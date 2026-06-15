@@ -25,6 +25,8 @@ import type {
   NormalizedProduct,
   NormalizedProductVariant,
   Order,
+  PendingPublish,
+  PublishExternalRef,
   SupplierAdapter,
   SupplierOrderResult,
   TrackingInfo,
@@ -79,6 +81,9 @@ interface PrintifyProduct {
   options?: PrintifyOption[];
   variants: PrintifyVariant[];
   images: PrintifyImage[];
+  // True while the product is locked pending a publish callback — set after the
+  // merchant clicks Publish, cleared once we POST publishing_succeeded/failed.
+  is_locked?: boolean;
 }
 
 interface PrintifyShipment {
@@ -168,6 +173,76 @@ export class PrintifyAdapter implements SupplierAdapter {
       if (current >= last) break;
       page++;
     }
+  }
+
+  // ── Publish handshake ─────────────────────────────────────────────────────
+  //
+  // When a merchant clicks "Publish" on a product in Printify, Printify locks it
+  // in a "publishing" state (is_locked) and waits for THIS integration to call
+  // publishing_succeeded / publishing_failed. Without that callback the product
+  // is stuck "publishing" forever. We page the catalog for locked products so a
+  // poll can import them and confirm. Printify exposes no server-side "locked"
+  // filter, so we scan pages (bounded by catalog size; runs on sync, not hot).
+
+  async listPendingPublish(): Promise<PendingPublish[]> {
+    const shopId = await this.getShopId();
+    const pending: PendingPublish[] = [];
+    let page = 1;
+    const limit = 50;
+
+    while (true) {
+      const res = await fetch(
+        `${BASE_URL}/shops/${shopId}/products.json?page=${page}&limit=${limit}`,
+        { headers: this.headers(), signal: AbortSignal.timeout(30_000) }
+      );
+      if (!res.ok) throw new Error(`Printify products fetch failed: ${res.status}`);
+
+      const body = (await res.json()) as {
+        data?: PrintifyProduct[];
+        current_page?: number;
+        last_page?: number;
+      };
+      const products = body.data ?? [];
+      if (products.length === 0) break;
+
+      for (const p of products) {
+        if (p.is_locked) pending.push({ supplierProductId: p.id, product: this.normalize(p) });
+      }
+
+      const current = body.current_page ?? page;
+      const last = body.last_page ?? page;
+      if (current >= last) break;
+      page++;
+    }
+    return pending;
+  }
+
+  async confirmPublish(supplierProductId: string, external: PublishExternalRef): Promise<void> {
+    const shopId = await this.getShopId();
+    const res = await fetch(
+      `${BASE_URL}/shops/${shopId}/products/${supplierProductId}/publishing_succeeded.json`,
+      {
+        method: 'POST',
+        headers: this.headers(),
+        body: JSON.stringify({ external: { id: external.id, handle: external.handle } }),
+        signal: AbortSignal.timeout(15_000),
+      }
+    );
+    if (!res.ok) throw new Error(`Printify publish confirm failed: ${res.status}`);
+  }
+
+  async failPublish(supplierProductId: string, reason: string): Promise<void> {
+    const shopId = await this.getShopId();
+    const res = await fetch(
+      `${BASE_URL}/shops/${shopId}/products/${supplierProductId}/publishing_failed.json`,
+      {
+        method: 'POST',
+        headers: this.headers(),
+        body: JSON.stringify({ reason }),
+        signal: AbortSignal.timeout(15_000),
+      }
+    );
+    if (!res.ok) throw new Error(`Printify publish-fail report failed: ${res.status}`);
   }
 
   private normalize(p: PrintifyProduct): NormalizedProduct {

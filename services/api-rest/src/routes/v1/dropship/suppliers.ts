@@ -19,7 +19,7 @@ import { notFound, badRequest, conflict } from '@sparx/api-core/errors';
 import { slugify, uniqueSlug } from '@sparx/api-core/slug';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
 import { createAdapter, VENDOR_CATALOG } from '@sparx/dropship';
-import type { PricingRule, SupplierType } from '@sparx/dropship';
+import type { PricingRule, SupplierAdapter, SupplierType } from '@sparx/dropship';
 import { applyPricingRule } from '@sparx/dropship';
 import { requireDropshipModule, toDropshipContext } from '../../../lib/dropship-context.js';
 import { env } from '../../../env.js';
@@ -387,6 +387,298 @@ function toDropshipProductView(dp: {
   };
 }
 
+// The normalized supplier variant both the import route and the publish reconcile
+// feed in — its inline options plus the per-variant mockups the adapter resolved.
+interface DropshipVariantData {
+  supplierSku: string;
+  title: string;
+  options: Record<string, string>;
+  costPriceCents: number;
+  msrpCents: number | null;
+  weight: number | null;
+  imageUrls?: string[];
+}
+
+interface DropshipImportData {
+  tenantId: string;
+  supplierId: string;
+  dropshipProductId: string;
+  title: string;
+  description: string | null;
+  productImages: string[];
+  variants: DropshipVariantData[];
+  pricingRule: PricingRule | null;
+  /** Resolved property ids the product is scoped to; empty = all sites. */
+  siteScopeIds: string[];
+}
+
+// Create a commerce product — options lattice, variants, per-variant imagery, and
+// the dropship link — from a normalized supplier product, in one transaction.
+// Shared by the manual import route and the publish reconcile so both produce an
+// identical catalog shape. Imports as `draft` (the merchant reviews pricing before
+// it goes live); returns the new product id + handle.
+async function createCommerceProductFromDropship(
+  tx: Parameters<Parameters<typeof withTenant>[1]>[0],
+  data: DropshipImportData
+): Promise<{ productId: string; handle: string; linkId: string; variantCount: number }> {
+  const { tenantId, supplierId, dropshipProductId, variants, pricingRule } = data;
+
+  const baseHandle = slugify(data.title || 'product');
+  const handle = await uniqueSlug(baseHandle, async (candidate) => {
+    const existing = await tx.product.findFirst({
+      where: { tenantId, handle: candidate, deletedAt: null },
+    });
+    return existing !== null;
+  });
+
+  // `inStock: true` because dropship items are supplier-fulfilled (made-to-order
+  // for POD) — we don't track their stock locally, so the storefront must never
+  // show them as sold out (the default `false` is what made imports read so).
+  const product = await tx.product.create({
+    data: {
+      tenantId,
+      title: data.title,
+      handle,
+      description: data.description ?? null,
+      status: 'draft',
+      fulfillmentType: 'physical',
+      inStock: true,
+      metadata: { dropshipSupplierId: supplierId, dropshipProductId },
+    },
+  });
+
+  // Build the option lattice first so each variant can be pinned to its option-
+  // value set — otherwise the storefront renders no size/colour picker.
+  const optionValueIdsBySku = await materializeDropshipOptions(tx, tenantId, product.id, variants);
+
+  const createdVariants = await Promise.all(
+    variants.map((v, idx) => {
+      const retailPrice = pricingRule
+        ? applyPricingRule(v.costPriceCents, pricingRule)
+        : (v.msrpCents ?? v.costPriceCents);
+      const compareAt = pricingRule ? (v.msrpCents ?? null) : null;
+      return tx.productVariant.create({
+        data: {
+          tenantId,
+          productId: product.id,
+          sku: v.supplierSku,
+          title: v.title || undefined,
+          priceCents: retailPrice,
+          compareAtPriceCents: compareAt,
+          costCents: v.costPriceCents,
+          currency: 'USD',
+          weightGrams: v.weight ?? undefined,
+          // `continue` = orderable without tracked stock (supplier holds it).
+          inventoryPolicy: 'continue',
+          isDefault: idx === 0,
+          position: idx,
+          dropshipSourceId: supplierId,
+        },
+      });
+    })
+  );
+
+  // Pin each variant onto its option-value lattice point (index-aligned).
+  const variantJoins = createdVariants.flatMap((cv, idx) => {
+    const supplierSku = variants[idx]?.supplierSku;
+    const ids = supplierSku ? (optionValueIdsBySku.get(supplierSku) ?? []) : [];
+    return ids.map((optionValueId) => ({ variantId: cv.id, optionValueId }));
+  });
+  if (variantJoins.length > 0) {
+    await tx.productVariantOptionValue.createMany({ data: variantJoins, skipDuplicates: true });
+  }
+
+  // Imagery: product-level hero/baseline + each variant's own mockups (see
+  // attachDropshipImages). createdVariants is index-aligned with `variants`.
+  const perVariantImages = createdVariants.map((cv, idx) => ({
+    variantId: cv.id,
+    imageUrls: variants[idx]?.imageUrls ?? [],
+  }));
+  await attachDropshipImages(tx, tenantId, product.id, data.productImages, perVariantImages);
+
+  const link = await tx.dropshipProductLink.create({
+    data: {
+      tenantId,
+      productId: product.id,
+      dropshipProductId,
+      supplierSku: variants[0]?.supplierSku ?? '',
+      status: 'active',
+    },
+  });
+
+  // Inherit the supplier's site scope (empty = all sites, writes no rows).
+  if (data.siteScopeIds.length > 0) {
+    await tx.productProperty.createMany({
+      data: data.siteScopeIds.map((propertyId) => ({ productId: product.id, propertyId })),
+    });
+  }
+
+  return { productId: product.id, handle, linkId: link.id, variantCount: createdVariants.length };
+}
+
+interface ReconcileDeps {
+  tenantId: string;
+  supplierId: string;
+  pricingRule: PricingRule | null;
+  siteScopeIds: string[];
+}
+
+interface ReconcileSummary {
+  pending: number;
+  imported: number;
+  confirmed: number;
+  failed: number;
+}
+
+// Close the publish handshake for a supplier (docs/14): custom-integration
+// channels (Printify/Printful) LOCK a product in a "publishing" state when the
+// merchant clicks Publish and wait for us to call back. Until we do, the product
+// is stuck. For each locked product we (a) ensure it's imported into the catalog,
+// then (b) confirm the publish — which unlocks it on the supplier side and lets
+// its UI deep-link to our listing. On any per-product error we report a publish
+// FAILURE instead, so a product is never left stuck on our account.
+//
+// Adapter is injected (not built here) so the orchestration is unit-testable with
+// a fake supplier. Returns nothing for adapters without the handshake.
+export async function reconcileSupplierPublishes(
+  adapter: SupplierAdapter,
+  deps: ReconcileDeps,
+  onImported: (productId: string) => Promise<void>
+): Promise<ReconcileSummary> {
+  if (!adapter.listPendingPublish || !adapter.confirmPublish) {
+    return { pending: 0, imported: 0, confirmed: 0, failed: 0 };
+  }
+
+  const pending = await adapter.listPendingPublish();
+  let imported = 0;
+  let confirmed = 0;
+  let failed = 0;
+
+  for (const item of pending) {
+    try {
+      const { productId, handle, didImport } = await withTenant(
+        { tenantId: deps.tenantId },
+        async (tx) => {
+          // Reuse an existing dropship row + commerce link if the product was
+          // already imported (publish after a manual import, or a re-run).
+          const existing = await tx.dropshipProduct.findFirst({
+            where: {
+              tenantId: deps.tenantId,
+              supplierId: deps.supplierId,
+              supplierProductId: item.supplierProductId,
+            },
+            include: { links: { where: { status: 'active' }, select: { productId: true } } },
+          });
+
+          const linkedProductId = existing?.links[0]?.productId;
+          if (linkedProductId) {
+            const prod = await tx.product.findUnique({
+              where: { id: linkedProductId },
+              select: { handle: true },
+            });
+            return { productId: linkedProductId, handle: prod?.handle ?? '', didImport: false };
+          }
+
+          // Ensure a dropship_products row exists to link against.
+          const dropshipProductId =
+            existing?.id ??
+            (
+              await tx.dropshipProduct.create({
+                data: {
+                  tenantId: deps.tenantId,
+                  supplierId: deps.supplierId,
+                  supplierProductId: item.supplierProductId,
+                  title: item.product.title,
+                  description: item.product.description,
+                  images: item.product.imageUrls,
+                  variants: item.product.variants as unknown as Prisma.InputJsonValue,
+                  costPriceCents: item.product.variants[0]?.costPriceCents ?? 0,
+                  msrpCents: item.product.variants[0]?.msrpCents ?? null,
+                },
+                select: { id: true },
+              })
+            ).id;
+
+          const res = await createCommerceProductFromDropship(tx, {
+            tenantId: deps.tenantId,
+            supplierId: deps.supplierId,
+            dropshipProductId,
+            title: item.product.title,
+            description: item.product.description,
+            productImages: item.product.imageUrls,
+            variants: item.product.variants,
+            pricingRule: deps.pricingRule,
+            siteScopeIds: deps.siteScopeIds,
+          });
+          return { productId: res.productId, handle: res.handle, didImport: true };
+        }
+      );
+
+      if (didImport) {
+        imported += 1;
+        await onImported(productId);
+      }
+
+      // Unlock the product on the supplier side, pointing it at our listing.
+      await adapter.confirmPublish(item.supplierProductId, { id: productId, handle });
+      confirmed += 1;
+    } catch (err) {
+      failed += 1;
+      // Never leave it stuck: report the failure so the supplier unlocks it.
+      if (adapter.failPublish) {
+        try {
+          await adapter.failPublish(
+            item.supplierProductId,
+            err instanceof Error ? err.message : 'Publish import failed'
+          );
+        } catch {
+          // best-effort — the next reconcile will retry
+        }
+      }
+    }
+  }
+
+  return { pending: pending.length, imported, confirmed, failed };
+}
+
+// Build the adapter from a supplier row and run the publish reconcile, emitting a
+// search-index event for each newly imported product. Shared by the Sync action
+// and the standalone reconcile endpoint.
+function runPublishReconcile(
+  supplier: {
+    id: string;
+    type: string;
+    credentials: unknown;
+    pricingRule: unknown;
+    siteScopes: { propertyId: string }[];
+  },
+  tenantId: string,
+  userId: string | null
+): Promise<ReconcileSummary> {
+  const adapter = createAdapter(
+    supplier.type as SupplierType,
+    supplier.credentials as Record<string, string>
+  );
+  return reconcileSupplierPublishes(
+    adapter,
+    {
+      tenantId,
+      supplierId: supplier.id,
+      pricingRule: (supplier.pricingRule as PricingRule | null) ?? null,
+      siteScopeIds: supplier.siteScopes.map((s) => s.propertyId),
+    },
+    (productId) =>
+      publishEvent(
+        publisher,
+        'search.entity.changed',
+        tenantId,
+        userId,
+        { entityType: 'product', recordId: productId, op: 'upsert' },
+        pubLogger
+      )
+  );
+}
+
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
   // ── Vendor catalog (the connectable suppliers + their credential field spec) ──
@@ -606,7 +898,10 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
     const { id } = PathId.parse(request.params);
 
     const supplier = await withTenant({ tenantId }, async (tx) => {
-      return tx.dropshipSupplier.findFirst({ where: { id, tenantId, deletedAt: null } });
+      return tx.dropshipSupplier.findFirst({
+        where: { id, tenantId, deletedAt: null },
+        include: { siteScopes: { select: { propertyId: true } } },
+      });
     });
     if (!supplier) throw notFound('Supplier not found');
     if (supplier.status === 'error') {
@@ -622,7 +917,46 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
       pubLogger
     );
 
-    return reply.send(ok({ supplierId: id, status: 'sync_queued' }));
+    // Close any pending publish handshake (e.g. Printify's "publishing" lock) as
+    // part of the same Sync action. Resilient: a failure here never blocks the
+    // catalog sync that was just queued.
+    let publishesConfirmed = 0;
+    try {
+      const summary = await runPublishReconcile(supplier, tenantId, userId);
+      publishesConfirmed = summary.confirmed;
+    } catch (err) {
+      request.log.warn({ err, supplierId: id }, 'dropship publish reconcile failed during sync');
+    }
+
+    return reply.send(ok({ supplierId: id, status: 'sync_queued', publishesConfirmed }));
+  });
+
+  // ── Reconcile pending publishes (unlock the supplier "publishing" state) ─────
+  //
+  // The publish handshake on its own — for a scheduler (poll-based) or a manual
+  // "unstick publishing" action. Imports each product the supplier locked for
+  // publish, then confirms it back so the supplier unlocks it and deep-links to
+  // our listing. Surfaces per-product errors as a publish FAILURE to the supplier
+  // so nothing stays stuck.
+  app.post('/v1/dropship/suppliers/:id/reconcile-publishes', async (request, reply) => {
+    await requireDropshipModule(request);
+    requireRole(request, 'admin');
+    const { tenantId, userId } = toDropshipContext(request);
+    const { id } = PathId.parse(request.params);
+
+    const supplier = await withTenant({ tenantId }, async (tx) => {
+      return tx.dropshipSupplier.findFirst({
+        where: { id, tenantId, deletedAt: null },
+        include: { siteScopes: { select: { propertyId: true } } },
+      });
+    });
+    if (!supplier) throw notFound('Supplier not found');
+    if (supplier.status === 'error') {
+      throw badRequest('Cannot reconcile a supplier in error state', 'SUPPLIER_ERROR');
+    }
+
+    const summary = await runPublishReconcile(supplier, tenantId, userId);
+    return reply.send(ok({ supplierId: id, ...summary }));
   });
 
   // ── Browse supplier catalog (raw dropship_products) ──────────────────────────
@@ -725,151 +1059,34 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
       imageUrls?: string[];
     }[];
 
-    const result = await withTenant({ tenantId }, async (tx) => {
-      // Generate a unique handle
-      const baseHandle = slugify(dropshipProduct.title || 'product');
-      const handle = await uniqueSlug(baseHandle, async (candidate) => {
-        const existing = await tx.product.findFirst({
-          where: { tenantId, handle: candidate, deletedAt: null },
-        });
-        return existing !== null;
-      });
-
-      // Create the commerce product. `inStock: true` because dropship items are
-      // supplier-fulfilled (made-to-order for POD) — we don't track their stock
-      // locally, so the storefront must never show them as sold out. The default
-      // is `false` (which is what made imported items read as sold out).
-      const product = await tx.product.create({
-        data: {
-          tenantId,
-          title: dropshipProduct.title,
-          handle,
-          description: dropshipProduct.description ?? null,
-          status: 'draft',
-          fulfillmentType: 'physical',
-          inStock: true,
-          metadata: {
-            dropshipSupplierId: id,
-            dropshipProductId: productId,
-          },
-        },
-      });
-
-      // Build the option lattice first so each variant can be pinned to its
-      // option-value set as it's created — otherwise the storefront renders no
-      // size/colour picker and the buyer is stranded on the default variant.
-      const optionValueIdsBySku = await materializeDropshipOptions(
-        tx,
+    const result = await withTenant({ tenantId }, (tx) =>
+      createCommerceProductFromDropship(tx, {
         tenantId,
-        product.id,
-        variants
-      );
-
-      // Create variants
-      const createdVariants = await Promise.all(
-        variants.map((v, idx) => {
-          const retailPrice = pricingRule
-            ? applyPricingRule(v.costPriceCents, pricingRule)
-            : (v.msrpCents ?? v.costPriceCents);
-
-          const compareAt = pricingRule ? (v.msrpCents ?? null) : null;
-
-          return tx.productVariant.create({
-            data: {
-              tenantId,
-              productId: product.id,
-              sku: v.supplierSku,
-              title: v.title || undefined,
-              priceCents: retailPrice,
-              compareAtPriceCents: compareAt,
-              costCents: v.costPriceCents,
-              currency: 'USD',
-              weightGrams: v.weight ?? undefined,
-              // `continue` = orderable without tracked stock. Dropship stock lives
-              // with the supplier, not in our inventory tables, so the default
-              // `deny` policy would block every add-to-cart (showing sold out).
-              inventoryPolicy: 'continue',
-              isDefault: idx === 0,
-              position: idx,
-              dropshipSourceId: id,
-            },
-          });
-        })
-      );
-
-      // Pin each created variant onto its option-value lattice point — this is
-      // what lets the storefront resolve a picked Size/Colour back to a SKU.
-      // createdVariants preserves the `variants` order (Promise.all), so index
-      // alignment maps each commerce variant to its source supplierSku.
-      const variantJoins = createdVariants.flatMap((cv, idx) => {
-        const supplierSku = variants[idx]?.supplierSku;
-        const ids = supplierSku ? (optionValueIdsBySku.get(supplierSku) ?? []) : [];
-        return ids.map((optionValueId) => ({ variantId: cv.id, optionValueId }));
-      });
-      if (variantJoins.length > 0) {
-        await tx.productVariantOptionValue.createMany({
-          data: variantJoins,
-          skipDuplicates: true,
-        });
-      }
-
-      // Copy the supplier's imagery into the commerce catalog (hot-linked media;
-      // see attachDropshipImages). createdVariants is index-aligned with
-      // `variants` (Promise.all), so each commerce variant carries its source
-      // variant's per-colour mockups, pinned to its SKU.
-      const perVariantImages = createdVariants.map((cv, idx) => ({
-        variantId: cv.id,
-        imageUrls: variants[idx]?.imageUrls ?? [],
-      }));
-      await attachDropshipImages(
-        tx,
-        tenantId,
-        product.id,
-        dropshipProduct.images,
-        perVariantImages
-      );
-
-      // Link the dropship product
-      const link = await tx.dropshipProductLink.create({
-        data: {
-          tenantId,
-          productId: product.id,
-          dropshipProductId: productId,
-          supplierSku: variants[0]?.supplierSku ?? '',
-          status: 'active',
-        },
-      });
-
-      // Inherit the supplier's site scope: a connection restricted to specific
-      // sites yields products visible only on those sites (commerce_product_
-      // properties — empty = all sites). An all-sites connection writes no rows,
-      // leaving the product global.
-      if (supplier.siteScopes.length > 0) {
-        await tx.productProperty.createMany({
-          data: supplier.siteScopes.map((s) => ({
-            productId: product.id,
-            propertyId: s.propertyId,
-          })),
-        });
-      }
-
-      return { product, variants: createdVariants, link };
-    });
+        supplierId: id,
+        dropshipProductId: productId,
+        title: dropshipProduct.title,
+        description: dropshipProduct.description ?? null,
+        productImages: (dropshipProduct.images as string[]) ?? [],
+        variants,
+        pricingRule,
+        siteScopeIds: supplier.siteScopes.map((s) => s.propertyId),
+      })
+    );
 
     await publishEvent(
       publisher,
       'search.entity.changed',
       tenantId,
       userId,
-      { entityType: 'product', recordId: result.product.id, op: 'upsert' },
+      { entityType: 'product', recordId: result.productId, op: 'upsert' },
       pubLogger
     );
 
     return reply.status(201).send(
       ok({
-        productId: result.product.id,
-        linkId: result.link.id,
-        variantCount: result.variants.length,
+        productId: result.productId,
+        linkId: result.linkId,
+        variantCount: result.variantCount,
       })
     );
   });

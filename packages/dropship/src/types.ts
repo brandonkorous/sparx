@@ -36,6 +36,23 @@ export interface NormalizedProduct {
   raw: Record<string, unknown>;
 }
 
+// A product the supplier has LOCKED pending our publish callback. Custom-
+// integration channels (Printify, Printful) lock a product in a "publishing"
+// state when the merchant hits Publish and wait for the integration to confirm
+// it landed; until then the product is stuck. `product` is the full normalized
+// payload so the caller can import it before confirming.
+export interface PendingPublish {
+  supplierProductId: string;
+  product: NormalizedProduct;
+}
+
+// Where a published product now lives in our system — sent back to the supplier
+// so its UI can deep-link to the live listing and unlock the product.
+export interface PublishExternalRef {
+  id: string;
+  handle: string;
+}
+
 // ── Order submission ──────────────────────────────────────────────────────────
 
 export interface OrderLineItem {
@@ -164,6 +181,21 @@ export interface SupplierAdapter {
 
   /** Check real-time inventory levels for a list of supplier SKUs. */
   checkInventory(skus: string[]): Promise<InventoryMap>;
+
+  // ── Publish handshake (custom-integration channels only) ──────────────────
+  // Printify/Printful lock a product in "publishing" when the merchant clicks
+  // Publish and wait for the integration to call back. Adapters without this
+  // handshake (csv/dsers/spocket) omit these — callers feature-detect.
+
+  /** Products the supplier is waiting on us to confirm a publish for. */
+  listPendingPublish?(): Promise<PendingPublish[]>;
+
+  /** Confirm a publish succeeded (unlocks the product on the supplier side),
+   *  reporting where it now lives in our system. */
+  confirmPublish?(supplierProductId: string, external: PublishExternalRef): Promise<void>;
+
+  /** Report a publish FAILED (also unlocks the product), with a reason. */
+  failPublish?(supplierProductId: string, reason: string): Promise<void>;
 }
 
 // ── Supplier type discriminant ────────────────────────────────────────────────
