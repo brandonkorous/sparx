@@ -36,13 +36,21 @@ export async function requireVerifiedEmail(request: FastifyRequest): Promise<voi
   const auth = requireAuth(request);
   if (auth.actorType !== 'user') return;
 
-  const [user, tenant] = await Promise.all([
-    prisma.user.findUnique({ where: { id: auth.actorId }, select: { emailVerified: true } }),
-    prisma.tenant.findUnique({ where: { id: auth.tenantId }, select: { settings: true } }),
-  ]);
+  // Source the verified flag from the authenticated identity (the session JWT
+  // `ev` claim), NOT a fresh DB read. `users` has RLS policies that filter the
+  // non-owner `sparx_app` role api-rest connects as (the table is ENABLE-but-
+  // NO-FORCE — see packages/db/CLAUDE.md), so `prisma.user.findUnique` on the
+  // base client returns null here and would wrongly gate EVERY verified user.
+  // The claim is refreshed on each 5-minute token mint, so it is never stale by
+  // more than that. (`tenants` below has no RLS — the dispatch table — so that
+  // base-client read is safe.)
+  if (auth.emailVerified) return;
 
-  if (user?.emailVerified) return;
   // Still onboarding → exempt, so a fresh signup's wizard steps flow freely.
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: auth.tenantId },
+    select: { settings: true },
+  });
   if (!onboardingFinished(tenant?.settings ?? null)) return;
 
   throw forbidden(VERIFY_EMAIL_MESSAGE);

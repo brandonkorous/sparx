@@ -2,7 +2,11 @@
 //
 // Token shape (JWT, issued by the dashboard for a logged-in user):
 //   { sub: <user_id>, tid: <tenant_id>, role: 'owner'|'admin'|'editor'|'viewer',
-//     iat, exp }
+//     ev: <email-verified bool>, iat, exp }
+//   `ev` carries the Better Auth `emailVerified` flag so request handlers can
+//   gate on it WITHOUT a DB read — the `users` table's RLS hides the row from
+//   the non-owner `sparx_app` role services connect as (see
+//   verified-email-guard.ts). The 5-minute token life keeps the claim fresh.
 //
 // API key shape (issued in /settings/ai-integrations, persisted in api_keys):
 //   sk_live_<8 base32>_<32 base32>
@@ -42,12 +46,23 @@ export interface AuthContext {
   actorId: string;
   actorType: ActorType;
   role: StaffRole;
+  /**
+   * Whether the actor's email is verified. Sourced from the session JWT `ev`
+   * claim, NOT a live DB read — the `users` table's RLS returns no row for the
+   * non-owner `sparx_app` role, so a fresh read would falsely report unverified.
+   * API-key actors are always `true` (an issued key implies an established
+   * tenant). Read by `requireVerifiedEmail`.
+   */
+  emailVerified: boolean;
 }
 
 interface InternalJwtPayload {
   sub: string;
   tid: string;
   role: StaffRole;
+  // Email-verified flag (see AuthContext.emailVerified). Optional on the wire so
+  // a token minted before this claim existed still verifies; absence → unverified.
+  ev?: boolean;
   iat?: number;
   exp?: number;
 }
@@ -108,6 +123,9 @@ export function createAuthPlugin(options: AuthPluginOptions): FastifyPluginAsync
           // API keys ship with a fixed editor role; finer-grained scopes are
           // surfaced in `apiKey.scopes` and enforced at the route handler.
           role: 'editor',
+          // An issued key implies an established tenant, so API actors are never
+          // email-gated (requireVerifiedEmail also short-circuits non-user actors).
+          emailVerified: true,
         };
         return;
       }
@@ -128,6 +146,7 @@ export function createAuthPlugin(options: AuthPluginOptions): FastifyPluginAsync
         actorId: payload.sub,
         actorType: 'user',
         role: payload.role,
+        emailVerified: payload.ev ?? false,
       };
     });
   };
