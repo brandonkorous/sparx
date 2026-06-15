@@ -26,7 +26,6 @@ import {
   Badge,
   Button,
   Container,
-  DonutChart,
   Grid,
   PageHeader,
   Stack,
@@ -50,13 +49,16 @@ import {
   fmtMoneyCents,
   fmtNumber,
   fmtPercentRatio,
+  liveOr,
 } from '../_components/overview-bits';
 
 // Commerce overview — the storekeeper's morning glance: revenue pulse, the
-// daily action queue, cashflow, and what's selling. Headline KPIs are wired to
-// the live /v1/commerce/reports/* endpoints (fail-soft to "—"); sections whose
-// reporting endpoints don't exist yet render representative data behind a
-// <SampleBadge>, the dashboard's sanctioned interim (see overview-charts.tsx).
+// daily action queue, cashflow, and what's selling. Headline KPIs, top products,
+// top customers, and inventory valuation are wired to the live
+// /v1/commerce/reports/* endpoints (each falls back to "—" or an illustrative
+// example via liveOr); sections whose reporting endpoints don't exist yet (the
+// revenue chart, payouts, recent orders, low-stock items, recover & grow) render
+// representative data behind a <SampleBadge>.
 
 export const dynamic = 'force-dynamic';
 
@@ -86,6 +88,48 @@ interface AbandonedCarts {
   recoveredCount: number;
   recoveryRate: number;
 }
+interface TopProductRow {
+  productId: string;
+  productTitle: string;
+  unitsSold: number;
+  revenueCents: number;
+}
+interface TopCustomerRow {
+  customerId: string;
+  customerName: string;
+  ordersCount: number;
+  totalSpentCents: number;
+}
+interface InventoryValuation {
+  totalUnits: number;
+  totalCostCents: number;
+  totalRetailCents: number;
+  currency: string;
+  asOf: string;
+}
+
+// Display rows shared by live + sample so liveOr can fall back cleanly.
+interface TopProductDisplay {
+  name: string;
+  meta?: string;
+  revenueCents: number;
+  units: number;
+  unitsSuffix: string;
+  swatch: string;
+}
+interface TopCustomerDisplay {
+  name: string;
+  orders: number;
+  spentCents: number;
+}
+
+const PRODUCT_SWATCHES = [
+  'linear-gradient(135deg,#7c2d12,#b45309)',
+  'linear-gradient(135deg,#92400e,#d97706)',
+  'linear-gradient(135deg,#3f2d1c,#78350f)',
+  'linear-gradient(135deg,#1c1917,#44403c)',
+  'linear-gradient(135deg,#a16207,#ca8a04)',
+] as const;
 
 // ── Sample data (illustrative until the matching endpoints land) ──
 const SAMPLE_ORDERS = [
@@ -139,43 +183,56 @@ const SAMPLE_ORDERS = [
   },
 ] as const;
 
-const SAMPLE_TOP_PRODUCTS = [
+const SAMPLE_TOP_PRODUCTS: TopProductDisplay[] = [
   {
     name: 'Trailhead Blend · 12oz',
     meta: 'Whole bean',
-    revenue: '$9,840',
-    units: '312 sold',
-    swatch: 'linear-gradient(135deg,#7c2d12,#b45309)',
+    revenueCents: 984_000,
+    units: 312,
+    unitsSuffix: 'sold',
+    swatch: PRODUCT_SWATCHES[0],
   },
   {
     name: "Roaster's Pick",
     meta: 'Subscription',
-    revenue: '$8,120',
-    units: '204 active',
-    swatch: 'linear-gradient(135deg,#92400e,#d97706)',
+    revenueCents: 812_000,
+    units: 204,
+    unitsSuffix: 'active',
+    swatch: PRODUCT_SWATCHES[1],
   },
   {
     name: 'Single-Origin Ethiopia',
     meta: 'Whole bean',
-    revenue: '$6,430',
-    units: '188 sold',
-    swatch: 'linear-gradient(135deg,#3f2d1c,#78350f)',
+    revenueCents: 643_000,
+    units: 188,
+    unitsSuffix: 'sold',
+    swatch: PRODUCT_SWATCHES[2],
   },
   {
     name: 'Cold Brew Concentrate',
     meta: '32oz',
-    revenue: '$4,205',
-    units: '141 sold',
-    swatch: 'linear-gradient(135deg,#1c1917,#44403c)',
+    revenueCents: 420_500,
+    units: 141,
+    unitsSuffix: 'sold',
+    swatch: PRODUCT_SWATCHES[3],
   },
   {
     name: 'Switchback Mug',
     meta: 'Ceramic',
-    revenue: '$1,960',
-    units: '98 sold',
-    swatch: 'linear-gradient(135deg,#a16207,#ca8a04)',
+    revenueCents: 196_000,
+    units: 98,
+    unitsSuffix: 'sold',
+    swatch: PRODUCT_SWATCHES[4],
   },
-] as const;
+];
+
+const SAMPLE_TOP_CUSTOMERS: TopCustomerDisplay[] = [
+  { name: 'Priya Nair', orders: 14, spentCents: 184_200 },
+  { name: 'Maya Chen', orders: 11, spentCents: 152_800 },
+  { name: 'Devon Walls', orders: 9, spentCents: 121_500 },
+  { name: 'Rosa Iqbal', orders: 8, spentCents: 98_400 },
+  { name: 'Theo Marsh', orders: 6, spentCents: 76_100 },
+];
 
 const ORDER_TONE: Record<string, string> = {
   warning: 'warning',
@@ -190,13 +247,44 @@ export default async function CommercePage() {
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
   const range = `from=${encodeURIComponent(thirtyDaysAgo.toISOString())}&to=${encodeURIComponent(now.toISOString())}`;
 
-  const [revenue, funnel, subs, abandoned] = await Promise.all([
-    api.get<RevenueSummary>(`/v1/commerce/reports/revenue-summary?${range}`).catch(() => null),
-    api.get<ConversionFunnel>(`/v1/commerce/reports/conversion-funnel?${range}`).catch(() => null),
-    api.get<SubscriptionMetrics>('/v1/commerce/reports/subscription-metrics').catch(() => null),
-    api.get<AbandonedCarts>(`/v1/commerce/reports/abandoned-carts?${range}`).catch(() => null),
-  ]);
+  const [revenue, funnel, subs, abandoned, liveProducts, liveCustomers, valuation] =
+    await Promise.all([
+      api.get<RevenueSummary>(`/v1/commerce/reports/revenue-summary?${range}`).catch(() => null),
+      api
+        .get<ConversionFunnel>(`/v1/commerce/reports/conversion-funnel?${range}`)
+        .catch(() => null),
+      api.get<SubscriptionMetrics>('/v1/commerce/reports/subscription-metrics').catch(() => null),
+      api.get<AbandonedCarts>(`/v1/commerce/reports/abandoned-carts?${range}`).catch(() => null),
+      api
+        .get<TopProductRow[]>(`/v1/commerce/reports/top-products?${range}&limit=5`)
+        .catch(() => null),
+      api
+        .get<TopCustomerRow[]>(`/v1/commerce/reports/top-customers?${range}&limit=5`)
+        .catch(() => null),
+      api.get<InventoryValuation>('/v1/commerce/reports/inventory-valuation').catch(() => null),
+    ]);
   const currency = revenue?.currency ?? 'USD';
+
+  // Top products + top customers — live once the store has sales, else a badged
+  // example via liveOr (the badge disappears as soon as real rows arrive).
+  const topProducts = liveOr<TopProductDisplay[]>(
+    liveProducts?.map((p, i) => ({
+      name: p.productTitle,
+      revenueCents: p.revenueCents,
+      units: p.unitsSold,
+      unitsSuffix: 'sold',
+      swatch: PRODUCT_SWATCHES[i % PRODUCT_SWATCHES.length] ?? PRODUCT_SWATCHES[0],
+    })) ?? null,
+    SAMPLE_TOP_PRODUCTS
+  );
+  const topCustomers = liveOr<TopCustomerDisplay[]>(
+    liveCustomers?.map((c) => ({
+      name: c.customerName,
+      orders: c.ordersCount,
+      spentCents: c.totalSpentCents,
+    })) ?? null,
+    SAMPLE_TOP_CUSTOMERS
+  );
 
   return (
     <Container size="xl">
@@ -415,9 +503,9 @@ export default async function CommercePage() {
             right={<CardLink href="/commerce/reports">Report</CardLink>}
           >
             <div className="flex flex-col">
-              {SAMPLE_TOP_PRODUCTS.map((p) => (
+              {topProducts.data.map((p, i) => (
                 <div
-                  key={p.name}
+                  key={`${p.name}-${i}`}
                   className="flex items-center gap-3 border-b border-[var(--color-border-default)] py-2.5 last:border-b-0"
                 >
                   <span
@@ -427,45 +515,51 @@ export default async function CommercePage() {
                   />
                   <div className="min-w-0">
                     <div className="truncate text-sm font-medium">{p.name}</div>
-                    <div className="text-xs text-[var(--color-text-tertiary)]">{p.meta}</div>
+                    {p.meta && (
+                      <div className="text-xs text-[var(--color-text-tertiary)]">{p.meta}</div>
+                    )}
                   </div>
                   <div className="ml-auto text-right">
-                    <div className="text-sm font-medium tabular-nums">{p.revenue}</div>
-                    <div className="text-xs text-[var(--color-text-tertiary)]">{p.units}</div>
+                    <div className="text-sm font-medium tabular-nums">
+                      {fmtMoneyCents(p.revenueCents, currency)}
+                    </div>
+                    <div className="text-xs text-[var(--color-text-tertiary)]">
+                      {fmtNumber(p.units)} {p.unitsSuffix}
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
-            <div className="mt-3">
-              <SampleBadge />
-            </div>
+            {topProducts.isSample && (
+              <div className="mt-3">
+                <SampleBadge reason="no-data" />
+              </div>
+            )}
           </OverviewCard>
         </div>
 
         {/* Customers + inventory + recover & grow */}
         <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
           <OverviewCard
-            title="Customers"
+            title="Top customers"
             icon={<Users className="h-4 w-4" />}
             right={<CardLink href="/crm/customers">CRM</CardLink>}
           >
-            <DonutChart
-              data={[
-                { label: 'Returning', value: 62, color: 'module' },
-                { label: 'New', value: 38, color: 'var(--module-active-tint)' },
-              ]}
-              valueFormat="percent"
-              centerValue="62%"
-              centerLabel="returning"
-              ariaLabel="New vs returning customers"
-            />
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              <MetricTile value="486" label="New · 30d" />
-              <MetricTile value="$96" label="Avg. lifetime value" />
-            </div>
-            <div className="mt-3">
-              <SampleBadge />
-            </div>
+            {topCustomers.data.map((c, i) => (
+              <OverviewRow
+                key={`${c.name}-${i}`}
+                icon={<Users className="h-4 w-4" />}
+                tone="module"
+                title={c.name}
+                hint={`${fmtNumber(c.orders)} orders`}
+                right={fmtMoneyCents(c.spentCents, currency)}
+              />
+            ))}
+            {topCustomers.isSample && (
+              <div className="mt-3">
+                <SampleBadge reason="no-data" />
+              </div>
+            )}
           </OverviewCard>
 
           <OverviewCard
@@ -473,10 +567,12 @@ export default async function CommercePage() {
             icon={<Box className="h-4 w-4" />}
             right={<CardLink href="/commerce/inventory">Manage</CardLink>}
           >
-            <div className="mb-3 grid grid-cols-3 gap-3 text-center">
-              <MetricTile value="142" label="In stock" />
-              <MetricTile value="5" label="Low" tone="warning" />
-              <MetricTile value="2" label="Out" tone="danger" />
+            <div className="mb-3 grid grid-cols-2 gap-3 text-center">
+              <MetricTile value={fmtNumber(valuation?.totalUnits)} label="Units in stock" />
+              <MetricTile
+                value={fmtMoneyCents(valuation?.totalRetailCents, valuation?.currency ?? currency)}
+                label="Stock value"
+              />
             </div>
             <OverviewRow
               icon={<AlertTriangle className="h-4 w-4" />}

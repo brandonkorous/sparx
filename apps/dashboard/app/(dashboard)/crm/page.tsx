@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import {
   AlertTriangle,
+  CheckCircle2,
   CheckSquare,
   Clipboard,
   Clock,
@@ -51,14 +52,17 @@ import {
   SampleBadge,
   fmtMoney,
   fmtNumber,
+  liveOr,
+  type MetricTone,
 } from '../_components/overview-bits';
 
 // CRM overview — the relationship manager's morning glance: who your customers
-// are, what's in the pipeline, and what needs a call today. Headline KPIs and
-// the customer-growth trend are wired to the live /v1/crm/reports/* endpoints
-// (fail-soft to "—" / sample); the pipeline, leads-by-source, top customers,
-// tasks, segments, and activity render representative data behind a
-// <SampleBadge> until their reporting endpoints land (see overview-charts.tsx).
+// are, what's in the pipeline, and what needs a call today. Headline KPIs, the
+// customer-growth trend, the sales pipeline + open-deal split, top customers,
+// tasks due today, and segment sizes are wired to the live /v1/crm/* endpoints
+// (each falls back to "—" or a badged example via liveOr); leads-by-source and
+// the activity feed render representative data behind a <SampleBadge> until
+// their reporting endpoints land.
 
 export const dynamic = 'force-dynamic';
 
@@ -78,6 +82,127 @@ interface CrmSnapshot {
 interface AcquisitionPoint {
   month: string; // yyyy-mm
   newCustomers: number;
+}
+
+// ── Live shapes from /v1/crm/* ───────────────────────────────
+interface PipelineRow {
+  id: string;
+  name: string;
+  isDefault: boolean;
+}
+interface FunnelBucket {
+  stageId: string;
+  stageName: string;
+  stageType: string; // 'open' | 'won' | 'lost'
+  count: number;
+  totalValue: number;
+}
+interface WinLossRow {
+  won: number;
+  lost: number;
+}
+interface CrmCustomer {
+  type: string; // 'prospect' | 'retail' | 'b2b'
+  firstName: string | null;
+  lastName: string | null;
+  company: string | null;
+  email: string | null;
+  totalSpent: string; // Decimal serialized as a string
+  orderCount: number;
+  lastOrderAt: string | null;
+}
+interface CrmTask {
+  title: string;
+  description: string | null;
+  priority: string; // 'low' | 'medium' | 'high' | 'urgent'
+}
+interface SegmentRow {
+  id: string;
+  name: string;
+}
+
+// Display rows shared by live + sample so liveOr can fall back cleanly.
+interface PipelineBar {
+  label: string;
+  value: number;
+  display: string;
+}
+interface OpenDealBar {
+  label: string;
+  value: number;
+  display: string;
+  color: string;
+}
+interface CustomerRow {
+  name: string;
+  type: string;
+  orders: number;
+  ltv: string;
+  last: string;
+  swatch: string;
+  initials: string;
+}
+interface TaskRow {
+  title: string;
+  hint: string;
+  badge: string;
+  badgeColor: string;
+  tone: string;
+}
+interface SegmentTile {
+  value: string;
+  label: string;
+  tone: MetricTone;
+}
+
+const CUSTOMER_SWATCHES = [
+  'linear-gradient(135deg,#0891b2,#0e7490)',
+  'linear-gradient(135deg,#7c3aed,#6d28d9)',
+  'linear-gradient(135deg,#0d9488,#0f766e)',
+  'linear-gradient(135deg,#db2777,#be185d)',
+  'linear-gradient(135deg,#475569,#334155)',
+] as const;
+const OPEN_DEAL_COLORS = [
+  'module',
+  'module',
+  'var(--module-active-tint)',
+  '#67e8f9',
+  '#a5f3fc',
+] as const;
+
+const TYPE_LABEL: Record<string, string> = {
+  b2b: 'Wholesale',
+  retail: 'Retail',
+  prospect: 'Prospect',
+};
+const PRIORITY_META: Record<string, { label: string; color: string; tone: string }> = {
+  urgent: { label: 'Urgent', color: 'danger', tone: 'danger' },
+  high: { label: 'High', color: 'warning', tone: 'warning' },
+  medium: { label: 'Today', color: 'neutral', tone: 'module' },
+  low: { label: 'Today', color: 'neutral', tone: 'module' },
+};
+
+function customerName(c: CrmCustomer): string {
+  const candidates = [c.company, [c.firstName, c.lastName].filter(Boolean).join(' '), c.email];
+  for (const v of candidates) {
+    const s = v?.trim();
+    if (s) return s;
+  }
+  return 'Unknown';
+}
+function initialsOf(name: string): string {
+  const parts = name.split(/\s+/).filter(Boolean);
+  return ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase() || '–';
+}
+// Relative "time ago" for the last-order column (request-time, so dynamic).
+function relTime(iso: string | null): string {
+  if (!iso) return '—';
+  const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
+  if (days <= 0) return 'Today';
+  if (days === 1) return '1d ago';
+  if (days < 7) return `${days}d ago`;
+  if (days < 35) return `${Math.floor(days / 7)}w ago`;
+  return `${Math.floor(days / 30)}mo ago`;
 }
 
 // ── Sample data (illustrative until the matching endpoints land) ──
@@ -203,6 +328,7 @@ const SAMPLE_OPEN_DEALS = [
 const TYPE_BADGE: Record<string, string> = {
   Wholesale: 'neutral',
   Retail: 'module',
+  Prospect: 'warning',
 };
 
 // yyyy-mm → "Mon" for a compact x-axis label.
@@ -228,9 +354,43 @@ function monthLabel(yyyymm: string): string {
 export default async function CrmOverviewPage() {
   await requireSession();
 
-  const [snapshot, acquisition] = await Promise.all([
-    api.get<CrmSnapshot>('/v1/crm/reports/snapshot').catch(() => null),
-    api.get<AcquisitionPoint[]>('/v1/crm/reports/acquisition?months=12').catch(() => null),
+  const [snapshot, acquisition, pipelinesPage, topCustomersLive, todayTasksLive, segmentsPage] =
+    await Promise.all([
+      api.get<CrmSnapshot>('/v1/crm/reports/snapshot').catch(() => null),
+      api.get<AcquisitionPoint[]>('/v1/crm/reports/acquisition?months=12').catch(() => null),
+      api.getPaged<PipelineRow[]>('/v1/crm/pipelines?take=50').catch(() => null),
+      api.get<CrmCustomer[]>('/v1/crm/customers/top?limit=5').catch(() => null),
+      api.get<CrmTask[]>('/v1/crm/tasks/today').catch(() => null),
+      api.getPaged<SegmentRow[]>('/v1/crm/segments?take=4').catch(() => null),
+    ]);
+
+  const defaultPipeline =
+    pipelinesPage?.data.find((p) => p.isDefault) ?? pipelinesPage?.data[0] ?? null;
+  const segmentList = segmentsPage?.data ?? null;
+
+  // Pipeline funnel + win/loss (both need a pipeline id) and segment member
+  // counts resolve in a second parallel wave.
+  const [funnel, winLoss, segmentCounts] = await Promise.all([
+    defaultPipeline
+      ? api
+          .get<FunnelBucket[]>(`/v1/crm/reports/pipeline-funnel?pipeline_id=${defaultPipeline.id}`)
+          .catch(() => null)
+      : Promise.resolve(null),
+    defaultPipeline
+      ? api
+          .get<WinLossRow[]>(`/v1/crm/reports/win-loss?pipeline_id=${defaultPipeline.id}`)
+          .catch(() => null)
+      : Promise.resolve(null),
+    segmentList
+      ? Promise.all(
+          segmentList.map(async (s) => {
+            const mc = await api
+              .get<{ total: number }>(`/v1/crm/segments/${s.id}/member-count`)
+              .catch(() => null);
+            return { name: s.name, count: mc?.total ?? 0 };
+          })
+        )
+      : Promise.resolve(null),
   ]);
 
   // Customer growth — live from acquisition when present, else sample + badge.
@@ -239,6 +399,87 @@ export default async function CrmOverviewPage() {
     ? acquisition.map((p) => ({ label: monthLabel(p.month), value: p.newCustomers }))
     : SAMPLE_CRM_GROWTH_12W.map((p) => ({ label: p.label, value: p.new }));
   const growthSeriesKey = 'value';
+
+  // New customers this month (latest acquisition point) + win rate (won ÷ closed).
+  const newThisMonth = growthLive ? fmtNumber(acquisition.at(-1)?.newCustomers) : '—';
+  const wl = winLoss?.reduce((a, r) => ({ won: a.won + r.won, lost: a.lost + r.lost }), {
+    won: 0,
+    lost: 0,
+  });
+  const winRate =
+    wl && wl.won + wl.lost > 0 ? `${Math.round((wl.won / (wl.won + wl.lost)) * 100)}%` : '—';
+
+  // Pipeline bars + open-deal split (share of open deals by stage).
+  const pipelineRows = liveOr<PipelineBar[]>(
+    funnel?.map((b) => ({
+      label: b.stageName,
+      value: b.count,
+      display: `${fmtNumber(b.count)} · ${fmtMoney(b.totalValue)}`,
+    })) ?? null,
+    [...SAMPLE_PIPELINE]
+  );
+  const openBuckets = funnel?.filter((b) => b.stageType === 'open') ?? null;
+  const openTotal = openBuckets?.reduce((s, b) => s + b.count, 0) ?? 0;
+  const openDealsRows = liveOr<OpenDealBar[]>(
+    openBuckets && openTotal > 0
+      ? openBuckets.map((b, i) => {
+          const pct = Math.round((b.count / openTotal) * 100);
+          return {
+            label: b.stageName,
+            value: pct,
+            display: `${pct}%`,
+            color: OPEN_DEAL_COLORS[i % OPEN_DEAL_COLORS.length] ?? 'module',
+          };
+        })
+      : null,
+    [...SAMPLE_OPEN_DEALS]
+  );
+
+  // Top customers, tasks due today, segment sizes.
+  const topCustomers = liveOr<CustomerRow[]>(
+    topCustomersLive?.map((c, i) => {
+      const name = customerName(c);
+      return {
+        name,
+        type: TYPE_LABEL[c.type] ?? c.type,
+        orders: c.orderCount,
+        ltv: fmtMoney(Number(c.totalSpent)),
+        last: relTime(c.lastOrderAt),
+        swatch: CUSTOMER_SWATCHES[i % CUSTOMER_SWATCHES.length] ?? CUSTOMER_SWATCHES[0],
+        initials: initialsOf(name),
+      };
+    }) ?? null,
+    [...SAMPLE_TOP_CUSTOMERS]
+  );
+  // Tasks due today — a successful fetch is trusted even when empty (a real
+  // "all caught up" state), so it does NOT fall back to sample. Only a failed
+  // fetch (null) shows a badged example.
+  const liveTasks =
+    todayTasksLive?.map((t) => {
+      const meta = PRIORITY_META[t.priority] ?? {
+        label: 'Today',
+        color: 'neutral',
+        tone: 'module',
+      };
+      return {
+        title: t.title,
+        hint: t.description ?? '',
+        badge: meta.label,
+        badgeColor: meta.color,
+        tone: meta.tone,
+      };
+    }) ?? null;
+  const tasksSample = liveTasks === null;
+  const tasksEmpty = liveTasks !== null && liveTasks.length === 0;
+  const taskRows: TaskRow[] = liveTasks ?? [...SAMPLE_TASKS];
+  const segmentTiles = liveOr<SegmentTile[]>(
+    segmentCounts?.map((s) => ({
+      value: fmtNumber(s.count),
+      label: s.name,
+      tone: 'default' as const,
+    })) ?? null,
+    [...SAMPLE_SEGMENTS]
+  );
 
   return (
     <Container size="xl">
@@ -262,8 +503,8 @@ export default async function CrmOverviewPage() {
           }
         />
 
-        {/* Headline KPIs — Customers + open pipeline are live; new·30d + win
-            rate await their report fields, so they show sample with a truthful hint. */}
+        {/* Headline KPIs — all live: customers + open pipeline from the snapshot,
+            new·30d from acquisition, win rate from the win/loss report. */}
         <Grid cols={1} mdCols={2} lgCols={4} gap={4}>
           <Stat
             icon={<Users className="h-4 w-4" />}
@@ -274,8 +515,8 @@ export default async function CrmOverviewPage() {
           <Stat
             icon={<Plus className="h-4 w-4" />}
             label="New · 30d"
-            value="486"
-            hint="Acquisition trend below is live"
+            value={newThisMonth}
+            hint="Newest month of acquisition"
           />
           <Stat
             icon={<Filter className="h-4 w-4" />}
@@ -286,8 +527,8 @@ export default async function CrmOverviewPage() {
           <Stat
             icon={<Target className="h-4 w-4" />}
             label="Win rate"
-            value="28%"
-            hint="Won ÷ closed, last quarter"
+            value={winRate}
+            hint="Won ÷ closed deals"
           />
         </Grid>
 
@@ -341,21 +582,19 @@ export default async function CrmOverviewPage() {
           icon={<Filter className="h-4 w-4" />}
           right={
             <div className="flex items-center gap-3">
-              <span className="text-xs text-[var(--color-text-tertiary)]">
-                Weighted value{' '}
-                <span className="font-medium text-[var(--color-text-secondary)]">$42,400</span>
-              </span>
-              <SampleBadge />
+              {snapshot && (
+                <span className="text-xs text-[var(--color-text-tertiary)]">
+                  Open value{' '}
+                  <span className="font-medium text-[var(--color-text-secondary)]">
+                    {fmtMoney(snapshot.pipelineValue)}
+                  </span>
+                </span>
+              )}
+              {pipelineRows.isSample && <SampleBadge reason="no-data" />}
             </div>
           }
         >
-          <BarList
-            items={SAMPLE_PIPELINE.map((s) => ({
-              label: s.label,
-              value: s.value,
-              display: s.display,
-            }))}
-          />
+          <BarList items={pipelineRows.data} />
         </OverviewCard>
 
         {/* Customer growth (live) + Leads by source */}
@@ -423,8 +662,8 @@ export default async function CrmOverviewPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {SAMPLE_TOP_CUSTOMERS.map((c) => (
-                  <TableRow key={c.name}>
+                {topCustomers.data.map((c, i) => (
+                  <TableRow key={`${c.name}-${i}`}>
                     <TableCell>
                       <div className="flex items-center gap-2.5">
                         <span
@@ -442,7 +681,7 @@ export default async function CrmOverviewPage() {
                         {c.type}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right tabular-nums">{c.orders}</TableCell>
+                    <TableCell className="text-right tabular-nums">{fmtNumber(c.orders)}</TableCell>
                     <TableCell className="text-right tabular-nums">{c.ltv}</TableCell>
                     <TableCell className="text-right text-[var(--color-text-tertiary)] tabular-nums">
                       {c.last}
@@ -451,9 +690,11 @@ export default async function CrmOverviewPage() {
                 ))}
               </TableBody>
             </Table>
-            <div className="mt-3">
-              <SampleBadge />
-            </div>
+            {topCustomers.isSample && (
+              <div className="mt-3">
+                <SampleBadge reason="no-data" />
+              </div>
+            )}
           </OverviewCard>
 
           <OverviewCard
@@ -461,23 +702,35 @@ export default async function CrmOverviewPage() {
             icon={<CheckSquare className="h-4 w-4" />}
             right={<CardLink href="/crm/tasks">All tasks</CardLink>}
           >
-            {SAMPLE_TASKS.map((t) => (
-              <OverviewRow
-                key={t.title}
-                icon={t.icon}
-                tone={t.tone}
-                title={t.title}
-                hint={t.hint}
-                right={
-                  <Badge color={t.badgeColor} variant="soft">
-                    {t.badge}
-                  </Badge>
-                }
-              />
-            ))}
-            <div className="mt-3">
-              <SampleBadge />
-            </div>
+            {tasksEmpty ? (
+              <div className="flex flex-col items-center gap-1.5 py-6 text-center">
+                <CheckCircle2 className="h-6 w-6 text-[var(--color-success-text)]" />
+                <p className="text-sm font-medium text-[var(--color-text-primary)]">
+                  All caught up
+                </p>
+                <p className="text-xs text-[var(--color-text-tertiary)]">No tasks due today.</p>
+              </div>
+            ) : (
+              taskRows.map((t, i) => (
+                <OverviewRow
+                  key={`${t.title}-${i}`}
+                  icon={<CheckSquare className="h-4 w-4" />}
+                  tone={t.tone}
+                  title={t.title}
+                  hint={t.hint}
+                  right={
+                    <Badge color={t.badgeColor} variant="soft">
+                      {t.badge}
+                    </Badge>
+                  }
+                />
+              ))
+            )}
+            {tasksSample && (
+              <div className="mt-3">
+                <SampleBadge reason="no-data" />
+              </div>
+            )}
           </OverviewCard>
         </div>
 
@@ -489,13 +742,15 @@ export default async function CrmOverviewPage() {
             right={<CardLink href="/crm/segments">Manage</CardLink>}
           >
             <div className="grid grid-cols-2 gap-3">
-              {SAMPLE_SEGMENTS.map((s) => (
-                <MetricTile key={s.label} value={s.value} label={s.label} tone={s.tone} />
+              {segmentTiles.data.map((s, i) => (
+                <MetricTile key={`${s.label}-${i}`} value={s.value} label={s.label} tone={s.tone} />
               ))}
             </div>
-            <div className="mt-3">
-              <SampleBadge />
-            </div>
+            {segmentTiles.isSample && (
+              <div className="mt-3">
+                <SampleBadge reason="no-data" />
+              </div>
+            )}
           </OverviewCard>
 
           <OverviewCard
@@ -516,22 +771,19 @@ export default async function CrmOverviewPage() {
           <OverviewCard
             title="Open deals by stage"
             icon={<Filter className="h-4 w-4" />}
-            description="Share of open pipeline value"
-            right={<SampleBadge />}
+            description="Share of open deals by stage"
+            right={openDealsRows.isSample ? <SampleBadge reason="no-data" /> : undefined}
           >
-            <BarList
-              items={SAMPLE_OPEN_DEALS.map((d) => ({
-                label: d.label,
-                value: d.value,
-                display: d.display,
-                color: d.color,
-              }))}
-            />
-            <div className="mt-4 border-t border-[var(--color-border-default)] pt-3 text-xs text-[var(--color-text-tertiary)]">
-              Open pipeline ·{' '}
-              <span className="font-medium text-[var(--color-text-secondary)]">$42,400</span> across
-              31 deals
-            </div>
+            <BarList items={openDealsRows.data} />
+            {snapshot && (
+              <div className="mt-4 border-t border-[var(--color-border-default)] pt-3 text-xs text-[var(--color-text-tertiary)]">
+                Open pipeline ·{' '}
+                <span className="font-medium text-[var(--color-text-secondary)]">
+                  {fmtMoney(snapshot.pipelineValue)}
+                </span>{' '}
+                across {fmtNumber(snapshot.openDeals)} deals
+              </div>
+            )}
           </OverviewCard>
         </Grid>
       </Stack>

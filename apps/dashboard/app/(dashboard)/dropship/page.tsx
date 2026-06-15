@@ -49,28 +49,58 @@ import {
   SampleBadge,
   fmtMoneyCents,
   fmtNumber,
+  liveOr,
 } from '../_components/overview-bits';
 
 // Dropship overview — the routing operator's morning glance: supplier-order
 // throughput, the daily routing/exception queue, the margin the network is
-// actually clearing, and supplier health. Headline KPIs and the margin
-// breakdown are wired to the live /v1/dropship/analytics summary (fail-soft to
-// the representative figures below); sections without a backing endpoint yet
-// (on-time delivery, the supplier-health table, reconciliation, routing rules,
-// the activity feed) render sample data behind a <SampleBadge>.
+// actually clearing, and supplier profitability. Headline KPIs, the margin
+// breakdown, the per-supplier profitability table, and the orders-by-supplier
+// split are wired to the live /v1/dropship/analytics summary; each falls back to
+// an illustrative example via liveOr until the tenant has routed orders. Sections
+// with no backing endpoint yet (on-time/SLA delivery, reconciliation, routing
+// rules, the activity feed) render sample data behind a <SampleBadge>.
 
 export const dynamic = 'force-dynamic';
 
 const MARGIN_ROW = 'grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1.9fr]';
 const TWO_COL_WIDE = 'grid grid-cols-1 gap-4 lg:grid-cols-[1.7fr_1fr]';
 
-// Live summary shape from /v1/dropship/analytics (see dropship/analytics/page).
+// Live shapes from /v1/dropship/analytics (summary + per-supplier breakdown).
+interface DropshipSupplierStat {
+  supplierId: string;
+  supplierName: string;
+  orders: number;
+  costCents: number;
+  revenueCents: number;
+  profitCents: number;
+  marginPct: number;
+}
+
 interface DropshipSummary {
   totalOrders: number;
   costCents: number;
   revenueCents: number;
   profitCents: number;
   marginPct: number;
+  bySupplier: DropshipSupplierStat[];
+}
+
+// The display row for the supplier table — shared by live + sample so liveOr can
+// fall back cleanly.
+interface SupplierRow {
+  name: string;
+  orders: number;
+  revenueCents: number;
+  profitCents: number;
+  marginPct: number;
+}
+
+// Status badge derived from realized margin — drives both live and sample rows.
+function marginTone(pct: number): { tone: 'success' | 'warning' | 'danger'; label: string } {
+  if (pct >= 25) return { tone: 'success', label: 'Healthy' };
+  if (pct >= 15) return { tone: 'warning', label: 'Watch' };
+  return { tone: 'danger', label: 'At risk' };
 }
 
 // ── Sample data (illustrative until matching endpoints land) ──
@@ -94,52 +124,48 @@ const SAMPLE_VOLUME_14D = [
   { label: 'Jun 13', routed: 42 },
 ] as const;
 
-// Supplier health — names carried from the mockup.
-const SAMPLE_SUPPLIERS = [
+// Supplier profitability — illustrative until the tenant has routed orders.
+const SAMPLE_SUPPLIER_PROFIT: SupplierRow[] = [
   {
     name: 'Cascade Roasting Co.',
-    orders: '189',
-    onTime: '96%',
-    fill: '98%',
-    avgShip: '1.9d',
-    status: 'Healthy',
-    tone: 'success' as const,
+    orders: 189,
+    revenueCents: 1_040_000,
+    profitCents: 343_000,
+    marginPct: 33,
   },
   {
     name: 'Andes Green Beans',
-    orders: '124',
-    onTime: '93%',
-    fill: '95%',
-    avgShip: '2.6d',
-    status: 'Healthy',
-    tone: 'success' as const,
+    orders: 124,
+    revenueCents: 686_000,
+    profitCents: 212_000,
+    marginPct: 31,
   },
   {
     name: 'PourCraft Equipment',
-    orders: '71',
-    onTime: '88%',
-    fill: '90%',
-    avgShip: '3.4d',
-    status: 'Watch',
-    tone: 'warning' as const,
+    orders: 71,
+    revenueCents: 392_000,
+    profitCents: 86_000,
+    marginPct: 22,
   },
-  {
-    name: 'Harvest Pantry',
-    orders: '28',
-    onTime: '79%',
-    fill: '84%',
-    avgShip: '4.1d',
-    status: 'At risk',
-    tone: 'danger' as const,
-  },
-] as const;
+  { name: 'Harvest Pantry', orders: 28, revenueCents: 162_000, profitCents: 18_000, marginPct: 11 },
+];
 
-// Orders by supplier (donut).
+// Donut color cycle for the live orders-by-supplier split (top suppliers first).
+const DONUT_COLORS = [
+  'module',
+  'var(--module-active-tint)',
+  '#6ee7b7',
+  '#a7f3d0',
+  '#d1fae5',
+  '#ecfdf5',
+];
+
+// Orders by supplier (donut) — sample until the tenant has routed orders.
 const SAMPLE_BY_SUPPLIER = [
-  { label: 'Cascade', value: 46, color: 'module' as const },
-  { label: 'Andes', value: 30, color: 'var(--module-active-tint)' },
-  { label: 'PourCraft', value: 18, color: '#6ee7b7' },
-  { label: 'Harvest', value: 6, color: '#d1fae5' },
+  { label: 'Cascade', value: 189, color: 'module' as const },
+  { label: 'Andes', value: 124, color: 'var(--module-active-tint)' },
+  { label: 'PourCraft', value: 71, color: '#6ee7b7' },
+  { label: 'Harvest', value: 28, color: '#d1fae5' },
 ];
 
 // Routing rules.
@@ -171,6 +197,26 @@ export default async function DropshipPage() {
   const ordersRouted = summary?.totalOrders ?? 412;
   const marginPct = summary?.marginPct ?? 31;
   const isLive = summary != null;
+
+  // Per-supplier profitability + orders split — live when the tenant has routed
+  // orders, else an illustrative example (liveOr drops the badge once real).
+  const liveSuppliers = summary?.bySupplier ?? null;
+  const supplierRows = liveOr<SupplierRow[]>(
+    liveSuppliers?.map((s) => ({
+      name: s.supplierName,
+      orders: s.orders,
+      revenueCents: s.revenueCents,
+      profitCents: s.profitCents,
+      marginPct: s.marginPct,
+    })) ?? null,
+    SAMPLE_SUPPLIER_PROFIT
+  );
+  const bySupplierDonut = liveOr(
+    liveSuppliers
+      ?.slice(0, DONUT_COLORS.length)
+      .map((s, i) => ({ label: s.supplierName, value: s.orders, color: DONUT_COLORS[i] })) ?? null,
+    SAMPLE_BY_SUPPLIER
+  );
 
   return (
     <Container size="xl">
@@ -352,7 +398,7 @@ export default async function DropshipPage() {
         {/* Supplier health + reconciliation */}
         <div className={TWO_COL_WIDE}>
           <OverviewCard
-            title="Supplier health"
+            title="Top suppliers"
             icon={<Factory className="h-4 w-4" />}
             right={<CardLink href="/dropship/suppliers">All suppliers</CardLink>}
           >
@@ -361,32 +407,43 @@ export default async function DropshipPage() {
                 <TableRow>
                   <TableHead>Supplier</TableHead>
                   <TableHead className="text-right">Orders</TableHead>
-                  <TableHead className="text-right">On-time</TableHead>
-                  <TableHead className="text-right">Fill rate</TableHead>
-                  <TableHead className="text-right">Avg ship</TableHead>
+                  <TableHead className="text-right">Revenue</TableHead>
+                  <TableHead className="text-right">Profit</TableHead>
+                  <TableHead className="text-right">Margin</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {SAMPLE_SUPPLIERS.map((s) => (
-                  <TableRow key={s.name}>
-                    <TableCell className="font-medium">{s.name}</TableCell>
-                    <TableCell className="text-right tabular-nums">{s.orders}</TableCell>
-                    <TableCell className="text-right tabular-nums">{s.onTime}</TableCell>
-                    <TableCell className="text-right tabular-nums">{s.fill}</TableCell>
-                    <TableCell className="text-right tabular-nums">{s.avgShip}</TableCell>
-                    <TableCell>
-                      <Badge color={s.tone} variant="soft">
-                        {s.status}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {supplierRows.data.map((s) => {
+                  const status = marginTone(s.marginPct);
+                  return (
+                    <TableRow key={s.name}>
+                      <TableCell className="font-medium">{s.name}</TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {fmtNumber(s.orders)}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {fmtMoneyCents(s.revenueCents)}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {fmtMoneyCents(s.profitCents)}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">{s.marginPct}%</TableCell>
+                      <TableCell>
+                        <Badge color={status.tone} variant="soft">
+                          {status.label}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
-            <div className="mt-3">
-              <SampleBadge />
-            </div>
+            {supplierRows.isSample && (
+              <div className="mt-3">
+                <SampleBadge reason="no-data" />
+              </div>
+            )}
           </OverviewCard>
 
           <OverviewCard
@@ -448,15 +505,17 @@ export default async function DropshipPage() {
             right={<CardLink href="/dropship/analytics">Report</CardLink>}
           >
             <DonutChart
-              data={SAMPLE_BY_SUPPLIER}
-              valueFormat="percent"
+              data={bySupplierDonut.data}
+              valueFormat="number"
               centerValue={fmtNumber(ordersRouted)}
               centerLabel="orders"
               ariaLabel="Orders by supplier"
             />
-            <div className="mt-3">
-              <SampleBadge />
-            </div>
+            {bySupplierDonut.isSample && (
+              <div className="mt-3">
+                <SampleBadge reason="no-data" />
+              </div>
+            )}
           </OverviewCard>
 
           <OverviewCard
