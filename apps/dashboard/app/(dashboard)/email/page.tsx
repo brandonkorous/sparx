@@ -55,17 +55,18 @@ import {
   OverviewRow,
   SampleBadge,
   fmtNumber,
+  liveOr,
 } from '../_components/overview-bits';
 import type { OverviewResult } from './_lib/types';
 
 // Email overview — the marketer's morning glance: subscriber pulse, the send
-// action queue, deliverability/sender health, and what's converting. The
-// engagement KPIs (open/click rate) and deliverability ratios (bounce, spam
-// complaints, suppressions) are wired LIVE to /v1/email/analytics/overview
-// (fail-soft to "—"); sections without a backing endpoint yet — subscriber
-// count, email-attributed revenue, list growth, top links, inbox placement,
-// SPF/DKIM/DMARC status, recent broadcasts — render representative data behind
-// a <SampleBadge>, the dashboard's sanctioned interim. The email layout already
+// action queue, deliverability/sender health, and what's converting. Engagement
+// KPIs (open/click rate), deliverability ratios (bounce, complaints,
+// suppressions), recent broadcasts (+ per-send open/click), and sending-domain
+// verification are wired LIVE (fail-soft to "—" / a badged example via liveOr);
+// sections without a backing endpoint yet — subscriber count, email-attributed
+// revenue, list growth, top links, inbox placement, automations, activity —
+// render representative data behind a <SampleBadge>. The email layout already
 // wraps this in <ModuleProvider module="email">, so the page never re-wraps.
 
 export const dynamic = 'force-dynamic';
@@ -73,65 +74,123 @@ export const dynamic = 'force-dynamic';
 const TWO_COL_FLIP = 'grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1.9fr]';
 const TWO_COL_WIDE = 'grid grid-cols-1 gap-4 lg:grid-cols-[1.7fr_1fr]';
 
-// ── Sample data (illustrative until the matching endpoints land) ──
-const SAMPLE_BROADCASTS = [
+// ── Live shapes + display rows ───────────────────────────────
+interface BroadcastRow {
+  id: string;
+  name: string;
+  subject: string;
+  status: string;
+  sentAt: string | null;
+  scheduledAt: string | null;
+  recipientCount: number;
+}
+interface BroadcastStats {
+  accepted: number;
+  delivered: number;
+  opened: number;
+  clicked: number;
+  bounced: number;
+  complained: number;
+  unsubscribed: number;
+}
+interface DomainRow {
+  id: string;
+  domain: string;
+  state: string;
+  isDefault: boolean;
+}
+
+// Display rows shared by live + sample so liveOr can fall back cleanly.
+interface BroadcastDisplay {
+  subject: string;
+  sentLabel: string;
+  recipients: string;
+  openRate: string;
+  clickRate: string;
+  statusLabel: string;
+  tone: string;
+}
+interface VerifyRow {
+  title: string;
+  statusLabel: string;
+  tone: string;
+}
+
+const BROADCAST_STATUS: Record<string, { label: string; tone: string }> = {
+  draft: { label: 'Draft', tone: 'neutral' },
+  scheduled: { label: 'Scheduled', tone: 'warning' },
+  sending: { label: 'Sending', tone: 'warning' },
+  sent: { label: 'Sent', tone: 'success' },
+  cancelled: { label: 'Cancelled', tone: 'danger' },
+  failed: { label: 'Failed', tone: 'danger' },
+};
+const DOMAIN_STATE: Record<string, { label: string; tone: string }> = {
+  verified: { label: 'Verified', tone: 'success' },
+  verifying: { label: 'Verifying', tone: 'warning' },
+  pending: { label: 'Pending', tone: 'warning' },
+  failed: { label: 'Failed', tone: 'danger' },
+  disabled: { label: 'Disabled', tone: 'danger' },
+};
+
+// Short, locale-stable date for the broadcast table (e.g. "Jun 11").
+function fmtShortDate(iso: string): string {
+  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(new Date(iso));
+}
+
+// ── Sample data (illustrative until the tenant has activity) ──
+const SAMPLE_BROADCASTS: BroadcastDisplay[] = [
   {
     subject: 'Summer iced drinks are here',
-    sent: 'Jun 11',
+    sentLabel: 'Jun 11',
     recipients: '8,900',
-    open: '51.2%',
-    click: '6.4%',
-    revenue: '$3,210',
-    status: 'Sent',
+    openRate: '51.2%',
+    clickRate: '6.4%',
+    statusLabel: 'Sent',
     tone: 'success',
   },
   {
     subject: 'New: Colombia single-origin',
-    sent: 'Jun 7',
+    sentLabel: 'Jun 7',
     recipients: '8,740',
-    open: '49.0%',
-    click: '5.8%',
-    revenue: '$2,480',
-    status: 'Sent',
+    openRate: '49.0%',
+    clickRate: '5.8%',
+    statusLabel: 'Sent',
     tone: 'success',
   },
   {
     subject: 'Weekend flash — 15% off beans',
-    sent: 'Jun 1',
+    sentLabel: 'Jun 1',
     recipients: '8,690',
-    open: '47.3%',
-    click: '6.9%',
-    revenue: '$2,910',
-    status: 'Sent',
+    openRate: '47.3%',
+    clickRate: '6.9%',
+    statusLabel: 'Sent',
     tone: 'success',
   },
   {
     subject: "Father's Day gifting",
-    sent: 'Jun 15',
+    sentLabel: 'Jun 15',
     recipients: '—',
-    open: '—',
-    click: '—',
-    revenue: '—',
-    status: 'Scheduled',
+    openRate: '—',
+    clickRate: '—',
+    statusLabel: 'Scheduled',
     tone: 'warning',
   },
   {
     subject: 'Back in stock: Switchback Mug',
-    sent: '—',
+    sentLabel: '—',
     recipients: '—',
-    open: '—',
-    click: '—',
-    revenue: '—',
-    status: 'Draft',
+    openRate: '—',
+    clickRate: '—',
+    statusLabel: 'Draft',
     tone: 'neutral',
   },
-] as const;
+];
 
-const BROADCAST_TONE: Record<string, string> = {
-  success: 'success',
-  warning: 'warning',
-  neutral: 'neutral',
-};
+const SAMPLE_AUTH_ROWS: VerifyRow[] = [
+  { title: 'SPF authenticated', statusLabel: 'Pass', tone: 'success' },
+  { title: 'DKIM signed', statusLabel: 'Pass', tone: 'success' },
+  { title: 'DMARC enforced', statusLabel: 'Pass', tone: 'success' },
+];
 
 const SAMPLE_AUTOMATIONS = [
   {
@@ -209,6 +268,63 @@ export default async function EmailPage() {
   const bounceRate = ratePercent(counts?.bounced, counts?.accepted);
   const complaintRate = ratePercent(counts?.complained, counts?.accepted, 2);
   const suppressed = overview ? fmtNumber(overview.suppressedTotal) : '—';
+
+  // Recent broadcasts (+ per-send stats) and sending-domain verification — live,
+  // with a liveOr fallback to a badged example until the tenant has activity.
+  const broadcastsPage = await api
+    .getPaged<BroadcastRow[]>('/v1/email/broadcasts?take=6')
+    .catch(() => null);
+  const [withStats, liveDomainsPage] = await Promise.all([
+    broadcastsPage
+      ? Promise.all(
+          broadcastsPage.data.map(async (b) => ({
+            b,
+            stats:
+              b.status === 'sent'
+                ? await api
+                    .get<BroadcastStats>(`/v1/email/broadcasts/${b.id}/stats`)
+                    .catch(() => null)
+                : null,
+          }))
+        )
+      : Promise.resolve(null),
+    api.getPaged<DomainRow[]>('/v1/email/domains?take=10').catch(() => null),
+  ]);
+  const liveDomains = liveDomainsPage?.data ?? null;
+
+  const broadcastRows = liveOr<BroadcastDisplay[]>(
+    withStats?.map(({ b, stats }) => {
+      const meta = BROADCAST_STATUS[b.status] ?? { label: b.status, tone: 'neutral' };
+      const dateIso = b.sentAt ?? b.scheduledAt;
+      return {
+        subject: b.subject || b.name,
+        sentLabel: dateIso ? fmtShortDate(dateIso) : '—',
+        recipients: b.status === 'draft' ? '—' : fmtNumber(b.recipientCount),
+        openRate: stats ? ratePercent(stats.opened, stats.delivered) : '—',
+        clickRate: stats ? ratePercent(stats.clicked, stats.delivered) : '—',
+        statusLabel: meta.label,
+        tone: meta.tone,
+      };
+    }) ?? null,
+    SAMPLE_BROADCASTS
+  );
+
+  const authRows = liveOr<VerifyRow[]>(
+    liveDomains?.map((d) => {
+      const meta = DOMAIN_STATE[d.state] ?? { label: d.state, tone: 'neutral' };
+      return {
+        title: d.isDefault ? `${d.domain} · default` : d.domain,
+        statusLabel: meta.label,
+        tone: meta.tone,
+      };
+    }) ?? null,
+    SAMPLE_AUTH_ROWS
+  );
+  const domainHealth = liveDomains?.length
+    ? liveDomains.every((d) => d.state === 'verified')
+      ? { label: 'Verified', tone: 'success' as const }
+      : { label: 'Action needed', tone: 'warning' as const }
+    : null;
 
   return (
     <Container size="xl">
@@ -307,52 +423,32 @@ export default async function EmailPage() {
             title="Sender health"
             icon={<ShieldCheck className="h-4 w-4" />}
             right={
-              <Badge color="success" variant="soft">
-                Healthy
-              </Badge>
+              authRows.isSample ? (
+                <SampleBadge reason="no-data" />
+              ) : (
+                <Badge color={domainHealth?.tone ?? 'success'} variant="soft">
+                  {domainHealth?.label ?? 'Verified'}
+                </Badge>
+              )
             }
           >
-            <p className="text-[1.65rem] leading-none font-medium">
-              98
-              <span className="text-base font-normal text-[var(--color-text-tertiary)]">
-                {' '}
-                / 100
-              </span>
-            </p>
-            <p className="mt-1.5 mb-3 text-sm text-[var(--color-text-tertiary)]">
-              Reputation score · sending via{' '}
+            <p className="mb-3 text-sm text-[var(--color-text-tertiary)]">
+              Authentication &amp; deliverability · sending via{' '}
               <span className="text-[var(--module-active-text)]">sparx.email</span>
             </p>
-            <OverviewRow
-              icon={<ShieldCheck className="h-4 w-4" />}
-              tone="success"
-              title="SPF authenticated"
-              right={
-                <Badge color="success" variant="soft">
-                  Pass
-                </Badge>
-              }
-            />
-            <OverviewRow
-              icon={<ShieldCheck className="h-4 w-4" />}
-              tone="success"
-              title="DKIM signed"
-              right={
-                <Badge color="success" variant="soft">
-                  Pass
-                </Badge>
-              }
-            />
-            <OverviewRow
-              icon={<ShieldCheck className="h-4 w-4" />}
-              tone="success"
-              title="DMARC enforced"
-              right={
-                <Badge color="success" variant="soft">
-                  Pass
-                </Badge>
-              }
-            />
+            {authRows.data.map((r) => (
+              <OverviewRow
+                key={r.title}
+                icon={<ShieldCheck className="h-4 w-4" />}
+                tone={r.tone}
+                title={r.title}
+                right={
+                  <Badge color={r.tone} variant="soft">
+                    {r.statusLabel}
+                  </Badge>
+                }
+              />
+            ))}
             <OverviewRow
               icon={<TrendingUp className="h-4 w-4" />}
               tone="success"
@@ -409,9 +505,8 @@ export default async function EmailPage() {
           </OverviewCard>
         </div>
 
-        {/* Recent broadcasts — the live `recent` feed is per-event rows, not
-            broadcast-shaped (no subject/recipients/open/click/revenue), so this
-            table renders representative broadcasts behind a SampleBadge. */}
+        {/* Recent broadcasts — live list + per-send open/click stats. Revenue
+            attribution has no endpoint yet, so that column is omitted. */}
         <OverviewCard
           title="Recent broadcasts"
           icon={<Send className="h-4 w-4" />}
@@ -425,33 +520,33 @@ export default async function EmailPage() {
                 <TableHead className="text-right">Recipients</TableHead>
                 <TableHead className="text-right">Open</TableHead>
                 <TableHead className="text-right">Click</TableHead>
-                <TableHead className="text-right">Revenue</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {SAMPLE_BROADCASTS.map((b) => (
-                <TableRow key={b.subject}>
+              {broadcastRows.data.map((b, i) => (
+                <TableRow key={`${b.subject}-${i}`}>
                   <TableCell className="font-medium">{b.subject}</TableCell>
                   <TableCell className="text-right text-[var(--color-text-tertiary)] tabular-nums">
-                    {b.sent}
+                    {b.sentLabel}
                   </TableCell>
                   <TableCell className="text-right tabular-nums">{b.recipients}</TableCell>
-                  <TableCell className="text-right tabular-nums">{b.open}</TableCell>
-                  <TableCell className="text-right tabular-nums">{b.click}</TableCell>
-                  <TableCell className="text-right tabular-nums">{b.revenue}</TableCell>
+                  <TableCell className="text-right tabular-nums">{b.openRate}</TableCell>
+                  <TableCell className="text-right tabular-nums">{b.clickRate}</TableCell>
                   <TableCell>
-                    <Badge color={BROADCAST_TONE[b.tone]} variant="soft">
-                      {b.status}
+                    <Badge color={b.tone} variant="soft">
+                      {b.statusLabel}
                     </Badge>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-          <div className="mt-3">
-            <SampleBadge />
-          </div>
+          {broadcastRows.isSample && (
+            <div className="mt-3">
+              <SampleBadge reason="no-data" />
+            </div>
+          )}
         </OverviewCard>
 
         {/* Automations + list growth */}

@@ -31,7 +31,11 @@ real with no backend work. Those are the cheapest wins and should go first.
 
 ## Quick-win summary (🟡 wire-now — endpoints already live)
 
-These are sample sections whose endpoint already ships in `api-rest` today:
+**Status (2026-06-14):** the first wire-now pass is **complete** — every row in this table
+(Dropship, Commerce, CRM, Email) is now ✅ live via `liveOr`, falling back to a badged example
+only until the tenant has data. See each module section below for specifics.
+
+These are the sample sections whose endpoint already ships in `api-rest` today:
 
 | Module   | Sample section showing now     | Existing endpoint to wire                                                       |
 | -------- | ------------------------------ | ------------------------------------------------------------------------------- |
@@ -65,9 +69,9 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 - ✅ Conversion funnel — `GET /v1/commerce/reports/conversion-funnel`
 - ✅ Subscription metrics — `GET /v1/commerce/reports/subscription-metrics`
 - ✅ Abandoned carts — `GET /v1/commerce/reports/abandoned-carts`
-- 🟡 Top products — `GET /v1/commerce/reports/top-products`
-- 🟡 Top customers — `GET /v1/commerce/reports/top-customers`
-- 🟡 Inventory value — `GET /v1/commerce/reports/inventory-valuation`
+- ✅ Top products — `GET /v1/commerce/reports/top-products` (wired 2026-06-14)
+- ✅ Top customers — `GET /v1/commerce/reports/top-customers` (wired 2026-06-14; replaced the unbacked new-vs-returning donut)
+- ✅ Inventory value — `GET /v1/commerce/reports/inventory-valuation` (wired 2026-06-14; units + stock value on the Inventory card)
 - ✅ Sales **timeseries** — `GET /v1/commerce/reports/revenue-timeseries` (shipped 2026-06-15; **first rollup** — `rollup_commerce_daily_revenue` + nightly reconcile + live-overlay read per docs/97 §5; powers the Revenue chart + Gross/Refunds/Discounts/Net footer)
 - 🔴 Traffic sources / channel breakdown — no endpoint
 - 🔴 Discount performance — no endpoint (only `/discounts` CRUD)
@@ -80,19 +84,20 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 
 - ✅ Snapshot KPIs — `GET /v1/crm/reports/snapshot`
 - ✅ Customer growth — `GET /v1/crm/reports/acquisition?months=12`
-- 🟡 Pipeline by stage — `GET /v1/crm/reports/pipeline-funnel?pipeline_id=`
-- 🟡 Win rate — `GET /v1/crm/reports/win-loss?pipeline_id=`
-- 🟡 Top customers — `GET /v1/crm/customers/top`
-- 🟡 Tasks — `GET /v1/crm/tasks/overdue`, `GET /v1/crm/tasks/today`
-- 🟡 Segment sizes — `GET /v1/crm/segments/:id/member-count` (per-segment; a cross-segment roll-up is still 🔴)
+- ✅ Pipeline by stage + open-deal split — `GET /v1/crm/reports/pipeline-funnel?pipeline_id=` (wired 2026-06-14; pipeline id from `GET /v1/crm/pipelines`)
+- ✅ Win rate — `GET /v1/crm/reports/win-loss?pipeline_id=` (wired 2026-06-14; KPI)
+- ✅ Top customers — `GET /v1/crm/customers/top` (wired 2026-06-14)
+- ✅ Tasks due today — `GET /v1/crm/tasks/today` (wired 2026-06-14)
+- ✅ Segment sizes — `GET /v1/crm/segments` + `GET /v1/crm/segments/:id/member-count` (wired 2026-06-14)
+- ✅ New · 30d KPI — derived from the latest `GET /v1/crm/reports/acquisition` month (wired 2026-06-14)
 - 🔴 Leads-by-source — no lead-source tracking in the report layer
 - 🔴 Aggregate task metrics & cross-segment summary — only per-entity lists/counts exist
 
 ### Email — Sky
 
 - ✅ Engagement & deliverability (sent, opens, clicks, bounces, complaints, suppressions, open/click rate) — `GET /v1/email/analytics/overview?days=30`
-- 🟡 Recent broadcasts (name, sent date, open/click) — `GET /v1/email/broadcasts` (+ `/:id/stats`)
-- 🟡 Domain SPF/DKIM/DMARC status — `GET /v1/email/domains`
+- ✅ Recent broadcasts (sent date, recipients, open/click) — `GET /v1/email/broadcasts` + per-send `/:id/stats` (wired 2026-06-14; revenue column dropped — no attribution endpoint)
+- ✅ Sending-domain verification — `GET /v1/email/domains` (wired 2026-06-14; replaced the fabricated 98/100 score + static SPF/DKIM/DMARC "Pass" rows with live per-domain state)
 - 🔴 Subscriber-growth / list-size timeseries — no endpoint
 - 🔴 Revenue attribution — no endpoint
 
@@ -109,10 +114,10 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 ### Dropship — Emerald
 
 - ✅ Headline KPIs (revenue, orders, margin) — `GET /v1/dropship/analytics`
-- 🟡 Supplier breakdown — **already in the `analytics` response** (per-supplier orders/cost/revenue/profit/margin); just render the rows instead of sample
-- 🟡 Per-order margin list — `GET /v1/dropship/analytics/orders`
+- ✅ Supplier profitability table + orders-by-supplier donut — wired to the `bySupplier` breakdown in `GET /v1/dropship/analytics`, with `liveOr` fallback to sample (2026-06-14)
+- 🟡 Per-order margin list — `GET /v1/dropship/analytics/orders` exists; not yet surfaced on the overview (no section for it)
+- 🔴 Supplier SLA (on-time %, fill rate, avg ship) — no delivery telemetry; the old "Supplier health" table invented these, now replaced by the live profitability table
 - 🔴 Revenue/orders **timeseries** — no endpoint (`…/analytics` is point-in-time)
-- 🔴 On-time delivery rate — no endpoint
 - 🔴 Activity feed — no endpoint
 
 ### Invoicing — Lime
