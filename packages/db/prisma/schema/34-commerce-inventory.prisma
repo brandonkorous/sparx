@@ -47,6 +47,7 @@ model Warehouse {
   reservations       InventoryReservation[]
   lotBatches         LotBatch[]
   serialUnits        SerialUnit[]
+  sourceLinks        InventorySourceLink[]
   defaultForProducts Product[]              @relation("ProductDefaultWarehouse")
 
   @@unique([tenantId, code], map: "inventory_warehouses_tenant_code_unique")

@@ -32,6 +32,10 @@ export { adjust, transfer } from './movements';
 export { reserve, release, commit, expireDueReservations } from './reservations';
 export type { ReservationResult } from './reservations';
 
+// ─── External-feed reconcile (sync sources) ───────────────────────────
+export { reconcileStockLevel } from './sync';
+export type { ReconcileStockLevelInput } from './sync';
+
 // ─── Lot batches + serial units + recalls ─────────────────────────────
 export {
   createLotBatch,

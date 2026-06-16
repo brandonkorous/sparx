@@ -92,7 +92,7 @@ interface InventorySummary {
   };
   stockStatus: { skuCount: number; outOfStock: number; lowStock: number; healthy: number };
   byLocation: {
-    locationId: string;
+    warehouseId: string;
     name: string;
     type: string;
     skuCount: number;
@@ -118,14 +118,36 @@ interface InventorySummary {
   lowStockThreshold: number;
 }
 interface InventoryActivityRow {
+  id: string;
   variantId: string;
-  locationId: string;
+  warehouseId: string;
   sku: string;
   title: string;
   location: string;
-  onHand: number;
-  available: number;
-  updatedAt: string;
+  delta: number;
+  balanceAfter: number | null;
+  reason: string;
+  createdAt: string;
+}
+
+// Movement reason → short human label for the activity feed.
+const REASON_LABELS: Record<string, string> = {
+  sale: 'Sale',
+  return: 'Return',
+  recount: 'Recount',
+  loss: 'Loss',
+  damage: 'Damage',
+  transfer_in: 'Transfer in',
+  transfer_out: 'Transfer out',
+  receive: 'Received',
+  reserve: 'Reserved',
+  release: 'Released',
+  manual: 'Manual',
+  sync: 'Synced',
+};
+
+function signed(n: number): string {
+  return n > 0 ? `+${fmtNumber(n)}` : fmtNumber(n);
 }
 interface ValuationTimeseries {
   range: { from: string; to: string };
@@ -503,17 +525,17 @@ export default async function InventoryPage() {
             {hasActivity ? (
               <Timeline>
                 {activity.map((a, i) => (
-                  <TimelineItem
-                    key={`${a.variantId}-${a.locationId}`}
-                    showConnector={i < activity.length - 1}
-                  >
+                  <TimelineItem key={a.id} showConnector={i < activity.length - 1}>
                     <TimelineTitle>
                       {a.title} —{' '}
                       <span className="font-normal text-[var(--color-text-secondary)]">
-                        {fmtNumber(a.onHand)} on hand at {a.location}
+                        {signed(a.delta)} · {REASON_LABELS[a.reason] ?? a.reason} at {a.location}
                       </span>
                     </TimelineTitle>
-                    <TimelineTime>{timeAgo(a.updatedAt)}</TimelineTime>
+                    <TimelineTime>
+                      {timeAgo(a.createdAt)}
+                      {a.balanceAfter != null ? ` · ${fmtNumber(a.balanceAfter)} on hand` : ''}
+                    </TimelineTime>
                   </TimelineItem>
                 ))}
               </Timeline>

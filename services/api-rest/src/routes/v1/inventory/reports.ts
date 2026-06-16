@@ -1,23 +1,27 @@
-// Inventory module reporting reads (docs/64, docs/97 §5).
+// Inventory module reporting reads (docs/64, docs/97 §5, docs/100 P1c).
 //
 //   GET /v1/inventory/reports/summary
 //     → valuation (units + cost/retail value), stock-status counts
-//       (out / low / healthy), per-location quantities, source-feed health,
+//       (out / low / healthy), per-warehouse quantities, source-feed health,
 //       and the low/out-of-stock attention list
+//   GET /v1/inventory/reports/valuation-timeseries
+//     → daily valuation snapshots + a live-overlay of today
 //   GET /v1/inventory/reports/activity?limit=
-//     → most recently-changed stock levels (a proxy for a movement feed, since
-//       the multi-source module has no per-change ledger)
+//     → the most recent stock movements (the real movement ledger feed)
 //
-// LIVE aggregates over `stock_levels` (the standalone multi-source module's
-// per-variant×location quantities) joined to `commerce_product_variants` for
-// cost/retail. No reorder-point column exists on the module's StockLevel, so
-// "low" is a fixed available-units threshold. Purchase orders + a value-over-
-// time series have no backing model yet (workload B) and stay sample on the
-// overview. Inventory-module-gated + viewer-read, tenant-scoped via withTenant.
+// LIVE aggregates over the MASTER stock model — `inventory_levels` (the
+// authoritative (variant, warehouse) on-hand, written only through the movement
+// ledger) joined to `commerce_product_variants` for cost/retail, and
+// `inventory_movements` for the activity feed. Cost basis falls back
+// avg_cost_cents → unit_cost_cents → variant.cost_cents. "Low" uses the level's
+// reorder point when set, else a fixed available-units threshold. Purchase orders
+// have no backing model yet (P3) and stay sample on the overview.
+// Inventory-module-gated + viewer-read, tenant-scoped via withTenant (RLS).
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { withTenant } from '@sparx/db';
+import type { TxClient } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireInventoryModule, toInventoryContext } from '../../../lib/inventory-context.js';
@@ -28,7 +32,7 @@ import {
 } from '../../../lib/inventory-valuation.js';
 
 const DEFAULT_CURRENCY = 'USD';
-// Available-units threshold below which a (variant, location) reads as "low".
+// Available-units fallback threshold (used when a level has no reorder point).
 const LOW_STOCK_THRESHOLD = 5;
 
 const ActivityQuery = z.object({
@@ -40,11 +44,106 @@ const RangeQuery = z.object({
   to: z.string().datetime().optional(),
 });
 
-interface RawStatusRow {
-  out: number;
-  low: number;
-  healthy: number;
-  total: number;
+interface SummaryAggRow {
+  totalUnits: bigint;
+  totalAllocated: bigint;
+  totalAvailable: bigint;
+  totalCostCents: bigint;
+  totalRetailCents: bigint;
+  skuCount: number;
+  outCount: number;
+  lowCount: number;
+  healthyCount: number;
+}
+interface ByWarehouseRow {
+  warehouseId: string;
+  name: string;
+  type: string;
+  skuCount: number;
+  onHand: bigint;
+  available: bigint;
+}
+interface LowOrOutRow {
+  variantId: string;
+  warehouseId: string;
+  sku: string;
+  title: string;
+  location: string;
+  onHand: number;
+  available: number;
+}
+interface ActivityRow {
+  id: string;
+  variantId: string;
+  warehouseId: string;
+  delta: number;
+  balanceAfter: number | null;
+  reason: string;
+  createdAt: Date;
+  sku: string;
+  title: string;
+  location: string;
+}
+
+// ── Aggregate readers (raw SQL over the master model) ────────────────
+
+function summaryAgg(tx: TxClient): Promise<SummaryAggRow[]> {
+  return tx.$queryRaw<SummaryAggRow[]>`
+    SELECT
+      COALESCE(SUM(l.on_hand), 0)::bigint                                          AS "totalUnits",
+      COALESCE(SUM(l.allocated), 0)::bigint                                        AS "totalAllocated",
+      COALESCE(SUM(l.on_hand - l.allocated), 0)::bigint                            AS "totalAvailable",
+      COALESCE(SUM(l.on_hand * COALESCE(l.avg_cost_cents, l.unit_cost_cents, v.cost_cents, 0)), 0)::bigint AS "totalCostCents",
+      COALESCE(SUM(l.on_hand * v.price_cents), 0)::bigint                          AS "totalRetailCents",
+      COUNT(*)::int                                                                AS "skuCount",
+      COUNT(*) FILTER (WHERE l.on_hand - l.allocated <= 0)::int                    AS "outCount",
+      COUNT(*) FILTER (
+        WHERE l.on_hand - l.allocated > 0
+          AND l.on_hand - l.allocated <= COALESCE(l.reorder_point, ${LOW_STOCK_THRESHOLD})
+      )::int                                                                       AS "lowCount",
+      COUNT(*) FILTER (
+        WHERE l.on_hand - l.allocated > COALESCE(l.reorder_point, ${LOW_STOCK_THRESHOLD})
+      )::int                                                                       AS "healthyCount"
+    FROM inventory_levels l
+    JOIN commerce_product_variants v ON v.id = l.variant_id AND v.deleted_at IS NULL
+    JOIN inventory_warehouses w ON w.id = l.warehouse_id AND w.deleted_at IS NULL
+  `;
+}
+
+function byWarehouse(tx: TxClient): Promise<ByWarehouseRow[]> {
+  return tx.$queryRaw<ByWarehouseRow[]>`
+    SELECT
+      l.warehouse_id                                  AS "warehouseId",
+      w.name                                          AS "name",
+      w.type                                          AS "type",
+      COUNT(*)::int                                   AS "skuCount",
+      COALESCE(SUM(l.on_hand), 0)::bigint             AS "onHand",
+      COALESCE(SUM(l.on_hand - l.allocated), 0)::bigint AS "available"
+    FROM inventory_levels l
+    JOIN inventory_warehouses w ON w.id = l.warehouse_id AND w.deleted_at IS NULL
+    GROUP BY l.warehouse_id, w.name, w.type
+    ORDER BY COALESCE(SUM(l.on_hand), 0) DESC
+    LIMIT 50
+  `;
+}
+
+function lowOrOut(tx: TxClient): Promise<LowOrOutRow[]> {
+  return tx.$queryRaw<LowOrOutRow[]>`
+    SELECT
+      l.variant_id                AS "variantId",
+      l.warehouse_id              AS "warehouseId",
+      v.sku                       AS "sku",
+      COALESCE(v.title, v.sku)    AS "title",
+      w.name                      AS "location",
+      l.on_hand                   AS "onHand",
+      l.on_hand - l.allocated     AS "available"
+    FROM inventory_levels l
+    JOIN commerce_product_variants v ON v.id = l.variant_id AND v.deleted_at IS NULL
+    JOIN inventory_warehouses w ON w.id = l.warehouse_id AND w.deleted_at IS NULL
+    WHERE l.on_hand - l.allocated <= COALESCE(l.reorder_point, ${LOW_STOCK_THRESHOLD})
+    ORDER BY (l.on_hand - l.allocated) ASC
+    LIMIT 8
+  `;
 }
 
 const reportRoutes: FastifyPluginAsync = (app) => {
@@ -54,100 +153,33 @@ const reportRoutes: FastifyPluginAsync = (app) => {
     const ctx = toInventoryContext(request);
 
     return withTenant(ctx, async (tx) => {
-      const [
-        variantSums,
-        statusRows,
-        locationGroups,
-        locations,
-        sourceGroups,
-        lastSyncAgg,
-        lowOrOut,
-      ] = await Promise.all([
-        tx.stockLevel.groupBy({
-          by: ['variantId'],
-          _sum: { onHand: true, allocated: true, available: true },
-        }),
-        tx.$queryRaw<RawStatusRow[]>`
-            SELECT
-              COUNT(*) FILTER (WHERE available <= 0)::int                                    AS out,
-              COUNT(*) FILTER (WHERE available > 0 AND available <= ${LOW_STOCK_THRESHOLD})::int AS low,
-              COUNT(*) FILTER (WHERE available > ${LOW_STOCK_THRESHOLD})::int                AS healthy,
-              COUNT(*)::int                                                                  AS total
-            FROM stock_levels
-          `,
-        tx.stockLevel.groupBy({
-          by: ['locationId'],
-          _sum: { onHand: true, available: true },
-          _count: { _all: true },
-        }),
-        tx.stockLocation.findMany({ select: { id: true, name: true, type: true, active: true } }),
-        tx.inventorySource.groupBy({
-          by: ['status'],
-          where: { deletedAt: null },
-          _count: { _all: true },
-        }),
-        tx.inventorySource.aggregate({
-          where: { deletedAt: null },
-          _max: { lastSyncAt: true },
-        }),
-        tx.stockLevel.findMany({
-          where: { available: { lte: LOW_STOCK_THRESHOLD } },
-          orderBy: { available: 'asc' },
-          take: 8,
-          select: {
-            variantId: true,
-            locationId: true,
-            onHand: true,
-            allocated: true,
-            available: true,
-          },
-        }),
-      ]);
+      const [aggRows, warehouseGroups, lowOrOutRows, sourceGroups, lastSyncAgg] = await Promise.all(
+        [
+          summaryAgg(tx),
+          byWarehouse(tx),
+          lowOrOut(tx),
+          tx.inventorySource.groupBy({
+            by: ['status'],
+            where: { deletedAt: null },
+            _count: { _all: true },
+          }),
+          tx.inventorySource.aggregate({
+            where: { deletedAt: null },
+            _max: { lastSyncAt: true },
+          }),
+        ]
+      );
 
-      // Valuation — join the per-variant on-hand sums to variant cost/retail.
-      const variantIds = [
-        ...new Set([...variantSums.map((v) => v.variantId), ...lowOrOut.map((l) => l.variantId)]),
-      ];
-      const variants =
-        variantIds.length > 0
-          ? await tx.productVariant.findMany({
-              where: { id: { in: variantIds } },
-              select: { id: true, sku: true, title: true, priceCents: true, costCents: true },
-            })
-          : [];
-      const variantById = new Map(variants.map((v) => [v.id, v]));
+      const agg = aggRows[0];
 
-      let totalUnits = 0;
-      let totalAllocated = 0;
-      let totalAvailable = 0;
-      let totalCostCents = 0;
-      let totalRetailCents = 0;
-      for (const vs of variantSums) {
-        const onHand = vs._sum.onHand ?? 0;
-        totalUnits += onHand;
-        totalAllocated += vs._sum.allocated ?? 0;
-        totalAvailable += vs._sum.available ?? 0;
-        const v = variantById.get(vs.variantId);
-        if (v) {
-          totalCostCents += (v.costCents ?? 0) * onHand;
-          totalRetailCents += v.priceCents * onHand;
-        }
-      }
-
-      const locationById = new Map(locations.map((l) => [l.id, l]));
-      const byLocation = locationGroups
-        .map((g) => {
-          const loc = locationById.get(g.locationId);
-          return {
-            locationId: g.locationId,
-            name: loc?.name ?? '—',
-            type: loc?.type ?? 'warehouse',
-            skuCount: g._count._all,
-            onHand: g._sum.onHand ?? 0,
-            available: g._sum.available ?? 0,
-          };
-        })
-        .sort((a, b) => b.onHand - a.onHand);
+      const byLocation = warehouseGroups.map((g) => ({
+        warehouseId: g.warehouseId,
+        name: g.name,
+        type: g.type,
+        skuCount: g.skuCount,
+        onHand: Number(g.onHand),
+        available: Number(g.available),
+      }));
 
       const sourceStatus = { total: 0, active: 0, paused: 0, error: 0 };
       for (const g of sourceGroups) {
@@ -157,34 +189,31 @@ const reportRoutes: FastifyPluginAsync = (app) => {
         }
       }
 
-      const status = statusRows[0] ?? { out: 0, low: 0, healthy: 0, total: 0 };
-      const lowOrOutList = lowOrOut.map((l) => {
-        const v = variantById.get(l.variantId);
-        return {
-          variantId: l.variantId,
-          sku: v?.sku ?? '—',
-          title: v?.title ?? v?.sku ?? '—',
-          location: locationById.get(l.locationId)?.name ?? '—',
-          onHand: l.onHand,
-          available: l.available,
-          status: l.available <= 0 ? 'out' : 'low',
-        };
-      });
+      const lowOrOutList = lowOrOutRows.map((l) => ({
+        variantId: l.variantId,
+        warehouseId: l.warehouseId,
+        sku: l.sku,
+        title: l.title,
+        location: l.location,
+        onHand: l.onHand,
+        available: l.available,
+        status: l.available <= 0 ? 'out' : 'low',
+      }));
 
       return ok({
         valuation: {
-          totalUnits,
-          totalAllocated,
-          totalAvailable,
-          totalCostCents,
-          totalRetailCents,
+          totalUnits: Number(agg?.totalUnits ?? 0),
+          totalAllocated: Number(agg?.totalAllocated ?? 0),
+          totalAvailable: Number(agg?.totalAvailable ?? 0),
+          totalCostCents: Number(agg?.totalCostCents ?? 0),
+          totalRetailCents: Number(agg?.totalRetailCents ?? 0),
           currency: DEFAULT_CURRENCY,
         },
         stockStatus: {
-          skuCount: status.total,
-          outOfStock: status.out,
-          lowStock: status.low,
-          healthy: status.healthy,
+          skuCount: agg?.skuCount ?? 0,
+          outOfStock: agg?.outCount ?? 0,
+          lowStock: agg?.lowCount ?? 0,
+          healthy: agg?.healthyCount ?? 0,
         },
         byLocation,
         sources: {
@@ -211,8 +240,8 @@ const reportRoutes: FastifyPluginAsync = (app) => {
     return ok(await withTenant(ctx, (tx) => valuationTimeseries(tx, from, to, toExclusive)));
   });
 
-  // Recently-changed stock levels — a movement-feed proxy (no per-change ledger
-  // exists in the multi-source module; StockLevel carries only `updatedAt`).
+  // Recent stock movements — the real ledger feed (every onHand change appends a
+  // row via applyMovement, so this is an exact audit of who moved what, when).
   app.get('/v1/inventory/reports/activity', async (request) => {
     await requireInventoryModule(request);
     requireRole(request, 'viewer');
@@ -220,30 +249,37 @@ const reportRoutes: FastifyPluginAsync = (app) => {
     const take = ActivityQuery.parse(request.query).limit ?? 10;
 
     return withTenant(ctx, async (tx) => {
-      const levels = await tx.stockLevel.findMany({
-        orderBy: { updatedAt: 'desc' },
-        take,
-        select: {
-          variantId: true,
-          locationId: true,
-          onHand: true,
-          available: true,
-          updatedAt: true,
-          variant: { select: { sku: true, title: true } },
-          location: { select: { name: true } },
-        },
-      });
+      const rows = await tx.$queryRaw<ActivityRow[]>`
+        SELECT
+          m.id            AS "id",
+          m.variant_id    AS "variantId",
+          m.warehouse_id  AS "warehouseId",
+          m.delta         AS "delta",
+          m.balance_after AS "balanceAfter",
+          m.reason        AS "reason",
+          m.created_at    AS "createdAt",
+          v.sku           AS "sku",
+          COALESCE(v.title, v.sku) AS "title",
+          w.name          AS "location"
+        FROM inventory_movements m
+        JOIN commerce_product_variants v ON v.id = m.variant_id
+        JOIN inventory_warehouses w ON w.id = m.warehouse_id
+        ORDER BY m.created_at DESC
+        LIMIT ${take}
+      `;
 
       return ok(
-        levels.map((l) => ({
-          variantId: l.variantId,
-          locationId: l.locationId,
-          sku: l.variant?.sku ?? '—',
-          title: l.variant?.title ?? l.variant?.sku ?? '—',
-          location: l.location?.name ?? '—',
-          onHand: l.onHand,
-          available: l.available,
-          updatedAt: l.updatedAt.toISOString(),
+        rows.map((m) => ({
+          id: m.id,
+          variantId: m.variantId,
+          warehouseId: m.warehouseId,
+          sku: m.sku,
+          title: m.title,
+          location: m.location,
+          delta: m.delta,
+          balanceAfter: m.balanceAfter,
+          reason: m.reason,
+          createdAt: m.createdAt.toISOString(),
         }))
       );
     });

@@ -33,8 +33,16 @@ export interface MovementInput {
   tenantId: string;
   variantId: string;
   warehouseId: string;
-  /** Signed change to onHand. */
+  /** Signed change to onHand. Ignored when `setOnHand` is provided. */
   delta: number;
+  /**
+   * Absolute on-hand target — when set, the effective delta is computed
+   * `setOnHand − lockedOnHand` INSIDE the row lock, so an external feed's
+   * "this SKU is now N units" reconciles to a corrective movement that can't
+   * race a concurrent sale. Used by the sync reconcile path; leave undefined
+   * for ordinary signed-delta movements.
+   */
+  setOnHand?: number;
   reason: string;
   referenceType?: string | null;
   referenceId?: string | null;
@@ -53,9 +61,12 @@ export interface MovementInput {
 }
 
 export interface MovementResult {
-  /** The appended movement's id, or the existing one when deduped. */
+  /** The appended movement's id, the existing one when deduped, or '' on a no-op. */
   movementId: string;
+  /** True when no row was appended — an idempotency hit or a zero-delta no-op. */
   deduped: boolean;
+  /** The signed change actually applied to onHand (0 when deduped / no-op). */
+  appliedDelta: number;
   onHand: number;
   allocated: number;
   available: number;
@@ -140,29 +151,31 @@ export async function applyMovement(tx: TxClient, input: MovementInput): Promise
       select: { id: true },
     });
     if (existing) {
-      return {
-        movementId: existing.id,
-        deduped: true,
-        onHand: current.on_hand,
-        allocated: current.allocated,
-        available: current.on_hand - current.allocated,
-        avgCostCents: current.avg_cost_cents,
-        reorderPoint: current.reorder_point,
-      };
+      return noChange(existing.id, current);
     }
   }
 
-  const newOnHand = current.on_hand + input.delta;
+  // Effective delta — an absolute `setOnHand` reconciles to a corrective delta
+  // computed against the locked on-hand; otherwise the signed `delta` is used.
+  const delta = input.setOnHand !== undefined ? input.setOnHand - current.on_hand : input.delta;
+
+  // A zero-effect movement (e.g. a sync run that found no change) writes no
+  // ledger row — keeps `onHand == Σ(movements)` clean and avoids feed noise.
+  if (delta === 0 && allocatedDelta === 0) {
+    return noChange('', current);
+  }
+
+  const newOnHand = current.on_hand + delta;
   if (newOnHand < 0 && !input.allowNegative) {
     throw new InventoryValidationError(
-      `Movement would drive onHand negative (current ${current.on_hand}, delta ${input.delta})`
+      `Movement would drive onHand negative (current ${current.on_hand}, delta ${delta})`
     );
   }
   const newAllocated = current.allocated + allocatedDelta;
   const newAvg = nextAvgCost(
     current.on_hand,
     current.avg_cost_cents,
-    input.delta,
+    delta,
     input.unitCostCents ?? null
   );
 
@@ -185,7 +198,7 @@ export async function applyMovement(tx: TxClient, input: MovementInput): Promise
       tenantId: input.tenantId,
       variantId: input.variantId,
       warehouseId: input.warehouseId,
-      delta: input.delta,
+      delta,
       balanceAfter: newOnHand,
       reason: input.reason,
       referenceType: input.referenceType ?? null,
@@ -205,10 +218,26 @@ export async function applyMovement(tx: TxClient, input: MovementInput): Promise
   return {
     movementId: movement.id,
     deduped: false,
+    appliedDelta: delta,
     onHand: newOnHand,
     allocated: newAllocated,
     available: newOnHand - newAllocated,
     avgCostCents: newAvg,
+    reorderPoint: current.reorder_point,
+  };
+}
+
+/** Build a MovementResult that reflects the locked level with nothing written
+ *  (an idempotency hit or a zero-effect movement). */
+function noChange(movementId: string, current: LockedLevel): MovementResult {
+  return {
+    movementId,
+    deduped: true,
+    appliedDelta: 0,
+    onHand: current.on_hand,
+    allocated: current.allocated,
+    available: current.on_hand - current.allocated,
+    avgCostCents: current.avg_cost_cents,
     reorderPoint: current.reorder_point,
   };
 }

@@ -19,6 +19,7 @@
     "@prisma/client": "^6.19.3",
     "@sparx/db": "workspace:*",
     "@sparx/events": "workspace:*",
+    "@sparx/inventory": "workspace:*",
     "pino": "^9.5.0",
     "zod": "^4.4.3"
   },

@@ -344,10 +344,8 @@ model Tenant {
   dropshipProductLinks DropshipProductLink[]
   dropshipOrders       DropshipOrder[]
 
-  // Inventory Sync (docs/64 Ph Inv-1)
+  // Inventory Sync (docs/64 Ph Inv-1) — folded onto the master stock model (docs/100 P1c)
   inventorySources     InventorySource[]
-  stockLocations       StockLocation[]
-  stockLevels          StockLevel[]
   inventorySourceLinks InventorySourceLink[]
 
   // Automation module (docs/81) — the cross-module rule engine

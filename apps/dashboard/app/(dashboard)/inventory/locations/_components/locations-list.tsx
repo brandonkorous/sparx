@@ -9,74 +9,78 @@ import {
   Text,
 } from '@sparx/ui';
 
-// Client wrapper for the stock-locations list. SelectionList takes render
-// functions (columns/card), which can't cross the server→client boundary, so
-// the server page hands rows + view here and this builds both views. Read-only —
+// Client wrapper for the stock-locations list. A "location" is a Warehouse in the
+// unified stock model (docs/100 P1c). SelectionList takes render functions
+// (columns/card), which can't cross the server→client boundary, so the server
+// page hands rows + view here and this builds both views. Read-only —
 // `selectable={false}` (no checkboxes / bulk bar) and rows have no detail route
 // yet, so the name renders as plain text.
 
-export interface StockLocation {
+export interface WarehouseRow {
   id: string;
   name: string;
+  code: string;
   type: string;
-  countryCode: string | null;
-  isDefault: boolean;
-  active: boolean;
-  createdAt: string;
+  city: string | null;
+  region: string | null;
+  country: string | null;
+  isActive: boolean;
 }
 
 const TYPE_LABELS: Record<string, string> = {
-  warehouse: 'Warehouse',
-  bin: 'Bin',
+  owned: 'Owned',
   '3pl': '3PL',
+  dropship: 'Dropship',
   virtual: 'Virtual',
-  transit: 'Transit',
 };
 
 interface LocationsListProps {
-  rows: StockLocation[];
+  rows: WarehouseRow[];
   view: 'table' | 'card';
 }
 
+function placeOf(w: WarehouseRow): string {
+  const parts = [w.city, w.region, w.country].filter(Boolean);
+  return parts.length > 0 ? parts.join(', ') : '—';
+}
+
 export function LocationsList({ rows, view }: LocationsListProps) {
-  const name = (loc: StockLocation) => (
+  const name = (w: WarehouseRow) => (
     <Stack direction="row" align="center" gap={2} className="min-w-0">
       <Text size="sm" className="truncate font-medium">
-        {loc.name}
+        {w.name}
       </Text>
-      {loc.isDefault && (
-        <Badge color="primary" variant="soft" size="sm">
-          Default
-        </Badge>
-      )}
+      <Badge color="neutral" variant="soft" size="sm">
+        {w.code}
+      </Badge>
     </Stack>
   );
 
-  const typeLabel = (loc: StockLocation) => TYPE_LABELS[loc.type] ?? loc.type;
+  const typeLabel = (w: WarehouseRow) => TYPE_LABELS[w.type] ?? w.type;
 
-  const statusBadge = (loc: StockLocation) => (
-    <Badge color={loc.active ? 'success' : 'neutral'} variant="soft" size="sm">
-      {loc.active ? 'Active' : 'Inactive'}
+  const statusBadge = (w: WarehouseRow) => (
+    <Badge color={w.isActive ? 'success' : 'neutral'} variant="soft" size="sm">
+      {w.isActive ? 'Active' : 'Archived'}
     </Badge>
   );
 
-  const columns: SelectionColumn<StockLocation>[] = [
+  const columns: SelectionColumn<WarehouseRow>[] = [
     { header: 'Name', cell: name, cellClassName: 'font-medium' },
     { header: 'Type', cell: typeLabel },
-    { header: 'Country', cell: (loc) => loc.countryCode ?? '—' },
+    { header: 'Location', cell: placeOf },
     { header: 'Status', cell: statusBadge },
   ];
 
-  const card: SelectionCard<StockLocation> = {
+  const card: SelectionCard<WarehouseRow> = {
     title: name,
     badge: statusBadge,
-    body: (loc) => (
+    body: (w) => (
       <Stack direction="row" align="center" gap={2}>
         <Text size="xs" variant="muted">
-          {typeLabel(loc)}
+          {typeLabel(w)}
         </Text>
         <Text size="xs" variant="muted">
-          {loc.countryCode ?? '—'}
+          {placeOf(w)}
         </Text>
       </Stack>
     ),
@@ -86,10 +90,10 @@ export function LocationsList({ rows, view }: LocationsListProps) {
     <SelectionList
       items={rows}
       view={view}
-      getId={(loc) => loc.id}
+      getId={(w) => w.id}
       selectable={false}
       entityLabelPlural="locations"
-      getRowLabel={(loc) => loc.name}
+      getRowLabel={(w) => w.name}
       columns={columns}
       card={card}
     />

@@ -105,7 +105,6 @@ model ProductVariant {
   reviews               ProductReview[]
   shippingProfileLinks  ShippingProfileVariant[]
   orderItems            OrderItem[]
-  stockLevels           StockLevel[]
   inventorySourceLinks  InventorySourceLink[]
   recomputeReviews      MarkupRecomputeReview[]
   billingDocumentLines  BillingDocumentLine[]

@@ -2320,6 +2320,9 @@ importers:
       '@sparx/events':
         specifier: workspace:*
         version: link:../../packages/events
+      '@sparx/inventory':
+        specifier: workspace:*
+        version: link:../../packages/inventory
       pino:
         specifier: ^9.5.0
         version: 9.14.0

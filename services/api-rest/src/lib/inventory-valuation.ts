@@ -1,12 +1,17 @@
 // Inventory valuation snapshots (docs/97 §5) — the "value over time" series on
 // the Inventory overview.
 //
-// Valuation is a POINT-IN-TIME measure: stock_levels carry only a current
-// quantity (no per-day movement ledger), so a day's value can only be captured
-// as of a run — there is no historical backfill. The nightly cron upserts
-// today's snapshot; the read live-overlays the current valuation for today so the
-// chart is fresh before tonight's run. The computation mirrors the live
-// `/v1/inventory/reports/summary` valuation exactly (Σ on_hand × cost / retail).
+// Valuation is captured as a daily SNAPSHOT: the nightly cron upserts today's
+// row, and the read live-overlays today's current valuation so the chart is fresh
+// before tonight's run. We snapshot (rather than reconstruct from the movement
+// ledger) because a past day's value depends on that day's moving-average cost
+// basis, which isn't cheaply reconstructable — so the series builds forward from
+// first capture (no historical backfill).
+//
+// The computation reads the MASTER stock model (inventory_levels, docs/100 P1c)
+// and mirrors the live `/v1/inventory/reports/summary` valuation exactly: cost =
+// Σ(on_hand × moving-average cost), retail = Σ(on_hand × variant price). The cost
+// basis falls back avg_cost_cents → unit_cost_cents → variant.cost_cents.
 //
 // Every function takes a tenant-scoped TxClient (caller wraps withTenant), so RLS
 // isolates all reads/writes.
@@ -30,36 +35,31 @@ export interface Valuation {
   totalRetailCents: number;
 }
 
-/** Current inventory valuation: total on-hand units + value at cost / retail.
- *  Mirrors the summary report — sum on-hand per variant, join variant pricing. */
-export async function computeValuation(tx: TxClient): Promise<Valuation> {
-  const variantSums = await tx.stockLevel.groupBy({
-    by: ['variantId'],
-    _sum: { onHand: true },
-  });
-  const variantIds = variantSums.map((v) => v.variantId);
-  const variants =
-    variantIds.length > 0
-      ? await tx.productVariant.findMany({
-          where: { id: { in: variantIds } },
-          select: { id: true, priceCents: true, costCents: true },
-        })
-      : [];
-  const byId = new Map(variants.map((v) => [v.id, v]));
+interface ValuationRow {
+  totalUnits: bigint;
+  totalCostCents: bigint;
+  totalRetailCents: bigint;
+}
 
-  let totalUnits = 0;
-  let totalCostCents = 0;
-  let totalRetailCents = 0;
-  for (const vs of variantSums) {
-    const onHand = vs._sum.onHand ?? 0;
-    totalUnits += onHand;
-    const v = byId.get(vs.variantId);
-    if (v) {
-      totalCostCents += (v.costCents ?? 0) * onHand;
-      totalRetailCents += v.priceCents * onHand;
-    }
-  }
-  return { totalUnits, totalCostCents, totalRetailCents };
+/** Current inventory valuation: total on-hand units + value at cost / retail.
+ *  Reads the master inventory_levels, costing each level at its moving-average
+ *  basis (avg → unit → variant cost), retail at the variant price. Excludes
+ *  archived warehouses + deleted variants. */
+export async function computeValuation(tx: TxClient): Promise<Valuation> {
+  const [row] = await tx.$queryRaw<ValuationRow[]>`
+    SELECT
+      COALESCE(SUM(l.on_hand), 0)::bigint AS "totalUnits",
+      COALESCE(SUM(l.on_hand * COALESCE(l.avg_cost_cents, l.unit_cost_cents, v.cost_cents, 0)), 0)::bigint AS "totalCostCents",
+      COALESCE(SUM(l.on_hand * v.price_cents), 0)::bigint AS "totalRetailCents"
+    FROM inventory_levels l
+    JOIN commerce_product_variants v ON v.id = l.variant_id AND v.deleted_at IS NULL
+    JOIN inventory_warehouses w ON w.id = l.warehouse_id AND w.deleted_at IS NULL
+  `;
+  return {
+    totalUnits: Number(row?.totalUnits ?? 0),
+    totalCostCents: Number(row?.totalCostCents ?? 0),
+    totalRetailCents: Number(row?.totalRetailCents ?? 0),
+  };
 }
 
 /** Capture today's valuation as an immutable daily snapshot (upsert). */

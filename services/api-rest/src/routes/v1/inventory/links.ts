@@ -1,4 +1,4 @@
-// Inventory Source Links — maps external SKU/location to (variant, location).
+// Inventory Source Links — maps external SKU/location to (variant, warehouse).
 //
 //   GET    /v1/inventory/sources/:sourceId/links
 //   POST   /v1/inventory/sources/:sourceId/links
@@ -14,7 +14,7 @@ import { requireInventoryModule, toInventoryContext } from '../../../lib/invento
 
 const CreateLinkBody = z.object({
   variantId: z.string().uuid(),
-  locationId: z.string().uuid(),
+  warehouseId: z.string().uuid(),
   externalSku: z.string().min(1).max(255),
   externalLocation: z.string().max(255).nullable().default(null),
 });
@@ -43,7 +43,7 @@ const inventoryLinkRoutes: FastifyPluginAsync = async (app) => {
           where: { tenantId, sourceId },
           include: {
             variant: { select: { id: true, sku: true, title: true } },
-            location: { select: { id: true, name: true } },
+            warehouse: { select: { id: true, name: true, code: true } },
           },
           orderBy: { createdAt: 'asc' },
           take: q.take,
