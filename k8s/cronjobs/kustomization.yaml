@@ -11,3 +11,4 @@ resources:
   - invoicing-collected-rollup.yaml
   - dropship-orders-rollup.yaml
   - automation-runs-rollup.yaml
+  - site-analytics-rollup.yaml

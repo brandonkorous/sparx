@@ -365,6 +365,10 @@ model Tenant {
   rollupDropshipDailyOrders     RollupDropshipDailyOrders[]
   rollupAutomationDailyRuns     RollupAutomationDailyRuns[]
 
+  // First-party site analytics (docs/97 §5) — raw capture + daily rollup
+  siteAnalyticsEvents SiteAnalyticsEvent[]
+  rollupSiteDaily     RollupSiteDaily[]
+
   @@map("tenants")
 }
 

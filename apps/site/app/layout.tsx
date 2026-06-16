@@ -35,6 +35,7 @@ import { getLegalFooterLinks } from '@/lib/legal';
 import { getPublishedBuilderLayout, getPublishedBuilderStyles } from '@/lib/builder';
 import { loadSiteData } from '@/lib/builder-data';
 import { ConsentManager } from '@/components/consent/consent-manager';
+import { SiteAnalyticsBeacon } from '@/components/site-analytics-beacon';
 import { ChatWidget } from '@sparx/chat-widget';
 import { ChunkReloadGuard } from '@sparx/ui';
 import { mediaUrl } from '@/lib/media';
@@ -473,6 +474,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   </div>
                   <MiniCart />
                   <ConsentManager tenant={site.slug} config={site.consent} />
+                  {chatApiUrl ? (
+                    <SiteAnalyticsBeacon
+                      apiUrl={chatApiUrl}
+                      tenantSlug={site.slug}
+                      propertySlug={activePropertySlug ?? undefined}
+                    />
+                  ) : null}
                   {chatEnabled && chatApiUrl ? (
                     <ChatWidget
                       apiUrl={chatApiUrl}

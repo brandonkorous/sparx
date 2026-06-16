@@ -1,0 +1,91 @@
+// First-party site analytics (docs/97 §5, docs/08 site builder) — cookieless,
+// privacy-safe storefront traffic capture. Phase-1 "start cheap": events land in
+// our own Postgres (no external analytics SaaS), aggregated for the Builder
+// overview's traffic cards.
+//
+// Privacy model (no consent banner needed): we store NO PII and set NO cookies.
+// A visitor is identified only by a SALTED DAILY-ROTATING HASH of
+// (date + tenant + client IP + user-agent) computed server-side at ingestion and
+// never reversible to an IP — the Plausible/Fathom approach. The hash rotates at
+// UTC midnight, so cross-day tracking is impossible by construction. Do-Not-Track
+// and obvious bots are dropped at the edge before a row is written.
+//
+// Two tables, the established hybrid (docs/97 §5):
+//   · site_analytics_events — the raw append-only capture (ingestion target).
+//     Read live for top-pages / sources / window-unique visitors (bounded by the
+//     query window).
+//   · rollup_site_daily — per (tenant, property, UTC day) pageviews / visitors /
+//     sessions / signups, maintained by the nightly reconcile (recomputed from
+//     the raw events) + live-overlay of the open day. Powers the traffic chart.
+//
+// Both tenant-scoped with ENABLE + FORCE RLS + a current_tenant_id() policy
+// (hand-authored in the migration SQL — Prisma doesn't generate RLS). property_id
+// is a denormalized scoping column (no FK relation) so a per-site overview filters
+// without a join and historical rows survive a property delete; tenant CASCADE is
+// the hard cleanup.
+
+model SiteAnalyticsEvent {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  // The web property (site) the hit landed on, resolved server-side at ingestion.
+  propertyId String? @map("property_id") @db.Uuid
+
+  // pageview | signup — the two storefront events the overview reports on.
+  type String @default("pageview") @db.VarChar(20)
+
+  // Normalized request path (query string + hash stripped), e.g. "/shop".
+  path String @db.VarChar(2048)
+
+  // Referrer classification (search | direct | social | referral) + the bare
+  // referrer host (e.g. "instagram.com") for the "top referrer" line. Null host
+  // for direct hits.
+  source       String  @default("direct") @map("source") @db.VarChar(20)
+  referrerHost String? @map("referrer_host") @db.VarChar(255)
+
+  // Salted daily-rotating visitor + session hashes (never an IP). Two hits with
+  // the same visitorHash on the same UTC day are the same person; the session
+  // hash additionally folds in a 30-minute window for "sessions".
+  visitorHash String @map("visitor_hash") @db.VarChar(64)
+  sessionHash String @map("session_hash") @db.VarChar(64)
+
+  // ISO-3166 country from edge geo, when available (coarse, non-identifying).
+  country String? @db.VarChar(2)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // The dominant read is "this tenant/property over a time window"; the visitor
+  // index backs window-unique counts; the path index backs top-pages.
+  @@index([tenantId, propertyId, createdAt])
+  @@index([tenantId, createdAt, visitorHash])
+  @@index([tenantId, propertyId, path])
+  @@map("site_analytics_events")
+}
+
+// One row per (tenant, property, UTC day) of storefront traffic. visitors /
+// sessions are the DISTINCT counts computed for that day (so they chart correctly
+// per-bucket but must NOT be summed for a window-unique figure — the read takes
+// window-unique from the raw events instead). Maintained by the nightly
+// `/internal/site/analytics-rollup` reconcile (also the backfill); the read
+// live-overlays the most recent open day(s) so "today" stays fresh.
+model RollupSiteDaily {
+  tenantId   String  @map("tenant_id") @db.Uuid
+  propertyId String  @map("property_id") @db.Uuid
+  bucket     DateTime @db.Date
+
+  pageviews Int @default(0)
+  // Distinct visitor hashes seen this day.
+  visitors  Int @default(0)
+  // Distinct session hashes seen this day.
+  sessions  Int @default(0)
+  // type='signup' events this day.
+  signups   Int @default(0)
+
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@id([tenantId, propertyId, bucket], map: "rollup_site_daily_pkey")
+  @@map("rollup_site_daily")
+}

@@ -12,6 +12,7 @@ import surfaceRoutes from './surface.js';
 import previewRoutes from './preview.js';
 import governanceRoutes from './governance.js';
 import archetypeRoutes from './archetypes.js';
+import analyticsRoutes from './analytics.js';
 
 const builderRoutes: FastifyPluginAsync = async (app) => {
   await app.register(pageRoutes);
@@ -24,6 +25,7 @@ const builderRoutes: FastifyPluginAsync = async (app) => {
   await app.register(previewRoutes);
   await app.register(governanceRoutes);
   await app.register(archetypeRoutes);
+  await app.register(analyticsRoutes);
 };
 
 export default builderRoutes;

@@ -11,9 +11,12 @@
 //   · Domain & SSL — /v1/domains (the canonical/verified domain)
 //   · Site health + Needs attention (SEO) — /v1/seo/audits?type=builder_page
 //   · Recent activity — derived from the page/layout catalog timestamps
-// SAMPLE (no endpoint yet — see docs/dashboard-overview-data-gaps.md §Site builder):
-//   · the analytics cards ONLY — visitors / pageviews / traffic / top pages /
-//     sources / email signups need a net-new per-site site-analytics surface.
+//   · Analytics cards — visitors / pageviews / signups KPIs, the traffic chart,
+//     sources, and top pages — from /v1/builder/analytics/* (first-party,
+//     cookieless capture via the storefront beacon; per active site). Each
+//     liveOr-falls back to a badged sample until the site has traffic.
+// SAMPLE (no capture yet — see docs/dashboard-overview-data-gaps.md §Site builder):
+//   · "Avg. load time" (needs RUM/Web-Vitals capture).
 //
 // The builder layout is gate-only (no ModuleProvider, so the editor's full-height
 // shell isn't disturbed), so this page supplies its own module color via
@@ -84,6 +87,7 @@ import { api } from '@/lib/api-rest-client';
 import type { SeoAuditRow } from '@/components/seo/types';
 import {
   CardLink,
+  fmtNumber,
   liveOr,
   MetricTile,
   OverviewCard,
@@ -381,6 +385,38 @@ function timeAgo(iso: string | null): string {
   return `${Math.round(months / 12)}y ago`;
 }
 
+// ── Live site-analytics shapes (/v1/builder/analytics/*) ──
+interface SiteAnalyticsSummary {
+  visitors: number;
+  pageviews: number;
+  sessions: number;
+  signups: number;
+  pagesPerVisit: number;
+  topReferrerHost: string | null;
+  topReferrerVisits: number;
+}
+interface SiteAnalyticsTimeseries {
+  points: { bucket: string; visitors: number; pageviews: number }[];
+  totals: { visitors: number; pageviews: number };
+}
+interface SiteTopPage {
+  path: string;
+  views: number;
+  visitors: number;
+}
+interface SiteSourceRow {
+  source: string;
+  visits: number;
+}
+
+// Source class → friendly label for the "where visitors come from" bars.
+const SOURCE_LABEL: Record<string, string> = {
+  search: 'Search',
+  direct: 'Direct',
+  social: 'Social',
+  referral: 'Referral',
+};
+
 export default async function BuilderOverviewPage() {
   // Teaser the blueprint catalog in-context (count + a few names). Degrades to a
   // plain CTA if the catalog read fails — this is the one piece of LIVE data here.
@@ -397,13 +433,88 @@ export default async function BuilderOverviewPage() {
   // The builder catalog + its SEO snapshots + the active property's domains are the
   // real signals behind this overview; analytics (visitors / pageviews / traffic)
   // has no endpoint yet, so those cards stay on the sample data above.
-  const [pages, layouts, components, audits, domains] = await Promise.all([
+  const [
+    pages,
+    layouts,
+    components,
+    audits,
+    domains,
+    anSummary,
+    anTimeseries,
+    anTopPages,
+    anSources,
+  ] = await Promise.all([
     listPages().catch(() => null),
     listLayouts().catch(() => null),
     listComponentsFull().catch(() => null),
     api.get<SeoAuditRow[]>('/v1/seo/audits?type=builder_page').catch(() => null),
     api.get<DomainView[]>('/v1/domains').catch(() => null),
+    api.get<SiteAnalyticsSummary>('/v1/builder/analytics/summary').catch(() => null),
+    api
+      .get<SiteAnalyticsTimeseries>('/v1/builder/analytics/timeseries?grain=day')
+      .catch(() => null),
+    api.get<SiteTopPage[]>('/v1/builder/analytics/top-pages?limit=6').catch(() => null),
+    api.get<SiteSourceRow[]>('/v1/builder/analytics/sources').catch(() => null),
   ]);
+
+  // Site analytics — live once the active site has captured any pageview, else
+  // the illustrative sample (visitors / pageviews / signups KPIs + the traffic
+  // chart, sources, and top-pages cards). "Avg load time" has no capture and
+  // stays sample.
+  const anLive = anSummary != null && anSummary.pageviews > 0;
+  const visitorsKpi = anLive ? fmtNumber(anSummary.visitors) : '8,420';
+  const pageviewsKpi = anLive ? fmtNumber(anSummary.pageviews) : '23,180';
+  const pageviewsHint = anLive
+    ? `${anSummary.pagesPerVisit} pages per visit`
+    : '2.75 pages per visit';
+  const signupsKpi = anLive ? fmtNumber(anSummary.signups) : '312';
+
+  const trafficChart = liveOr(
+    anTimeseries && anTimeseries.totals.pageviews > 0
+      ? anTimeseries.points.map((p) => ({
+          label: new Date(`${p.bucket}T00:00:00Z`).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            timeZone: 'UTC',
+          }),
+          visitors: p.visitors,
+          pageviews: p.pageviews,
+        }))
+      : null,
+    [...SAMPLE_TRAFFIC_14D]
+  );
+
+  const totalSourceVisits = (anSources ?? []).reduce((s, r) => s + r.visits, 0);
+  const sourceBars = liveOr(
+    anSources && totalSourceVisits > 0
+      ? anSources.map((r) => ({
+          label: SOURCE_LABEL[r.source] ?? r.source,
+          value: Math.round((r.visits / totalSourceVisits) * 100),
+          display: `${Math.round((r.visits / totalSourceVisits) * 100)}%`,
+        }))
+      : null,
+    SAMPLE_SOURCES
+  );
+
+  const topPagesLive = liveOr(
+    anTopPages && anTopPages.length > 0
+      ? anTopPages.map((p) => ({
+          page: p.path === '/' ? 'Home' : p.path.replace(/^\//, ''),
+          path: p.path,
+          views: fmtNumber(p.views),
+          visitors: fmtNumber(p.visitors),
+        }))
+      : null,
+    SAMPLE_TOP_PAGES.map((p) => ({
+      page: p.page,
+      path: p.path,
+      views: p.views,
+      // ~72% of views as unique visitors — illustrative only.
+      visitors: Math.round(Number.parseInt(p.views.replace(/,/g, ''), 10) * 0.72).toLocaleString(
+        'en-US'
+      ),
+    }))
+  );
 
   // Pages & content — published vs pure-draft pages + saved components.
   const catalog =
@@ -564,14 +675,14 @@ export default async function BuilderOverviewPage() {
             <Stat
               icon={<Users className="h-4 w-4" />}
               label="Visitors · 30d"
-              value="8,420"
+              value={visitorsKpi}
               hint="Unique visitors, last 30 days"
             />
             <Stat
               icon={<Eye className="h-4 w-4" />}
               label="Pageviews · 30d"
-              value="23,180"
-              hint="2.75 pages per visit"
+              value={pageviewsKpi}
+              hint={pageviewsHint}
             />
             <Stat
               icon={<Zap className="h-4 w-4" />}
@@ -582,13 +693,15 @@ export default async function BuilderOverviewPage() {
             <Stat
               icon={<Mail className="h-4 w-4" />}
               label="Email signups · 30d"
-              value="312"
-              hint="3.7% of visitors"
+              value={signupsKpi}
+              hint="Storefront newsletter signups"
             />
           </Grid>
-          <div className="-mt-2">
-            <SampleBadge />
-          </div>
+          {!anLive ? (
+            <div className="-mt-2">
+              <SampleBadge />
+            </div>
+          ) : null}
 
           {/* Traffic + sources. */}
           <div className={TWO_COL}>
@@ -596,10 +709,10 @@ export default async function BuilderOverviewPage() {
               title="Traffic"
               icon={<TrendingUp className="h-4 w-4" />}
               description="Visitors & pageviews · last 14 days"
-              right={<SampleBadge />}
+              right={trafficChart.isSample ? <SampleBadge reason="no-data" /> : undefined}
             >
               <AreaChart
-                data={SAMPLE_TRAFFIC_14D}
+                data={trafficChart.data}
                 series={[
                   { key: 'visitors', label: 'Visitors', color: 'module' },
                   { key: 'pageviews', label: 'Pageviews', color: 'var(--module-active-tint)' },
@@ -614,16 +727,26 @@ export default async function BuilderOverviewPage() {
             <OverviewCard
               title="Where visitors come from"
               icon={<Target className="h-4 w-4" />}
-              right={<SampleBadge />}
+              right={sourceBars.isSample ? <SampleBadge reason="no-data" /> : undefined}
             >
-              <BarList items={SAMPLE_SOURCES} color="module" />
-              <p className="mt-4 border-t border-[var(--color-border-default)] pt-3 text-xs text-[var(--color-text-tertiary)]">
-                Top referrer ·{' '}
-                <span className="font-medium text-[var(--color-text-secondary)]">
-                  instagram.com
-                </span>{' '}
-                — 1,140 visits
-              </p>
+              <BarList items={sourceBars.data} color="module" />
+              {anLive && anSummary.topReferrerHost ? (
+                <p className="mt-4 border-t border-[var(--color-border-default)] pt-3 text-xs text-[var(--color-text-tertiary)]">
+                  Top referrer ·{' '}
+                  <span className="font-medium text-[var(--color-text-secondary)]">
+                    {anSummary.topReferrerHost}
+                  </span>{' '}
+                  — {fmtNumber(anSummary.topReferrerVisits)} visits
+                </p>
+              ) : !anLive ? (
+                <p className="mt-4 border-t border-[var(--color-border-default)] pt-3 text-xs text-[var(--color-text-tertiary)]">
+                  Top referrer ·{' '}
+                  <span className="font-medium text-[var(--color-text-secondary)]">
+                    instagram.com
+                  </span>{' '}
+                  — 1,140 visits
+                </p>
+              ) : null}
             </OverviewCard>
           </div>
 
@@ -639,12 +762,11 @@ export default async function BuilderOverviewPage() {
                   <TableRow>
                     <TableHead>Page</TableHead>
                     <TableHead className="text-right">Views</TableHead>
-                    <TableHead className="text-right">Avg. time</TableHead>
-                    <TableHead className="text-right">Signup conv.</TableHead>
+                    <TableHead className="text-right">Visitors</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {SAMPLE_TOP_PAGES.map((p) => (
+                  {topPagesLive.data.map((p) => (
                     <TableRow key={p.path}>
                       <TableCell>
                         <div className="font-medium text-[var(--color-text-primary)]">{p.page}</div>
@@ -653,15 +775,16 @@ export default async function BuilderOverviewPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-right tabular-nums">{p.views}</TableCell>
-                      <TableCell className="text-right tabular-nums">{p.time}</TableCell>
-                      <TableCell className="text-right tabular-nums">{p.conv}</TableCell>
+                      <TableCell className="text-right tabular-nums">{p.visitors}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-              <div className="mt-3">
-                <SampleBadge />
-              </div>
+              {topPagesLive.isSample ? (
+                <div className="mt-3">
+                  <SampleBadge reason="no-data" />
+                </div>
+              ) : null}
             </OverviewCard>
 
             <OverviewCard

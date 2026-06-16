@@ -53,6 +53,7 @@ import commerceCronRoutes from './routes/internal/commerce-cron.js';
 import invoicingCronRoutes from './routes/internal/invoicing-cron.js';
 import dropshipCronRoutes from './routes/internal/dropship-cron.js';
 import automationCronRoutes from './routes/internal/automation-cron.js';
+import siteAnalyticsCronRoutes from './routes/internal/site-analytics-cron.js';
 import acquisitionReportRoutes from './routes/internal/acquisition-report.js';
 import contentTypeRoutes from './routes/v1/content/types.js';
 import entryRoutes from './routes/v1/content/entries.js';
@@ -84,6 +85,7 @@ import publicMediaRoutes from './routes/v1/public/media.js';
 import marketplaceMediaRoutes from './routes/v1/public/marketplace-media.js';
 import publicConsentRoutes from './routes/v1/public/consent.js';
 import publicSignupRoutes from './routes/v1/public/signup.js';
+import publicSiteAnalyticsRoutes from './routes/v1/public/site-analytics.js';
 import publicNewsletterRoutes from './routes/v1/public/newsletter.js';
 import publicMarketplaceRoutes from './routes/v1/public/marketplace.js';
 import publicRedirectRoutes from './routes/v1/public/redirects.js';
@@ -587,6 +589,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(invoicingCronRoutes);
   await app.register(dropshipCronRoutes);
   await app.register(automationCronRoutes);
+  await app.register(siteAnalyticsCronRoutes);
   await app.register(acquisitionReportRoutes);
 
   // v1 surface. Each route file owns its own URL prefix so this central
@@ -624,6 +627,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(publicConsentRoutes);
   await app.register(publicSignupRoutes);
   await app.register(publicNewsletterRoutes);
+  await app.register(publicSiteAnalyticsRoutes);
   await app.register(publicMarketplaceRoutes);
   await app.register(publicChatRoutes);
   await app.register(publicRedirectRoutes);

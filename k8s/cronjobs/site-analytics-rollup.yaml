@@ -1,0 +1,71 @@
+# Reconciles the first-party site-analytics daily rollup (docs/97 §5).
+# Recomputes a trailing window of rollup_site_daily from the raw
+# site_analytics_events (captured cookieless by the storefront beacon), per
+# tenant that has captured ≥1 event, so the Builder overview's traffic chart
+# reads pre-aggregated rows instead of scanning the raw events on the hot path.
+#
+# Runs nightly at 09:00 UTC — after the day has fully closed and after the
+# commerce (06:00), invoicing (06:30), dropship (07:00) and automation (08:00)
+# rollups, so the nightly reconciles don't pile onto the DB at once. The read
+# endpoint live-overlays today + cold-starts from the raw events, so a late or
+# skipped run only delays correcting closed days, never the live figure. Forbid
+# concurrency so a slow run never overlaps the next.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: site-analytics-rollup
+  namespace: sparx-prod
+  labels:
+    app: site-analytics-cron
+    job: analytics-rollup
+spec:
+  schedule: '0 9 * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: site-analytics-cron
+            job: analytics-rollup
+        spec:
+          serviceAccountName: sparx-app
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 300
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://api-rest.sparx-prod.svc.cluster.local:3000/internal/site/analytics-rollup
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '25m'
+                  memory: '16Mi'
+                limits:
+                  cpu: '100m'
+                  memory: '32Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault
