@@ -30,6 +30,12 @@ import {
   CommerceValidationError,
 } from '@sparx/commerce';
 import {
+  InventoryConflictError,
+  InventoryNotFoundError,
+  InventoryOutOfStockError,
+  InventoryValidationError,
+} from '@sparx/inventory';
+import {
   EmailConflictError,
   EmailNotFoundError,
   EmailProviderError,
@@ -386,6 +392,70 @@ function commerceErrorMapper(
   return undefined;
 }
 
+// Inventory service-layer errors (@sparx/inventory — its own error vocabulary,
+// same envelope codes as commerce/crm). Out-of-stock keeps a distinct code so
+// the storefront/dashboard can offer a wait-list / back-order recovery path.
+function inventoryErrorMapper(
+  err: unknown,
+  request: { id: string },
+  reply: FastifyReply
+): FastifyReply | undefined {
+  const requestId = request.id;
+  if (err instanceof InventoryNotFoundError) {
+    const body: ErrorEnvelope = {
+      success: false,
+      error: {
+        code: 'NOT_FOUND',
+        message: err.message,
+        details: { entityType: err.entityType, entityId: err.entityId },
+        request_id: requestId,
+      },
+    };
+    return reply.code(404).send(body);
+  }
+  if (err instanceof InventoryValidationError) {
+    const body: ErrorEnvelope = {
+      success: false,
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: err.message,
+        details: err.details,
+        request_id: requestId,
+      },
+    };
+    return reply.code(422).send(body);
+  }
+  if (err instanceof InventoryConflictError) {
+    const body: ErrorEnvelope = {
+      success: false,
+      error: {
+        code: 'CONFLICT',
+        message: err.message,
+        ...(err.field !== undefined ? { details: { field: err.field } } : {}),
+        request_id: requestId,
+      },
+    };
+    return reply.code(409).send(body);
+  }
+  if (err instanceof InventoryOutOfStockError) {
+    const body: ErrorEnvelope = {
+      success: false,
+      error: {
+        code: 'OUT_OF_STOCK',
+        message: err.message,
+        details: {
+          variantId: err.variantId,
+          requested: err.requested,
+          available: err.available,
+        },
+        request_id: requestId,
+      },
+    };
+    return reply.code(409).send(body);
+  }
+  return undefined;
+}
+
 // Email-platform service-layer errors — same envelope vocabulary as CRM, with
 // PROVIDER_ERROR (→ 502) for Mailgun admin failures the tenant should see.
 function emailErrorMapper(
@@ -553,6 +623,7 @@ export async function createApp(): Promise<FastifyInstance> {
       extraMappers: [
         crmErrorMapper,
         commerceErrorMapper,
+        inventoryErrorMapper,
         sitebuilderErrorMapper,
         builderErrorMapper,
         emailErrorMapper,

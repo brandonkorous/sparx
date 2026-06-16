@@ -29,6 +29,7 @@ COPY packages/events/package.json packages/events/
 COPY packages/crm/package.json packages/crm/
 COPY packages/crm-schemas/package.json packages/crm-schemas/
 COPY packages/commerce/package.json packages/commerce/
+COPY packages/inventory/package.json packages/inventory/
 COPY packages/commerce-schemas/package.json packages/commerce-schemas/
 # @sparx/payments is a dep of @sparx/commerce (checkout/return services); its only
 # workspace dep is @sparx/db (above). Needed for the filtered install to resolve.
@@ -79,6 +80,7 @@ COPY packages/events packages/events
 COPY packages/crm packages/crm
 COPY packages/crm-schemas packages/crm-schemas
 COPY packages/commerce packages/commerce
+COPY packages/inventory packages/inventory
 COPY packages/commerce-schemas packages/commerce-schemas
 COPY packages/payments packages/payments
 COPY packages/integration-framework packages/integration-framework

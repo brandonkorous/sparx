@@ -21,6 +21,8 @@ COPY packages/events ./packages/events
 # image builds but crashes at runtime with ERR_MODULE_NOT_FOUND on '@sparx/payments'.
 COPY packages/payments ./packages/payments
 COPY packages/commerce ./packages/commerce
+# @sparx/commerce re-exports inventoryService from @sparx/inventory at module load.
+COPY packages/inventory ./packages/inventory
 # @sparx/commerce-schemas (pure markup engine) is a dep of both @sparx/commerce
 # and now @sparx/crm (quote-line markup, docs/48 §5).
 COPY packages/commerce-schemas ./packages/commerce-schemas
