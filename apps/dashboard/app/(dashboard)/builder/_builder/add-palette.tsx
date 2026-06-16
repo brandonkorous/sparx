@@ -24,6 +24,8 @@ const GROUPS: { group: PaletteGroup; label: string }[] = [
   { group: 'layout', label: 'Layout' },
   { group: 'content', label: 'Content & media' },
   { group: 'data', label: 'From your modules' },
+  // Raw HTML elements (docs/98 Pillar 1) — every whitelisted tag, fully classable.
+  { group: 'elements', label: 'HTML elements' },
 ];
 
 function Tile({ def, onAdd }: { def: ComponentDef; onAdd: (type: string) => void }) {

@@ -33,7 +33,12 @@ import * as React from 'react';
 import { Image as ImageIcon } from 'lucide-react';
 import {
   coerceNavLinks,
+  isRawElementType,
+  isRawVoidType,
   legacyButtonStyleToClass,
+  rawElementText,
+  rawTagOf,
+  safeElementAttrs,
   sampleEmailText,
   type BuilderNode,
   type Cardinality,
@@ -295,6 +300,27 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
   // for email). `ph` supplies a placeholder string in the editor only.
   const ph = (s: string): string => (edit ? s : '');
   const boundOr = (fallback: string): string => (bound ? asText(value) : '') || tpl(fallback);
+
+  // Raw HTML elements (docs/98 Pillar 1) — render the whitelisted tag with its
+  // sanitized attributes (the host walker handles raw CONTAINER tags itself; a
+  // raw LEAF/void/text element renders here). The element wears node.class on its
+  // own tag, so the walker passes it as `leafClass` and omits its wrapper.
+  if (isRawElementType(node.type)) {
+    const tag = rawTagOf(node.type)!;
+    const attrs = safeElementAttrs(node);
+    if (isRawVoidType(node.type)) {
+      // An unsourced media void previews as a slot in the editor so it stays selectable.
+      if (edit && (tag === 'img' || tag === 'source') && !attrs.src) {
+        return <Placeholder ratio="wide" label={typeof attrs.alt === 'string' ? attrs.alt : tag} />;
+      }
+      return React.createElement(tag, { className: leafClass, ...attrs });
+    }
+    // A bound value fills text elements (e.g. an <a> label from a field); else the
+    // authored text, the nested inline children, or a faint tag label while empty.
+    const text = (bound ? asText(value) : '') || rawElementText(node);
+    const inner = children ?? (text || (edit ? `<${tag}>` : null));
+    return React.createElement(tag, { className: leafClass, ...attrs }, inner);
+  }
 
   switch (node.type) {
     case 'Heading': {

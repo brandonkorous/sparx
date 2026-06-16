@@ -69,7 +69,7 @@ import type {
 } from '@sparx/builder-schemas';
 
 import { makeId, type BuilderNode, type Device, type PageSeo, type PageTemplate } from './model';
-import { getDef } from './registry';
+import { componentGroupOf, getDef } from './registry';
 import { Inspector, LayoutSettings, PageSettings } from './inspector';
 import { AddPalette } from './add-palette';
 import { Canvas } from './canvas';
@@ -630,7 +630,7 @@ export function SiteStudio({
     setBusy(true);
     const res = await copyComponent({
       name: node.name ?? def?.label ?? 'Component',
-      group: def?.group ?? 'content',
+      group: def ? componentGroupOf(def) : 'content',
       icon: 'box',
       surfaces: [surface],
       tree: node,

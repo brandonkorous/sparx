@@ -23,7 +23,12 @@ import {
   emailSampleData,
   expandComponentTree,
   isCustomType,
+  isRawContainerType,
+  isRawElementType,
+  rawTagAcceptsInlineChrome,
+  rawTagOf,
   readComponentRef,
+  safeElementAttrs,
   sampleEmailText,
   type BindingCatalog,
   type ComponentDto,
@@ -429,7 +434,11 @@ function CanvasNode({
   // where the live-compiled utilities (flex/grid/padding/surface) lay out + paint
   // it. `leafWearsClass` is the SHARED predicate the live renderer uses, so both
   // surfaces agree where node.class lands.
-  const leafByClass = leafWearsClass(node.type);
+  // A raw element (docs/98 Pillar 1) wears node.class on its OWN tag too: a raw
+  // LEAF/void renders through renderLeaf (like the recipe leaves), a raw CONTAINER
+  // becomes its tag below so <ul>/<table>/<nav> preview faithfully.
+  const rawContainer = isRawContainerType(node.type);
+  const leafByClass = leafWearsClass(node.type) || (isRawElementType(node.type) && !rawContainer);
   // The `.bx-node` chrome wrapper is `display:contents` (builder.css) so the live
   // renderer's wrapperless DOM is reproduced and `node.class` sizing (w-full,
   // flex-1, mx-auto) resolves against the real flex/grid parent. The selection
@@ -442,6 +451,12 @@ function CanvasNode({
     leafByClass || !hasPosition ? 'relative' : undefined,
     leafByClass ? undefined : node.class
   );
+  // The element that carries `.bx-inner`: a div for ordinary nodes, the actual tag
+  // for a raw container. The inline `.bx-tag` selection label can only be injected
+  // where the tag permits flow children (not inside ul/table/svg/select).
+  const InnerTag = (rawContainer ? rawTagOf(node.type)! : 'div') as React.ElementType;
+  const innerAttrs = rawContainer ? safeElementAttrs(node) : undefined;
+  const showInlineTag = !rawContainer || rawTagAcceptsInlineChrome(node.type);
 
   let body: React.ReactNode;
   if (node.type === 'Outlet') {
@@ -592,9 +607,9 @@ function CanvasNode({
     // selection tag, no outline, not clickable.
     return (
       <div className={cn('bx-node', 'bx-chrome')} data-node-id={node.id} data-bx-type={node.type}>
-        <div className={innerClass} style={bgStyle}>
+        <InnerTag className={innerClass} style={bgStyle} {...innerAttrs}>
           {body}
-        </div>
+        </InnerTag>
       </div>
     );
   }
@@ -621,31 +636,33 @@ function CanvasNode({
         }
       }}
     >
-      <div className={innerClass} style={bgStyle}>
-        <span className="bx-tag">
-          <span className="bx-tag__name">{node.name ?? def.label}</span>
-          {bound ? (
-            <span
-              className="bx-tag__bind"
-              style={{ color: moduleColor(moduleForPath(catalog, node.binding!.path)) }}
-            >
+      <InnerTag className={innerClass} style={bgStyle} {...innerAttrs}>
+        {showInlineTag ? (
+          <span className="bx-tag">
+            <span className="bx-tag__name">{node.name ?? def.label}</span>
+            {bound ? (
               <span
-                className="bx-tag__dot"
-                style={{ background: moduleColor(moduleForPath(catalog, node.binding!.path)) }}
-              />
-              {node.binding!.path}
-            </span>
-          ) : null}
-          {bindSlot !== null ? (
-            <span className="bx-tag__bind" style={{ color: 'var(--module-active)' }}>
-              <span className="bx-tag__dot" style={{ background: 'var(--module-active)' }} />
-              field · {bindSlot}
-            </span>
-          ) : null}
-          {iterating ? <span className="bx-tag__repeat">↻ {count}</span> : null}
-        </span>
+                className="bx-tag__bind"
+                style={{ color: moduleColor(moduleForPath(catalog, node.binding!.path)) }}
+              >
+                <span
+                  className="bx-tag__dot"
+                  style={{ background: moduleColor(moduleForPath(catalog, node.binding!.path)) }}
+                />
+                {node.binding!.path}
+              </span>
+            ) : null}
+            {bindSlot !== null ? (
+              <span className="bx-tag__bind" style={{ color: 'var(--module-active)' }}>
+                <span className="bx-tag__dot" style={{ background: 'var(--module-active)' }} />
+                field · {bindSlot}
+              </span>
+            ) : null}
+            {iterating ? <span className="bx-tag__repeat">↻ {count}</span> : null}
+          </span>
+        ) : null}
         {body}
-      </div>
+      </InnerTag>
     </div>
   );
 }

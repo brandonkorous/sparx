@@ -11,7 +11,7 @@ import { Copy } from 'lucide-react';
 import { Button } from '@sparx/ui';
 import type { ComponentSurface } from '@sparx/builder-schemas';
 
-import { getDef, makeNode } from '../../_builder/registry';
+import { componentGroupOf, getDef, makeNode } from '../../_builder/registry';
 import { copyComponent } from '../_lib/component-actions';
 
 export function CopyComponentButton({ systemType, label }: { systemType: string; label: string }) {
@@ -27,7 +27,7 @@ export function CopyComponentButton({ systemType, label }: { systemType: string;
     );
     const res = await copyComponent({
       name: `${label} copy`,
-      group: def.group,
+      group: componentGroupOf(def),
       icon: 'box',
       surfaces: surfaces.length > 0 ? surfaces : ['page'],
       tree: makeNode(systemType),

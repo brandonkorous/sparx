@@ -17,7 +17,11 @@
 import * as React from 'react';
 import {
   cardinalityOf,
+  isRawContainerType,
+  isRawElementType,
+  rawTagOf,
   resolvePath,
+  safeElementAttrs,
   type BuilderNode,
   type Cardinality,
   type DataSources,
@@ -115,13 +119,18 @@ function RenderNode({
    *  only — undefined when rendering a page tree, which has no Outlet). */
   outlet?: React.ReactNode;
 }): React.ReactNode {
-  const isContainer = CONTAINERS.has(node.type);
+  // A raw HTML element (docs/98 Pillar 1) renders AS its tag — a container wraps its
+  // walked children in that tag (not the default div), a leaf/void renders through
+  // renderLeaf. Either way the tag wears node.class on its own element.
+  const rawTag = rawTagOf(node.type);
+  const isContainer = CONTAINERS.has(node.type) || isRawContainerType(node.type);
   // docs/61: a presentational leaf carries node.class on its OWN element (its
   // Surface component / the Button recipe) via renderLeaf, so the renderer returns
   // it directly — no wrapper, no double-paint. Every other node gets ONE wrapper
   // div carrying node.class. Exactly one styled element per node. `leafWearsClass`
   // is the SHARED predicate the canvas uses too, so both agree where the class sits.
-  const leafStylesByClass = !isContainer && leafWearsClass(node.type);
+  const leafStylesByClass =
+    !isContainer && (leafWearsClass(node.type) || isRawElementType(node.type));
   const bound = Boolean(node.binding);
   const value = bound ? resolvePath(scope, node.binding!.path) : undefined;
   const card: Cardinality = bound ? cardinalityOf(value) : 'empty';
@@ -235,10 +244,18 @@ function RenderNode({
   }
 
   // A class-styled leaf already wears node.class on its own element → return it as
-  // is. Everything else gets one wrapper div carrying node.class (+ the dynamic
+  // is. A raw container renders AS its tag (carrying node.class + sanitized attrs).
+  // Everything else gets one wrapper div carrying node.class (+ the dynamic
   // background image, the only inline style left). The published page and the
   // editor canvas emit the same class, so preview == production.
   if (leafStylesByClass) return body;
+  if (rawTag) {
+    return React.createElement(
+      rawTag,
+      { className: cls(node.class), style: bgStyle, ...safeElementAttrs(node) },
+      body
+    );
+  }
   return (
     <div className={cls(node.class)} style={bgStyle} data-bx-type={node.type}>
       {body}

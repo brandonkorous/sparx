@@ -28,6 +28,9 @@ import {
   Images,
   LayoutGrid,
   LayoutTemplate,
+  Link,
+  List,
+  ListCollapse,
   Mail,
   MailX,
   MapPin,
@@ -40,7 +43,9 @@ import {
   PanelTop,
   Pilcrow,
   PlayCircle,
+  Quote,
   Rows3,
+  Shapes,
   Share2,
   ShoppingBag,
   ShoppingCart,
@@ -52,11 +57,23 @@ import {
   SunMoon,
   Table,
   Tag,
+  TextCursorInput,
   Type,
   type LucideIcon,
 } from 'lucide-react';
 
-import { readClassGroup, setClassGroup } from '@sparx/builder-schemas';
+import {
+  GLOBAL_ATTRS,
+  RAW_ELEMENTS,
+  isRawElementType,
+  rawElementType,
+  rawTagOf,
+  readClassGroup,
+  setClassGroup,
+  type AttrKey,
+  type RawElementGroup,
+  type RawElementMeta,
+} from '@sparx/builder-schemas';
 
 import {
   boxLayoutClass,
@@ -77,7 +94,7 @@ export type NodeKind = 'container' | 'leaf';
  *  agents; composites are also where canvas↔live render drift concentrates. */
 export type Composition = 'basic' | 'composite';
 export type ModuleKey = 'cms' | 'commerce' | 'crm' | 'events' | 'site';
-export type PaletteGroup = 'layout' | 'content' | 'data';
+export type PaletteGroup = 'layout' | 'content' | 'data' | 'elements';
 /** Which editor surface a component belongs to. `page` = the content outlet
  *  (per-record content); `site` = the layout shell (chrome zones); `email` = the
  *  Email Builder body (docs/52). Most primitives belong to page+site; the Outlet
@@ -1013,8 +1030,200 @@ for (const d of DEFS) {
 
 const BY_TYPE = new Map(DEFS.map((d) => [d.type, d]));
 
+// ── Raw HTML elements (docs/98 Pillar 1) ──────────────────────────────────────
+// A raw element's ComponentDef is SYNTHESIZED from its tag metadata in
+// @sparx/builder-schemas (the React-free allow-list), so the editor's metadata
+// plumbing — palette, inspector, retype, drop targets, makeNode — works for every
+// whitelisted tag with no per-tag boilerplate. The tag is encoded in `node.type`
+// (`el:div`), which all the type-string helpers below resolve.
+
+const RAW_GROUP_ICON: Record<RawElementGroup, LucideIcon> = {
+  structure: Square,
+  text: Type,
+  list: List,
+  media: ImageIcon,
+  table: Table,
+  form: TextCursorInput,
+  interactive: ListCollapse,
+};
+
+const RAW_TAG_ICON: Partial<Record<string, LucideIcon>> = {
+  section: LayoutTemplate,
+  nav: Menu,
+  header: PanelTop,
+  a: Link,
+  p: Pilcrow,
+  h1: HeadingIcon,
+  h2: HeadingIcon,
+  h3: HeadingIcon,
+  blockquote: Quote,
+  ul: List,
+  li: Minus,
+  img: ImageIcon,
+  svg: Shapes,
+  tr: Rows3,
+  button: MousePointerClick,
+  input: TextCursorInput,
+  label: Tag,
+  details: ListCollapse,
+  summary: ListCollapse,
+};
+
+function attrSwitchLabel(key: AttrKey): string {
+  const map: Partial<Record<AttrKey, string>> = {
+    controls: 'Show controls',
+    autoplay: 'Autoplay',
+    loop: 'Loop',
+    muted: 'Muted',
+    disabled: 'Disabled',
+    required: 'Required',
+    checked: 'Checked',
+    open: 'Open by default',
+  };
+  return map[key] ?? key;
+}
+
+// AttrKey → its inspector PropSpec. Text content is the separate `text` prop;
+// identity attrs (id/title/role) aren't surfaced as primary props.
+function attrPropSpec(key: AttrKey): PropSpec | null {
+  switch (key) {
+    case 'ariaLabel':
+      return { key, label: 'Accessible label', control: 'text' };
+    case 'href':
+      return { key, label: 'Link URL', control: 'text', placeholder: '/page or https://…' };
+    case 'target':
+      return {
+        key,
+        label: 'Opens in',
+        control: 'buttongroup',
+        options: [
+          { value: '', label: 'Same tab' },
+          { value: '_blank', label: 'New tab' },
+        ],
+      };
+    case 'src':
+      return { key, label: 'Source URL', control: 'text', placeholder: 'https://…' };
+    case 'srcset':
+      return { key, label: 'Source set', control: 'text' };
+    case 'alt':
+      return { key, label: 'Alt text', control: 'text', placeholder: 'Describe the image' };
+    case 'poster':
+      return { key, label: 'Poster URL', control: 'text' };
+    case 'type':
+      return { key, label: 'Type', control: 'text', placeholder: 'text, email, search…' };
+    case 'name':
+      return { key, label: 'Field name', control: 'text' };
+    case 'value':
+      return { key, label: 'Value', control: 'text' };
+    case 'placeholder':
+      return { key, label: 'Placeholder', control: 'text' };
+    case 'for':
+      return { key, label: 'For (field id)', control: 'text' };
+    case 'width':
+      return { key, label: 'Width', control: 'text' };
+    case 'height':
+      return { key, label: 'Height', control: 'text' };
+    case 'loading':
+      return {
+        key,
+        label: 'Loading',
+        control: 'buttongroup',
+        options: [
+          { value: 'lazy', label: 'Lazy' },
+          { value: 'eager', label: 'Eager' },
+        ],
+      };
+    case 'scope':
+      return {
+        key,
+        label: 'Scope',
+        control: 'buttongroup',
+        options: [
+          { value: 'col', label: 'Column' },
+          { value: 'row', label: 'Row' },
+        ],
+      };
+    case 'colspan':
+      return { key, label: 'Column span', control: 'text' };
+    case 'rowspan':
+      return { key, label: 'Row span', control: 'text' };
+    case 'datetime':
+      return { key, label: 'Date/time', control: 'text' };
+    case 'controls':
+    case 'autoplay':
+    case 'loop':
+    case 'muted':
+    case 'disabled':
+    case 'required':
+    case 'checked':
+    case 'open':
+      return { key, label: attrSwitchLabel(key), control: 'switch' };
+    default:
+      // SVG geometry/paint + the rest — plain text fields (advanced).
+      return { key, label: key, control: 'text' };
+  }
+}
+
+const TEXTAREA_TAGS = new Set(['p', 'blockquote', 'pre', 'code', 'td', 'th', 'caption', 'li']);
+
+function rawElementDef(type: string): ComponentDef {
+  const tag = rawTagOf(type)!;
+  const meta = RAW_ELEMENTS.get(tag) as RawElementMeta;
+  const props: PropSpec[] = [];
+  if (meta.text) {
+    props.push({
+      key: 'text',
+      label: 'Text',
+      control: TEXTAREA_TAGS.has(tag) ? 'textarea' : 'text',
+      placeholder: 'Type text…',
+    });
+  }
+  for (const key of meta.attrs ?? []) {
+    if (GLOBAL_ATTRS.includes(key)) continue;
+    const spec = attrPropSpec(key);
+    if (spec) props.push(spec);
+  }
+  const accepts: Cardinality[] = meta.void
+    ? []
+    : meta.kind === 'container'
+      ? ['array', 'object', 'empty']
+      : ['scalar'];
+  const def: ComponentDef = {
+    type,
+    label: meta.label,
+    kind: meta.kind,
+    group: 'elements',
+    icon: RAW_TAG_ICON[tag] ?? RAW_GROUP_ICON[meta.group],
+    bindable: !meta.void,
+    accepts,
+    props,
+    defaults: { props: meta.text ? { text: '' } : {} },
+  };
+  if (meta.acceptsChildren && meta.kind === 'leaf') def.acceptsChildren = true;
+  return def;
+}
+
+const rawDefCache = new Map<string, ComponentDef>();
+
+function getRawDef(type: string): ComponentDef {
+  let d = rawDefCache.get(type);
+  if (!d) {
+    d = rawElementDef(type);
+    rawDefCache.set(type, d);
+  }
+  return d;
+}
+
+/** The featured raw-element tiles for the Add palette (the common set; every other
+ *  whitelisted tag is reachable via the inspector's same-kind tag picker). */
+const RAW_ELEMENT_DEFS: ComponentDef[] = Array.from(RAW_ELEMENTS.entries())
+  .filter(([, meta]) => meta.featured)
+  .map(([tag]) => getRawDef(rawElementType(tag)));
+
 export function getDef(type: string): ComponentDef | undefined {
-  return BY_TYPE.get(type);
+  const hit = BY_TYPE.get(type);
+  if (hit) return hit;
+  return isRawElementType(type) ? getRawDef(type) : undefined;
 }
 
 /** The composition class of a node type (docs/23 §17) — `basic` for unknown
@@ -1065,6 +1274,14 @@ export function acceptsChildren(type: string): boolean {
 
 export const PALETTE: ComponentDef[] = DEFS;
 
+/** Map a palette group to a tenant-component group (docs/53). A saved component is
+ *  a higher-level unit, never the raw-`elements` category — a raw container maps to
+ *  `layout`, a raw leaf to `content`. */
+export function componentGroupOf(def: ComponentDef): 'layout' | 'content' | 'data' {
+  if (def.group !== 'elements') return def.group;
+  return def.kind === 'container' ? 'layout' : 'content';
+}
+
 /** The render-safe subset an EMAIL can compose from (docs/52 §4). Email is fixed-
  *  width and non-interactive, so the palette is OPT-IN: only these types appear,
  *  never the page/site default. Excludes site chrome (Outlet/NavMenu/Logo/Social),
@@ -1094,8 +1311,11 @@ const EMAIL_TYPES: ReadonlySet<string> = new Set([
  *  list the surface. Email is the exception — a curated allowlist (EMAIL_TYPES),
  *  never the omitted-surfaces default, so nothing leaks into an email by accident. */
 export function paletteForSurface(surface: EditorSurface): ComponentDef[] {
+  // Email is its own medium (docs/98 §3.6c) — curated allow-list, no raw HTML.
   if (surface === 'email') return DEFS.filter((d) => EMAIL_TYPES.has(d.type));
-  return DEFS.filter((d) => !d.surfaces || d.surfaces.includes(surface));
+  const named = DEFS.filter((d) => !d.surfaces || d.surfaces.includes(surface));
+  // Raw HTML elements (docs/98 Pillar 1) join the page + site palettes.
+  return [...named, ...RAW_ELEMENT_DEFS];
 }
 
 /** Build a fresh node from a palette entry. The entry's ergonomic box/layout
@@ -1104,10 +1324,14 @@ export function paletteForSurface(surface: EditorSurface): ComponentDef[] {
 export function makeNode(type: string): BuilderNode {
   const def = getDef(type);
   if (!def) throw new Error(`Unknown component type: ${type}`);
-  const cls = [boxLayoutClass(def.defaults.box, def.defaults.layout, type), def.defaults.class]
-    .filter(Boolean)
-    .join(' ')
-    .trim();
+  // Raw elements (docs/98) start unstyled — the inspector authors their class, with
+  // no box/layout seed. Named components compile their ergonomic box/layout defaults.
+  const cls = isRawElementType(type)
+    ? (def.defaults.class ?? '')
+    : [boxLayoutClass(def.defaults.box, def.defaults.layout, type), def.defaults.class]
+        .filter(Boolean)
+        .join(' ')
+        .trim();
   const out: BuilderNode = {
     id: makeId(type),
     type,
