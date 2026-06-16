@@ -98,6 +98,48 @@ describe('renderLeaf — email surface paints the email scale', () => {
     expect(html).toContain('View order');
     expect(html).not.toContain('st-btn');
   });
+
+  // Email v2 §3.6c — the canvas leaf compiles the email-safe subset of node.class to
+  // an inline style, so the editor preview matches the real send (which inlines the
+  // SAME subset via classStyleFor). These are the parity guards.
+  it('compiles a leaf class to inline styles (alignment + semantic color = the send)', () => {
+    const html = leaf(
+      {
+        type: 'Heading',
+        props: { level: 'h1', text: 'Big news' },
+        class: 'text-center text-success',
+      },
+      { surface: 'email' }
+    );
+    expect(html).toContain('text-align:center');
+    // `success` resolves to the fixed email hex — concrete + identical to the send.
+    expect(html).toContain('#16A34A');
+  });
+
+  it('resolves a brand-color class through the live canvas theme var', () => {
+    const html = leaf(
+      { type: 'Button', props: { label: 'View order' }, class: 'bg-base-200' },
+      { surface: 'email' }
+    );
+    // bg-base-200 → the canvas palette's `--st-*` var, so the preview tracks the theme
+    // exactly like the leaf's built-in colors (the documented brand-source behavior).
+    expect(html).toContain('var(--st-base-200');
+  });
+
+  it('drops web-only class tokens without corrupting the email leaf', () => {
+    const html = leaf(
+      {
+        type: 'Text',
+        props: { text: 'Body copy' },
+        class: 'text-lg hover:text-primary md:text-3xl flex',
+      },
+      { surface: 'email' }
+    );
+    // The base `text-lg` lands (18px); hover/responsive/flex siblings have no email
+    // analogue and are ignored — no leftover state markers.
+    expect(html).toContain('font-size:18px');
+    expect(html).not.toContain('hover');
+  });
 });
 
 describe('renderLeaf — edit placeholders keep empty nodes selectable; live renders empty', () => {
