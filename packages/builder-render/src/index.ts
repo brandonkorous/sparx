@@ -51,3 +51,21 @@ export type {
 
 // The canvas sample product (the commerce atoms' edit-mode fallback).
 export { SAMPLE_BUILDER_PRODUCT } from './sample-product';
+
+// The sanctioned behavior runtime (docs/98 Pillar 5) — the closed data-sx-* set,
+// the React hydration island both surfaces mount, and the node-props → attribute
+// lowering the walkers emit.
+export { BuilderBehaviors } from './behaviors/runtime-island';
+export {
+  hydrateBehaviors,
+  behaviorAttrs,
+  sxAttrs,
+  SX_ROLES,
+  BEHAVIOR_NAMES,
+  BEHAVIOR_DESCRIPTORS,
+  type BehaviorName,
+  type BehaviorContext,
+  type SxRole,
+  type BehaviorDescriptor,
+  type BehaviorParam,
+} from './behaviors';
