@@ -170,6 +170,8 @@ export interface BuilderEditor {
   onClass: (value: string) => void;
   onBind: (target: string | Binding | null) => void;
   onAdd: (type: string) => void;
+  /** Stamp a forked copy of a catalog component / archetype tree into the target. */
+  onStamp: (tree: BuilderNode) => void;
   /** Replace the node `id` with `next` (same position), selecting it. Used by
    *  "Save as component" to swap a subtree for a `custom:*` placement. */
   replaceNode: (id: string, next: BuilderNode) => void;
@@ -499,6 +501,18 @@ export function useBuilderEditor({
     setRailTab('layers');
   };
 
+  // Stamp a platform catalog component or brand-section archetype (docs/98 §5,
+  // docs/61 §6): fork a COPY of its tree (fresh, page-unique ids) into the active
+  // target. A one-time copy — the dropped nodes are ordinary, fully-editable nodes,
+  // not a live `custom:<key>` reference.
+  const onStamp = (tree: BuilderNode) => {
+    if (!target) return;
+    const child = cloneWithFreshIds(tree);
+    const targetId = target.id;
+    updateTree((t) => appendChild(t, targetId, child), { ids: [child.id], primary: child.id });
+    setRailTab('layers');
+  };
+
   // Swap the node `id` for `next` (same position) — "Save as component" replaces a
   // subtree with its `custom:*` placement. Selects the new node.
   const replaceNode = (id: string, next: BuilderNode) => {
@@ -777,6 +791,7 @@ export function useBuilderEditor({
     onClass,
     onBind,
     onAdd,
+    onStamp,
     replaceNode,
     onRemove,
     onMove,

@@ -23,224 +23,21 @@
 // draggable.
 
 import * as React from 'react';
-import {
-  Boxes,
-  ChevronDown,
-  ChevronRight,
-  ChevronsDownUp,
-  ChevronsUpDown,
-  Palette,
-  X,
-} from 'lucide-react';
-import {
-  DndContext,
-  MeasuringStrategy,
-  PointerSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-  type DragMoveEvent,
-  type DragOverEvent,
-  type DragStartEvent,
-} from '@dnd-kit/core';
-import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import { ChevronsDownUp, ChevronsUpDown, Palette } from 'lucide-react';
+import { DndContext } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { cn } from '@sparx/ui';
-import {
-  customKeyOf,
-  isCustomType,
-  type BindingCatalog,
-  type ComponentDto,
-} from '@sparx/builder-schemas';
+import type { BindingCatalog, ComponentDto } from '@sparx/builder-schemas';
 
 import { updateNode, type BuilderNode } from './model';
-import { NO_SCOPE, cardinalityForPath, moduleColor, moduleForPath } from './binding-catalog';
-import { acceptsChildren, getDef } from './registry';
-import {
-  ancestorIds,
-  collapsibleIds,
-  descendantIds,
-  flattenTree,
-  projectDrop,
-  type FlatNode,
-  type Projection,
-} from './layers-tree';
+import { LayerRow } from './layers-row';
+import { useLayerTree } from './use-layer-tree';
+import { descendantIds } from './layers-tree';
 import { findOutletId } from './studio-routing';
 import type { StudioSelection, StudioZone } from './use-studio-editor';
 import type { SelectMods } from './use-builder-editor';
 
-const INDENT = 16;
 const COLLAPSE_STORE = 'sparx.builder.studio.layers.collapsed.v1:';
-
-function loadCollapsed(treeId: string): string[] | null {
-  try {
-    const raw = window.localStorage.getItem(COLLAPSE_STORE + treeId);
-    if (!raw) return null;
-    const arr: unknown = JSON.parse(raw);
-    return Array.isArray(arr) ? arr.filter((x): x is string => typeof x === 'string') : null;
-  } catch {
-    return null;
-  }
-}
-
-function saveCollapsed(treeId: string, ids: ReadonlySet<string>): void {
-  try {
-    window.localStorage.setItem(COLLAPSE_STORE + treeId, JSON.stringify([...ids]));
-  } catch {
-    /* private mode / quota — collapse state is a nicety */
-  }
-}
-
-function bindMeta(
-  node: BuilderNode,
-  catalog: BindingCatalog
-): { path: string; color: string; repeats: boolean } | null {
-  const b = node.binding;
-  if (!b) return null;
-  // Entity / collection / action bindings (docs/98 Pillar 7) carry no field path —
-  // show a friendly summary; a collection source repeats (↻).
-  if (!b.path) {
-    const label = b.action
-      ? `action · ${b.action}`
-      : b.source
-        ? `repeat · ${b.source.from === 'all' ? 'all products' : b.source.from}`
-        : b.entity
-          ? `${b.entity} · ${b.label ?? b.id ?? ''}`
-          : '';
-    return {
-      path: label,
-      color: moduleColor(b.entity === 'cms' ? 'cms' : 'commerce'),
-      repeats: Boolean(b.source),
-    };
-  }
-  const path = b.path;
-  const color = moduleColor(moduleForPath(catalog, path));
-  const repeats = path.startsWith('item')
-    ? false
-    : cardinalityForPath(catalog, NO_SCOPE, path) === 'array';
-  return { path, color, repeats };
-}
-
-function Row({
-  flat,
-  zone,
-  catalog,
-  components,
-  selected,
-  multi,
-  collapsed,
-  draggable,
-  dragDepth,
-  onSelect,
-  onRemove,
-  onToggle,
-}: {
-  flat: FlatNode;
-  zone: 'layout' | 'page';
-  catalog: BindingCatalog;
-  components?: ReadonlyMap<string, ComponentDto>;
-  selected: boolean;
-  /** Part of a multi-selection but not the primary (docs/builder/05 §2.2). */
-  multi: boolean;
-  collapsed: boolean;
-  draggable: boolean;
-  dragDepth: number;
-  onSelect: (id: string, mods?: SelectMods) => void;
-  onRemove: (id: string) => void;
-  onToggle: (id: string) => void;
-}) {
-  const { node } = flat;
-  const def = getDef(node.type);
-  const custom = isCustomType(node.type);
-  const pinned = Boolean(def?.pinned);
-  const canDrag = draggable && !pinned;
-  const sortable = useSortable({ id: node.id, disabled: !canDrag });
-  if (!def && !custom) return null;
-  const customComp = custom ? components?.get(customKeyOf(node.type) ?? '') : undefined;
-  const Icon = def?.icon ?? Boxes;
-  const label = node.name ?? def?.label ?? customComp?.name ?? customKeyOf(node.type) ?? node.type;
-  const bind = def ? bindMeta(node, catalog) : null;
-  const hasCaret = !!def && acceptsChildren(node.type) && (node.children?.length ?? 0) > 0;
-
-  const style: React.CSSProperties = {
-    paddingLeft: 8 + dragDepth * INDENT,
-    transform: CSS.Translate.toString(sortable.transform),
-    transition: sortable.transition,
-  };
-
-  return (
-    <div
-      {...(canDrag ? sortable.attributes : {})}
-      {...(canDrag ? (sortable.listeners ?? {}) : {})}
-      className={cn(
-        'bx-layer',
-        canDrag && 'bx-layer--draggable',
-        selected && 'bx-layer--on',
-        multi && 'bx-layer--multi',
-        sortable.isDragging && 'bx-layer--dragging'
-      )}
-      style={style}
-      data-layer-id={node.id}
-      data-zone={zone}
-      role="button"
-      tabIndex={0}
-      aria-pressed={selected}
-      onClick={(e) => onSelect(node.id, { additive: e.metaKey || e.ctrlKey, range: e.shiftKey })}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onSelect(node.id);
-        }
-      }}
-    >
-      {hasCaret ? (
-        <button
-          type="button"
-          className="bx-layer__caret"
-          aria-label={collapsed ? 'Expand' : 'Collapse'}
-          aria-expanded={!collapsed}
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggle(node.id);
-          }}
-        >
-          {collapsed ? <ChevronRight aria-hidden /> : <ChevronDown aria-hidden />}
-        </button>
-      ) : (
-        <span className="bx-layer__caret bx-layer__caret--spacer" aria-hidden />
-      )}
-      <Icon className="bx-layer__icon" aria-hidden />
-      <span className="bx-layer__name">{label}</span>
-      <span className="bx-layer__zone" data-zone={zone} aria-hidden>
-        {zone === 'page' ? 'Page' : 'Layout'}
-      </span>
-      {custom ? <span className="bx-layer__component">component</span> : null}
-      {bind ? (
-        <span className="bx-layer__chip" style={{ color: bind.color }}>
-          <span className="bx-layer__dot" style={{ background: bind.color }} />
-          {bind.path}
-        </span>
-      ) : null}
-      {bind?.repeats ? <span className="bx-layer__repeat">↻</span> : null}
-      {canDrag ? (
-        <button
-          type="button"
-          className="bx-layer__remove"
-          aria-label="Remove layer"
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation();
-            onRemove(node.id);
-          }}
-        >
-          <X aria-hidden />
-        </button>
-      ) : null}
-    </div>
-  );
-}
 
 export function StudioLayers({
   layoutTree,
@@ -300,106 +97,31 @@ export function StudioLayers({
     [layoutTree.id, pageTree]
   );
 
-  const [collapsed, setCollapsed] = React.useState<ReadonlySet<string>>(
-    () => new Set(collapsibleIds(composed))
-  );
-  const composedRef = React.useRef(composed);
-  composedRef.current = composed;
-  const collapsedRef = React.useRef(collapsed);
-  collapsedRef.current = collapsed;
-  const layersRef = React.useRef<HTMLDivElement>(null);
-
-  const [activeId, setActiveId] = React.useState<string | null>(null);
-  const [overId, setOverId] = React.useState<string | null>(null);
-  const [offsetX, setOffsetX] = React.useState(0);
-
-  const dndId = React.useId();
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }));
-
   const selectedId = selection.zone === 'theme' ? null : selection.id;
 
-  const commit = React.useCallback((next: ReadonlySet<string>) => {
-    setCollapsed(next);
-    saveCollapsed(composedRef.current.id, next);
-  }, []);
-
-  // Restore collapse state on mount + when the layout root changes (a different
-  // site). Keyed on the composed root (the layout) — the page graft rides along.
-  React.useEffect(() => {
-    const saved = loadCollapsed(layoutTree.id);
-    setCollapsed(saved ? new Set(saved) : new Set(collapsibleIds(composedRef.current)));
-  }, [layoutTree.id]);
-
-  // Reveal + scroll the selected row (select→reveal, both directions).
-  React.useEffect(() => {
-    if (!selectedId) return;
-    const trail = ancestorIds(composedRef.current, selectedId);
-    if (trail.some((id) => collapsedRef.current.has(id))) {
-      const next = new Set(collapsedRef.current);
-      for (const id of trail) next.delete(id);
-      commit(next);
-    }
-  }, [selectedId, commit]);
-
-  React.useEffect(() => {
-    if (!selectedId) return;
-    const el = layersRef.current?.querySelector(
-      `[data-layer-id="${window.CSS.escape(selectedId)}"]`
-    );
-    el?.scrollIntoView({ block: 'nearest' });
-  }, [selectedId, collapsed]);
-
-  const toggle = React.useCallback(
-    (id: string) => {
-      const next = new Set(collapsedRef.current);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      commit(next);
-    },
-    [commit]
-  );
-
-  const expandAll = () => commit(new Set());
-  const collapseAll = () => commit(new Set(collapsibleIds(composedRef.current)));
-
-  const flat = React.useMemo(() => {
-    if (!activeId) return flattenTree(composed, collapsed);
-    const withActive = new Set(collapsed);
-    withActive.add(activeId);
-    return flattenTree(composed, withActive);
-  }, [composed, collapsed, activeId]);
-
-  const rowIds = React.useMemo(() => flat.map((f) => f.node.id), [flat]);
-
-  const projection: Projection | null =
-    activeId && overId ? projectDrop(flat, activeId, overId, offsetX, INDENT) : null;
-
-  const resetDrag = () => {
-    setActiveId(null);
-    setOverId(null);
-    setOffsetX(0);
-  };
-
-  const onDragStart = (e: DragStartEvent) => {
-    setActiveId(String(e.active.id));
-    setOverId(String(e.active.id));
-    setOffsetX(0);
-  };
-  const onDragMove = (e: DragMoveEvent) => setOffsetX(e.delta.x);
-  const onDragOver = (e: DragOverEvent) => setOverId(e.over ? String(e.over.id) : null);
-  const onDragEnd = (e: DragEndEvent) => {
-    const active = String(e.active.id);
-    const over = e.over ? String(e.over.id) : null;
-    if (over) {
-      const proj = projectDrop(flat, active, over, e.delta.x, INDENT);
-      // Zone gate: only commit a move that stays inside the dragged node's zone, so
-      // nothing crosses the Outlet boundary (the studio router would reject it as a
-      // mis-routed save anyway — this keeps the drop indicator honest).
-      if (proj && zoneOf(active) === zoneOf(proj.parentId))
-        onMove(active, proj.parentId, proj.index);
-    }
-    resetDrag();
-  };
+  // Collapse + flat + dnd + select→reveal, SHARED with the per-surface LayersPanel
+  // via useLayerTree (over the COMPOSED tree). The studio's one extra rule lives in
+  // `validateMove`: a drop is committed only when it stays inside the dragged node's
+  // zone, so nothing crosses the Outlet boundary (the studio router would reject a
+  // mis-routed save anyway — this keeps the drop indicator honest).
+  const {
+    collapsed,
+    toggle,
+    expandAll,
+    collapseAll,
+    flat,
+    rowIds,
+    activeId,
+    projection,
+    layersRef,
+    dndContextProps,
+  } = useLayerTree({
+    tree: composed,
+    collapseStore: COLLAPSE_STORE,
+    selectedId,
+    onMove,
+    validateMove: (active, parentId) => zoneOf(active) === zoneOf(parentId),
+  });
 
   return (
     <div className="bx-layers" ref={layersRef}>
@@ -427,17 +149,7 @@ export function StudioLayers({
           Brand
         </span>
       </button>
-      <DndContext
-        id={dndId}
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
-        onDragStart={onDragStart}
-        onDragMove={onDragMove}
-        onDragOver={onDragOver}
-        onDragEnd={onDragEnd}
-        onDragCancel={resetDrag}
-      >
+      <DndContext {...dndContextProps}>
         <SortableContext items={rowIds} strategy={verticalListSortingStrategy}>
           {flat.map((f) => {
             const zone = zoneOf(f.node.id);
@@ -452,7 +164,7 @@ export function StudioLayers({
                   ? pageLabel
                   : null;
             return (
-              <Row
+              <LayerRow
                 key={f.node.id}
                 flat={labelOverride ? { ...f, node: { ...f.node, name: labelOverride } } : f}
                 zone={zone}

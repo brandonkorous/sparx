@@ -785,6 +785,11 @@ const DEFS: ComponentDef[] = [
     group: 'layout',
     icon: SquareDashed,
     bindable: false,
+    // The single structural invariant of a layout (docs/98 §3.7): the content box
+    // where each routed page renders. `pinned` makes it un-deletable + un-draggable
+    // (its layers Remove affordance hidden), so a layout always has exactly one
+    // Outlet — everything else (header/footer/sidebars) is freely author-composed.
+    pinned: true,
     accepts: [],
     surfaces: ['site'],
     props: [],

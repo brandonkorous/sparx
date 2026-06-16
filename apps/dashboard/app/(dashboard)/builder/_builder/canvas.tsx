@@ -1291,13 +1291,19 @@ export function Canvas({
   );
   const drag = useCanvasDrag(dragRoots, onMove, scrollRef);
 
-  // Scroll the selected node into view (the preview side of select→reveal — e.g.
-  // selecting a layer in the tree). `nearest` makes it a no-op when the node is
-  // already visible, so clicking a node in the canvas never makes it jump.
+  // Scroll the selected node into view (the canvas side of select→reveal — e.g.
+  // selecting a layer in the tree scrolls the canvas to its node). The `.bx-node`
+  // wrapper that carries `data-node-id` is `display:contents` (it must not affect
+  // layout — see CanvasNode), so it has NO box of its own and `scrollIntoView` on
+  // it silently no-ops. Walk down to the first descendant that actually paints a
+  // box (its `.bx-inner` content) and scroll THAT. `nearest` keeps it from jumping
+  // when the node is already on-screen, so a plain canvas click never scrolls.
   React.useEffect(() => {
     if (!selectedId) return;
-    const el = scrollRef.current?.querySelector(`[data-node-id="${CSS.escape(selectedId)}"]`);
-    el?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    const node = scrollRef.current?.querySelector(`[data-node-id="${CSS.escape(selectedId)}"]`);
+    let target: Element | null = node ?? null;
+    while (target?.getClientRects().length === 0) target = target.firstElementChild;
+    (target ?? node)?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   }, [selectedId]);
   // Email preview sample data (docs/93): the real tenant identity merged over the
   // generic placeholders, so `{{tenant.name}}` reads the store's real name in the

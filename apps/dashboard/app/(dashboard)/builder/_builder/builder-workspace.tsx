@@ -331,6 +331,7 @@ export function BuilderWorkspace({
               <AddPalette
                 targetName={editor.targetName}
                 onAdd={editor.onAdd}
+                onStamp={editor.onStamp}
                 surface={surface}
                 customComponents={components ? [...components.values()] : undefined}
               />

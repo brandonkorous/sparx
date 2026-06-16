@@ -20,7 +20,6 @@ import {
   listLayouts,
   listPages,
 } from '../_lib/api';
-import { loadEmailSurfaceData } from '../_lib/email-surface-data';
 import type { BrandDto, SiteConfigDto, SiteDto, SitePreviewConfig } from '../_brand/lib/types';
 import { StudioApp } from '../_builder/studio-app';
 import '../builder.css';
@@ -29,13 +28,14 @@ import '../builder.css';
 import '@sparx/site-ui/styles.canvas.css';
 
 // /builder/studio — the UNIFIED builder shell (docs/builder/03): one editor whose
-// canvas is the live stack (brand theme › site layout › active page at the Outlet),
-// with the Email sibling surface alongside. It composes the data the three former
-// routes each loaded on their own — the page/site catalog + binding sources, the
-// brand/theme bundle, and the email surface — into one studio. The Phase-7 cutover
-// (docs/builder/07) made this THE builder editor: /builder/page · /site · /brand
-// redirect here (to the matching zone via `?zone=` / `?page=`); /builder/email is
-// kept as a sibling route. `?page=<id>` opens that page in the Outlet on mount.
+// canvas is the live stack (brand theme › site layout › active page at the Outlet).
+// It composes the data the three former routes each loaded on their own — the
+// page/site catalog + binding sources and the brand/theme bundle — into one studio.
+// The Phase-7 cutover (docs/builder/07) made this THE site editor: /builder/page ·
+// /site · /brand redirect here (to the matching zone via `?zone=` / `?page=`).
+// EMAIL is a different medium and lives on its own route, /builder/email (reached
+// from the sidebar) — NOT a surface of this studio. `?page=<id>` opens that page in
+// the Outlet on mount.
 
 export const metadata: Metadata = {
   title: 'Builder · Studio',
@@ -99,7 +99,6 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
     pageCatalog,
     components,
     archetypes,
-    email,
   ] = await Promise.all([
     searchParams,
     getBrand(),
@@ -112,7 +111,6 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
     loadCatalog(),
     listComponentsFull(),
     listArchetypes(),
-    loadEmailSurfaceData(),
   ]);
 
   const initialPageId = typeof sp.page === 'string' ? sp.page : undefined;
@@ -161,10 +159,6 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
   return (
     <>
       {themeCss ? <style dangerouslySetInnerHTML={{ __html: themeCss }} /> : null}
-      {/* The email-brand override (docs/93) — wins on the Email surface's canvas. */}
-      {email.kind === 'ok' && email.emailBrandCss ? (
-        <style dangerouslySetInnerHTML={{ __html: email.emailBrandCss }} />
-      ) : null}
       {/* Key on the active site id so switching sites (the breadcrumb switcher does a
           soft router.refresh()) REMOUNTS the studio with the new site's identity —
           its layouts, pages, AND the Theme form. Without it, the client useState
@@ -194,7 +188,6 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
             sitePreview: sitePreviewConfig,
           },
         }}
-        email={email.kind === 'ok' ? email.props : null}
       />
     </>
   );
