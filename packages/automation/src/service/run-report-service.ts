@@ -297,3 +297,60 @@ export async function reconcileRunsRollup(
     };
   });
 }
+
+// ─── Per-automation overview (docs/97) ───────────────────────────────────────
+// Every automation the tenant owns, enriched with its trailing-window run count
+// + success rate — the AI overview's "Automations & agents" table. `listAutoma-
+// tions` returns definitions only (no run stats), so this one groups
+// automation_runs by (automationId, status) over the window and merges. A single
+// groupBy, not N per-automation queries.
+export interface AutomationOverviewRow {
+  id: string;
+  name: string;
+  triggerType: string;
+  status: string;
+  runs: number;
+  successRate: number | null;
+}
+
+export async function automationsOverview(
+  ctx: ServiceCtx,
+  opts?: { sinceDays?: number }
+): Promise<AutomationOverviewRow[]> {
+  const sinceDays = Math.max(1, opts?.sinceDays ?? 30);
+  const since = addUtcDays(startOfUtcDay(new Date()), -(sinceDays - 1));
+
+  return withTenant({ tenantId: ctx.tenantId }, async (tx) => {
+    const [automations, grouped] = await Promise.all([
+      tx.automation.findMany({
+        orderBy: { updatedAt: 'desc' },
+        select: { id: true, name: true, triggerType: true, status: true },
+      }),
+      tx.automationRun.groupBy({
+        by: ['automationId', 'status'],
+        where: { startedAt: { gte: since } },
+        _count: { _all: true },
+      }),
+    ]);
+
+    const statById = new Map<string, { runs: number; completed: number }>();
+    for (const g of grouped) {
+      const s = statById.get(g.automationId) ?? { runs: 0, completed: 0 };
+      s.runs += g._count._all;
+      if (g.status === 'completed') s.completed += g._count._all;
+      statById.set(g.automationId, s);
+    }
+
+    return automations.map((a) => {
+      const s = statById.get(a.id);
+      return {
+        id: a.id,
+        name: a.name,
+        triggerType: a.triggerType,
+        status: a.status,
+        runs: s?.runs ?? 0,
+        successRate: s && s.runs > 0 ? +(s.completed / s.runs).toFixed(4) : null,
+      };
+    });
+  });
+}

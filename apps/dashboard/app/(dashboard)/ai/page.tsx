@@ -72,10 +72,12 @@ import {
 // from real usage, each liveOr-falling back to a badged sample until the tenant
 // has MCP traffic. What we genuinely can't see is the client-side LLM spend
 // (the agent's model/token/cost lives in the caller's LLM account, never ours),
-// so the token/cost/model-mix card stays sample (workload B). The approval
-// queue, connected-surfaces permissions, and the automations table are sample
-// until their own capture/endpoints land. Rose is the module identity (from the
-// AI <ModuleProvider> in layout.tsx); warm semantic colors keep their meaning.
+// so the token/cost/model-mix card stays sample (workload B). The "Automations &
+// agents" table is LIVE from `/v1/automations/reports/summary` (each automation +
+// its 30d run count / success rate). The approval queue + connected-surfaces
+// permissions stay sample until their own capture lands. Rose is the module
+// identity (from the AI <ModuleProvider> in layout.tsx); warm semantic colors
+// keep their meaning.
 
 export const dynamic = 'force-dynamic';
 
@@ -108,6 +110,25 @@ interface AiActivityItem {
   outcome: string;
   createdAt: string;
 }
+// /v1/automations/reports/summary — every automation + its 30d run stats.
+interface AutomationSummary {
+  id: string;
+  name: string;
+  triggerType: string;
+  status: string;
+  runs: number;
+  successRate: number | null;
+}
+// The normalized row the "Automations & agents" table renders (live + sample).
+interface AutomationRow {
+  key: string;
+  name: string;
+  trigger: string;
+  runs: string;
+  success: string;
+  statusLabel: string;
+  paused: boolean;
+}
 
 // The normalized timeline entry — shared by live activity + the sample fallback.
 interface ActivityEntry {
@@ -123,6 +144,12 @@ const TOOL_DONUT_COLORS = [
   'var(--color-bg-muted)',
   '#fda4af',
 ];
+
+// "order.created" → "Order created" for the trigger column.
+function humanizeTrigger(triggerType: string): string {
+  const s = triggerType.replace(/[._]/g, ' ').trim();
+  return s.length > 0 ? s.charAt(0).toUpperCase() + s.slice(1) : triggerType;
+}
 
 // Compact relative time for the activity feed (server-rendered).
 function timeAgo(iso: string, nowMs: number): string {
@@ -222,11 +249,12 @@ export default async function AiPage() {
   await requireSession();
 
   const nowMs = Date.now();
-  const [summary, timeseries, topTools, activity] = await Promise.all([
+  const [summary, timeseries, topTools, activity, automations] = await Promise.all([
     api.get<AiSummary>('/v1/ai/reports/summary').catch(() => null),
     api.get<AiTimeseries>('/v1/ai/reports/timeseries?grain=day').catch(() => null),
     api.get<AiTopTool[]>('/v1/ai/reports/top-tools?limit=6').catch(() => null),
     api.get<AiActivityItem[]>('/v1/ai/reports/activity?limit=6').catch(() => null),
+    api.get<AutomationSummary[]>('/v1/automations/reports/summary').catch(() => null),
   ]);
 
   // KPI + MCP-card values — live from the summary, else the sample figure.
@@ -292,6 +320,30 @@ export default async function AiPage() {
       : null,
     SAMPLE_ACTIVITY
   );
+
+  // Automations table — live list + 30d run stats, else the badged sample.
+  const automationRows: AutomationRow[] | null =
+    automations && automations.length > 0
+      ? automations.map((a) => ({
+          key: a.id,
+          name: a.name,
+          trigger: humanizeTrigger(a.triggerType),
+          runs: fmtNumber(a.runs),
+          success: a.successRate != null ? fmtPercentRatio(a.successRate, 0) : '—',
+          statusLabel: a.status.charAt(0).toUpperCase() + a.status.slice(1),
+          paused: a.status !== 'active',
+        }))
+      : null;
+  const SAMPLE_AUTOMATION_ROWS: AutomationRow[] = SAMPLE_AUTOMATIONS.map((a, i) => ({
+    key: `sa${i}`,
+    name: a.name,
+    trigger: a.trigger,
+    runs: a.runs,
+    success: a.success,
+    statusLabel: a.status,
+    paused: a.paused,
+  }));
+  const automationsTable = liveOr<AutomationRow[]>(automationRows, SAMPLE_AUTOMATION_ROWS);
 
   return (
     <Container size="xl">
@@ -491,8 +543,8 @@ export default async function AiPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {SAMPLE_AUTOMATIONS.map((a) => (
-                  <TableRow key={a.name}>
+                {automationsTable.data.map((a) => (
+                  <TableRow key={a.key}>
                     <TableCell className="font-medium">{a.name}</TableCell>
                     <TableCell className="text-[var(--color-text-tertiary)]">{a.trigger}</TableCell>
                     <TableCell className="text-right tabular-nums">{a.runs}</TableCell>
@@ -501,12 +553,12 @@ export default async function AiPage() {
                       {a.paused ? (
                         <Badge color="neutral" variant="soft">
                           <Pause className="mr-1 h-3 w-3" />
-                          {a.status}
+                          {a.statusLabel}
                         </Badge>
                       ) : (
                         <Badge color="success" variant="soft">
                           <StatusDot color="success" className="mr-1" />
-                          {a.status}
+                          {a.statusLabel}
                         </Badge>
                       )}
                     </TableCell>
@@ -514,9 +566,11 @@ export default async function AiPage() {
                 ))}
               </TableBody>
             </Table>
-            <div className="mt-3">
-              <SampleBadge />
-            </div>
+            {automationsTable.isSample && (
+              <div className="mt-3">
+                <SampleBadge reason="no-data" />
+              </div>
+            )}
           </OverviewCard>
 
           <OverviewCard

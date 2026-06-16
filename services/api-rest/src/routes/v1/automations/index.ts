@@ -28,6 +28,7 @@ import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import {
   AutomationNotFoundError,
+  automationsOverview,
   cloneAutomation,
   createAutomation,
   deleteAutomation,
@@ -118,6 +119,13 @@ const automationRoutes: FastifyPluginAsync = (app) => {
     const q = RunsTimeseriesQuery.parse(request.query);
     const range = resolveRange(q);
     return ok(await runsTimeseries(ctx, { range, ...(q.grain ? { grain: q.grain } : {}) }));
+  });
+
+  // Every automation + its trailing-window run count / success rate (docs/97 §5)
+  // — the AI overview's "Automations & agents" table. Static segment, viewer-read.
+  app.get('/v1/automations/reports/summary', async (request) => {
+    const ctx = ctxFor(request, 'viewer');
+    return ok(await automationsOverview(ctx, { sinceDays: 30 }));
   });
 
   app.get('/v1/automations/:id', async (request) => {

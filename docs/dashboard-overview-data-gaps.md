@@ -124,7 +124,8 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 
 - ✅ MCP usage (requests, success rate, distinct tools), the activity chart, top tools, API-key counts, automation runs, the combined "AI actions" total, and the recent-activity feed — `GET /v1/ai/reports/{summary,timeseries,top-tools,activity}` (shipped 2026-06-15). **No new capture needed**: every MCP tool call already lands in `audit_logs` (`entity_type='McpToolCall'`, `action='mcp.<tool>'`, `diff={input,outcome}` — services/api-mcp/src/audit.ts), so the whole MCP surface is a LIVE aggregate over that table. AI-module-gated (`lib/ai-context.ts`), viewer-read, tenant-scoped. Each tile `liveOr`-falls back to a badged sample until the tenant has MCP traffic
 - 🔴 Tokens / cost / model-mix — **not ours to capture**: the agent's LLM spend (model, tokens, $) lives in the _caller's_ LLM account, never on our MCP server. The "Usage & cost" card stays sample (workload B) unless/until a first-party copilot with server-side LLM calls ships
-- 🔴 Connected-surfaces permissions, approval queue, the automations table — sample until their own capture/endpoints land (automations have `/v1/automations`, not yet wired onto this overview)
+- ✅ **Automations & agents table** — `GET /v1/automations/reports/summary` (shipped 2026-06-15): every automation the tenant owns + its 30d run count and success rate (one `automation_runs` groupBy merged with the automation list, not N per-automation queries), `liveOr`-falling back to a badged sample. Built on the existing `/v1/automations` engine.
+- 🔴 Connected-surfaces permissions + approval queue — sample until their own capture/endpoints land
 
 ### Dropship — Emerald
 

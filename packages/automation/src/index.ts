@@ -91,8 +91,10 @@ export {
   type ListRunsFilter,
 } from './service/run-service';
 export {
+  automationsOverview,
   reconcileRunsRollup,
   runsTimeseries,
+  type AutomationOverviewRow,
   type DateRange as RunsDateRange,
   type RollupGrain as RunsRollupGrain,
   type RunsRollupReconcileResult,
