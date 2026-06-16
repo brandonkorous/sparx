@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The AI workspace that works for you. | Notion</title>
+    <meta
+      name="description"
+      content="Mockup replica of the Notion.com homepage — built with Tailwind CSS for design reference only. Not affiliated with Notion Labs, Inc."
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+              serif: ['Georgia', 'ui-serif', 'serif'],
+            },
+            colors: {
+              ink: '#191918', // Notion marketing near-black
+              body: '#37352F',
+              muted: '#73726E',
+              faint: '#9B9A97',
+              cream: '#F6F5F3',
+              line: '#EAE9E5',
+              brand: '#2383E2',
+              // solid bento palette pulled from the live cards
+              btnyellow: '#FFC93C',
+              btncoral: '#EF6F5C',
+              btnblue: '#5C97E8',
+              btnteal: '#1F9E8F',
+              btnbrown: '#A9744F',
+              btnnavy: '#211F33',
+              shiplime: '#C8F2C2',
+            },
+            boxShadow: {
+              soft: '0 18px 50px -18px rgba(15,15,15,0.22), 0 2px 8px rgba(15,15,15,0.04)',
+              card: '0 1px 2px rgba(15,15,15,0.05), 0 8px 20px -10px rgba(15,15,15,0.10)',
+            },
+          },
+        },
+      };
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        letter-spacing: -0.012em;
+        color: #37352f;
+      }
+      .display {
+        letter-spacing: -0.035em;
+        line-height: 1.02;
+        color: #191918;
+      }
+
+      /* ---- buttons ---- */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        height: 42px;
+        padding: 0 16px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 500;
+        transition:
+          background-color 0.16s ease,
+          border-color 0.16s ease,
+          transform 0.08s ease;
+      }
+      .btn:active {
+        transform: translateY(1px);
+      }
+      .btn-blue {
+        background: #2383e2;
+        color: #fff;
+      }
+      .btn-blue:hover {
+        background: #1a76d1;
+      }
+      .btn-ghost {
+        background: #fff;
+        color: #191918;
+        border: 1px solid rgba(15, 15, 15, 0.18);
+      }
+      .btn-ghost:hover {
+        background: #f6f5f3;
+      }
+
+      .nav-link {
+        color: #37352f;
+        font-weight: 500;
+        font-size: 15px;
+        padding: 6px 9px;
+        border-radius: 8px;
+        transition: background-color 0.15s ease;
+        white-space: nowrap;
+      }
+      .nav-link:hover {
+        background: #efefec;
+      }
+
+      #hdr {
+        transition:
+          box-shadow 0.2s ease,
+          background-color 0.2s ease,
+          border-color 0.2s ease;
+        border-bottom: 1px solid transparent;
+        background: #fff;
+      }
+      #hdr.scrolled {
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: saturate(180%) blur(12px);
+        border-bottom-color: #eae9e5;
+      }
+
+      /* circular arrow / play button used across the bento cards */
+      .pill-btn {
+        display: inline-grid;
+        place-items: center;
+        height: 34px;
+        width: 34px;
+        border-radius: 9999px;
+        background: #191918;
+        color: #fff;
+        flex: none;
+      }
+      .pill-btn svg {
+        height: 16px;
+        width: 16px;
+      }
+
+      .marquee {
+        mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+      }
+      .marquee-track {
+        animation: scrollx 34s linear infinite;
+      }
+      @keyframes scrollx {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .marquee-track { animation: none; }
+      }
+      .skel { background: rgba(255, 255, 255, 0.65); border-radius: 5px; }
+    </style>
+  </head>
+
+  <body class="bg-white">
+    <!-- ================= HEADER ================= -->
+    <header id="hdr" class="sticky top-0 z-50 w-full">
+      <div class="mx-auto flex h-16 max-w-[1240px] items-center justify-between px-4 sm:px-6">
+        <div class="flex items-center gap-1.5 xl:gap-3">
+          <a href="#top" class="mr-1 flex items-center gap-1.5">
+            <span class="grid h-7 w-7 place-items-center rounded-md bg-[#191918] text-base font-bold text-white">N</span>
+            <span class="text-[20px] font-semibold tracking-tight text-ink">Notion</span>
+          </a>
+          <nav class="hidden items-center xl:flex">
+            <a href="#features" class="nav-link inline-flex items-center gap-1">Product <svg class="h-3.5 w-3.5 text-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></a>
+            <a href="#agents" class="nav-link inline-flex items-center gap-1">AI <svg class="h-3.5 w-3.5 text-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></a>
+            <a href="#" class="nav-link inline-flex items-center gap-1">Solutions <svg class="h-3.5 w-3.5 text-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></a>
+            <a href="#" class="nav-link inline-flex items-center gap-1">Resources <svg class="h-3.5 w-3.5 text-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></a>
+            <a href="#" class="nav-link">Developers</a>
+            <a href="#" class="nav-link">Enterprise</a>
+            <a href="#" class="nav-link">Pricing</a>
+            <a href="#" class="nav-link">Request a demo</a>
+          </nav>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <a href="#" class="nav-link hidden sm:inline-flex">Log in</a>
+          <a href="#cta" class="btn btn-blue h-9 px-3.5 text-sm">Get Notion free</a>
+          <button class="nav-link xl:hidden" aria-label="Open menu">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- ================= HERO ================= -->
+      <section class="bg-white">
+        <div class="mx-auto max-w-5xl px-6 pb-8 pt-12 text-center sm:pt-16">
+          <!-- avatar + agent cluster -->
+          <div class="mb-7 flex items-center justify-center -space-x-2">
+            <span class="grid h-11 w-11 place-items-center rounded-full bg-[#DDEBF1] text-xl ring-4 ring-white">🧑‍💻</span>
+            <span class="grid h-11 w-11 place-items-center rounded-full bg-[#FBECDD] text-xl ring-4 ring-white">👩‍🎨</span>
+            <span class="grid h-11 w-11 place-items-center rounded-full bg-[#211F33] text-lg text-white ring-4 ring-white">✨</span>
+            <span class="grid h-11 w-11 place-items-center rounded-full bg-[#DDEDEA] text-xl ring-4 ring-white">🧑‍🚀</span>
+            <span class="grid h-11 w-11 place-items-center rounded-full bg-[#5C97E8] text-lg text-white ring-4 ring-white">🤖</span>
+            <span class="grid h-11 w-11 place-items-center rounded-full bg-[#E9E5F8] text-xl ring-4 ring-white">🧑‍🔧</span>
+          </div>
+
+          <h1 class="display mx-auto max-w-3xl text-[44px] font-bold sm:text-6xl lg:text-[68px]">
+            Where teams and agents
+            <span class="relative mx-1 inline-flex items-center gap-2 rounded-2xl bg-shiplime px-4 py-0.5 align-middle">
+              <span class="h-2.5 w-2.5 rounded-full bg-[#2E9E4F]"></span>
+              <span class="text-[#1E7A38]">Ship</span>
+            </span>
+            together.
+          </h1>
+
+          <p class="mx-auto mt-6 max-w-xl text-lg text-muted sm:text-xl">
+            Capture context, find answers, and automate tasks with AI built for
+            your team.
+          </p>
+
+          <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <a href="#cta" class="btn btn-blue w-full sm:w-auto">Get Notion free</a>
+            <a href="#" class="btn btn-ghost w-full sm:w-auto">Request a demo</a>
+          </div>
+        </div>
+
+        <!-- recreated workspace preview (HTML/CSS, not a screenshot) -->
+        <div class="relative mx-auto max-w-5xl px-4 pb-16 sm:px-6">
+          <!-- floating mascot accents -->
+          <span class="absolute -left-1 top-10 hidden h-9 w-9 rotate-[-12deg] place-items-center rounded-full bg-[#EF6F5C] text-lg shadow-card sm:grid">🙂</span>
+          <span class="absolute -right-1 top-24 hidden h-9 w-9 rotate-[10deg] place-items-center rounded-full bg-[#FFC93C] text-lg shadow-card sm:grid">⚡</span>
+
+          <div class="overflow-hidden rounded-2xl bg-white shadow-soft ring-1 ring-black/5">
+            <div class="flex items-center gap-2 border-b border-line bg-cream px-4 py-3">
+              <span class="h-3 w-3 rounded-full bg-[#FF5F57]"></span>
+              <span class="h-3 w-3 rounded-full bg-[#FEBC2E]"></span>
+              <span class="h-3 w-3 rounded-full bg-[#28C840]"></span>
+              <div class="ml-3 hidden h-6 flex-1 items-center rounded-md bg-white px-3 text-xs text-faint ring-1 ring-line sm:flex">notion.so / Ramp HQ</div>
+            </div>
+
+            <div class="flex min-h-[440px]">
+              <aside class="hidden w-56 shrink-0 flex-col gap-0.5 border-r border-line bg-[#FBFBFA] p-3 text-sm md:flex">
+                <div class="flex items-center gap-2 rounded-md px-2 py-1.5 font-medium">
+                  <span class="grid h-5 w-5 place-items-center rounded bg-[#191918] text-[10px] font-bold text-white">R</span>
+                  Ramp HQ
+                </div>
+                <div class="mt-1 flex items-center gap-2 rounded-md px-2 py-1.5 text-muted"><span>🔍</span> Search</div>
+                <div class="flex items-center gap-2 rounded-md px-2 py-1.5 text-muted"><span>✨</span> Notion AI</div>
+                <div class="flex items-center gap-2 rounded-md px-2 py-1.5 text-muted"><span>🏠</span> Home</div>
+                <p class="mt-3 px-2 text-[11px] font-semibold uppercase tracking-wide text-faint">Workspace</p>
+                <div class="flex items-center gap-2 rounded-md bg-[#EFEFEE] px-2 py-1.5 font-medium text-ink"><span>📊</span> Company tasks</div>
+                <div class="flex items-center gap-2 rounded-md px-2 py-1.5 text-muted"><span>🚀</span> Roadmap</div>
+                <div class="flex items-center gap-2 rounded-md px-2 py-1.5 text-muted"><span>📓</span> Engineering Wiki</div>
+                <div class="flex items-center gap-2 rounded-md px-2 py-1.5 text-muted"><span>🎯</span> OKRs</div>
+                <div class="flex items-center gap-2 rounded-md px-2 py-1.5 text-muted"><span>💬</span> Meeting Notes</div>
+              </aside>
+
+              <div class="flex-1 overflow-hidden px-5 py-6 sm:px-8">
+                <div class="flex items-center gap-2 text-2xl">📊 <span class="text-xl font-bold text-ink">Company tasks</span></div>
+                <div class="mt-4 flex gap-4 border-b border-line text-sm">
+                  <span class="-mb-px border-b-2 border-ink pb-2 font-medium text-ink">Table</span>
+                  <span class="pb-2 text-muted">Board</span>
+                  <span class="pb-2 text-muted">Timeline</span>
+                  <span class="pb-2 text-muted">Calendar</span>
+                </div>
+
+                <!-- faux database table -->
+                <div class="mt-4 overflow-hidden rounded-lg border border-line text-sm">
+                  <div class="grid grid-cols-[1.6fr_0.9fr_1fr] bg-[#FBFBFA] px-3 py-2 text-xs font-medium text-faint">
+                    <span>Task</span><span>Status</span><span>Owner</span>
+                  </div>
+                  <div class="grid grid-cols-[1.6fr_0.9fr_1fr] items-center border-t border-line px-3 py-2.5">
+                    <span>Launch AI Meeting Notes</span>
+                    <span><span class="rounded-md bg-[#DDEDEA] px-2 py-0.5 text-xs text-[#1C6B5B]">In progress</span></span>
+                    <span class="text-muted">🟣 Priya</span>
+                  </div>
+                  <div class="grid grid-cols-[1.6fr_0.9fr_1fr] items-center border-t border-line px-3 py-2.5">
+                    <span>Enterprise Search rollout</span>
+                    <span><span class="rounded-md bg-[#FBECDD] px-2 py-0.5 text-xs text-[#9F5C2E]">Planning</span></span>
+                    <span class="text-muted">🟠 Dev</span>
+                  </div>
+                  <div class="grid grid-cols-[1.6fr_0.9fr_1fr] items-center border-t border-line px-3 py-2.5">
+                    <span>Q2 board deck</span>
+                    <span><span class="rounded-md bg-[#DDEBF1] px-2 py-0.5 text-xs text-[#1F5C82]">In review</span></span>
+                    <span class="text-muted">🔵 Sam</span>
+                  </div>
+                  <div class="grid grid-cols-[1.6fr_0.9fr_1fr] items-center border-t border-line px-3 py-2.5">
+                    <span>Universal search GA</span>
+                    <span><span class="rounded-md bg-[#E7E7E5] px-2 py-0.5 text-xs text-muted">Done</span></span>
+                    <span class="text-muted">🟢 Mia</span>
+                  </div>
+                  <div class="grid grid-cols-[1.6fr_0.9fr_1fr] items-center border-t border-line px-3 py-2.5 text-muted">
+                    <span>＋ New</span><span></span><span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= LOGO STRIP ================= -->
+      <section class="border-t border-line bg-white pb-14 pt-2">
+        <div class="marquee overflow-hidden">
+          <div class="marquee-track flex w-max items-center gap-14 px-7 text-2xl font-semibold text-[#C7C6C2]">
+            <span>Vela</span><span>Northwind</span><span>Lumen</span><span>Contoso</span><span>Aperture</span><span>Initech</span><span>Globex</span><span>Hooli</span><span>Umbra</span><span>Stark&nbsp;Labs</span>
+            <span>Vela</span><span>Northwind</span><span>Lumen</span><span>Contoso</span><span>Aperture</span><span>Initech</span><span>Globex</span><span>Hooli</span><span>Umbra</span><span>Stark&nbsp;Labs</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= KEEP WORK MOVING ================= -->
+      <section id="agents" class="bg-cream py-16 sm:py-24">
+        <div class="mx-auto max-w-5xl px-6">
+          <h2 class="display text-4xl font-bold sm:text-[40px]">Keep work moving 24/7.</h2>
+
+          <div class="mt-8 overflow-hidden rounded-2xl bg-white ring-1 ring-black/5">
+            <div class="grid gap-6 p-7 sm:grid-cols-2 sm:p-9">
+              <div>
+                <p class="text-sm text-muted">Custom Agents</p>
+                <h3 class="mt-1 text-2xl font-semibold text-ink">Automate repetitive work for your team.</h3>
+                <button class="pill-btn mt-5"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+              </div>
+              <div class="space-y-2.5">
+                <div class="flex items-center gap-3 rounded-xl bg-cream p-3 text-sm">
+                  <span class="grid h-8 w-8 place-items-center rounded-lg bg-[#EF6F5C] text-white">⚡</span>
+                  <div><p class="font-medium text-ink">Q&amp;A agents</p><p class="text-xs text-muted">Answer questions instantly using knowledge you already have.</p></div>
+                </div>
+                <div class="flex items-center gap-3 rounded-xl bg-cream p-3 text-sm">
+                  <span class="grid h-8 w-8 place-items-center rounded-lg bg-[#5C97E8] text-white">🧭</span>
+                  <p class="font-medium text-ink">Task routing agents</p>
+                </div>
+                <div class="flex items-center gap-3 rounded-xl bg-cream p-3 text-sm">
+                  <span class="grid h-8 w-8 place-items-center rounded-lg bg-[#1F9E8F] text-white">📈</span>
+                  <p class="font-medium text-ink">Reporting agents</p>
+                </div>
+                <div class="flex items-center gap-3 rounded-xl bg-cream p-3 text-sm">
+                  <span class="grid h-8 w-8 place-items-center rounded-lg bg-[#A9744F] text-white">＋</span>
+                  <p class="font-medium text-ink">Create your own</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="mt-8 text-sm text-muted">See what Custom Agents can do</p>
+          <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            <div class="rounded-xl bg-white p-4 text-sm ring-1 ring-line"><span class="text-lg">💬</span><p class="mt-2 font-medium text-ink">Triage product feedback →</p></div>
+            <div class="rounded-xl bg-white p-4 text-sm ring-1 ring-line"><span class="text-lg">🎫</span><p class="mt-2 font-medium text-ink">Resolve support tickets in Slack →</p></div>
+            <div class="rounded-xl bg-white p-4 text-sm ring-1 ring-line"><span class="text-lg">🛡️</span><p class="mt-2 font-medium text-ink">Respond to security alerts faster →</p></div>
+            <div class="rounded-xl bg-white p-4 text-sm ring-1 ring-line"><span class="text-lg">📊</span><p class="mt-2 font-medium text-ink">Automate weekly reporting →</p></div>
+            <div class="rounded-xl bg-btnnavy p-4 text-sm text-white"><span class="text-lg">✨</span><p class="mt-2 font-medium">Create your own Custom Agent →</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ON-DEMAND ASSISTANTS (bento) ================= -->
+      <section id="features" class="bg-white py-16 sm:py-24">
+        <div class="mx-auto max-w-5xl px-6">
+          <h2 class="display text-4xl font-bold sm:text-[40px]">Ask your on-demand assistants.</h2>
+
+          <div class="mt-8 grid gap-4">
+            <!-- wide split: Notion Agent -->
+            <article class="grid overflow-hidden rounded-2xl ring-1 ring-black/5 sm:grid-cols-2">
+              <div class="bg-white p-7">
+                <p class="text-sm text-muted">Notion Agent</p>
+                <h3 class="mt-1 text-2xl font-semibold text-ink">You assign the tasks. Notion Agent does the work.</h3>
+                <button class="pill-btn mt-5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+              </div>
+              <div class="relative min-h-[200px] bg-btnyellow p-7">
+                <div class="absolute inset-x-7 top-7 rounded-xl bg-white/80 p-4 text-sm shadow-card">
+                  <p class="font-medium text-ink">⚡ Agent · running</p>
+                  <div class="mt-2 h-2.5 w-3/4 skel bg-black/10"></div>
+                  <div class="mt-2 h-2.5 w-1/2 skel bg-black/10"></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- two solid cards -->
+            <div class="grid gap-4 sm:grid-cols-2">
+              <article class="overflow-hidden rounded-2xl ring-1 ring-black/5">
+                <div class="bg-white p-7">
+                  <p class="text-sm text-muted">Enterprise Search</p>
+                  <h3 class="mt-1 text-2xl font-semibold text-ink">One search for everything.</h3>
+                  <button class="pill-btn mt-5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+                </div>
+                <div class="relative min-h-[210px] bg-btncoral p-7">
+                  <div class="flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm shadow-card">
+                    <span>🔍</span><span class="text-muted">Search Notion, Slack, Drive…</span>
+                  </div>
+                  <div class="mt-3 space-y-2">
+                    <div class="rounded-lg bg-white/80 px-3 py-2 text-xs text-ink">📄 Q2 launch brief</div>
+                    <div class="rounded-lg bg-white/80 px-3 py-2 text-xs text-ink">💬 #product-launch thread</div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="overflow-hidden rounded-2xl ring-1 ring-black/5">
+                <div class="bg-white p-7">
+                  <p class="text-sm text-muted">AI Meeting Notes</p>
+                  <h3 class="mt-1 text-2xl font-semibold text-ink">Perfect notes, every time.</h3>
+                  <button class="pill-btn mt-5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+                </div>
+                <div class="relative min-h-[210px] bg-btnblue p-7">
+                  <div class="rounded-xl bg-white p-4 text-sm shadow-card">
+                    <p class="font-medium text-ink">📝 Standup — June 15</p>
+                    <p class="mt-2 text-xs text-muted">• Shipped universal search</p>
+                    <p class="text-xs text-muted">• Action: Sam to finalize deck</p>
+                    <p class="text-xs text-muted">• Risk: SSO timeline at risk</p>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= BRING ALL YOUR WORK TOGETHER (bento) ================= -->
+      <section class="bg-cream py-16 sm:py-24">
+        <div class="mx-auto max-w-5xl px-6">
+          <h2 class="display text-4xl font-bold sm:text-[40px]">Bring all your work together.</h2>
+
+          <div class="mt-8 grid gap-4">
+            <div class="grid gap-4 sm:grid-cols-2">
+              <article class="overflow-hidden rounded-2xl bg-white ring-1 ring-black/5">
+                <div class="p-7">
+                  <p class="text-sm text-muted">Docs</p>
+                  <h3 class="mt-1 text-2xl font-semibold text-ink">Simple and powerful.</h3>
+                  <button class="pill-btn mt-5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+                </div>
+                <div class="min-h-[200px] bg-btnteal p-7">
+                  <div class="rounded-xl bg-white p-5 shadow-card">
+                    <div class="h-3 w-1/2 skel bg-black/10"></div>
+                    <div class="mt-3 h-2.5 w-full skel bg-black/10"></div>
+                    <div class="mt-2 h-2.5 w-5/6 skel bg-black/10"></div>
+                    <div class="mt-2 h-2.5 w-2/3 skel bg-black/10"></div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="overflow-hidden rounded-2xl bg-white ring-1 ring-black/5">
+                <div class="p-7">
+                  <p class="text-sm text-muted">Knowledge Base</p>
+                  <h3 class="mt-1 text-2xl font-semibold text-ink">One source of truth for teams and agents.</h3>
+                  <button class="pill-btn mt-5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+                </div>
+                <div class="min-h-[200px] bg-btnblue p-7">
+                  <div class="grid grid-cols-2 gap-3">
+                    <div class="rounded-lg bg-white/85 p-3 text-xs text-ink">📓 Engineering Wiki</div>
+                    <div class="rounded-lg bg-white/85 p-3 text-xs text-ink">📐 Design System</div>
+                    <div class="rounded-lg bg-white/85 p-3 text-xs text-ink">🧾 Policies</div>
+                    <div class="rounded-lg bg-white/85 p-3 text-xs text-ink">🎓 Onboarding</div>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <!-- wide brown: Projects -->
+            <article class="grid overflow-hidden rounded-2xl bg-white ring-1 ring-black/5 sm:grid-cols-[1fr_1.4fr]">
+              <div class="p-7">
+                <p class="text-sm text-muted">Projects</p>
+                <h3 class="mt-1 text-2xl font-semibold text-ink">Less tracking. More progress.</h3>
+                <button class="pill-btn mt-5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+              </div>
+              <div class="min-h-[200px] bg-btnbrown p-7">
+                <div class="grid h-full grid-cols-3 gap-3">
+                  <div class="space-y-2"><div class="h-2.5 w-12 skel bg-white/40"></div><div class="rounded-lg bg-white/85 p-2 text-xs text-ink">Spec</div><div class="rounded-lg bg-white/85 p-2 text-xs text-ink">Design</div></div>
+                  <div class="space-y-2"><div class="h-2.5 w-12 skel bg-white/40"></div><div class="rounded-lg bg-white/85 p-2 text-xs text-ink">Build</div></div>
+                  <div class="space-y-2"><div class="h-2.5 w-12 skel bg-white/40"></div><div class="rounded-lg bg-white/85 p-2 text-xs text-ink">Launch</div></div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <p class="mt-12 text-center font-serif text-2xl italic text-ink sm:text-3xl">"Your AI everything app."</p>
+        </div>
+      </section>
+
+      <!-- ================= TRUSTED ================= -->
+      <section class="bg-white py-16 sm:py-24">
+        <div class="mx-auto max-w-5xl px-6">
+          <h2 class="display text-4xl font-bold sm:text-[40px]">Trusted by teams that ship.</h2>
+
+          <div class="mt-8 rounded-2xl bg-cream p-8 sm:p-10">
+            <p class="max-w-2xl font-serif text-2xl italic text-ink sm:text-3xl">
+              "There's power in a single platform where you can do all your work.
+              Notion is that single place."
+            </p>
+            <a href="#" class="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand">Read the full story →</a>
+          </div>
+
+          <div class="mt-4 grid gap-4 sm:grid-cols-3">
+            <div class="rounded-2xl bg-cream p-6 text-sm text-body">"Streamlined workflows that cut our timelines by 3x."</div>
+            <div class="rounded-2xl bg-cream p-6 text-sm text-body">"Agents built in three minutes — hours of manual work, gone."</div>
+            <div class="rounded-2xl bg-cream p-6 text-sm text-body">"Notion understands you can solve a lot of problems with one tool."</div>
+          </div>
+
+          <div class="mt-10 grid grid-cols-2 gap-4 text-center sm:grid-cols-4">
+            <div class="rounded-xl border border-line p-5"><p class="text-3xl font-bold text-ink">#1</p><p class="mt-1 text-xs text-muted">Knowledge base, 3 yrs running (G2)</p></div>
+            <div class="rounded-xl border border-line p-5"><p class="text-3xl font-bold text-ink">#1</p><p class="mt-1 text-xs text-muted">AI enterprise search (G2)</p></div>
+            <div class="rounded-xl border border-line p-5"><p class="text-3xl font-bold text-ink">62%</p><p class="mt-1 text-xs text-muted">of the Fortune 100</p></div>
+            <div class="rounded-xl border border-line p-5"><p class="text-3xl font-bold text-ink">50%+</p><p class="mt-1 text-xs text-muted">of YC companies</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TRY FOR FREE ================= -->
+      <section id="cta" class="bg-cream py-16 sm:py-24">
+        <div class="mx-auto max-w-5xl px-6">
+          <h2 class="display text-4xl font-bold sm:text-[40px]">Try for free.</h2>
+
+          <div class="mt-8 grid gap-4 lg:grid-cols-2">
+            <article class="rounded-2xl bg-white p-8 ring-1 ring-black/5">
+              <span class="grid h-10 w-10 place-items-center rounded-lg bg-[#191918] text-lg font-bold text-white">N</span>
+              <h3 class="mt-5 text-2xl font-semibold text-ink">Get started on Notion</h3>
+              <p class="mt-1 text-muted">Your AI workspace with built-in agents.</p>
+              <div class="mt-5 flex flex-wrap gap-2.5">
+                <a href="#" class="btn btn-blue">Get Notion free</a>
+                <a href="#" class="btn btn-ghost">⊞ Download for Windows</a>
+              </div>
+            </article>
+
+            <div class="grid gap-4">
+              <article class="flex items-center justify-between gap-6 rounded-2xl bg-white p-7 ring-1 ring-black/5">
+                <div>
+                  <h3 class="text-xl font-semibold text-ink">📨 Notion Mail</h3>
+                  <p class="mt-1 text-sm text-muted">The AI inbox that thinks like you.</p>
+                  <a href="#" class="mt-3 inline-flex text-sm font-medium text-brand">Download →</a>
+                </div>
+                <div class="hidden h-20 w-28 shrink-0 rounded-lg bg-cream ring-1 ring-line sm:block"></div>
+              </article>
+              <article class="flex items-center justify-between gap-6 rounded-2xl bg-white p-7 ring-1 ring-black/5">
+                <div>
+                  <h3 class="text-xl font-semibold text-ink">📅 Notion Calendar</h3>
+                  <p class="mt-1 text-sm text-muted">Time, scheduling, tasks — all together.</p>
+                  <a href="#" class="mt-3 inline-flex text-sm font-medium text-brand">Download →</a>
+                </div>
+                <div class="hidden h-20 w-28 shrink-0 rounded-lg bg-cream ring-1 ring-line sm:block"></div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="border-t border-line bg-white py-16">
+      <div class="mx-auto max-w-[1240px] px-6">
+        <div class="grid grid-cols-2 gap-10 md:grid-cols-5">
+          <div class="col-span-2 md:col-span-1">
+            <a href="#top" class="flex items-center gap-1.5">
+              <span class="grid h-7 w-7 place-items-center rounded-md bg-[#191918] text-base font-bold text-white">N</span>
+              <span class="text-[19px] font-semibold tracking-tight text-ink">Notion</span>
+            </a>
+            <div class="mt-5 flex gap-3 text-faint">
+              <a href="#" aria-label="X" class="hover:text-ink"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.5 8.6L23 22h-6.8l-5-6.6L5.4 22H2.3l8-9.2L1.6 2h6.9l4.5 6 5.9-6Zm-1.2 18h1.7L7.3 3.8H5.5L17.7 20Z"/></svg></a>
+              <a href="#" aria-label="LinkedIn" class="hover:text-ink"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5A2.5 2.5 0 1 1 0 3.5a2.5 2.5 0 0 1 4.98 0ZM0 8h5v16H0V8Zm7.5 0H12v2.2h.1c.6-1.1 2.1-2.3 4.4-2.3 4.7 0 5.5 3 5.5 7V24h-5v-6.3c0-1.5 0-3.5-2.1-3.5s-2.5 1.6-2.5 3.4V24h-5V8Z"/></svg></a>
+              <a href="#" aria-label="YouTube" class="hover:text-ink"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.5a3 3 0 0 0-2.1-2.1C19 4.9 12 4.9 12 4.9s-7 0-8.9.5A3 3 0 0 0 1 7.5 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.5a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.5 31 31 0 0 0-.5-4.5ZM9.7 15.3V8.7l5.8 3.3-5.8 3.3Z"/></svg></a>
+            </div>
+            <button class="mt-5 inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-sm text-body">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"/></svg>
+              English (US)
+            </button>
+          </div>
+
+          <div>
+            <h4 class="text-sm font-semibold text-ink">Company</h4>
+            <ul class="mt-4 space-y-3 text-sm text-muted">
+              <li><a href="#" class="hover:text-ink">About us</a></li>
+              <li><a href="#" class="hover:text-ink">Careers</a></li>
+              <li><a href="#" class="hover:text-ink">Security</a></li>
+              <li><a href="#" class="hover:text-ink">Status</a></li>
+              <li><a href="#" class="hover:text-ink">Terms &amp; privacy</a></li>
+              <li><a href="#" class="hover:text-ink">Your privacy rights</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-sm font-semibold text-ink">Download</h4>
+            <ul class="mt-4 space-y-3 text-sm text-muted">
+              <li><a href="#" class="hover:text-ink">iOS &amp; Android</a></li>
+              <li><a href="#" class="hover:text-ink">Mac &amp; Windows</a></li>
+              <li><a href="#" class="hover:text-ink">Mail</a></li>
+              <li><a href="#" class="hover:text-ink">Calendar</a></li>
+              <li><a href="#" class="hover:text-ink">Web Clipper</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-sm font-semibold text-ink">Resources</h4>
+            <ul class="mt-4 space-y-3 text-sm text-muted">
+              <li><a href="#" class="hover:text-ink">Help center</a></li>
+              <li><a href="#" class="hover:text-ink">Pricing</a></li>
+              <li><a href="#" class="hover:text-ink">Blog</a></li>
+              <li><a href="#" class="hover:text-ink">Community</a></li>
+              <li><a href="#" class="hover:text-ink">Templates</a></li>
+              <li><a href="#" class="hover:text-ink">Partner programs</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-sm font-semibold text-ink">Notion for</h4>
+            <ul class="mt-4 space-y-3 text-sm text-muted">
+              <li><a href="#" class="hover:text-ink">Enterprise</a></li>
+              <li><a href="#" class="hover:text-ink">Small business</a></li>
+              <li><a href="#" class="hover:text-ink">Personal</a></li>
+              <li><a href="#" class="hover:text-ink">Explore more →</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-12 flex flex-col gap-3 border-t border-line pt-7 text-xs text-faint sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <span>&copy; 2026 Mockup Replica</span>
+            <a href="#" class="hover:text-ink">Do Not Sell or Share My Info</a>
+            <a href="#" class="hover:text-ink">Cookie settings</a>
+          </div>
+          <p class="max-w-md leading-relaxed">
+            Design mockup built with Tailwind CSS for layout reference only. Not
+            affiliated with, endorsed by, or representative of Notion Labs, Inc.
+            "Notion" and product names are trademarks of their respective owners.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        const hdr = document.getElementById('hdr');
+        const onScroll = () => hdr.classList.toggle('scrolled', window.scrollY > 8);
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+      })();
+    </script>
+  </body>
+</html>

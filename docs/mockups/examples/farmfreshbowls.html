@@ -1,0 +1,890 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Farm Fresh Bowls — Here to Deliver Health</title>
+    <meta
+      name="description"
+      content="Mockup replica of the Farm Fresh Bowls homepage — built with Tailwind CSS for design reference only. Not affiliated with Farm Fresh Bowls."
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Nunito', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+              display: ['Quicksand', 'Nunito', 'ui-sans-serif', 'sans-serif'],
+            },
+            colors: {
+              leaf: '#5C7A3D',
+              moss: '#3E5C2A',
+              fern: '#7FA85B',
+              sage: '#E8EEDF',
+              cream: '#FBF8F1',
+              sand: '#F3ECDE',
+              bark: '#4A3B2A',
+              berry: '#C8324B',
+              berrydk: '#A8253A',
+              mango: '#F2A93B',
+              ink: '#2E3424',
+              body: '#54513F',
+              muted: '#8B8772',
+            },
+            boxShadow: {
+              soft: '0 24px 60px -22px rgba(60,70,40,0.30), 0 6px 16px rgba(60,70,40,0.06)',
+              card: '0 1px 2px rgba(60,70,40,0.05), 0 14px 34px -16px rgba(60,70,40,0.20)',
+              cta: '0 10px 24px -8px rgba(200,50,75,0.45)',
+            },
+          },
+        },
+      };
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Quicksand:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: 'Nunito', system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        color: #54513f;
+        background: #fbf8f1;
+      }
+      .display {
+        font-family: 'Quicksand', 'Nunito', sans-serif;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        line-height: 1.02;
+        color: #2e3424;
+      }
+
+      /* ---- wordmark (CSS recreation) ---- */
+      .wordmark {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        line-height: 1;
+        color: #3e5c2a;
+        font-family: 'Quicksand', sans-serif;
+      }
+      .wordmark .top {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.42em;
+        padding-left: 0.42em;
+      }
+      .wordmark .bowl {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin: 1px 0;
+      }
+      .wordmark .est {
+        font-size: 7px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        color: #8b8772;
+      }
+      .wordmark .icon {
+        width: 26px;
+        height: 14px;
+        border: 1.8px solid #3e5c2a;
+        border-top: none;
+        border-radius: 0 0 40px 40px;
+        position: relative;
+      }
+      .wordmark .icon::before {
+        content: '';
+        position: absolute;
+        top: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 30px;
+        height: 4px;
+        border-radius: 9999px;
+        background: #7fa85b;
+      }
+      .wordmark .bottom {
+        font-size: 17px;
+        font-weight: 700;
+        letter-spacing: 0.34em;
+        padding-left: 0.34em;
+      }
+
+      /* ---- buttons ---- */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        height: 48px;
+        padding: 0 26px;
+        border-radius: 9999px;
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: 0.01em;
+        transition:
+          background-color 0.16s ease,
+          color 0.16s ease,
+          border-color 0.16s ease,
+          box-shadow 0.16s ease,
+          transform 0.08s ease;
+        white-space: nowrap;
+      }
+      .btn:active { transform: translateY(1px); }
+      .btn-berry { background: #c8324b; color: #fff; box-shadow: var(--tw-shadow, 0 10px 24px -8px rgba(200,50,75,0.45)); }
+      .btn-berry:hover { background: #a8253a; }
+      .btn-leaf { background: #5c7a3d; color: #fff; }
+      .btn-leaf:hover { background: #3e5c2a; }
+      .btn-ghost { background: transparent; color: #3e5c2a; border: 2px solid rgba(62,92,42,0.35); }
+      .btn-ghost:hover { background: rgba(62,92,42,0.08); border-color: rgba(62,92,42,0.55); }
+      .btn-sm { height: 40px; padding: 0 18px; font-size: 13px; }
+
+      .nav-link {
+        color: #54513f;
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 8px 12px;
+        border-radius: 9999px;
+        transition: color 0.15s ease, background-color 0.15s ease;
+        white-space: nowrap;
+      }
+      .nav-link:hover { color: #3e5c2a; background: rgba(62,92,42,0.07); }
+      .nav-link.active { color: #c8324b; }
+
+      #hdr {
+        transition: box-shadow 0.2s ease, background-color 0.2s ease;
+        background: rgba(251, 248, 241, 0.72);
+        backdrop-filter: saturate(150%) blur(6px);
+      }
+      #hdr.scrolled {
+        background: rgba(251, 248, 241, 0.96);
+        box-shadow: 0 1px 0 rgba(60, 70, 40, 0.08), 0 10px 30px -22px rgba(60, 70, 40, 0.5);
+      }
+
+      /* ---- photo placeholders (CSS food art, no hotlinked photos) ---- */
+      .photo {
+        position: relative;
+        overflow: hidden;
+        background-color: #e8eedf;
+        border-radius: 28px;
+      }
+      .photo .emoji {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(56px, 12vw, 128px);
+        filter: drop-shadow(0 14px 24px rgba(40, 30, 10, 0.28));
+      }
+      .photo .glow {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(60% 50% at 30% 25%, rgba(255, 255, 255, 0.45), transparent 60%),
+          radial-gradient(70% 70% at 80% 90%, rgba(0, 0, 0, 0.16), transparent 60%);
+        pointer-events: none;
+      }
+      .grain {
+        background-image: repeating-linear-gradient(
+          45deg,
+          rgba(255, 255, 255, 0.05) 0,
+          rgba(255, 255, 255, 0.05) 1px,
+          transparent 1px,
+          transparent 7px
+        );
+      }
+
+      .ph-strawberry { background-image: radial-gradient(circle at 30% 25%, #ff7a85, transparent 45%), radial-gradient(circle at 75% 70%, #c8324b, transparent 55%), linear-gradient(135deg, #d8455c, #8c1f33); }
+      .ph-acai { background-image: radial-gradient(circle at 30% 25%, #b06bff, transparent 45%), radial-gradient(circle at 75% 70%, #5a2a8c, transparent 55%), linear-gradient(135deg, #7a3fb0, #3c1a66); }
+      .ph-green { background-image: radial-gradient(circle at 30% 25%, #b6d97f, transparent 45%), radial-gradient(circle at 75% 70%, #3e5c2a, transparent 55%), linear-gradient(135deg, #6f9a3f, #3e5c2a); }
+      .ph-mango { background-image: radial-gradient(circle at 30% 25%, #ffd27a, transparent 45%), radial-gradient(circle at 75% 70%, #e07b1a, transparent 55%), linear-gradient(135deg, #f2a93b, #c46a12); }
+      .ph-citrus { background-image: radial-gradient(circle at 30% 25%, #ffe18a, transparent 45%), radial-gradient(circle at 75% 70%, #f08a2a, transparent 55%), linear-gradient(135deg, #ffb73d, #e07b1a); }
+      .ph-berry { background-image: radial-gradient(circle at 30% 25%, #8aa0ff, transparent 45%), radial-gradient(circle at 75% 70%, #2a3c8c, transparent 55%), linear-gradient(135deg, #5a6fd8, #2a3266); }
+      .ph-salad { background-image: radial-gradient(circle at 30% 25%, #cfe89a, transparent 45%), radial-gradient(circle at 75% 70%, #4a6b2a, transparent 55%), linear-gradient(135deg, #7fa85b, #4a6b2a); }
+      .ph-coconut { background-image: radial-gradient(circle at 30% 25%, #fffdf2, transparent 45%), radial-gradient(circle at 75% 70%, #8b7a52, transparent 55%), linear-gradient(135deg, #e8e0c4, #8b7a52); }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        border-radius: 9999px;
+        padding: 6px 14px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .hairline { height: 2px; width: 72px; background: #c8324b; border-radius: 9999px; }
+
+      .card {
+        background: #fff;
+        border-radius: 28px;
+        box-shadow: 0 1px 2px rgba(60,70,40,0.05), 0 14px 34px -16px rgba(60,70,40,0.20);
+        border: 1px solid rgba(60,70,40,0.06);
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+      }
+      .card:hover { transform: translateY(-4px); box-shadow: 0 26px 50px -20px rgba(60,70,40,0.32); }
+
+      .menu-tab {
+        font-weight: 800;
+        font-size: 14px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: 10px 20px;
+        border-radius: 9999px;
+        color: #8b8772;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .menu-tab[aria-selected='true'] { background: #5c7a3d; color: #fff; }
+
+      /* mobile drawer */
+      #drawer { transition: opacity 0.2s ease; }
+      #drawer.hidden { display: none; }
+
+      .leaf-divider {
+        text-align: center;
+        color: #7fa85b;
+        font-size: 22px;
+        letter-spacing: 0.5em;
+      }
+    </style>
+  </head>
+
+  <body id="top">
+    <!-- ================= ANNOUNCEMENT BAR ================= -->
+    <div class="bg-moss text-cream">
+      <div class="mx-auto flex max-w-[1180px] items-center justify-center gap-2 px-4 py-2 text-center text-[12.5px] font-bold tracking-wide">
+        <span>🌱</span>
+        <span>Free local delivery on orders over $35 · Fresh-pressed daily, never frozen</span>
+      </div>
+    </div>
+
+    <!-- ================= HEADER ================= -->
+    <header id="hdr" class="sticky top-0 z-50 w-full">
+      <div class="mx-auto flex h-[78px] max-w-[1180px] items-center justify-between px-4 sm:px-6">
+        <!-- wordmark -->
+        <a href="#top" class="flex items-center" aria-label="Farm Fresh Bowls home">
+          <span class="wordmark">
+            <span class="top">FARM&nbsp;FRESH</span>
+            <span class="bowl">
+              <span class="est">EST</span>
+              <span class="icon"></span>
+              <span class="est">2018</span>
+            </span>
+            <span class="bottom">BOWLS</span>
+          </span>
+        </a>
+
+        <!-- desktop nav -->
+        <nav class="hidden items-center gap-1 lg:flex">
+          <a href="#top" class="nav-link active">Home</a>
+          <a href="#menu" class="nav-link">Menu</a>
+          <a href="#story" class="nav-link">Farm Fresh Story</a>
+          <a href="#locations" class="nav-link">Locations</a>
+          <a href="#catering" class="nav-link">Catering</a>
+          <a href="#giftcards" class="nav-link">Gift Cards</a>
+        </nav>
+
+        <div class="flex items-center gap-2">
+          <a href="#order" class="btn btn-berry shadow-cta hidden sm:inline-flex">Order Online</a>
+          <button id="menuBtn" class="inline-flex h-11 w-11 items-center justify-center rounded-full text-moss hover:bg-sage lg:hidden" aria-label="Open menu" aria-expanded="false">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18" /></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- mobile drawer -->
+    <div id="drawer" class="fixed inset-0 z-[60] hidden lg:hidden">
+      <div id="drawerScrim" class="absolute inset-0 bg-ink/40"></div>
+      <div class="absolute right-0 top-0 flex h-full w-[82%] max-w-sm flex-col bg-cream p-6 shadow-soft">
+        <div class="flex items-center justify-between">
+          <span class="wordmark">
+            <span class="top">FARM&nbsp;FRESH</span>
+            <span class="bowl"><span class="est">EST</span><span class="icon"></span><span class="est">2018</span></span>
+            <span class="bottom">BOWLS</span>
+          </span>
+          <button id="closeBtn" class="inline-flex h-11 w-11 items-center justify-center rounded-full text-moss hover:bg-sage" aria-label="Close menu">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+          </button>
+        </div>
+        <nav class="mt-8 flex flex-col gap-1 text-lg">
+          <a href="#top" class="rounded-2xl px-4 py-3 font-extrabold text-berry hover:bg-sage">Home</a>
+          <a href="#menu" class="rounded-2xl px-4 py-3 font-extrabold text-ink hover:bg-sage">Menu</a>
+          <a href="#story" class="rounded-2xl px-4 py-3 font-extrabold text-ink hover:bg-sage">Farm Fresh Story</a>
+          <a href="#locations" class="rounded-2xl px-4 py-3 font-extrabold text-ink hover:bg-sage">Locations</a>
+          <a href="#catering" class="rounded-2xl px-4 py-3 font-extrabold text-ink hover:bg-sage">Catering</a>
+          <a href="#giftcards" class="rounded-2xl px-4 py-3 font-extrabold text-ink hover:bg-sage">Gift Cards</a>
+        </nav>
+        <a href="#order" class="btn btn-berry mt-auto w-full">Order Online</a>
+      </div>
+    </div>
+
+    <!-- ================= HERO ================= -->
+    <section class="mx-auto max-w-[1180px] px-4 pt-6 sm:px-6">
+      <div class="photo ph-strawberry grain min-h-[480px] sm:min-h-[560px] lg:min-h-[600px]">
+        <div class="emoji">🍓</div>
+        <div class="glow"></div>
+        <!-- dark veil for text contrast -->
+        <div class="absolute inset-0" style="background: linear-gradient(180deg, rgba(40,20,10,0.18), rgba(40,20,10,0.42));"></div>
+
+        <div class="relative z-10 flex h-full min-h-[480px] flex-col items-center justify-center px-6 py-16 text-center sm:min-h-[560px] lg:min-h-[600px]">
+          <h1 class="display text-white text-[44px] leading-[1.04] sm:text-[64px] lg:text-[76px]" style="letter-spacing: 0.01em;">
+            HERE TO<br />DELIVER HEALTH
+          </h1>
+          <div class="my-7 h-[3px] w-44 rounded-full bg-white/85"></div>
+          <p class="max-w-xl text-[16px] font-bold leading-relaxed text-white/95 sm:text-[19px]">
+            At Farm Fresh Bowls we offer balanced, nutritious bowls made
+            with local ingredients — without any chemicals or preservatives.
+          </p>
+          <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+            <a href="#order" class="btn btn-berry shadow-cta">Order Online</a>
+            <a href="#menu" class="btn btn-ghost border-white/70 text-white hover:bg-white/15">See the Menu</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= QUOTE ================= -->
+    <section class="mx-auto max-w-[1180px] px-6 py-16 sm:py-20">
+      <p class="display mx-auto max-w-3xl text-center text-leaf text-[24px] leading-snug sm:text-[34px]">
+        &ldquo;Healthy bowls from healthy people<br class="hidden sm:block" />
+        to make people healthy and happy&rdquo;
+      </p>
+      <div class="leaf-divider mt-8">🌿</div>
+    </section>
+
+    <!-- ================= WE REALLY DO CARE ================= -->
+    <section id="story" class="bg-sage py-16 sm:py-24">
+      <div class="mx-auto grid max-w-[1080px] items-center gap-10 px-6 md:grid-cols-2">
+        <div>
+          <span class="hairline mb-5 block"></span>
+          <h2 class="display text-berry text-[36px] leading-tight sm:text-[46px]">We Really<br />Do Care</h2>
+          <p class="mt-5 max-w-md text-[16px] font-semibold leading-relaxed text-body">
+            We care about your health. In order to make the most of your life,
+            it is important to take good care of it — because feeling good is
+            where everything starts.
+          </p>
+          <p class="mt-4 max-w-md text-[16px] font-semibold leading-relaxed text-body">
+            So let us support you, and contribute to your healthy lifestyle with
+            food that loves you back.
+          </p>
+          <a href="#menu" class="btn btn-leaf mt-8">Explore the Bowls</a>
+        </div>
+        <div class="photo ph-strawberry grain aspect-[4/3] w-full">
+          <div class="emoji">🍓</div>
+          <div class="glow"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= WE LOVE FOR YOU TO ================= -->
+    <section class="py-16 sm:py-24">
+      <div class="mx-auto grid max-w-[1080px] items-center gap-10 px-6 md:grid-cols-2">
+        <div class="photo ph-acai grain order-2 aspect-[4/3] w-full md:order-1">
+          <div class="emoji">🥣</div>
+          <div class="glow"></div>
+        </div>
+        <div class="order-1 md:order-2">
+          <span class="hairline mb-5 block" style="background:#7fa85b;"></span>
+          <h2 class="display text-leaf text-[36px] leading-tight sm:text-[46px]">We Love<br />For You To</h2>
+          <p class="mt-5 max-w-md text-[16px] font-semibold leading-relaxed text-body">
+            …experience the flavors of food the way it is meant to taste. Taste
+            the quality of local, wholesome ingredients — without any chemicals
+            or preservatives.
+          </p>
+          <p class="mt-4 max-w-md text-[16px] font-semibold leading-relaxed text-body">
+            We balance out all the nutrients you need, and serve you the right
+            portion size, every single time.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= VALUES STRIP ================= -->
+    <section class="bg-cream py-14">
+      <div class="mx-auto grid max-w-[1080px] grid-cols-2 gap-8 px-6 text-center md:grid-cols-4">
+        <div>
+          <div class="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-sage text-3xl">🌾</div>
+          <h3 class="display text-ink text-[18px]">Locally Sourced</h3>
+          <p class="mt-1.5 text-sm font-semibold text-muted">From farms within 60 miles</p>
+        </div>
+        <div>
+          <div class="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-sage text-3xl">🚫</div>
+          <h3 class="display text-ink text-[18px]">No Preservatives</h3>
+          <p class="mt-1.5 text-sm font-semibold text-muted">Nothing artificial, ever</p>
+        </div>
+        <div>
+          <div class="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-sage text-3xl">⚖️</div>
+          <h3 class="display text-ink text-[18px]">Balanced Macros</h3>
+          <p class="mt-1.5 text-sm font-semibold text-muted">Portioned by nutritionists</p>
+        </div>
+        <div>
+          <div class="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-sage text-3xl">♻️</div>
+          <h3 class="display text-ink text-[18px]">Eco Packaging</h3>
+          <p class="mt-1.5 text-sm font-semibold text-muted">100% compostable bowls</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= MENU ================= -->
+    <section id="menu" class="py-16 sm:py-24">
+      <div class="mx-auto max-w-[1180px] px-6">
+        <div class="text-center">
+          <span class="pill bg-sage text-moss">🥗 Our Menu</span>
+          <h2 class="display mt-4 text-ink text-[36px] sm:text-[48px]">Made fresh, built for you</h2>
+          <p class="mx-auto mt-4 max-w-xl text-[16px] font-semibold text-body">
+            Every bowl is blended to order with seasonal produce. Pick a
+            signature combination, or build your own at the counter.
+          </p>
+        </div>
+
+        <!-- tabs (visual only) -->
+        <div class="mt-9 flex flex-wrap justify-center gap-2">
+          <span class="menu-tab" aria-selected="true">Açaí Bowls</span>
+          <span class="menu-tab" aria-selected="false">Smoothies</span>
+          <span class="menu-tab" aria-selected="false">Salads &amp; Grains</span>
+        </div>
+
+        <!-- AÇAÍ BOWLS -->
+        <h3 class="display mt-12 text-leaf text-[24px]">Açaí &amp; Smoothie Bowls</h3>
+        <div class="mt-6 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+          <!-- card -->
+          <article class="card overflow-hidden">
+            <div class="photo ph-acai grain h-48 rounded-none rounded-t-[28px]">
+              <div class="emoji">🥣</div><div class="glow"></div>
+            </div>
+            <div class="p-6">
+              <div class="flex items-start justify-between gap-3">
+                <h4 class="display text-ink text-[20px]">Midnight Açaí</h4>
+                <span class="text-[17px] font-extrabold text-berry">$11.50</span>
+              </div>
+              <p class="mt-2 text-sm font-semibold leading-relaxed text-body">
+                Pure açaí blended with banana &amp; almond milk, topped with
+                granola, blueberries, coconut and a drizzle of raw honey.
+              </p>
+              <div class="mt-4 flex flex-wrap gap-1.5">
+                <span class="pill bg-sage text-moss">Vegan</span>
+                <span class="pill bg-sage text-moss">Antioxidant</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card overflow-hidden">
+            <div class="photo ph-strawberry grain h-48 rounded-t-[28px]">
+              <div class="emoji">🍓</div><div class="glow"></div>
+            </div>
+            <div class="p-6">
+              <div class="flex items-start justify-between gap-3">
+                <h4 class="display text-ink text-[20px]">Strawberry Fields</h4>
+                <span class="text-[17px] font-extrabold text-berry">$10.75</span>
+              </div>
+              <p class="mt-2 text-sm font-semibold leading-relaxed text-body">
+                Local strawberries &amp; dragon fruit over a creamy banana base,
+                finished with hemp hearts, fresh berries and mint.
+              </p>
+              <div class="mt-4 flex flex-wrap gap-1.5">
+                <span class="pill bg-sage text-moss">Gluten-Free</span>
+                <span class="pill bg-sage text-moss">Local</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card overflow-hidden">
+            <div class="photo ph-green grain h-48 rounded-t-[28px]">
+              <div class="emoji">🥝</div><div class="glow"></div>
+            </div>
+            <div class="p-6">
+              <div class="flex items-start justify-between gap-3">
+                <h4 class="display text-ink text-[20px]">Green Machine</h4>
+                <span class="text-[17px] font-extrabold text-berry">$11.95</span>
+              </div>
+              <p class="mt-2 text-sm font-semibold leading-relaxed text-body">
+                Spinach, kale, kiwi and pineapple blended smooth, topped with
+                kiwi, chia, toasted coconut and house granola.
+              </p>
+              <div class="mt-4 flex flex-wrap gap-1.5">
+                <span class="pill bg-sage text-moss">Detox</span>
+                <span class="pill bg-sage text-moss">Vegan</span>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- SMOOTHIES -->
+        <h3 class="display mt-14 text-leaf text-[24px]">Cold-Pressed Smoothies</h3>
+        <div class="mt-6 grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
+          <article class="card overflow-hidden">
+            <div class="photo ph-mango grain h-40 rounded-t-[28px]"><div class="emoji">🥭</div><div class="glow"></div></div>
+            <div class="p-5">
+              <div class="flex items-start justify-between gap-2">
+                <h4 class="display text-ink text-[18px]">Mango Sunrise</h4>
+                <span class="font-extrabold text-berry">$8.25</span>
+              </div>
+              <p class="mt-2 text-[13px] font-semibold leading-relaxed text-body">Mango, orange, carrot &amp; turmeric with a ginger kick.</p>
+            </div>
+          </article>
+
+          <article class="card overflow-hidden">
+            <div class="photo ph-berry grain h-40 rounded-t-[28px]"><div class="emoji">🫐</div><div class="glow"></div></div>
+            <div class="p-5">
+              <div class="flex items-start justify-between gap-2">
+                <h4 class="display text-ink text-[18px]">Blue Recovery</h4>
+                <span class="font-extrabold text-berry">$8.75</span>
+              </div>
+              <p class="mt-2 text-[13px] font-semibold leading-relaxed text-body">Wild blueberry, banana, oat milk &amp; plant protein.</p>
+            </div>
+          </article>
+
+          <article class="card overflow-hidden">
+            <div class="photo ph-citrus grain h-40 rounded-t-[28px]"><div class="emoji">🍊</div><div class="glow"></div></div>
+            <div class="p-5">
+              <div class="flex items-start justify-between gap-2">
+                <h4 class="display text-ink text-[18px]">Citrus Glow</h4>
+                <span class="font-extrabold text-berry">$7.95</span>
+              </div>
+              <p class="mt-2 text-[13px] font-semibold leading-relaxed text-body">Orange, pineapple, lemon &amp; a hint of cayenne.</p>
+            </div>
+          </article>
+
+          <article class="card overflow-hidden">
+            <div class="photo ph-coconut grain h-40 rounded-t-[28px]"><div class="emoji">🥥</div><div class="glow"></div></div>
+            <div class="p-5">
+              <div class="flex items-start justify-between gap-2">
+                <h4 class="display text-ink text-[18px]">Coco Almond</h4>
+                <span class="font-extrabold text-berry">$8.50</span>
+              </div>
+              <p class="mt-2 text-[13px] font-semibold leading-relaxed text-body">Coconut, almond butter, dates, banana &amp; cinnamon.</p>
+            </div>
+          </article>
+        </div>
+
+        <!-- SALADS & GRAINS -->
+        <h3 class="display mt-14 text-leaf text-[24px]">Salads &amp; Grain Bowls</h3>
+        <div class="mt-6 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+          <article class="card overflow-hidden">
+            <div class="photo ph-salad grain h-48 rounded-t-[28px]"><div class="emoji">🥗</div><div class="glow"></div></div>
+            <div class="p-6">
+              <div class="flex items-start justify-between gap-3">
+                <h4 class="display text-ink text-[20px]">Harvest Kale</h4>
+                <span class="text-[17px] font-extrabold text-berry">$12.50</span>
+              </div>
+              <p class="mt-2 text-sm font-semibold leading-relaxed text-body">Massaged kale, roasted squash, quinoa, pomegranate &amp; tahini-lemon dressing.</p>
+              <div class="mt-4 flex flex-wrap gap-1.5"><span class="pill bg-sage text-moss">High-Protein</span><span class="pill bg-sage text-moss">Seasonal</span></div>
+            </div>
+          </article>
+
+          <article class="card overflow-hidden">
+            <div class="photo ph-green grain h-48 rounded-t-[28px]"><div class="emoji">🥑</div><div class="glow"></div></div>
+            <div class="p-6">
+              <div class="flex items-start justify-between gap-3">
+                <h4 class="display text-ink text-[20px]">Avocado Power</h4>
+                <span class="text-[17px] font-extrabold text-berry">$13.25</span>
+              </div>
+              <p class="mt-2 text-sm font-semibold leading-relaxed text-body">Brown rice, avocado, edamame, cucumber, pickled carrot &amp; sesame-ginger.</p>
+              <div class="mt-4 flex flex-wrap gap-1.5"><span class="pill bg-sage text-moss">Vegan</span><span class="pill bg-sage text-moss">Filling</span></div>
+            </div>
+          </article>
+
+          <article class="card overflow-hidden">
+            <div class="photo ph-mango grain h-48 rounded-t-[28px]"><div class="emoji">🌽</div><div class="glow"></div></div>
+            <div class="p-6">
+              <div class="flex items-start justify-between gap-3">
+                <h4 class="display text-ink text-[20px]">Southwest Grain</h4>
+                <span class="text-[17px] font-extrabold text-berry">$12.95</span>
+              </div>
+              <p class="mt-2 text-sm font-semibold leading-relaxed text-body">Farro, black beans, roasted corn, peppers, cilantro &amp; chipotle-lime crema.</p>
+              <div class="mt-4 flex flex-wrap gap-1.5"><span class="pill bg-sage text-moss">Hearty</span><span class="pill bg-sage text-moss">Local</span></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="mt-12 text-center">
+          <a href="#order" class="btn btn-berry shadow-cta">Order the Full Menu</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= HOW IT WORKS ================= -->
+    <section class="bg-moss py-16 text-cream sm:py-24">
+      <div class="mx-auto max-w-[1080px] px-6 text-center">
+        <span class="pill bg-fern/30 text-cream">How it works</span>
+        <h2 class="display mt-4 text-white text-[34px] sm:text-[44px]">Fresh in three simple steps</h2>
+        <div class="mt-12 grid gap-10 md:grid-cols-3">
+          <div>
+            <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-fern/25 text-4xl">🧺</div>
+            <h3 class="display mt-5 text-white text-[20px]">1 · We Source</h3>
+            <p class="mt-2 text-[15px] font-semibold leading-relaxed text-sage">Produce is picked from partner farms the morning it&rsquo;s served — nothing sits in storage.</p>
+          </div>
+          <div>
+            <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-fern/25 text-4xl">🥄</div>
+            <h3 class="display mt-5 text-white text-[20px]">2 · We Blend</h3>
+            <p class="mt-2 text-[15px] font-semibold leading-relaxed text-sage">Every bowl is built to order and portioned for balanced macros by our in-house team.</p>
+          </div>
+          <div>
+            <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-fern/25 text-4xl">🚲</div>
+            <h3 class="display mt-5 text-white text-[20px]">3 · We Deliver</h3>
+            <p class="mt-2 text-[15px] font-semibold leading-relaxed text-sage">Grab it at the counter or get free local delivery — always in compostable packaging.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= LOCATIONS ================= -->
+    <section id="locations" class="py-16 sm:py-24">
+      <div class="mx-auto max-w-[1180px] px-6">
+        <div class="text-center">
+          <span class="pill bg-sage text-moss">📍 Find Us</span>
+          <h2 class="display mt-4 text-ink text-[36px] sm:text-[46px]">Two neighborhoods, one fresh standard</h2>
+        </div>
+        <div class="mt-10 grid gap-7 md:grid-cols-2">
+          <article class="card flex flex-col overflow-hidden md:flex-row">
+            <div class="photo ph-green grain h-44 w-full rounded-t-[28px] md:h-auto md:w-2/5 md:rounded-l-[28px] md:rounded-tr-none">
+              <div class="emoji">🌿</div><div class="glow"></div>
+            </div>
+            <div class="flex-1 p-7">
+              <h3 class="display text-leaf text-[22px]">Riverside Market</h3>
+              <p class="mt-2 text-[15px] font-semibold text-body">214 Orchard Lane<br />Riverside, CA 92501</p>
+              <p class="mt-3 text-sm font-bold text-muted">Mon–Fri · 7am – 7pm<br />Sat–Sun · 8am – 5pm</p>
+              <div class="mt-5 flex gap-2">
+                <a href="#order" class="btn btn-leaf btn-sm">Order Pickup</a>
+                <a href="#locations" class="btn btn-ghost btn-sm">Directions</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="card flex flex-col overflow-hidden md:flex-row">
+            <div class="photo ph-acai grain h-44 w-full rounded-t-[28px] md:h-auto md:w-2/5 md:rounded-l-[28px] md:rounded-tr-none">
+              <div class="emoji">🥣</div><div class="glow"></div>
+            </div>
+            <div class="flex-1 p-7">
+              <h3 class="display text-leaf text-[22px]">Downtown Commons</h3>
+              <p class="mt-2 text-[15px] font-semibold text-body">88 Maple Street, Suite B<br />Riverside, CA 92507</p>
+              <p class="mt-3 text-sm font-bold text-muted">Mon–Fri · 6:30am – 8pm<br />Sat–Sun · 8am – 6pm</p>
+              <div class="mt-5 flex gap-2">
+                <a href="#order" class="btn btn-leaf btn-sm">Order Pickup</a>
+                <a href="#locations" class="btn btn-ghost btn-sm">Directions</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TESTIMONIALS ================= -->
+    <section class="bg-sage py-16 sm:py-24">
+      <div class="mx-auto max-w-[1080px] px-6 text-center">
+        <h2 class="display text-berry text-[32px] sm:text-[42px]">Loved by the neighborhood</h2>
+        <div class="leaf-divider mt-5">🍃</div>
+        <div class="mt-10 grid gap-7 md:grid-cols-3">
+          <figure class="card p-7 text-left">
+            <div class="text-mango text-lg">★★★★★</div>
+            <blockquote class="mt-3 text-[15px] font-semibold italic leading-relaxed text-body">
+              &ldquo;The Midnight Açaí is my morning ritual now. You can actually
+              taste how fresh everything is — it ruined every other bowl for me.&rdquo;
+            </blockquote>
+            <figcaption class="mt-4 flex items-center gap-3">
+              <span class="flex h-10 w-10 items-center justify-center rounded-full bg-acai text-lg" style="background:#e9defb;">🙂</span>
+              <span class="font-extrabold text-ink">Maya R. <span class="block text-xs font-bold text-muted">Riverside</span></span>
+            </figcaption>
+          </figure>
+
+          <figure class="card p-7 text-left">
+            <div class="text-mango text-lg">★★★★★</div>
+            <blockquote class="mt-3 text-[15px] font-semibold italic leading-relaxed text-body">
+              &ldquo;Finally a place where I trust every ingredient. The team knows
+              their farmers by name. Catering for our office was a huge hit.&rdquo;
+            </blockquote>
+            <figcaption class="mt-4 flex items-center gap-3">
+              <span class="flex h-10 w-10 items-center justify-center rounded-full text-lg" style="background:#dcebd0;">😊</span>
+              <span class="font-extrabold text-ink">Daniel K. <span class="block text-xs font-bold text-muted">Downtown</span></span>
+            </figcaption>
+          </figure>
+
+          <figure class="card p-7 text-left">
+            <div class="text-mango text-lg">★★★★★</div>
+            <blockquote class="mt-3 text-[15px] font-semibold italic leading-relaxed text-body">
+              &ldquo;Balanced, filling, and genuinely delicious. The Green Machine
+              gets me through marathon training weeks without the crash.&rdquo;
+            </blockquote>
+            <figcaption class="mt-4 flex items-center gap-3">
+              <span class="flex h-10 w-10 items-center justify-center rounded-full text-lg" style="background:#fce4d0;">😄</span>
+              <span class="font-extrabold text-ink">Priya S. <span class="block text-xs font-bold text-muted">Riverside</span></span>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CATERING / GIFT CARDS CTA ================= -->
+    <section id="catering" class="py-16 sm:py-24">
+      <div class="mx-auto max-w-[1080px] px-6">
+        <div class="grid gap-7 md:grid-cols-2">
+          <div class="card flex flex-col justify-between gap-6 bg-leaf p-9 text-cream">
+            <div>
+              <span class="text-3xl">🥗</span>
+              <h3 class="display mt-3 text-white text-[26px]">Catering &amp; Events</h3>
+              <p class="mt-3 text-[15px] font-semibold leading-relaxed text-sage">
+                Bowl bars, smoothie stations and grain platters for offices,
+                weddings and team workouts. Built fresh, delivered on time.
+              </p>
+            </div>
+            <a href="#order" class="btn btn-berry self-start">Plan an Event</a>
+          </div>
+
+          <div id="giftcards" class="card flex flex-col justify-between gap-6 bg-mango p-9 text-bark">
+            <div>
+              <span class="text-3xl">🎁</span>
+              <h3 class="display mt-3 text-bark text-[26px]">Gift Cards</h3>
+              <p class="mt-3 text-[15px] font-semibold leading-relaxed text-bark/80">
+                Give the gift of good food. Digital gift cards arrive instantly
+                and never expire — redeemable at both locations and online.
+              </p>
+            </div>
+            <a href="#order" class="btn btn-leaf self-start">Buy a Gift Card</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ORDER / EMAIL SIGNUP ================= -->
+    <section id="order" class="bg-berry py-16 text-white sm:py-20">
+      <div class="mx-auto max-w-[760px] px-6 text-center">
+        <h2 class="display text-white text-[34px] sm:text-[44px]">Ready to eat fresh?</h2>
+        <p class="mx-auto mt-4 max-w-lg text-[16px] font-semibold text-white/90">
+          Order online for pickup or free local delivery — or join our list for
+          seasonal menus, new flavors and the occasional treat.
+        </p>
+        <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          <a href="#order" class="btn bg-white text-berry hover:bg-cream">Start an Order</a>
+        </div>
+        <form class="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:flex-row" onsubmit="return false;">
+          <label for="email" class="sr-only">Email address</label>
+          <input id="email" type="email" placeholder="you@email.com" class="h-12 flex-1 rounded-full border-0 px-5 text-[15px] font-semibold text-ink placeholder:text-muted focus:outline-none focus:ring-4 focus:ring-white/40" />
+          <button type="submit" class="btn btn-leaf">Sign Up</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="bg-ink py-14 text-sage">
+      <div class="mx-auto max-w-[1180px] px-6">
+        <div class="grid gap-10 md:grid-cols-4">
+          <!-- brand -->
+          <div>
+            <span class="wordmark" style="color:#e8eedf;">
+              <span class="top" style="color:#e8eedf;">FARM&nbsp;FRESH</span>
+              <span class="bowl"><span class="est" style="color:#9fb98a;">EST</span><span class="icon" style="border-color:#e8eedf;"></span><span class="est" style="color:#9fb98a;">2018</span></span>
+              <span class="bottom" style="color:#e8eedf;">BOWLS</span>
+            </span>
+            <p class="mt-4 max-w-xs text-sm font-semibold leading-relaxed text-sage/80">
+              Balanced, nutritious bowls made with local ingredients —
+              here to deliver health, one bowl at a time.
+            </p>
+          </div>
+
+          <!-- contact -->
+          <div>
+            <h4 class="display text-[14px] uppercase tracking-widest text-fern">Contact</h4>
+            <ul class="mt-4 space-y-2 text-sm font-semibold text-sage/85">
+              <li>hello@farmfreshbowls.example</li>
+              <li>(951) 555-0142</li>
+              <li>214 Orchard Lane<br />Riverside, CA 92501</li>
+            </ul>
+          </div>
+
+          <!-- hours -->
+          <div>
+            <h4 class="display text-[14px] uppercase tracking-widest text-fern">Hours</h4>
+            <ul class="mt-4 space-y-2 text-sm font-semibold text-sage/85">
+              <li>Mon – Fri · 7am – 7pm</li>
+              <li>Saturday · 8am – 5pm</li>
+              <li>Sunday · 8am – 5pm</li>
+            </ul>
+          </div>
+
+          <!-- links + email -->
+          <div>
+            <h4 class="display text-[14px] uppercase tracking-widest text-fern">Email Sign Up</h4>
+            <form class="mt-4 flex gap-2" onsubmit="return false;">
+              <input type="email" placeholder="Your email" class="h-11 w-full rounded-full border-0 px-4 text-sm font-semibold text-ink placeholder:text-muted focus:outline-none focus:ring-4 focus:ring-fern/40" />
+              <button type="submit" class="btn btn-leaf btn-sm">Join</button>
+            </form>
+            <div class="mt-6 flex gap-3">
+              <a href="#top" aria-label="Instagram" class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 transition hover:bg-fern">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+              </a>
+              <a href="#top" aria-label="Facebook" class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 transition hover:bg-fern">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H7v3h3v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/></svg>
+              </a>
+              <a href="#top" aria-label="X" class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 transition hover:bg-fern">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h4l4 5.5L16.5 4H20l-6 7.8L20.5 20H16l-4.2-5.8L7 20H3.5l6.3-8.2z"/></svg>
+              </a>
+              <a href="#top" aria-label="TikTok" class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 transition hover:bg-fern">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M14 3c.3 2 1.6 3.6 3.7 4v3c-1.4 0-2.7-.4-3.7-1.1V15a5 5 0 1 1-5-5c.3 0 .7 0 1 .1v3.1a2 2 0 1 0 1.4 1.9V3z"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-12 border-t border-white/10 pt-8 text-center text-xs font-semibold text-sage/60">
+          <p>© 2026 Farm Fresh Bowls (mockup). All rights reserved.</p>
+          <p class="mx-auto mt-3 max-w-3xl leading-relaxed">
+            Design mockup built with Tailwind CSS for layout reference only. Not
+            affiliated with, endorsed by, or representative of Farm Fresh Bowls.
+            All names and trademarks belong to their respective owners.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- ================= MINIMAL JS ================= -->
+    <script>
+      // header scroll state
+      const hdr = document.getElementById('hdr');
+      const onScroll = () => hdr.classList.toggle('scrolled', window.scrollY > 12);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      // mobile drawer
+      const drawer = document.getElementById('drawer');
+      const menuBtn = document.getElementById('menuBtn');
+      const openDrawer = () => {
+        drawer.classList.remove('hidden');
+        menuBtn.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+      };
+      const closeDrawer = () => {
+        drawer.classList.add('hidden');
+        menuBtn.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+      };
+      menuBtn.addEventListener('click', openDrawer);
+      document.getElementById('closeBtn').addEventListener('click', closeDrawer);
+      document.getElementById('drawerScrim').addEventListener('click', closeDrawer);
+      drawer.querySelectorAll('a').forEach((a) => a.addEventListener('click', closeDrawer));
+
+      // menu tabs (visual demo)
+      const tabs = document.querySelectorAll('.menu-tab');
+      tabs.forEach((t) =>
+        t.addEventListener('click', () => {
+          tabs.forEach((x) => x.setAttribute('aria-selected', 'false'));
+          t.setAttribute('aria-selected', 'true');
+        }),
+      );
+    </script>
+  </body>
+</html>

@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Nike — Just Do It (design mockup)</title>
+<!--
+  ============================================================
+  DESIGN-REFERENCE MOCKUP — Nike.com homepage
+  Self-contained HTML, Tailwind via Play CDN. Part of the
+  /docs/mockups design-reference gallery (tesla / notion / clay).
+
+  IP NOTE: The swoosh is a hand-built inline SVG path and the
+  "Nike" wordmark is styled text — no real Nike logo/asset is
+  embedded or hotlinked. All product/campaign imagery is
+  recreated with CSS gradients + emoji stand-ins. Product
+  names, prices and copy are invented. See footer disclaimer.
+  ============================================================
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['Anton', 'Archivo', 'system-ui', 'sans-serif'],
+          condensed: ['Archivo', 'system-ui', 'sans-serif'],
+          body: ['Inter', 'system-ui', 'sans-serif'],
+        },
+        colors: {
+          ink: '#111111',
+          smoke: '#757575',
+          line: '#e5e5e5',
+          haze: '#f5f5f5',
+          stone: '#e8e8e8',
+        },
+        maxWidth: { mega: '1800px' },
+      },
+    },
+  };
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', system-ui, sans-serif; color: #111; -webkit-font-smoothing: antialiased; }
+  .font-display { letter-spacing: -0.01em; }
+  /* horizontal carousel: hide scrollbar but keep scroll */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .snap-x-mandatory { scroll-snap-type: x mandatory; }
+  .snap-start { scroll-snap-align: start; }
+  /* recreated swoosh: pure CSS rotated ellipse mask fallback handled by SVG below */
+  .uline { background-image: linear-gradient(currentColor,currentColor); background-size:0% 1.5px; background-repeat:no-repeat; background-position:left bottom; transition:background-size .25s ease; }
+  .uline:hover { background-size:100% 1.5px; }
+  /* texture for image stand-ins */
+  .grain { position:relative; overflow:hidden; }
+  .grain::after { content:""; position:absolute; inset:0; background-image:radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px); background-size:4px 4px; pointer-events:none; }
+</style>
+</head>
+<body class="bg-white">
+
+<!-- ============================================================
+     UTILITY BAR (thin, top)
+     ============================================================ -->
+<div class="bg-haze text-ink text-[11px] hidden md:block">
+  <div class="mx-auto max-w-mega px-10">
+    <div class="flex items-center justify-end gap-5 h-9">
+      <!-- recreated swoosh mark, tiny -->
+      <svg viewBox="0 0 80 28" class="h-3.5 w-auto mr-auto opacity-90" aria-label="Nike (mockup)" role="img">
+        <path d="M2 22 C 18 5, 52 -3, 78 1 C 50 7, 26 16, 8 25 C 6 26, 3 25, 2 22 Z" fill="#111"/>
+      </svg>
+      <a href="#" class="uline font-medium">Find a Store</a>
+      <span class="text-line">|</span>
+      <a href="#" class="uline font-medium">Help</a>
+      <span class="text-line">|</span>
+      <a href="#" class="uline font-medium">Join Us</a>
+      <span class="text-line">|</span>
+      <a href="#" class="uline font-medium">Sign In</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MAIN HEADER (sticky, scroll state via JS)
+     ============================================================ -->
+<header id="hdr" class="sticky top-0 z-50 bg-white transition-shadow duration-200">
+  <div class="mx-auto max-w-mega px-5 md:px-10">
+    <div class="flex items-center h-16">
+      <!-- Brand: recreated swoosh + wordmark -->
+      <a href="#" class="flex items-center gap-2 shrink-0" aria-label="Nike home (mockup)">
+        <svg viewBox="0 0 120 42" class="h-6 md:h-7 w-auto" role="img" aria-hidden="true">
+          <path d="M4 33 C 28 7, 78 -5, 116 2 C 76 11, 40 24, 13 37 C 9 39, 5 37, 4 33 Z" fill="#111"/>
+        </svg>
+        <span class="sr-only">Nike</span>
+      </a>
+
+      <!-- Primary nav (desktop) -->
+      <nav class="hidden lg:flex items-center gap-7 absolute left-1/2 -translate-x-1/2 text-[16px] font-medium">
+        <a href="#" class="py-5 border-b-2 border-transparent hover:border-ink transition-colors">New &amp; Featured</a>
+        <a href="#" class="py-5 border-b-2 border-transparent hover:border-ink transition-colors">Men</a>
+        <a href="#" class="py-5 border-b-2 border-transparent hover:border-ink transition-colors">Women</a>
+        <a href="#" class="py-5 border-b-2 border-transparent hover:border-ink transition-colors">Kids</a>
+        <a href="#" class="py-5 border-b-2 border-transparent hover:border-ink transition-colors">Jordan</a>
+        <a href="#" class="py-5 border-b-2 border-transparent hover:border-ink transition-colors text-[#9e0000]">Sale</a>
+      </nav>
+
+      <!-- Right cluster -->
+      <div class="flex items-center gap-2 md:gap-4 ml-auto">
+        <!-- Search pill -->
+        <form class="hidden sm:flex items-center bg-haze rounded-full h-10 px-4 gap-2 w-36 md:w-44 focus-within:w-56 transition-all" onsubmit="return false">
+          <svg class="h-4 w-4 text-smoke" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input type="search" placeholder="Search" class="bg-transparent outline-none text-sm w-full placeholder:text-smoke" />
+        </form>
+        <!-- Heart -->
+        <button class="h-10 w-10 grid place-items-center rounded-full hover:bg-haze transition-colors" aria-label="Favorites">
+          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21.4l8.8-8.7a5 5 0 0 0 0-7.1Z"/></svg>
+        </button>
+        <!-- Bag -->
+        <button class="h-10 w-10 grid place-items-center rounded-full hover:bg-haze transition-colors relative" aria-label="Bag">
+          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+          <span class="absolute top-1.5 right-1.5 h-4 min-w-4 px-1 rounded-full bg-ink text-white text-[10px] font-semibold grid place-items-center">2</span>
+        </button>
+        <!-- Hamburger (mobile) -->
+        <button id="burger" class="lg:hidden h-10 w-10 grid place-items-center rounded-full hover:bg-haze transition-colors" aria-label="Menu" aria-expanded="false">
+          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu drawer -->
+  <div id="mobileMenu" class="lg:hidden hidden border-t border-line bg-white">
+    <nav class="px-5 py-3 flex flex-col text-lg font-semibold">
+      <a href="#" class="py-3 border-b border-line">New &amp; Featured</a>
+      <a href="#" class="py-3 border-b border-line">Men</a>
+      <a href="#" class="py-3 border-b border-line">Women</a>
+      <a href="#" class="py-3 border-b border-line">Kids</a>
+      <a href="#" class="py-3 border-b border-line">Jordan</a>
+      <a href="#" class="py-3 text-[#9e0000]">Sale</a>
+    </nav>
+    <div class="px-5 pb-5 flex items-center gap-4 text-sm text-smoke">
+      <a href="#" class="uline">Find a Store</a><a href="#" class="uline">Help</a><a href="#" class="uline">Join Us</a><a href="#" class="uline">Sign In</a>
+    </div>
+  </div>
+</header>
+
+<main class="mx-auto max-w-mega">
+
+  <!-- ============================================================
+       HERO — full-bleed campaign
+       ============================================================ -->
+  <section class="relative overflow-hidden grain bg-gradient-to-br from-[#3a4756] via-[#566173] to-[#8a93a3]">
+    <!-- recreated "scene": layered color blocks + figure stand-in -->
+    <div class="absolute inset-0">
+      <div class="absolute -right-10 top-0 h-full w-2/3 bg-gradient-to-bl from-[#cfd6dd]/40 via-transparent to-transparent"></div>
+      <div class="absolute right-[8%] top-1/2 -translate-y-1/2 text-[40vw] sm:text-[26vw] leading-none select-none opacity-90 drop-shadow-2xl">🏃🏽</div>
+      <div class="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/55 via-black/10 to-transparent"></div>
+    </div>
+
+    <div class="relative px-6 md:px-14 pt-16 pb-12 md:pt-28 md:pb-20 min-h-[78vh] md:min-h-[86vh] flex flex-col justify-end max-w-3xl">
+      <p class="text-white/90 font-semibold tracking-wide text-sm md:text-base mb-3">Nike Football</p>
+      <h1 class="font-display text-white text-6xl sm:text-7xl md:text-8xl lg:text-9xl leading-[0.88] uppercase">
+        Wear It<br/>With Grit
+      </h1>
+      <p class="text-white/90 text-base md:text-lg mt-5 max-w-md font-medium">
+        Rep the fabric of the pitch with unflinching attitude. Built for the players who never settle.
+      </p>
+      <div class="flex flex-wrap gap-3 mt-7">
+        <a href="#" class="inline-flex items-center justify-center bg-ink text-white rounded-full h-12 px-7 text-[15px] font-medium hover:bg-black/80 transition-colors">Shop England</a>
+        <a href="#" class="inline-flex items-center justify-center gap-2 bg-white text-ink rounded-full h-12 px-7 text-[15px] font-medium hover:bg-white/90 transition-colors">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Watch
+        </a>
+      </div>
+    </div>
+
+    <!-- carousel dots + arrows -->
+    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2">
+      <span class="h-1.5 w-6 rounded-full bg-white"></span>
+      <span class="h-1.5 w-1.5 rounded-full bg-white/50"></span>
+      <span class="h-1.5 w-1.5 rounded-full bg-white/50"></span>
+      <span class="h-1.5 w-1.5 rounded-full bg-white/50"></span>
+    </div>
+    <div class="hidden md:flex absolute bottom-6 right-8 gap-2">
+      <button class="h-11 w-11 rounded-full bg-white/85 hover:bg-white grid place-items-center transition-colors" aria-label="Previous">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <button class="h-11 w-11 rounded-full bg-white/85 hover:bg-white grid place-items-center transition-colors" aria-label="Next">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       THREE-UP CATEGORY TILES (under hero)
+       ============================================================ -->
+  <section class="px-3 md:px-6 mt-3 md:mt-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
+      <!-- tile -->
+      <article class="group">
+        <div class="grain aspect-[4/5] md:aspect-[5/6] bg-gradient-to-br from-[#f2b705] to-[#e85d04] grid place-items-center overflow-hidden">
+          <span class="text-[120px] md:text-[150px] leading-none transition-transform duration-500 group-hover:scale-110">👟</span>
+        </div>
+        <p class="mt-3 text-base font-medium">Shop Lifestyle</p>
+      </article>
+      <article class="group">
+        <div class="grain aspect-[4/5] md:aspect-[5/6] bg-gradient-to-br from-[#06d6a0] to-[#118ab2] grid place-items-center overflow-hidden">
+          <span class="text-[120px] md:text-[150px] leading-none transition-transform duration-500 group-hover:scale-110">⚽</span>
+        </div>
+        <p class="mt-3 text-base font-medium">Shop Cleats</p>
+      </article>
+      <article class="group">
+        <div class="grain aspect-[4/5] md:aspect-[5/6] bg-gradient-to-br from-[#ef476f] to-[#7209b7] grid place-items-center overflow-hidden">
+          <span class="text-[120px] md:text-[150px] leading-none transition-transform duration-500 group-hover:scale-110">🎽</span>
+        </div>
+        <p class="mt-3 text-base font-medium">Rep Your Team</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FEATURED PRODUCT CAROUSEL — "Best of Air Max"
+       ============================================================ -->
+  <section class="px-5 md:px-10 mt-16 md:mt-24">
+    <div class="flex items-end justify-between mb-5">
+      <h2 class="font-condensed font-bold text-2xl md:text-3xl">Best of Air Max</h2>
+      <div class="hidden md:flex items-center gap-2">
+        <button class="car-prev h-11 w-11 rounded-full bg-haze hover:bg-stone grid place-items-center transition-colors" data-car="airmax" aria-label="Previous">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button class="car-next h-11 w-11 rounded-full bg-haze hover:bg-stone grid place-items-center transition-colors" data-car="airmax" aria-label="Next">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="car-airmax" class="flex gap-4 md:gap-5 overflow-x-auto no-scrollbar snap-x-mandatory pb-2 scroll-smooth">
+      <!-- product card template repeated -->
+      <article class="snap-start shrink-0 w-[78%] sm:w-[46%] md:w-[31%] lg:w-[24%] group cursor-pointer">
+        <div class="grain aspect-square bg-gradient-to-br from-[#dfe7ef] to-[#b8c4d3] grid place-items-center relative overflow-hidden">
+          <span class="absolute top-3 left-3 text-[12px] font-medium text-[#9e0000]">Just In</span>
+          <span class="text-[110px] leading-none transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6">👟</span>
+        </div>
+        <p class="mt-3 text-[#9e0000] text-[13px] font-medium">Just In</p>
+        <p class="text-[15px] font-medium leading-tight">Air Vega 270</p>
+        <p class="text-smoke text-[15px]">Men's Shoes</p>
+        <p class="mt-1 text-[15px] font-medium">$149.97</p>
+      </article>
+
+      <article class="snap-start shrink-0 w-[78%] sm:w-[46%] md:w-[31%] lg:w-[24%] group cursor-pointer">
+        <div class="grain aspect-square bg-gradient-to-br from-[#ffe5d0] to-[#ffb088] grid place-items-center relative overflow-hidden">
+          <span class="text-[110px] leading-none transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6">👟</span>
+        </div>
+        <p class="mt-3 text-[#9e0000] text-[13px] font-medium">Just In</p>
+        <p class="text-[15px] font-medium leading-tight">Pegasus Trail 5</p>
+        <p class="text-smoke text-[15px]">Men's Trail Running</p>
+        <p class="mt-1 text-[15px] font-medium">$139.97</p>
+      </article>
+
+      <article class="snap-start shrink-0 w-[78%] sm:w-[46%] md:w-[31%] lg:w-[24%] group cursor-pointer">
+        <div class="grain aspect-square bg-gradient-to-br from-[#d8f3dc] to-[#74c69d] grid place-items-center relative overflow-hidden">
+          <span class="text-[110px] leading-none transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6">👟</span>
+        </div>
+        <p class="mt-3 text-[15px] font-medium leading-tight">Court Royale Lux</p>
+        <p class="text-smoke text-[15px]">Women's Shoes</p>
+        <p class="mt-1 text-[15px] font-medium">$94.97</p>
+      </article>
+
+      <article class="snap-start shrink-0 w-[78%] sm:w-[46%] md:w-[31%] lg:w-[24%] group cursor-pointer">
+        <div class="grain aspect-square bg-gradient-to-br from-[#e0c3fc] to-[#8ec5fc] grid place-items-center relative overflow-hidden">
+          <span class="text-[110px] leading-none transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6">👟</span>
+        </div>
+        <p class="mt-3 text-[15px] font-medium leading-tight">Air Zoom Flux</p>
+        <p class="text-smoke text-[15px]">Men's Road Racing</p>
+        <p class="mt-1 text-[15px] font-medium">$169.97</p>
+      </article>
+
+      <article class="snap-start shrink-0 w-[78%] sm:w-[46%] md:w-[31%] lg:w-[24%] group cursor-pointer">
+        <div class="grain aspect-square bg-gradient-to-br from-[#fff1c1] to-[#ffd166] grid place-items-center relative overflow-hidden">
+          <span class="text-[110px] leading-none transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6">👟</span>
+        </div>
+        <p class="mt-3 text-[15px] font-medium leading-tight">Blazer Mid '78</p>
+        <p class="text-smoke text-[15px]">Women's Shoes</p>
+        <p class="mt-1 text-[15px] font-medium">$109.97</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       BRANDED PROMO — Nike Basketball (dark editorial)
+       ============================================================ -->
+  <section class="bg-haze mt-16 md:mt-24 py-10 md:py-16">
+    <div class="px-5 md:px-10">
+      <div class="flex items-center justify-center gap-3 mb-6">
+        <svg viewBox="0 0 120 42" class="h-7 w-auto" aria-hidden="true"><path d="M4 33 C 28 7, 78 -5, 116 2 C 76 11, 40 24, 13 37 C 9 39, 5 37, 4 33 Z" fill="#111"/></svg>
+        <span class="font-condensed font-extrabold text-2xl md:text-3xl tracking-tight">Basketball</span>
+      </div>
+
+      <div class="relative grain overflow-hidden bg-gradient-to-br from-[#0b132b] via-[#1c2541] to-[#3a506b] min-h-[420px] md:min-h-[520px] flex items-end">
+        <div class="absolute right-[10%] top-1/2 -translate-y-1/2 text-[36vw] md:text-[18vw] leading-none opacity-90 select-none">🏀</div>
+        <div class="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/70 to-transparent"></div>
+        <div class="relative p-7 md:p-12 max-w-xl">
+          <h3 class="font-display text-white text-5xl md:text-7xl leading-[0.9] uppercase">Never Slept.<br/>Always Dreamed.</h3>
+          <p class="text-white/85 mt-4 max-w-sm font-medium">It lives in the hours no one sees. The new Flight Series drops with the lights off and the work on.</p>
+          <div class="flex flex-wrap gap-3 mt-6">
+            <a href="#" class="inline-flex items-center justify-center bg-white text-ink rounded-full h-11 px-6 text-[15px] font-medium hover:bg-white/90 transition-colors">Shop</a>
+            <a href="#" class="inline-flex items-center justify-center border border-white/70 text-white rounded-full h-11 px-6 text-[15px] font-medium hover:bg-white/10 transition-colors">Learn More</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       EDITORIAL PROMO — Meet the Future of Football
+       ============================================================ -->
+  <section class="px-5 md:px-10 mt-16 md:mt-24">
+    <div class="relative grain overflow-hidden bg-gradient-to-r from-[#e9d8a6] via-[#ee9b00] to-[#bb3e03] min-h-[380px] md:min-h-[480px] flex items-center">
+      <div class="absolute right-[6%] bottom-[6%] text-[34vw] md:text-[15vw] leading-none opacity-90 select-none">⚡</div>
+      <div class="relative p-7 md:p-14 max-w-lg">
+        <h3 class="font-display text-ink text-5xl md:text-7xl leading-[0.9] uppercase">Meet the<br/>Future of<br/>Football</h3>
+        <p class="text-ink/80 mt-4 max-w-sm font-medium">Get ready to watch the boot that reps high-school players compete to open potential this fall. Streaming live now.</p>
+        <div class="flex flex-wrap gap-3 mt-6">
+          <a href="#" class="inline-flex items-center justify-center bg-ink text-white rounded-full h-11 px-6 text-[15px] font-medium hover:bg-black/80 transition-colors">Explore Now</a>
+          <a href="#" class="inline-flex items-center justify-center gap-2 bg-white text-ink rounded-full h-11 px-6 text-[15px] font-medium hover:bg-white/90 transition-colors">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Watch
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SHOP BY SPORT — icon row
+       ============================================================ -->
+  <section class="px-5 md:px-10 mt-16 md:mt-24">
+    <h2 class="font-condensed font-bold text-2xl md:text-3xl mb-6">Shop By Sport</h2>
+    <div class="flex gap-4 md:gap-5 overflow-x-auto no-scrollbar snap-x-mandatory pb-2">
+      <!-- sport pill -->
+      <a href="#" class="snap-start shrink-0 group text-center">
+        <div class="grain h-28 w-28 md:h-36 md:w-36 rounded-full bg-gradient-to-br from-[#0077b6] to-[#00b4d8] grid place-items-center transition-transform duration-300 group-hover:scale-105">
+          <span class="text-5xl md:text-6xl">⚽</span>
+        </div>
+        <p class="mt-3 text-sm md:text-base font-medium">Football</p>
+      </a>
+      <a href="#" class="snap-start shrink-0 group text-center">
+        <div class="grain h-28 w-28 md:h-36 md:w-36 rounded-full bg-gradient-to-br from-[#d00000] to-[#ffba08] grid place-items-center transition-transform duration-300 group-hover:scale-105">
+          <span class="text-5xl md:text-6xl">🏀</span>
+        </div>
+        <p class="mt-3 text-sm md:text-base font-medium">Basketball</p>
+      </a>
+      <a href="#" class="snap-start shrink-0 group text-center">
+        <div class="grain h-28 w-28 md:h-36 md:w-36 rounded-full bg-gradient-to-br from-[#386641] to-[#a7c957] grid place-items-center transition-transform duration-300 group-hover:scale-105">
+          <span class="text-5xl md:text-6xl">🏃</span>
+        </div>
+        <p class="mt-3 text-sm md:text-base font-medium">Running</p>
+      </a>
+      <a href="#" class="snap-start shrink-0 group text-center">
+        <div class="grain h-28 w-28 md:h-36 md:w-36 rounded-full bg-gradient-to-br from-[#7209b7] to-[#f72585] grid place-items-center transition-transform duration-300 group-hover:scale-105">
+          <span class="text-5xl md:text-6xl">🎾</span>
+        </div>
+        <p class="mt-3 text-sm md:text-base font-medium">Tennis</p>
+      </a>
+      <a href="#" class="snap-start shrink-0 group text-center">
+        <div class="grain h-28 w-28 md:h-36 md:w-36 rounded-full bg-gradient-to-br from-[#023e8a] to-[#0096c7] grid place-items-center transition-transform duration-300 group-hover:scale-105">
+          <span class="text-5xl md:text-6xl">🏋️</span>
+        </div>
+        <p class="mt-3 text-sm md:text-base font-medium">Training</p>
+      </a>
+      <a href="#" class="snap-start shrink-0 group text-center">
+        <div class="grain h-28 w-28 md:h-36 md:w-36 rounded-full bg-gradient-to-br from-[#ff6d00] to-[#ffd60a] grid place-items-center transition-transform duration-300 group-hover:scale-105">
+          <span class="text-5xl md:text-6xl">⛳</span>
+        </div>
+        <p class="mt-3 text-sm md:text-base font-medium">Golf</p>
+      </a>
+      <a href="#" class="snap-start shrink-0 group text-center">
+        <div class="grain h-28 w-28 md:h-36 md:w-36 rounded-full bg-gradient-to-br from-[#495057] to-[#adb5bd] grid place-items-center transition-transform duration-300 group-hover:scale-105">
+          <span class="text-5xl md:text-6xl">🛹</span>
+        </div>
+        <p class="mt-3 text-sm md:text-base font-medium">Skateboarding</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FULL-WIDTH STATEMENT PROMO — For Best Results
+       ============================================================ -->
+  <section class="px-5 md:px-10 mt-16 md:mt-24">
+    <h2 class="font-display uppercase text-4xl md:text-6xl text-center leading-[0.9] mb-8">For Best Results, Use Daily</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5">
+      <article class="group cursor-pointer">
+        <div class="grain aspect-[3/4] bg-gradient-to-br from-[#212529] to-[#495057] flex items-end p-6 overflow-hidden">
+          <div>
+            <p class="text-white/70 text-sm font-medium">Recovery</p>
+            <p class="text-white font-condensed font-bold text-xl">Refuel &amp; Reset</p>
+          </div>
+          <span class="ml-auto self-center text-7xl transition-transform duration-500 group-hover:scale-110">🧴</span>
+        </div>
+      </article>
+      <article class="group cursor-pointer">
+        <div class="grain aspect-[3/4] bg-gradient-to-br from-[#283618] to-[#606c38] flex items-end p-6 overflow-hidden">
+          <div>
+            <p class="text-white/70 text-sm font-medium">Hydration</p>
+            <p class="text-white font-condensed font-bold text-xl">Stay In Motion</p>
+          </div>
+          <span class="ml-auto self-center text-7xl transition-transform duration-500 group-hover:scale-110">💧</span>
+        </div>
+      </article>
+      <article class="group cursor-pointer">
+        <div class="grain aspect-[3/4] bg-gradient-to-br from-[#3c096c] to-[#9d4edd] flex items-end p-6 overflow-hidden">
+          <div>
+            <p class="text-white/70 text-sm font-medium">Mobility</p>
+            <p class="text-white font-condensed font-bold text-xl">Move Freely</p>
+          </div>
+          <span class="ml-auto self-center text-7xl transition-transform duration-500 group-hover:scale-110">🧘</span>
+        </div>
+      </article>
+    </div>
+    <div class="flex justify-center mt-7">
+      <a href="#" class="inline-flex items-center justify-center bg-ink text-white rounded-full h-12 px-8 text-[15px] font-medium hover:bg-black/80 transition-colors">Shop Recovery</a>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FANDOM REIMAGINED — team shop carousel
+       ============================================================ -->
+  <section class="bg-haze mt-16 md:mt-24 py-12 md:py-20">
+    <div class="px-5 md:px-10">
+      <div class="relative grain overflow-hidden bg-gradient-to-br from-[#003049] via-[#0353a4] to-[#3a86ff] min-h-[360px] md:min-h-[460px] flex items-end mb-8">
+        <div class="absolute right-[8%] top-1/2 -translate-y-1/2 text-[34vw] md:text-[15vw] leading-none opacity-90 select-none">🧢</div>
+        <div class="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/60 to-transparent"></div>
+        <div class="relative p-7 md:p-12">
+          <h3 class="font-display text-white text-5xl md:text-7xl leading-[0.9] uppercase">Fandom,<br/>Reimagined</h3>
+          <p class="text-white/85 mt-3 max-w-sm font-medium">Officially licensed gear for the leagues you live for. Rep your colors, every game day.</p>
+        </div>
+      </div>
+
+      <div class="flex items-end justify-between mb-5">
+        <h2 class="font-condensed font-bold text-2xl md:text-3xl">Shop Your Team</h2>
+        <div class="hidden md:flex items-center gap-2">
+          <button class="car-prev h-11 w-11 rounded-full bg-white hover:bg-stone grid place-items-center transition-colors" data-car="teams" aria-label="Previous">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <button class="car-next h-11 w-11 rounded-full bg-white hover:bg-stone grid place-items-center transition-colors" data-car="teams" aria-label="Next">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="car-teams" class="flex gap-4 md:gap-5 overflow-x-auto no-scrollbar snap-x-mandatory pb-2 scroll-smooth">
+        <article class="snap-start shrink-0 w-[78%] sm:w-[46%] md:w-[31%] lg:w-[24%] group cursor-pointer">
+          <div class="grain aspect-square bg-gradient-to-br from-[#27251f] to-[#fdb827] grid place-items-center overflow-hidden">
+            <span class="text-[100px] leading-none transition-transform duration-500 group-hover:scale-110">🦜</span>
+          </div>
+          <p class="mt-3 text-[15px] font-medium leading-tight">Harbor Pirates Jersey</p>
+          <p class="text-smoke text-[15px]">Men's Replica</p>
+          <p class="mt-1 text-[15px] font-medium">$129.97</p>
+        </article>
+        <article class="snap-start shrink-0 w-[78%] sm:w-[46%] md:w-[31%] lg:w-[24%] group cursor-pointer">
+          <div class="grain aspect-square bg-gradient-to-br from-[#003278] to-[#c0111f] grid place-items-center overflow-hidden">
+            <span class="text-[100px] leading-none transition-transform duration-500 group-hover:scale-110">⭐</span>
+          </div>
+          <p class="mt-3 text-[15px] font-medium leading-tight">Lone Star Rangers Tee</p>
+          <p class="text-smoke text-[15px]">Women's Top</p>
+          <p class="mt-1 text-[15px] font-medium">$44.97</p>
+        </article>
+        <article class="snap-start shrink-0 w-[78%] sm:w-[46%] md:w-[31%] lg:w-[24%] group cursor-pointer">
+          <div class="grain aspect-square bg-gradient-to-br from-[#c6011f] to-[#000000] grid place-items-center overflow-hidden">
+            <span class="text-[100px] leading-none transition-transform duration-500 group-hover:scale-110">🐯</span>
+          </div>
+          <p class="mt-3 text-[15px] font-medium leading-tight">Queen City Reds Cap</p>
+          <p class="text-smoke text-[15px]">Adjustable Hat</p>
+          <p class="mt-1 text-[15px] font-medium">$34.97</p>
+        </article>
+        <article class="snap-start shrink-0 w-[78%] sm:w-[46%] md:w-[31%] lg:w-[24%] group cursor-pointer">
+          <div class="grain aspect-square bg-gradient-to-br from-[#0c2340] to-[#e31837] grid place-items-center overflow-hidden">
+            <span class="text-[100px] leading-none transition-transform duration-500 group-hover:scale-110">⚓</span>
+          </div>
+          <p class="mt-3 text-[15px] font-medium leading-tight">Bay City Hoodie</p>
+          <p class="text-smoke text-[15px]">Men's Fleece</p>
+          <p class="mt-1 text-[15px] font-medium">$89.97</p>
+        </article>
+        <article class="snap-start shrink-0 w-[78%] sm:w-[46%] md:w-[31%] lg:w-[24%] group cursor-pointer">
+          <div class="grain aspect-square bg-gradient-to-br from-[#13274f] to-[#ce1141] grid place-items-center overflow-hidden">
+            <span class="text-[100px] leading-none transition-transform duration-500 group-hover:scale-110">🔥</span>
+          </div>
+          <p class="mt-3 text-[15px] font-medium leading-tight">Capital Heat Shorts</p>
+          <p class="text-smoke text-[15px]">Men's Training</p>
+          <p class="mt-1 text-[15px] font-medium">$54.97</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       TWO-UP EDITORIAL — Nike Skate + Explore More
+       ============================================================ -->
+  <section class="px-5 md:px-10 mt-16 md:mt-24">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5">
+      <article class="md:col-span-2 group cursor-pointer">
+        <div class="grain aspect-[16/10] bg-gradient-to-br from-[#212529] via-[#343a40] to-[#6c757d] flex items-end p-7 md:p-10 overflow-hidden relative">
+          <span class="absolute right-[8%] top-1/2 -translate-y-1/2 text-[28vw] md:text-[12vw] leading-none opacity-90 select-none">🛹</span>
+          <div class="relative">
+            <p class="text-white/70 text-sm font-medium mb-1">Introducing Nike SB</p>
+            <h3 class="font-condensed font-extrabold text-white text-3xl md:text-4xl leading-tight max-w-md">The most durable construction for skate, built for impact and grip.</h3>
+            <a href="#" class="inline-flex items-center justify-center bg-white text-ink rounded-full h-11 px-6 text-[15px] font-medium hover:bg-white/90 transition-colors mt-5">Shop the Drop</a>
+          </div>
+        </div>
+      </article>
+      <article class="group cursor-pointer">
+        <div class="grain aspect-[16/10] md:aspect-auto md:h-full bg-gradient-to-br from-[#ff6700] to-[#ee9b00] flex items-end p-7 md:p-10 overflow-hidden relative">
+          <span class="absolute right-[8%] top-[18%] text-[24vw] md:text-[8vw] leading-none opacity-90 select-none">🧥</span>
+          <div class="relative">
+            <h3 class="font-condensed font-extrabold text-ink text-2xl md:text-3xl leading-tight">Explore the Air Max 24/24 Collection</h3>
+            <a href="#" class="inline-flex items-center justify-center bg-ink text-white rounded-full h-11 px-6 text-[15px] font-medium hover:bg-black/80 transition-colors mt-5">Explore</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       TRENDING — tag cloud
+       ============================================================ -->
+  <section class="px-5 md:px-10 mt-16 md:mt-24 text-center">
+    <h2 class="font-display uppercase text-4xl md:text-6xl leading-none mb-3">Trending</h2>
+    <p class="text-smoke max-w-xl mx-auto mb-7">Classic silhouettes and cutting-edge innovation to stack on the gram for the gravel-to-glow.</p>
+    <div class="flex flex-wrap justify-center gap-2.5 max-w-3xl mx-auto">
+      <a href="#" class="rounded-full border border-line px-5 h-10 inline-flex items-center text-sm font-medium hover:bg-haze transition-colors">Air Vega 270</a>
+      <a href="#" class="rounded-full border border-line px-5 h-10 inline-flex items-center text-sm font-medium hover:bg-haze transition-colors">Pegasus Trail</a>
+      <a href="#" class="rounded-full border border-line px-5 h-10 inline-flex items-center text-sm font-medium hover:bg-haze transition-colors">Flight Series</a>
+      <a href="#" class="rounded-full border border-line px-5 h-10 inline-flex items-center text-sm font-medium hover:bg-haze transition-colors">Court Royale</a>
+      <a href="#" class="rounded-full border border-line px-5 h-10 inline-flex items-center text-sm font-medium hover:bg-haze transition-colors">Nike SB</a>
+      <a href="#" class="rounded-full border border-line px-5 h-10 inline-flex items-center text-sm font-medium hover:bg-haze transition-colors">Tech Fleece</a>
+      <a href="#" class="rounded-full border border-line px-5 h-10 inline-flex items-center text-sm font-medium hover:bg-haze transition-colors">Blazer Mid '78</a>
+      <a href="#" class="rounded-full border border-line px-5 h-10 inline-flex items-center text-sm font-medium hover:bg-haze transition-colors">Zoom Flux</a>
+      <a href="#" class="rounded-full border border-line px-5 h-10 inline-flex items-center text-sm font-medium hover:bg-haze transition-colors">Running</a>
+      <a href="#" class="rounded-full border border-line px-5 h-10 inline-flex items-center text-sm font-medium hover:bg-haze transition-colors">Sale</a>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================================================
+     MEGA FOOTER
+     ============================================================ -->
+<footer class="border-t border-line mt-20">
+  <div class="mx-auto max-w-mega px-5 md:px-10 py-12 md:py-16">
+    <div class="grid grid-cols-2 md:grid-cols-12 gap-8 md:gap-6">
+      <!-- link columns -->
+      <div class="md:col-span-2">
+        <h4 class="font-condensed font-bold uppercase text-xs tracking-wide text-smoke mb-4">Featured</h4>
+        <ul class="space-y-3 text-sm text-ink">
+          <li><a href="#" class="uline">Air Force 1</a></li>
+          <li><a href="#" class="uline">Air Max</a></li>
+          <li><a href="#" class="uline">Pegasus</a></li>
+          <li><a href="#" class="uline">Blazer</a></li>
+          <li><a href="#" class="uline">Jordan</a></li>
+        </ul>
+      </div>
+      <div class="md:col-span-2">
+        <h4 class="font-condensed font-bold uppercase text-xs tracking-wide text-smoke mb-4">Shoes</h4>
+        <ul class="space-y-3 text-sm text-ink">
+          <li><a href="#" class="uline">All Shoes</a></li>
+          <li><a href="#" class="uline">Running Shoes</a></li>
+          <li><a href="#" class="uline">Basketball Shoes</a></li>
+          <li><a href="#" class="uline">Lifestyle Shoes</a></li>
+          <li><a href="#" class="uline">Skateboarding</a></li>
+        </ul>
+      </div>
+      <div class="md:col-span-2">
+        <h4 class="font-condensed font-bold uppercase text-xs tracking-wide text-smoke mb-4">Clothing</h4>
+        <ul class="space-y-3 text-sm text-ink">
+          <li><a href="#" class="uline">All Clothing</a></li>
+          <li><a href="#" class="uline">Tops &amp; T-Shirts</a></li>
+          <li><a href="#" class="uline">Hoodies &amp; Fleece</a></li>
+          <li><a href="#" class="uline">Shorts</a></li>
+          <li><a href="#" class="uline">Jackets &amp; Vests</a></li>
+        </ul>
+      </div>
+      <div class="md:col-span-2">
+        <h4 class="font-condensed font-bold uppercase text-xs tracking-wide text-smoke mb-4">Kids</h4>
+        <ul class="space-y-3 text-sm text-ink">
+          <li><a href="#" class="uline">Infant &amp; Toddler</a></li>
+          <li><a href="#" class="uline">Kids' Shoes</a></li>
+          <li><a href="#" class="uline">Kids' Clothing</a></li>
+          <li><a href="#" class="uline">Kids' Backpacks</a></li>
+          <li><a href="#" class="uline">Kids' Accessories</a></li>
+        </ul>
+      </div>
+
+      <!-- Help / Company columns -->
+      <div class="md:col-span-2">
+        <h4 class="font-condensed font-bold uppercase text-xs tracking-wide text-smoke mb-4">Get Help</h4>
+        <ul class="space-y-3 text-sm text-ink">
+          <li><a href="#" class="uline">Order Status</a></li>
+          <li><a href="#" class="uline">Shipping &amp; Delivery</a></li>
+          <li><a href="#" class="uline">Returns</a></li>
+          <li><a href="#" class="uline">Size Charts</a></li>
+          <li><a href="#" class="uline">Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="md:col-span-2">
+        <h4 class="font-condensed font-bold uppercase text-xs tracking-wide text-smoke mb-4">About</h4>
+        <ul class="space-y-3 text-sm text-ink">
+          <li><a href="#" class="uline">News</a></li>
+          <li><a href="#" class="uline">Careers</a></li>
+          <li><a href="#" class="uline">Investors</a></li>
+          <li><a href="#" class="uline">Sustainability</a></li>
+          <li><a href="#" class="uline">Purpose</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- bottom strip: socials + region -->
+    <div class="mt-12 pt-8 border-t border-line flex flex-col-reverse md:flex-row md:items-center gap-6 md:gap-0">
+      <!-- region -->
+      <button class="flex items-center gap-2 text-sm text-smoke hover:text-ink transition-colors">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18Z" stroke-linecap="round"/></svg>
+        United States
+      </button>
+
+      <!-- socials -->
+      <div class="flex items-center gap-4 md:ml-auto text-ink">
+        <a href="#" aria-label="Twitter" class="hover:text-smoke transition-colors"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 3H22l-7.4 8.4L23 21h-6.5l-5-6.3L5.7 21H2.5l7.9-9L2 3h6.6l4.5 5.8L18.9 3Zm-1.1 16h1.7L7.3 4.7H5.5L17.8 19Z"/></svg></a>
+        <a href="#" aria-label="Facebook" class="hover:text-smoke transition-colors"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H7v3h3v6h3v-6h3l1-3h-4v-2c0-.6.4-1 1-1Z"/></svg></a>
+        <a href="#" aria-label="Instagram" class="hover:text-smoke transition-colors"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+        <a href="#" aria-label="YouTube" class="hover:text-smoke transition-colors"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M22 8.2a3 3 0 0 0-2.1-2.1C18 5.5 12 5.5 12 5.5s-6 0-7.9.6A3 3 0 0 0 2 8.2 31 31 0 0 0 1.7 12 31 31 0 0 0 2 15.8a3 3 0 0 0 2.1 2.1c1.9.6 7.9.6 7.9.6s6 0 7.9-.6a3 3 0 0 0 2.1-2.1c.3-1.3.3-3.8.3-3.8s0-2.5-.3-3.8ZM10 15V9l5.2 3L10 15Z"/></svg></a>
+      </div>
+    </div>
+
+    <!-- legal row + REQUIRED disclaimer -->
+    <div class="mt-8 flex flex-col md:flex-row md:items-center gap-3 text-xs text-smoke">
+      <div class="flex items-center gap-2">
+        <svg viewBox="0 0 120 42" class="h-4 w-auto opacity-70" aria-hidden="true"><path d="M4 33 C 28 7, 78 -5, 116 2 C 76 11, 40 24, 13 37 C 9 39, 5 37, 4 33 Z" fill="#757575"/></svg>
+        <span>&copy; 2026 Nike-style demo. All rights reserved (mockup).</span>
+      </div>
+      <div class="flex flex-wrap gap-4 md:ml-auto">
+        <a href="#" class="uline">Guides</a>
+        <a href="#" class="uline">Terms of Sale</a>
+        <a href="#" class="uline">Terms of Use</a>
+        <a href="#" class="uline">Privacy Policy</a>
+      </div>
+    </div>
+
+    <p class="mt-6 text-[11px] leading-relaxed text-smoke max-w-3xl">
+      Design mockup built with Tailwind CSS for layout reference only. Not affiliated with, endorsed by, or representative of Nike, Inc. All names and trademarks belong to their respective owners.
+    </p>
+  </div>
+</footer>
+
+<script>
+  // Header scroll state — subtle shadow once scrolled
+  (function () {
+    var hdr = document.getElementById('hdr');
+    var onScroll = function () {
+      if (window.scrollY > 8) {
+        hdr.classList.add('shadow-[0_1px_0_0_rgba(0,0,0,0.08)]');
+      } else {
+        hdr.classList.remove('shadow-[0_1px_0_0_rgba(0,0,0,0.08)]');
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // Mobile menu toggle
+    var burger = document.getElementById('burger');
+    var menu = document.getElementById('mobileMenu');
+    burger.addEventListener('click', function () {
+      var open = menu.classList.toggle('hidden') === false;
+      burger.setAttribute('aria-expanded', String(open));
+    });
+
+    // Carousel arrow controls (scroll by ~one viewport of the track)
+    document.querySelectorAll('.car-prev, .car-next').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var track = document.getElementById('car-' + btn.dataset.car);
+        if (!track) return;
+        var dir = btn.classList.contains('car-next') ? 1 : -1;
+        track.scrollBy({ left: dir * Math.round(track.clientWidth * 0.85), behavior: 'smooth' });
+      });
+    });
+  })();
+</script>
+</body>
+</html>

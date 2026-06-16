@@ -1,0 +1,958 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clutch — B2B Ratings &amp; Reviews (design mockup)</title>
+<meta name="description" content="Self-contained Tailwind design-reference mockup recreating the Clutch.co homepage layout. Not affiliated with Clutch." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['"Source Sans 3"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          display: ['"Source Sans 3"', 'Inter', 'system-ui', 'sans-serif'],
+        },
+        colors: {
+          // Clutch-like palette
+          coral: {
+            DEFAULT: '#FF3D2E', // primary coral/red accent
+            hover: '#E22D1F',
+            tint: '#FFF1EF',
+          },
+          ink: {
+            DEFAULT: '#16253B', // deep navy ink used for body + dark bars
+            900: '#0F1B2D',
+            800: '#16253B',
+            700: '#243B53',
+          },
+          link: '#1A6BC6',     // category link blue
+          mist: '#F3F4F6',     // light gray section bg
+          band: '#EEF3FF',     // pale blue announcement band
+          jade: {
+            DEFAULT: '#1FAE8C', // teal/green "one-stop-shop" band
+            dark: '#0E5E50',
+          },
+          star: '#FF3D2E',
+        },
+        boxShadow: {
+          card: '0 1px 2px rgba(16,27,45,.06), 0 1px 3px rgba(16,27,45,.05)',
+          cardh: '0 8px 24px rgba(16,27,45,.12)',
+          pop: '0 10px 40px rgba(16,27,45,.18)',
+        },
+        maxWidth: { shell: '1240px' },
+      },
+    },
+  };
+</script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+
+  /* Recreated "Clutch" wordmark — the dot of the lowercase "t" is a coral disc.
+     Pure CSS/text; no logo asset. */
+  .wordmark { font-family: 'Source Sans 3', Inter, sans-serif; font-weight: 900; letter-spacing: -.025em; }
+  .wordmark .dot {
+    display: inline-grid; place-items: center;
+    width: .62em; height: .62em; border-radius: 9999px;
+    background: #FF3D2E; color: #fff; vertical-align: baseline;
+    transform: translateY(.06em); margin: 0 .005em;
+    font-size: .58em; font-weight: 900; line-height: 1;
+  }
+
+  /* Star rating glyphs */
+  .stars { display: inline-flex; gap: 1px; color: #FF3D2E; }
+  .stars svg { width: 15px; height: 15px; }
+  .stars.lg svg { width: 18px; height: 18px; }
+
+  /* Generic text-avatar tiles for placeholder company "logos" */
+  .avatar { font-family: 'Source Sans 3', sans-serif; font-weight: 800; letter-spacing: -.02em; }
+
+  .nav-underline { position: relative; }
+  .nav-underline::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -22px; height: 2px;
+    background: #FF3D2E; transform: scaleX(0); transform-origin: left; transition: transform .18s ease;
+  }
+  .nav-underline:hover::after { transform: scaleX(1); }
+
+  /* Header elevates on scroll */
+  #masthead { transition: box-shadow .2s ease; }
+  #masthead.scrolled { box-shadow: 0 1px 0 rgba(16,27,45,.08), 0 6px 24px rgba(16,27,45,.06); }
+
+  .hex-bg {
+    background-image:
+      linear-gradient(120deg, rgba(255,255,255,.06) 1px, transparent 1px),
+      linear-gradient(60deg, rgba(255,255,255,.06) 1px, transparent 1px);
+    background-size: 26px 45px;
+  }
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display: none; }
+</style>
+</head>
+
+<body class="font-sans text-ink bg-white">
+
+<!-- ============================================================
+     HEADER  (dark utility bar + white primary nav)
+     ============================================================ -->
+<header id="masthead" class="sticky top-0 z-50 bg-white">
+  <!-- dark utility strip -->
+  <div class="bg-ink-900 text-white/90">
+    <div class="mx-auto max-w-shell px-4 sm:px-6 lg:px-8">
+      <div class="flex h-10 items-center justify-end gap-4 sm:gap-6 text-[13px]">
+        <label class="relative hidden sm:block">
+          <input type="text" placeholder="Search"
+                 class="h-7 w-44 lg:w-64 rounded-md bg-white pl-3 pr-8 text-ink placeholder:text-ink/40 text-[13px] focus:outline-none focus:ring-2 focus:ring-coral/60" />
+          <svg class="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-ink/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+        </label>
+        <a href="#" class="hidden md:inline hover:text-white">Leave a Review</a>
+        <a href="#" class="hidden md:inline hover:text-white">For Providers</a>
+        <a href="#" class="hidden lg:inline-flex items-center hover:text-white" aria-label="Saved">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg>
+        </a>
+        <a href="#" class="hidden lg:inline-flex items-center hover:text-white" aria-label="Messages">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.5L3 21l2-5.5A8.5 8.5 0 1 1 21 11.5z"/></svg>
+        </a>
+        <a href="#" class="inline-flex items-center gap-1.5 hover:text-white">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3.4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>
+          Sign in
+        </a>
+        <a href="#" class="rounded-full border border-white/40 px-4 py-1 font-semibold hover:bg-white hover:text-ink transition">Join</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- primary nav -->
+  <div class="border-b border-ink/10 bg-white">
+    <div class="mx-auto max-w-shell px-4 sm:px-6 lg:px-8">
+      <div class="flex h-16 items-center justify-between gap-6">
+        <!-- recreated wordmark -->
+        <a href="#top" class="wordmark text-[30px] leading-none text-ink select-none">
+          Clu<span class="dot">t</span>ch<span class="sr-only"> (mockup)</span>
+        </a>
+
+        <nav class="hidden lg:flex items-center gap-7 text-[15px] font-semibold text-ink">
+          <a class="nav-underline hover:text-coral" href="#categories">Development</a>
+          <a class="nav-underline hover:text-coral" href="#categories">IT Services</a>
+          <a class="nav-underline hover:text-coral" href="#categories">Marketing</a>
+          <a class="nav-underline hover:text-coral" href="#categories">Design</a>
+          <a class="nav-underline hover:text-coral" href="#categories">Business Services</a>
+          <a class="nav-underline hover:text-coral" href="#leaderboard">Pricing &amp; Packages</a>
+          <a class="nav-underline hover:text-coral" href="#resources">Resources</a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+          <a href="#hero" class="hidden sm:inline font-bold text-coral hover:text-coral-hover">Post a Project</a>
+          <!-- hamburger -->
+          <button id="navToggle" class="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-md border border-ink/15 text-ink" aria-label="Open menu" aria-expanded="false">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- mobile menu -->
+    <div id="mobileMenu" class="lg:hidden hidden border-t border-ink/10 bg-white">
+      <nav class="mx-auto max-w-shell px-4 sm:px-6 py-3 grid gap-1 text-[15px] font-semibold text-ink">
+        <a class="py-2 hover:text-coral" href="#categories">Development</a>
+        <a class="py-2 hover:text-coral" href="#categories">IT Services</a>
+        <a class="py-2 hover:text-coral" href="#categories">Marketing</a>
+        <a class="py-2 hover:text-coral" href="#categories">Design</a>
+        <a class="py-2 hover:text-coral" href="#categories">Business Services</a>
+        <a class="py-2 hover:text-coral" href="#leaderboard">Pricing &amp; Packages</a>
+        <a class="py-2 hover:text-coral" href="#resources">Resources</a>
+        <a class="py-2 font-bold text-coral" href="#hero">Post a Project</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============================================================
+       ANNOUNCEMENT BAND
+       ============================================================ -->
+  <section class="bg-band border-b border-ink/5">
+    <div class="mx-auto max-w-shell px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col gap-3 py-3.5 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 inline-grid h-9 w-9 flex-none place-items-center rounded-lg bg-white shadow-sm text-link">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 3 1.8 4.6L18.5 9l-3.8 2.6L15.6 16 12 13.4 8.4 16l.9-4.4L5.5 9l4.7-1.4L12 3z"/></svg>
+          </span>
+          <div>
+            <p class="font-bold text-ink leading-tight">AI is changing how businesses find service providers</p>
+            <p class="text-[14px] text-ink/70 leading-tight">See how verified providers appear across AI-driven search and buyer research.</p>
+          </div>
+        </div>
+        <a href="#meet-ai" class="self-start sm:self-auto inline-flex items-center gap-2 rounded-md bg-ink-900 px-4 py-2 text-[14px] font-semibold text-white hover:bg-ink-800 transition">
+          Read the announcement
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       HERO
+       ============================================================ -->
+  <section id="hero" class="relative bg-mist overflow-hidden">
+    <!-- subtle decorative hex cluster, right side -->
+    <svg class="pointer-events-none absolute right-[6%] top-1/2 hidden -translate-y-1/2 opacity-[.5] xl:block" width="320" height="320" viewBox="0 0 200 200" fill="none" stroke="#C9D2DE" stroke-width="1.2">
+      <g>
+        <polygon points="100,20 126,35 126,65 100,80 74,65 74,35"/>
+        <polygon points="140,45 166,60 166,90 140,105 114,90 114,60"/>
+        <polygon points="60,45 86,60 86,90 60,105 34,90 34,60"/>
+        <polygon points="100,80 126,95 126,125 100,140 74,125 74,95"/>
+        <polygon points="140,105 166,120 166,150 140,165 114,150 114,120"/>
+        <polygon points="60,105 86,120 86,150 60,165 34,150 34,120"/>
+      </g>
+    </svg>
+
+    <div class="relative mx-auto max-w-shell px-4 sm:px-6 lg:px-8">
+      <div class="py-14 sm:py-20 lg:py-24 max-w-3xl">
+        <h1 class="font-display font-extrabold tracking-tight text-ink text-[40px] leading-[1.05] sm:text-[56px] lg:text-[64px]">
+          Connect with trusted companies for your next project.
+        </h1>
+
+        <!-- mode toggle -->
+        <div class="mt-8 inline-flex rounded-full bg-white p-1 shadow-card ring-1 ring-ink/10">
+          <button class="inline-flex items-center gap-2 rounded-full bg-ink-900 px-5 py-2.5 text-[15px] font-bold text-white">
+            <svg class="h-4 w-4 text-coral" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 1.6 4.4L18 8l-4.4 1.6L12 14l-1.6-4.4L6 8l4.4-1.6L12 2z"/></svg>
+            Let us match you
+          </button>
+          <button class="rounded-full px-5 py-2.5 text-[15px] font-bold text-ink/70 hover:text-ink">Browse on your own</button>
+        </div>
+
+        <!-- search -->
+        <form class="mt-5 flex flex-col gap-3 sm:flex-row" onsubmit="return false">
+          <div class="relative flex-1">
+            <input type="text" placeholder="What do you need help with?"
+                   class="h-14 w-full rounded-lg border border-ink/15 bg-white pl-4 pr-4 text-[16px] text-ink placeholder:text-ink/40 shadow-card focus:outline-none focus:ring-2 focus:ring-coral/60 focus:border-coral" />
+          </div>
+          <button class="h-14 rounded-lg bg-coral px-8 text-[16px] font-bold text-white shadow-card hover:bg-coral-hover transition">
+            Get Matched
+          </button>
+        </form>
+
+        <!-- popular searches -->
+        <div class="mt-6">
+          <p class="text-[12px] font-bold uppercase tracking-[.12em] text-ink/45">Popular searches</p>
+          <div class="mt-3 flex flex-wrap gap-2.5">
+            <a href="#categories" class="inline-flex items-center gap-2 rounded-md border border-ink/15 bg-white px-3.5 py-2 text-[14px] font-medium text-ink hover:border-coral hover:text-coral transition">
+              <svg class="h-4 w-4 text-ink/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+              Get more qualified leads
+            </a>
+            <a href="#categories" class="inline-flex items-center gap-2 rounded-md border border-ink/15 bg-white px-3.5 py-2 text-[14px] font-medium text-ink hover:border-coral hover:text-coral transition">
+              <svg class="h-4 w-4 text-ink/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+              Set up a CRM system
+            </a>
+            <a href="#categories" class="inline-flex items-center gap-2 rounded-md border border-ink/15 bg-white px-3.5 py-2 text-[14px] font-medium text-ink hover:border-coral hover:text-coral transition">
+              <svg class="h-4 w-4 text-ink/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+              Design my mobile app
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       CATEGORY CARDS GRID
+       ============================================================ -->
+  <section id="categories" class="bg-white">
+    <div class="mx-auto max-w-shell px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+      <h2 class="font-display text-[32px] sm:text-[40px] font-extrabold tracking-tight text-ink">The perfect partner for any project</h2>
+      <p class="mt-3 max-w-3xl text-[16px] text-ink/65">
+        Whatever your business challenge, browse our most in-demand service categories to find top-ranked companies across more than 2,000 specialized service lines.
+      </p>
+
+      <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- Development -->
+        <div class="rounded-xl border border-ink/10 bg-white p-6 shadow-card hover:shadow-cardh transition">
+          <div class="flex items-center gap-3">
+            <span class="inline-grid h-11 w-11 place-items-center rounded-lg bg-emerald-50 text-emerald-600">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m8 8-4 4 4 4m8-8 4 4-4 4M14 5l-4 14"/></svg>
+            </span>
+            <h3 class="font-display text-[20px] font-bold text-ink">Development</h3>
+          </div>
+          <ul class="mt-5 space-y-2.5 text-[15px] font-semibold text-link">
+            <li><a class="hover:underline" href="#leaderboard">Mobile App Development</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Software Development</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Web Development</a></li>
+            <li><a class="hover:underline" href="#leaderboard">AR / VR Development</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Artificial Intelligence</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Blockchain</a></li>
+          </ul>
+        </div>
+
+        <!-- Design & Production -->
+        <div class="rounded-xl border border-ink/10 bg-white p-6 shadow-card hover:shadow-cardh transition">
+          <div class="flex items-center gap-3">
+            <span class="inline-grid h-11 w-11 place-items-center rounded-lg bg-emerald-50 text-emerald-600">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 21 6-2 9-9-4-4-9 9-2 6z"/><path d="m14 6 4 4"/></svg>
+            </span>
+            <h3 class="font-display text-[20px] font-bold text-ink">Design &amp; Production</h3>
+          </div>
+          <ul class="mt-5 space-y-2.5 text-[15px] font-semibold text-link">
+            <li><a class="hover:underline" href="#leaderboard">Web Design</a></li>
+            <li><a class="hover:underline" href="#leaderboard">User Experience Design</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Logo Design</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Graphic Design</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Product Design</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Digital Design</a></li>
+          </ul>
+        </div>
+
+        <!-- Marketing -->
+        <div class="rounded-xl border border-ink/10 bg-white p-6 shadow-card hover:shadow-cardh transition">
+          <div class="flex items-center gap-3">
+            <span class="inline-grid h-11 w-11 place-items-center rounded-lg bg-emerald-50 text-emerald-600">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5m0 14 5-5 4 3 7-8m0 0v5m0-5h-5"/></svg>
+            </span>
+            <h3 class="font-display text-[20px] font-bold text-ink">Marketing</h3>
+          </div>
+          <ul class="mt-5 space-y-2.5 text-[15px] font-semibold text-link">
+            <li><a class="hover:underline" href="#leaderboard">Digital Marketing</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Search Engine Optimization</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Social Media Marketing</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Mobile Marketing</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Content Marketing</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Search Marketing</a></li>
+          </ul>
+        </div>
+
+        <!-- Advertising -->
+        <div class="rounded-xl border border-ink/10 bg-white p-6 shadow-card hover:shadow-cardh transition">
+          <div class="flex items-center gap-3">
+            <span class="inline-grid h-11 w-11 place-items-center rounded-lg bg-emerald-50 text-emerald-600">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11v3a1 1 0 0 0 1 1h3l4 4V7L7 11H4a1 1 0 0 0-1 1z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg>
+            </span>
+            <h3 class="font-display text-[20px] font-bold text-ink">Advertising</h3>
+          </div>
+          <ul class="mt-5 space-y-2.5 text-[15px] font-semibold text-link">
+            <li><a class="hover:underline" href="#leaderboard">Advertising</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Branding</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Creative Production</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Video Production</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Public Relations</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Media Planning &amp; Buying</a></li>
+          </ul>
+        </div>
+
+        <!-- Business Services -->
+        <div class="rounded-xl border border-ink/10 bg-white p-6 shadow-card hover:shadow-cardh transition">
+          <div class="flex items-center gap-3">
+            <span class="inline-grid h-11 w-11 place-items-center rounded-lg bg-emerald-50 text-emerald-600">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h18v12H3z"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </span>
+            <h3 class="font-display text-[20px] font-bold text-ink">Business Services</h3>
+          </div>
+          <ul class="mt-5 space-y-2.5 text-[15px] font-semibold text-link">
+            <li><a class="hover:underline" href="#leaderboard">Call Centers</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Business Process Outsourcing</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Accounting</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Commercial Real Estate</a></li>
+            <li><a class="hover:underline" href="#leaderboard">HR Services</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Consulting</a></li>
+          </ul>
+        </div>
+
+        <!-- IT Services -->
+        <div class="rounded-xl border border-ink/10 bg-white p-6 shadow-card hover:shadow-cardh transition">
+          <div class="flex items-center gap-3">
+            <span class="inline-grid h-11 w-11 place-items-center rounded-lg bg-emerald-50 text-emerald-600">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 4 6v5c0 5 3.5 8 8 10 4.5-2 8-5 8-10V6l-8-3z"/></svg>
+            </span>
+            <h3 class="font-display text-[20px] font-bold text-ink">IT Services</h3>
+          </div>
+          <ul class="mt-5 space-y-2.5 text-[15px] font-semibold text-link">
+            <li><a class="hover:underline" href="#leaderboard">IT Managed Services</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Cybersecurity</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Data Analytics</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Managed IT Services</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Cloud Consulting</a></li>
+            <li><a class="hover:underline" href="#leaderboard">Staff Augmentation</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-8 flex justify-end">
+        <a href="#leaderboard" class="inline-flex items-center gap-2 text-[15px] font-bold text-link hover:underline">
+          Browse all services
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       LEADERBOARD — top companies list rows
+       ============================================================ -->
+  <section id="leaderboard" class="bg-mist border-y border-ink/5">
+    <div class="mx-auto max-w-shell px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p class="text-[13px] font-bold uppercase tracking-[.12em] text-coral">Leaders Matrix</p>
+          <h2 class="mt-1 font-display text-[32px] sm:text-[38px] font-extrabold tracking-tight text-ink">Top Web Developers</h2>
+          <p class="mt-2 max-w-2xl text-[15px] text-ink/65">Ranked by verified client reviews, project history, and market presence. Updated June 2026.</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button class="rounded-md border border-ink/15 bg-white px-3.5 py-2 text-[14px] font-semibold text-ink hover:border-coral hover:text-coral">All Locations</button>
+          <button class="rounded-md border border-ink/15 bg-white px-3.5 py-2 text-[14px] font-semibold text-ink hover:border-coral hover:text-coral">Budget</button>
+          <button class="rounded-md border border-ink/15 bg-white px-3.5 py-2 text-[14px] font-semibold text-ink hover:border-coral hover:text-coral">Sort: Sponsored</button>
+        </div>
+      </div>
+
+      <ol class="mt-9 space-y-4">
+
+        <!-- Row 1 -->
+        <li class="rounded-xl border border-ink/10 bg-white p-5 sm:p-6 shadow-card hover:shadow-cardh transition">
+          <div class="flex flex-col gap-5 lg:flex-row lg:items-start">
+            <div class="flex items-start gap-4">
+              <span class="text-[15px] font-extrabold text-ink/30 pt-1 w-6 text-right">1</span>
+              <span class="avatar inline-grid h-16 w-16 flex-none place-items-center rounded-xl text-white text-[15px]" style="background:#1F6FEB">Vela</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 class="font-display text-[20px] font-bold text-ink">Vela Digital Studio</h3>
+                <span class="inline-flex items-center gap-1 rounded-full bg-coral-tint px-2.5 py-0.5 text-[12px] font-bold text-coral">Sponsored</span>
+                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[12px] font-bold text-emerald-700">
+                  <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 13 4 4 10-10"/></svg> Verified
+                </span>
+              </div>
+              <p class="mt-1.5 text-[15px] text-ink/70">Full-service product engineering &amp; web development partner.</p>
+              <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+                <span class="stars" aria-label="Rated 5.0 out of 5">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                </span>
+                <span class="text-[15px] font-extrabold text-ink">5.0</span>
+                <span class="text-[14px] text-ink/55">(86 reviews)</span>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-3 lg:w-auto lg:flex lg:gap-8 text-[14px]">
+              <div><p class="text-ink/45 font-semibold">Min. project</p><p class="font-bold text-ink">$25,000+</p></div>
+              <div><p class="text-ink/45 font-semibold">Hourly rate</p><p class="font-bold text-ink">$100 – $149</p></div>
+              <div><p class="text-ink/45 font-semibold">Location</p><p class="font-bold text-ink">Austin, TX</p></div>
+            </div>
+            <div class="flex flex-col gap-2 lg:w-44">
+              <a href="#" class="rounded-lg bg-coral px-4 py-2.5 text-center text-[14px] font-bold text-white hover:bg-coral-hover transition">Visit Website</a>
+              <a href="#" class="rounded-lg border border-ink/15 px-4 py-2.5 text-center text-[14px] font-bold text-ink hover:border-coral hover:text-coral transition">View Profile</a>
+            </div>
+          </div>
+        </li>
+
+        <!-- Row 2 -->
+        <li class="rounded-xl border border-ink/10 bg-white p-5 sm:p-6 shadow-card hover:shadow-cardh transition">
+          <div class="flex flex-col gap-5 lg:flex-row lg:items-start">
+            <div class="flex items-start gap-4">
+              <span class="text-[15px] font-extrabold text-ink/30 pt-1 w-6 text-right">2</span>
+              <span class="avatar inline-grid h-16 w-16 flex-none place-items-center rounded-xl text-white text-[13px]" style="background:#0E7C66">North</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 class="font-display text-[20px] font-bold text-ink">Northwind Labs</h3>
+                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[12px] font-bold text-emerald-700">
+                  <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 13 4 4 10-10"/></svg> Verified
+                </span>
+              </div>
+              <p class="mt-1.5 text-[15px] text-ink/70">Web apps, headless commerce &amp; platform modernization.</p>
+              <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+                <span class="stars" aria-label="Rated 4.9 out of 5">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.2v13.6L5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                </span>
+                <span class="text-[15px] font-extrabold text-ink">4.9</span>
+                <span class="text-[14px] text-ink/55">(124 reviews)</span>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-3 lg:w-auto lg:flex lg:gap-8 text-[14px]">
+              <div><p class="text-ink/45 font-semibold">Min. project</p><p class="font-bold text-ink">$50,000+</p></div>
+              <div><p class="text-ink/45 font-semibold">Hourly rate</p><p class="font-bold text-ink">$150 – $199</p></div>
+              <div><p class="text-ink/45 font-semibold">Location</p><p class="font-bold text-ink">Chicago, IL</p></div>
+            </div>
+            <div class="flex flex-col gap-2 lg:w-44">
+              <a href="#" class="rounded-lg bg-coral px-4 py-2.5 text-center text-[14px] font-bold text-white hover:bg-coral-hover transition">Visit Website</a>
+              <a href="#" class="rounded-lg border border-ink/15 px-4 py-2.5 text-center text-[14px] font-bold text-ink hover:border-coral hover:text-coral transition">View Profile</a>
+            </div>
+          </div>
+        </li>
+
+        <!-- Row 3 -->
+        <li class="rounded-xl border border-ink/10 bg-white p-5 sm:p-6 shadow-card hover:shadow-cardh transition">
+          <div class="flex flex-col gap-5 lg:flex-row lg:items-start">
+            <div class="flex items-start gap-4">
+              <span class="text-[15px] font-extrabold text-ink/30 pt-1 w-6 text-right">3</span>
+              <span class="avatar inline-grid h-16 w-16 flex-none place-items-center rounded-xl text-white text-[13px]" style="background:#7C3AED">Lumen</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 class="font-display text-[20px] font-bold text-ink">Lumen Interactive</h3>
+                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[12px] font-bold text-emerald-700">
+                  <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 13 4 4 10-10"/></svg> Verified
+                </span>
+              </div>
+              <p class="mt-1.5 text-[15px] text-ink/70">Design-led web &amp; CMS builds for growth-stage brands.</p>
+              <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+                <span class="stars" aria-label="Rated 4.8 out of 5">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.2v9.6l-3.1 1.6.6-3.4-2.5-2.4 3.5-.5L12 4.2z"/></svg>
+                </span>
+                <span class="text-[15px] font-extrabold text-ink">4.8</span>
+                <span class="text-[14px] text-ink/55">(67 reviews)</span>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-3 lg:w-auto lg:flex lg:gap-8 text-[14px]">
+              <div><p class="text-ink/45 font-semibold">Min. project</p><p class="font-bold text-ink">$10,000+</p></div>
+              <div><p class="text-ink/45 font-semibold">Hourly rate</p><p class="font-bold text-ink">$75 – $99</p></div>
+              <div><p class="text-ink/45 font-semibold">Location</p><p class="font-bold text-ink">Denver, CO</p></div>
+            </div>
+            <div class="flex flex-col gap-2 lg:w-44">
+              <a href="#" class="rounded-lg bg-coral px-4 py-2.5 text-center text-[14px] font-bold text-white hover:bg-coral-hover transition">Visit Website</a>
+              <a href="#" class="rounded-lg border border-ink/15 px-4 py-2.5 text-center text-[14px] font-bold text-ink hover:border-coral hover:text-coral transition">View Profile</a>
+            </div>
+          </div>
+        </li>
+
+        <!-- Row 4 -->
+        <li class="rounded-xl border border-ink/10 bg-white p-5 sm:p-6 shadow-card hover:shadow-cardh transition">
+          <div class="flex flex-col gap-5 lg:flex-row lg:items-start">
+            <div class="flex items-start gap-4">
+              <span class="text-[15px] font-extrabold text-ink/30 pt-1 w-6 text-right">4</span>
+              <span class="avatar inline-grid h-16 w-16 flex-none place-items-center rounded-xl text-white text-[13px]" style="background:#B45309">Cont</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 class="font-display text-[20px] font-bold text-ink">Contoso Web Group</h3>
+                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[12px] font-bold text-emerald-700">
+                  <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 13 4 4 10-10"/></svg> Verified
+                </span>
+              </div>
+              <p class="mt-1.5 text-[15px] text-ink/70">Enterprise web platforms &amp; accessibility-first builds.</p>
+              <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+                <span class="stars" aria-label="Rated 4.8 out of 5">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.2v9.6l-3.1 1.6.6-3.4-2.5-2.4 3.5-.5L12 4.2z"/></svg>
+                </span>
+                <span class="text-[15px] font-extrabold text-ink">4.8</span>
+                <span class="text-[14px] text-ink/55">(203 reviews)</span>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-3 lg:w-auto lg:flex lg:gap-8 text-[14px]">
+              <div><p class="text-ink/45 font-semibold">Min. project</p><p class="font-bold text-ink">$75,000+</p></div>
+              <div><p class="text-ink/45 font-semibold">Hourly rate</p><p class="font-bold text-ink">$200 – $300</p></div>
+              <div><p class="text-ink/45 font-semibold">Location</p><p class="font-bold text-ink">New York, NY</p></div>
+            </div>
+            <div class="flex flex-col gap-2 lg:w-44">
+              <a href="#" class="rounded-lg bg-coral px-4 py-2.5 text-center text-[14px] font-bold text-white hover:bg-coral-hover transition">Visit Website</a>
+              <a href="#" class="rounded-lg border border-ink/15 px-4 py-2.5 text-center text-[14px] font-bold text-ink hover:border-coral hover:text-coral transition">View Profile</a>
+            </div>
+          </div>
+        </li>
+
+        <!-- Row 5 -->
+        <li class="rounded-xl border border-ink/10 bg-white p-5 sm:p-6 shadow-card hover:shadow-cardh transition">
+          <div class="flex flex-col gap-5 lg:flex-row lg:items-start">
+            <div class="flex items-start gap-4">
+              <span class="text-[15px] font-extrabold text-ink/30 pt-1 w-6 text-right">5</span>
+              <span class="avatar inline-grid h-16 w-16 flex-none place-items-center rounded-xl text-white text-[13px]" style="background:#0F766E">Aper</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 class="font-display text-[20px] font-bold text-ink">Aperture Systems</h3>
+                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[12px] font-bold text-emerald-700">
+                  <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 13 4 4 10-10"/></svg> Verified
+                </span>
+              </div>
+              <p class="mt-1.5 text-[15px] text-ink/70">Custom web &amp; AI-assisted development for SaaS teams.</p>
+              <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+                <span class="stars" aria-label="Rated 4.7 out of 5">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.2v6.4l-2 1 .4-2.2L9 7.9l2.2-.3L12 4.2z"/></svg>
+                </span>
+                <span class="text-[15px] font-extrabold text-ink">4.7</span>
+                <span class="text-[14px] text-ink/55">(51 reviews)</span>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-3 lg:w-auto lg:flex lg:gap-8 text-[14px]">
+              <div><p class="text-ink/45 font-semibold">Min. project</p><p class="font-bold text-ink">$25,000+</p></div>
+              <div><p class="text-ink/45 font-semibold">Hourly rate</p><p class="font-bold text-ink">$100 – $149</p></div>
+              <div><p class="text-ink/45 font-semibold">Location</p><p class="font-bold text-ink">Remote · US</p></div>
+            </div>
+            <div class="flex flex-col gap-2 lg:w-44">
+              <a href="#" class="rounded-lg bg-coral px-4 py-2.5 text-center text-[14px] font-bold text-white hover:bg-coral-hover transition">Visit Website</a>
+              <a href="#" class="rounded-lg border border-ink/15 px-4 py-2.5 text-center text-[14px] font-bold text-ink hover:border-coral hover:text-coral transition">View Profile</a>
+            </div>
+          </div>
+        </li>
+      </ol>
+
+      <div class="mt-9 flex justify-center">
+        <a href="#" class="inline-flex items-center gap-2 rounded-lg border border-ink/20 bg-white px-6 py-3 text-[15px] font-bold text-ink hover:border-coral hover:text-coral transition">
+          See all 4,812 Web Developers
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       PROJECT BRIEF BAND (pale blue)
+       ============================================================ -->
+  <section class="bg-band">
+    <div class="mx-auto max-w-shell px-4 sm:px-6 lg:px-8 py-14">
+      <div class="grid items-center gap-8 lg:grid-cols-2">
+        <div class="rounded-xl border border-ink/10 bg-white p-5 shadow-card">
+          <div class="space-y-3">
+            <div class="rounded-lg bg-mist px-4 py-3 text-[14px] text-ink/70">Project brief</div>
+            <div class="ml-auto max-w-[78%] rounded-lg bg-ink-900 px-4 py-3 text-[14px] text-white">What are your goals for this project?</div>
+            <div class="max-w-[78%] rounded-lg bg-mist px-4 py-3 text-[14px] text-ink/70">Tell us about your company and timeline…</div>
+            <div class="ml-auto max-w-[60%] rounded-lg bg-ink-900 px-4 py-3 text-[14px] text-white">What's your budget range?</div>
+          </div>
+        </div>
+        <div>
+          <p class="inline-flex items-center gap-2 text-[14px] font-bold text-ink/60">
+            Powered by <span class="wordmark text-[18px] text-ink">Clu<span class="dot">t</span>ch</span>
+            <span class="rounded bg-ink-900 px-1.5 py-0.5 text-[11px] font-bold text-white">AI</span>
+          </p>
+          <h2 class="mt-3 font-display text-[30px] sm:text-[36px] font-extrabold tracking-tight text-ink">Share your project. Get connected with best-fit providers in minutes.</h2>
+          <p class="mt-3 text-[16px] text-ink/65">Tell us about your goals and company to generate a custom project brief, then get matched with vetted companies ready to deliver.</p>
+          <a href="#hero" class="mt-6 inline-flex items-center gap-2 rounded-lg border border-ink/25 bg-white px-6 py-3 text-[15px] font-bold text-ink hover:border-coral hover:text-coral transition">Find Companies</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ONE-STOP-SHOP (jade band, 3 dark cards)  — how it works
+       ============================================================ -->
+  <section class="bg-jade text-white">
+    <div class="mx-auto max-w-shell px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+      <div class="text-center">
+        <h2 class="font-display text-[30px] sm:text-[38px] font-extrabold tracking-tight">Your one-stop-shop for better business decisions</h2>
+        <p class="mt-3 text-[16px] text-white/85">The tools to research, shortlist, and decide — wherever you are in the process.</p>
+      </div>
+
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        <!-- Search -->
+        <div class="rounded-2xl bg-jade-dark/80 ring-1 ring-white/10 p-7">
+          <p class="text-[13px] font-bold uppercase tracking-[.14em] text-white/60">Search</p>
+          <h3 class="mt-2 font-display text-[22px] font-bold">Browse 350K+ service providers</h3>
+          <p class="mt-3 text-[15px] text-white/80">Explore our global network of trusted partners across 2,000+ business categories. Find the right company in minutes.</p>
+          <div class="mt-6 space-y-2.5 rounded-lg bg-white p-4 text-ink">
+            <div class="flex items-center gap-2"><span class="stars"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg></span><span class="h-2 flex-1 rounded bg-ink/10"></span></div>
+            <div class="h-2 w-3/4 rounded bg-ink/10"></div>
+            <div class="h-2 w-2/3 rounded bg-ink/10"></div>
+            <div class="mt-3 h-7 w-28 rounded bg-coral"></div>
+          </div>
+        </div>
+
+        <!-- Find -->
+        <div class="rounded-2xl bg-jade-dark/80 ring-1 ring-white/10 p-7">
+          <p class="text-[13px] font-bold uppercase tracking-[.14em] text-white/60">Find</p>
+          <h3 class="mt-2 font-display text-[22px] font-bold">Narrow results &amp; shortlist top picks</h3>
+          <p class="mt-3 text-[15px] text-white/80">Go from thousands of options to a handful of legit contenders. Filter by budget, industry, location, and more.</p>
+          <div class="mt-6 space-y-2.5 rounded-lg bg-white p-4 text-ink">
+            <div class="flex items-center justify-between rounded-md border border-ink/10 px-3 py-2 text-[13px] font-semibold">Location <span class="text-ink/40">▾</span></div>
+            <div class="flex items-center justify-between rounded-md border border-ink/10 px-3 py-2 text-[13px] font-semibold">Industry <span class="text-ink/40">▾</span></div>
+            <div class="flex items-center justify-between rounded-md bg-link/10 border border-link/40 px-3 py-2 text-[13px] font-semibold text-link">Client budget <span>▾</span></div>
+          </div>
+        </div>
+
+        <!-- Decide -->
+        <div class="rounded-2xl bg-jade-dark/80 ring-1 ring-white/10 p-7">
+          <p class="text-[13px] font-bold uppercase tracking-[.14em] text-white/60">Decide</p>
+          <h3 class="mt-2 font-display text-[22px] font-bold">Read in-depth verified reviews</h3>
+          <p class="mt-3 text-[15px] text-white/80">Our analysts interview real clients so you can see who can take on your project — and deliver results.</p>
+          <div class="mt-6 space-y-2.5 rounded-lg bg-white p-4 text-ink">
+            <div class="flex items-center gap-2">
+              <span class="stars"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg></span>
+              <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700">
+                <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 13 4 4 10-10"/></svg> Verified
+              </span>
+            </div>
+            <div class="h-2 w-full rounded bg-ink/10"></div>
+            <div class="h-2 w-5/6 rounded bg-ink/10"></div>
+            <div class="h-2 w-2/3 rounded bg-ink/10"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       STATS BAND
+       ============================================================ -->
+  <section class="bg-ink-900 text-white">
+    <div class="mx-auto max-w-shell px-4 sm:px-6 lg:px-8 py-14">
+      <p class="text-center font-display text-[24px] sm:text-[30px] font-extrabold">
+        Join 1 million leaders who use Clutch each month to connect with a trusted business partner
+      </p>
+      <p class="mt-2 text-center text-[15px] text-white/70">Explore our marketplace and see why business leaders choose us again and again.</p>
+      <div class="mt-10 grid grid-cols-2 gap-8 md:grid-cols-4 text-center">
+        <div>
+          <p class="font-display text-[40px] font-extrabold text-coral">350K+</p>
+          <p class="mt-1 text-[14px] font-semibold text-white/75">Service providers listed</p>
+        </div>
+        <div>
+          <p class="font-display text-[40px] font-extrabold text-coral">280K+</p>
+          <p class="mt-1 text-[14px] font-semibold text-white/75">Verified client reviews</p>
+        </div>
+        <div>
+          <p class="font-display text-[40px] font-extrabold text-coral">2,000+</p>
+          <p class="mt-1 text-[14px] font-semibold text-white/75">Specialized service lines</p>
+        </div>
+        <div>
+          <p class="font-display text-[40px] font-extrabold text-coral">1M+</p>
+          <p class="mt-1 text-[14px] font-semibold text-white/75">Monthly buyers</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       TESTIMONIAL / VERIFIED REVIEWS TRUST
+       ============================================================ -->
+  <section class="bg-white">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16 text-center">
+      <div class="mx-auto mb-6 h-px w-24 bg-ink/15"></div>
+      <svg class="mx-auto h-10 w-10 text-ink/20" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h4v6c0 2.8-1.7 4.6-4 5v-2c1.2-.4 2-1.4 2-3H7V7zm8 0h4v6c0 2.8-1.7 4.6-4 5v-2c1.2-.4 2-1.4 2-3h-2V7z"/></svg>
+      <blockquote class="mt-5 font-display text-[24px] sm:text-[28px] font-bold leading-snug text-ink">
+        Clutch made it easy to research, interview, and select the best match for a talent agency. It saved our company a tremendous amount of time and resources.
+      </blockquote>
+      <div class="mt-6 flex items-center justify-center gap-3">
+        <span class="avatar inline-grid h-11 w-11 place-items-center rounded-full bg-ink-900 text-white text-[14px]">RG</span>
+        <div class="text-left">
+          <p class="text-[15px] font-bold text-ink">Renee Gardner</p>
+          <p class="text-[14px] text-ink/60">VP of Operations, Globex Retail</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       MEET CLUTCH AI BAND
+       ============================================================ -->
+  <section id="meet-ai" class="bg-band border-y border-ink/5">
+    <div class="mx-auto max-w-shell px-4 sm:px-6 lg:px-8 py-10">
+      <div class="flex flex-col items-center gap-5 text-center sm:flex-row sm:justify-between sm:text-left">
+        <div class="flex items-center gap-3">
+          <span class="text-[15px] font-bold text-ink/70">Meet</span>
+          <span class="wordmark text-[24px] text-ink">Clu<span class="dot">t</span>ch</span>
+          <span class="rounded-md bg-emerald-100 px-2 py-1 text-[13px] font-extrabold text-emerald-700">AI</span>
+        </div>
+        <div class="max-w-xl">
+          <p class="font-display text-[20px] font-bold text-ink">Fast-track your search for business services</p>
+          <p class="text-[15px] text-ink/65">The future of B2B buying is here. Let Clutch AI find your provider faster.</p>
+        </div>
+        <a href="#hero" class="inline-flex items-center gap-2 rounded-lg border border-ink/25 bg-white px-6 py-3 text-[15px] font-bold text-ink hover:border-coral hover:text-coral transition">Let's Chat</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       WRITE A REVIEW SPLIT
+       ============================================================ -->
+  <section class="bg-white">
+    <div class="mx-auto max-w-shell px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+      <div class="grid items-center gap-10 lg:grid-cols-2">
+        <div>
+          <span class="stars lg" aria-label="five stars">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>
+          </span>
+          <h2 class="mt-4 font-display text-[30px] sm:text-[38px] font-extrabold tracking-tight text-ink">Share your experience and make B2B buying more transparent</h2>
+          <p class="mt-3 text-[16px] text-ink/65">Leave a review of the business partners you've worked with over the years. Make your voice heard and help other business leaders make a confident choice.</p>
+          <a href="#" class="mt-6 inline-flex items-center gap-2 rounded-lg border border-ink/25 bg-white px-6 py-3 text-[15px] font-bold text-ink hover:border-coral hover:text-coral transition">Write a Review</a>
+        </div>
+        <div class="relative">
+          <!-- decorative handshake illustration (CSS only) -->
+          <div class="relative aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br from-jade/15 via-mist to-band ring-1 ring-ink/10">
+            <svg class="absolute inset-0 h-full w-full opacity-40" viewBox="0 0 200 150" fill="none" stroke="#1FAE8C" stroke-width="1">
+              <g>
+                <polygon points="150,20 168,30 168,50 150,60 132,50 132,30"/>
+                <polygon points="150,60 168,70 168,90 150,100 132,90 132,70"/>
+                <polygon points="132,90 150,100 150,120 132,130 114,120 114,100"/>
+                <polygon points="168,90 186,100 186,120 168,130 150,120 150,100"/>
+              </g>
+            </svg>
+            <div class="absolute inset-0 grid place-items-center">
+              <svg class="h-28 w-28 text-jade-dark/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                <path d="M7 11 4 8l3-3 3 3"/><path d="m13 7 4-2 3 3-3 5-3-2"/><path d="M4 8l5 5 3-2 3 3a2 2 0 0 1-3 3l-1-1-2 2a2 2 0 0 1-3-3"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       PROVIDER CTA (dark navy band)
+       ============================================================ -->
+  <section id="resources" class="relative bg-ink-900 text-white overflow-hidden">
+    <div class="hex-bg absolute inset-0 opacity-50"></div>
+    <div class="relative mx-auto max-w-shell px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+      <div class="grid items-center gap-10 lg:grid-cols-2">
+        <div class="relative">
+          <div class="aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br from-ink-700 to-ink-900 ring-1 ring-white/10 grid place-items-center">
+            <svg class="h-24 w-24 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.6"/><path d="M14.5 20a5 5 0 0 1 6.5-4.8"/></svg>
+          </div>
+        </div>
+        <div>
+          <p class="text-[14px] font-bold uppercase tracking-[.14em] text-jade">Selling B2B services?</p>
+          <h2 class="mt-2 font-display text-[32px] sm:text-[40px] font-extrabold tracking-tight">Connect with your next client on Clutch</h2>
+          <p class="mt-3 text-[16px] text-white/75">Get in front of millions of active B2B buyers worldwide inside the leading global services marketplace.</p>
+          <a href="#" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-[15px] font-bold text-ink hover:bg-white/90 transition">Create a Profile</a>
+          <p class="mt-5 text-[15px] text-white/70">Already have a profile? <a href="#" class="font-bold text-white underline decoration-coral underline-offset-4">Ask your clients to leave a review.</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="bg-white border-t border-ink/10">
+  <div class="mx-auto max-w-shell px-4 sm:px-6 lg:px-8 py-14">
+    <div class="grid gap-10 lg:grid-cols-5">
+      <!-- brand col -->
+      <div class="lg:col-span-1">
+        <span class="wordmark text-[26px] text-ink">Clu<span class="dot">t</span>ch</span>
+        <p class="mt-4 text-[14px] leading-relaxed text-ink/60">1602 Constitution Ave NW<br/>Washington, DC 20036</p>
+        <a href="#" class="mt-4 inline-block text-[14px] font-semibold text-link hover:underline">Site Feedback</a>
+        <a href="#" class="mt-2 block text-[14px] font-semibold text-link hover:underline">Contact Us</a>
+        <div class="mt-5 flex items-center gap-3 text-ink/55">
+          <a href="#" aria-label="Facebook" class="hover:text-coral"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 22v-8h3l.5-3H13V9c0-.9.3-1.5 1.6-1.5H17V4.8C16.6 4.7 15.6 4.6 14.5 4.6 12 4.6 10.5 6 10.5 8.7V11H8v3h2.5v8H13z"/></svg></a>
+          <a href="#" aria-label="X" class="hover:text-coral"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 3h3l-6.6 7.6L21.8 21h-5.9l-4.6-6-5.3 6H3l7.1-8.1L2.6 3h6l4.1 5.5L17.5 3z"/></svg></a>
+          <a href="#" aria-label="Instagram" class="hover:text-coral"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg></a>
+          <a href="#" aria-label="LinkedIn" class="hover:text-coral"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4.5 3.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM3 9h3v12H3V9zm6 0h2.9v1.7h.04c.4-.76 1.4-1.7 3-1.7 3.2 0 3.8 2.1 3.8 4.8V21H18v-5.3c0-1.3 0-2.9-1.8-2.9s-2 1.4-2 2.8V21H9V9z"/></svg></a>
+        </div>
+      </div>
+
+      <!-- link columns -->
+      <div>
+        <h4 class="text-[13px] font-extrabold uppercase tracking-[.1em] text-ink">About Clutch</h4>
+        <ul class="mt-4 space-y-2.5 text-[14px] text-ink/65">
+          <li><a class="hover:text-coral" href="#">About Us</a></li>
+          <li><a class="hover:text-coral" href="#">Careers</a></li>
+          <li><a class="hover:text-coral" href="#">News &amp; Press</a></li>
+          <li><a class="hover:text-coral" href="#">Ranking Methodology</a></li>
+          <li><a class="hover:text-coral" href="#">FAQ</a></li>
+          <li><a class="hover:text-coral" href="#">Newsletter</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-[13px] font-extrabold uppercase tracking-[.1em] text-ink">Buyers</h4>
+        <ul class="mt-4 space-y-2.5 text-[14px] text-ink/65">
+          <li><a class="hover:text-coral" href="#categories">Browse All Directories</a></li>
+          <li><a class="hover:text-coral" href="#leaderboard">Review Service Providers</a></li>
+          <li><a class="hover:text-coral" href="#">Blog &amp; Resources</a></li>
+          <li><a class="hover:text-coral" href="#hero">Find a Project Partner</a></li>
+          <li><a class="hover:text-coral" href="#">Buyer's Guides</a></li>
+          <li><a class="hover:text-coral" href="#meet-ai">Meet Clutch AI</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-[13px] font-extrabold uppercase tracking-[.1em] text-ink">Service Providers</h4>
+        <ul class="mt-4 space-y-2.5 text-[14px] text-ink/65">
+          <li><a class="hover:text-coral" href="#resources">Get Listed</a></li>
+          <li><a class="hover:text-coral" href="#">Get Verified</a></li>
+          <li><a class="hover:text-coral" href="#">Advertise</a></li>
+          <li><a class="hover:text-coral" href="#">Service Provider Guide</a></li>
+          <li><a class="hover:text-coral" href="#">Pricing &amp; Packages</a></li>
+          <li><a class="hover:text-coral" href="#">Partner Login</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-[13px] font-extrabold uppercase tracking-[.1em] text-ink">Top Directories</h4>
+        <ul class="mt-4 space-y-2.5 text-[14px] text-ink/65">
+          <li><a class="hover:text-coral" href="#leaderboard">Web Developers</a></li>
+          <li><a class="hover:text-coral" href="#leaderboard">Digital Marketing Agencies</a></li>
+          <li><a class="hover:text-coral" href="#leaderboard">IT Services</a></li>
+          <li><a class="hover:text-coral" href="#leaderboard">SEO Companies</a></li>
+          <li><a class="hover:text-coral" href="#leaderboard">App Developers</a></li>
+          <li><a class="hover:text-coral" href="#leaderboard">Branding Agencies</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-12 border-t border-ink/10 pt-6">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] text-ink/55">
+          <a class="hover:text-coral" href="#">Privacy Policy</a>
+          <a class="hover:text-coral" href="#">Your Privacy Choices</a>
+          <a class="hover:text-coral" href="#">Notice for California Residents</a>
+          <a class="hover:text-coral" href="#">Terms of Use</a>
+          <span>Site last updated: June 15, 2026</span>
+        </div>
+        <p class="text-[13px] text-ink/55">© 2026 Clutch (mockup). All rights reserved.</p>
+      </div>
+
+      <!-- Required IP / disclaimer notice -->
+      <p class="mt-6 text-[12px] leading-relaxed text-ink/45">
+        Design mockup built with Tailwind CSS for layout reference only. Not affiliated with, endorsed by, or representative of Clutch. All names and trademarks belong to their respective owners.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     MINIMAL JS — header scroll state + mobile menu toggle
+     ============================================================ -->
+<script>
+  (function () {
+    var head = document.getElementById('masthead');
+    var onScroll = function () {
+      if (window.scrollY > 8) head.classList.add('scrolled');
+      else head.classList.remove('scrolled');
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    var toggle = document.getElementById('navToggle');
+    var menu = document.getElementById('mobileMenu');
+    toggle.addEventListener('click', function () {
+      var open = menu.classList.toggle('hidden') === false;
+      toggle.setAttribute('aria-expanded', String(open));
+    });
+    // close mobile menu after navigating
+    menu.addEventListener('click', function (e) {
+      if (e.target.closest('a')) {
+        menu.classList.add('hidden');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  })();
+</script>
+</body>
+</html>

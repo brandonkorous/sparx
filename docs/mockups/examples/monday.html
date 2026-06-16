@@ -1,0 +1,850 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>monday.com — design reference mockup</title>
+
+<!-- ============================================================
+     DESIGN-REFERENCE MOCKUP — monday.com homepage replica
+     Self-contained. Tailwind via Play CDN + inline config.
+     Visuals recreated with CSS/SVG/HTML only — no hotlinked
+     copyrighted assets, no embedded real logo. Not affiliated
+     with monday.com. For layout reference only.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Figtree', 'system-ui', 'sans-serif'],
+          display: ['Poppins', 'system-ui', 'sans-serif'],
+        },
+        colors: {
+          brand: {
+            purple: '#6161FF',
+            purpleDark: '#5151E5',
+            ink: '#323338',
+            slate: '#676879',
+            mist: '#676879',
+            red: '#E2445C',
+            green: '#00C875',
+            blue: '#579BFC',
+            yellow: '#FDAB3D',
+            orange: '#FF642E',
+            pink: '#FF158A',
+            teal: '#00D2D2',
+            done: '#00C875',
+            working: '#FDAB3D',
+            stuck: '#E2445C',
+            line: '#D0D4E4',
+          },
+        },
+        borderRadius: {
+          xl2: '14px',
+          '4xl': '32px',
+        },
+        boxShadow: {
+          card: '0 6px 24px -8px rgba(50,51,56,0.18)',
+          board: '0 24px 60px -20px rgba(50,51,56,0.35)',
+          pop: '0 12px 40px -12px rgba(97,97,255,0.45)',
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  /* ---------- base ---------- */
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Figtree', system-ui, sans-serif; color: #323338; background:#fff; -webkit-font-smoothing: antialiased; }
+  h1,h2,h3,h4 { font-family: 'Poppins', system-ui, sans-serif; letter-spacing: -0.02em; }
+
+  /* ---------- monday-style wordmark dots ---------- */
+  .md-mark { display:inline-flex; align-items:flex-end; gap:3px; height:18px; }
+  .md-mark span { display:block; width:8px; border-radius:9999px; }
+  .md-mark .d1 { height:18px; background:#FDAB3D; }   /* yellow */
+  .md-mark .d2 { height:18px; background:#E2445C; }   /* red */
+  .md-mark .d3 { height:18px; background:#00C875; }   /* green */
+  .md-mark .d1, .md-mark .d3 { border-radius:9999px 9999px 9999px 9999px; }
+  .md-mark .d2 { border-radius:9999px; }
+  .wordmark { font-family:'Poppins'; font-weight:700; font-size:22px; letter-spacing:-0.04em; color:#323338; line-height:1; }
+  .wordmark .dotcom { font-weight:400; font-size:13px; color:#676879; vertical-align:super; }
+
+  /* ---------- header scroll state ---------- */
+  #siteHeader { transition: box-shadow .25s ease, background .25s ease, border-color .25s ease; }
+  #siteHeader.scrolled { background: rgba(255,255,255,.92); backdrop-filter: blur(10px); box-shadow: 0 1px 0 rgba(208,212,228,.9); }
+
+  /* ---------- buttons ---------- */
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; font-weight:600; border-radius:9999px; transition: transform .12s ease, background .2s ease, box-shadow .2s ease, color .2s ease, border-color .2s ease; cursor:pointer; white-space:nowrap; }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background:#6161FF; color:#fff; padding:12px 26px; box-shadow: 0 10px 30px -10px rgba(97,97,255,.6); }
+  .btn-primary:hover { background:#5151E5; box-shadow: 0 14px 36px -10px rgba(97,97,255,.75); }
+  .btn-ghost { background:transparent; color:#323338; padding:9px 20px; border:1px solid #C3C6D4; }
+  .btn-ghost:hover { border-color:#6161FF; color:#6161FF; }
+  .btn-light { background:#fff; color:#323338; padding:12px 26px; }
+  .btn-light:hover { background:#f3f4fb; }
+  .btn-onDark { background:#6161FF; color:#fff; padding:12px 26px; box-shadow:0 10px 30px -10px rgba(97,97,255,.7); }
+  .btn-onDark:hover { background:#7474ff; }
+
+  /* ---------- nav link ---------- */
+  .navlink { display:inline-flex; align-items:center; gap:5px; font-weight:500; color:#323338; padding:8px 4px; position:relative; cursor:pointer; }
+  .navlink:hover { color:#6161FF; }
+  .navlink .chev { transition: transform .2s ease; }
+  .navlink:hover .chev { transform: translateY(1px); }
+
+  /* ---------- status pills ---------- */
+  .pill { display:inline-flex; align-items:center; justify-content:center; font-weight:600; font-size:11px; color:#fff; border-radius:6px; padding:5px 10px; min-width:74px; }
+
+  /* ---------- board cells ---------- */
+  .cell { border-right:1px solid #EAEBF2; border-bottom:1px solid #EAEBF2; }
+  .timeline-bar { height:18px; border-radius:9999px; }
+  .grad-line { background:linear-gradient(90deg,#e9eafc,#dfe6ff); border-radius:9999px; }
+
+  /* ---------- entrance animation ---------- */
+  .reveal { opacity:0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.in { opacity:1; transform:none; }
+  @media (prefers-reduced-motion: reduce){ .reveal{opacity:1;transform:none;transition:none;} html{scroll-behavior:auto;} }
+
+  /* ---------- avatars ---------- */
+  .ava { border-radius:9999px; display:grid; place-items:center; color:#fff; font-weight:700; font-size:12px; flex:none; }
+
+  /* ---------- mobile menu ---------- */
+  #mobileMenu { transition: opacity .2s ease, transform .2s ease; }
+  #mobileMenu.hidden-menu { opacity:0; pointer-events:none; transform: translateY(-8px); }
+
+  ::selection { background:#dadbff; }
+</style>
+</head>
+
+<body class="antialiased">
+
+<!-- ============================ HEADER ============================ -->
+<header id="siteHeader" class="fixed top-0 inset-x-0 z-50 border-b border-transparent">
+  <div class="max-w-[1280px] mx-auto px-5 lg:px-8 h-[68px] flex items-center gap-6">
+
+    <!-- wordmark -->
+    <a href="#" class="flex items-center gap-2 shrink-0" aria-label="monday.com home">
+      <span class="md-mark" aria-hidden="true"><span class="d1"></span><span class="d2"></span><span class="d3"></span></span>
+      <span class="wordmark">monday<span class="dotcom">.com</span></span>
+    </a>
+
+    <!-- desktop nav -->
+    <nav class="hidden lg:flex items-center gap-6 ml-2">
+      <span class="navlink text-[15px]">AI platform
+        <svg class="chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </span>
+      <span class="navlink text-[15px]">Solutions
+        <svg class="chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </span>
+      <span class="navlink text-[15px]">Resources
+        <svg class="chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </span>
+      <span class="navlink text-[15px]">Enterprise</span>
+    </nav>
+
+    <!-- right cluster -->
+    <div class="hidden lg:flex items-center gap-4 ml-auto">
+      <a href="#pricing" class="navlink text-[15px]">Pricing</a>
+      <a href="#" class="navlink text-[15px]">Log in</a>
+      <a href="#" class="btn btn-ghost text-[15px]">Contact sales</a>
+      <a href="#" class="btn btn-primary text-[15px]">
+        Get Started
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <button class="grid grid-cols-3 gap-[3px] p-1 rounded-md hover:bg-[#f1f1fb]" aria-label="Open apps">
+        <span class="block w-[5px] h-[5px] rounded-full bg-[#676879]"></span><span class="block w-[5px] h-[5px] rounded-full bg-[#676879]"></span><span class="block w-[5px] h-[5px] rounded-full bg-[#676879]"></span>
+        <span class="block w-[5px] h-[5px] rounded-full bg-[#676879]"></span><span class="block w-[5px] h-[5px] rounded-full bg-[#676879]"></span><span class="block w-[5px] h-[5px] rounded-full bg-[#676879]"></span>
+        <span class="block w-[5px] h-[5px] rounded-full bg-[#676879]"></span><span class="block w-[5px] h-[5px] rounded-full bg-[#676879]"></span><span class="block w-[5px] h-[5px] rounded-full bg-[#676879]"></span>
+      </button>
+    </div>
+
+    <!-- mobile actions -->
+    <div class="flex lg:hidden items-center gap-3 ml-auto">
+      <a href="#" class="btn btn-primary text-sm px-5 py-2">Get Started</a>
+      <button id="hamburger" class="p-2 -mr-1" aria-label="Open menu">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#323338" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- mobile menu -->
+  <div id="mobileMenu" class="hidden-menu lg:hidden absolute inset-x-0 top-[68px] bg-white border-b border-[#EAEBF2] shadow-card px-5 py-4">
+    <div class="flex flex-col divide-y divide-[#EAEBF2]">
+      <a href="#" class="py-3 font-medium">AI platform</a>
+      <a href="#" class="py-3 font-medium">Solutions</a>
+      <a href="#" class="py-3 font-medium">Resources</a>
+      <a href="#" class="py-3 font-medium">Enterprise</a>
+      <a href="#pricing" class="py-3 font-medium">Pricing</a>
+      <a href="#" class="py-3 font-medium">Log in</a>
+      <div class="pt-4 flex flex-col gap-3">
+        <a href="#" class="btn btn-ghost w-full">Contact sales</a>
+        <a href="#" class="btn btn-primary w-full">Get Started</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+<!-- ============================ HERO ============================ -->
+<section class="pt-[120px] pb-10 lg:pt-[140px] lg:pb-14 px-5">
+  <div class="max-w-[1100px] mx-auto text-center">
+    <p class="text-[15px] font-semibold text-brand-ink/80 mb-4 reveal">AI work platform</p>
+    <h1 class="font-extrabold text-brand-ink leading-[1.02] text-[clamp(2.6rem,8vw,5.6rem)] reveal">
+      You lead. Agents act.
+    </h1>
+    <p class="mt-6 text-[clamp(1.05rem,2.2vw,1.4rem)] text-brand-slate max-w-[560px] mx-auto reveal">
+      Where people and agents drive results together on one secure work platform.
+    </p>
+    <div class="mt-8 flex items-center justify-center reveal">
+      <a href="#" class="btn btn-primary text-[17px] px-9 py-[15px]">
+        Get Started
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+    <p class="mt-5 text-[13px] text-brand-slate reveal">
+      No credit card needed&nbsp;&nbsp;✦&nbsp;&nbsp;Unlimited time on Free plan
+    </p>
+  </div>
+
+  <!-- ===== Product board mock ===== -->
+  <div class="max-w-[1180px] mx-auto mt-12 reveal">
+    <div class="rounded-4xl bg-[#f4f5fb] p-4 sm:p-8 shadow-board">
+
+      <!-- use-case chips -->
+      <div class="flex flex-wrap items-center justify-center gap-2.5 mb-7">
+        <button class="inline-flex items-center gap-1.5 bg-white text-brand-purple font-semibold text-sm rounded-full pl-4 pr-3.5 py-2 ring-1 ring-brand-purple/40 shadow-sm">
+          Marketing
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="#6161FF"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="bg-white text-brand-ink font-medium text-sm rounded-full px-4 py-2 ring-1 ring-[#E2E3EF] hover:ring-brand-purple/40">IT</button>
+        <button class="bg-white text-brand-ink font-medium text-sm rounded-full px-4 py-2 ring-1 ring-[#E2E3EF] hover:ring-brand-purple/40">Product</button>
+        <button class="bg-white text-brand-ink font-medium text-sm rounded-full px-4 py-2 ring-1 ring-[#E2E3EF] hover:ring-brand-purple/40">Sales</button>
+        <button class="bg-white text-brand-ink font-medium text-sm rounded-full px-4 py-2 ring-1 ring-[#E2E3EF] hover:ring-brand-purple/40">HR</button>
+        <button class="bg-white text-brand-ink font-medium text-sm rounded-full px-4 py-2 ring-1 ring-[#E2E3EF] hover:ring-brand-purple/40">PMO</button>
+        <button class="bg-white text-brand-ink font-medium text-sm rounded-full px-4 py-2 ring-1 ring-[#E2E3EF] hover:ring-brand-purple/40">Create any agent</button>
+      </div>
+
+      <!-- board + agent panel -->
+      <div class="grid lg:grid-cols-[1fr_330px] gap-4 items-start">
+
+        <!-- BOARD -->
+        <div class="bg-white rounded-2xl shadow-card overflow-hidden flex">
+          <!-- mini sidebar -->
+          <div class="hidden sm:flex flex-col items-center gap-4 py-4 px-2.5 border-r border-[#EAEBF2] bg-[#fbfbfd]">
+            <span class="md-mark scale-[.62]" aria-hidden="true"><span class="d1"></span><span class="d2"></span><span class="d3"></span></span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9699A6" stroke-width="1.8"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9699A6" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9699A6" stroke-width="1.8"><path d="M20.8 4.6a5 5 0 0 0-7 0L12 6.3l-1.7-1.7a5 5 0 0 0-7 7l8.7 8.7 8.7-8.7a5 5 0 0 0 .1-7z"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9699A6" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9699A6" stroke-width="1.8"><path d="M4 12h3l2 6 4-14 2 8h5"/></svg>
+          </div>
+
+          <!-- board body -->
+          <div class="flex-1 min-w-0 p-5 sm:p-6">
+            <h3 class="text-[22px] font-bold text-brand-ink mb-4">Global marketing event</h3>
+
+            <!-- view tabs -->
+            <div class="flex items-center gap-6 border-b border-[#EAEBF2] mb-5 text-sm">
+              <span class="pb-2.5 font-semibold text-brand-ink border-b-2 border-brand-purple">Main table</span>
+              <span class="pb-2.5 text-brand-slate cursor-pointer hover:text-brand-ink">Gantt</span>
+              <span class="pb-2.5 text-brand-slate cursor-pointer hover:text-brand-ink">Kanban</span>
+              <span class="pb-2.5 text-brand-slate cursor-pointer hover:text-brand-ink">+</span>
+            </div>
+
+            <div class="text-brand-blue font-bold text-[15px] mb-2">Incoming leads</div>
+
+            <!-- table -->
+            <div class="overflow-x-auto">
+              <div class="min-w-[560px] border border-[#EAEBF2] rounded-lg overflow-hidden">
+                <!-- header row -->
+                <div class="grid grid-cols-[160px_1fr_120px_120px] bg-[#fbfbfd] text-[12px] font-semibold text-brand-slate">
+                  <div class="cell px-3 py-2.5">Lead</div>
+                  <div class="cell px-3 py-2.5">Owner</div>
+                  <div class="cell px-3 py-2.5">Status</div>
+                  <div class="cell px-3 py-2.5 border-r-0">Timeline</div>
+                </div>
+
+                <!-- rows -->
+                <div class="grid grid-cols-[160px_1fr_120px_120px] items-center bg-white text-[13px]">
+                  <div class="cell px-3 py-2.5 font-medium text-brand-ink flex items-center gap-2"><span class="w-1 h-5 rounded bg-brand-blue -ml-1"></span>Elian Warren</div>
+                  <div class="cell px-3 py-2.5"><span class="ava w-6 h-6" style="background:linear-gradient(135deg,#FF642E,#FF158A)">EW</span></div>
+                  <div class="cell px-2 py-2.5"><span class="pill bg-brand-done">Qualified</span></div>
+                  <div class="cell px-3 py-2.5 border-r-0"><span class="timeline-bar block w-[80%]" style="background:#00C875"></span></div>
+                </div>
+                <div class="grid grid-cols-[160px_1fr_120px_120px] items-center bg-white text-[13px]">
+                  <div class="cell px-3 py-2.5 font-medium text-brand-ink flex items-center gap-2"><span class="w-1 h-5 rounded bg-brand-blue -ml-1"></span>Priya Anand</div>
+                  <div class="cell px-3 py-2.5"><span class="ava w-6 h-6" style="background:linear-gradient(135deg,#579BFC,#6161FF)">PA</span></div>
+                  <div class="cell px-2 py-2.5"><span class="pill bg-brand-working">Working</span></div>
+                  <div class="cell px-3 py-2.5 border-r-0"><span class="timeline-bar block w-[55%]" style="background:#FDAB3D"></span></div>
+                </div>
+                <div class="grid grid-cols-[160px_1fr_120px_120px] items-center bg-white text-[13px]">
+                  <div class="cell px-3 py-2.5 font-medium text-brand-ink flex items-center gap-2"><span class="w-1 h-5 rounded bg-brand-blue -ml-1"></span>Marco Devlin</div>
+                  <div class="cell px-3 py-2.5"><span class="ava w-6 h-6" style="background:linear-gradient(135deg,#00C875,#00D2D2)">MD</span></div>
+                  <div class="cell px-2 py-2.5"><span class="pill bg-brand-stuck">Stuck</span></div>
+                  <div class="cell px-3 py-2.5 border-r-0"><span class="timeline-bar block w-[35%]" style="background:#E2445C"></span></div>
+                </div>
+                <div class="grid grid-cols-[160px_1fr_120px_120px] items-center bg-white text-[13px]">
+                  <div class="cell px-3 py-2.5 font-medium text-brand-ink flex items-center gap-2"><span class="w-1 h-5 rounded bg-brand-blue -ml-1"></span>Soraya Bell</div>
+                  <div class="cell px-3 py-2.5"><span class="ava w-6 h-6" style="background:linear-gradient(135deg,#FDAB3D,#FF642E)">SB</span></div>
+                  <div class="cell px-2 py-2.5"><span class="pill" style="background:#A25DDC">Review</span></div>
+                  <div class="cell px-3 py-2.5 border-r-0"><span class="timeline-bar block w-[68%]" style="background:#A25DDC"></span></div>
+                </div>
+                <div class="grid grid-cols-[160px_1fr_120px_120px] items-center bg-white text-[13px]">
+                  <div class="cell px-3 py-2.5 font-medium text-brand-ink flex items-center gap-2 border-b-0"><span class="w-1 h-5 rounded bg-brand-blue -ml-1"></span>Theo Nkosi</div>
+                  <div class="cell px-3 py-2.5 border-b-0"><span class="ava w-6 h-6" style="background:linear-gradient(135deg,#6161FF,#FF158A)">TN</span></div>
+                  <div class="cell px-2 py-2.5 border-b-0"><span class="pill bg-brand-done">Qualified</span></div>
+                  <div class="cell px-3 py-2.5 border-r-0 border-b-0"><span class="timeline-bar block w-[92%]" style="background:#00C875"></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AGENT PANEL -->
+        <div class="bg-white rounded-2xl shadow-card p-5">
+          <div class="flex items-center gap-3 pb-4 border-b border-[#EAEBF2]">
+            <span class="ava w-10 h-10" style="background:linear-gradient(135deg,#FF158A,#6161FF)">J</span>
+            <div>
+              <div class="text-[15px] text-brand-ink"><strong class="font-bold">Jane,</strong> Leads Sourcer</div>
+              <div class="text-[12px] text-brand-slate">60 prospects sourced</div>
+            </div>
+          </div>
+
+          <!-- user bubble -->
+          <div class="flex items-center gap-2 mt-5">
+            <div class="bg-[#EAF1FF] text-brand-ink font-medium text-[14px] rounded-xl rounded-tr-sm px-3.5 py-3 flex-1">Find new leads for our event</div>
+            <span class="ava w-9 h-9" style="background:linear-gradient(135deg,#579BFC,#00D2D2)">RK</span>
+          </div>
+
+          <!-- agent processing -->
+          <div class="flex items-start gap-2.5 mt-5">
+            <span class="ava w-7 h-7 mt-0.5" style="background:linear-gradient(135deg,#FF158A,#6161FF)">J</span>
+            <div class="flex-1">
+              <div class="text-[14px] text-brand-slate mb-3">Processing your request…</div>
+              <div class="flex items-center gap-2.5 text-[14px] text-brand-ink mb-3">
+                <span class="w-6 h-6 rounded-md grid place-items-center bg-[#0A66C2] text-white text-[11px] font-bold">in</span>
+                Scanning LinkedIn
+              </div>
+              <div class="flex items-center gap-2.5 text-[14px] text-brand-ink">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6161FF" stroke-width="2" stroke-linecap="round"><path d="M4 7h11M4 12h11M4 17h7M18 9v8M14 13h8"/></svg>
+                Adding new leads
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 h-1.5 w-full rounded-full bg-[#EAEBF2] overflow-hidden">
+            <div class="h-full w-[72%] rounded-full" style="background:linear-gradient(90deg,#6161FF,#FF158A)"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ TRUST LOGOS ============================ -->
+<section class="px-5 py-12">
+  <p class="text-center text-[14px] font-semibold text-brand-slate mb-8 reveal">Trusted by over 245,000 teams worldwide</p>
+  <div class="max-w-[1000px] mx-auto flex flex-wrap items-center justify-center gap-x-12 gap-y-6 text-brand-slate/70 reveal">
+    <span class="font-display font-bold text-xl tracking-tight">Vela</span>
+    <span class="font-display font-extrabold text-lg tracking-wider uppercase">Northwind</span>
+    <span class="font-display font-semibold text-xl italic">Lumen</span>
+    <span class="font-display font-bold text-xl tracking-tight">Contoso</span>
+    <span class="font-display font-extrabold text-lg tracking-tight">Aperture</span>
+    <span class="font-display font-bold text-xl uppercase tracking-wide">Globex</span>
+    <span class="font-display font-extrabold text-2xl lowercase">hooli</span>
+    <span class="font-display font-semibold text-xl tracking-tight">Umbra</span>
+  </div>
+</section>
+
+<!-- ============================ DARK: AGENT FOR EVERY USE CASE ============================ -->
+<section class="bg-[#0E0E14] text-white py-24 px-5 overflow-hidden">
+  <div class="max-w-[1180px] mx-auto">
+    <p class="text-center text-[13px] font-semibold text-white/45 mb-3 reveal">Custom agents to fit your needs</p>
+    <h2 class="text-center font-extrabold text-[clamp(2rem,5vw,3.4rem)] mb-14 reveal">An agent for every use case</h2>
+
+    <!-- agent showcase card -->
+    <div class="rounded-4xl bg-gradient-to-br from-[#1b1b27] to-[#15151f] ring-1 ring-white/10 p-6 sm:p-10 grid lg:grid-cols-[280px_1fr] gap-8 items-center reveal shadow-board">
+      <!-- left: agent menu -->
+      <div class="space-y-2.5">
+        <div class="bg-white/[0.06] ring-1 ring-white/10 rounded-xl px-4 py-3 text-sm font-medium flex items-center gap-3">
+          <span class="w-2 h-2 rounded-full bg-brand-green"></span> Research Agent
+        </div>
+        <div class="bg-white/[0.04] rounded-xl px-4 py-3 text-sm text-white/70 flex items-center gap-3 hover:bg-white/[0.07]">
+          <span class="w-2 h-2 rounded-full bg-brand-blue"></span> Reporting Agent
+        </div>
+        <div class="bg-white/[0.04] rounded-xl px-4 py-3 text-sm text-white/70 flex items-center gap-3 hover:bg-white/[0.07]">
+          <span class="w-2 h-2 rounded-full bg-brand-yellow"></span> Insights Agent
+        </div>
+        <div class="bg-white/[0.04] rounded-xl px-4 py-3 text-sm text-white/70 flex items-center gap-3 hover:bg-white/[0.07]">
+          <span class="w-2 h-2 rounded-full bg-brand-pink"></span> Meeting Assistant
+        </div>
+        <div class="bg-white/[0.04] rounded-xl px-4 py-3 text-sm text-white/70 flex items-center gap-3 hover:bg-white/[0.07]">
+          <span class="w-2 h-2 rounded-full bg-brand-orange"></span> Forecast Optimizer
+        </div>
+        <div class="rounded-xl px-4 py-3 text-sm font-semibold text-brand-purple flex items-center gap-2 ring-1 ring-brand-purple/40 hover:bg-brand-purple/10">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Create your own agent
+        </div>
+      </div>
+
+      <!-- right: agent detail card -->
+      <div class="bg-[#101019] ring-1 ring-white/10 rounded-2xl p-6 sm:p-8">
+        <div class="flex items-start gap-5 flex-col sm:flex-row">
+          <!-- illustrated avatar -->
+          <div class="w-28 h-28 rounded-2xl shrink-0 grid place-items-center" style="background:radial-gradient(120% 120% at 30% 20%,#6161FF,#FF158A 70%,#FF642E)">
+            <svg width="58" height="58" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-2xl font-bold mb-2">Market Analyzer</h3>
+            <p class="text-white/65 text-[15px] leading-relaxed mb-5">Surfaces competitor moves, scores opportunities, and drafts a research brief your team can act on in minutes — not days.</p>
+            <a href="#" class="btn btn-onDark text-sm">
+              Get Started
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 mt-7 justify-center">
+          <span class="w-7 h-1.5 rounded-full bg-white/80"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-white/25"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-white/25"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- side by side row -->
+    <h3 class="text-center font-extrabold text-[clamp(1.6rem,4vw,2.6rem)] mt-24 mb-12 reveal max-w-[640px] mx-auto leading-tight">Get more done with agents and people working side by side</h3>
+
+    <!-- secondary chips -->
+    <div class="flex flex-wrap items-center justify-center gap-2.5 mb-10 reveal">
+      <span class="bg-brand-purple text-white text-sm font-semibold rounded-full px-4 py-2">Work in context</span>
+      <span class="bg-white/[0.06] text-white/80 text-sm font-medium rounded-full px-4 py-2 ring-1 ring-white/10">Marketing</span>
+      <span class="bg-white/[0.06] text-white/80 text-sm font-medium rounded-full px-4 py-2 ring-1 ring-white/10">IT</span>
+      <span class="bg-white/[0.06] text-white/80 text-sm font-medium rounded-full px-4 py-2 ring-1 ring-white/10">Product</span>
+      <span class="bg-white/[0.06] text-white/80 text-sm font-medium rounded-full px-4 py-2 ring-1 ring-white/10">Sales</span>
+      <span class="bg-white/[0.06] text-white/80 text-sm font-medium rounded-full px-4 py-2 ring-1 ring-white/10">Create any agent</span>
+    </div>
+
+    <!-- three mini board cards -->
+    <div class="grid md:grid-cols-3 gap-5 reveal">
+      <!-- card 1 -->
+      <div class="bg-[#16161f] ring-1 ring-white/10 rounded-2xl p-5">
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-sm font-semibold text-white/85">Vendor Researcher</span>
+          <span class="btn btn-onDark text-[11px] px-3 py-1.5">Get Started</span>
+        </div>
+        <div class="space-y-2">
+          <div class="flex items-center gap-2"><span class="w-16 h-2.5 rounded-full bg-white/10"></span><span class="pill !min-w-0 !py-[3px] !px-2.5 bg-brand-done">Done</span><span class="flex-1 h-2.5 rounded-full bg-white/10"></span></div>
+          <div class="flex items-center gap-2"><span class="w-16 h-2.5 rounded-full bg-white/10"></span><span class="pill !min-w-0 !py-[3px] !px-2.5 bg-brand-working">Working</span><span class="flex-1 h-2.5 rounded-full bg-white/10"></span></div>
+          <div class="flex items-center gap-2"><span class="w-16 h-2.5 rounded-full bg-white/10"></span><span class="pill !min-w-0 !py-[3px] !px-2.5 bg-brand-blue">Review</span><span class="flex-1 h-2.5 rounded-full bg-white/10"></span></div>
+          <div class="flex items-center gap-2"><span class="w-16 h-2.5 rounded-full bg-white/10"></span><span class="pill !min-w-0 !py-[3px] !px-2.5 bg-brand-stuck">Stuck</span><span class="flex-1 h-2.5 rounded-full bg-white/10"></span></div>
+        </div>
+      </div>
+      <!-- card 2 (highlighted) -->
+      <div class="bg-white rounded-2xl p-5 shadow-board">
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-sm font-semibold text-brand-ink">Meeting Scheduler</span>
+          <span class="btn btn-primary text-[11px] px-3 py-1.5">Get Started</span>
+        </div>
+        <div class="space-y-2.5">
+          <div class="flex items-center gap-2"><span class="pill !min-w-0 !py-[3px] !px-2.5 bg-brand-purple">Mon</span><span class="flex-1 h-2.5 rounded-full bg-[#EDEEF6]"></span></div>
+          <div class="flex items-center gap-2"><span class="pill !min-w-0 !py-[3px] !px-2.5" style="background:#A25DDC">Tue</span><span class="flex-1 h-2.5 rounded-full bg-[#EDEEF6]"></span></div>
+          <div class="bg-[#F4F5FB] rounded-lg p-3 text-[12px] text-brand-slate flex items-start gap-2">
+            <svg width="16" height="16" class="mt-0.5 shrink-0" viewBox="0 0 24 24" fill="#6161FF"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Agent booked 5 meetings and synced everyone's calendar automatically.
+          </div>
+        </div>
+      </div>
+      <!-- card 3 -->
+      <div class="bg-[#16161f] ring-1 ring-white/10 rounded-2xl p-5">
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-sm font-semibold text-white/85">Portfolio Management</span>
+          <span class="btn btn-onDark text-[11px] px-3 py-1.5">Get Started</span>
+        </div>
+        <div class="space-y-2">
+          <div class="flex items-center gap-2"><span class="w-12 h-2.5 rounded-full bg-white/10"></span><span class="flex-1 h-2.5 rounded-full bg-gradient-to-r from-brand-purple/60 to-transparent"></span></div>
+          <div class="flex items-center gap-2"><span class="w-12 h-2.5 rounded-full bg-white/10"></span><span class="flex-1 h-2.5 rounded-full bg-gradient-to-r from-brand-pink/60 to-transparent"></span></div>
+          <div class="flex items-center gap-2"><span class="w-12 h-2.5 rounded-full bg-white/10"></span><span class="flex-1 h-2.5 rounded-full bg-gradient-to-r from-brand-green/60 to-transparent"></span></div>
+          <div class="flex items-center gap-2"><span class="w-12 h-2.5 rounded-full bg-white/10"></span><span class="flex-1 h-2.5 rounded-full bg-gradient-to-r from-brand-yellow/60 to-transparent"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-12 reveal">
+      <h3 class="font-extrabold text-[clamp(1.8rem,4vw,2.8rem)] inline-block">Work in context</h3>
+      <p class="text-white/55 max-w-[420px] mx-auto mt-3 mb-6 text-[15px]">AI agents are only as good as their context. Sync work across context that lives in monday — surfacing work it's having context and consistently and consistently.</p>
+      <a href="#" class="btn btn-onDark text-sm">Get Started</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ CONSIDER YOURSELF LIMITLESS ============================ -->
+<section class="bg-white py-24 px-5">
+  <div class="max-w-[1100px] mx-auto grid lg:grid-cols-[0.9fr_1.1fr] gap-12 items-start">
+    <div class="reveal">
+      <h2 class="font-extrabold text-[clamp(2.4rem,6vw,4rem)] leading-[1.04] text-brand-ink">Consider<br/>yourself<br/>limitless</h2>
+      <p class="text-brand-slate text-[15px] mt-5 max-w-[300px]">An open platform for every agent your team works with — connect to Claude, OpenAI, Custom GenAI, and 200+ connected tools.</p>
+      <a href="#" class="btn btn-primary text-sm mt-6">Get Started</a>
+    </div>
+
+    <div class="space-y-6 reveal">
+      <!-- bring your own agent -->
+      <div class="bg-[#F4F5FB] rounded-2xl p-6">
+        <div class="flex items-center gap-3 mb-5 flex-wrap">
+          <span class="w-10 h-10 rounded-xl bg-white grid place-items-center shadow-sm text-brand-purple font-bold">A</span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9699A6" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <span class="w-10 h-10 rounded-xl bg-brand-purple grid place-items-center shadow-pop">
+            <span class="md-mark scale-[.6]"><span class="d1 !bg-white/90"></span><span class="d2 !bg-white/70"></span><span class="d3 !bg-white/90"></span></span>
+          </span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9699A6" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <span class="w-10 h-10 rounded-xl bg-white grid place-items-center shadow-sm text-lg">🤖</span>
+        </div>
+        <h4 class="font-bold text-brand-ink text-lg mb-1.5">Bring your own agent</h4>
+        <p class="text-brand-slate text-[14px]">Connect agents from any trusted provider and put them to work directly inside your workflows.</p>
+      </div>
+      <!-- favorite ai tools -->
+      <div class="bg-[#F4F5FB] rounded-2xl p-6">
+        <div class="flex items-center gap-2.5 mb-5">
+          <span class="w-9 h-9 rounded-xl bg-white grid place-items-center shadow-sm text-base">✦</span>
+          <span class="w-9 h-9 rounded-xl bg-white grid place-items-center shadow-sm text-base">◎</span>
+          <span class="w-9 h-9 rounded-xl bg-white grid place-items-center shadow-sm text-base">◆</span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9699A6" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <span class="w-9 h-9 rounded-xl bg-brand-purple grid place-items-center shadow-pop text-white font-bold">∞</span>
+        </div>
+        <h4 class="font-bold text-brand-ink text-lg mb-1.5">Use your favorite AI tools</h4>
+        <p class="text-brand-slate text-[14px]">Keep the AI tools you already love and orchestrate them all from one connected workspace.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ LET WORK FLOW ============================ -->
+<section class="bg-white pb-24 px-5 text-center">
+  <p class="text-[13px] font-semibold text-brand-slate mb-3 reveal">Orchestrate workflows</p>
+  <h2 class="font-extrabold text-[clamp(2.2rem,6vw,3.6rem)] text-brand-ink reveal">Let work flow</h2>
+  <p class="text-brand-slate text-[clamp(1rem,2.2vw,1.25rem)] max-w-[440px] mx-auto mt-3 reveal">
+    Automate how work moves between
+    <span class="inline-flex items-center gap-1 align-middle mx-1">
+      <span class="ava w-6 h-6" style="background:linear-gradient(135deg,#FF642E,#FF158A)">A</span>
+      <span class="ava w-6 h-6 -ml-2" style="background:linear-gradient(135deg,#579BFC,#6161FF)">B</span>
+      <span class="ava w-6 h-6 -ml-2" style="background:linear-gradient(135deg,#00C875,#00D2D2)">C</span>
+    </span>
+    people and agents 🤖 ✨
+  </p>
+  <a href="#" class="btn btn-primary text-sm mt-7 reveal">Get Started</a>
+</section>
+
+<!-- ============================ FULL CONTROL ============================ -->
+<section class="bg-white py-20 px-5 border-t border-[#EAEBF2]">
+  <div class="max-w-[1180px] mx-auto">
+    <h2 class="font-extrabold text-[clamp(2.4rem,6vw,4rem)] leading-[1.02] text-brand-ink mb-14 reveal">Full<br/>control</h2>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 reveal">
+      <div>
+        <div class="w-11 h-11 rounded-xl grid place-items-center mb-4" style="background:#EAF1FF">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#579BFC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg>
+        </div>
+        <h4 class="font-bold text-brand-ink mb-1.5">Agent activity</h4>
+        <p class="text-brand-slate text-[14px]">Track every agent action across your organization with a clear, real-time audit log.</p>
+      </div>
+      <div>
+        <div class="w-11 h-11 rounded-xl grid place-items-center mb-4" style="background:#E7FBF3">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00C875" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        </div>
+        <h4 class="font-bold text-brand-ink mb-1.5">Permissions</h4>
+        <p class="text-brand-slate text-[14px]">Define exactly which data an agent can access and which actions it can take, by role.</p>
+      </div>
+      <div>
+        <div class="w-11 h-11 rounded-xl grid place-items-center mb-4" style="background:#FFF3E3">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FDAB3D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        </div>
+        <h4 class="font-bold text-brand-ink mb-1.5">Human in the loop</h4>
+        <p class="text-brand-slate text-[14px]">Require human approval on sensitive steps so people always stay in command.</p>
+      </div>
+      <div>
+        <div class="w-11 h-11 rounded-xl grid place-items-center mb-4" style="background:#FBEAFF">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A25DDC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2L12 16.6 5.7 21l2.3-7.2-6-4.4h7.6z"/></svg>
+        </div>
+        <h4 class="font-bold text-brand-ink mb-1.5">Data training</h4>
+        <p class="text-brand-slate text-[14px]">Your data is never used to train public models — your work stays your own.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ CUSTOMERS ACHIEVE MORE (stats) ============================ -->
+<section class="bg-[#F4F5FB] py-20 px-5">
+  <div class="max-w-[1180px] mx-auto">
+    <div class="flex items-center justify-between flex-wrap gap-4 mb-10 reveal">
+      <h2 class="font-extrabold text-[clamp(2rem,5vw,3.2rem)] text-brand-ink leading-tight">Our customers<br/>achieve more</h2>
+      <a href="#" class="btn btn-ghost text-sm">Contact sales</a>
+    </div>
+
+    <div class="grid lg:grid-cols-[1.1fr_1fr_1fr] gap-5 reveal">
+      <!-- quote card (dark) -->
+      <div class="bg-[#0E0E14] text-white rounded-2xl p-8 flex flex-col">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="#6161FF" class="mb-4"><path d="M9 7H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h2v2a2 2 0 0 1-2 2H4v2h1a4 4 0 0 0 4-4zM21 7h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h2v2a2 2 0 0 1-2 2h-1v2h1a4 4 0 0 0 4-4z"/></svg>
+        <p class="text-[19px] font-medium leading-snug mb-6">We replaced a 10-minute screening call with an AI agent that does it in 90 seconds.</p>
+        <div class="mt-auto text-[13px] text-white/55">Jess Boulden · Director of Operations, Vela</div>
+      </div>
+      <!-- stat 1 -->
+      <div class="rounded-2xl p-8 flex flex-col justify-between" style="background:linear-gradient(160deg,#EBD8FF,#F4E9FF)">
+        <div class="text-[clamp(2.6rem,6vw,4.2rem)] font-extrabold text-brand-ink leading-none">25%</div>
+        <div class="mt-4">
+          <p class="text-brand-ink/80 text-[14px] font-medium mb-3">reduction in project delivery time across teams</p>
+          <a href="#" class="text-brand-purple font-semibold text-[13px] inline-flex items-center gap-1">Learn more <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </div>
+      <!-- stat 2 -->
+      <div class="rounded-2xl p-8 flex flex-col justify-between" style="background:linear-gradient(160deg,#D9E4FF,#EAF1FF)">
+        <div class="text-[clamp(2.6rem,6vw,4.2rem)] font-extrabold text-brand-ink leading-none">40%</div>
+        <div class="mt-4">
+          <p class="text-brand-ink/80 text-[14px] font-medium mb-3">more work completed per person, every quarter</p>
+          <a href="#" class="text-brand-purple font-semibold text-[13px] inline-flex items-center gap-1">Learn more <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-center gap-2 mt-7 reveal">
+      <span class="w-6 h-1.5 rounded-full bg-brand-ink/70"></span>
+      <span class="w-1.5 h-1.5 rounded-full bg-brand-ink/25"></span>
+      <span class="w-1.5 h-1.5 rounded-full bg-brand-ink/25"></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ TRUSTED BY ENTERPRISES ============================ -->
+<section class="bg-white py-24 px-5">
+  <div class="max-w-[1100px] mx-auto text-center">
+    <p class="text-[13px] font-semibold text-brand-slate mb-3 reveal">Enterprise-ready work platform</p>
+    <h2 class="font-extrabold text-[clamp(1.9rem,5vw,3.2rem)] text-brand-ink leading-tight mb-14 reveal">Trusted by enterprises.<br/>Recognized by industry leaders.</h2>
+
+    <div class="grid md:grid-cols-3 gap-5 text-left reveal">
+      <!-- security -->
+      <div class="border border-[#EAEBF2] rounded-2xl p-7 hover:shadow-card transition-shadow">
+        <div class="w-11 h-11 rounded-xl grid place-items-center mb-5" style="background:#EAF1FF">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#579BFC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg>
+        </div>
+        <h4 class="font-bold text-brand-ink text-lg mb-2">Enterprise-grade security</h4>
+        <p class="text-brand-slate text-[14px] mb-5">SOC 2 Type II, ISO 27001, GDPR, and HIPAA support, with granular access controls and audit trails.</p>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-[11px] font-semibold text-brand-slate ring-1 ring-[#EAEBF2] rounded-full px-3 py-1">SOC 2</span>
+          <span class="text-[11px] font-semibold text-brand-slate ring-1 ring-[#EAEBF2] rounded-full px-3 py-1">ISO 27001</span>
+          <span class="text-[11px] font-semibold text-brand-slate ring-1 ring-[#EAEBF2] rounded-full px-3 py-1">GDPR</span>
+        </div>
+      </div>
+      <!-- leader badge stat -->
+      <div class="rounded-2xl p-7" style="background:linear-gradient(160deg,#0E0E14,#1c1c2a)">
+        <div class="text-white">
+          <div class="inline-flex items-center gap-2 text-[12px] font-semibold text-white/60 mb-6">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#FDAB3D"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2L12 16.6 5.7 21l2.3-7.2-6-4.4h7.6z"/></svg>
+            #1 ranked work platform
+          </div>
+          <div class="text-[clamp(2.6rem,6vw,4rem)] font-extrabold leading-none mb-2">3M+</div>
+          <p class="text-white/65 text-[14px]">teams use the platform to plan, run, and ship their most important work.</p>
+        </div>
+      </div>
+      <!-- roi stat -->
+      <div class="border border-[#EAEBF2] rounded-2xl p-7 hover:shadow-card transition-shadow">
+        <div class="text-[clamp(2.6rem,6vw,4rem)] font-extrabold text-brand-purple leading-none mb-2">346%</div>
+        <h4 class="font-bold text-brand-ink mb-2">3-year ROI</h4>
+        <p class="text-brand-slate text-[14px] mb-5">Documented in an independent commissioned study of teams that standardized on the platform.</p>
+        <a href="#" class="text-brand-purple font-semibold text-[13px] inline-flex items-center gap-1">Read the study <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ PRODUCTS / USE-CASE CARDS ============================ -->
+<section id="pricing" class="bg-[#F4F5FB] py-24 px-5">
+  <div class="max-w-[1180px] mx-auto">
+    <p class="text-center text-[13px] font-semibold text-brand-slate mb-3 reveal">One platform, many products</p>
+    <h2 class="text-center font-extrabold text-[clamp(2rem,5vw,3.2rem)] text-brand-ink mb-14 reveal">Built for people <span class="text-brand-purple">and agents</span></h2>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 reveal">
+      <!-- work management -->
+      <div class="bg-white rounded-2xl p-7 hover:-translate-y-1 transition-transform shadow-sm hover:shadow-card">
+        <div class="w-12 h-12 rounded-2xl grid place-items-center mb-5" style="background:#EAF1FF">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#579BFC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v16"/></svg>
+        </div>
+        <h4 class="font-bold text-brand-ink text-lg mb-1.5">Work Management</h4>
+        <p class="text-brand-slate text-[14px]">Plan projects, assign owners, and track every task to done on flexible boards.</p>
+      </div>
+      <!-- CRM -->
+      <div class="bg-white rounded-2xl p-7 hover:-translate-y-1 transition-transform shadow-sm hover:shadow-card">
+        <div class="w-12 h-12 rounded-2xl grid place-items-center mb-5" style="background:#E7FBF3">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00C875" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+        </div>
+        <h4 class="font-bold text-brand-ink text-lg mb-1.5">CRM</h4>
+        <p class="text-brand-slate text-[14px]">Close more deals with a pipeline that updates itself and never lets a lead slip.</p>
+      </div>
+      <!-- dev -->
+      <div class="bg-white rounded-2xl p-7 hover:-translate-y-1 transition-transform shadow-sm hover:shadow-card">
+        <div class="w-12 h-12 rounded-2xl grid place-items-center mb-5" style="background:#FFF3E3">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FDAB3D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M13 6l-2 12"/></svg>
+        </div>
+        <h4 class="font-bold text-brand-ink text-lg mb-1.5">Dev</h4>
+        <p class="text-brand-slate text-[14px]">Ship products faster with sprints, roadmaps, and bug tracking developers actually use.</p>
+      </div>
+      <!-- service -->
+      <div class="bg-white rounded-2xl p-7 hover:-translate-y-1 transition-transform shadow-sm hover:shadow-card">
+        <div class="w-12 h-12 rounded-2xl grid place-items-center mb-5" style="background:#FBEAFF">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A25DDC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h4 class="font-bold text-brand-ink text-lg mb-1.5">Service</h4>
+        <p class="text-brand-slate text-[14px]">Resolve tickets faster with AI triage, smart routing, and one shared inbox.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ FINAL CTA ============================ -->
+<section class="bg-brand-purple text-white py-24 px-5 text-center overflow-hidden relative">
+  <!-- decorative dots -->
+  <div class="absolute -top-10 -left-10 w-40 h-40 rounded-full bg-white/10 blur-2xl"></div>
+  <div class="absolute -bottom-16 right-0 w-56 h-56 rounded-full bg-brand-pink/30 blur-3xl"></div>
+  <div class="relative max-w-[760px] mx-auto reveal">
+    <div class="flex items-center justify-center gap-2 mb-6">
+      <span class="md-mark scale-110"><span class="d1 !bg-white"></span><span class="d2 !bg-white/80"></span><span class="d3 !bg-white"></span></span>
+    </div>
+    <h2 class="font-extrabold text-[clamp(2.2rem,6vw,4rem)] leading-[1.04]">Start running your<br/>work like it's monday</h2>
+    <p class="text-white/80 text-[clamp(1rem,2.2vw,1.3rem)] mt-5 max-w-[440px] mx-auto">Get your whole team and their agents on one platform — free to start, in under five minutes.</p>
+    <div class="mt-9 flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="#" class="btn btn-light text-[17px] px-9 py-[15px]">
+        Get Started
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a href="#" class="btn text-[17px] px-9 py-[15px] ring-1 ring-white/60 text-white hover:bg-white/10">Contact sales</a>
+    </div>
+    <p class="mt-6 text-[13px] text-white/70">No credit card needed&nbsp;&nbsp;✦&nbsp;&nbsp;Unlimited time on Free plan</p>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================ FOOTER ============================ -->
+<footer class="bg-[#0E0E14] text-white pt-20 pb-10 px-5">
+  <div class="max-w-[1180px] mx-auto">
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-y-10 gap-x-6">
+      <!-- brand col -->
+      <div class="col-span-2 md:col-span-3 lg:col-span-1">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="md-mark" aria-hidden="true"><span class="d1"></span><span class="d2"></span><span class="d3"></span></span>
+          <span class="wordmark !text-white">monday<span class="dotcom !text-white/55">.com</span></span>
+        </div>
+        <p class="text-white/45 text-[13px] max-w-[220px]">The AI work platform where people and agents drive results together.</p>
+        <div class="flex items-center gap-3 mt-5">
+          <a href="#" class="w-9 h-9 rounded-full bg-white/10 grid place-items-center hover:bg-white/20" aria-label="Social"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.2c-1.2 0-1.6.8-1.6 1.5V12h2.7l-.4 2.9h-2.3v7A10 10 0 0 0 22 12z"/></svg></a>
+          <a href="#" class="w-9 h-9 rounded-full bg-white/10 grid place-items-center hover:bg-white/20" aria-label="Social"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM8.3 18.3H5.7V9.7h2.6zM7 8.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm11.3 9.8h-2.6v-4.5c0-1.1-.4-1.8-1.4-1.8-.8 0-1.2.5-1.4 1-.1.2-.1.5-.1.8v4.5H10.2V9.7h2.6v1.1c.4-.5 1-1.3 2.5-1.3 1.8 0 3 1.2 3 3.7z"/></svg></a>
+          <a href="#" class="w-9 h-9 rounded-full bg-white/10 grid place-items-center hover:bg-white/20" aria-label="Social"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 7.2s-.2-1.4-.8-2c-.8-.8-1.6-.8-2-.9C16 4 12 4 12 4s-4 0-6.8.3c-.4 0-1.3.1-2 .9-.6.6-.8 2-.8 2S2 8.8 2 10.5v1.3c0 1.7.2 3.3.2 3.3s.2 1.4.8 2c.8.8 1.8.8 2.3.9 1.7.2 6.7.2 6.7.2s4 0 6.8-.3c.4 0 1.3-.1 2-.9.6-.6.8-2 .8-2s.2-1.6.2-3.3v-1.3c0-1.7-.2-3.3-.2-3.3zM10 14.6V8.9l5.2 2.9z"/></svg></a>
+        </div>
+      </div>
+
+      <!-- products -->
+      <div>
+        <h5 class="font-bold text-[14px] mb-4">Products</h5>
+        <ul class="space-y-2.5 text-white/55 text-[13px]">
+          <li><a href="#" class="hover:text-white">Work Management</a></li>
+          <li><a href="#" class="hover:text-white">CRM</a></li>
+          <li><a href="#" class="hover:text-white">Dev</a></li>
+          <li><a href="#" class="hover:text-white">Service</a></li>
+          <li><a href="#" class="hover:text-white">AI Agents</a></li>
+        </ul>
+      </div>
+      <!-- solutions -->
+      <div>
+        <h5 class="font-bold text-[14px] mb-4">Solutions</h5>
+        <ul class="space-y-2.5 text-white/55 text-[13px]">
+          <li><a href="#" class="hover:text-white">Marketing</a></li>
+          <li><a href="#" class="hover:text-white">Sales</a></li>
+          <li><a href="#" class="hover:text-white">Project Management</a></li>
+          <li><a href="#" class="hover:text-white">Operations</a></li>
+          <li><a href="#" class="hover:text-white">IT &amp; PMO</a></li>
+        </ul>
+      </div>
+      <!-- resources -->
+      <div>
+        <h5 class="font-bold text-[14px] mb-4">Resources</h5>
+        <ul class="space-y-2.5 text-white/55 text-[13px]">
+          <li><a href="#" class="hover:text-white">Templates</a></li>
+          <li><a href="#" class="hover:text-white">Blog</a></li>
+          <li><a href="#" class="hover:text-white">Webinars</a></li>
+          <li><a href="#" class="hover:text-white">Help Center</a></li>
+          <li><a href="#" class="hover:text-white">Community</a></li>
+        </ul>
+      </div>
+      <!-- company -->
+      <div>
+        <h5 class="font-bold text-[14px] mb-4">Company</h5>
+        <ul class="space-y-2.5 text-white/55 text-[13px]">
+          <li><a href="#" class="hover:text-white">About</a></li>
+          <li><a href="#" class="hover:text-white">Careers</a></li>
+          <li><a href="#" class="hover:text-white">Press</a></li>
+          <li><a href="#" class="hover:text-white">Investor Relations</a></li>
+          <li><a href="#" class="hover:text-white">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- app store buttons -->
+    <div class="flex flex-wrap items-center gap-3 mt-14">
+      <a href="#" class="inline-flex items-center gap-2.5 bg-white/10 hover:bg-white/15 rounded-xl px-4 py-2.5">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M16.4 12.6c0-2.1 1.7-3.1 1.8-3.2-1-1.4-2.5-1.6-3-1.7-1.3-.1-2.5.7-3.1.7s-1.6-.7-2.7-.7c-1.4 0-2.6.8-3.3 2-1.4 2.4-.4 6 1 8 .7 1 1.4 2 2.5 2 1 0 1.4-.6 2.6-.6s1.6.6 2.7.6 1.8-1 2.4-2c.8-1.1 1.1-2.2 1.1-2.3 0 0-2.1-.8-2.1-3.1zM14.6 6.2c.6-.7 1-1.6.9-2.6-.8 0-1.8.6-2.4 1.3-.5.6-1 1.5-.9 2.5.9.1 1.8-.5 2.4-1.2z"/></svg>
+        <span class="text-left leading-tight"><span class="block text-[10px] text-white/55">Download on the</span><span class="block text-[13px] font-semibold">App Store</span></span>
+      </a>
+      <a href="#" class="inline-flex items-center gap-2.5 bg-white/10 hover:bg-white/15 rounded-xl px-4 py-2.5">
+        <svg width="20" height="20" viewBox="0 0 24 24"><path d="M3.6 2.3 13 12 3.6 21.7c-.3-.2-.5-.6-.5-1V3.3c0-.4.2-.8.5-1z" fill="#34A853"/><path d="M13 12 3.6 2.3c.1-.1.3-.1.4-.1l11 6.3z" fill="#FBBC04"/><path d="m17 8.5 3 1.7c.7.4.7 1.5 0 1.9l-3 1.7L13 12z" fill="#EA4335"/><path d="m15 14.5-11 6.3c-.1 0-.3 0-.4-.1L13 12z" fill="#4285F4"/></svg>
+        <span class="text-left leading-tight"><span class="block text-[10px] text-white/55">Get it on</span><span class="block text-[13px] font-semibold">Google Play</span></span>
+      </a>
+    </div>
+
+    <!-- legal / disclaimer -->
+    <div class="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-[12px] text-white/45">
+      <div class="flex flex-wrap gap-x-5 gap-y-2">
+        <a href="#" class="hover:text-white/80">Terms &amp; Privacy</a>
+        <a href="#" class="hover:text-white/80">Security</a>
+        <a href="#" class="hover:text-white/80">Status</a>
+        <a href="#" class="hover:text-white/80">Cookie Settings</a>
+        <span>© 2026 — all rights reserved</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+        English
+      </div>
+    </div>
+
+    <p class="text-[11px] leading-relaxed text-white/35 mt-8 max-w-[760px]">
+      Design mockup built with Tailwind CSS for layout reference only. Not affiliated with, endorsed by, or representative of monday.com. All names and trademarks belong to their respective owners.
+    </p>
+  </div>
+</footer>
+
+<!-- ============================ MINIMAL JS ============================ -->
+<script>
+  // header background on scroll
+  const header = document.getElementById('siteHeader');
+  const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 12);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // mobile menu toggle
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  hamburger.addEventListener('click', () => mobileMenu.classList.toggle('hidden-menu'));
+  mobileMenu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => mobileMenu.classList.add('hidden-menu')));
+
+  // reveal-on-scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+</script>
+
+</body>
+</html>

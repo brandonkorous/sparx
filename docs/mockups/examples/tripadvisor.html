@@ -1,0 +1,934 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tripadvisor: Read Reviews, Compare Prices &amp; Book</title>
+    <meta
+      name="description"
+      content="Mockup replica of the Tripadvisor.com homepage — built with Tailwind CSS for design reference only. Not affiliated with Tripadvisor."
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Poppins', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            },
+            colors: {
+              // Tripadvisor signature green family
+              ta: '#34E0A1',
+              tadark: '#00AA6C',
+              taink: '#000000',
+              taslate: '#1a1a1a',
+              tabody: '#2B2B2B',
+              tamuted: '#5A5A5A',
+              tafaint: '#767676',
+              taline: '#E0E0E0',
+              tapage: '#FFFFFF',
+              tacream: '#F2F2F2',
+              tasoft: '#F7F7F7',
+            },
+            boxShadow: {
+              card: '0 1px 2px rgba(0,0,0,0.06), 0 8px 22px -12px rgba(0,0,0,0.16)',
+              cardhover: '0 2px 6px rgba(0,0,0,0.08), 0 18px 40px -16px rgba(0,0,0,0.26)',
+              pill: '0 1px 3px rgba(0,0,0,0.10), 0 6px 18px -8px rgba(0,0,0,0.18)',
+              barsoft: '0 2px 8px rgba(0,0,0,0.08), 0 14px 34px -18px rgba(0,0,0,0.22)',
+            },
+          },
+        },
+      };
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: 'Poppins', system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        color: #2b2b2b;
+        background: #ffffff;
+      }
+      .display {
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #000;
+      }
+
+      /* ---------- header ---------- */
+      #hdr {
+        transition:
+          box-shadow 0.2s ease,
+          background-color 0.2s ease;
+        background: #ffffff;
+      }
+      #hdr.scrolled {
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), 0 6px 20px -16px rgba(0, 0, 0, 0.4);
+      }
+
+      .nav-link {
+        color: #1a1a1a;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 8px 12px;
+        border-radius: 9999px;
+        transition: background-color 0.15s ease;
+        white-space: nowrap;
+      }
+      .nav-link:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      /* ---------- buttons / pills ---------- */
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        transition:
+          background-color 0.16s ease,
+          border-color 0.16s ease,
+          box-shadow 0.16s ease,
+          transform 0.08s ease;
+      }
+      .pill:active {
+        transform: translateY(1px);
+      }
+      .pill-green {
+        background: #34e0a1;
+        color: #000;
+      }
+      .pill-green:hover {
+        background: #2bd198;
+      }
+      .pill-black {
+        background: #000;
+        color: #fff;
+      }
+      .pill-black:hover {
+        background: #2b2b2b;
+      }
+      .pill-outline {
+        background: #fff;
+        color: #000;
+        border: 1px solid rgba(0, 0, 0, 0.55);
+      }
+      .pill-outline:hover {
+        background: rgba(0, 0, 0, 0.04);
+        border-color: #000;
+      }
+
+      /* ---------- search category tabs ---------- */
+      .ta-tab {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 14px 4px 16px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1a1a;
+        white-space: nowrap;
+        cursor: pointer;
+      }
+      .ta-tab svg {
+        height: 18px;
+        width: 18px;
+      }
+      .ta-tab[aria-selected='true']::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 3px;
+        border-radius: 3px;
+        background: #000;
+      }
+      .ta-tab[aria-selected='false'] {
+        color: #5a5a5a;
+      }
+      .ta-tab[aria-selected='false']:hover {
+        color: #000;
+      }
+
+      /* ---------- rating bubbles (green circle dots) ---------- */
+      .bubbles {
+        display: inline-flex;
+        gap: 3px;
+        align-items: center;
+      }
+      .bub {
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        background: #00aa6c;
+        display: inline-block;
+      }
+      .bub.empty {
+        background: #fff;
+        box-shadow: inset 0 0 0 2px #00aa6c;
+      }
+      .bub.half {
+        background: linear-gradient(90deg, #00aa6c 50%, #fff 50%);
+        box-shadow: inset 0 0 0 2px #00aa6c;
+      }
+
+      /* ---------- owl logo mark ---------- */
+      .owl {
+        position: relative;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #000;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .owl .eye {
+        position: absolute;
+        top: 8px;
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: #34e0a1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .owl .eye.left {
+        left: 4px;
+      }
+      .owl .eye.right {
+        right: 4px;
+      }
+      .owl .pupil {
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: #000;
+      }
+      .owl .beak {
+        position: absolute;
+        bottom: 7px;
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 6px solid #34e0a1;
+      }
+
+      /* ---------- image stand-ins (no hotlinked photos) ---------- */
+      .photo {
+        position: relative;
+        overflow: hidden;
+        background-size: cover;
+        background-position: center;
+      }
+      .photo .emoji {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 56px;
+        text-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+      }
+      .grad-outdoors {
+        background:
+          radial-gradient(120% 100% at 30% 10%, #ffb347 0%, transparent 60%),
+          linear-gradient(160deg, #e8590c 0%, #b5410b 100%);
+      }
+      .grad-food {
+        background:
+          radial-gradient(120% 100% at 70% 0%, #ffd9a8 0%, transparent 55%),
+          linear-gradient(160deg, #d98a3d 0%, #8a4f1d 100%);
+      }
+      .grad-culture {
+        background:
+          radial-gradient(120% 100% at 20% 0%, #7b5bff 0%, transparent 55%),
+          linear-gradient(160deg, #3b1fb0 0%, #14064f 100%);
+      }
+      .grad-water {
+        background:
+          radial-gradient(120% 100% at 60% 10%, #6ff0d6 0%, transparent 55%),
+          linear-gradient(160deg, #14b8a6 0%, #0d7a8a 100%);
+      }
+      .grad-teal {
+        background: linear-gradient(160deg, #1bbf9c 0%, #0e7a82 100%);
+      }
+      .grad-sky {
+        background: linear-gradient(160deg, #4ea8de 0%, #1f5f99 100%);
+      }
+      .grad-rose {
+        background: linear-gradient(160deg, #f06595 0%, #a61e4d 100%);
+      }
+      .grad-amber {
+        background: linear-gradient(160deg, #f59f00 0%, #b5670b 100%);
+      }
+      .grad-plum {
+        background: linear-gradient(160deg, #845ef7 0%, #4a2197 100%);
+      }
+      .grad-forest {
+        background: linear-gradient(160deg, #2f9e44 0%, #145423 100%);
+      }
+      .grad-night {
+        background: linear-gradient(160deg, #364fc7 0%, #131c4d 100%);
+      }
+      .grad-sand {
+        background: linear-gradient(160deg, #e9c46a 0%, #b08423 100%);
+      }
+      .grad-coral {
+        background: linear-gradient(160deg, #ff8787 0%, #c92a2a 100%);
+      }
+
+      .card {
+        transition:
+          box-shadow 0.18s ease,
+          transform 0.12s ease;
+      }
+      .card:hover {
+        box-shadow: var(--cardhover, 0 18px 40px -16px rgba(0, 0, 0, 0.26));
+        transform: translateY(-2px);
+      }
+
+      /* horizontal scroll rows */
+      .hscroll {
+        scrollbar-width: none;
+      }
+      .hscroll::-webkit-scrollbar {
+        display: none;
+      }
+
+      .heart {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.92);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+      }
+      .heart svg {
+        width: 17px;
+        height: 17px;
+        stroke: #000;
+        fill: none;
+        stroke-width: 2.2;
+      }
+    </style>
+  </head>
+
+  <body id="top">
+    <!-- ================= HEADER ================= -->
+    <header id="hdr" class="sticky top-0 z-50 w-full">
+      <div class="mx-auto flex h-[68px] max-w-[1180px] items-center gap-3 px-4 sm:px-6">
+        <!-- logo -->
+        <a href="#top" class="mr-1 flex items-center gap-2" aria-label="Tripadvisor home">
+          <span class="owl">
+            <span class="eye left"><span class="pupil"></span></span>
+            <span class="eye right"><span class="pupil"></span></span>
+            <span class="beak"></span>
+          </span>
+          <span class="text-[22px] font-extrabold tracking-tight text-taink">Tripadvisor</span>
+        </a>
+
+        <!-- primary nav -->
+        <nav class="ml-3 hidden items-center gap-0.5 lg:flex">
+          <a href="#" class="nav-link inline-flex items-center gap-1.5">
+            <svg class="h-4 w-4 text-tadark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3m0 12v3m9-9h-3M6 12H3m13.5-6.5-2 2m-7 7-2 2m11 0-2-2m-7-7-2-2"/><circle cx="12" cy="12" r="3.5"/></svg>
+            Plan with AI
+          </a>
+          <a href="#" class="nav-link">Rewards</a>
+          <a href="#" class="nav-link">Discover</a>
+          <a href="#" class="nav-link">Trips</a>
+          <a href="#" class="nav-link">Review</a>
+          <a href="#" class="nav-link">Forums</a>
+        </nav>
+
+        <!-- right cluster -->
+        <div class="ml-auto flex items-center gap-1.5 sm:gap-2">
+          <button class="nav-link hidden items-center gap-1.5 sm:inline-flex" aria-label="Currency">
+            <span>USD</span>
+            <svg class="h-3.5 w-3.5 text-tafaint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <button class="nav-link hidden items-center gap-1.5 md:inline-flex" aria-label="Language and region">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/></svg>
+          </button>
+          <a href="#" class="pill pill-black h-10 px-4 text-sm">Sign in</a>
+          <button class="nav-link lg:hidden" aria-label="Open menu" id="menuBtn">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- mobile dropdown nav -->
+      <div id="mobileNav" class="hidden border-t border-taline bg-white px-4 py-3 lg:hidden">
+        <nav class="flex flex-col">
+          <a href="#" class="nav-link !rounded-lg !py-3">Plan with AI</a>
+          <a href="#" class="nav-link !rounded-lg !py-3">Rewards</a>
+          <a href="#" class="nav-link !rounded-lg !py-3">Discover</a>
+          <a href="#" class="nav-link !rounded-lg !py-3">Trips</a>
+          <a href="#" class="nav-link !rounded-lg !py-3">Review</a>
+          <a href="#" class="nav-link !rounded-lg !py-3">Forums</a>
+          <div class="mt-2 flex gap-4 border-t border-taline pt-3 text-sm font-semibold text-tamuted">
+            <span>USD</span><span>United States</span>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <!-- ================= HERO ================= -->
+      <section class="mx-auto max-w-[1024px] px-4 pt-10 sm:px-6 sm:pt-14">
+        <h1 class="display text-center text-[40px] leading-none sm:text-[56px]">Where to?</h1>
+
+        <!-- category tabs -->
+        <div class="mt-7 flex justify-center">
+          <div class="hscroll -mx-4 flex max-w-full gap-6 overflow-x-auto px-4 sm:mx-0 sm:gap-8 sm:px-0" role="tablist" aria-label="Search categories">
+            <button class="ta-tab" role="tab" aria-selected="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+              Search All
+            </button>
+            <button class="ta-tab" role="tab" aria-selected="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg>
+              Hotels
+            </button>
+            <button class="ta-tab" role="tab" aria-selected="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-5.7 8-12a8 8 0 1 0-16 0c0 6.3 8 12 8 12Z"/><circle cx="12" cy="10" r="3"/></svg>
+              Things to Do
+            </button>
+            <button class="ta-tab" role="tab" aria-selected="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3v7c0 1.7 1.3 3 3 3s3-1.3 3-3V3M8 13v8M16 3c-1.7 0-3 2.7-3 6s1.3 4 3 4v8"/></svg>
+              Restaurants
+            </button>
+            <button class="ta-tab" role="tab" aria-selected="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 16l9-3 9 3M5 13V5a2 2 0 0 1 2-2h6l5 5v5M3 20h18"/></svg>
+              Flights
+            </button>
+            <button class="ta-tab" role="tab" aria-selected="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-8 9 8M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>
+              Vacation Rentals
+            </button>
+            <button class="ta-tab" role="tab" aria-selected="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18c1.5 1 3 1 4.5 0s3-1 4.5 0 3 1 4.5 0 3-1 4.5 0M5 13l1-5h12l1 5M9 8V5h6v3"/></svg>
+              Cruises
+            </button>
+          </div>
+        </div>
+
+        <!-- search bar -->
+        <div class="mt-5">
+          <form class="flex items-center gap-2 rounded-full border border-taline bg-white p-2 shadow-barsoft" onsubmit="return false">
+            <span class="ml-3 inline-flex shrink-0 text-tafaint">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+            </span>
+            <input
+              type="text"
+              placeholder="Places to go, things to do, hotels…"
+              class="min-w-0 flex-1 bg-transparent py-2.5 text-[15px] text-taink placeholder:text-tafaint focus:outline-none"
+              aria-label="Search destinations"
+            />
+            <button class="pill pill-outline hidden h-11 px-5 text-sm sm:inline-flex">
+              <svg class="h-4 w-4 text-tadark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3m0 12v3m9-9h-3M6 12H3"/><circle cx="12" cy="12" r="3.5"/></svg>
+              Ask AI
+            </button>
+            <button class="pill pill-green h-11 px-6 text-sm">Search</button>
+          </form>
+        </div>
+
+        <!-- promo hero band -->
+        <div class="mt-9 grid overflow-hidden rounded-3xl bg-ta md:grid-cols-2">
+          <div class="photo grad-coral min-h-[220px] md:min-h-[280px]">
+            <span class="emoji">⛩️</span>
+            <span class="absolute bottom-3 left-3 rounded-full bg-black/55 px-3 py-1 text-xs font-medium text-white">📷 adriansj88</span>
+          </div>
+          <div class="flex flex-col justify-center gap-4 px-7 py-9 sm:px-10">
+            <h2 class="display text-[30px] leading-tight sm:text-[38px]">
+              Find things to do for everything you're into
+            </h2>
+            <p class="text-[15px] font-medium text-taslate/80">
+              Browse 400,000+ experiences and book with us.
+            </p>
+            <a href="#experiences" class="pill pill-black h-12 w-fit px-7 text-[15px]">Book now</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= INTEREST CARDS ================= -->
+      <section class="mx-auto max-w-[1180px] px-4 pt-14 sm:px-6">
+        <h2 class="text-[22px] font-bold text-taink">Find things to do by interest</h2>
+        <p class="mt-1 text-sm text-tamuted">Whatever you're into, we've got it</p>
+
+        <div class="mt-5 grid grid-cols-2 gap-4 md:grid-cols-4">
+          <a href="#" class="card relative block aspect-[4/3] overflow-hidden rounded-2xl shadow-card">
+            <div class="photo grad-outdoors h-full w-full"><span class="emoji">🏜️</span></div>
+            <span class="absolute bottom-3 left-4 text-xl font-bold text-white drop-shadow">Outdoors</span>
+          </a>
+          <a href="#" class="card relative block aspect-[4/3] overflow-hidden rounded-2xl shadow-card">
+            <div class="photo grad-food h-full w-full"><span class="emoji">🍜</span></div>
+            <span class="absolute bottom-3 left-4 text-xl font-bold text-white drop-shadow">Food</span>
+          </a>
+          <a href="#" class="card relative block aspect-[4/3] overflow-hidden rounded-2xl shadow-card">
+            <div class="photo grad-culture h-full w-full"><span class="emoji">🎭</span></div>
+            <span class="absolute bottom-3 left-4 text-xl font-bold text-white drop-shadow">Culture</span>
+          </a>
+          <a href="#" class="card relative block aspect-[4/3] overflow-hidden rounded-2xl shadow-card">
+            <div class="photo grad-water h-full w-full"><span class="emoji">🤿</span></div>
+            <span class="absolute bottom-3 left-4 text-xl font-bold text-white drop-shadow">Water</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- ================= EXPERIENCES TRAVELERS LOVE ================= -->
+      <section id="experiences" class="mx-auto max-w-[1180px] px-4 pt-14 sm:px-6">
+        <div class="flex items-end justify-between">
+          <div>
+            <h2 class="text-[22px] font-bold text-taink">Experiences travelers love</h2>
+            <p class="mt-1 text-sm text-tamuted">Travelers' Choice Awards Best of the Best</p>
+          </div>
+          <a href="#" class="hidden text-sm font-semibold text-taink underline-offset-4 hover:underline sm:inline">See all</a>
+        </div>
+
+        <div class="hscroll mt-5 flex gap-4 overflow-x-auto pb-2 [scroll-snap-type:x_mandatory]">
+          <!-- card -->
+          <article class="card w-[260px] shrink-0 overflow-hidden rounded-2xl bg-white shadow-card [scroll-snap-align:start]">
+            <div class="relative">
+              <div class="photo grad-culture h-44 w-full"><span class="emoji">⛪</span></div>
+              <span class="heart"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C.8 8.6 2.3 5 6 5c2.1 0 3.3 1.3 4 2.4C10.7 6.3 11.9 5 14 5c3.7 0 5.2 3.6 3.5 7-2.5 4.5-9.5 9-9.5 9Z"/></svg></span>
+            </div>
+            <div class="p-4">
+              <h3 class="line-clamp-2 min-h-[44px] text-sm font-semibold text-taink">The Best Tour in Florence: Renaissance &amp; Medici Tales — guided by a Storyteller</h3>
+              <div class="mt-2 flex items-center gap-2 text-xs text-tamuted">
+                <span class="bubbles" aria-label="Rated 5 of 5">
+                  <span class="bub"></span><span class="bub"></span><span class="bub"></span><span class="bub"></span><span class="bub"></span>
+                </span>
+                <span class="font-semibold text-taink">5.0</span>
+                <span>(2,148)</span>
+              </div>
+              <p class="mt-3 text-sm text-taink"><span class="text-tamuted">from</span> <span class="font-bold">$64</span> per adult</p>
+            </div>
+          </article>
+
+          <article class="card w-[260px] shrink-0 overflow-hidden rounded-2xl bg-white shadow-card [scroll-snap-align:start]">
+            <div class="relative">
+              <div class="photo grad-forest h-44 w-full"><span class="emoji">⛰️</span></div>
+              <span class="heart"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C.8 8.6 2.3 5 6 5c2.1 0 3.3 1.3 4 2.4C10.7 6.3 11.9 5 14 5c3.7 0 5.2 3.6 3.5 7-2.5 4.5-9.5 9-9.5 9Z"/></svg></span>
+            </div>
+            <div class="p-4">
+              <h3 class="line-clamp-2 min-h-[44px] text-sm font-semibold text-taink">Full-Day Ninh Binh Highlights Tour from Hanoi with Riverboat Cruise</h3>
+              <div class="mt-2 flex items-center gap-2 text-xs text-tamuted">
+                <span class="bubbles" aria-label="Rated 4.5 of 5">
+                  <span class="bub"></span><span class="bub"></span><span class="bub"></span><span class="bub"></span><span class="bub half"></span>
+                </span>
+                <span class="font-semibold text-taink">4.9</span>
+                <span>(8,341)</span>
+              </div>
+              <p class="mt-3 text-sm text-taink"><span class="text-tamuted">from</span> <span class="font-bold">$45</span> per adult</p>
+            </div>
+          </article>
+
+          <article class="card w-[260px] shrink-0 overflow-hidden rounded-2xl bg-white shadow-card [scroll-snap-align:start]">
+            <div class="relative">
+              <div class="photo grad-teal h-44 w-full"><span class="emoji">🛥️</span></div>
+              <span class="heart"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C.8 8.6 2.3 5 6 5c2.1 0 3.3 1.3 4 2.4C10.7 6.3 11.9 5 14 5c3.7 0 5.2 3.6 3.5 7-2.5 4.5-9.5 9-9.5 9Z"/></svg></span>
+            </div>
+            <div class="p-4">
+              <h3 class="line-clamp-2 min-h-[44px] text-sm font-semibold text-taink">Small Group Blue Cave and Sunj Beach Boat Tour from Dubrovnik</h3>
+              <div class="mt-2 flex items-center gap-2 text-xs text-tamuted">
+                <span class="bubbles" aria-label="Rated 5 of 5">
+                  <span class="bub"></span><span class="bub"></span><span class="bub"></span><span class="bub"></span><span class="bub"></span>
+                </span>
+                <span class="font-semibold text-taink">5.0</span>
+                <span>(1,962)</span>
+              </div>
+              <p class="mt-3 text-sm text-taink"><span class="text-tamuted">from</span> <span class="font-bold">$83</span> per adult</p>
+            </div>
+          </article>
+
+          <article class="card w-[260px] shrink-0 overflow-hidden rounded-2xl bg-white shadow-card [scroll-snap-align:start]">
+            <div class="relative">
+              <div class="photo grad-amber h-44 w-full"><span class="emoji">🍺</span></div>
+              <span class="heart"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C.8 8.6 2.3 5 6 5c2.1 0 3.3 1.3 4 2.4C10.7 6.3 11.9 5 14 5c3.7 0 5.2 3.6 3.5 7-2.5 4.5-9.5 9-9.5 9Z"/></svg></span>
+            </div>
+            <div class="p-4">
+              <h3 class="line-clamp-2 min-h-[44px] text-sm font-semibold text-taink">London Small Group Tour of Historic Pubs with a Local Guide</h3>
+              <div class="mt-2 flex items-center gap-2 text-xs text-tamuted">
+                <span class="bubbles" aria-label="Rated 4.5 of 5">
+                  <span class="bub"></span><span class="bub"></span><span class="bub"></span><span class="bub"></span><span class="bub half"></span>
+                </span>
+                <span class="font-semibold text-taink">4.8</span>
+                <span>(3,074)</span>
+              </div>
+              <p class="mt-3 text-sm text-taink"><span class="text-tamuted">from</span> <span class="font-bold">$49</span> per adult</p>
+            </div>
+          </article>
+
+          <article class="card w-[260px] shrink-0 overflow-hidden rounded-2xl bg-white shadow-card [scroll-snap-align:start]">
+            <div class="relative">
+              <div class="photo grad-sand h-44 w-full"><span class="emoji">🐫</span></div>
+              <span class="heart"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C.8 8.6 2.3 5 6 5c2.1 0 3.3 1.3 4 2.4C10.7 6.3 11.9 5 14 5c3.7 0 5.2 3.6 3.5 7-2.5 4.5-9.5 9-9.5 9Z"/></svg></span>
+            </div>
+            <div class="p-4">
+              <h3 class="line-clamp-2 min-h-[44px] text-sm font-semibold text-taink">Marrakech Agafay Desert Sunset, Camel Ride &amp; Dinner Show</h3>
+              <div class="mt-2 flex items-center gap-2 text-xs text-tamuted">
+                <span class="bubbles" aria-label="Rated 5 of 5">
+                  <span class="bub"></span><span class="bub"></span><span class="bub"></span><span class="bub"></span><span class="bub"></span>
+                </span>
+                <span class="font-semibold text-taink">5.0</span>
+                <span>(5,520)</span>
+              </div>
+              <p class="mt-3 text-sm text-taink"><span class="text-tamuted">from</span> <span class="font-bold">$57</span> per adult</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ================= FOUNDATION / SMALL BUSINESS BAND ================= -->
+      <section class="mx-auto max-w-[1180px] px-4 pt-14 sm:px-6">
+        <div class="grid overflow-hidden rounded-3xl bg-tasoft md:grid-cols-2">
+          <div class="photo grad-rose min-h-[230px] md:min-h-[260px]">
+            <span class="emoji">🌻</span>
+            <span class="absolute left-4 top-4 rounded-md bg-black/45 px-2.5 py-1 text-sm font-bold text-white">give·a·little</span>
+          </div>
+          <div class="flex flex-col justify-center gap-3 px-7 py-9 sm:px-10">
+            <span class="inline-flex w-fit items-center gap-2 text-xs font-bold text-tadark">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-5.7 8-12a8 8 0 1 0-16 0c0 6.3 8 12 8 12Z"/><path d="m9 11 2 2 4-4"/></svg>
+              Travel Foundation
+            </span>
+            <h2 class="display text-[26px] leading-tight">Show some love to small businesses</h2>
+            <p class="text-sm text-tamuted">
+              Donate today to provide micro-loans to local entrepreneurs, and our Foundation will match it, up to $250,000 collectively. Terms apply.
+            </p>
+            <a href="#" class="pill pill-black h-11 w-fit px-6 text-sm">Donate now</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= INSPIRATION (articles) ================= -->
+      <section class="mt-14 bg-tasoft py-14">
+        <div class="mx-auto max-w-[1180px] px-4 sm:px-6">
+          <h2 class="text-[22px] font-bold text-taink">Inspiration to get you going</h2>
+          <div class="mt-6 grid gap-5 sm:grid-cols-3">
+            <a href="#" class="card group block overflow-hidden rounded-2xl bg-white shadow-card">
+              <div class="photo grad-sky relative h-48 w-full">
+                <span class="emoji">🏖️</span>
+                <span class="heart"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C.8 8.6 2.3 5 6 5c2.1 0 3.3 1.3 4 2.4C10.7 6.3 11.9 5 14 5c3.7 0 5.2 3.6 3.5 7-2.5 4.5-9.5 9-9.5 9Z"/></svg></span>
+              </div>
+              <div class="p-5">
+                <span class="text-xs font-bold uppercase tracking-wide text-tadark">Guide</span>
+                <h3 class="mt-1 text-[15px] font-semibold text-taink">Our ultimate summer travel recs for 2026</h3>
+              </div>
+            </a>
+            <a href="#" class="card group block overflow-hidden rounded-2xl bg-white shadow-card">
+              <div class="photo grad-plum relative h-48 w-full">
+                <span class="emoji">🚲</span>
+                <span class="heart"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C.8 8.6 2.3 5 6 5c2.1 0 3.3 1.3 4 2.4C10.7 6.3 11.9 5 14 5c3.7 0 5.2 3.6 3.5 7-2.5 4.5-9.5 9-9.5 9Z"/></svg></span>
+              </div>
+              <div class="p-5">
+                <span class="text-xs font-bold uppercase tracking-wide text-tadark">City Guide</span>
+                <h3 class="mt-1 text-[15px] font-semibold text-taink">A traveler's weekend guide to Amsterdam</h3>
+              </div>
+            </a>
+            <a href="#" class="card group block overflow-hidden rounded-2xl bg-white shadow-card">
+              <div class="photo grad-night relative h-48 w-full">
+                <span class="emoji">🌌</span>
+                <span class="heart"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C.8 8.6 2.3 5 6 5c2.1 0 3.3 1.3 4 2.4C10.7 6.3 11.9 5 14 5c3.7 0 5.2 3.6 3.5 7-2.5 4.5-9.5 9-9.5 9Z"/></svg></span>
+              </div>
+              <div class="p-5">
+                <span class="text-xs font-bold uppercase tracking-wide text-tadark">Bucket List</span>
+                <h3 class="mt-1 text-[15px] font-semibold text-taink">7 places to experience the midnight sun</h3>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SEE THE CITY FROM THE WATER (booking cards) ================= -->
+      <section class="mx-auto max-w-[1180px] px-4 pt-14 sm:px-6">
+        <h2 class="text-[22px] font-bold text-taink">See the city from the water</h2>
+        <p class="mt-1 text-sm text-tamuted">Hop on a cruise to check out the sights</p>
+
+        <div class="hscroll mt-5 flex gap-4 overflow-x-auto pb-2 [scroll-snap-type:x_mandatory]">
+          <article class="card w-[260px] shrink-0 overflow-hidden rounded-2xl bg-white shadow-card [scroll-snap-align:start]">
+            <div class="relative">
+              <div class="photo grad-teal h-44 w-full"><span class="emoji">🚤</span></div>
+              <span class="heart"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C.8 8.6 2.3 5 6 5c2.1 0 3.3 1.3 4 2.4C10.7 6.3 11.9 5 14 5c3.7 0 5.2 3.6 3.5 7-2.5 4.5-9.5 9-9.5 9Z"/></svg></span>
+            </div>
+            <div class="p-4">
+              <h3 class="line-clamp-2 min-h-[44px] text-sm font-semibold text-taink">All-Day Cruise: 3 Islands to Aglieri Moni, Aegina with Lunch and Drinks</h3>
+              <div class="mt-2 flex items-center gap-2 text-xs text-tamuted">
+                <span class="bubbles" aria-label="Rated 4.5 of 5">
+                  <span class="bub"></span><span class="bub"></span><span class="bub"></span><span class="bub"></span><span class="bub half"></span>
+                </span>
+                <span class="font-semibold text-taink">4.7</span>
+                <span>(1,205)</span>
+              </div>
+              <p class="mt-3 text-sm text-taink"><span class="text-tamuted">from</span> <span class="font-bold">$98</span> per adult</p>
+            </div>
+          </article>
+
+          <article class="card w-[260px] shrink-0 overflow-hidden rounded-2xl bg-white shadow-card [scroll-snap-align:start]">
+            <div class="relative">
+              <div class="photo grad-sky h-44 w-full"><span class="emoji">⛵</span></div>
+              <span class="absolute left-3 top-3 rounded-md border border-taline bg-white px-2 py-0.5 text-[11px] font-bold text-tadark">Likely to sell out</span>
+              <span class="heart"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C.8 8.6 2.3 5 6 5c2.1 0 3.3 1.3 4 2.4C10.7 6.3 11.9 5 14 5c3.7 0 5.2 3.6 3.5 7-2.5 4.5-9.5 9-9.5 9Z"/></svg></span>
+            </div>
+            <div class="p-4">
+              <h3 class="line-clamp-2 min-h-[44px] text-sm font-semibold text-taink">Manhattan Architecture Yacht Cruise on Skyline Princess</h3>
+              <div class="mt-2 flex items-center gap-2 text-xs text-tamuted">
+                <span class="bubbles" aria-label="Rated 5 of 5">
+                  <span class="bub"></span><span class="bub"></span><span class="bub"></span><span class="bub"></span><span class="bub"></span>
+                </span>
+                <span class="font-semibold text-taink">4.9</span>
+                <span>(7,902)</span>
+              </div>
+              <p class="mt-3 text-sm text-taink"><span class="text-tamuted">from</span> <span class="font-bold">$72</span> per adult</p>
+            </div>
+          </article>
+
+          <article class="card w-[260px] shrink-0 overflow-hidden rounded-2xl bg-white shadow-card [scroll-snap-align:start]">
+            <div class="relative">
+              <div class="photo grad-night h-44 w-full"><span class="emoji">🌃</span></div>
+              <span class="absolute left-3 top-3 rounded-md bg-black px-2 py-0.5 text-[11px] font-bold text-white">Best seller</span>
+              <span class="heart"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C.8 8.6 2.3 5 6 5c2.1 0 3.3 1.3 4 2.4C10.7 6.3 11.9 5 14 5c3.7 0 5.2 3.6 3.5 7-2.5 4.5-9.5 9-9.5 9Z"/></svg></span>
+            </div>
+            <div class="p-4">
+              <h3 class="line-clamp-2 min-h-[44px] text-sm font-semibold text-taink">Amsterdam Classic Saloon Boat Cruise with Drinks and Cheese</h3>
+              <div class="mt-2 flex items-center gap-2 text-xs text-tamuted">
+                <span class="bubbles" aria-label="Rated 4.5 of 5">
+                  <span class="bub"></span><span class="bub"></span><span class="bub"></span><span class="bub"></span><span class="bub half"></span>
+                </span>
+                <span class="font-semibold text-taink">4.8</span>
+                <span>(15,960)</span>
+              </div>
+              <p class="mt-3 text-sm text-taink"><span class="text-tamuted">from</span> <span class="font-bold">$39</span> per adult</p>
+            </div>
+          </article>
+
+          <article class="card w-[260px] shrink-0 overflow-hidden rounded-2xl bg-white shadow-card [scroll-snap-align:start]">
+            <div class="relative">
+              <div class="photo grad-rose h-44 w-full"><span class="emoji">🥂</span></div>
+              <span class="absolute left-3 top-3 rounded-md border border-taline bg-white px-2 py-0.5 text-[11px] font-bold text-tadark">Likely to sell out</span>
+              <span class="heart"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C.8 8.6 2.3 5 6 5c2.1 0 3.3 1.3 4 2.4C10.7 6.3 11.9 5 14 5c3.7 0 5.2 3.6 3.5 7-2.5 4.5-9.5 9-9.5 9Z"/></svg></span>
+            </div>
+            <div class="p-4">
+              <h3 class="line-clamp-2 min-h-[44px] text-sm font-semibold text-taink">Budapest Unlimited Prosecco, Beer &amp; Aperol Spritz Cruise</h3>
+              <div class="mt-2 flex items-center gap-2 text-xs text-tamuted">
+                <span class="bubbles" aria-label="Rated 4 of 5">
+                  <span class="bub"></span><span class="bub"></span><span class="bub"></span><span class="bub"></span><span class="bub empty"></span>
+                </span>
+                <span class="font-semibold text-taink">4.3</span>
+                <span>(2,841)</span>
+              </div>
+              <p class="mt-3 text-sm text-taink"><span class="text-tamuted">from</span> <span class="font-bold">$31</span> per adult</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ================= SWEEPSTAKES PROMO ================= -->
+      <section class="mx-auto max-w-[1180px] px-4 pt-14 sm:px-6">
+        <div class="grid overflow-hidden rounded-3xl border border-taline bg-white md:grid-cols-2">
+          <div class="photo grad-forest min-h-[220px] md:min-h-[240px]"><span class="emoji">💰</span></div>
+          <div class="flex flex-col justify-center gap-3 px-7 py-9 sm:px-10">
+            <span class="text-xs font-medium text-tafaint">Sponsored by Cruxer</span>
+            <h2 class="display text-[26px] leading-tight">You could win $5K in Trip Cash</h2>
+            <p class="text-sm text-tamuted">The Taste of Summer Sweepstakes is ready to deliver. Terms apply.</p>
+            <a href="#" class="pill pill-black h-11 w-fit px-6 text-sm">Enter now</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ICONIC PLACES (destinations) ================= -->
+      <section class="mx-auto max-w-[1180px] px-4 pt-14 sm:px-6">
+        <h2 class="text-[22px] font-bold text-taink">Iconic places you need to see</h2>
+        <div class="mt-5 grid grid-cols-2 gap-4 md:grid-cols-4">
+          <a href="#" class="card relative block aspect-[3/4] overflow-hidden rounded-2xl shadow-card">
+            <div class="photo grad-amber h-full w-full"><span class="emoji">🏛️</span></div>
+            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+              <span class="text-lg font-bold text-white">Rome, Italy</span>
+            </div>
+          </a>
+          <a href="#" class="card relative block aspect-[3/4] overflow-hidden rounded-2xl shadow-card">
+            <div class="photo grad-sky h-full w-full"><span class="emoji">🗼</span></div>
+            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+              <span class="text-lg font-bold text-white">Paris, France</span>
+            </div>
+          </a>
+          <a href="#" class="card relative block aspect-[3/4] overflow-hidden rounded-2xl shadow-card">
+            <div class="photo grad-plum h-full w-full"><span class="emoji">🎰</span></div>
+            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+              <span class="text-lg font-bold text-white">Las Vegas, NV</span>
+            </div>
+          </a>
+          <a href="#" class="card relative block aspect-[3/4] overflow-hidden rounded-2xl shadow-card">
+            <div class="photo grad-night h-full w-full"><span class="emoji">🎡</span></div>
+            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+              <span class="text-lg font-bold text-white">London, UK</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- ================= TRAVELERS' CHOICE AWARDS BAND ================= -->
+      <section class="mt-16 px-4 sm:px-6">
+        <div class="mx-auto max-w-[1180px] overflow-hidden rounded-3xl bg-[#1d1d18] px-8 py-14 sm:px-14">
+          <!-- award medal mark -->
+          <div class="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-full bg-ta">
+            <span class="text-2xl">🏆</span>
+          </div>
+          <h2 class="display max-w-lg text-[34px] leading-tight text-white sm:text-[42px]">
+            Travelers' Choice Awards Best of the Best
+          </h2>
+          <p class="mt-4 max-w-md text-sm text-white/70">
+            Among our top 1% of places, stays, eats, and experiences — decided by you.
+          </p>
+          <a href="#" class="pill pill-green mt-7 h-12 px-7 text-[15px]">See the winners</a>
+        </div>
+      </section>
+
+      <!-- ================= JOIN THE COMMUNITY ================= -->
+      <section class="mx-auto max-w-[1180px] px-4 pb-12 pt-14 sm:px-6">
+        <h2 class="text-xl font-bold text-taink">Tripadvisor: join the largest travel community</h2>
+        <p class="mt-3 max-w-3xl text-sm leading-relaxed text-tamuted">
+          As the world's largest travel guidance platform, Tripadvisor helps you take better trips. And now it pays to plan, book, and review with us. Join Tripadvisor Rewards today and get $30 off Things to Do. Plus, you can check out hotels, restaurants, and more on our site or in the app — they're all booked by more than a billion reviews and opinions from travelers who have been there.
+        </p>
+      </section>
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="border-t border-taline bg-tasoft">
+      <div class="mx-auto max-w-[1180px] px-4 py-12 sm:px-6">
+        <div class="grid grid-cols-2 gap-8 md:grid-cols-4">
+          <div>
+            <h4 class="text-sm font-bold text-taink">About Tripadvisor</h4>
+            <ul class="mt-4 space-y-2.5 text-sm text-tamuted">
+              <li><a href="#" class="hover:text-taink hover:underline">About Us</a></li>
+              <li><a href="#" class="hover:text-taink hover:underline">Press</a></li>
+              <li><a href="#" class="hover:text-taink hover:underline">Resources and Policies</a></li>
+              <li><a href="#" class="hover:text-taink hover:underline">Careers</a></li>
+              <li><a href="#" class="hover:text-taink hover:underline">Investor Relations</a></li>
+              <li><a href="#" class="hover:text-taink hover:underline">Trust &amp; Safety</a></li>
+              <li><a href="#" class="hover:text-taink hover:underline">Contact us</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-sm font-bold text-taink">Explore</h4>
+            <ul class="mt-4 space-y-2.5 text-sm text-tamuted">
+              <li><a href="#" class="hover:text-taink hover:underline">Write a review</a></li>
+              <li><a href="#" class="hover:text-taink hover:underline">Add a Place</a></li>
+              <li><a href="#" class="hover:text-taink hover:underline">Join</a></li>
+              <li><a href="#" class="hover:text-taink hover:underline">Travelers' Choice</a></li>
+              <li><a href="#" class="hover:text-taink hover:underline">Help Center</a></li>
+              <li><a href="#" class="hover:text-taink hover:underline">Travel Stories</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-sm font-bold text-taink">Do Business With Us</h4>
+            <ul class="mt-4 space-y-2.5 text-sm text-tamuted">
+              <li><a href="#" class="hover:text-taink hover:underline">Owners</a></li>
+              <li><a href="#" class="hover:text-taink hover:underline">Business Advantage</a></li>
+              <li><a href="#" class="hover:text-taink hover:underline">Sponsored Placements</a></li>
+              <li><a href="#" class="hover:text-taink hover:underline">Advertise with Us</a></li>
+              <li><a href="#" class="hover:text-taink hover:underline">Access our Content API</a></li>
+              <li><a href="#" class="hover:text-taink hover:underline">Become an Affiliate</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-sm font-bold text-taink">Get The App</h4>
+            <ul class="mt-4 space-y-2.5 text-sm text-tamuted">
+              <li><a href="#" class="hover:text-taink hover:underline">iPhone App</a></li>
+              <li><a href="#" class="hover:text-taink hover:underline">Android App</a></li>
+            </ul>
+            <h4 class="mt-6 text-sm font-bold text-taink">Tripadvisor Sites</h4>
+            <ul class="mt-4 space-y-2.5 text-sm text-tamuted">
+              <li><a href="#" class="hover:text-taink hover:underline">Book tours and activities</a></li>
+              <li><a href="#" class="hover:text-taink hover:underline">Read reviews, book hotels</a></li>
+              <li><a href="#" class="hover:text-taink hover:underline">Book cruises &amp; charters</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- currency / region row -->
+        <div class="mt-10 flex flex-wrap items-center gap-3 border-t border-taline pt-8">
+          <button class="pill pill-outline h-10 px-4 text-sm">
+            <span>$ USD</span>
+            <svg class="h-3.5 w-3.5 text-tafaint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <button class="pill pill-outline h-10 px-4 text-sm">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/></svg>
+            <span>United States</span>
+          </button>
+          <div class="ml-auto flex items-center gap-3 text-tamuted">
+            <a href="#" aria-label="Facebook" class="hover:text-taink"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.2c-1.2 0-1.6.8-1.6 1.6V12h2.7l-.4 2.9h-2.3v7A10 10 0 0 0 22 12Z"/></svg></a>
+            <a href="#" aria-label="X" class="hover:text-taink"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.5 8.6L23 22h-6.8l-5-6.6L5.4 22H2.3l8-9.2L1.6 2h6.9l4.5 6 5.9-6Zm-1.2 18h1.7L7.3 3.8H5.5L17.7 20Z"/></svg></a>
+            <a href="#" aria-label="Pinterest" class="hover:text-taink"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-3.6 19.3c-.1-.8-.1-2 0-2.9l1.2-5.1s-.3-.6-.3-1.5c0-1.4.8-2.4 1.8-2.4.9 0 1.3.6 1.3 1.4 0 .9-.5 2.1-.8 3.3-.2 1 .5 1.7 1.4 1.7 1.7 0 2.9-2.2 2.9-4.7 0-2-1.3-3.4-3.7-3.4a4.2 4.2 0 0 0-4.4 4.2c0 .8.2 1.4.6 1.8.2.2.2.3.1.5l-.2.8c-.1.3-.2.4-.5.2-1.1-.5-1.7-1.8-1.7-3.3 0-2.5 2-5.4 6-5.4 3.2 0 5.4 2.3 5.4 4.9 0 3.3-1.8 5.7-4.6 5.7-.9 0-1.8-.5-2.1-1.1l-.6 2.2c-.2.8-.7 1.7-1 2.3A10 10 0 1 0 12 2Z"/></svg></a>
+            <a href="#" aria-label="Instagram" class="hover:text-taink"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+            <a href="#" aria-label="YouTube" class="hover:text-taink"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.5a3 3 0 0 0-2.1-2.1C19 4.9 12 4.9 12 4.9s-7 0-8.9.5A3 3 0 0 0 1 7.5 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.5a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.5 31 31 0 0 0-.5-4.5ZM9.7 15.3V8.7l5.8 3.3-5.8 3.3Z"/></svg></a>
+            <a href="#" aria-label="TikTok" class="hover:text-taink"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3c.3 2.3 1.7 3.9 4 4.2v3c-1.5 0-2.9-.5-4-1.3v6.4c0 3.4-2.6 5.7-5.7 5.7A5.6 5.6 0 0 1 4.6 15c0-3.2 2.6-5.6 5.9-5.4v3.1a2.6 2.6 0 0 0-1-.2 2.5 2.5 0 1 0 2.5 2.5V3H16Z"/></svg></a>
+          </div>
+        </div>
+
+        <!-- legal -->
+        <div class="mt-8 border-t border-taline pt-6 text-xs leading-relaxed text-tafaint">
+          <div class="flex flex-wrap gap-x-4 gap-y-2 font-medium text-tamuted">
+            <a href="#" class="hover:text-taink hover:underline">Terms of Use</a>
+            <a href="#" class="hover:text-taink hover:underline">Privacy and Cookies Statement</a>
+            <a href="#" class="hover:text-taink hover:underline">Cookie consent</a>
+            <a href="#" class="hover:text-taink hover:underline">Site Map</a>
+            <a href="#" class="hover:text-taink hover:underline">How the site works</a>
+            <a href="#" class="hover:text-taink hover:underline">Contact us</a>
+            <a href="#" class="hover:text-taink hover:underline">Accessibility Statement</a>
+          </div>
+          <p class="mt-4">
+            &copy; 2026 Mockup Replica. All rights reserved.
+          </p>
+          <p class="mt-3 max-w-3xl">
+            Design mockup built with Tailwind CSS for layout reference only. Not affiliated with, endorsed by, or representative of Tripadvisor. All names and trademarks belong to their respective owners.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        // header scroll state
+        const hdr = document.getElementById('hdr');
+        const onScroll = () => hdr.classList.toggle('scrolled', window.scrollY > 8);
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+
+        // mobile menu toggle
+        const menuBtn = document.getElementById('menuBtn');
+        const mobileNav = document.getElementById('mobileNav');
+        if (menuBtn && mobileNav) {
+          menuBtn.addEventListener('click', () => mobileNav.classList.toggle('hidden'));
+        }
+
+        // search category tab selection
+        const tabs = Array.from(document.querySelectorAll('.ta-tab'));
+        tabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            tabs.forEach((t) => t.setAttribute('aria-selected', 'false'));
+            tab.setAttribute('aria-selected', 'true');
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

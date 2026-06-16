@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>adidas US — Homepage (design mockup)</title>
+    <meta
+      name="description"
+      content="Self-contained Tailwind design mockup recreating the adidas.com/us homepage layout for reference only. Not affiliated with adidas."
+    />
+
+    <!-- Fonts: Archivo (bold grotesque headings) + Inter (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Narrow:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              // Bold condensed grotesque for headings + utility caps
+              display: ['"Archivo"', 'system-ui', 'sans-serif'],
+              narrow: ['"Archivo Narrow"', '"Archivo"', 'sans-serif'],
+              body: ['"Inter"', 'system-ui', 'sans-serif'],
+            },
+            colors: {
+              // adidas is stark black / white
+              ink: '#000000',
+              paper: '#ffffff',
+              // muted grays used for chrome + placeholder blocks
+              grayline: '#767677',
+              hairline: '#e3e3e3',
+              soft: '#f5f5f5',
+              // adidas membership / accent green
+              member: '#1d6b3e',
+              memberDark: '#13502e',
+            },
+            letterSpacing: {
+              tightest: '-0.04em',
+            },
+            maxWidth: {
+              shell: '1480px',
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+      /* The three-stripes mark, drawn purely with skewed CSS bars */
+      .three-stripes {
+        display: inline-flex;
+        align-items: flex-end;
+        gap: 2.5px;
+        height: 22px;
+      }
+      .three-stripes i {
+        display: block;
+        width: 5px;
+        background: currentColor;
+        transform: skewX(-12deg);
+      }
+      .three-stripes i:nth-child(1) {
+        height: 11px;
+      }
+      .three-stripes i:nth-child(2) {
+        height: 16px;
+      }
+      .three-stripes i:nth-child(3) {
+        height: 21px;
+      }
+      /* The classic adidas underline-cut "shop now" arrow link */
+      .arrow-link {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        font-family: 'Archivo', sans-serif;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.01em;
+        border-bottom: 2px solid currentColor;
+        padding-bottom: 3px;
+      }
+      .arrow-link svg {
+        transition: transform 0.2s ease;
+      }
+      .arrow-link:hover svg {
+        transform: translateX(5px);
+      }
+      /* Recreated "shoe" silhouette built from CSS — used as image stand-in */
+      .css-shoe {
+        position: relative;
+        width: 168px;
+        height: 78px;
+        filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.28));
+      }
+      .css-shoe .sole {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 16px;
+        background: #111;
+        border-radius: 0 0 6px 22px;
+      }
+      .css-shoe .upper {
+        position: absolute;
+        bottom: 13px;
+        left: 0;
+        width: 100%;
+        height: 52px;
+        background: linear-gradient(150deg, #fff 0%, #e9e9e9 60%, #cfcfcf 100%);
+        border-radius: 46px 70px 8px 8px / 60px 50px 8px 8px;
+        box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.06);
+      }
+      .css-shoe .toe {
+        position: absolute;
+        bottom: 13px;
+        right: 0;
+        width: 58px;
+        height: 30px;
+        background: linear-gradient(160deg, #f2f2f2, #d4d4d4);
+        border-radius: 0 8px 6px 40px;
+      }
+      /* three diagonal stripes on the shoe upper */
+      .css-shoe .stripe {
+        position: absolute;
+        top: 14px;
+        width: 7px;
+        height: 40px;
+        background: #111;
+        transform: skewX(-22deg);
+      }
+      .css-shoe .stripe:nth-of-type(1) {
+        left: 58px;
+      }
+      .css-shoe .stripe:nth-of-type(2) {
+        left: 72px;
+      }
+      .css-shoe .stripe:nth-of-type(3) {
+        left: 86px;
+      }
+      /* utility for the diagonal "kinetic" campaign text repeat */
+      .campaign-stack {
+        line-height: 0.84;
+      }
+      /* hide scrollbar on the horizontal team scroller */
+      .no-bar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-bar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    </style>
+  </head>
+
+  <body class="bg-paper text-ink">
+    <!-- ============================================================
+         TOP UTILITY BAR
+    ============================================================= -->
+    <div class="hidden border-b border-hairline bg-soft text-[11px] md:block">
+      <div class="mx-auto flex max-w-shell items-center justify-end gap-5 px-5 py-1.5 font-medium text-grayline">
+        <a href="#" class="hover:text-ink hover:underline">store finder</a>
+        <span class="text-hairline">|</span>
+        <a href="#" class="hover:text-ink hover:underline">help</a>
+        <span class="text-hairline">|</span>
+        <a href="#" class="hover:text-ink hover:underline">orders and returns</a>
+        <span class="text-hairline">|</span>
+        <a href="#" class="hover:text-ink hover:underline">gift cards</a>
+        <span class="text-hairline">|</span>
+        <a href="#" class="font-semibold text-ink hover:underline">join adiClub</a>
+        <span class="text-hairline">|</span>
+        <a href="#" class="font-semibold text-ink hover:underline">sign in</a>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         HEADER
+    ============================================================= -->
+    <header id="masthead" class="sticky top-0 z-50 bg-paper transition-shadow duration-200">
+      <div class="mx-auto flex max-w-shell items-center gap-4 px-4 py-3 md:px-5">
+        <!-- logo: three-stripes mark + lowercase wordmark -->
+        <a href="#top" class="flex shrink-0 items-center gap-2 text-ink" aria-label="adidas home">
+          <span class="three-stripes" aria-hidden="true">
+            <i></i><i></i><i></i>
+          </span>
+          <span class="font-display text-2xl font-extrabold lowercase tracking-tightest">adidas</span>
+        </a>
+
+        <!-- primary nav -->
+        <nav class="ml-6 hidden flex-1 items-center gap-6 font-display text-[13px] font-bold uppercase tracking-wide lg:flex">
+          <a href="#" class="border-b-2 border-transparent pb-0.5 hover:border-ink">Men</a>
+          <a href="#" class="border-b-2 border-transparent pb-0.5 hover:border-ink">Women</a>
+          <a href="#" class="border-b-2 border-transparent pb-0.5 hover:border-ink">Kids</a>
+          <a href="#" class="flex items-center gap-1 border-b-2 border-transparent pb-0.5 hover:border-ink">
+            <span aria-hidden="true">⚽</span> World Cup 26™
+          </a>
+          <a href="#" class="border-b-2 border-transparent pb-0.5 hover:border-ink">Sports</a>
+          <a href="#" class="border-b-2 border-transparent pb-0.5 font-extrabold text-[#d32f2f] hover:border-[#d32f2f]">Sale</a>
+          <a href="#" class="border-b-2 border-transparent pb-0.5 hover:border-ink">New &amp; Trending</a>
+        </nav>
+
+        <!-- search -->
+        <div class="ml-auto hidden items-center md:flex">
+          <label class="flex items-center gap-2 bg-soft px-3 py-2 text-sm text-grayline">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="search"
+              placeholder="Search"
+              class="w-28 bg-transparent placeholder-grayline outline-none focus:w-40 transition-all"
+            />
+          </label>
+        </div>
+
+        <!-- account / wishlist / bag -->
+        <div class="flex items-center gap-3 text-ink md:gap-4">
+          <a href="#" class="hidden hover:opacity-70 sm:block" aria-label="Account">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+            </svg>
+          </a>
+          <a href="#" class="relative hover:opacity-70" aria-label="Wishlist">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 21s-7-4.5-9.5-9A5 5 0 0112 5a5 5 0 019.5 7c-2.5 4.5-9.5 9-9.5 9z" />
+            </svg>
+            <span class="absolute -right-1.5 -top-1.5 grid h-4 w-4 place-items-center bg-ink text-[10px] font-bold text-paper">2</span>
+          </a>
+          <a href="#" class="relative hover:opacity-70" aria-label="Bag">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 7h12l-1 13H7L6 7z" /><path d="M9 7a3 3 0 016 0" />
+            </svg>
+            <span class="absolute -right-1.5 -top-1.5 grid h-4 w-4 place-items-center bg-ink text-[10px] font-bold text-paper">3</span>
+          </a>
+          <!-- hamburger -->
+          <button id="hamburger" class="lg:hidden hover:opacity-70" aria-label="Open menu">
+            <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- promo strip under header -->
+      <div class="border-y border-ink bg-paper">
+        <p class="mx-auto max-w-shell px-5 py-2 text-center text-[12px] font-medium tracking-wide">
+          Summer Kickoff Event: Up to 40% off select styles.
+          <a href="#" class="font-bold underline underline-offset-2">Shop the event</a>
+        </p>
+      </div>
+
+      <!-- mobile menu -->
+      <div id="mobileMenu" class="hidden border-b border-hairline bg-paper lg:hidden">
+        <nav class="flex flex-col font-display text-base font-bold uppercase">
+          <a href="#" class="border-b border-hairline px-5 py-3 hover:bg-soft">Men</a>
+          <a href="#" class="border-b border-hairline px-5 py-3 hover:bg-soft">Women</a>
+          <a href="#" class="border-b border-hairline px-5 py-3 hover:bg-soft">Kids</a>
+          <a href="#" class="border-b border-hairline px-5 py-3 hover:bg-soft">⚽ World Cup 26™</a>
+          <a href="#" class="border-b border-hairline px-5 py-3 hover:bg-soft">Sports</a>
+          <a href="#" class="border-b border-hairline px-5 py-3 text-[#d32f2f] hover:bg-soft">Sale</a>
+          <a href="#" class="border-b border-hairline px-5 py-3 hover:bg-soft">New &amp; Trending</a>
+          <a href="#" class="px-5 py-3 hover:bg-soft">Sign In</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- ============================================================
+           HERO — full-bleed campaign (World Cup 26 / "team colors")
+      ============================================================= -->
+      <section class="relative overflow-hidden bg-[#0a0d2b]">
+        <!-- recreated campaign backdrop: bold gradient + repeated kinetic headline -->
+        <div class="relative grid min-h-[420px] grid-cols-1 md:min-h-[560px] md:grid-cols-2">
+          <!-- left: athlete stand-in panel -->
+          <div
+            class="relative flex items-end overflow-hidden"
+            style="background: radial-gradient(120% 110% at 30% 20%, #fde047 0%, #f59e0b 38%, #b91c1c 78%, #5b1010 100%);"
+          >
+            <!-- abstract "athlete" silhouette as a CSS shape -->
+            <div class="absolute right-2 top-8 h-64 w-44 rounded-t-[60px] bg-black/25 blur-[2px] md:h-96 md:w-64"></div>
+            <div class="absolute right-10 top-16 h-40 w-28 rounded-full bg-[#1d4ed8]/40 blur-xl"></div>
+            <!-- name tag like the real "Luis Díaz" label -->
+            <span
+              class="absolute left-0 top-10 -rotate-90 origin-left font-narrow text-xs font-bold uppercase tracking-[0.3em] text-white/80"
+              >L. Vargas · No. 7</span
+            >
+            <!-- repeated kinetic campaign word -->
+            <div class="campaign-stack pointer-events-none absolute inset-0 flex flex-col justify-center pl-6 font-display text-5xl font-black uppercase italic text-[#1d4ed8] md:pl-10 md:text-7xl">
+              <span class="opacity-90">Vamos</span>
+              <span class="opacity-70">Vamos</span>
+              <span class="opacity-50">Vamos</span>
+            </div>
+          </div>
+
+          <!-- right: jersey / kit stand-in panel -->
+          <div
+            class="relative flex items-center justify-center overflow-hidden"
+            style="background: linear-gradient(135deg, #facc15 0%, #fbbf24 55%, #d97706 100%);"
+          >
+            <!-- "jersey" block with three stripes -->
+            <div class="relative h-56 w-44 rotate-3 bg-[#fde047] shadow-2xl md:h-80 md:w-60">
+              <div class="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-black/10"></div>
+              <span class="three-stripes absolute right-3 top-3 text-[#1d4ed8] !h-7" aria-hidden="true">
+                <i></i><i></i><i></i>
+              </span>
+              <span class="absolute bottom-6 left-1/2 -translate-x-1/2 font-display text-6xl font-black text-[#1d4ed8]">7</span>
+              <span class="absolute bottom-2 left-1/2 -translate-x-1/2 font-narrow text-[10px] font-bold uppercase tracking-widest text-[#1d4ed8]">Vargas</span>
+            </div>
+          </div>
+
+          <!-- foreground copy block (bottom-left card, adidas style) -->
+          <div class="absolute bottom-6 left-4 max-w-md bg-paper p-5 md:bottom-10 md:left-10 md:p-7">
+            <p class="font-narrow text-xs font-bold uppercase tracking-[0.2em] text-grayline">FIFA World Cup 26™</p>
+            <h1 class="mt-2 font-display text-2xl font-black uppercase leading-[0.95] tracking-tightest md:text-4xl">
+              Your jersey.<br />Your colors.
+            </h1>
+            <p class="mt-2 max-w-xs text-sm text-ink/80">Gear up in the new national team kits — ready for match day.</p>
+            <div class="mt-5 flex flex-wrap gap-3">
+              <a href="#" class="inline-flex items-center gap-2 bg-ink px-6 py-3 font-display text-sm font-bold uppercase text-paper transition hover:bg-ink/85">
+                Shop Now
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12" /><polyline points="14 6 20 12 14 18" /></svg>
+              </a>
+              <a href="#" class="inline-flex items-center gap-2 border-2 border-ink bg-paper px-6 py-3 font-display text-sm font-bold uppercase text-ink transition hover:bg-soft">
+                Find Your Team
+              </a>
+            </div>
+          </div>
+
+          <!-- pause/carousel control like the real site -->
+          <button class="absolute right-4 top-4 grid h-9 w-9 place-items-center border border-white/50 text-white/90 hover:bg-white/10" aria-label="Pause">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" /><rect x="14" y="5" width="4" height="14" /></svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           FIND YOUR TEAM — horizontal scroller of national kits
+      ============================================================= -->
+      <section class="mx-auto max-w-shell px-4 py-10 md:px-5">
+        <h2 class="mb-5 font-display text-xl font-black uppercase tracking-tightest md:text-2xl">Find Your Team</h2>
+        <div class="no-bar flex gap-3 overflow-x-auto pb-2">
+          <!-- team tiles -->
+          <a href="#" class="group relative flex h-44 w-40 shrink-0 flex-col justify-end overflow-hidden md:h-56 md:w-52" style="background: linear-gradient(160deg,#16803c,#0b4e24);">
+            <span class="three-stripes absolute right-3 top-3 text-white/90 !h-5"><i></i><i></i><i></i></span>
+            <div class="bg-paper px-3 py-2"><span class="font-display text-sm font-bold uppercase">Mexico</span></div>
+          </a>
+          <a href="#" class="group relative flex h-44 w-40 shrink-0 flex-col justify-end overflow-hidden md:h-56 md:w-52" style="background: linear-gradient(160deg,#7f1d1d,#3f0d0d);">
+            <span class="three-stripes absolute right-3 top-3 text-white/90 !h-5"><i></i><i></i><i></i></span>
+            <div class="bg-paper px-3 py-2"><span class="font-display text-sm font-bold uppercase">Spain</span></div>
+          </a>
+          <a href="#" class="group relative flex h-44 w-40 shrink-0 flex-col justify-end overflow-hidden md:h-56 md:w-52" style="background: linear-gradient(160deg,#1e3a8a,#0b1e4d);">
+            <span class="three-stripes absolute right-3 top-3 text-white/90 !h-5"><i></i><i></i><i></i></span>
+            <div class="bg-paper px-3 py-2"><span class="font-display text-sm font-bold uppercase">Argentina</span></div>
+          </a>
+          <a href="#" class="group relative flex h-44 w-40 shrink-0 flex-col justify-end overflow-hidden md:h-56 md:w-52" style="background: linear-gradient(160deg,#fbbf24,#b45309);">
+            <span class="three-stripes absolute right-3 top-3 text-ink/80 !h-5"><i></i><i></i><i></i></span>
+            <div class="bg-paper px-3 py-2"><span class="font-display text-sm font-bold uppercase">Colombia</span></div>
+          </a>
+          <a href="#" class="group relative flex h-44 w-40 shrink-0 flex-col justify-end overflow-hidden md:h-56 md:w-52" style="background: linear-gradient(160deg,#1f2937,#0a0e16);">
+            <span class="three-stripes absolute right-3 top-3 text-white/90 !h-5"><i></i><i></i><i></i></span>
+            <div class="bg-paper px-3 py-2"><span class="font-display text-sm font-bold uppercase">Germany</span></div>
+          </a>
+          <a href="#" class="group relative flex h-44 w-40 shrink-0 flex-col justify-end overflow-hidden md:h-56 md:w-52" style="background: linear-gradient(160deg,#15803d,#fde047);">
+            <span class="three-stripes absolute right-3 top-3 text-white/90 !h-5"><i></i><i></i><i></i></span>
+            <div class="bg-paper px-3 py-2"><span class="font-display text-sm font-bold uppercase">Brazil</span></div>
+          </a>
+          <a href="#" class="group relative flex h-44 w-40 shrink-0 flex-col justify-end overflow-hidden md:h-56 md:w-52" style="background: linear-gradient(160deg,#dc2626,#7f1d1d);">
+            <span class="three-stripes absolute right-3 top-3 text-white/90 !h-5"><i></i><i></i><i></i></span>
+            <div class="bg-paper px-3 py-2"><span class="font-display text-sm font-bold uppercase">Belgium</span></div>
+          </a>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           SHOP THE WORLD CUP — 4-up category tiles
+      ============================================================= -->
+      <section class="mx-auto max-w-shell px-4 pb-12 md:px-5">
+        <h2 class="mb-5 font-display text-xl font-black uppercase tracking-tightest md:text-2xl">Shop the World Cup 26™</h2>
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <!-- tile -->
+          <article class="group relative flex h-80 flex-col justify-end overflow-hidden" style="background: linear-gradient(155deg,#fde047,#dc2626 70%,#1d4ed8);">
+            <span class="three-stripes absolute right-4 top-4 text-white/90"><i></i><i></i><i></i></span>
+            <div class="bg-paper p-5">
+              <h3 class="font-display text-lg font-black uppercase leading-tight tracking-tightest">National Team Jerseys</h3>
+              <p class="mt-1 text-xs text-grayline">Authentic &amp; replica kits</p>
+              <a href="#" class="arrow-link mt-3 text-xs">
+                Shop Now
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12" /><polyline points="14 6 20 12 14 18" /></svg>
+              </a>
+            </div>
+          </article>
+          <article class="group relative flex h-80 flex-col justify-end overflow-hidden" style="background: linear-gradient(155deg,#0f172a,#1e3a8a);">
+            <span class="three-stripes absolute right-4 top-4 text-white/90"><i></i><i></i><i></i></span>
+            <!-- recreated boot/shoe stand-in -->
+            <div class="absolute left-1/2 top-1/3 -translate-x-1/2"><div class="css-shoe"><div class="upper"></div><div class="toe"></div><span class="stripe"></span><span class="stripe"></span><span class="stripe"></span><div class="sole"></div></div></div>
+            <div class="bg-paper p-5">
+              <h3 class="font-display text-lg font-black uppercase leading-tight tracking-tightest">Predator Cleats</h3>
+              <p class="mt-1 text-xs text-grayline">Firm ground &amp; turf</p>
+              <a href="#" class="arrow-link mt-3 text-xs">
+                Shop Now
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12" /><polyline points="14 6 20 12 14 18" /></svg>
+              </a>
+            </div>
+          </article>
+          <article class="group relative flex h-80 flex-col justify-end overflow-hidden" style="background: linear-gradient(155deg,#334155,#0f172a);">
+            <span class="three-stripes absolute right-4 top-4 text-white/90"><i></i><i></i><i></i></span>
+            <div class="absolute left-1/2 top-10 -translate-x-1/2 text-7xl" aria-hidden="true">⚽</div>
+            <div class="bg-paper p-5">
+              <h3 class="font-display text-lg font-black uppercase leading-tight tracking-tightest">Match Balls</h3>
+              <p class="mt-1 text-xs text-grayline">Official &amp; training</p>
+              <a href="#" class="arrow-link mt-3 text-xs">
+                Shop Now
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12" /><polyline points="14 6 20 12 14 18" /></svg>
+              </a>
+            </div>
+          </article>
+          <article class="group relative flex h-80 flex-col justify-end overflow-hidden" style="background: linear-gradient(155deg,#6d28d9,#db2777);">
+            <span class="three-stripes absolute right-4 top-4 text-white/90"><i></i><i></i><i></i></span>
+            <div class="bg-paper p-5">
+              <h3 class="font-display text-lg font-black uppercase leading-tight tracking-tightest">Fan Gear &amp; Scarves</h3>
+              <p class="mt-1 text-xs text-grayline">Show your colors</p>
+              <a href="#" class="arrow-link mt-3 text-xs">
+                Shop Now
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12" /><polyline points="14 6 20 12 14 18" /></svg>
+              </a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           CATEGORY TILES — Originals / Running / Soccer / Lifestyle
+      ============================================================= -->
+      <section class="mx-auto max-w-shell px-4 pb-12 md:px-5">
+        <h2 class="mb-5 font-display text-xl font-black uppercase tracking-tightest md:text-2xl">Shop by Category</h2>
+        <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <article class="group relative flex h-72 flex-col justify-end overflow-hidden bg-soft md:h-96">
+            <div class="absolute inset-0" style="background: linear-gradient(160deg,#111 0%,#3f3f46 100%);"></div>
+            <span class="three-stripes absolute right-4 top-4 text-white/90"><i></i><i></i><i></i></span>
+            <div class="absolute left-1/2 top-1/3 -translate-x-1/2"><div class="css-shoe"><div class="upper"></div><div class="toe"></div><span class="stripe"></span><span class="stripe"></span><span class="stripe"></span><div class="sole"></div></div></div>
+            <div class="relative bg-paper p-4 md:p-5">
+              <h3 class="font-display text-base font-black uppercase tracking-tightest md:text-lg">Originals</h3>
+              <a href="#" class="arrow-link mt-2 text-[11px]">Shop Now
+                <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12" /><polyline points="14 6 20 12 14 18" /></svg></a>
+            </div>
+          </article>
+          <article class="group relative flex h-72 flex-col justify-end overflow-hidden bg-soft md:h-96">
+            <div class="absolute inset-0" style="background: linear-gradient(160deg,#0ea5e9 0%,#1d4ed8 100%);"></div>
+            <span class="three-stripes absolute right-4 top-4 text-white/90"><i></i><i></i><i></i></span>
+            <div class="absolute left-1/2 top-1/3 -translate-x-1/2"><div class="css-shoe"><div class="upper"></div><div class="toe"></div><span class="stripe"></span><span class="stripe"></span><span class="stripe"></span><div class="sole"></div></div></div>
+            <div class="relative bg-paper p-4 md:p-5">
+              <h3 class="font-display text-base font-black uppercase tracking-tightest md:text-lg">Running</h3>
+              <a href="#" class="arrow-link mt-2 text-[11px]">Shop Now
+                <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12" /><polyline points="14 6 20 12 14 18" /></svg></a>
+            </div>
+          </article>
+          <article class="group relative flex h-72 flex-col justify-end overflow-hidden bg-soft md:h-96">
+            <div class="absolute inset-0" style="background: linear-gradient(160deg,#15803d 0%,#052e16 100%);"></div>
+            <span class="three-stripes absolute right-4 top-4 text-white/90"><i></i><i></i><i></i></span>
+            <div class="absolute left-1/2 top-12 -translate-x-1/2 text-7xl" aria-hidden="true">⚽</div>
+            <div class="relative bg-paper p-4 md:p-5">
+              <h3 class="font-display text-base font-black uppercase tracking-tightest md:text-lg">Soccer</h3>
+              <a href="#" class="arrow-link mt-2 text-[11px]">Shop Now
+                <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12" /><polyline points="14 6 20 12 14 18" /></svg></a>
+            </div>
+          </article>
+          <article class="group relative flex h-72 flex-col justify-end overflow-hidden bg-soft md:h-96">
+            <div class="absolute inset-0" style="background: linear-gradient(160deg,#f59e0b 0%,#b91c1c 100%);"></div>
+            <span class="three-stripes absolute right-4 top-4 text-white/90"><i></i><i></i><i></i></span>
+            <div class="absolute left-1/2 top-1/3 -translate-x-1/2"><div class="css-shoe"><div class="upper"></div><div class="toe"></div><span class="stripe"></span><span class="stripe"></span><span class="stripe"></span><div class="sole"></div></div></div>
+            <div class="relative bg-paper p-4 md:p-5">
+              <h3 class="font-display text-base font-black uppercase tracking-tightest md:text-lg">Lifestyle</h3>
+              <a href="#" class="arrow-link mt-2 text-[11px]">Shop Now
+                <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12" /><polyline points="14 6 20 12 14 18" /></svg></a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           FEATURED PRODUCTS ROW — name / category / price
+      ============================================================= -->
+      <section class="mx-auto max-w-shell px-4 pb-12 md:px-5">
+        <div class="mb-5 flex items-end justify-between">
+          <h2 class="font-display text-xl font-black uppercase tracking-tightest md:text-2xl">Shop Best Sellers</h2>
+          <a href="#" class="arrow-link text-xs">View All
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12" /><polyline points="14 6 20 12 14 18" /></svg>
+          </a>
+        </div>
+        <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <!-- product card -->
+          <article class="group">
+            <div class="relative flex aspect-square items-center justify-center overflow-hidden bg-soft">
+              <span class="absolute left-2 top-2 bg-ink px-2 py-0.5 text-[10px] font-bold uppercase text-paper">Best Seller</span>
+              <button class="absolute right-2 top-2 text-grayline hover:text-ink" aria-label="Add to wishlist">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0112 5a5 5 0 019.5 7c-2.5 4.5-9.5 9-9.5 9z" /></svg>
+              </button>
+              <div class="css-shoe scale-110 transition group-hover:scale-125"><div class="upper"></div><div class="toe"></div><span class="stripe"></span><span class="stripe"></span><span class="stripe"></span><div class="sole"></div></div>
+            </div>
+            <div class="pt-2">
+              <h3 class="font-display text-sm font-bold uppercase tracking-tight">Samba Vega OG</h3>
+              <p class="text-xs text-grayline">Originals · Shoes</p>
+              <p class="mt-1 text-sm font-bold">$100</p>
+            </div>
+          </article>
+
+          <article class="group">
+            <div class="relative flex aspect-square items-center justify-center overflow-hidden bg-soft">
+              <button class="absolute right-2 top-2 text-grayline hover:text-ink" aria-label="Add to wishlist">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0112 5a5 5 0 019.5 7c-2.5 4.5-9.5 9-9.5 9z" /></svg>
+              </button>
+              <div class="css-shoe scale-110 transition group-hover:scale-125"><div class="upper" style="background:linear-gradient(150deg,#1d4ed8,#0b2a78);"></div><div class="toe" style="background:linear-gradient(160deg,#2563eb,#0b2a78);"></div><span class="stripe" style="background:#fff;"></span><span class="stripe" style="background:#fff;"></span><span class="stripe" style="background:#fff;"></span><div class="sole"></div></div>
+            </div>
+            <div class="pt-2">
+              <h3 class="font-display text-sm font-bold uppercase tracking-tight">Ultraboost Lite</h3>
+              <p class="text-xs text-grayline">Running · Shoes</p>
+              <p class="mt-1 text-sm font-bold">$190</p>
+            </div>
+          </article>
+
+          <article class="group">
+            <div class="relative flex aspect-square items-center justify-center overflow-hidden bg-soft">
+              <span class="absolute left-2 top-2 bg-[#d32f2f] px-2 py-0.5 text-[10px] font-bold uppercase text-paper">-30%</span>
+              <button class="absolute right-2 top-2 text-grayline hover:text-ink" aria-label="Add to wishlist">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0112 5a5 5 0 019.5 7c-2.5 4.5-9.5 9-9.5 9z" /></svg>
+              </button>
+              <div class="css-shoe scale-110 transition group-hover:scale-125"><div class="upper" style="background:linear-gradient(150deg,#15803d,#073b1c);"></div><div class="toe" style="background:linear-gradient(160deg,#16a34a,#073b1c);"></div><span class="stripe" style="background:#fff;"></span><span class="stripe" style="background:#fff;"></span><span class="stripe" style="background:#fff;"></span><div class="sole"></div></div>
+            </div>
+            <div class="pt-2">
+              <h3 class="font-display text-sm font-bold uppercase tracking-tight">Gazelle Bold</h3>
+              <p class="text-xs text-grayline">Originals · Shoes</p>
+              <p class="mt-1 flex items-center gap-2 text-sm font-bold">
+                <span class="text-[#d32f2f]">$84</span>
+                <span class="font-normal text-grayline line-through">$120</span>
+              </p>
+            </div>
+          </article>
+
+          <article class="group">
+            <div class="relative flex aspect-square items-center justify-center overflow-hidden bg-soft">
+              <button class="absolute right-2 top-2 text-grayline hover:text-ink" aria-label="Add to wishlist">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0112 5a5 5 0 019.5 7c-2.5 4.5-9.5 9-9.5 9z" /></svg>
+              </button>
+              <div class="css-shoe scale-110 transition group-hover:scale-125"><div class="upper" style="background:linear-gradient(150deg,#111,#27272a);"></div><div class="toe" style="background:linear-gradient(160deg,#3f3f46,#111);"></div><span class="stripe" style="background:#fff;"></span><span class="stripe" style="background:#fff;"></span><span class="stripe" style="background:#fff;"></span><div class="sole" style="background:#fff;"></div></div>
+            </div>
+            <div class="pt-2">
+              <h3 class="font-display text-sm font-bold uppercase tracking-tight">Predator Elite FG</h3>
+              <p class="text-xs text-grayline">Soccer · Cleats</p>
+              <p class="mt-1 text-sm font-bold">$280</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           EDITORIAL PROMO BLOCKS — two big split panels
+      ============================================================= -->
+      <section class="mx-auto max-w-shell px-4 pb-12 md:px-5">
+        <h2 class="mb-5 font-display text-xl font-black uppercase tracking-tightest md:text-2xl">Shop Lifestyle</h2>
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
+          <article class="group relative flex min-h-[360px] flex-col justify-end overflow-hidden" style="background: linear-gradient(150deg,#a16207,#451a03);">
+            <div class="absolute right-6 top-8 h-40 w-28 rounded-t-[40px] bg-black/30 blur-[1px]"></div>
+            <div class="bg-paper p-5">
+              <h3 class="font-display text-lg font-black uppercase tracking-tightest">Street Ready</h3>
+              <p class="mt-1 text-xs text-grayline">Terrace styles for everyday wear.</p>
+              <a href="#" class="arrow-link mt-3 text-xs">Shop Men
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12" /><polyline points="14 6 20 12 14 18" /></svg></a>
+            </div>
+          </article>
+          <article class="group relative flex min-h-[360px] flex-col justify-end overflow-hidden" style="background: linear-gradient(150deg,#b91c1c,#450a0a);">
+            <div class="absolute right-6 top-8 h-44 w-28 rounded-t-[40px] bg-black/25 blur-[1px]"></div>
+            <div class="bg-paper p-5">
+              <h3 class="font-display text-lg font-black uppercase tracking-tightest">Studio to Street</h3>
+              <p class="mt-1 text-xs text-grayline">Move in training-built layers.</p>
+              <a href="#" class="arrow-link mt-3 text-xs">Shop Women
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12" /><polyline points="14 6 20 12 14 18" /></svg></a>
+            </div>
+          </article>
+          <article class="group relative flex min-h-[360px] flex-col justify-end overflow-hidden" style="background: linear-gradient(150deg,#0e7490,#082f3a);">
+            <div class="absolute right-6 top-8 h-40 w-28 rounded-t-[40px] bg-black/30 blur-[1px]"></div>
+            <div class="bg-paper p-5">
+              <h3 class="font-display text-lg font-black uppercase tracking-tightest">Mini Me</h3>
+              <p class="mt-1 text-xs text-grayline">Kids' icons, sized down.</p>
+              <a href="#" class="arrow-link mt-3 text-xs">Shop Kids
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12" /><polyline points="14 6 20 12 14 18" /></svg></a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- full-bleed editorial banner -->
+      <section class="relative overflow-hidden" style="background: linear-gradient(110deg,#111 0%,#1f2937 55%,#000 100%);">
+        <div class="mx-auto grid max-w-shell grid-cols-1 items-center gap-6 px-6 py-16 md:grid-cols-2 md:px-5">
+          <div class="text-paper">
+            <p class="font-narrow text-xs font-bold uppercase tracking-[0.3em] text-white/60">Impossible Is Nothing</p>
+            <h2 class="mt-3 font-display text-4xl font-black uppercase leading-[0.92] tracking-tightest md:text-6xl">
+              Built for<br />the long run
+            </h2>
+            <p class="mt-4 max-w-md text-sm text-white/70">
+              New Supernova Rise — engineered cushioning that returns energy from the first step to the finish line.
+            </p>
+            <a href="#" class="mt-6 inline-flex items-center gap-2 bg-paper px-7 py-3.5 font-display text-sm font-bold uppercase text-ink transition hover:bg-white/85">
+              Shop Running
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12" /><polyline points="14 6 20 12 14 18" /></svg>
+            </a>
+          </div>
+          <div class="flex justify-center md:justify-end">
+            <div class="css-shoe scale-[1.7] md:scale-[2.1]"><div class="upper"></div><div class="toe"></div><span class="stripe"></span><span class="stripe"></span><span class="stripe"></span><div class="sole"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           MEMBERSHIP JOIN BANNER (adiClub green)
+      ============================================================= -->
+      <section class="bg-member text-paper">
+        <div class="mx-auto flex max-w-shell flex-col items-start gap-5 px-6 py-12 md:flex-row md:items-center md:justify-between md:px-5">
+          <div>
+            <div class="mb-3 flex items-center gap-2">
+              <span class="three-stripes text-paper !h-5"><i></i><i></i><i></i></span>
+              <span class="font-display text-lg font-black uppercase tracking-tightest">adiClub</span>
+            </div>
+            <h2 class="font-display text-2xl font-black uppercase leading-[0.95] tracking-tightest md:text-4xl">
+              Join adiClub.<br />Score every time you shop.
+            </h2>
+            <p class="mt-3 max-w-xl text-sm text-white/85">
+              Free membership. Earn points on every order, get members-only access to launches, free shipping, and a birthday surprise.
+            </p>
+          </div>
+          <div class="flex shrink-0 flex-col gap-3 sm:flex-row">
+            <a href="#" class="inline-flex items-center justify-center gap-2 bg-paper px-7 py-3.5 font-display text-sm font-bold uppercase text-member transition hover:bg-white/85">
+              Join For Free
+            </a>
+            <a href="#" class="inline-flex items-center justify-center gap-2 border-2 border-paper px-7 py-3.5 font-display text-sm font-bold uppercase text-paper transition hover:bg-white/10">
+              Sign In
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- benefit strip -->
+      <section class="border-b border-hairline bg-paper">
+        <div class="mx-auto grid max-w-shell grid-cols-2 gap-px bg-hairline md:grid-cols-4">
+          <div class="bg-paper p-6 text-center">
+            <p class="font-display text-sm font-bold uppercase tracking-tight">Free Shipping</p>
+            <p class="mt-1 text-xs text-grayline">For adiClub members</p>
+          </div>
+          <div class="bg-paper p-6 text-center">
+            <p class="font-display text-sm font-bold uppercase tracking-tight">Free Returns</p>
+            <p class="mt-1 text-xs text-grayline">Within 30 days</p>
+          </div>
+          <div class="bg-paper p-6 text-center">
+            <p class="font-display text-sm font-bold uppercase tracking-tight">Member Pricing</p>
+            <p class="mt-1 text-xs text-grayline">Exclusive offers</p>
+          </div>
+          <div class="bg-paper p-6 text-center">
+            <p class="font-display text-sm font-bold uppercase tracking-tight">Order Tracking</p>
+            <p class="mt-1 text-xs text-grayline">Every step of the way</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEO copy block (adidas keeps a dense text block above footer) -->
+      <section class="bg-paper">
+        <div class="mx-auto max-w-shell px-5 py-12">
+          <h2 class="font-display text-base font-bold uppercase tracking-tight">Sneakers, Activewear and Sporting Goods</h2>
+          <p class="mt-3 max-w-4xl text-xs leading-relaxed text-grayline">
+            From the track to the street, our gear is built to move with you. Explore performance running shoes,
+            iconic Originals sneakers, soccer cleats and national team kits, training apparel, and lifestyle staples
+            designed to last. Whether you're chasing a personal best or building an everyday rotation, find the fit,
+            the cushioning, and the colors that match your game. Shop new arrivals, best sellers, and seasonal
+            essentials for men, women, and kids — all backed by free returns and adiClub member rewards.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <!-- ============================================================
+         MEGA FOOTER
+    ============================================================= -->
+    <footer class="bg-ink text-paper">
+      <div class="mx-auto max-w-shell px-5 py-14">
+        <!-- link columns -->
+        <div class="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5">
+          <div>
+            <h3 class="font-display text-xs font-bold uppercase tracking-widest text-white/90">Products</h3>
+            <ul class="mt-4 space-y-2.5 text-sm text-white/70">
+              <li><a href="#" class="hover:text-paper hover:underline">Shoes</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Clothing</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Accessories</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">New Arrivals</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Best Sellers</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Release Dates</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-display text-xs font-bold uppercase tracking-widest text-white/90">Sports</h3>
+            <ul class="mt-4 space-y-2.5 text-sm text-white/70">
+              <li><a href="#" class="hover:text-paper hover:underline">Soccer</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Running</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Basketball</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Training</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Outdoor</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Golf</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-display text-xs font-bold uppercase tracking-widest text-white/90">Collections</h3>
+            <ul class="mt-4 space-y-2.5 text-sm text-white/70">
+              <li><a href="#" class="hover:text-paper hover:underline">adidas Originals</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Ultraboost</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Samba</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Gazelle</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Predator</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Superstar</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-display text-xs font-bold uppercase tracking-widest text-white/90">Support</h3>
+            <ul class="mt-4 space-y-2.5 text-sm text-white/70">
+              <li><a href="#" class="hover:text-paper hover:underline">Help</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Returns &amp; Exchanges</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Shipping</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Order Tracker</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Size Charts</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Gift Cards</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-display text-xs font-bold uppercase tracking-widest text-white/90">Company</h3>
+            <ul class="mt-4 space-y-2.5 text-sm text-white/70">
+              <li><a href="#" class="hover:text-paper hover:underline">About Us</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">adiClub</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Careers</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Press</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Sustainability</a></li>
+              <li><a href="#" class="hover:text-paper hover:underline">Affiliates</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- newsletter + social row -->
+        <div class="mt-12 flex flex-col gap-8 border-t border-white/10 pt-10 lg:flex-row lg:items-end lg:justify-between">
+          <div class="max-w-md">
+            <h3 class="font-display text-lg font-black uppercase tracking-tightest">Join Our Newsletter</h3>
+            <p class="mt-1 text-sm text-white/60">Sign up for the latest drops, offers, and member rewards.</p>
+            <form class="mt-4 flex" onsubmit="return false">
+              <input
+                type="email"
+                placeholder="Email address"
+                class="w-full border border-white/30 bg-transparent px-4 py-3 text-sm text-paper placeholder-white/40 outline-none focus:border-paper"
+              />
+              <button class="bg-paper px-5 font-display text-sm font-bold uppercase text-ink transition hover:bg-white/85" aria-label="Subscribe">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12" /><polyline points="14 6 20 12 14 18" /></svg>
+              </button>
+            </form>
+          </div>
+          <!-- socials -->
+          <div class="flex items-center gap-3">
+            <a href="#" class="grid h-10 w-10 place-items-center border border-white/30 transition hover:bg-white/10" aria-label="Facebook">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 22v-8h3l.5-3.5H13V8.3c0-1 .3-1.7 1.8-1.7H17V3.5c-.9-.1-1.8-.2-2.7-.2-2.7 0-4.5 1.6-4.5 4.6v2.6H6.5V14H9.8v8H13z" /></svg>
+            </a>
+            <a href="#" class="grid h-10 w-10 place-items-center border border-white/30 transition hover:bg-white/10" aria-label="Instagram">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" /></svg>
+            </a>
+            <a href="#" class="grid h-10 w-10 place-items-center border border-white/30 transition hover:bg-white/10" aria-label="X">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.2 3h3.3l-7.2 8.2L23 21h-6.6l-5.2-6.8L5.3 21H2l7.7-8.8L1.7 3h6.8l4.7 6.2L18.2 3zm-1.2 16h1.8L7.1 4.8H5.2L17 19z" /></svg>
+            </a>
+            <a href="#" class="grid h-10 w-10 place-items-center border border-white/30 transition hover:bg-white/10" aria-label="YouTube">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12s0-3.2-.4-4.7a2.5 2.5 0 00-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.5A2.5 2.5 0 002.4 7.3C2 8.8 2 12 2 12s0 3.2.4 4.7a2.5 2.5 0 001.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.5a2.5 2.5 0 001.8-1.8C22 15.2 22 12 22 12zm-12 3V9l5 3-5 3z" /></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- big wordmark + legal -->
+        <div class="mt-12 flex flex-col gap-6 border-t border-white/10 pt-8 md:flex-row md:items-center md:justify-between">
+          <a href="#top" class="flex items-center gap-3 text-paper" aria-label="adidas">
+            <span class="three-stripes !h-9 [&_i]:!w-2" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="font-display text-3xl font-extrabold lowercase tracking-tightest">adidas</span>
+          </a>
+
+          <!-- country / region selector -->
+          <button class="inline-flex items-center gap-2 border border-white/30 px-4 py-2.5 text-sm text-white/80 transition hover:bg-white/10">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18" /></svg>
+            <span class="font-medium">United States</span>
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+          </button>
+        </div>
+
+        <!-- legal line + mockup disclaimer -->
+        <div class="mt-8 flex flex-col gap-4 border-t border-white/10 pt-6 text-xs text-white/45 md:flex-row md:items-center md:justify-between">
+          <div class="flex flex-wrap gap-x-5 gap-y-2">
+            <a href="#" class="hover:text-white/80 hover:underline">Privacy Policy</a>
+            <a href="#" class="hover:text-white/80 hover:underline">Terms and Conditions</a>
+            <a href="#" class="hover:text-white/80 hover:underline">Cookie Settings</a>
+            <a href="#" class="hover:text-white/80 hover:underline">Promotion Terms</a>
+            <a href="#" class="hover:text-white/80 hover:underline">Accessibility</a>
+          </div>
+          <p>© 2026 Sportswear demo · All names are illustrative.</p>
+        </div>
+
+        <!-- REQUIRED mockup disclaimer -->
+        <p class="mt-6 border-t border-white/10 pt-6 text-[11px] leading-relaxed text-white/40">
+          Design mockup built with Tailwind CSS for layout reference only. Not affiliated with, endorsed by, or
+          representative of adidas. All names and trademarks belong to their respective owners.
+        </p>
+      </div>
+    </footer>
+
+    <!-- ============================================================
+         MINIMAL JS — header scroll state + mobile menu toggle
+    ============================================================= -->
+    <script>
+      // Header gains a shadow once the user scrolls past the hero top.
+      const masthead = document.getElementById('masthead');
+      const onScroll = () => {
+        if (window.scrollY > 8) {
+          masthead.classList.add('shadow-md');
+        } else {
+          masthead.classList.remove('shadow-md');
+        }
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      // Mobile hamburger toggles the stacked nav.
+      const hamburger = document.getElementById('hamburger');
+      const mobileMenu = document.getElementById('mobileMenu');
+      hamburger.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+    </script>
+  </body>
+</html>

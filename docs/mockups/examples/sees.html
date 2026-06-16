@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>See's Candies — Homepage (design reference mockup)</title>
+
+<!-- ============================================================
+     DESIGN-REFERENCE MOCKUP — sees.html
+     A faithful, self-contained recreation of the See's Candies
+     homepage layout for the /docs/mockups gallery (alongside
+     tesla.html, notion.html, clay.html).
+
+     IP / branding notes:
+       - The "See's" wordmark and the Mary See oval portrait are
+         recreated entirely as styled TEXT + CSS. No real logo,
+         brand asset, or photo is embedded or hotlinked.
+       - All candy "photography" is faked with warm CSS gradients
+         + emoji stand-ins so nothing ever renders broken.
+       - Product names, prices, and copy are invented but plausible.
+       - See footer disclaimer. Not affiliated with See's Candies.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          // Dancing Script gives the friendly "See's" script feel.
+          script: ['"Dancing Script"', 'cursive'],
+          // Lora is the classic serif used for headings + body copy.
+          serif: ['Lora', 'Georgia', 'serif'],
+          // Inter handles tight UI chrome (nav, buttons, prices).
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+        },
+        colors: {
+          // See's is fundamentally black & white with a warm red accent.
+          ink: '#1a1715',        // near-black brand text
+          coal: '#0f0d0c',       // pure header/footer black
+          cream: '#faf7f2',      // warm off-white page base
+          parchment: '#f3ede3',  // section tint
+          seered: '#a8232f',     // brand red accent
+          'seered-dark': '#871a24',
+          gilt: '#8a6d3b',       // muted gold used in promo bars
+          'gilt-dark': '#6f5226',
+          cocoa: '#4a2c1a',
+          milk: '#7a4a28',
+          caramel: '#c08a4e',
+        },
+        boxShadow: {
+          card: '0 1px 3px rgba(26,23,21,.08), 0 8px 24px -12px rgba(26,23,21,.18)',
+          'card-hover': '0 6px 14px rgba(26,23,21,.12), 0 18px 40px -16px rgba(26,23,21,.28)',
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+
+  /* --- The See's wordmark: "See's" in script, "CANDIES" in a chunky
+         condensed serif. Recreated as text only. --- */
+  .wordmark-script {
+    font-family: 'Dancing Script', cursive;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .wordmark-block {
+    font-family: 'Lora', serif;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+  }
+
+  /* --- Mary See oval portrait: a CSS oval, vignette + monogram. --- */
+  .mary-oval {
+    background:
+      radial-gradient(ellipse at 50% 32%, #fbf6ee 0%, #efe4d2 46%, #d8c4a6 100%);
+    box-shadow:
+      inset 0 0 0 2px #fff,
+      inset 0 0 0 4px #2c2520,
+      0 2px 6px rgba(0,0,0,.25);
+  }
+
+  /* --- Checkerboard motif (pure CSS). See's signature B&W check. --- */
+  .checker {
+    background-image:
+      linear-gradient(45deg, #15110f 25%, transparent 25%),
+      linear-gradient(-45deg, #15110f 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #15110f 75%),
+      linear-gradient(-45deg, transparent 75%, #15110f 75%);
+    background-size: 28px 28px;
+    background-position: 0 0, 0 14px, 14px -14px, -14px 0;
+    background-color: #faf7f2;
+  }
+  .checker-sm {
+    background-image:
+      linear-gradient(45deg, #15110f 25%, transparent 25%),
+      linear-gradient(-45deg, #15110f 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #15110f 75%),
+      linear-gradient(-45deg, transparent 75%, #15110f 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    background-color: #faf7f2;
+  }
+
+  /* --- Faux candy "photo" surfaces: warm gradients standing in for
+         glossy chocolate / candy product shots. --- */
+  .candy-chocolate { background: radial-gradient(circle at 35% 28%, #7a4a28 0%, #4a2c1a 55%, #2e1a0f 100%); }
+  .candy-milk      { background: radial-gradient(circle at 38% 30%, #c89b6a 0%, #9a6638 55%, #5e3b1f 100%); }
+  .candy-caramel   { background: radial-gradient(circle at 40% 28%, #e7b878 0%, #c08a4e 50%, #8a5a2c 100%); }
+  .candy-lolly     { background: radial-gradient(circle at 35% 30%, #f0a9b4 0%, #d65f73 55%, #a8232f 100%); }
+  .candy-mint      { background: radial-gradient(circle at 38% 30%, #bfe3cf 0%, #6fae8a 55%, #3d6b54 100%); }
+  .candy-toffee    { background: radial-gradient(circle at 40% 28%, #d8a05a 0%, #a9702f 55%, #6b431a 100%); }
+  .candy-gift      { background: radial-gradient(circle at 40% 26%, #c1414c 0%, #a8232f 55%, #6f1119 100%); }
+  .candy-truffle   { background: radial-gradient(circle at 35% 30%, #8b5e3c 0%, #5a3620 55%, #361f12 100%); }
+  .candy-cream     { background: radial-gradient(circle at 40% 28%, #f4e6cf 0%, #d9bf94 52%, #b18f5c 100%); }
+
+  .candy-tile {
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+  /* subtle glossy sheen on faux product surfaces */
+  .candy-tile::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(150deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,0) 42%);
+    pointer-events: none;
+  }
+  .candy-emoji { filter: drop-shadow(0 4px 8px rgba(0,0,0,.4)); }
+
+  /* underline-on-hover for nav + footer links */
+  .link-underline { position: relative; }
+  .link-underline::after {
+    content: ''; position: absolute; left: 0; bottom: -3px;
+    width: 0; height: 1.5px; background: currentColor;
+    transition: width .22s ease;
+  }
+  .link-underline:hover::after { width: 100%; }
+
+  /* header gains a shadow + opacity shift once scrolled */
+  #siteHeader { transition: box-shadow .25s ease, background-color .25s ease; }
+  #siteHeader.scrolled { box-shadow: 0 2px 14px rgba(26,23,21,.12); }
+
+  /* mobile menu slide */
+  #mobileMenu { transition: transform .28s ease, opacity .2s ease; }
+  #mobileMenu.closed { transform: translateY(-8px); opacity: 0; pointer-events: none; }
+
+  .star::before { content: '★'; }
+</style>
+</head>
+
+<body class="bg-cream font-sans text-ink antialiased">
+
+  <!-- ====================================================== -->
+  <!-- TOP ANNOUNCEMENT BAR (gilt promo + countdown)          -->
+  <!-- ====================================================== -->
+  <div class="bg-gilt text-amber-50">
+    <div class="mx-auto flex max-w-7xl items-center justify-center gap-3 px-4 py-2 text-center text-[12px] sm:text-[13px]">
+      <button class="hidden text-amber-200/80 transition hover:text-white sm:block" aria-label="Previous offer">&#8249;</button>
+      <p class="font-medium tracking-wide">
+        Father's Day is June 21st! Order by <span class="font-semibold">6/16</span> for guaranteed delivery
+        <span class="ml-2 hidden items-center gap-1.5 align-middle sm:inline-flex">
+          <span class="rounded bg-coal/30 px-1.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums" id="cdDays">01</span><span class="text-[10px] text-amber-200/80">Days</span>
+          <span class="rounded bg-coal/30 px-1.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums" id="cdHrs">06</span><span class="text-[10px] text-amber-200/80">Hrs</span>
+          <span class="rounded bg-coal/30 px-1.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums" id="cdMin">13</span><span class="text-[10px] text-amber-200/80">Mins</span>
+          <span class="rounded bg-coal/30 px-1.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums" id="cdSec">02</span><span class="text-[10px] text-amber-200/80">Secs</span>
+        </span>
+      </p>
+      <button class="hidden text-amber-200/80 transition hover:text-white sm:block" aria-label="Next offer">&#8250;</button>
+    </div>
+  </div>
+
+  <!-- ====================================================== -->
+  <!-- UTILITY TAB BAR (black) — Sees.com / Fundraising / etc.-->
+  <!-- ====================================================== -->
+  <div class="bg-coal text-amber-50/80">
+    <div class="mx-auto flex max-w-7xl items-stretch px-4 text-[12px]">
+      <a href="#" class="border-x border-white/5 bg-white/[.06] px-4 py-2 font-semibold text-white">Sees.com</a>
+      <a href="#" class="link-underline px-4 py-2 transition hover:text-white">Fundraising</a>
+      <a href="#" class="link-underline px-4 py-2 transition hover:text-white">Corporate Gifting</a>
+    </div>
+  </div>
+
+  <!-- ====================================================== -->
+  <!-- HEADER — wordmark, contact, account/cart, nav, search  -->
+  <!-- ====================================================== -->
+  <header id="siteHeader" class="sticky top-0 z-40 border-b border-ink/10 bg-cream/95 backdrop-blur">
+    <div class="mx-auto max-w-7xl px-4">
+
+      <!-- top header row -->
+      <div class="flex items-center justify-between gap-4 py-4">
+
+        <!-- left: hamburger (mobile) + wordmark -->
+        <div class="flex items-center gap-3">
+          <button id="hamburger" class="grid h-9 w-9 place-items-center rounded-md text-ink transition hover:bg-ink/5 lg:hidden" aria-label="Open menu">
+            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+          </button>
+
+          <a href="#" class="flex items-baseline gap-2 leading-none" aria-label="See's Candies home">
+            <span class="wordmark-script text-[40px] leading-[0.8] text-ink sm:text-[46px]">See&rsquo;s</span>
+            <span class="wordmark-block text-[20px] text-ink sm:text-[24px]">CANDIES</span>
+            <span class="-ml-1 self-start text-[10px] text-ink/60">&reg;</span>
+          </a>
+        </div>
+
+        <!-- right: phone, shop locator, account, cart -->
+        <div class="flex items-center gap-5 text-[13px]">
+          <a href="tel:18003477337" class="hidden font-medium text-ink/80 transition hover:text-ink xl:block">1&#8209;800&#8209;347&#8209;7337</a>
+
+          <a href="#" class="hidden items-center gap-2 text-ink/80 transition hover:text-ink md:flex">
+            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s7-6.3 7-11a7 7 0 0 0-14 0c0 4.7 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            <span class="leading-tight">Select Your<br class="hidden lg:block"/> Preferred Shop</span>
+          </a>
+
+          <a href="#" class="flex items-center gap-2 text-ink/80 transition hover:text-ink">
+            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.6 3.1-5.5 7-5.5s7 1.9 7 5.5"/></svg>
+            <span class="hidden sm:inline">Account</span>
+          </a>
+
+          <a href="#" class="flex items-center gap-2 font-medium text-ink transition hover:text-seered">
+            <span class="relative">
+              <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg>
+            </span>
+            <span class="hidden sm:inline">Bag (0)</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- nav + search row -->
+      <div class="hidden items-center justify-between gap-6 pb-3 lg:flex">
+        <nav class="flex items-center gap-7 font-serif text-[16px] text-ink">
+          <a href="#" class="link-underline transition hover:text-seered">Father's Day</a>
+          <a href="#" class="link-underline transition hover:text-seered">Patriotic</a>
+          <a href="#" class="link-underline transition hover:text-seered">Best Sellers</a>
+          <a href="#categories" class="link-underline inline-flex items-center gap-1 transition hover:text-seered">
+            Shop <svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+          </a>
+          <a href="#buildbox" class="link-underline inline-flex items-center gap-1 transition hover:text-seered">
+            Build a Box <svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+          </a>
+          <a href="#" class="link-underline font-semibold text-seered transition hover:text-seered-dark">National Candy Month</a>
+        </nav>
+
+        <form class="flex items-stretch" role="search" onsubmit="return false">
+          <input type="search" placeholder="Search…" aria-label="Search"
+                 class="w-44 rounded-l-md border border-ink/20 bg-white px-3 py-1.5 text-[13px] text-ink placeholder:text-ink/40 focus:border-seered focus:outline-none xl:w-56" />
+          <button class="rounded-r-md bg-coal px-3 text-white transition hover:bg-seered" aria-label="Submit search">
+            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- mobile dropdown nav -->
+    <div id="mobileMenu" class="closed absolute inset-x-0 top-full border-b border-ink/10 bg-cream px-4 py-4 shadow-card lg:hidden">
+      <form class="mb-4 flex items-stretch" role="search" onsubmit="return false">
+        <input type="search" placeholder="Search See's…" aria-label="Search"
+               class="flex-1 rounded-l-md border border-ink/20 bg-white px-3 py-2 text-[14px] placeholder:text-ink/40 focus:border-seered focus:outline-none" />
+        <button class="rounded-r-md bg-coal px-4 text-white" aria-label="Submit search">
+          <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+        </button>
+      </form>
+      <nav class="flex flex-col font-serif text-[17px]">
+        <a href="#" class="border-b border-ink/5 py-2.5 transition hover:text-seered">Father's Day</a>
+        <a href="#" class="border-b border-ink/5 py-2.5 transition hover:text-seered">Patriotic</a>
+        <a href="#" class="border-b border-ink/5 py-2.5 transition hover:text-seered">Best Sellers</a>
+        <a href="#categories" class="border-b border-ink/5 py-2.5 transition hover:text-seered">Shop</a>
+        <a href="#buildbox" class="border-b border-ink/5 py-2.5 transition hover:text-seered">Build a Box</a>
+        <a href="#" class="py-2.5 font-semibold text-seered">National Candy Month</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- ====================================================== -->
+    <!-- HERO PROMO BANNER                                      -->
+    <!-- ====================================================== -->
+    <section class="relative overflow-hidden bg-parchment">
+      <div class="mx-auto grid max-w-7xl items-stretch gap-0 px-4 py-8 sm:py-10 lg:grid-cols-2">
+
+        <!-- copy side -->
+        <div class="relative flex flex-col justify-center py-6 text-center lg:py-12 lg:pr-10 lg:text-left">
+          <span class="mx-auto inline-block w-fit rounded-full border border-seered/30 bg-seered/5 px-3 py-1 font-sans text-[11px] font-semibold uppercase tracking-[0.18em] text-seered lg:mx-0">
+            Limited Time Offer
+          </span>
+          <h1 class="mt-4 font-serif text-[40px] font-bold leading-[1.04] text-ink sm:text-[52px] lg:text-[60px]">
+            Buy One,<br/>Gift One Free
+          </h1>
+          <p class="mt-3 font-serif text-[18px] italic text-ink/70 sm:text-[20px]">
+            Valid on 1&nbsp;lb. Assorted Chocolates &mdash; share the joy, twice over.
+          </p>
+          <div class="mt-7 flex flex-col items-center gap-3 sm:flex-row lg:items-start lg:justify-start">
+            <a href="#bestsellers" class="rounded-full bg-coal px-8 py-3 font-sans text-[14px] font-semibold uppercase tracking-wider text-white shadow-card transition hover:bg-seered hover:shadow-card-hover">
+              Shop Now
+            </a>
+            <a href="#buildbox" class="font-serif text-[15px] font-medium text-ink underline-offset-4 transition hover:text-seered hover:underline">
+              Or build your own box &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- faux product showcase side -->
+        <div class="relative grid grid-cols-2 gap-4 py-4">
+          <div class="candy-tile candy-chocolate aspect-square rounded-2xl shadow-card">
+            <span class="candy-emoji text-7xl">🍫</span>
+          </div>
+          <div class="candy-tile candy-caramel mt-8 aspect-square rounded-2xl shadow-card">
+            <span class="candy-emoji text-7xl">🍬</span>
+          </div>
+          <div class="candy-tile candy-gift -mt-4 aspect-square rounded-2xl shadow-card">
+            <span class="candy-emoji text-7xl">🎁</span>
+          </div>
+          <div class="candy-tile candy-milk mt-4 aspect-square rounded-2xl shadow-card">
+            <span class="candy-emoji text-7xl">🍫</span>
+          </div>
+          <!-- floating "1 LB" ribbon -->
+          <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[-6deg] rounded-md border-2 border-coal bg-cream px-4 py-2 font-serif text-[15px] font-bold uppercase tracking-widest text-coal shadow-card">
+            1 LB Box
+          </span>
+        </div>
+      </div>
+
+      <!-- thin checkerboard divider under hero -->
+      <div class="checker-sm h-3 w-full opacity-90"></div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- FATHER'S DAY FEATURE STRIP (4 promo tiles)            -->
+    <!-- ====================================================== -->
+    <section class="mx-auto max-w-7xl px-4 py-10 sm:py-14">
+      <h2 class="text-center font-serif text-[26px] font-bold text-ink sm:text-[30px]">Just for Dad</h2>
+      <p class="mt-1 text-center font-serif italic text-ink/60">Hand-crafted favorites he'll savor</p>
+
+      <div class="mt-8 grid grid-cols-2 gap-5 lg:grid-cols-4">
+        <!-- tile 1 -->
+        <article class="group flex flex-col">
+          <div class="candy-tile candy-cream relative aspect-[4/5] rounded-2xl shadow-card transition group-hover:shadow-card-hover">
+            <span class="absolute left-3 top-3 rounded-md bg-seered px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider text-white">New</span>
+            <span class="candy-emoji text-7xl">🍬</span>
+          </div>
+          <h3 class="mt-3 font-serif text-[16px] font-semibold text-ink">Scotchmallow&reg; Assortment</h3>
+          <p class="mt-0.5 font-sans text-[14px] font-semibold text-ink">$32.50</p>
+          <button class="mt-3 rounded-full bg-coal px-4 py-2 font-sans text-[12px] font-semibold uppercase tracking-wider text-white transition hover:bg-seered">View Options</button>
+        </article>
+
+        <!-- tile 2 -->
+        <article class="group flex flex-col">
+          <div class="candy-tile candy-toffee aspect-[4/5] rounded-2xl shadow-card transition group-hover:shadow-card-hover">
+            <span class="candy-emoji text-7xl">🍫</span>
+          </div>
+          <h3 class="mt-3 font-serif text-[16px] font-semibold text-ink">"Great Dad" Custom Box</h3>
+          <p class="mt-0.5 font-sans text-[14px] font-semibold text-ink">$34.90</p>
+          <button class="mt-3 rounded-full bg-coal px-4 py-2 font-sans text-[12px] font-semibold uppercase tracking-wider text-white transition hover:bg-seered">View Options</button>
+        </article>
+
+        <!-- tile 3 -->
+        <article class="group flex flex-col">
+          <div class="candy-tile candy-truffle aspect-[4/5] rounded-2xl shadow-card transition group-hover:shadow-card-hover">
+            <span class="candy-emoji text-7xl">🍫</span>
+          </div>
+          <h3 class="mt-3 font-serif text-[16px] font-semibold text-ink">Father's Day Nuts &amp; Chews</h3>
+          <p class="mt-0.5 font-sans text-[14px] font-semibold text-ink">$34.50</p>
+          <button class="mt-3 rounded-full bg-coal px-4 py-2 font-sans text-[12px] font-semibold uppercase tracking-wider text-white transition hover:bg-seered">View Options</button>
+        </article>
+
+        <!-- tile 4 -->
+        <article class="group flex flex-col">
+          <div class="candy-tile candy-gift aspect-[4/5] rounded-2xl shadow-card transition group-hover:shadow-card-hover">
+            <span class="absolute left-3 top-3 rounded-md bg-coal px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider text-amber-200">Patriotic</span>
+            <span class="candy-emoji text-7xl">🎁</span>
+          </div>
+          <h3 class="mt-3 font-serif text-[16px] font-semibold text-ink">Stars &amp; Sparkles Box</h3>
+          <p class="mt-0.5 font-sans text-[14px] font-semibold text-ink">$29.50</p>
+          <button class="mt-3 rounded-full bg-coal px-4 py-2 font-sans text-[12px] font-semibold uppercase tracking-wider text-white transition hover:bg-seered">View Options</button>
+        </article>
+      </div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- CHECKERBOARD MOTIF STRIP — full B&W signature pattern  -->
+    <!-- ====================================================== -->
+    <section class="checker py-12">
+      <div class="mx-auto max-w-3xl px-4">
+        <div class="rounded-2xl bg-cream/95 px-6 py-8 text-center shadow-card backdrop-blur sm:px-12">
+          <p class="font-sans text-[11px] font-bold uppercase tracking-[0.25em] text-seered">The See's Difference</p>
+          <h2 class="mt-2 font-serif text-[28px] font-bold text-ink sm:text-[34px]">Quality Without Compromise</h2>
+          <p class="mt-3 font-serif text-[16px] leading-relaxed text-ink/70">
+            Every piece is made with the finest ingredients and no added preservatives &mdash;
+            the same recipes Mary See brought to her very first shop.
+          </p>
+          <div class="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 font-serif text-[14px] text-ink/80">
+            <span class="flex items-center gap-2"><span class="text-seered star"></span> Made Fresh Daily</span>
+            <span class="flex items-center gap-2"><span class="text-seered star"></span> Free Sample in Every Shop</span>
+            <span class="flex items-center gap-2"><span class="text-seered star"></span> Satisfaction Guaranteed</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- BUILD A BOX                                            -->
+    <!-- ====================================================== -->
+    <section id="buildbox" class="bg-parchment py-12 sm:py-16">
+      <div class="mx-auto grid max-w-7xl items-center gap-10 px-4 lg:grid-cols-2">
+        <div class="text-center lg:text-left">
+          <h2 class="font-serif text-[34px] font-bold text-ink sm:text-[42px]">Build a Box</h2>
+          <p class="mt-3 max-w-md font-serif text-[18px] leading-relaxed text-ink/70 lg:mx-0">
+            Gift them their favorite custom mix of chocolates or lollypops &mdash; choose
+            every piece, pick the wrapping, and make it unmistakably theirs.
+          </p>
+          <div class="mt-7 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">
+            <a href="#" class="inline-flex items-center gap-2 rounded-full bg-coal px-6 py-3 font-sans text-[13px] font-semibold uppercase tracking-wider text-white transition hover:bg-seered">
+              Chocolate Box <span aria-hidden="true">&rarr;</span>
+            </a>
+            <a href="#" class="inline-flex items-center gap-2 rounded-full border border-coal px-6 py-3 font-sans text-[13px] font-semibold uppercase tracking-wider text-coal transition hover:bg-coal hover:text-white">
+              Lollypop Box <span aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- faux "open box of assorted chocolates" -->
+        <div class="relative">
+          <div class="rounded-2xl bg-coal p-4 shadow-card-hover">
+            <div class="grid grid-cols-4 gap-2.5 rounded-xl bg-[#1f1814] p-3">
+              <!-- 16 chocolate "cups" -->
+              <span class="candy-tile candy-truffle aspect-square rounded-full">🍫</span>
+              <span class="candy-tile candy-caramel aspect-square rounded-full">🍬</span>
+              <span class="candy-tile candy-milk aspect-square rounded-full">🍫</span>
+              <span class="candy-tile candy-cream aspect-square rounded-full">🍬</span>
+              <span class="candy-tile candy-mint aspect-square rounded-full">🍫</span>
+              <span class="candy-tile candy-chocolate aspect-square rounded-full">🍬</span>
+              <span class="candy-tile candy-toffee aspect-square rounded-full">🍫</span>
+              <span class="candy-tile candy-truffle aspect-square rounded-full">🍬</span>
+              <span class="candy-tile candy-caramel aspect-square rounded-full">🍫</span>
+              <span class="candy-tile candy-cream aspect-square rounded-full">🍬</span>
+              <span class="candy-tile candy-milk aspect-square rounded-full">🍫</span>
+              <span class="candy-tile candy-chocolate aspect-square rounded-full">🍬</span>
+              <span class="candy-tile candy-mint aspect-square rounded-full">🍫</span>
+              <span class="candy-tile candy-toffee aspect-square rounded-full">🍬</span>
+              <span class="candy-tile candy-truffle aspect-square rounded-full">🍫</span>
+              <span class="candy-tile candy-caramel aspect-square rounded-full">🍬</span>
+            </div>
+          </div>
+          <span class="absolute -right-3 -top-3 rotate-6 rounded-full border-2 border-coal bg-cream px-4 py-1.5 font-serif text-[13px] font-bold uppercase tracking-wide text-coal shadow-card">
+            Pick Your Pieces
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- PRODUCT CATEGORY TILES                                 -->
+    <!-- ====================================================== -->
+    <section id="categories" class="mx-auto max-w-7xl px-4 py-12 sm:py-16">
+      <h2 class="text-center font-serif text-[28px] font-bold text-ink sm:text-[34px]">Chocolates &amp; Candies for All Occasions</h2>
+      <p class="mx-auto mt-2 max-w-2xl text-center font-serif italic text-ink/60">
+        Browse every craving &mdash; from creamy boxed assortments to crunchy brittle.
+      </p>
+
+      <div class="mt-9 grid grid-cols-2 gap-5 lg:grid-cols-4">
+        <!-- Boxed Chocolates -->
+        <a href="#" class="group flex flex-col items-center text-center">
+          <div class="candy-tile candy-chocolate aspect-square w-full rounded-2xl shadow-card transition group-hover:-translate-y-1 group-hover:shadow-card-hover">
+            <span class="candy-emoji text-[64px]">🍫</span>
+          </div>
+          <span class="mt-3 inline-flex items-center gap-1 font-serif text-[16px] font-semibold text-ink transition group-hover:text-seered">
+            Boxed Chocolates <span class="transition group-hover:translate-x-0.5">&rarr;</span>
+          </span>
+        </a>
+
+        <!-- Lollypops -->
+        <a href="#" class="group flex flex-col items-center text-center">
+          <div class="candy-tile candy-lolly aspect-square w-full rounded-2xl shadow-card transition group-hover:-translate-y-1 group-hover:shadow-card-hover">
+            <span class="candy-emoji text-[64px]">🍭</span>
+          </div>
+          <span class="mt-3 inline-flex items-center gap-1 font-serif text-[16px] font-semibold text-ink transition group-hover:text-seered">
+            Lollypops <span class="transition group-hover:translate-x-0.5">&rarr;</span>
+          </span>
+        </a>
+
+        <!-- Truffles -->
+        <a href="#" class="group flex flex-col items-center text-center">
+          <div class="candy-tile candy-truffle aspect-square w-full rounded-2xl shadow-card transition group-hover:-translate-y-1 group-hover:shadow-card-hover">
+            <span class="candy-emoji text-[64px]">🍬</span>
+          </div>
+          <span class="mt-3 inline-flex items-center gap-1 font-serif text-[16px] font-semibold text-ink transition group-hover:text-seered">
+            Truffles <span class="transition group-hover:translate-x-0.5">&rarr;</span>
+          </span>
+        </a>
+
+        <!-- Gift Baskets -->
+        <a href="#" class="group flex flex-col items-center text-center">
+          <div class="candy-tile candy-gift aspect-square w-full rounded-2xl shadow-card transition group-hover:-translate-y-1 group-hover:shadow-card-hover">
+            <span class="candy-emoji text-[64px]">🎁</span>
+          </div>
+          <span class="mt-3 inline-flex items-center gap-1 font-serif text-[16px] font-semibold text-ink transition group-hover:text-seered">
+            Gift Baskets <span class="transition group-hover:translate-x-0.5">&rarr;</span>
+          </span>
+        </a>
+
+        <!-- Brittle & Toffee -->
+        <a href="#" class="group flex flex-col items-center text-center">
+          <div class="candy-tile candy-toffee aspect-square w-full rounded-2xl shadow-card transition group-hover:-translate-y-1 group-hover:shadow-card-hover">
+            <span class="candy-emoji text-[64px]">🥜</span>
+          </div>
+          <span class="mt-3 inline-flex items-center gap-1 font-serif text-[16px] font-semibold text-ink transition group-hover:text-seered">
+            Brittle &amp; Toffee <span class="transition group-hover:translate-x-0.5">&rarr;</span>
+          </span>
+        </a>
+
+        <!-- Nuts & Chews -->
+        <a href="#" class="group flex flex-col items-center text-center">
+          <div class="candy-tile candy-milk aspect-square w-full rounded-2xl shadow-card transition group-hover:-translate-y-1 group-hover:shadow-card-hover">
+            <span class="candy-emoji text-[64px]">🥜</span>
+          </div>
+          <span class="mt-3 inline-flex items-center gap-1 font-serif text-[16px] font-semibold text-ink transition group-hover:text-seered">
+            Nuts &amp; Chews <span class="transition group-hover:translate-x-0.5">&rarr;</span>
+          </span>
+        </a>
+
+        <!-- Sugar Free -->
+        <a href="#" class="group flex flex-col items-center text-center">
+          <div class="candy-tile candy-mint aspect-square w-full rounded-2xl shadow-card transition group-hover:-translate-y-1 group-hover:shadow-card-hover">
+            <span class="candy-emoji text-[64px]">🍬</span>
+          </div>
+          <span class="mt-3 inline-flex items-center gap-1 font-serif text-[16px] font-semibold text-ink transition group-hover:text-seered">
+            Sugar Free <span class="transition group-hover:translate-x-0.5">&rarr;</span>
+          </span>
+        </a>
+
+        <!-- Lollypop Bouquets -->
+        <a href="#" class="group flex flex-col items-center text-center">
+          <div class="candy-tile candy-caramel aspect-square w-full rounded-2xl shadow-card transition group-hover:-translate-y-1 group-hover:shadow-card-hover">
+            <span class="candy-emoji text-[64px]">💐</span>
+          </div>
+          <span class="mt-3 inline-flex items-center gap-1 font-serif text-[16px] font-semibold text-ink transition group-hover:text-seered">
+            Lollypop Bouquets <span class="transition group-hover:translate-x-0.5">&rarr;</span>
+          </span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- BEST SELLERS — featured products grid                  -->
+    <!-- ====================================================== -->
+    <section id="bestsellers" class="bg-parchment py-12 sm:py-16">
+      <div class="mx-auto max-w-7xl px-4">
+        <div class="flex items-end justify-between">
+          <div>
+            <h2 class="font-serif text-[28px] font-bold text-ink sm:text-[34px]">Best Sellers</h2>
+            <p class="mt-1 font-serif italic text-ink/60">The pieces our fans reach for again and again</p>
+          </div>
+          <a href="#" class="hidden font-serif text-[15px] font-medium text-seered underline-offset-4 transition hover:underline sm:block">View all &rarr;</a>
+        </div>
+
+        <div class="mt-8 grid grid-cols-2 gap-5 lg:grid-cols-4">
+
+          <!-- product 1 -->
+          <article class="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-card transition hover:shadow-card-hover">
+            <div class="candy-tile candy-chocolate relative aspect-square">
+              <span class="absolute left-3 top-3 rounded bg-seered px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider text-white">Limited</span>
+              <span class="candy-emoji text-[72px]">🍫</span>
+            </div>
+            <div class="flex flex-1 flex-col p-4">
+              <div class="flex items-center justify-between">
+                <h3 class="font-serif text-[16px] font-semibold leading-tight text-ink">Assorted Chocolates</h3>
+                <span class="flex items-center gap-0.5 text-[12px] text-ink/60"><span class="text-seered star"></span> 4.9</span>
+              </div>
+              <p class="mt-1 font-sans text-[13px] text-ink/60">Starting at $24.50 &middot; 1&nbsp;lb box</p>
+              <button class="mt-auto pt-4">
+                <span class="block rounded-full bg-coal py-2.5 text-center font-sans text-[12px] font-semibold uppercase tracking-wider text-white transition group-hover:bg-seered">Add to Cart</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- product 2 -->
+          <article class="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-card transition hover:shadow-card-hover">
+            <div class="candy-tile candy-milk relative aspect-square">
+              <span class="candy-emoji text-[72px]">🥜</span>
+            </div>
+            <div class="flex flex-1 flex-col p-4">
+              <div class="flex items-center justify-between">
+                <h3 class="font-serif text-[16px] font-semibold leading-tight text-ink">Nuts &amp; Chews</h3>
+                <span class="flex items-center gap-0.5 text-[12px] text-ink/60"><span class="text-seered star"></span> 4.8</span>
+              </div>
+              <p class="mt-1 font-sans text-[13px] text-ink/60">Starting at $26.50 &middot; 1&nbsp;lb box</p>
+              <button class="mt-auto pt-4">
+                <span class="block rounded-full bg-coal py-2.5 text-center font-sans text-[12px] font-semibold uppercase tracking-wider text-white transition group-hover:bg-seered">Add to Cart</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- product 3 -->
+          <article class="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-card transition hover:shadow-card-hover">
+            <div class="candy-tile candy-truffle relative aspect-square">
+              <span class="candy-emoji text-[72px]">🍫</span>
+            </div>
+            <div class="flex flex-1 flex-col p-4">
+              <div class="flex items-center justify-between">
+                <h3 class="font-serif text-[16px] font-semibold leading-tight text-ink">Milk &amp; Dark Scotchmallow&reg;</h3>
+                <span class="flex items-center gap-0.5 text-[12px] text-ink/60"><span class="text-seered star"></span> 4.7</span>
+              </div>
+              <p class="mt-1 font-sans text-[13px] text-ink/60">$30.50 &middot; 1&nbsp;lb box</p>
+              <button class="mt-auto pt-4">
+                <span class="block rounded-full bg-coal py-2.5 text-center font-sans text-[12px] font-semibold uppercase tracking-wider text-white transition group-hover:bg-seered">Add to Cart</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- product 4 -->
+          <article class="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-card transition hover:shadow-card-hover">
+            <div class="candy-tile candy-toffee relative aspect-square">
+              <span class="candy-emoji text-[72px]">🍬</span>
+            </div>
+            <div class="flex flex-1 flex-col p-4">
+              <div class="flex items-center justify-between">
+                <h3 class="font-serif text-[16px] font-semibold leading-tight text-ink">Peanut Brittle</h3>
+                <span class="flex items-center gap-0.5 text-[12px] text-ink/60"><span class="text-seered star"></span> 4.9</span>
+              </div>
+              <p class="mt-1 font-sans text-[13px] text-ink/60">$19.50 &middot; 1&nbsp;lb bag</p>
+              <button class="mt-auto pt-4">
+                <span class="block rounded-full bg-coal py-2.5 text-center font-sans text-[12px] font-semibold uppercase tracking-wider text-white transition group-hover:bg-seered">Add to Cart</span>
+              </button>
+            </div>
+          </article>
+        </div>
+
+        <a href="#" class="mt-6 block text-center font-serif text-[15px] font-medium text-seered underline-offset-4 transition hover:underline sm:hidden">View all best sellers &rarr;</a>
+      </div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- "KEEP THE CANDY COMING" subscription band              -->
+    <!-- ====================================================== -->
+    <section class="mx-auto max-w-3xl px-4 py-14 text-center">
+      <h2 class="font-serif text-[28px] font-bold text-ink sm:text-[32px]">Keep the Candy Coming</h2>
+      <p class="mx-auto mt-2 max-w-md font-serif text-[16px] leading-relaxed text-ink/70">
+        Get your favorite treats on repeat with a See's Pleaser&trade; auto-delivery subscription &mdash;
+        always fresh, never a missed sweet tooth.
+      </p>
+      <a href="#" class="mt-6 inline-block rounded-full bg-seered px-8 py-3 font-sans text-[13px] font-semibold uppercase tracking-wider text-white shadow-card transition hover:bg-seered-dark">
+        Order Now &rarr;
+      </a>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- OUR STORY / SINCE 1921 — heritage section              -->
+    <!-- ====================================================== -->
+    <section class="relative overflow-hidden bg-coal text-amber-50">
+      <!-- faint checker texture top edge -->
+      <div class="checker-sm absolute inset-x-0 top-0 h-3 opacity-30"></div>
+
+      <div class="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 sm:py-20 lg:grid-cols-[auto_1fr]">
+        <!-- Mary See oval portrait, recreated in CSS -->
+        <div class="mx-auto flex flex-col items-center">
+          <div class="mary-oval grid h-44 w-36 place-items-center rounded-[50%] text-coal sm:h-52 sm:w-44">
+            <div class="text-center leading-none">
+              <div class="wordmark-script text-[40px] text-cocoa">Mary</div>
+              <div class="font-serif text-[12px] font-semibold uppercase tracking-[0.2em] text-cocoa/80">See</div>
+            </div>
+          </div>
+          <p class="mt-3 font-serif text-[12px] italic text-amber-100/60">Our founder, est. 1921</p>
+        </div>
+
+        <!-- story copy -->
+        <div class="text-center lg:text-left">
+          <p class="font-sans text-[11px] font-bold uppercase tracking-[0.28em] text-amber-300">Our Story</p>
+          <h2 class="mt-2 font-serif text-[32px] font-bold leading-tight sm:text-[40px]">
+            Sweet Memories Since 1921
+          </h2>
+          <p class="mt-4 max-w-2xl font-serif text-[17px] leading-relaxed text-amber-50/80">
+            It started with one woman, one kitchen, and an uncompromising recipe. Over a century later,
+            we still make every piece the way Mary did &mdash; in small batches, with real cream, real
+            butter, and not a single shortcut. That black-and-white shop, and the free sample at the
+            counter, have never gone out of style.
+          </p>
+          <div class="mt-7 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+            <a href="#" class="rounded-full bg-amber-50 px-7 py-3 font-sans text-[13px] font-semibold uppercase tracking-wider text-coal transition hover:bg-white">
+              Read Our Story
+            </a>
+            <a href="#" class="rounded-full border border-amber-50/40 px-7 py-3 font-sans text-[13px] font-semibold uppercase tracking-wider text-amber-50 transition hover:border-amber-50 hover:bg-white/5">
+              Find a Shop
+            </a>
+          </div>
+          <!-- heritage stat row -->
+          <div class="mt-9 grid max-w-lg grid-cols-3 gap-4 text-center lg:mx-0 lg:text-left">
+            <div>
+              <div class="font-serif text-[28px] font-bold text-amber-100">100+</div>
+              <div class="font-sans text-[11px] uppercase tracking-wider text-amber-50/60">Years of joy</div>
+            </div>
+            <div>
+              <div class="font-serif text-[28px] font-bold text-amber-100">200+</div>
+              <div class="font-sans text-[11px] uppercase tracking-wider text-amber-50/60">Candy varieties</div>
+            </div>
+            <div>
+              <div class="font-serif text-[28px] font-bold text-amber-100">Free</div>
+              <div class="font-sans text-[11px] uppercase tracking-wider text-amber-50/60">Sample in-shop</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- SOCIAL / #SeesTheDay                                   -->
+    <!-- ====================================================== -->
+    <section class="mx-auto max-w-7xl px-4 py-14 text-center">
+      <h2 class="font-serif text-[26px] font-bold text-ink sm:text-[30px]">See's on Social</h2>
+      <p class="mt-1 font-serif italic text-ink/60">Share the happiness <span class="font-semibold not-italic text-seered">#SeesTheDay</span></p>
+
+      <div class="mt-7 grid grid-cols-3 gap-3 sm:grid-cols-6">
+        <div class="candy-tile candy-chocolate aspect-square rounded-xl shadow-card"><span class="candy-emoji text-4xl">🍫</span></div>
+        <div class="candy-tile candy-lolly aspect-square rounded-xl shadow-card"><span class="candy-emoji text-4xl">🍭</span></div>
+        <div class="candy-tile candy-gift aspect-square rounded-xl shadow-card"><span class="candy-emoji text-4xl">🎁</span></div>
+        <div class="candy-tile candy-caramel aspect-square rounded-xl shadow-card"><span class="candy-emoji text-4xl">🍬</span></div>
+        <div class="candy-tile candy-mint aspect-square rounded-xl shadow-card"><span class="candy-emoji text-4xl">🍫</span></div>
+        <div class="candy-tile candy-truffle aspect-square rounded-xl shadow-card"><span class="candy-emoji text-4xl">🍬</span></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ====================================================== -->
+  <!-- NEWSLETTER BAND (Join The Sweet List)                  -->
+  <!-- ====================================================== -->
+  <section class="bg-[#1f1814] text-amber-50">
+    <div class="mx-auto flex max-w-3xl flex-col items-center gap-4 px-4 py-10 text-center sm:flex-row sm:justify-between sm:text-left">
+      <div>
+        <h2 class="font-serif text-[24px] font-bold sm:text-[26px]">Join The Sweet List</h2>
+        <p class="mt-1 font-serif text-[14px] text-amber-50/70">Be the first to know about new flavors and special offers.</p>
+      </div>
+      <form class="flex w-full max-w-sm items-stretch sm:w-auto" onsubmit="return false">
+        <input type="email" placeholder="Your email address" aria-label="Email address"
+               class="flex-1 rounded-l-md border border-white/15 bg-white/10 px-4 py-2.5 text-[14px] text-white placeholder:text-amber-50/50 focus:border-amber-300 focus:outline-none sm:w-64" />
+        <button class="rounded-r-md bg-seered px-5 font-sans text-[13px] font-semibold uppercase tracking-wider text-white transition hover:bg-seered-dark">Sign Up</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- FOOTER                                                 -->
+  <!-- ====================================================== -->
+  <footer class="bg-coal text-amber-50/80">
+    <div class="mx-auto max-w-7xl px-4 py-12">
+      <div class="grid grid-cols-2 gap-8 sm:grid-cols-4">
+
+        <!-- Customer Service -->
+        <div>
+          <h3 class="font-serif text-[15px] font-semibold text-white">Customer Service</h3>
+          <ul class="mt-4 space-y-2.5 text-[13px]">
+            <li><a href="#" class="link-underline transition hover:text-white">Find a Shop</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">Track an Order</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">Contact Us</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">Shipping &amp; Promotion Info</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">FAQs</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">Allergen Info</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">Gift Card Balance</a></li>
+          </ul>
+        </div>
+
+        <!-- Shop See's -->
+        <div>
+          <h3 class="font-serif text-[15px] font-semibold text-white">Shop See's</h3>
+          <ul class="mt-4 space-y-2.5 text-[13px]">
+            <li><a href="#" class="link-underline transition hover:text-white">Sees.com</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">Corporate Gifting</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">Fundraising</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">Catalogs</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">Subscriptions</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">DoorDash Delivery</a></li>
+          </ul>
+        </div>
+
+        <!-- About Us -->
+        <div>
+          <h3 class="font-serif text-[15px] font-semibold text-white">About Us</h3>
+          <ul class="mt-4 space-y-2.5 text-[13px]">
+            <li><a href="#" class="link-underline transition hover:text-white">Our Story</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">Flavor Guide</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">Recipes</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">News &amp; Chews Blog</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">Satisfaction Guarantee</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">Glossary</a></li>
+          </ul>
+        </div>
+
+        <!-- Company Info -->
+        <div>
+          <h3 class="font-serif text-[15px] font-semibold text-white">Company Info</h3>
+          <ul class="mt-4 space-y-2.5 text-[13px]">
+            <li><a href="#" class="link-underline transition hover:text-white">Careers</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">Partner Program</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">Newsroom</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">Privacy Policy</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">Terms of Use</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">Terms of Sale</a></li>
+            <li><a href="#" class="link-underline transition hover:text-white">Fundraising Policy</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- footer wordmark + socials -->
+      <div class="mt-12 flex flex-col items-center gap-6 border-t border-white/10 pt-8 sm:flex-row sm:justify-between">
+        <a href="#" class="flex items-baseline gap-2 leading-none" aria-label="See's Candies home">
+          <span class="wordmark-script text-[34px] leading-[0.8] text-amber-50">See&rsquo;s</span>
+          <span class="wordmark-block text-[17px] text-amber-50">CANDIES</span>
+        </a>
+
+        <div class="flex items-center gap-3">
+          <!-- social icon chips (decorative) -->
+          <a href="#" aria-label="Facebook" class="grid h-9 w-9 place-items-center rounded-full border border-white/15 transition hover:border-white hover:text-white">
+            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor"><path d="M13 22v-8h2.7l.4-3H13V9c0-.9.3-1.5 1.6-1.5H16V4.9c-.3 0-1.2-.1-2.3-.1-2.3 0-3.7 1.3-3.7 3.8V11H7.5v3H10v8h3Z"/></svg>
+          </a>
+          <a href="#" aria-label="Instagram" class="grid h-9 w-9 place-items-center rounded-full border border-white/15 transition hover:border-white hover:text-white">
+            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><circle cx="12" cy="12" r="3.6"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <a href="#" aria-label="Pinterest" class="grid h-9 w-9 place-items-center rounded-full border border-white/15 transition hover:border-white hover:text-white">
+            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor"><path d="M12 2a10 10 0 0 0-3.6 19.3c-.1-.8-.1-2 .1-2.9l1.2-4.9s-.3-.6-.3-1.5c0-1.4.8-2.4 1.8-2.4.9 0 1.3.6 1.3 1.4 0 .9-.5 2.1-.8 3.3-.2.9.5 1.7 1.4 1.7 1.7 0 2.9-2.2 2.9-4.7 0-1.9-1.3-3.4-3.7-3.4-2.7 0-4.3 2-4.3 4 0 .8.3 1.4.7 1.8.2.2.2.3.1.5l-.2.8c0 .3-.2.4-.5.2-1.2-.5-1.8-1.9-1.8-3.4 0-2.5 2.1-5.5 6.3-5.5 3.4 0 5.6 2.4 5.6 5 0 3.5-1.9 6.1-4.8 6.1-1 0-1.9-.5-2.2-1.1l-.6 2.4c-.2.8-.7 1.6-1 2.2A10 10 0 1 0 12 2Z"/></svg>
+          </a>
+          <a href="#" aria-label="YouTube" class="grid h-9 w-9 place-items-center rounded-full border border-white/15 transition hover:border-white hover:text-white">
+            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor"><path d="M22 8.2a2.6 2.6 0 0 0-1.8-1.8C18.6 6 12 6 12 6s-6.6 0-8.2.4A2.6 2.6 0 0 0 2 8.2 27 27 0 0 0 1.7 12 27 27 0 0 0 2 15.8a2.6 2.6 0 0 0 1.8 1.8C5.4 18 12 18 12 18s6.6 0 8.2-.4a2.6 2.6 0 0 0 1.8-1.8c.3-1.3.3-3.8.3-3.8s0-2.5-.3-3.8ZM10 15V9l5 3-5 3Z"/></svg>
+          </a>
+          <a href="#" aria-label="TikTok" class="grid h-9 w-9 place-items-center rounded-full border border-white/15 transition hover:border-white hover:text-white">
+            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor"><path d="M16.5 3c.3 2 1.5 3.5 3.5 3.7v2.7c-1.3 0-2.5-.4-3.5-1v6.1c0 3.2-2.6 5.5-5.6 5.5A5.5 5.5 0 0 1 5.4 14c.6-1.7 2.2-2.9 4-2.9.4 0 .8 0 1.1.1v2.8c-.3-.1-.7-.2-1.1-.2-1.2 0-2.2 1-2.2 2.3 0 1.2 1 2.2 2.3 2.2 1.3 0 2.4-1 2.4-2.4V3h4.6Z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- accessibility line + copyright + DISCLAIMER -->
+      <div class="mt-8 space-y-3 border-t border-white/10 pt-6 text-center text-[12px] text-amber-50/55">
+        <p>
+          If you are using a screen reader and experiencing problems with our website, please call
+          <a href="tel:18003477337" class="text-amber-50 underline-offset-2 hover:underline">1&#8209;800&#8209;347&#8209;7337</a>
+          or <a href="tel:13104046200" class="text-amber-50 underline-offset-2 hover:underline">1&#8209;310&#8209;404&#8209;6200</a> for assistance.
+        </p>
+        <p>&copy; 2026 Copyright See's Candy Shops, Inc. &mdash; All rights reserved.</p>
+        <p class="mx-auto max-w-3xl text-[11px] leading-relaxed text-amber-50/45">
+          Design mockup built with Tailwind CSS for layout reference only. Not affiliated with,
+          endorsed by, or representative of See's Candies. All names and trademarks belong to their
+          respective owners.
+        </p>
+      </div>
+    </div>
+
+    <!-- signature checkerboard footer strip -->
+    <div class="checker-sm h-6 w-full"></div>
+  </footer>
+
+  <!-- ====================================================== -->
+  <!-- MINIMAL JS — header scroll state, mobile menu, live      -->
+  <!-- countdown for the announcement bar.                      -->
+  <!-- ====================================================== -->
+  <script>
+    // Header gains shadow once the page is scrolled.
+    const header = document.getElementById('siteHeader');
+    const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 8);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // Mobile menu toggle.
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => mobileMenu.classList.toggle('closed'));
+    // Close the menu after tapping a link.
+    mobileMenu.querySelectorAll('a').forEach((a) =>
+      a.addEventListener('click', () => mobileMenu.classList.add('closed'))
+    );
+
+    // Live countdown to the Father's Day order cutoff (6/16).
+    const els = {
+      d: document.getElementById('cdDays'),
+      h: document.getElementById('cdHrs'),
+      m: document.getElementById('cdMin'),
+      s: document.getElementById('cdSec'),
+    };
+    const target = new Date('2026-06-16T23:59:59');
+    const pad = (n) => String(Math.max(0, n)).padStart(2, '0');
+    function tick() {
+      const diff = target - new Date();
+      if (diff <= 0) {
+        els.d.textContent = els.h.textContent = els.m.textContent = els.s.textContent = '00';
+        return;
+      }
+      const s = Math.floor(diff / 1000);
+      els.d.textContent = pad(Math.floor(s / 86400));
+      els.h.textContent = pad(Math.floor((s % 86400) / 3600));
+      els.m.textContent = pad(Math.floor((s % 3600) / 60));
+      els.s.textContent = pad(s % 60);
+    }
+    tick();
+    setInterval(tick, 1000);
+  </script>
+</body>
+</html>

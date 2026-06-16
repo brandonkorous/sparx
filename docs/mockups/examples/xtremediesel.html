@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>XDP — Xtreme Diesel Performance (design mockup)</title>
+
+<!--
+  =====================================================================
+  DESIGN-REFERENCE MOCKUP — xtremediesel.com homepage replica
+  Part of the /docs/mockups design-reference gallery.
+  Built with Tailwind CSS (Play CDN) for layout reference ONLY.
+  Not affiliated with, endorsed by, or representative of XDP /
+  Xtreme Diesel Performance. Wordmark is recreated as styled text;
+  no copyrighted logos / product photos are embedded or hotlinked.
+  Brand logos use GENERIC placeholder names. Products/prices invented.
+  =====================================================================
+-->
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap"
+  rel="stylesheet"
+/>
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['Oswald', 'Archivo', 'system-ui', 'sans-serif'],
+          cond: ['Archivo', 'Oswald', 'system-ui', 'sans-serif'],
+          body: ['Inter', 'system-ui', 'sans-serif'],
+        },
+        colors: {
+          // Automotive dark + aggressive red
+          ink: '#0a0a0b',
+          coal: '#121214',
+          charcoal: '#1a1a1d',
+          steel: '#26262b',
+          ash: '#3a3a40',
+          xred: {
+            DEFAULT: '#e11d23',
+            600: '#c8161c',
+            700: '#a30f14',
+          },
+          amber: { glow: '#f5c518' },
+        },
+        boxShadow: {
+          deal: '0 10px 30px -12px rgba(0,0,0,.85)',
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #0a0a0b;
+  }
+  /* Diamond-plate / brushed-metal texture for hero + accents, pure CSS */
+  .tex-plate {
+    background-image:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.04) 25%, transparent 25%),
+      linear-gradient(225deg, rgba(255, 255, 255, 0.04) 25%, transparent 25%),
+      linear-gradient(45deg, rgba(0, 0, 0, 0.35) 25%, transparent 25%),
+      linear-gradient(315deg, rgba(0, 0, 0, 0.35) 25%, transparent 25%);
+    background-size: 18px 18px;
+    background-position:
+      9px 0,
+      9px 0,
+      0 0,
+      0 0;
+  }
+  .tex-carbon {
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0),
+      radial-gradient(circle at 5px 5px, rgba(255, 255, 255, 0.03) 1px, transparent 0);
+    background-size: 8px 8px;
+  }
+  .heading {
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 0.01em;
+  }
+  /* Italic "speed" skew on big hero text */
+  .skew-fast {
+    transform: skewX(-7deg);
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  /* Header shrink-on-scroll */
+  #utilbar {
+    transition:
+      max-height 0.25s ease,
+      opacity 0.2s ease;
+    max-height: 40px;
+    overflow: hidden;
+  }
+  body.scrolled #utilbar {
+    max-height: 0;
+    opacity: 0;
+  }
+  #sitehead {
+    transition:
+      box-shadow 0.25s ease,
+      background 0.25s ease;
+  }
+  body.scrolled #sitehead {
+    box-shadow: 0 6px 24px -8px rgba(0, 0, 0, 0.9);
+  }
+</style>
+</head>
+
+<body class="bg-ink text-zinc-200 font-body antialiased">
+  <!-- ============================================================ -->
+  <!-- TOP UTILITY BAR                                              -->
+  <!-- ============================================================ -->
+  <div class="w-full bg-xred text-white text-[11px] sm:text-xs font-semibold tracking-wide">
+    <div class="mx-auto flex max-w-[1400px] items-center justify-center gap-2 px-4 py-2 text-center">
+      <span class="text-[13px] leading-none">🚚</span>
+      <span class="uppercase">Free Shipping</span>
+      <span class="hidden font-normal text-white/85 sm:inline">on orders over $99.00*</span>
+    </div>
+  </div>
+
+  <div id="utilbar" class="w-full border-b border-white/5 bg-coal text-[11px] text-zinc-400">
+    <div class="mx-auto flex max-w-[1400px] items-center justify-end gap-5 px-4 py-2">
+      <a href="#" class="flex items-center gap-1.5 transition hover:text-white">
+        <span>👤</span><span class="hidden sm:inline">My Account / Sign In</span><span class="sm:hidden">Account</span>
+      </a>
+      <span class="h-3 w-px bg-white/10"></span>
+      <a href="#" class="flex items-center gap-1.5 transition hover:text-white">
+        <span>📦</span><span>Order Status</span>
+      </a>
+      <span class="h-3 w-px bg-white/10"></span>
+      <a href="#" class="flex items-center gap-1.5 transition hover:text-white">
+        <span>🎧</span><span class="hidden sm:inline">Help Desk</span>
+      </a>
+      <span class="h-3 w-px bg-white/10"></span>
+      <a href="tel:+18005550199" class="flex items-center gap-1.5 font-semibold text-white">
+        <span>📞</span><span>1-800-555-0199</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- HEADER                                                       -->
+  <!-- ============================================================ -->
+  <header id="sitehead" class="sticky top-0 z-50 border-b border-white/5 bg-coal/95 backdrop-blur">
+    <div class="mx-auto flex max-w-[1400px] items-center gap-4 px-4 py-3 lg:gap-6">
+      <!-- Wordmark (recreated as styled text) -->
+      <a href="#top" class="group flex flex-none items-center gap-2" aria-label="XDP — Xtreme Diesel Performance home">
+        <span
+          class="flex items-center rounded-full border-[3px] border-amber-glow px-3 py-1.5 shadow-[0_0_0_2px_#0a0a0b]"
+          style="background: linear-gradient(180deg, #1a1a1d, #0a0a0b)"
+        >
+          <span class="heading text-2xl font-bold italic leading-none tracking-tight text-amber-glow skew-fast">XDP</span>
+        </span>
+        <span class="hidden flex-col leading-none xl:flex">
+          <span class="heading text-[13px] font-semibold uppercase tracking-[0.18em] text-white">Xtreme Diesel</span>
+          <span class="heading text-[13px] font-semibold uppercase tracking-[0.18em] text-xred">Performance</span>
+        </span>
+      </a>
+
+      <!-- Search bar -->
+      <form class="relative flex min-w-0 flex-1 items-center" onsubmit="return false">
+        <label for="search" class="sr-only">Search by keyword or part number</label>
+        <input
+          id="search"
+          type="search"
+          placeholder="Search by keyword or part number…"
+          class="h-11 w-full rounded-sm border border-white/15 bg-white px-4 pr-12 text-sm text-ink placeholder:text-zinc-400 focus:border-xred focus:outline-none focus:ring-2 focus:ring-xred/40"
+        />
+        <button
+          type="submit"
+          aria-label="Search"
+          class="absolute right-0 top-0 grid h-11 w-12 place-items-center rounded-r-sm bg-ink text-white transition hover:bg-steel"
+        >
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" stroke-linecap="round" />
+          </svg>
+        </button>
+      </form>
+
+      <!-- Select-a-vehicle quick pill -->
+      <a
+        href="#vehicle"
+        class="hidden flex-none items-center gap-2 rounded-sm bg-xred px-4 py-3 text-xs font-bold uppercase tracking-wide text-white transition hover:bg-xred-600 lg:flex"
+      >
+        <span class="text-base leading-none">🛻</span> Select a Vehicle
+      </a>
+
+      <!-- Account + cart -->
+      <div class="flex flex-none items-center gap-1 sm:gap-3">
+        <a href="#" class="hidden flex-col items-center px-1 text-zinc-300 transition hover:text-white sm:flex">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">
+            <circle cx="12" cy="8" r="4" /><path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke-linecap="round" />
+          </svg>
+          <span class="mt-0.5 text-[10px] font-semibold uppercase tracking-wide">Account</span>
+        </a>
+        <a href="#" class="relative flex items-center gap-2 rounded-sm bg-steel px-3 py-2.5 text-white transition hover:bg-ash">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">
+            <path d="M3 4h2l2.5 12h11l2-8H6" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="9" cy="20" r="1.4" fill="currentColor" /><circle cx="18" cy="20" r="1.4" fill="currentColor" />
+          </svg>
+          <span class="grid h-5 min-w-5 place-items-center rounded-full bg-xred px-1 text-[11px] font-bold leading-none text-white">0</span>
+        </a>
+        <!-- Mobile hamburger -->
+        <button
+          id="hamburger"
+          class="grid h-11 w-11 place-items-center rounded-sm text-white transition hover:bg-steel lg:hidden"
+          aria-label="Open menu"
+          aria-expanded="false"
+        >
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Primary nav (Shop by Engine) -->
+    <nav class="hidden border-t border-white/5 bg-charcoal lg:block">
+      <div class="mx-auto flex max-w-[1400px] items-center gap-1 px-4">
+        <a href="#category" class="heading flex items-center gap-2 border-r border-white/5 px-4 py-3 text-sm font-semibold uppercase tracking-wide text-white">
+          <svg class="h-4 w-4 text-xred" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" /></svg>
+          Shop by Engine
+        </a>
+        <a href="#" class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-zinc-300 transition hover:text-xred">Powerstroke</a>
+        <span class="text-white/15">/</span>
+        <a href="#" class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-zinc-300 transition hover:text-xred">Cummins</a>
+        <span class="text-white/15">/</span>
+        <a href="#" class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-zinc-300 transition hover:text-xred">Duramax</a>
+        <span class="text-white/15">/</span>
+        <a href="#" class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-zinc-300 transition hover:text-xred">EcoDiesel</a>
+        <span class="text-white/15">/</span>
+        <a href="#" class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-zinc-300 transition hover:text-xred">+ More Engines</a>
+        <span class="ml-auto"></span>
+        <a href="#brands" class="heading px-4 py-3 text-xs font-bold uppercase tracking-wide text-white transition hover:text-xred">XDP Brand</a>
+        <a href="#brands" class="heading px-4 py-3 text-xs font-bold uppercase tracking-wide text-white transition hover:text-xred">All Brands</a>
+        <a href="#deals" class="heading flex items-center gap-1.5 px-4 py-3 text-xs font-bold uppercase tracking-wide text-xred">
+          <span>🔥</span> Deals
+        </a>
+      </div>
+    </nav>
+
+    <!-- Mobile nav drawer -->
+    <nav id="mobilenav" class="hidden border-t border-white/5 bg-charcoal lg:!hidden">
+      <div class="flex flex-col px-4 py-2">
+        <a href="#category" class="border-b border-white/5 py-3 text-sm font-semibold uppercase tracking-wide text-white">Shop by Engine</a>
+        <a href="#" class="border-b border-white/5 py-3 text-sm text-zinc-300">Powerstroke</a>
+        <a href="#" class="border-b border-white/5 py-3 text-sm text-zinc-300">Cummins</a>
+        <a href="#" class="border-b border-white/5 py-3 text-sm text-zinc-300">Duramax</a>
+        <a href="#" class="border-b border-white/5 py-3 text-sm text-zinc-300">EcoDiesel</a>
+        <a href="#brands" class="border-b border-white/5 py-3 text-sm font-semibold uppercase tracking-wide text-white">All Brands</a>
+        <a href="#deals" class="py-3 text-sm font-bold uppercase tracking-wide text-xred">🔥 Deals</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <!-- ============================================================ -->
+    <!-- VEHICLE SELECTOR — "Shop by Vehicle" (signature element)     -->
+    <!-- ============================================================ -->
+    <section id="vehicle" class="border-b border-white/5 bg-ink tex-carbon">
+      <div class="mx-auto max-w-[1400px] px-4 py-5">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end">
+          <div class="flex flex-none items-center gap-3">
+            <span class="grid h-12 w-12 place-items-center rounded-sm bg-xred text-2xl">🛻</span>
+            <div class="leading-tight">
+              <h2 class="heading text-lg font-bold uppercase tracking-wide text-white">Shop by Vehicle</h2>
+              <p class="text-xs text-zinc-400">Find parts guaranteed to fit your rig.</p>
+            </div>
+          </div>
+
+          <form class="grid flex-1 grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-4" onsubmit="return false">
+            <div class="col-span-1">
+              <label class="mb-1 block text-[10px] font-semibold uppercase tracking-wide text-zinc-500">Year</label>
+              <select class="h-11 w-full rounded-sm border border-white/15 bg-charcoal px-3 text-sm text-white focus:border-xred focus:outline-none">
+                <option>Select Year</option>
+                <option>2024</option><option>2023</option><option>2022</option><option>2020</option><option>2017</option><option>2008</option><option>2003</option>
+              </select>
+            </div>
+            <div class="col-span-1">
+              <label class="mb-1 block text-[10px] font-semibold uppercase tracking-wide text-zinc-500">Make</label>
+              <select class="h-11 w-full rounded-sm border border-white/15 bg-charcoal px-3 text-sm text-white focus:border-xred focus:outline-none">
+                <option>Select Make</option>
+                <option>Ford</option><option>Ram / Dodge</option><option>Chevy / GMC</option><option>Nissan</option>
+              </select>
+            </div>
+            <div class="col-span-1">
+              <label class="mb-1 block text-[10px] font-semibold uppercase tracking-wide text-zinc-500">Model</label>
+              <select class="h-11 w-full rounded-sm border border-white/15 bg-charcoal px-3 text-sm text-white focus:border-xred focus:outline-none">
+                <option>Select Model</option>
+                <option>F-250</option><option>F-350</option><option>2500</option><option>3500</option><option>Silverado</option>
+              </select>
+            </div>
+            <div class="col-span-1">
+              <label class="mb-1 block text-[10px] font-semibold uppercase tracking-wide text-zinc-500">Engine</label>
+              <select class="h-11 w-full rounded-sm border border-white/15 bg-charcoal px-3 text-sm text-white focus:border-xred focus:outline-none">
+                <option>Select Engine</option>
+                <option>6.7L Power Stroke</option><option>6.7L Cummins</option><option>6.6L Duramax</option><option>7.3L Power Stroke</option>
+              </select>
+            </div>
+          </form>
+
+          <button
+            type="submit"
+            class="heading flex-none rounded-sm bg-xred px-8 py-3 text-sm font-bold uppercase tracking-widest text-white shadow-deal transition hover:bg-xred-600 active:translate-y-px lg:self-end"
+          >
+            Shop Now →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- HERO / PROMO DEAL BANNER                                     -->
+    <!-- ============================================================ -->
+    <section
+      class="relative overflow-hidden border-b-2 border-xred tex-plate"
+      style="background: radial-gradient(120% 140% at 70% 30%, #2a2a30 0%, #121214 45%, #08080a 100%)"
+    >
+      <!-- faux truck silhouette block -->
+      <div class="pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 md:block">
+        <div class="absolute bottom-0 right-0 h-[78%] w-[92%] rounded-tl-[40px] bg-gradient-to-tl from-zinc-700/70 via-zinc-800/60 to-transparent"></div>
+        <div class="absolute bottom-8 right-10 h-24 w-24 rounded-full bg-ink/80 ring-8 ring-zinc-600/40"></div>
+        <div class="absolute bottom-8 right-48 h-24 w-24 rounded-full bg-ink/80 ring-8 ring-zinc-600/40"></div>
+        <div class="absolute right-16 top-20 text-[110px] opacity-20">🛻</div>
+      </div>
+
+      <div class="relative mx-auto flex min-h-[360px] max-w-[1400px] flex-col justify-center px-4 py-16 md:min-h-[460px]">
+        <p class="heading mb-3 inline-flex w-fit items-center gap-2 rounded-sm bg-xred px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-white">
+          🔥 Limited-Time Event
+        </p>
+        <h1 class="heading max-w-3xl text-5xl font-bold uppercase leading-[0.95] text-white sm:text-6xl md:text-7xl lg:text-8xl">
+          Summer Power
+          <span class="block text-xred">Savings</span>
+        </h1>
+        <p class="heading mt-4 max-w-xl text-base font-semibold uppercase tracking-[0.15em] text-zinc-200 sm:text-lg md:text-2xl">
+          Shop Top XDP Deals, Special Offers &amp; More
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="#deals" class="heading rounded-sm bg-xred px-7 py-3.5 text-sm font-bold uppercase tracking-widest text-white shadow-deal transition hover:bg-xred-600 active:translate-y-px">
+            Shop the Sale
+          </a>
+          <a href="#category" class="heading rounded-sm border border-white/25 bg-white/5 px-7 py-3.5 text-sm font-bold uppercase tracking-widest text-white backdrop-blur transition hover:bg-white/10">
+            Browse Categories
+          </a>
+        </div>
+        <p class="mt-5 text-xs text-zinc-400">We Know What Powers You — performance diesel parts since 2003.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- PROMO / DEAL TILE ROW (mirrors the 6-tile deal grid)         -->
+    <!-- ============================================================ -->
+    <section id="deals" class="bg-ink py-10">
+      <div class="mx-auto max-w-[1400px] px-4">
+        <div class="mb-6 flex items-end justify-between">
+          <h2 class="heading text-2xl font-bold uppercase tracking-wide text-white sm:text-3xl">
+            <span class="text-xred">Hot</span> Deals &amp; Offers
+          </h2>
+          <a href="#" class="heading hidden text-xs font-bold uppercase tracking-widest text-zinc-300 transition hover:text-xred sm:block">View All Deals →</a>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <!-- Deal tile template -->
+          <a href="#" class="group relative overflow-hidden rounded-sm border border-white/10 bg-charcoal tex-plate shadow-deal transition hover:border-xred">
+            <div class="relative flex h-44 flex-col justify-between p-5" style="background: linear-gradient(110deg, rgba(10,10,11,.92) 35%, rgba(10,10,11,.25) 100%)">
+              <span class="heading w-fit rounded-sm bg-xred px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white">15% Off</span>
+              <div>
+                <h3 class="heading text-xl font-bold uppercase tracking-wide text-white">Northwind Exhaust</h3>
+                <p class="text-xs text-zinc-300">On specially marked Northwind systems. Ends 6/30.</p>
+              </div>
+              <span class="heading w-fit rounded-sm bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-ink transition group-hover:bg-xred group-hover:text-white">Shop Now</span>
+            </div>
+            <span class="absolute right-4 top-4 text-4xl opacity-20 transition group-hover:opacity-40">⚙️</span>
+          </a>
+
+          <a href="#" class="group relative overflow-hidden rounded-sm border border-white/10 bg-charcoal tex-plate shadow-deal transition hover:border-xred">
+            <div class="relative flex h-44 flex-col justify-between p-5" style="background: linear-gradient(110deg, rgba(10,10,11,.92) 35%, rgba(10,10,11,.25) 100%)">
+              <span class="heading w-fit rounded-sm bg-amber-glow px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-ink">Clearance</span>
+              <div>
+                <h3 class="heading text-xl font-bold uppercase tracking-wide text-white">Clearance Rack</h3>
+                <p class="text-xs text-zinc-300">Grab it before it's gone — while supplies last.</p>
+              </div>
+              <span class="heading w-fit rounded-sm bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-ink transition group-hover:bg-xred group-hover:text-white">Shop Now</span>
+            </div>
+            <span class="absolute right-4 top-4 text-4xl opacity-20 transition group-hover:opacity-40">🏷️</span>
+          </a>
+
+          <a href="#" class="group relative overflow-hidden rounded-sm border border-white/10 bg-charcoal tex-plate shadow-deal transition hover:border-xred">
+            <div class="relative flex h-44 flex-col justify-between p-5" style="background: linear-gradient(110deg, rgba(10,10,11,.92) 35%, rgba(10,10,11,.25) 100%)">
+              <span class="heading w-fit rounded-sm bg-xred px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white">15% Off</span>
+              <div>
+                <h3 class="heading text-xl font-bold uppercase tracking-wide text-white">Umbra Floor Liners</h3>
+                <p class="text-xs text-zinc-300">On specially marked Umbra liners. Ends 6/30.</p>
+              </div>
+              <span class="heading w-fit rounded-sm bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-ink transition group-hover:bg-xred group-hover:text-white">Shop Now</span>
+            </div>
+            <span class="absolute right-4 top-4 text-4xl opacity-20 transition group-hover:opacity-40">🛡️</span>
+          </a>
+
+          <a href="#" class="group relative overflow-hidden rounded-sm border border-white/10 bg-charcoal tex-plate shadow-deal transition hover:border-xred">
+            <div class="relative flex h-44 flex-col justify-between p-5" style="background: linear-gradient(110deg, rgba(10,10,11,.92) 35%, rgba(10,10,11,.25) 100%)">
+              <span class="heading w-fit rounded-sm bg-xred px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white">New</span>
+              <div>
+                <h3 class="heading text-xl font-bold uppercase tracking-wide text-white">XDP Xtra-Cool Radiators</h3>
+                <p class="text-xs text-zinc-300">Direct-fit replacement built for summer heat.</p>
+              </div>
+              <span class="heading w-fit rounded-sm bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-ink transition group-hover:bg-xred group-hover:text-white">Shop Now</span>
+            </div>
+            <span class="absolute right-4 top-4 text-4xl opacity-20 transition group-hover:opacity-40">❄️</span>
+          </a>
+
+          <a href="#" class="group relative overflow-hidden rounded-sm border border-white/10 bg-charcoal tex-plate shadow-deal transition hover:border-xred">
+            <div class="relative flex h-44 flex-col justify-between p-5" style="background: linear-gradient(110deg, rgba(10,10,11,.92) 35%, rgba(10,10,11,.25) 100%)">
+              <span class="heading w-fit rounded-sm bg-xred px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white">10% Off</span>
+              <div>
+                <h3 class="heading text-xl font-bold uppercase tracking-wide text-white">Globex Performance</h3>
+                <p class="text-xs text-zinc-300">On specially marked Globex products. Ends 6/21.</p>
+              </div>
+              <span class="heading w-fit rounded-sm bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-ink transition group-hover:bg-xred group-hover:text-white">Shop Now</span>
+            </div>
+            <span class="absolute right-4 top-4 text-4xl opacity-20 transition group-hover:opacity-40">🔧</span>
+          </a>
+
+          <a href="#" class="group relative overflow-hidden rounded-sm border border-white/10 bg-charcoal tex-plate shadow-deal transition hover:border-xred">
+            <div class="relative flex h-44 flex-col justify-between p-5" style="background: linear-gradient(110deg, rgba(10,10,11,.92) 35%, rgba(10,10,11,.25) 100%)">
+              <span class="heading w-fit rounded-sm bg-xred px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white">Featured</span>
+              <div>
+                <h3 class="heading text-xl font-bold uppercase tracking-wide text-white">XDP Water Pumps</h3>
+                <p class="text-xs text-zinc-300">Restore factory coolant flow &amp; cooling performance.</p>
+              </div>
+              <span class="heading w-fit rounded-sm bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-ink transition group-hover:bg-xred group-hover:text-white">Shop Now</span>
+            </div>
+            <span class="absolute right-4 top-4 text-4xl opacity-20 transition group-hover:opacity-40">💧</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SHOP BY CATEGORY                                             -->
+    <!-- ============================================================ -->
+    <section id="category" class="border-t border-white/5 bg-coal py-12 tex-carbon">
+      <div class="mx-auto max-w-[1400px] px-4">
+        <div class="mb-8 text-center">
+          <h2 class="heading text-3xl font-bold uppercase tracking-wide text-white sm:text-4xl">Shop by Category</h2>
+          <p class="mt-2 text-sm text-zinc-400">Everything to build, tune, and bulletproof your diesel.</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+          <!-- category tile -->
+          <a href="#" class="group flex flex-col items-center justify-center gap-3 rounded-sm border border-white/10 bg-charcoal p-6 text-center transition hover:-translate-y-1 hover:border-xred hover:bg-steel">
+            <span class="grid h-16 w-16 place-items-center rounded-sm bg-gradient-to-br from-steel to-ink text-3xl ring-1 ring-white/10 transition group-hover:ring-xred">💨</span>
+            <span class="heading text-sm font-semibold uppercase tracking-wide text-white">Exhaust</span>
+          </a>
+          <a href="#" class="group flex flex-col items-center justify-center gap-3 rounded-sm border border-white/10 bg-charcoal p-6 text-center transition hover:-translate-y-1 hover:border-xred hover:bg-steel">
+            <span class="grid h-16 w-16 place-items-center rounded-sm bg-gradient-to-br from-steel to-ink text-3xl ring-1 ring-white/10 transition group-hover:ring-xred">🖥️</span>
+            <span class="heading text-sm font-semibold uppercase tracking-wide text-white">Tuners</span>
+          </a>
+          <a href="#" class="group flex flex-col items-center justify-center gap-3 rounded-sm border border-white/10 bg-charcoal p-6 text-center transition hover:-translate-y-1 hover:border-xred hover:bg-steel">
+            <span class="grid h-16 w-16 place-items-center rounded-sm bg-gradient-to-br from-steel to-ink text-3xl ring-1 ring-white/10 transition group-hover:ring-xred">🛻</span>
+            <span class="heading text-sm font-semibold uppercase tracking-wide text-white">Lift Kits</span>
+          </a>
+          <a href="#" class="group flex flex-col items-center justify-center gap-3 rounded-sm border border-white/10 bg-charcoal p-6 text-center transition hover:-translate-y-1 hover:border-xred hover:bg-steel">
+            <span class="grid h-16 w-16 place-items-center rounded-sm bg-gradient-to-br from-steel to-ink text-3xl ring-1 ring-white/10 transition group-hover:ring-xred">⛽</span>
+            <span class="heading text-sm font-semibold uppercase tracking-wide text-white">Fuel Systems</span>
+          </a>
+          <a href="#" class="group flex flex-col items-center justify-center gap-3 rounded-sm border border-white/10 bg-charcoal p-6 text-center transition hover:-translate-y-1 hover:border-xred hover:bg-steel">
+            <span class="grid h-16 w-16 place-items-center rounded-sm bg-gradient-to-br from-steel to-ink text-3xl ring-1 ring-white/10 transition group-hover:ring-xred">❄️</span>
+            <span class="heading text-sm font-semibold uppercase tracking-wide text-white">Cooling</span>
+          </a>
+          <a href="#" class="group flex flex-col items-center justify-center gap-3 rounded-sm border border-white/10 bg-charcoal p-6 text-center transition hover:-translate-y-1 hover:border-xred hover:bg-steel">
+            <span class="grid h-16 w-16 place-items-center rounded-sm bg-gradient-to-br from-steel to-ink text-3xl ring-1 ring-white/10 transition group-hover:ring-xred">🧪</span>
+            <span class="heading text-sm font-semibold uppercase tracking-wide text-white">Filters</span>
+          </a>
+          <a href="#" class="group flex flex-col items-center justify-center gap-3 rounded-sm border border-white/10 bg-charcoal p-6 text-center transition hover:-translate-y-1 hover:border-xred hover:bg-steel">
+            <span class="grid h-16 w-16 place-items-center rounded-sm bg-gradient-to-br from-steel to-ink text-3xl ring-1 ring-white/10 transition group-hover:ring-xred">🌀</span>
+            <span class="heading text-sm font-semibold uppercase tracking-wide text-white">Turbos</span>
+          </a>
+          <a href="#" class="group flex flex-col items-center justify-center gap-3 rounded-sm border border-white/10 bg-charcoal p-6 text-center transition hover:-translate-y-1 hover:border-xred hover:bg-steel">
+            <span class="grid h-16 w-16 place-items-center rounded-sm bg-gradient-to-br from-steel to-ink text-3xl ring-1 ring-white/10 transition group-hover:ring-xred">⚙️</span>
+            <span class="heading text-sm font-semibold uppercase tracking-wide text-white">Transmission</span>
+          </a>
+          <a href="#" class="group flex flex-col items-center justify-center gap-3 rounded-sm border border-white/10 bg-charcoal p-6 text-center transition hover:-translate-y-1 hover:border-xred hover:bg-steel">
+            <span class="grid h-16 w-16 place-items-center rounded-sm bg-gradient-to-br from-steel to-ink text-3xl ring-1 ring-white/10 transition group-hover:ring-xred">🔋</span>
+            <span class="heading text-sm font-semibold uppercase tracking-wide text-white">Electrical</span>
+          </a>
+          <a href="#" class="group flex flex-col items-center justify-center gap-3 rounded-sm border border-white/10 bg-charcoal p-6 text-center transition hover:-translate-y-1 hover:border-xred hover:bg-steel">
+            <span class="grid h-16 w-16 place-items-center rounded-sm bg-gradient-to-br from-steel to-ink text-3xl ring-1 ring-white/10 transition group-hover:ring-xred">🛞</span>
+            <span class="heading text-sm font-semibold uppercase tracking-wide text-white">Suspension</span>
+          </a>
+          <a href="#" class="group flex flex-col items-center justify-center gap-3 rounded-sm border border-white/10 bg-charcoal p-6 text-center transition hover:-translate-y-1 hover:border-xred hover:bg-steel">
+            <span class="grid h-16 w-16 place-items-center rounded-sm bg-gradient-to-br from-steel to-ink text-3xl ring-1 ring-white/10 transition group-hover:ring-xred">🛢️</span>
+            <span class="heading text-sm font-semibold uppercase tracking-wide text-white">Oil &amp; Fluids</span>
+          </a>
+          <a href="#" class="group flex flex-col items-center justify-center gap-3 rounded-sm border border-white/10 bg-charcoal p-6 text-center transition hover:-translate-y-1 hover:border-xred hover:bg-steel">
+            <span class="grid h-16 w-16 place-items-center rounded-sm bg-gradient-to-br from-steel to-ink text-3xl ring-1 ring-white/10 transition group-hover:ring-xred">🛠️</span>
+            <span class="heading text-sm font-semibold uppercase tracking-wide text-white">Tools &amp; Shop</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SHOP BY BRAND (generic placeholder names)                    -->
+    <!-- ============================================================ -->
+    <section id="brands" class="border-t border-white/5 bg-ink py-10">
+      <div class="mx-auto max-w-[1400px] px-4">
+        <div class="mb-6 text-center">
+          <p class="heading text-xs font-bold uppercase tracking-[0.3em] text-zinc-500">Our Top</p>
+          <h2 class="heading text-2xl font-bold uppercase tracking-wide text-white sm:text-3xl">Manufacturers</h2>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
+          <!-- brand "logo" rendered as styled text -->
+          <a href="#" class="flex h-20 items-center justify-center rounded-sm border border-white/10 bg-charcoal transition hover:border-xred hover:bg-steel">
+            <span class="heading text-lg font-bold uppercase tracking-wider text-zinc-300">Vela</span>
+          </a>
+          <a href="#" class="flex h-20 items-center justify-center rounded-sm border border-white/10 bg-charcoal transition hover:border-xred hover:bg-steel">
+            <span class="heading text-lg font-bold uppercase tracking-wider text-zinc-300">Northwind</span>
+          </a>
+          <a href="#" class="flex h-20 items-center justify-center rounded-sm border border-white/10 bg-charcoal transition hover:border-xred hover:bg-steel">
+            <span class="heading text-lg font-bold uppercase italic tracking-wider text-amber-glow">Lumen</span>
+          </a>
+          <a href="#" class="flex h-20 items-center justify-center rounded-sm border border-white/10 bg-charcoal transition hover:border-xred hover:bg-steel">
+            <span class="heading text-lg font-bold uppercase tracking-wider text-zinc-300">Contoso</span>
+          </a>
+          <a href="#" class="flex h-20 items-center justify-center rounded-sm border border-white/10 bg-charcoal transition hover:border-xred hover:bg-steel">
+            <span class="heading text-lg font-bold uppercase tracking-wider text-zinc-300">Aperture</span>
+          </a>
+          <a href="#" class="flex h-20 items-center justify-center rounded-sm border border-white/10 bg-charcoal transition hover:border-xred hover:bg-steel">
+            <span class="heading text-lg font-bold uppercase tracking-wider text-xred">Globex</span>
+          </a>
+          <a href="#" class="flex h-20 items-center justify-center rounded-sm border border-white/10 bg-charcoal transition hover:border-xred hover:bg-steel">
+            <span class="heading text-lg font-bold uppercase tracking-wider text-zinc-300">Hooli</span>
+          </a>
+          <a href="#" class="flex h-20 items-center justify-center rounded-sm border border-white/10 bg-charcoal transition hover:border-xred hover:bg-steel">
+            <span class="heading text-lg font-bold uppercase tracking-wider text-zinc-300">Umbra</span>
+          </a>
+        </div>
+
+        <div class="mt-6 text-center">
+          <a href="#" class="heading text-xs font-bold uppercase tracking-widest text-zinc-300 transition hover:text-xred">View All Brands →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- FEATURED PRODUCTS GRID                                       -->
+    <!-- ============================================================ -->
+    <section class="border-t border-white/5 bg-coal py-12 tex-carbon">
+      <div class="mx-auto max-w-[1400px] px-4">
+        <div class="mb-8 flex items-end justify-between">
+          <div>
+            <p class="heading text-xs font-bold uppercase tracking-[0.3em] text-xred">Best Sellers</p>
+            <h2 class="heading text-3xl font-bold uppercase tracking-wide text-white sm:text-4xl">Featured Products</h2>
+          </div>
+          <a href="#" class="heading hidden text-xs font-bold uppercase tracking-widest text-zinc-300 transition hover:text-xred sm:block">Shop All →</a>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          <!-- product card template -->
+          <article class="group flex flex-col overflow-hidden rounded-sm border border-white/10 bg-charcoal transition hover:border-xred">
+            <div class="relative grid h-44 place-items-center bg-gradient-to-br from-steel via-ink to-ink tex-plate">
+              <span class="text-5xl drop-shadow-lg">🌀</span>
+              <span class="heading absolute left-3 top-3 rounded-sm bg-xred px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">Save $200</span>
+            </div>
+            <div class="flex flex-1 flex-col p-4">
+              <p class="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">Northwind</p>
+              <h3 class="heading mt-1 text-sm font-semibold leading-snug text-white">Stage 2 Turbo Kit — 6.7L Cummins</h3>
+              <div class="mt-3 flex items-end gap-2">
+                <span class="heading text-xl font-bold text-white">$2,499.99</span>
+                <span class="text-xs text-zinc-500 line-through">$2,699.99</span>
+              </div>
+              <button class="heading mt-3 w-full rounded-sm bg-xred py-2.5 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-xred-600 active:translate-y-px">Add to Cart</button>
+            </div>
+          </article>
+
+          <article class="group flex flex-col overflow-hidden rounded-sm border border-white/10 bg-charcoal transition hover:border-xred">
+            <div class="relative grid h-44 place-items-center bg-gradient-to-br from-steel via-ink to-ink tex-plate">
+              <span class="text-5xl drop-shadow-lg">🖥️</span>
+              <span class="heading absolute left-3 top-3 rounded-sm bg-amber-glow px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-ink">New</span>
+            </div>
+            <div class="flex flex-1 flex-col p-4">
+              <p class="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">Globex</p>
+              <h3 class="heading mt-1 text-sm font-semibold leading-snug text-white">Tuner Module &amp; Gauge Monitor</h3>
+              <div class="mt-3 flex items-end gap-2">
+                <span class="heading text-xl font-bold text-white">$749.00</span>
+              </div>
+              <button class="heading mt-3 w-full rounded-sm bg-xred py-2.5 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-xred-600 active:translate-y-px">Add to Cart</button>
+            </div>
+          </article>
+
+          <article class="group flex flex-col overflow-hidden rounded-sm border border-white/10 bg-charcoal transition hover:border-xred">
+            <div class="relative grid h-44 place-items-center bg-gradient-to-br from-steel via-ink to-ink tex-plate">
+              <span class="text-5xl drop-shadow-lg">💨</span>
+            </div>
+            <div class="flex flex-1 flex-col p-4">
+              <p class="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">Vela</p>
+              <h3 class="heading mt-1 text-sm font-semibold leading-snug text-white">4" Cat-Back Exhaust System — Stainless</h3>
+              <div class="mt-3 flex items-end gap-2">
+                <span class="heading text-xl font-bold text-white">$679.95</span>
+              </div>
+              <button class="heading mt-3 w-full rounded-sm bg-xred py-2.5 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-xred-600 active:translate-y-px">Add to Cart</button>
+            </div>
+          </article>
+
+          <article class="group flex flex-col overflow-hidden rounded-sm border border-white/10 bg-charcoal transition hover:border-xred">
+            <div class="relative grid h-44 place-items-center bg-gradient-to-br from-steel via-ink to-ink tex-plate">
+              <span class="text-5xl drop-shadow-lg">⛽</span>
+              <span class="heading absolute left-3 top-3 rounded-sm bg-xred px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">Save $120</span>
+            </div>
+            <div class="flex flex-1 flex-col p-4">
+              <p class="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">Aperture</p>
+              <h3 class="heading mt-1 text-sm font-semibold leading-snug text-white">High-Pressure Fuel System Kit</h3>
+              <div class="mt-3 flex items-end gap-2">
+                <span class="heading text-xl font-bold text-white">$1,329.00</span>
+                <span class="text-xs text-zinc-500 line-through">$1,449.00</span>
+              </div>
+              <button class="heading mt-3 w-full rounded-sm bg-xred py-2.5 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-xred-600 active:translate-y-px">Add to Cart</button>
+            </div>
+          </article>
+
+          <article class="group flex flex-col overflow-hidden rounded-sm border border-white/10 bg-charcoal transition hover:border-xred">
+            <div class="relative grid h-44 place-items-center bg-gradient-to-br from-steel via-ink to-ink tex-plate">
+              <span class="text-5xl drop-shadow-lg">❄️</span>
+            </div>
+            <div class="flex flex-1 flex-col p-4">
+              <p class="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">XDP Brand</p>
+              <h3 class="heading mt-1 text-sm font-semibold leading-snug text-white">Xtra-Cool Aluminum Radiator</h3>
+              <div class="mt-3 flex items-end gap-2">
+                <span class="heading text-xl font-bold text-white">$429.99</span>
+              </div>
+              <button class="heading mt-3 w-full rounded-sm bg-xred py-2.5 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-xred-600 active:translate-y-px">Add to Cart</button>
+            </div>
+          </article>
+
+          <article class="group flex flex-col overflow-hidden rounded-sm border border-white/10 bg-charcoal transition hover:border-xred">
+            <div class="relative grid h-44 place-items-center bg-gradient-to-br from-steel via-ink to-ink tex-plate">
+              <span class="text-5xl drop-shadow-lg">🛻</span>
+              <span class="heading absolute left-3 top-3 rounded-sm bg-xred px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">Hot</span>
+            </div>
+            <div class="flex flex-1 flex-col p-4">
+              <p class="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">Contoso</p>
+              <h3 class="heading mt-1 text-sm font-semibold leading-snug text-white">6" Suspension Lift Kit — F-250/F-350</h3>
+              <div class="mt-3 flex items-end gap-2">
+                <span class="heading text-xl font-bold text-white">$1,899.00</span>
+              </div>
+              <button class="heading mt-3 w-full rounded-sm bg-xred py-2.5 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-xred-600 active:translate-y-px">Add to Cart</button>
+            </div>
+          </article>
+
+          <article class="group flex flex-col overflow-hidden rounded-sm border border-white/10 bg-charcoal transition hover:border-xred">
+            <div class="relative grid h-44 place-items-center bg-gradient-to-br from-steel via-ink to-ink tex-plate">
+              <span class="text-5xl drop-shadow-lg">🧪</span>
+            </div>
+            <div class="flex flex-1 flex-col p-4">
+              <p class="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">Lumen</p>
+              <h3 class="heading mt-1 text-sm font-semibold leading-snug text-white">Fuel Filter Service Kit (3-Pack)</h3>
+              <div class="mt-3 flex items-end gap-2">
+                <span class="heading text-xl font-bold text-white">$89.99</span>
+                <span class="text-xs text-zinc-500 line-through">$104.99</span>
+              </div>
+              <button class="heading mt-3 w-full rounded-sm bg-xred py-2.5 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-xred-600 active:translate-y-px">Add to Cart</button>
+            </div>
+          </article>
+
+          <article class="group flex flex-col overflow-hidden rounded-sm border border-white/10 bg-charcoal transition hover:border-xred">
+            <div class="relative grid h-44 place-items-center bg-gradient-to-br from-steel via-ink to-ink tex-plate">
+              <span class="text-5xl drop-shadow-lg">⚙️</span>
+              <span class="heading absolute left-3 top-3 rounded-sm bg-amber-glow px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-ink">Best Seller</span>
+            </div>
+            <div class="flex flex-1 flex-col p-4">
+              <p class="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">Hooli</p>
+              <h3 class="heading mt-1 text-sm font-semibold leading-snug text-white">Heavy-Duty Transmission Pan</h3>
+              <div class="mt-3 flex items-end gap-2">
+                <span class="heading text-xl font-bold text-white">$319.00</span>
+              </div>
+              <button class="heading mt-3 w-full rounded-sm bg-xred py-2.5 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-xred-600 active:translate-y-px">Add to Cart</button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- TRUST BAND                                                   -->
+    <!-- ============================================================ -->
+    <section class="border-y border-white/5 bg-charcoal">
+      <div class="mx-auto grid max-w-[1400px] grid-cols-1 divide-y divide-white/5 px-4 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
+        <div class="flex items-center gap-4 px-2 py-7">
+          <span class="grid h-12 w-12 flex-none place-items-center rounded-sm bg-xred text-2xl">🚚</span>
+          <div>
+            <h3 class="heading text-sm font-bold uppercase tracking-wide text-white">Free Shipping</h3>
+            <p class="text-xs text-zinc-400">On qualifying orders over $99.</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 px-2 py-7 sm:pl-8">
+          <span class="grid h-12 w-12 flex-none place-items-center rounded-sm bg-steel text-2xl ring-1 ring-xred">🎧</span>
+          <div>
+            <h3 class="heading text-sm font-bold uppercase tracking-wide text-white">Expert Support</h3>
+            <p class="text-xs text-zinc-400">Diesel techs, 7 days a week.</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 px-2 py-7 sm:pl-8 lg:pl-2">
+          <span class="grid h-12 w-12 flex-none place-items-center rounded-sm bg-steel text-2xl ring-1 ring-xred">↩️</span>
+          <div>
+            <h3 class="heading text-sm font-bold uppercase tracking-wide text-white">Easy Returns</h3>
+            <p class="text-xs text-zinc-400">90-day hassle-free returns.</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 px-2 py-7 sm:pl-8">
+          <span class="grid h-12 w-12 flex-none place-items-center rounded-sm bg-steel text-2xl ring-1 ring-xred">🛡️</span>
+          <div>
+            <h3 class="heading text-sm font-bold uppercase tracking-wide text-white">Guaranteed Fit</h3>
+            <p class="text-xs text-zinc-400">Verified for your year/make/model.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- NEWSLETTER STRIP                                             -->
+    <!-- ============================================================ -->
+    <section class="bg-ink py-12">
+      <div class="mx-auto flex max-w-[1400px] flex-col items-center gap-5 px-4 text-center">
+        <h2 class="heading text-2xl font-bold uppercase tracking-wide text-white sm:text-3xl">Stay in the Know</h2>
+        <p class="max-w-xl text-sm text-zinc-400">Get access to the latest savings, new products, and tech articles straight to your inbox.</p>
+        <form class="flex w-full max-w-md flex-col gap-2 sm:flex-row" onsubmit="return false">
+          <input
+            type="email"
+            placeholder="Enter your email"
+            class="h-12 flex-1 rounded-sm border border-white/15 bg-charcoal px-4 text-sm text-white placeholder:text-zinc-500 focus:border-xred focus:outline-none focus:ring-2 focus:ring-xred/40"
+          />
+          <button class="heading h-12 rounded-sm bg-xred px-7 text-sm font-bold uppercase tracking-widest text-white transition hover:bg-xred-600 active:translate-y-px">Subscribe</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================ -->
+  <!-- FOOTER                                                       -->
+  <!-- ============================================================ -->
+  <footer class="border-t-2 border-xred bg-coal">
+    <div class="mx-auto max-w-[1400px] px-4 py-12">
+      <div class="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5">
+        <!-- brand col -->
+        <div class="col-span-2 sm:col-span-3 lg:col-span-1">
+          <a href="#top" class="inline-flex items-center gap-2">
+            <span class="flex items-center rounded-full border-[3px] border-amber-glow px-3 py-1.5" style="background: linear-gradient(180deg, #1a1a1d, #0a0a0b)">
+              <span class="heading text-xl font-bold italic leading-none tracking-tight text-amber-glow skew-fast">XDP</span>
+            </span>
+          </a>
+          <p class="mt-4 max-w-xs text-sm leading-relaxed text-zinc-400">
+            <span class="heading font-semibold uppercase tracking-wide text-white">We Know What Powers You.</span><br />
+            Performance diesel parts &amp; accessories for the trucks that work as hard as you do.
+          </p>
+          <div class="mt-5 flex gap-3">
+            <a href="#" aria-label="Facebook" class="grid h-9 w-9 place-items-center rounded-sm bg-steel text-zinc-300 transition hover:bg-xred hover:text-white">f</a>
+            <a href="#" aria-label="Instagram" class="grid h-9 w-9 place-items-center rounded-sm bg-steel text-zinc-300 transition hover:bg-xred hover:text-white">◎</a>
+            <a href="#" aria-label="YouTube" class="grid h-9 w-9 place-items-center rounded-sm bg-steel text-zinc-300 transition hover:bg-xred hover:text-white">▶</a>
+            <a href="#" aria-label="TikTok" class="grid h-9 w-9 place-items-center rounded-sm bg-steel text-zinc-300 transition hover:bg-xred hover:text-white">♪</a>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="heading mb-4 text-xs font-bold uppercase tracking-widest text-white">Customer Service</h3>
+          <ul class="space-y-2 text-sm text-zinc-400">
+            <li><a href="#" class="transition hover:text-xred">Account Login</a></li>
+            <li><a href="#" class="transition hover:text-xred">Order Status</a></li>
+            <li><a href="#" class="transition hover:text-xred">Shipping</a></li>
+            <li><a href="#" class="transition hover:text-xred">Returns</a></li>
+            <li><a href="#" class="transition hover:text-xred">Help Desk</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="heading mb-4 text-xs font-bold uppercase tracking-widest text-white">Company</h3>
+          <ul class="space-y-2 text-sm text-zinc-400">
+            <li><a href="#" class="transition hover:text-xred">About XDP</a></li>
+            <li><a href="#" class="transition hover:text-xred">Our Locations</a></li>
+            <li><a href="#" class="transition hover:text-xred">Privacy Policy</a></li>
+            <li><a href="#" class="transition hover:text-xred">Become a Dealer</a></li>
+            <li><a href="#" class="transition hover:text-xred">Careers</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="heading mb-4 text-xs font-bold uppercase tracking-widest text-white">Quick Links</h3>
+          <ul class="space-y-2 text-sm text-zinc-400">
+            <li><a href="#deals" class="transition hover:text-xred">Deals &amp; Offers</a></li>
+            <li><a href="#category" class="transition hover:text-xred">Shop by Category</a></li>
+            <li><a href="#brands" class="transition hover:text-xred">All Brands</a></li>
+            <li><a href="#" class="transition hover:text-xred">XDP Brand Parts</a></li>
+            <li><a href="#" class="transition hover:text-xred">Articles &amp; Events</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="heading mb-4 text-xs font-bold uppercase tracking-widest text-white">Get in Touch</h3>
+          <ul class="space-y-2 text-sm text-zinc-400">
+            <li class="flex items-center gap-2"><span>📞</span><a href="tel:+18005550199" class="font-semibold text-white transition hover:text-xred">1-800-555-0199</a></li>
+            <li class="flex items-start gap-2"><span>📍</span><span>1234 Diesel Way<br />Phoenix, AZ 85001</span></li>
+            <li class="flex items-center gap-2"><span>✉️</span><a href="#" class="transition hover:text-xred">support@xdp.example</a></li>
+            <li class="pt-1 text-xs text-zinc-500">Mon–Fri 6a–6p · Sat 8a–4p MST</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- legal / disclaimer -->
+    <div class="border-t border-white/5 bg-ink">
+      <div class="mx-auto flex max-w-[1400px] flex-col gap-3 px-4 py-6 text-center text-[11px] leading-relaxed text-zinc-500 lg:flex-row lg:items-center lg:justify-between lg:text-left">
+        <p>© 2026 XDP — Xtreme Diesel Performance (mockup). All rights reserved.</p>
+        <p class="flex flex-wrap justify-center gap-x-4 gap-y-1">
+          <a href="#" class="transition hover:text-zinc-300">Terms &amp; Conditions</a>
+          <a href="#" class="transition hover:text-zinc-300">Privacy Policy</a>
+          <a href="#" class="transition hover:text-zinc-300">Accessibility</a>
+          <a href="#" class="transition hover:text-zinc-300">Your Privacy Choices</a>
+        </p>
+      </div>
+      <div class="mx-auto max-w-[1400px] px-4 pb-8">
+        <p class="rounded-sm border border-white/10 bg-charcoal p-4 text-center text-[11px] leading-relaxed text-zinc-500">
+          Design mockup built with Tailwind CSS for layout reference only. Not affiliated with, endorsed by, or
+          representative of XDP / Xtreme Diesel Performance. All names and trademarks belong to their respective owners.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to top -->
+  <button
+    id="totop"
+    aria-label="Back to top"
+    class="fixed bottom-6 right-6 z-50 grid h-11 w-11 translate-y-4 place-items-center rounded-sm bg-xred text-white opacity-0 shadow-deal transition hover:bg-xred-600"
+  >
+    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="m6 14 6-6 6 6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+  </button>
+
+  <script>
+    // ---- Minimal JS: header scroll state + mobile menu + back-to-top ----
+    const totop = document.getElementById('totop');
+    const onScroll = () => {
+      const y = window.scrollY;
+      document.body.classList.toggle('scrolled', y > 60);
+      if (y > 600) {
+        totop.classList.remove('opacity-0', 'translate-y-4');
+      } else {
+        totop.classList.add('opacity-0', 'translate-y-4');
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    totop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    const hamburger = document.getElementById('hamburger');
+    const mobilenav = document.getElementById('mobilenav');
+    hamburger.addEventListener('click', () => {
+      const open = mobilenav.classList.toggle('hidden') === false;
+      hamburger.setAttribute('aria-expanded', String(open));
+    });
+  </script>
+</body>
+</html>

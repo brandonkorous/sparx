@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tesla — Electric Cars, Solar &amp; Clean Energy</title>
+    <meta
+      name="description"
+      content="Mockup replica of the Tesla.com homepage — built with Tailwind CSS for design reference only. Not affiliated with Tesla, Inc."
+    />
+
+    <!-- Tailwind Play CDN (self-contained for a static mockup) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            },
+            colors: {
+              ink: '#171a20',
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Inter is a clean geometric stand-in for Tesla's proprietary Gotham face -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --header-h: 56px;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        overflow-y: scroll;
+        scroll-snap-type: y proximity;
+        -webkit-font-smoothing: antialiased;
+        scrollbar-width: none;
+      }
+      body::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* ---- Full-bleed scroll-snap panels (the Tesla signature) ---- */
+      .panel {
+        position: relative;
+        min-height: 100vh;
+        scroll-snap-align: start;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color: #dfe1e3; /* fallback before photo paints */
+      }
+
+      /* Top scrim keeps the floating header legible over any photo */
+      .scrim {
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 45%;
+        pointer-events: none;
+      }
+      .panel[data-theme='light'] .scrim {
+        background: linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.55),
+          rgba(255, 255, 255, 0)
+        );
+      }
+      .panel[data-theme='dark'] .scrim {
+        background: linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0.55),
+          rgba(0, 0, 0, 0)
+        );
+      }
+
+      /* ---- Tesla-style pill CTA buttons ---- */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 256px;
+        height: 40px;
+        padding: 0 24px;
+        border-radius: 100px;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        backdrop-filter: blur(6px);
+        transition:
+          background-color 0.25s ease,
+          transform 0.1s ease;
+      }
+      .btn:active {
+        transform: scale(0.985);
+      }
+
+      /* Light panels */
+      .panel[data-theme='light'] .btn-primary {
+        background: rgba(23, 26, 32, 0.8);
+        color: #fff;
+      }
+      .panel[data-theme='light'] .btn-primary:hover {
+        background: rgba(23, 26, 32, 0.95);
+      }
+      .panel[data-theme='light'] .btn-secondary {
+        background: rgba(244, 244, 244, 0.65);
+        color: #171a20;
+      }
+      .panel[data-theme='light'] .btn-secondary:hover {
+        background: rgba(244, 244, 244, 0.9);
+      }
+
+      /* Dark panels invert the pair */
+      .panel[data-theme='dark'] .btn-primary {
+        background: rgba(244, 244, 244, 0.85);
+        color: #171a20;
+      }
+      .panel[data-theme='dark'] .btn-primary:hover {
+        background: rgba(255, 255, 255, 1);
+      }
+      .panel[data-theme='dark'] .btn-secondary {
+        background: rgba(23, 26, 32, 0.55);
+        color: #fff;
+      }
+      .panel[data-theme='dark'] .btn-secondary:hover {
+        background: rgba(23, 26, 32, 0.75);
+      }
+
+      /* ---- Floating header adapts its color to the panel behind it ---- */
+      #site-header {
+        color: #171a20;
+        transition: color 0.4s ease;
+      }
+      #site-header[data-theme='dark'] {
+        color: #fff;
+      }
+      .nav-pill {
+        transition: background-color 0.2s ease;
+      }
+      .nav-pill:hover {
+        background-color: rgba(140, 140, 140, 0.18);
+      }
+
+      /* Wordmark — recreated as letter-spaced type, not Tesla's trademarked asset */
+      .wordmark {
+        font-weight: 600;
+        letter-spacing: 0.42em;
+        padding-left: 0.42em;
+      }
+
+      .scroll-cue {
+        animation: bob 2s ease-in-out infinite;
+      }
+      @keyframes bob {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(6px);
+        }
+      }
+    </style>
+  </head>
+
+  <body class="bg-neutral-200 text-ink antialiased">
+    <!-- ================= HEADER ================= -->
+    <header
+      id="site-header"
+      data-theme="light"
+      class="fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between px-4 sm:px-6"
+    >
+      <!-- Wordmark -->
+      <a href="#model-y" class="wordmark text-lg sm:text-xl">TESLA</a>
+
+      <!-- Center nav (desktop) -->
+      <nav class="hidden lg:flex items-center gap-1 text-[14px] font-medium">
+        <a href="#model-y" class="nav-pill rounded px-3 py-1.5">Vehicles</a>
+        <a href="#solar-panels" class="nav-pill rounded px-3 py-1.5">Energy</a>
+        <a href="#" class="nav-pill rounded px-3 py-1.5">Charging</a>
+        <a href="#" class="nav-pill rounded px-3 py-1.5">Discover</a>
+        <a href="#accessories" class="nav-pill rounded px-3 py-1.5">Shop</a>
+      </nav>
+
+      <!-- Right utilities -->
+      <div class="flex items-center gap-1 text-[14px] font-medium">
+        <a href="#" class="nav-pill hidden sm:inline-flex rounded px-3 py-1.5" aria-label="Language and region">
+          <!-- globe -->
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18" />
+          </svg>
+        </a>
+        <a href="#" class="nav-pill hidden sm:inline-flex rounded px-3 py-1.5" aria-label="Account">
+          <!-- person -->
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <circle cx="12" cy="8" r="3.4" />
+            <path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6" />
+          </svg>
+        </a>
+        <button class="nav-pill rounded px-3 py-1.5" aria-label="Menu">Menu</button>
+      </div>
+    </header>
+
+    <!-- ================= PANELS ================= -->
+    <main>
+      <!-- Model Y -->
+      <section
+        id="model-y"
+        class="panel"
+        data-theme="light"
+        style="
+          background-image: linear-gradient(180deg, rgba(255,255,255,0) 40%, rgba(0,0,0,0.04)),
+            url('https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=2000&q=80');
+        "
+      >
+        <div class="scrim"></div>
+        <div class="relative z-10 flex min-h-screen flex-col items-center justify-between pb-12 pt-24 text-center">
+          <div>
+            <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">Model Y</h1>
+            <a href="#" class="mt-1 inline-block border-b border-current/70 text-sm">
+              Schedule a Demo Drive
+            </a>
+          </div>
+          <div class="flex w-full flex-col items-center gap-4 px-6 sm:flex-row sm:justify-center">
+            <a href="#" class="btn btn-primary">Order Now</a>
+            <a href="#" class="btn btn-secondary">View Inventory</a>
+          </div>
+        </div>
+        <a
+          href="#model-3"
+          class="scroll-cue absolute bottom-6 left-1/2 z-10 -translate-x-1/2"
+          aria-label="Scroll to next section"
+        >
+          <svg class="h-7 w-7 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </a>
+      </section>
+
+      <!-- Model 3 -->
+      <section
+        id="model-3"
+        class="panel"
+        data-theme="light"
+        style="
+          background-image: url('https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=2000&q=80');
+        "
+      >
+        <div class="scrim"></div>
+        <div class="relative z-10 flex min-h-screen flex-col items-center justify-between pb-12 pt-24 text-center">
+          <div>
+            <h2 class="text-4xl font-semibold tracking-tight sm:text-5xl">Model 3</h2>
+            <p class="mt-1 text-sm">Lease starting at $349/mo*</p>
+          </div>
+          <div class="flex w-full flex-col items-center gap-4 px-6 sm:flex-row sm:justify-center">
+            <a href="#" class="btn btn-primary">Order Now</a>
+            <a href="#" class="btn btn-secondary">Demo Drive</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Model S (dark drama panel) -->
+      <section
+        id="model-s"
+        class="panel"
+        data-theme="dark"
+        style="
+          background-image: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.35)),
+            url('https://images.unsplash.com/photo-1536700503339-1e4b06520771?auto=format&fit=crop&w=2000&q=80');
+          background-color: #111418;
+        "
+      >
+        <div class="scrim"></div>
+        <div class="relative z-10 flex min-h-screen flex-col items-center justify-between pb-12 pt-24 text-center text-white">
+          <div>
+            <h2 class="text-4xl font-semibold tracking-tight sm:text-5xl">Model S</h2>
+            <p class="mt-1 text-sm text-white/80">Plaid · 0–60 mph in 1.99s*</p>
+          </div>
+          <div class="flex w-full flex-col items-center gap-4 px-6 sm:flex-row sm:justify-center">
+            <a href="#" class="btn btn-primary">Order Now</a>
+            <a href="#" class="btn btn-secondary">Demo Drive</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Model X -->
+      <section
+        id="model-x"
+        class="panel"
+        data-theme="light"
+        style="
+          background-image: url('https://images.unsplash.com/photo-1551952237-954a0e2a8f0e?auto=format&fit=crop&w=2000&q=80');
+          background-color: #cfd3d6;
+        "
+      >
+        <div class="scrim"></div>
+        <div class="relative z-10 flex min-h-screen flex-col items-center justify-between pb-12 pt-24 text-center">
+          <div>
+            <h2 class="text-4xl font-semibold tracking-tight sm:text-5xl">Model X</h2>
+            <p class="mt-1 text-sm">Falcon Wing doors · Up to 7 seats</p>
+          </div>
+          <div class="flex w-full flex-col items-center gap-4 px-6 sm:flex-row sm:justify-center">
+            <a href="#" class="btn btn-primary">Order Now</a>
+            <a href="#" class="btn btn-secondary">Demo Drive</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Solar Panels -->
+      <section
+        id="solar-panels"
+        class="panel"
+        data-theme="light"
+        style="
+          background-image: url('https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=2000&q=80');
+          background-color: #b9c4cc;
+        "
+      >
+        <div class="scrim"></div>
+        <div class="relative z-10 flex min-h-screen flex-col items-center justify-between pb-12 pt-24 text-center">
+          <div>
+            <h2 class="text-4xl font-semibold tracking-tight sm:text-5xl">Solar Panels</h2>
+            <p class="mt-1 text-sm">Lowest Cost Solar Panels in America</p>
+          </div>
+          <div class="flex w-full flex-col items-center gap-4 px-6 sm:flex-row sm:justify-center">
+            <a href="#" class="btn btn-primary">Order Now</a>
+            <a href="#" class="btn btn-secondary">Learn More</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Solar Roof -->
+      <section
+        id="solar-roof"
+        class="panel"
+        data-theme="light"
+        style="
+          background-image: url('https://images.unsplash.com/photo-1605980776566-0486c3ac7617?auto=format&fit=crop&w=2000&q=80');
+          background-color: #c7cdd1;
+        "
+      >
+        <div class="scrim"></div>
+        <div class="relative z-10 flex min-h-screen flex-col items-center justify-between pb-12 pt-24 text-center">
+          <div>
+            <h2 class="text-4xl font-semibold tracking-tight sm:text-5xl">Solar Roof</h2>
+            <p class="mt-1 text-sm">Produce Clean Energy From Your Roof</p>
+          </div>
+          <div class="flex w-full flex-col items-center gap-4 px-6 sm:flex-row sm:justify-center">
+            <a href="#" class="btn btn-primary">Order Now</a>
+            <a href="#" class="btn btn-secondary">Learn More</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Powerwall -->
+      <section
+        id="powerwall"
+        class="panel"
+        data-theme="light"
+        style="
+          background-image: url('https://images.unsplash.com/photo-1558036117-15d82a90b9b1?auto=format&fit=crop&w=2000&q=80');
+          background-color: #d6d9db;
+        "
+      >
+        <div class="scrim"></div>
+        <div class="relative z-10 flex min-h-screen flex-col items-center justify-between pb-12 pt-24 text-center">
+          <div>
+            <h2 class="text-4xl font-semibold tracking-tight sm:text-5xl">Powerwall</h2>
+            <p class="mt-1 text-sm">Energy Storage for a Sustainable Home</p>
+          </div>
+          <div class="flex w-full flex-col items-center gap-4 px-6 sm:flex-row sm:justify-center">
+            <a href="#" class="btn btn-primary">Order Now</a>
+            <a href="#" class="btn btn-secondary">Learn More</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Accessories (dark) -->
+      <section
+        id="accessories"
+        class="panel"
+        data-theme="dark"
+        style="
+          background-image: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.45)),
+            url('https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=2000&q=80');
+          background-color: #0e1013;
+        "
+      >
+        <div class="scrim"></div>
+        <div class="relative z-10 flex min-h-screen flex-col items-center justify-between pb-12 pt-24 text-center text-white">
+          <div>
+            <h2 class="text-4xl font-semibold tracking-tight sm:text-5xl">Accessories</h2>
+            <p class="mt-1 text-sm text-white/80">Gear designed for your Tesla</p>
+          </div>
+          <div class="flex w-full flex-col items-center gap-4 px-6 sm:flex-row sm:justify-center">
+            <a href="#" class="btn btn-primary">Shop Now</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="bg-neutral-100 py-5 text-[12px] text-neutral-500">
+      <ul class="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-7 gap-y-2 px-6">
+        <li class="font-medium text-neutral-600">Tesla &copy; 2026</li>
+        <li><a class="hover:text-neutral-800" href="#">Privacy &amp; Legal</a></li>
+        <li><a class="hover:text-neutral-800" href="#">Vehicle Recalls</a></li>
+        <li><a class="hover:text-neutral-800" href="#">Contact</a></li>
+        <li><a class="hover:text-neutral-800" href="#">News</a></li>
+        <li><a class="hover:text-neutral-800" href="#">Get Updates</a></li>
+        <li><a class="hover:text-neutral-800" href="#">Locations</a></li>
+      </ul>
+      <p class="mx-auto mt-4 max-w-3xl px-6 text-center text-[11px] leading-relaxed text-neutral-400">
+        Design mockup built with Tailwind CSS for layout reference only. Not affiliated with,
+        endorsed by, or representative of Tesla, Inc. All vehicle and energy product names are
+        trademarks of their respective owners.
+      </p>
+    </footer>
+
+    <!-- ================= HEADER THEME SYNC ================= -->
+    <script>
+      (function () {
+        const header = document.getElementById('site-header');
+        const panels = document.querySelectorAll('.panel');
+
+        // Whichever panel occupies the most of the viewport sets the header color.
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting && entry.intersectionRatio >= 0.55) {
+                header.dataset.theme = entry.target.dataset.theme;
+              }
+            });
+          },
+          { threshold: [0.55] }
+        );
+
+        panels.forEach((panel) => observer.observe(panel));
+      })();
+    </script>
+  </body>
+</html>

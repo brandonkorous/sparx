@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rough Country — Off-Road Suspension &amp; Accessories (design mockup)</title>
+<meta name="description" content="Design-reference mockup of a rugged off-road truck &amp; Jeep parts e-commerce homepage. Built with Tailwind CSS for layout reference only. Not affiliated with Rough Country." />
+
+<!-- ============================================================
+     DESIGN MOCKUP — Rough Country homepage replica
+     For the Sparx /docs/mockups design-reference gallery.
+     Self-contained: Tailwind Play CDN + inline config.
+     Recreates structure & feel from public homepage knowledge.
+     NO real logos / product images are hotlinked — all imagery
+     is CSS gradients + emoji stand-ins; brand logos are generic
+     placeholder names. See footer disclaimer.
+     ============================================================ -->
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Saira+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          // Industrial condensed display + clean body
+          display: ['"Saira Condensed"', '"Oswald"', 'system-ui', 'sans-serif'],
+          head: ['"Oswald"', '"Saira Condensed"', 'system-ui', 'sans-serif'],
+          body: ['"Inter"', 'system-ui', '-apple-system', 'sans-serif'],
+        },
+        colors: {
+          // Rugged off-road palette: black/charcoal + bold red & yellow
+          ink:      '#0a0a0a',
+          char:     '#161616',
+          char2:    '#1f1f1f',
+          steel:    '#2a2a2a',
+          rcred:    '#e21f26', // signature aggressive red
+          rcred2:   '#b3161c',
+          amber:    '#ffb400', // bold safety yellow / amber accent
+          amber2:   '#ffcf45',
+          fog:      '#d4d4d4',
+          fog2:     '#9a9a9a',
+        },
+        boxShadow: {
+          tile: '0 10px 30px -12px rgba(0,0,0,.6)',
+          card: '0 1px 0 0 rgba(0,0,0,.04), 0 12px 28px -18px rgba(0,0,0,.4)',
+        },
+        backgroundImage: {
+          'dirt': 'radial-gradient(120% 140% at 80% -10%, rgba(226,31,38,.28), transparent 55%), radial-gradient(90% 120% at 10% 120%, rgba(255,180,0,.12), transparent 50%), linear-gradient(135deg,#0d0d0d 0%, #1a1a1a 55%, #050505 100%)',
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  .display { font-family: '"Saira Condensed"', 'Saira Condensed', 'Oswald', sans-serif; }
+  /* Diagonal aggressive slash used on CTAs / banners */
+  .skew-edge { clip-path: polygon(0 0, 100% 0, 100% 100%, 6% 100%); }
+  /* Subtle tread/diamond-plate texture for dark panels */
+  .tread {
+    background-image:
+      linear-gradient(135deg, rgba(255,255,255,.035) 25%, transparent 25%),
+      linear-gradient(225deg, rgba(255,255,255,.035) 25%, transparent 25%),
+      linear-gradient(45deg,  rgba(0,0,0,.18) 25%, transparent 25%),
+      linear-gradient(315deg, rgba(0,0,0,.18) 25%, transparent 25%);
+    background-position: 9px 0, 9px 0, 0 0, 0 0;
+    background-size: 18px 18px;
+  }
+  /* photo stand-in — dark rugged gradient blocks */
+  .photo { background:
+      radial-gradient(110% 120% at 75% 10%, rgba(226,31,38,.30), transparent 55%),
+      radial-gradient(80% 100% at 15% 110%, rgba(255,180,0,.14), transparent 55%),
+      linear-gradient(160deg, #2b2b2b 0%, #131313 60%, #060606 100%);
+  }
+  .photo-cool { background:
+      radial-gradient(110% 120% at 80% 0%, rgba(120,140,160,.28), transparent 55%),
+      linear-gradient(160deg, #23262b 0%, #121417 60%, #07080a 100%);
+  }
+  /* hide scrollbars on the category rail */
+  .no-sb::-webkit-scrollbar { display:none; }
+  .no-sb { -ms-overflow-style:none; scrollbar-width:none; }
+  /* nav underline sweep */
+  .navlink { position:relative; }
+  .navlink::after { content:''; position:absolute; left:0; right:0; bottom:-22px; height:3px; background:#e21f26; transform:scaleX(0); transform-origin:left; transition:transform .18s ease; }
+  .navlink:hover::after { transform:scaleX(1); }
+</style>
+</head>
+
+<body class="bg-ink text-fog font-body antialiased">
+
+<!-- =========================================================
+     1 · TOP UTILITY BAR
+     ========================================================= -->
+<div class="bg-ink text-fog2 text-[11px] sm:text-xs tracking-wide border-b border-white/5">
+  <div class="mx-auto max-w-[1320px] px-4 flex items-center justify-between h-9">
+    <div class="flex items-center gap-2 font-semibold">
+      <span class="text-amber">FREE SHIPPING SITEWIDE</span>
+      <span class="hidden sm:inline text-fog2">on orders over $99 —</span>
+      <a href="#" class="text-rcred hover:text-amber transition-colors underline-offset-2 hover:underline">View Details</a>
+    </div>
+    <div class="hidden sm:flex items-center gap-5">
+      <a href="#" class="hover:text-white transition-colors flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+        1-800-222-7023
+      </a>
+      <a href="#" class="hover:text-white transition-colors">Find an Installer</a>
+      <a href="#" class="hover:text-white transition-colors">Support</a>
+      <a href="#" class="hover:text-white transition-colors">Track Order</a>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     2 · HEADER (wordmark / search / account / cart)
+     ========================================================= -->
+<header id="hdr" class="sticky top-0 z-40 bg-char/95 backdrop-blur border-b border-white/10 transition-shadow duration-200">
+  <div class="mx-auto max-w-[1320px] px-4">
+    <div class="flex items-center gap-4 lg:gap-6 h-[68px]">
+
+      <!-- mobile hamburger -->
+      <button id="burger" class="md:hidden -ml-1 p-2 text-fog hover:text-white" aria-label="Open menu">
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+
+      <!-- WORDMARK (recreated as styled text — not the real logo) -->
+      <a href="#" class="shrink-0 select-none leading-none" aria-label="Rough Country home">
+        <div class="display font-extrabold italic tracking-tight text-[26px] sm:text-[30px] leading-none">
+          <span class="text-white">ROUGH</span><span class="text-rcred"> COUNTRY</span>
+        </div>
+        <div class="display text-[9px] sm:text-[10px] font-semibold tracking-[0.42em] text-fog2 -mt-0.5 pl-0.5">
+          OFF&middot;ROAD&middot;SUSPENSION
+        </div>
+      </a>
+
+      <!-- SEARCH (big bar) -->
+      <form class="hidden md:flex flex-1 max-w-[640px] mx-auto" onsubmit="return false">
+        <div class="flex w-full rounded-sm overflow-hidden ring-1 ring-white/15 focus-within:ring-2 focus-within:ring-rcred bg-white">
+          <input type="search" placeholder="Search products, categories, part #…"
+                 class="flex-1 px-4 text-[15px] text-ink placeholder:text-neutral-400 outline-none" />
+          <button class="px-5 bg-rcred hover:bg-rcred2 transition-colors text-white grid place-items-center" aria-label="Search">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          </button>
+        </div>
+      </form>
+
+      <!-- account + cart -->
+      <div class="ml-auto flex items-center gap-1 sm:gap-3 shrink-0">
+        <a href="#" class="hidden sm:flex flex-col items-center px-2 text-fog hover:text-white transition-colors">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+          <span class="text-[10px] font-semibold tracking-wide mt-0.5">ACCOUNT</span>
+        </a>
+        <a href="#" class="relative flex flex-col items-center px-2 text-fog hover:text-white transition-colors">
+          <span class="relative">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h15l-1.6 9.5a2 2 0 0 1-2 1.7H9.3a2 2 0 0 1-2-1.6L5 3H2"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/></svg>
+            <span class="absolute -top-1.5 -right-2 bg-amber text-ink text-[10px] font-extrabold rounded-full w-4 h-4 grid place-items-center">3</span>
+          </span>
+          <span class="text-[10px] font-semibold tracking-wide mt-0.5">CART</span>
+        </a>
+        <!-- Add Your Vehicle pill (red, prominent) -->
+        <a href="#vehicle" class="hidden lg:flex items-center gap-2 ml-1 bg-rcred hover:bg-rcred2 transition-colors text-white font-head font-semibold tracking-wide text-sm px-4 h-10 rounded-sm">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M6 17 7.4 9.2A2 2 0 0 1 9.4 7.5h5.2a2 2 0 0 1 2 1.7L18 17"/><circle cx="7.5" cy="17" r="1.6"/><circle cx="16.5" cy="17" r="1.6"/></svg>
+          ADD YOUR VEHICLE
+        </a>
+      </div>
+    </div>
+
+    <!-- PRIMARY NAV -->
+    <nav class="hidden md:flex items-center gap-7 h-11 font-head font-semibold tracking-wide text-[13px] uppercase text-fog">
+      <a href="#" class="navlink hover:text-white transition-colors">Truck &amp; Jeep Parts</a>
+      <a href="#" class="navlink hover:text-white transition-colors">UTV &amp; ATV Parts</a>
+      <a href="#" class="navlink hover:text-white transition-colors">Lifestyle</a>
+      <a href="#" class="navlink hover:text-white transition-colors">Customer Builds</a>
+      <a href="#" class="navlink hover:text-white transition-colors">Articles &amp; More</a>
+      <a href="#" class="navlink ml-auto text-amber hover:text-amber2 transition-colors flex items-center gap-1.5">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        Deals
+      </a>
+    </nav>
+  </div>
+</header>
+
+<!-- mobile slide nav -->
+<div id="mnav" class="md:hidden hidden border-b border-white/10 bg-char">
+  <div class="px-4 py-3">
+    <form class="flex mb-3" onsubmit="return false">
+      <div class="flex w-full rounded-sm overflow-hidden ring-1 ring-white/15 bg-white">
+        <input type="search" placeholder="Search products…" class="flex-1 px-3 py-2.5 text-ink text-sm outline-none" />
+        <button class="px-4 bg-rcred text-white" aria-label="Search">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        </button>
+      </div>
+    </form>
+    <div class="grid font-head font-semibold uppercase tracking-wide text-sm">
+      <a href="#" class="py-2.5 border-b border-white/5 hover:text-white">Truck &amp; Jeep Parts</a>
+      <a href="#" class="py-2.5 border-b border-white/5 hover:text-white">UTV &amp; ATV Parts</a>
+      <a href="#" class="py-2.5 border-b border-white/5 hover:text-white">Lifestyle</a>
+      <a href="#" class="py-2.5 border-b border-white/5 hover:text-white">Customer Builds</a>
+      <a href="#" class="py-2.5 border-b border-white/5 hover:text-white">Articles &amp; More</a>
+      <a href="#" class="py-2.5 text-amber">Deals</a>
+    </div>
+    <a href="#vehicle" class="mt-3 flex items-center justify-center gap-2 bg-rcred text-white font-head font-semibold tracking-wide px-4 h-11 rounded-sm">ADD YOUR VEHICLE</a>
+  </div>
+</div>
+
+<!-- =========================================================
+     3 · HERO BANNER
+     ========================================================= -->
+<section class="relative photo overflow-hidden">
+  <div class="absolute inset-0 tread opacity-[.5] pointer-events-none"></div>
+  <!-- big rugged truck stand-in -->
+  <div class="absolute inset-y-0 right-0 w-[58%] hidden md:flex items-center justify-end pr-6 select-none" aria-hidden="true">
+    <div class="text-[clamp(7rem,22vw,17rem)] leading-none drop-shadow-2xl translate-y-2 opacity-90">🛻</div>
+    <div class="absolute right-10 top-12 text-[clamp(2rem,5vw,4rem)] opacity-70">🏔️</div>
+  </div>
+  <div class="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-transparent"></div>
+
+  <div class="relative mx-auto max-w-[1320px] px-4">
+    <div class="py-16 sm:py-24 lg:py-28 max-w-xl">
+      <div class="inline-flex items-center gap-2 bg-amber text-ink font-head font-bold text-xs tracking-widest uppercase px-3 py-1 mb-5 skew-edge">
+        Limited Time &middot; Save Big
+      </div>
+      <h1 class="display font-extrabold italic uppercase leading-[0.92] text-white">
+        <span class="block text-[clamp(2.4rem,7vw,5rem)]">One Touch.</span>
+        <span class="block text-[clamp(2.4rem,7vw,5rem)]">Total Control.</span>
+        <span class="block text-rcred text-[clamp(2.4rem,7vw,5rem)]">Up To $300 Off.</span>
+      </h1>
+      <p class="mt-4 text-fog text-base sm:text-lg max-w-md">
+        Savings extended on our most advanced retractable bed covers. Built to take a beating, sealed against the elements.
+      </p>
+      <div class="mt-7 flex flex-wrap gap-3">
+        <a href="#categories" class="inline-flex items-center gap-2 bg-rcred hover:bg-rcred2 transition-colors text-white font-head font-bold uppercase tracking-wide text-sm px-7 h-12 rounded-sm">
+          Shop Bed Covers
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="#deals" class="inline-flex items-center gap-2 border-2 border-white/30 hover:border-white text-white font-head font-bold uppercase tracking-wide text-sm px-6 h-12 rounded-sm transition-colors">
+          View All Deals
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- hero dots -->
+  <div class="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2">
+    <span class="w-7 h-1.5 rounded-full bg-rcred"></span>
+    <span class="w-2.5 h-1.5 rounded-full bg-white/30"></span>
+    <span class="w-2.5 h-1.5 rounded-full bg-white/30"></span>
+    <span class="w-2.5 h-1.5 rounded-full bg-white/30"></span>
+  </div>
+</section>
+
+<!-- =========================================================
+     4 · VEHICLE SELECTOR (signature element)
+     ========================================================= -->
+<section id="vehicle" class="bg-char2 border-y border-white/10 tread">
+  <div class="mx-auto max-w-[1320px] px-4 py-7">
+    <div class="flex items-center justify-center gap-3 mb-5">
+      <svg class="w-6 h-6 text-rcred" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M6 17 7.4 9.2A2 2 0 0 1 9.4 7.5h5.2a2 2 0 0 1 2 1.7L18 17"/><circle cx="7.5" cy="17" r="1.6"/><circle cx="16.5" cy="17" r="1.6"/></svg>
+      <h2 class="display font-bold italic uppercase tracking-wide text-white text-2xl sm:text-3xl">Shop Parts For Your Vehicle</h2>
+    </div>
+
+    <!-- vehicle type toggle -->
+    <div class="flex justify-center gap-2 mb-4">
+      <button data-vtab class="vtab font-head font-semibold uppercase tracking-wide text-sm px-5 h-10 rounded-sm bg-rcred text-white">Truck + Jeep</button>
+      <button data-vtab class="vtab font-head font-semibold uppercase tracking-wide text-sm px-5 h-10 rounded-sm bg-steel text-fog2 hover:text-white transition-colors">UTV + ATV</button>
+    </div>
+
+    <!-- selector row -->
+    <form onsubmit="return false" class="flex flex-col lg:flex-row gap-2 max-w-4xl mx-auto">
+      <div class="relative flex-1">
+        <select class="appearance-none w-full bg-white text-ink font-medium text-sm px-4 h-12 rounded-sm outline-none focus:ring-2 focus:ring-rcred cursor-pointer">
+          <option selected disabled>Year</option>
+          <option>2024</option><option>2023</option><option>2022</option><option>2021</option><option>2020</option><option>2019</option>
+        </select>
+        <svg class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-ink pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <div class="relative flex-1">
+        <select class="appearance-none w-full bg-white text-ink font-medium text-sm px-4 h-12 rounded-sm outline-none focus:ring-2 focus:ring-rcred cursor-pointer">
+          <option selected disabled>Make</option>
+          <option>Chevrolet</option><option>Ford</option><option>RAM</option><option>Toyota</option><option>Jeep</option><option>GMC</option>
+        </select>
+        <svg class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-ink pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <div class="relative flex-1">
+        <select class="appearance-none w-full bg-white text-ink font-medium text-sm px-4 h-12 rounded-sm outline-none focus:ring-2 focus:ring-rcred cursor-pointer">
+          <option selected disabled>Model</option>
+          <option>Silverado 1500</option><option>F-150</option><option>1500</option><option>Tacoma</option><option>Wrangler JL</option>
+        </select>
+        <svg class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-ink pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <button class="bg-rcred hover:bg-rcred2 transition-colors text-white font-head font-bold uppercase tracking-widest text-base px-10 h-12 rounded-sm shrink-0">
+        Go
+      </button>
+    </form>
+    <p class="text-center text-fog2 text-xs mt-3">Find the exact fitment for your rig — over 80,000 parts engineered to bolt right on.</p>
+  </div>
+</section>
+
+<!-- =========================================================
+     5 · SHOP BY CATEGORY tiles
+     ========================================================= -->
+<section id="categories" class="bg-ink">
+  <div class="mx-auto max-w-[1320px] px-4 py-12 sm:py-16">
+    <div class="flex items-end justify-between gap-4 mb-7">
+      <div>
+        <h2 class="display font-extrabold italic uppercase text-white text-3xl sm:text-4xl leading-none">Top Categories</h2>
+        <div class="mt-2 h-1 w-16 bg-rcred"></div>
+      </div>
+      <a href="#" class="hidden sm:inline-flex items-center gap-1.5 text-amber hover:text-amber2 font-head font-semibold uppercase tracking-wide text-sm transition-colors">
+        Shop All Parts
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+      <!-- tile template -->
+      <a href="#" class="group relative aspect-[4/3] rounded-sm overflow-hidden shadow-tile photo">
+        <div class="absolute inset-0 tread opacity-30"></div>
+        <div class="absolute inset-0 grid place-items-center text-6xl sm:text-7xl opacity-80 group-hover:scale-110 transition-transform duration-300">⚙️</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent"></div>
+        <div class="absolute left-3 bottom-3 right-3">
+          <div class="display font-bold italic uppercase text-white text-lg sm:text-xl leading-none">Suspension Lift Kits</div>
+        </div>
+        <span class="absolute top-0 left-0 h-1 w-full bg-rcred"></span>
+      </a>
+
+      <a href="#" class="group relative aspect-[4/3] rounded-sm overflow-hidden shadow-tile photo-cool">
+        <div class="absolute inset-0 tread opacity-30"></div>
+        <div class="absolute inset-0 grid place-items-center text-6xl sm:text-7xl opacity-80 group-hover:scale-110 transition-transform duration-300">📐</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent"></div>
+        <div class="absolute left-3 bottom-3 right-3"><div class="display font-bold italic uppercase text-white text-lg sm:text-xl leading-none">Leveling Kits</div></div>
+        <span class="absolute top-0 left-0 h-1 w-full bg-amber"></span>
+      </a>
+
+      <a href="#" class="group relative aspect-[4/3] rounded-sm overflow-hidden shadow-tile photo">
+        <div class="absolute inset-0 tread opacity-30"></div>
+        <div class="absolute inset-0 grid place-items-center text-6xl sm:text-7xl opacity-80 group-hover:scale-110 transition-transform duration-300">🛞</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent"></div>
+        <div class="absolute left-3 bottom-3 right-3"><div class="display font-bold italic uppercase text-white text-lg sm:text-xl leading-none">Shocks &amp; Struts</div></div>
+        <span class="absolute top-0 left-0 h-1 w-full bg-rcred"></span>
+      </a>
+
+      <a href="#" class="group relative aspect-[4/3] rounded-sm overflow-hidden shadow-tile photo-cool">
+        <div class="absolute inset-0 tread opacity-30"></div>
+        <div class="absolute inset-0 grid place-items-center text-6xl sm:text-7xl opacity-80 group-hover:scale-110 transition-transform duration-300">🛡️</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent"></div>
+        <div class="absolute left-3 bottom-3 right-3"><div class="display font-bold italic uppercase text-white text-lg sm:text-xl leading-none">Bumpers</div></div>
+        <span class="absolute top-0 left-0 h-1 w-full bg-amber"></span>
+      </a>
+
+      <a href="#" class="group relative aspect-[4/3] rounded-sm overflow-hidden shadow-tile photo">
+        <div class="absolute inset-0 tread opacity-30"></div>
+        <div class="absolute inset-0 grid place-items-center text-6xl sm:text-7xl opacity-80 group-hover:scale-110 transition-transform duration-300">💡</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent"></div>
+        <div class="absolute left-3 bottom-3 right-3"><div class="display font-bold italic uppercase text-white text-lg sm:text-xl leading-none">LED Lighting</div></div>
+        <span class="absolute top-0 left-0 h-1 w-full bg-rcred"></span>
+      </a>
+
+      <a href="#" class="group relative aspect-[4/3] rounded-sm overflow-hidden shadow-tile photo-cool">
+        <div class="absolute inset-0 tread opacity-30"></div>
+        <div class="absolute inset-0 grid place-items-center text-6xl sm:text-7xl opacity-80 group-hover:scale-110 transition-transform duration-300">⭕</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent"></div>
+        <div class="absolute left-3 bottom-3 right-3"><div class="display font-bold italic uppercase text-white text-lg sm:text-xl leading-none">Wheels &amp; Tires</div></div>
+        <span class="absolute top-0 left-0 h-1 w-full bg-amber"></span>
+      </a>
+
+      <a href="#" class="group relative aspect-[4/3] rounded-sm overflow-hidden shadow-tile photo">
+        <div class="absolute inset-0 tread opacity-30"></div>
+        <div class="absolute inset-0 grid place-items-center text-6xl sm:text-7xl opacity-80 group-hover:scale-110 transition-transform duration-300">🚙</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent"></div>
+        <div class="absolute left-3 bottom-3 right-3"><div class="display font-bold italic uppercase text-white text-lg sm:text-xl leading-none">Steps &amp; Running Boards</div></div>
+        <span class="absolute top-0 left-0 h-1 w-full bg-rcred"></span>
+      </a>
+
+      <a href="#" class="group relative aspect-[4/3] rounded-sm overflow-hidden shadow-tile photo-cool">
+        <div class="absolute inset-0 tread opacity-30"></div>
+        <div class="absolute inset-0 grid place-items-center text-6xl sm:text-7xl opacity-80 group-hover:scale-110 transition-transform duration-300">🧰</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent"></div>
+        <div class="absolute left-3 bottom-3 right-3"><div class="display font-bold italic uppercase text-white text-lg sm:text-xl leading-none">Control Arms</div></div>
+        <span class="absolute top-0 left-0 h-1 w-full bg-amber"></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     6 · DEALS / PROMO BAND
+     ========================================================= -->
+<section id="deals" class="bg-dirt tread">
+  <div class="mx-auto max-w-[1320px] px-4 py-10 sm:py-12">
+    <div class="grid lg:grid-cols-3 gap-4">
+      <!-- big featured deal -->
+      <div class="lg:col-span-2 relative overflow-hidden rounded-sm bg-char2 ring-1 ring-white/10 p-7 sm:p-10 flex flex-col justify-center min-h-[220px]">
+        <div class="absolute right-0 bottom-0 text-[10rem] leading-none opacity-15 select-none -mb-6 -mr-2">🛻</div>
+        <div class="relative">
+          <span class="inline-block bg-amber text-ink font-head font-bold uppercase tracking-widest text-xs px-3 py-1 skew-edge mb-3">Deal of the Week</span>
+          <h3 class="display font-extrabold italic uppercase text-white text-3xl sm:text-5xl leading-[0.95]">
+            Up To <span class="text-rcred">40% Off</span><br>Lift Kits &amp; Shocks
+          </h3>
+          <p class="text-fog mt-3 max-w-md">Stack the season's biggest savings on full suspension systems. Lifetime replacement included on every N3 series shock.</p>
+          <a href="#" class="mt-5 inline-flex items-center gap-2 bg-rcred hover:bg-rcred2 transition-colors text-white font-head font-bold uppercase tracking-wide text-sm px-6 h-11 rounded-sm">
+            Shop The Sale
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+      <!-- two stacked small promos -->
+      <div class="grid grid-rows-2 gap-4">
+        <div class="relative overflow-hidden rounded-sm photo ring-1 ring-white/10 p-6 flex flex-col justify-center">
+          <div class="absolute right-3 top-1/2 -translate-y-1/2 text-6xl opacity-25">💡</div>
+          <span class="text-amber font-head font-bold uppercase tracking-widest text-xs">Free Gift</span>
+          <div class="display font-bold italic uppercase text-white text-2xl leading-none mt-1">LED Light Bar<br>With Any Bumper</div>
+          <a href="#" class="mt-3 text-fog text-sm font-semibold hover:text-white">Claim offer →</a>
+        </div>
+        <div class="relative overflow-hidden rounded-sm photo-cool ring-1 ring-white/10 p-6 flex flex-col justify-center">
+          <div class="absolute right-3 top-1/2 -translate-y-1/2 text-6xl opacity-25">📦</div>
+          <span class="text-amber font-head font-bold uppercase tracking-widest text-xs">Bundle &amp; Save</span>
+          <div class="display font-bold italic uppercase text-white text-2xl leading-none mt-1">$50 Off<br>Build Packages</div>
+          <a href="#" class="mt-3 text-fog text-sm font-semibold hover:text-white">View bundles →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     7 · FEATURED / NEW PRODUCTS grid
+     ========================================================= -->
+<section class="bg-ink">
+  <div class="mx-auto max-w-[1320px] px-4 py-12 sm:py-16">
+    <div class="flex items-end justify-between gap-4 mb-7">
+      <div>
+        <h2 class="display font-extrabold italic uppercase text-white text-3xl sm:text-4xl leading-none">New Products</h2>
+        <div class="mt-2 h-1 w-16 bg-rcred"></div>
+      </div>
+      <a href="#" class="hidden sm:inline-flex items-center gap-1.5 text-amber hover:text-amber2 font-head font-semibold uppercase tracking-wide text-sm transition-colors">
+        Shop All
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+
+    <div id="prodgrid" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+      <!-- product cards injected by JS below for cleanliness -->
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     8 · SHOP BY ACTIVITY (lifestyle rail)
+     ========================================================= -->
+<section class="bg-char2 border-y border-white/10">
+  <div class="mx-auto max-w-[1320px] px-4 py-12 sm:py-14">
+    <h2 class="display font-extrabold italic uppercase text-white text-3xl sm:text-4xl leading-none mb-1">Shop By Activity</h2>
+    <div class="mb-7 h-1 w-16 bg-rcred"></div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+      <a href="#" class="group relative aspect-[3/4] sm:aspect-[4/5] rounded-sm overflow-hidden photo">
+        <div class="absolute inset-0 grid place-items-center text-7xl opacity-70 group-hover:scale-110 transition-transform duration-300">🏕️</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-ink via-transparent"></div>
+        <div class="absolute inset-x-3 bottom-3">
+          <div class="display font-extrabold italic uppercase text-white text-2xl leading-none">Overlanding</div>
+          <span class="mt-2 inline-block text-amber font-head font-semibold uppercase tracking-wide text-xs">Let's Go →</span>
+        </div>
+      </a>
+      <a href="#" class="group relative aspect-[3/4] sm:aspect-[4/5] rounded-sm overflow-hidden photo-cool">
+        <div class="absolute inset-0 grid place-items-center text-7xl opacity-70 group-hover:scale-110 transition-transform duration-300">🏜️</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-ink via-transparent"></div>
+        <div class="absolute inset-x-3 bottom-3">
+          <div class="display font-extrabold italic uppercase text-white text-2xl leading-none">Off-Roading</div>
+          <span class="mt-2 inline-block text-amber font-head font-semibold uppercase tracking-wide text-xs">Let's Go →</span>
+        </div>
+      </a>
+      <a href="#" class="group relative aspect-[3/4] sm:aspect-[4/5] rounded-sm overflow-hidden photo">
+        <div class="absolute inset-0 grid place-items-center text-7xl opacity-70 group-hover:scale-110 transition-transform duration-300">🎣</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-ink via-transparent"></div>
+        <div class="absolute inset-x-3 bottom-3">
+          <div class="display font-extrabold italic uppercase text-white text-2xl leading-none">Hunting &amp; Fishing</div>
+          <span class="mt-2 inline-block text-amber font-head font-semibold uppercase tracking-wide text-xs">Let's Go →</span>
+        </div>
+      </a>
+      <a href="#" class="group relative aspect-[3/4] sm:aspect-[4/5] rounded-sm overflow-hidden photo-cool">
+        <div class="absolute inset-0 grid place-items-center text-7xl opacity-70 group-hover:scale-110 transition-transform duration-300">🏈</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-ink via-transparent"></div>
+        <div class="absolute inset-x-3 bottom-3">
+          <div class="display font-extrabold italic uppercase text-white text-2xl leading-none">Tailgating</div>
+          <span class="mt-2 inline-block text-amber font-head font-semibold uppercase tracking-wide text-xs">Let's Go →</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     9 · CUSTOMER BUILDS strip
+     ========================================================= -->
+<section class="bg-ink">
+  <div class="mx-auto max-w-[1320px] px-4 py-12 sm:py-14">
+    <div class="flex items-end justify-between gap-4 mb-7">
+      <div>
+        <h2 class="display font-extrabold italic uppercase text-white text-3xl sm:text-4xl leading-none">Customer Builds</h2>
+        <div class="mt-2 h-1 w-16 bg-rcred"></div>
+      </div>
+      <a href="#" class="hidden sm:inline-flex items-center gap-1.5 text-amber hover:text-amber2 font-head font-semibold uppercase tracking-wide text-sm transition-colors">Submit Your Build →</a>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5">
+      <article class="rounded-sm overflow-hidden bg-char2 ring-1 ring-white/10">
+        <div class="relative aspect-[16/10] photo grid place-items-center text-7xl opacity-80">🛻</div>
+        <div class="p-4">
+          <div class="display font-bold italic uppercase text-white text-lg leading-tight">6in Lifted 2021 F-150 4WD</div>
+          <div class="text-fog2 text-sm mt-1">Built by Lee S.</div>
+        </div>
+      </article>
+      <article class="rounded-sm overflow-hidden bg-char2 ring-1 ring-white/10">
+        <div class="relative aspect-[16/10] photo-cool grid place-items-center text-7xl opacity-80">🚙</div>
+        <div class="p-4">
+          <div class="display font-bold italic uppercase text-white text-lg leading-tight">3.5in Lifted 2022 Bronco 4WD</div>
+          <div class="text-fog2 text-sm mt-1">Built by Hunter S.</div>
+        </div>
+      </article>
+      <article class="rounded-sm overflow-hidden bg-char2 ring-1 ring-white/10">
+        <div class="relative aspect-[16/10] photo grid place-items-center text-7xl opacity-80">🛻</div>
+        <div class="p-4">
+          <div class="display font-bold italic uppercase text-white text-lg leading-tight">1.75in Lifted 2022 Tundra 4WD</div>
+          <div class="text-fog2 text-sm mt-1">Built by Bryan H.</div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     10 · TRUST BAND
+     ========================================================= -->
+<section class="bg-amber text-ink">
+  <div class="mx-auto max-w-[1320px] px-4 py-6">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-y-6 gap-x-4">
+      <div class="flex items-center gap-3 justify-center sm:justify-start">
+        <svg class="w-9 h-9 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h15v13H1zM16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2"/><circle cx="18.5" cy="18.5" r="2"/></svg>
+        <div><div class="font-head font-bold uppercase text-sm leading-tight">Free Shipping</div><div class="text-ink/70 text-xs">On orders over $99</div></div>
+      </div>
+      <div class="flex items-center gap-3 justify-center sm:justify-start">
+        <svg class="w-9 h-9 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/></svg>
+        <div><div class="font-head font-bold uppercase text-sm leading-tight">Lifetime Warranty</div><div class="text-ink/70 text-xs">On qualifying products</div></div>
+      </div>
+      <div class="flex items-center gap-3 justify-center sm:justify-start">
+        <svg class="w-9 h-9 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-7h3zM3 19a2 2 0 0 0 2 2h1v-7H3z"/></svg>
+        <div><div class="font-head font-bold uppercase text-sm leading-tight">Expert Support</div><div class="text-ink/70 text-xs">Real build techs, M–F</div></div>
+      </div>
+      <div class="flex items-center gap-3 justify-center sm:justify-start">
+        <svg class="w-9 h-9 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 1 0 5.6l-1.4 1.4-5.6-5.6 1.4-1.4a4 4 0 0 1 5.6 0zM7.3 13.7 3 18v3h3l4.3-4.3"/></svg>
+        <div><div class="font-head font-bold uppercase text-sm leading-tight">Easy Install</div><div class="text-ink/70 text-xs">Bolt-on, no cutting</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     11 · REVIEWS band
+     ========================================================= -->
+<section class="bg-char2 border-b border-white/10">
+  <div class="mx-auto max-w-[1320px] px-4 py-12 sm:py-14">
+    <h2 class="display font-extrabold italic uppercase text-white text-3xl sm:text-4xl leading-none mb-1">What Our Customers Are Saying</h2>
+    <div class="mb-7 flex items-center gap-3">
+      <div class="h-1 w-16 bg-rcred"></div>
+      <div class="flex items-center gap-1 text-amber" aria-label="4.5 out of 5 stars">
+        <span>★</span><span>★</span><span>★</span><span>★</span><span class="text-amber/50">★</span>
+        <span class="text-fog2 text-sm ml-2 font-medium">4.5 / 5 &middot; 38,412 reviews</span>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <figure class="rounded-sm bg-char p-5 ring-1 ring-white/10">
+        <div class="text-amber mb-2">★★★★★</div>
+        <blockquote class="text-fog text-sm">Awesome delivery time and the fitment was perfect. Bolted my N3 shocks on in an afternoon — night and day difference on the trail.</blockquote>
+        <figcaption class="mt-3 text-fog2 text-xs font-semibold uppercase tracking-wide">Jared M. &middot; Verified Buyer</figcaption>
+      </figure>
+      <figure class="rounded-sm bg-char p-5 ring-1 ring-white/10">
+        <div class="text-amber mb-2">★★★★★</div>
+        <blockquote class="text-fog text-sm">Fit like a glove and zero problems with the install. Instructions were clear and every bracket lined up the first time.</blockquote>
+        <figcaption class="mt-3 text-fog2 text-xs font-semibold uppercase tracking-wide">Priya N. &middot; Verified Buyer</figcaption>
+      </figure>
+      <figure class="rounded-sm bg-char p-5 ring-1 ring-white/10">
+        <div class="text-amber mb-2">★★★★<span class="text-amber/50">★</span></div>
+        <blockquote class="text-fog text-sm">Great gear and fast shipping. Knocked off a star only because I wanted more color options for the bumper — quality is rock solid.</blockquote>
+        <figcaption class="mt-3 text-fog2 text-xs font-semibold uppercase tracking-wide">Devon R. &middot; Verified Buyer</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     12 · ARTICLES & GUIDES (dark editorial band)
+     ========================================================= -->
+<section class="bg-ink tread">
+  <div class="mx-auto max-w-[1320px] px-4 py-12 sm:py-16">
+    <div class="flex items-end justify-between gap-4 mb-7">
+      <div>
+        <h2 class="display font-extrabold italic uppercase text-white text-3xl sm:text-4xl leading-none">Articles &amp; Guides</h2>
+        <div class="mt-2 h-1 w-16 bg-rcred"></div>
+      </div>
+      <a href="#" class="hidden sm:inline-flex text-amber hover:text-amber2 font-head font-semibold uppercase tracking-wide text-sm transition-colors">View All →</a>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <a href="#" class="group rounded-sm overflow-hidden bg-char2 ring-1 ring-white/10">
+        <div class="aspect-[16/9] photo grid place-items-center text-6xl opacity-70">🏔️</div>
+        <div class="p-5">
+          <span class="text-rcred font-head font-semibold uppercase tracking-wide text-xs">Lifestyle</span>
+          <h3 class="display font-bold italic uppercase text-white text-xl leading-tight mt-1 group-hover:text-amber transition-colors">How To Protect Cargo In Your Truck During Summer Road Trips</h3>
+          <p class="text-fog2 text-sm mt-2">Beat the heat and keep your gear secure — bed covers, tie-downs, and storage that survives the long haul.</p>
+        </div>
+      </a>
+      <a href="#" class="group rounded-sm overflow-hidden bg-char2 ring-1 ring-white/10">
+        <div class="aspect-[16/9] photo-cool grid place-items-center text-6xl opacity-70">⚙️</div>
+        <div class="p-5">
+          <span class="text-rcred font-head font-semibold uppercase tracking-wide text-xs">In The Spotlight</span>
+          <h3 class="display font-bold italic uppercase text-white text-xl leading-tight mt-1 group-hover:text-amber transition-colors">Built For The Road: How One Shop Gives The Rough-Country Treatment</h3>
+          <p class="text-fog2 text-sm mt-2">A look inside a real customer build, from bare frame to fully kitted trail rig — and the parts that got it there.</p>
+        </div>
+      </a>
+      <a href="#" class="group rounded-sm overflow-hidden bg-char2 ring-1 ring-white/10">
+        <div class="aspect-[16/9] photo grid place-items-center text-6xl opacity-70">🎁</div>
+        <div class="p-5">
+          <span class="text-rcred font-head font-semibold uppercase tracking-wide text-xs">Gift Guide</span>
+          <h3 class="display font-bold italic uppercase text-white text-xl leading-tight mt-1 group-hover:text-amber transition-colors">Father's Day Gift Guide: Upgrades For The Dad Who Has Everything</h3>
+          <p class="text-fog2 text-sm mt-2">From recovery gear to lighting kits, the bolt-on upgrades any truck dad will actually use this season.</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     13 · BRAND STRIP (generic placeholder names)
+     ========================================================= -->
+<section class="bg-char2 border-y border-white/10">
+  <div class="mx-auto max-w-[1320px] px-4 py-8">
+    <p class="text-center text-fog2 font-head font-semibold uppercase tracking-widest text-xs mb-5">Fits Today's Most Popular Platforms</p>
+    <div class="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 opacity-70">
+      <span class="display font-bold italic uppercase text-fog text-2xl">Vela</span>
+      <span class="display font-bold italic uppercase text-fog text-2xl">Northwind</span>
+      <span class="display font-bold italic uppercase text-fog text-2xl">Lumen</span>
+      <span class="display font-bold italic uppercase text-fog text-2xl">Contoso</span>
+      <span class="display font-bold italic uppercase text-fog text-2xl">Aperture</span>
+      <span class="display font-bold italic uppercase text-fog text-2xl">Globex</span>
+      <span class="display font-bold italic uppercase text-fog text-2xl">Umbra</span>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     14 · EMAIL SIGNUP
+     ========================================================= -->
+<section class="bg-dirt tread">
+  <div class="mx-auto max-w-[1320px] px-4 py-10 flex flex-col lg:flex-row items-center justify-between gap-6">
+    <div class="text-center lg:text-left">
+      <h3 class="display font-extrabold italic uppercase text-white text-3xl leading-none">Join The Crew</h3>
+      <p class="text-fog mt-2">Exclusive deals, new product drops, and build inspiration — straight to your inbox.</p>
+    </div>
+    <form onsubmit="return false" class="flex w-full max-w-md rounded-sm overflow-hidden ring-1 ring-white/20 bg-white">
+      <input type="email" placeholder="Enter your email" class="flex-1 px-4 py-3 text-ink text-sm outline-none placeholder:text-neutral-400" />
+      <button class="bg-rcred hover:bg-rcred2 transition-colors text-white font-head font-bold uppercase tracking-wide text-sm px-6">Sign Up</button>
+    </form>
+  </div>
+</section>
+
+<!-- =========================================================
+     15 · FOOTER
+     ========================================================= -->
+<footer class="bg-ink border-t border-white/10">
+  <div class="mx-auto max-w-[1320px] px-4 py-12">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
+      <!-- brand + social -->
+      <div class="col-span-2 md:col-span-1">
+        <div class="display font-extrabold italic uppercase text-2xl leading-none">
+          <span class="text-white">ROUGH</span><span class="text-rcred"> COUNTRY</span>
+        </div>
+        <p class="text-fog2 text-sm mt-3">Building tough, affordable off-road suspension and accessories since day one.</p>
+        <div class="flex gap-3 mt-4">
+          <a href="#" aria-label="Facebook" class="w-9 h-9 grid place-items-center rounded-sm bg-char2 ring-1 ring-white/10 text-fog hover:text-white hover:bg-rcred transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M13 22v-8h3l1-4h-4V8c0-1 .3-2 2-2h2V2.2C18.4 2 17 2 16 2c-3 0-5 1.8-5 5v3H8v4h3v8z"/></svg>
+          </a>
+          <a href="#" aria-label="Instagram" class="w-9 h-9 grid place-items-center rounded-sm bg-char2 ring-1 ring-white/10 text-fog hover:text-white hover:bg-rcred transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <a href="#" aria-label="YouTube" class="w-9 h-9 grid place-items-center rounded-sm bg-char2 ring-1 ring-white/10 text-fog hover:text-white hover:bg-rcred transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M23 12s0-3.2-.4-4.7a2.5 2.5 0 0 0-1.8-1.8C19.3 5 12 5 12 5s-7.3 0-8.8.5A2.5 2.5 0 0 0 1.4 7.3C1 8.8 1 12 1 12s0 3.2.4 4.7a2.5 2.5 0 0 0 1.8 1.8C4.7 19 12 19 12 19s7.3 0 8.8-.5a2.5 2.5 0 0 0 1.8-1.8C23 15.2 23 12 23 12zM10 15V9l5 3z"/></svg>
+          </a>
+          <a href="#" aria-label="X" class="w-9 h-9 grid place-items-center rounded-sm bg-char2 ring-1 ring-white/10 text-fog hover:text-white hover:bg-rcred transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h3l-7.5 8.6L22 22h-6.8l-4.8-6.3L4.8 22H1.7l8-9.2L2 2h6.9l4.3 5.7zM16.8 20.1h1.7L7.3 3.8H5.5z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="font-head font-bold uppercase tracking-wide text-white text-sm mb-4">Shop</h4>
+        <ul class="space-y-2.5 text-sm text-fog2">
+          <li><a href="#" class="hover:text-white transition-colors">Lift Kits</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Leveling Kits</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Shocks &amp; Struts</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Bumpers</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">LED Lighting</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Wheels &amp; Tires</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-head font-bold uppercase tracking-wide text-white text-sm mb-4">Support</h4>
+        <ul class="space-y-2.5 text-sm text-fog2">
+          <li><a href="#" class="hover:text-white transition-colors">Track Order</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Find an Installer</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Shipping Policy</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Returns &amp; Warranty</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-head font-bold uppercase tracking-wide text-white text-sm mb-4">Company</h4>
+        <ul class="space-y-2.5 text-sm text-fog2">
+          <li><a href="#" class="hover:text-white transition-colors">About Us</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Careers</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Dealer Program</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Affiliate Program</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Customer Builds</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-head font-bold uppercase tracking-wide text-white text-sm mb-4">Talk To A Build Expert</h4>
+        <a href="#" class="display font-extrabold italic text-rcred text-2xl leading-none">1-800-222-7023</a>
+        <div class="text-fog2 text-sm mt-3 space-y-1">
+          <div>Mon–Fri &middot; 7am – 9pm CST</div>
+          <div>Sat &middot; 8am – 5pm CST</div>
+        </div>
+        <a href="#" class="mt-4 inline-flex items-center gap-2 border-2 border-white/20 hover:border-white text-white font-head font-semibold uppercase tracking-wide text-xs px-4 h-9 rounded-sm transition-colors">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Live Chat
+        </a>
+      </div>
+    </div>
+
+    <!-- legal / payment row -->
+    <div class="mt-10 pt-6 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-fog2">
+        <a href="#" class="hover:text-white transition-colors">Sitemap</a>
+        <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+        <a href="#" class="hover:text-white transition-colors">Terms of Use</a>
+        <a href="#" class="hover:text-white transition-colors">Do Not Sell My Info</a>
+        <a href="#" class="hover:text-white transition-colors">Accessibility</a>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-fog2 text-xs mr-1">We accept</span>
+        <span class="bg-white text-ink text-[10px] font-bold px-2 py-1 rounded-sm">VISA</span>
+        <span class="bg-white text-ink text-[10px] font-bold px-2 py-1 rounded-sm">MC</span>
+        <span class="bg-white text-ink text-[10px] font-bold px-2 py-1 rounded-sm">AMEX</span>
+        <span class="bg-white text-ink text-[10px] font-bold px-2 py-1 rounded-sm">PAY</span>
+      </div>
+    </div>
+
+    <div class="mt-6 text-center text-fog2 text-xs">
+      &copy; 2026 Rough Country (mockup). All rights reserved.
+    </div>
+
+    <!-- REQUIRED disclaimer -->
+    <div class="mt-3 text-center text-[11px] leading-relaxed text-fog2/80 max-w-3xl mx-auto">
+      Design mockup built with Tailwind CSS for layout reference only. Not affiliated with, endorsed by, or representative of Rough Country. All names and trademarks belong to their respective owners.
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ---- header scroll state (the only JS, per spec) ---- */
+  const hdr = document.getElementById('hdr');
+  const onScroll = () => {
+    if (window.scrollY > 8) hdr.classList.add('shadow-2xl', 'shadow-black/60');
+    else hdr.classList.remove('shadow-2xl', 'shadow-black/60');
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* ---- mobile nav toggle ---- */
+  const burger = document.getElementById('burger');
+  const mnav = document.getElementById('mnav');
+  burger.addEventListener('click', () => mnav.classList.toggle('hidden'));
+
+  /* ---- vehicle-type tab toggle (pure cosmetic) ---- */
+  document.querySelectorAll('[data-vtab]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-vtab]').forEach((b) => {
+        b.classList.remove('bg-rcred', 'text-white');
+        b.classList.add('bg-steel', 'text-fog2');
+      });
+      btn.classList.remove('bg-steel', 'text-fog2');
+      btn.classList.add('bg-rcred', 'text-white');
+    });
+  });
+
+  /* ---- featured products (data-as-code; keeps markup DRY) ---- */
+  const products = [
+    { name: '6in Suspension Lift Kit', fit: 'Silverado / Sierra 1500 (2019–2024)', price: 1149.95, was: 1299.95, emoji: '⚙️', rating: 5, reviews: 214, badge: 'Best Seller' },
+    { name: 'N3 Series Shocks (Set of 4)', fit: 'Universal — application specific', price: 189.95, was: null, emoji: '🛞', rating: 4, reviews: 88, badge: 'New' },
+    { name: 'Heavy-Duty Front Bumper', fit: 'F-150 (2021–2024)', price: 459.95, was: 529.95, emoji: '🛡️', rating: 5, reviews: 41, badge: 'Save $70' },
+    { name: '50in Curved LED Light Bar', fit: 'Universal mount kit included', price: 219.95, was: null, emoji: '💡', rating: 4, reviews: 167, badge: null },
+    { name: '2in Leveling Kit', fit: 'Tacoma (2016–2023)', price: 79.95, was: 99.95, emoji: '📐', rating: 5, reviews: 302, badge: 'Save $20' },
+    { name: 'Retractable Bed Cover', fit: 'RAM 1500 5.7ft Bed', price: 899.95, was: null, emoji: '🧰', rating: 4, reviews: 56, badge: 'New' },
+    { name: 'Nerf Steps / Running Boards', fit: 'Wrangler JL 4-Door', price: 269.95, was: 319.95, emoji: '🚙', rating: 5, reviews: 73, badge: 'Save $50' },
+    { name: 'Upper Control Arms (Pair)', fit: 'Silverado 1500 (2019–2024)', price: 349.95, was: null, emoji: '🔧', rating: 4, reviews: 29, badge: null },
+  ];
+
+  const stars = (n) =>
+    '<span class="text-amber text-sm">' +
+    '★'.repeat(n) + '<span class="text-amber/40">' + '★'.repeat(5 - n) + '</span></span>';
+
+  const grid = document.getElementById('prodgrid');
+  grid.innerHTML = products.map((p, i) => `
+    <article class="group flex flex-col rounded-sm overflow-hidden bg-char2 ring-1 ring-white/10 hover:ring-rcred/60 transition-shadow shadow-card">
+      <div class="relative aspect-square ${i % 2 ? 'photo-cool' : 'photo'} grid place-items-center">
+        <div class="text-6xl sm:text-7xl opacity-80 group-hover:scale-110 transition-transform duration-300">${p.emoji}</div>
+        ${p.badge ? `<span class="absolute top-2 left-2 bg-rcred text-white font-head font-bold uppercase tracking-wide text-[10px] px-2 py-0.5 skew-edge">${p.badge}</span>` : ''}
+        <button class="absolute top-2 right-2 w-8 h-8 grid place-items-center rounded-full bg-ink/60 text-fog hover:text-rcred transition-colors" aria-label="Add to wishlist">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.5-1.5 3-3.3 3-5.5A4.5 4.5 0 0 0 12 6 4.5 4.5 0 0 0 2 8.5C2 10.7 3.5 12.5 5 14l7 7z"/></svg>
+        </button>
+      </div>
+      <div class="p-3 sm:p-4 flex flex-col flex-1">
+        <h3 class="display font-bold italic uppercase text-white text-base sm:text-lg leading-tight">${p.name}</h3>
+        <p class="text-fog2 text-xs mt-1">${p.fit}</p>
+        <div class="flex items-center gap-2 mt-2">${stars(p.rating)}<span class="text-fog2 text-xs">(${p.reviews})</span></div>
+        <div class="mt-auto pt-3 flex items-end gap-2">
+          <span class="display font-extrabold text-amber text-xl sm:text-2xl leading-none">$${p.price.toFixed(2)}</span>
+          ${p.was ? `<span class="text-fog2 text-sm line-through mb-0.5">$${p.was.toFixed(2)}</span>` : ''}
+        </div>
+        <button class="mt-3 w-full bg-rcred hover:bg-rcred2 transition-colors text-white font-head font-bold uppercase tracking-wide text-sm py-2.5 rounded-sm flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h15l-1.6 9.5a2 2 0 0 1-2 1.7H9.3a2 2 0 0 1-2-1.6L5 3H2"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/></svg>
+          Add To Cart
+        </button>
+      </div>
+    </article>
+  `).join('');
+</script>
+
+</body>
+</html>

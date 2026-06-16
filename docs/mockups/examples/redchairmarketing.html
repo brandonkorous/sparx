@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Red Chair Marketing — Transform your brand from invisible to irresistible (mockup)</title>
+<meta name="description" content="Design mockup of a bold, cinematic marketing-agency homepage. Reference only — not affiliated with Red Chair Marketing." />
+
+<!-- Confident sans display + text companion -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<!-- Tailwind Play CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['Archivo', 'system-ui', 'sans-serif'],
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+        },
+        colors: {
+          // Strong red accent + deep cinematic neutrals (matching the real site)
+          red: {
+            DEFAULT: '#E2231A',
+            500: '#E2231A',
+            600: '#C41A12',
+            700: '#9E140E',
+          },
+          ink: {
+            900: '#0a0a0a',
+            800: '#111113',
+            700: '#16161a',
+            600: '#1d1d22',
+            500: '#26262c',
+          },
+          smoke: '#8a8a92',
+        },
+        letterSpacing: {
+          tightest: '-0.045em',
+        },
+        boxShadow: {
+          lift: '0 24px 60px -22px rgba(0,0,0,.85)',
+          redglow: '0 18px 50px -16px rgba(226,35,26,.55)',
+        },
+        keyframes: {
+          floaty: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
+          rise: { '0%': { opacity: '0', transform: 'translateY(22px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+        },
+        animation: {
+          floaty: 'floaty 6s ease-in-out infinite',
+          rise: 'rise .8s cubic-bezier(.16,1,.3,1) both',
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body { background: #0a0a0a; }
+  ::selection { background: #E2231A; color: #fff; }
+
+  .font-display { font-family: 'Archivo', system-ui, sans-serif; }
+  .display-tight { letter-spacing: -0.045em; line-height: 0.92; }
+
+  /* Concrete-room cinematic backdrop, built from gradients (no hotlinked imagery) */
+  .room {
+    background:
+      radial-gradient(120% 90% at 78% 8%, rgba(255,255,255,.10), rgba(255,255,255,0) 42%),
+      radial-gradient(80% 70% at 12% 4%, rgba(255,255,255,.05), rgba(255,255,255,0) 40%),
+      conic-gradient(from 210deg at 70% 35%, #1c1c20 0deg, #121214 90deg, #0a0a0b 200deg, #161618 320deg, #1c1c20 360deg),
+      #0c0c0e;
+  }
+  .floor {
+    background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,0) 60%),
+      linear-gradient(180deg, #121214, #0a0a0b);
+  }
+  .grain::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .5;
+    background-image: radial-gradient(rgba(255,255,255,.045) 1px, transparent 1px);
+    background-size: 3px 3px; mix-blend-mode: overlay;
+  }
+
+  /* ---- CSS red leather wingback "chair" motif (no embedded photo) ---- */
+  .chair { position: relative; width: 280px; height: 360px; filter: drop-shadow(0 40px 40px rgba(0,0,0,.7)); }
+  .chair .wing {
+    position: absolute; top: 0; width: 86px; height: 250px; border-radius: 80px 80px 18px 18px;
+    background: linear-gradient(120deg, #b71b14, #7d0f0a 65%, #4d0805);
+    box-shadow: inset 0 0 30px rgba(0,0,0,.55), inset 8px 0 18px rgba(255,255,255,.08);
+  }
+  .chair .wing.l { left: 0; transform: rotate(-7deg); transform-origin: bottom center; }
+  .chair .wing.r { right: 0; transform: rotate(7deg); transform-origin: bottom center; }
+  .chair .back {
+    position: absolute; top: 18px; left: 50%; transform: translateX(-50%); width: 168px; height: 220px;
+    border-radius: 90px 90px 14px 14px;
+    background: radial-gradient(120% 120% at 35% 25%, #d22018, #8c100b 55%, #520806);
+    box-shadow: inset 0 0 36px rgba(0,0,0,.6);
+    /* tufted button pattern */
+    background-image:
+      radial-gradient(circle at 30% 28%, rgba(0,0,0,.5) 2px, transparent 3px),
+      radial-gradient(circle at 55% 28%, rgba(0,0,0,.5) 2px, transparent 3px),
+      radial-gradient(circle at 42% 45%, rgba(0,0,0,.5) 2px, transparent 3px),
+      radial-gradient(circle at 67% 45%, rgba(0,0,0,.5) 2px, transparent 3px),
+      radial-gradient(circle at 30% 62%, rgba(0,0,0,.5) 2px, transparent 3px),
+      radial-gradient(circle at 55% 62%, rgba(0,0,0,.5) 2px, transparent 3px),
+      radial-gradient(120% 120% at 35% 25%, #d22018, #8c100b 55%, #520806);
+  }
+  .chair .seat {
+    position: absolute; bottom: 70px; left: 50%; transform: translateX(-50%); width: 200px; height: 70px;
+    border-radius: 30px;
+    background: linear-gradient(180deg, #c41c14, #7d0f0a);
+    box-shadow: inset 0 8px 16px rgba(255,255,255,.12), inset 0 -10px 20px rgba(0,0,0,.5);
+  }
+  .chair .leg { position: absolute; bottom: 24px; width: 18px; height: 50px; border-radius: 0 0 6px 6px; background: linear-gradient(180deg, #5b3a1f, #2c1a0d); }
+  .chair .leg.l { left: 44px; transform: rotate(6deg); }
+  .chair .leg.r { right: 44px; transform: rotate(-6deg); }
+  .chair .spot { position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); width: 260px; height: 36px; border-radius: 50%; background: radial-gradient(closest-side, rgba(0,0,0,.7), transparent); }
+
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  .card-lift { transition: transform .35s cubic-bezier(.16,1,.3,1), border-color .35s, box-shadow .35s; }
+  .card-lift:hover { transform: translateY(-8px); }
+
+  .nav-link { position: relative; }
+  .nav-link::after { content: ""; position: absolute; left: 0; bottom: -4px; height: 2px; width: 0; background: #E2231A; transition: width .3s ease; }
+  .nav-link:hover::after { width: 100%; }
+</style>
+</head>
+
+<body class="bg-ink-900 text-white font-sans antialiased selection:bg-red">
+
+<!-- ============================ HEADER ============================ -->
+<header id="site-header" class="fixed inset-x-0 top-0 z-50 transition-all duration-300">
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
+    <!-- Wordmark (recreated as CSS/text, never the real logo) -->
+    <a href="#top" class="group flex items-center gap-3">
+      <span class="grid h-9 w-9 place-items-center rounded-[7px] bg-red shadow-redglow">
+        <!-- minimalist chair glyph -->
+        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 4v8M7 12h10M17 6v6M7 17v3M17 17v3M6 12h12" />
+        </svg>
+      </span>
+      <span class="font-display text-[17px] font-extrabold leading-none tracking-tight">
+        RED<span class="text-red">CHAIR</span><span class="hidden sm:inline text-white/60 font-semibold">·MKTG</span>
+      </span>
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="hidden items-center gap-9 text-[13px] font-semibold uppercase tracking-[0.14em] text-white/80 lg:flex">
+      <a href="#services" class="nav-link hover:text-white">Services</a>
+      <a href="#work" class="nav-link hover:text-white">Work</a>
+      <a href="#about" class="nav-link hover:text-white">About</a>
+      <a href="#process" class="nav-link hover:text-white">Process</a>
+      <a href="#blog" class="nav-link hover:text-white">Blog</a>
+      <a href="#contact" class="nav-link hover:text-white">Contact</a>
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <a href="#contact" class="hidden rounded-full bg-red px-5 py-2.5 text-[13px] font-bold uppercase tracking-[0.12em] text-white shadow-redglow transition hover:bg-red-600 sm:inline-block">
+        Get Started
+      </a>
+      <!-- Hamburger -->
+      <button id="menu-btn" aria-label="Open menu" class="grid h-10 w-10 place-items-center rounded-md border border-white/15 lg:hidden">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile drawer -->
+  <div id="mobile-menu" class="hidden border-t border-white/10 bg-ink-900/95 backdrop-blur lg:hidden">
+    <nav class="mx-auto flex max-w-7xl flex-col gap-1 px-5 py-4 text-sm font-semibold uppercase tracking-[0.12em]">
+      <a href="#services" class="rounded px-3 py-3 text-white/80 hover:bg-white/5 hover:text-white">Services</a>
+      <a href="#work" class="rounded px-3 py-3 text-white/80 hover:bg-white/5 hover:text-white">Work</a>
+      <a href="#about" class="rounded px-3 py-3 text-white/80 hover:bg-white/5 hover:text-white">About</a>
+      <a href="#process" class="rounded px-3 py-3 text-white/80 hover:bg-white/5 hover:text-white">Process</a>
+      <a href="#blog" class="rounded px-3 py-3 text-white/80 hover:bg-white/5 hover:text-white">Blog</a>
+      <a href="#contact" class="rounded px-3 py-3 text-white/80 hover:bg-white/5 hover:text-white">Contact</a>
+      <a href="#contact" class="mt-2 rounded-full bg-red px-3 py-3 text-center text-white">Get Started</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ============================ HERO ============================ -->
+<section id="top" class="room grain relative overflow-hidden">
+  <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-ink-900"></div>
+
+  <div class="relative mx-auto flex min-h-screen max-w-7xl flex-col justify-center px-5 pb-24 pt-36 sm:px-8 lg:flex-row lg:items-center lg:gap-10">
+    <!-- Headline column -->
+    <div class="lg:w-[58%]">
+      <p class="animate-rise mb-6 inline-flex items-center gap-2 rounded-full border border-red/40 bg-red/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-red">
+        <span class="h-1.5 w-1.5 rounded-full bg-red"></span> Growth · Positioning · Demand
+      </p>
+      <h1 class="font-display display-tight text-5xl font-black uppercase text-white sm:text-6xl md:text-7xl lg:text-[5.2rem]">
+        Transform your brand from <span class="text-white">invisible</span> to <span class="text-red">irresistible.</span>
+      </h1>
+      <p class="mt-7 max-w-xl text-lg font-medium leading-relaxed text-red/90">
+        Strategic positioning, lead infrastructure, and AI-enabled growth systems engineered for companies that intend to dominate their category.
+      </p>
+      <div class="mt-9 flex flex-col gap-4 sm:flex-row">
+        <a href="#contact" class="rounded-full bg-red px-8 py-4 text-center text-sm font-bold uppercase tracking-[0.12em] text-white shadow-redglow transition hover:-translate-y-0.5 hover:bg-red-600">
+          Book a Strategy Call
+        </a>
+        <a href="#work" class="rounded-full border border-white/20 px-8 py-4 text-center text-sm font-bold uppercase tracking-[0.12em] text-white transition hover:border-white/50 hover:bg-white/5">
+          See the Work
+        </a>
+      </div>
+      <div class="mt-12 flex flex-wrap items-center gap-x-10 gap-y-4 text-sm text-white/55">
+        <span><span class="font-display text-2xl font-extrabold text-white">$214M+</span> revenue influenced</span>
+        <span><span class="font-display text-2xl font-extrabold text-white">11</span> categories led</span>
+        <span><span class="font-display text-2xl font-extrabold text-white">4.9/5</span> partner rating</span>
+      </div>
+    </div>
+
+    <!-- Chair motif column -->
+    <div class="relative mt-16 flex justify-center lg:mt-0 lg:w-[42%]">
+      <!-- spotlight -->
+      <div class="pointer-events-none absolute -top-24 left-1/2 h-[460px] w-[360px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(255,255,255,.16),transparent)]"></div>
+      <div class="chair animate-floaty">
+        <span class="wing l"></span>
+        <span class="wing r"></span>
+        <span class="back"></span>
+        <span class="seat"></span>
+        <span class="leg l"></span>
+        <span class="leg r"></span>
+        <span class="spot"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- scroll cue -->
+  <div class="floor absolute inset-x-0 bottom-0 h-px bg-white/10"></div>
+</section>
+
+<!-- ============================ MANIFESTO BAND ============================ -->
+<section class="floor relative border-t border-white/5 py-24 sm:py-32">
+  <div class="mx-auto max-w-5xl px-5 text-center sm:px-8">
+    <p class="reveal font-display display-tight text-4xl font-black uppercase text-white/30 sm:text-5xl">Most agencies sell marketing.</p>
+    <p class="reveal font-display display-tight mt-3 text-4xl font-black uppercase text-red sm:text-6xl">We engineer market position.</p>
+    <p class="reveal mx-auto mt-8 max-w-2xl text-base leading-relaxed text-white/55 sm:text-lg">
+      Campaigns expire. Position compounds. Red Chair builds the strategy, systems, and creative that make a company the obvious choice — long after the ad spend stops.
+    </p>
+  </div>
+</section>
+
+<!-- ============================ SERVICES ============================ -->
+<section id="services" class="relative bg-ink-900 py-24 sm:py-32">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="reveal mb-16 max-w-3xl">
+      <p class="mb-3 text-[11px] font-bold uppercase tracking-[0.28em] text-red">What we do</p>
+      <h2 class="font-display display-tight text-4xl font-black uppercase sm:text-6xl">Built for dominance.<br/><span class="text-white/35">Not vanity metrics.</span></h2>
+    </div>
+
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <!-- Card template -->
+      <article class="card-lift group rounded-2xl border border-white/10 bg-ink-800 p-8 hover:border-red/60 hover:shadow-lift">
+        <div class="mb-6 grid h-12 w-12 place-items-center rounded-xl bg-red/12 text-red transition group-hover:bg-red group-hover:text-white">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 16.5 7.1 18.2 8 12.7 4 8.8 9.5 8z"/></svg>
+        </div>
+        <h3 class="font-display text-2xl font-extrabold uppercase tracking-tight">Brand &amp; Positioning</h3>
+        <p class="mt-3 text-sm leading-relaxed text-white/55">Category narrative, messaging hierarchy, and a visual identity that signals leadership before a word is read.</p>
+        <ul class="mt-5 space-y-1.5 text-[13px] text-white/45">
+          <li>Strategy &amp; naming</li><li>Identity systems</li><li>Brand guidelines</li>
+        </ul>
+      </article>
+
+      <article class="card-lift group rounded-2xl border border-white/10 bg-ink-800 p-8 hover:border-red/60 hover:shadow-lift">
+        <div class="mb-6 grid h-12 w-12 place-items-center rounded-xl bg-red/12 text-red transition group-hover:bg-red group-hover:text-white">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M8 21h8"/></svg>
+        </div>
+        <h3 class="font-display text-2xl font-extrabold uppercase tracking-tight">Web Design &amp; Build</h3>
+        <p class="mt-3 text-sm leading-relaxed text-white/55">Conversion-first sites that load fast, rank well, and turn attention into qualified pipeline.</p>
+        <ul class="mt-5 space-y-1.5 text-[13px] text-white/45">
+          <li>UX &amp; design systems</li><li>Headless builds</li><li>CRO &amp; A/B testing</li>
+        </ul>
+      </article>
+
+      <article class="card-lift group rounded-2xl border border-white/10 bg-ink-800 p-8 hover:border-red/60 hover:shadow-lift">
+        <div class="mb-6 grid h-12 w-12 place-items-center rounded-xl bg-red/12 text-red transition group-hover:bg-red group-hover:text-white">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        </div>
+        <h3 class="font-display text-2xl font-extrabold uppercase tracking-tight">SEO &amp; Content</h3>
+        <p class="mt-3 text-sm leading-relaxed text-white/55">Topical authority programs and editorial engines that own the searches your buyers actually make.</p>
+        <ul class="mt-5 space-y-1.5 text-[13px] text-white/45">
+          <li>Technical SEO</li><li>Content engine</li><li>Digital PR &amp; links</li>
+        </ul>
+      </article>
+
+      <article class="card-lift group rounded-2xl border border-white/10 bg-ink-800 p-8 hover:border-red/60 hover:shadow-lift">
+        <div class="mb-6 grid h-12 w-12 place-items-center rounded-xl bg-red/12 text-red transition group-hover:bg-red group-hover:text-white">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 11l18-7-7 18-2.5-7.5z"/></svg>
+        </div>
+        <h3 class="font-display text-2xl font-extrabold uppercase tracking-tight">Paid Media</h3>
+        <p class="mt-3 text-sm leading-relaxed text-white/55">Full-funnel paid acquisition across search, social, and programmatic — managed to CAC, not clicks.</p>
+        <ul class="mt-5 space-y-1.5 text-[13px] text-white/45">
+          <li>Google &amp; Meta</li><li>Creative testing</li><li>Attribution modeling</li>
+        </ul>
+      </article>
+
+      <article class="card-lift group rounded-2xl border border-white/10 bg-ink-800 p-8 hover:border-red/60 hover:shadow-lift">
+        <div class="mb-6 grid h-12 w-12 place-items-center rounded-xl bg-red/12 text-red transition group-hover:bg-red group-hover:text-white">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+        </div>
+        <h3 class="font-display text-2xl font-extrabold uppercase tracking-tight">Social &amp; Brand Media</h3>
+        <p class="mt-3 text-sm leading-relaxed text-white/55">Always-on social, short-form video, and founder media that keep your category talking about you.</p>
+        <ul class="mt-5 space-y-1.5 text-[13px] text-white/45">
+          <li>Content production</li><li>Community</li><li>Influencer programs</li>
+        </ul>
+      </article>
+
+      <article class="card-lift group rounded-2xl border border-red/40 bg-gradient-to-br from-red-700/30 to-ink-800 p-8 hover:border-red hover:shadow-redglow">
+        <div class="mb-6 grid h-12 w-12 place-items-center rounded-xl bg-red text-white">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M18 6l-2.5 2.5M8.5 15.5L6 18"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <h3 class="font-display text-2xl font-extrabold uppercase tracking-tight">AI Growth Systems</h3>
+        <p class="mt-3 text-sm leading-relaxed text-white/70">Lead infrastructure, automated nurture, and AI-enabled workflows that scale demand without scaling headcount.</p>
+        <ul class="mt-5 space-y-1.5 text-[13px] text-white/55">
+          <li>RevOps &amp; CRM</li><li>AI agents &amp; automation</li><li>Reporting dashboards</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ WORK / PORTFOLIO ============================ -->
+<section id="work" class="relative bg-ink-800 py-24 sm:py-32">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="reveal mb-14 flex flex-wrap items-end justify-between gap-6">
+      <div class="max-w-2xl">
+        <p class="mb-3 text-[11px] font-bold uppercase tracking-[0.28em] text-red">Selected work</p>
+        <h2 class="font-display display-tight text-4xl font-black uppercase sm:text-6xl">Proof, not promises.</h2>
+      </div>
+      <a href="#contact" class="text-sm font-bold uppercase tracking-[0.12em] text-red hover:text-white">View all case studies →</a>
+    </div>
+
+    <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      <!-- Case card: recreated UI mock, no hotlinked images -->
+      <a href="#work" class="card-lift group block overflow-hidden rounded-2xl border border-white/10 bg-ink-900 hover:border-red/60 hover:shadow-lift">
+        <div class="relative h-52 overflow-hidden bg-[radial-gradient(120%_120%_at_20%_10%,#3a0d0a,#0c0c0e)]">
+          <div class="absolute inset-0 grain opacity-60"></div>
+          <div class="absolute left-6 top-6 right-6 rounded-lg border border-white/10 bg-white/5 p-4 backdrop-blur">
+            <div class="mb-3 flex gap-1.5"><span class="h-2 w-2 rounded-full bg-red"></span><span class="h-2 w-2 rounded-full bg-white/30"></span><span class="h-2 w-2 rounded-full bg-white/30"></span></div>
+            <div class="h-2 w-3/4 rounded bg-white/20"></div>
+            <div class="mt-2 h-2 w-1/2 rounded bg-white/10"></div>
+            <div class="mt-4 h-7 w-24 rounded bg-red"></div>
+          </div>
+        </div>
+        <div class="p-6">
+          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-red">Vela · SaaS</p>
+          <h3 class="mt-1 font-display text-xl font-extrabold uppercase tracking-tight">Rebrand + demand engine</h3>
+          <p class="mt-2 text-sm text-white/50">+312% qualified pipeline in two quarters after a full repositioning.</p>
+        </div>
+      </a>
+
+      <a href="#work" class="card-lift group block overflow-hidden rounded-2xl border border-white/10 bg-ink-900 hover:border-red/60 hover:shadow-lift">
+        <div class="relative h-52 overflow-hidden bg-[linear-gradient(135deg,#1a1a1f,#0c0c0e)]">
+          <div class="absolute inset-0 grain opacity-60"></div>
+          <div class="absolute inset-0 grid grid-cols-3 gap-2 p-6">
+            <div class="rounded bg-red/80"></div><div class="rounded bg-white/10"></div><div class="rounded bg-white/15"></div>
+            <div class="rounded bg-white/10"></div><div class="rounded bg-red/40"></div><div class="rounded bg-white/10"></div>
+          </div>
+        </div>
+        <div class="p-6">
+          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-red">Northwind · Industrial</p>
+          <h3 class="mt-1 font-display text-xl font-extrabold uppercase tracking-tight">Category leadership</h3>
+          <p class="mt-2 text-sm text-white/50">Ranked #1 for 47 buyer-intent terms; cut CAC by 38%.</p>
+        </div>
+      </a>
+
+      <a href="#work" class="card-lift group block overflow-hidden rounded-2xl border border-white/10 bg-ink-900 hover:border-red/60 hover:shadow-lift">
+        <div class="relative h-52 overflow-hidden bg-[radial-gradient(120%_120%_at_80%_20%,#2a0808,#0c0c0e)]">
+          <div class="absolute inset-0 grain opacity-60"></div>
+          <div class="absolute bottom-6 left-6 right-6">
+            <div class="flex items-end gap-2">
+              <div class="h-10 w-6 rounded-t bg-white/15"></div>
+              <div class="h-16 w-6 rounded-t bg-white/20"></div>
+              <div class="h-24 w-6 rounded-t bg-red"></div>
+              <div class="h-28 w-6 rounded-t bg-red-600"></div>
+              <div class="h-32 w-6 rounded-t bg-red"></div>
+            </div>
+          </div>
+        </div>
+        <div class="p-6">
+          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-red">Lumen · Fintech</p>
+          <h3 class="mt-1 font-display text-xl font-extrabold uppercase tracking-tight">Paid &amp; lifecycle</h3>
+          <p class="mt-2 text-sm text-white/50">$6.4M incremental ARR from a rebuilt acquisition funnel.</p>
+        </div>
+      </a>
+
+      <a href="#work" class="card-lift group block overflow-hidden rounded-2xl border border-white/10 bg-ink-900 hover:border-red/60 hover:shadow-lift">
+        <div class="relative h-52 overflow-hidden bg-[linear-gradient(160deg,#330b08,#0c0c0e)]">
+          <div class="absolute inset-0 grain opacity-60"></div>
+          <div class="absolute inset-6 rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+            <div class="h-3 w-1/3 rounded bg-red"></div>
+            <div class="mt-3 grid grid-cols-2 gap-2"><div class="h-12 rounded bg-white/10"></div><div class="h-12 rounded bg-white/10"></div></div>
+          </div>
+        </div>
+        <div class="p-6">
+          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-red">Contoso · DTC</p>
+          <h3 class="mt-1 font-display text-xl font-extrabold uppercase tracking-tight">Storefront relaunch</h3>
+          <p class="mt-2 text-sm text-white/50">2.1× conversion rate and a 27% lift in average order value.</p>
+        </div>
+      </a>
+
+      <a href="#work" class="card-lift group block overflow-hidden rounded-2xl border border-white/10 bg-ink-900 hover:border-red/60 hover:shadow-lift">
+        <div class="relative h-52 overflow-hidden bg-[radial-gradient(120%_120%_at_50%_0%,#3a0d0a,#0c0c0e)]">
+          <div class="absolute inset-0 grain opacity-60"></div>
+          <div class="absolute inset-0 grid place-items-center">
+            <div class="h-24 w-24 rounded-full border-4 border-red/70" style="border-right-color:transparent;border-bottom-color:transparent;transform:rotate(35deg)"></div>
+          </div>
+        </div>
+        <div class="p-6">
+          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-red">Aperture · Health</p>
+          <h3 class="mt-1 font-display text-xl font-extrabold uppercase tracking-tight">Launch campaign</h3>
+          <p class="mt-2 text-sm text-white/50">Sold out the founding cohort 9 days ahead of plan.</p>
+        </div>
+      </a>
+
+      <a href="#work" class="card-lift group block overflow-hidden rounded-2xl border border-white/10 bg-ink-900 hover:border-red/60 hover:shadow-lift">
+        <div class="relative h-52 overflow-hidden bg-[linear-gradient(135deg,#1d1d22,#0c0c0e)]">
+          <div class="absolute inset-0 grain opacity-60"></div>
+          <div class="absolute left-6 right-6 top-1/2 -translate-y-1/2 space-y-2">
+            <div class="h-2 w-full rounded bg-white/10"></div>
+            <div class="h-2 w-5/6 rounded bg-red"></div>
+            <div class="h-2 w-2/3 rounded bg-white/10"></div>
+            <div class="h-2 w-3/4 rounded bg-white/15"></div>
+          </div>
+        </div>
+        <div class="p-6">
+          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-red">Globex · B2B</p>
+          <h3 class="mt-1 font-display text-xl font-extrabold uppercase tracking-tight">ABM &amp; content</h3>
+          <p class="mt-2 text-sm text-white/50">Closed 3 of the 5 target logos in the first 6 months.</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ STATS BAND ============================ -->
+<section class="relative overflow-hidden bg-red py-20">
+  <div class="absolute inset-0 grain opacity-30"></div>
+  <div class="relative mx-auto grid max-w-7xl grid-cols-2 gap-y-12 px-5 text-center sm:px-8 lg:grid-cols-4">
+    <div class="reveal">
+      <p class="font-display display-tight text-5xl font-black sm:text-6xl">$214M+</p>
+      <p class="mt-2 text-sm font-semibold uppercase tracking-[0.15em] text-white/80">Revenue influenced</p>
+    </div>
+    <div class="reveal">
+      <p class="font-display display-tight text-5xl font-black sm:text-6xl">312%</p>
+      <p class="mt-2 text-sm font-semibold uppercase tracking-[0.15em] text-white/80">Avg. pipeline lift</p>
+    </div>
+    <div class="reveal">
+      <p class="font-display display-tight text-5xl font-black sm:text-6xl">11</p>
+      <p class="mt-2 text-sm font-semibold uppercase tracking-[0.15em] text-white/80">Categories led</p>
+    </div>
+    <div class="reveal">
+      <p class="font-display display-tight text-5xl font-black sm:text-6xl">14<span class="align-top text-2xl">yrs</span></p>
+      <p class="mt-2 text-sm font-semibold uppercase tracking-[0.15em] text-white/80">Avg. partner tenure</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ PROCESS / APPROACH ============================ -->
+<section id="process" class="relative bg-ink-900 py-24 sm:py-32">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="reveal mb-16 max-w-3xl">
+      <p class="mb-3 text-[11px] font-bold uppercase tracking-[0.28em] text-red">How we work</p>
+      <h2 class="font-display display-tight text-4xl font-black uppercase sm:text-6xl">Partnership capacity is <span class="text-red">intentionally limited.</span></h2>
+      <p class="mt-6 max-w-xl text-base leading-relaxed text-white/55">We take on a small number of partners each quarter so every engagement gets senior attention. Here is how a partnership runs.</p>
+    </div>
+
+    <div class="grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 md:grid-cols-2 lg:grid-cols-4">
+      <div class="group bg-ink-800 p-8 transition hover:bg-ink-700">
+        <span class="font-display text-5xl font-black text-red/30 transition group-hover:text-red">01</span>
+        <h3 class="mt-4 font-display text-xl font-extrabold uppercase tracking-tight">Diagnose</h3>
+        <p class="mt-3 text-sm leading-relaxed text-white/55">Deep audit of position, funnel, and data. We find where growth is actually leaking.</p>
+      </div>
+      <div class="group bg-ink-800 p-8 transition hover:bg-ink-700">
+        <span class="font-display text-5xl font-black text-red/30 transition group-hover:text-red">02</span>
+        <h3 class="mt-4 font-display text-xl font-extrabold uppercase tracking-tight">Position</h3>
+        <p class="mt-3 text-sm leading-relaxed text-white/55">A sharp category narrative and messaging system everything else is built on.</p>
+      </div>
+      <div class="group bg-ink-800 p-8 transition hover:bg-ink-700">
+        <span class="font-display text-5xl font-black text-red/30 transition group-hover:text-red">03</span>
+        <h3 class="mt-4 font-display text-xl font-extrabold uppercase tracking-tight">Build</h3>
+        <p class="mt-3 text-sm leading-relaxed text-white/55">Site, creative, and the lead infrastructure that turns demand into pipeline.</p>
+      </div>
+      <div class="group bg-ink-800 p-8 transition hover:bg-ink-700">
+        <span class="font-display text-5xl font-black text-red/30 transition group-hover:text-red">04</span>
+        <h3 class="mt-4 font-display text-xl font-extrabold uppercase tracking-tight">Scale</h3>
+        <p class="mt-3 text-sm leading-relaxed text-white/55">Compounding paid, content, and automation — measured to revenue every week.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ TESTIMONIALS ============================ -->
+<section class="relative bg-ink-800 py-24 sm:py-32">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="reveal mb-14 max-w-2xl">
+      <p class="mb-3 text-[11px] font-bold uppercase tracking-[0.28em] text-red">In their words</p>
+      <h2 class="font-display display-tight text-4xl font-black uppercase sm:text-6xl">Partners who scaled.</h2>
+    </div>
+
+    <div class="grid gap-5 lg:grid-cols-3">
+      <figure class="card-lift rounded-2xl border border-white/10 bg-ink-900 p-8 hover:border-red/50 hover:shadow-lift">
+        <div class="mb-4 text-red">★★★★★</div>
+        <blockquote class="text-lg leading-relaxed text-white/85">"Red Chair didn't just run our ads — they rebuilt how the market sees us. We went from one of many to the default choice."</blockquote>
+        <figcaption class="mt-6 flex items-center gap-3">
+          <span class="grid h-11 w-11 place-items-center rounded-full bg-red font-display font-bold">SK</span>
+          <span><span class="block text-sm font-semibold">Sasha Kerr</span><span class="block text-xs text-white/50">VP Marketing, Vela</span></span>
+        </figcaption>
+      </figure>
+
+      <figure class="card-lift rounded-2xl border border-white/10 bg-ink-900 p-8 hover:border-red/50 hover:shadow-lift">
+        <div class="mb-4 text-red">★★★★★</div>
+        <blockquote class="text-lg leading-relaxed text-white/85">"The most senior, most accountable team we've worked with. Every dollar is tied to a number that matters to the board."</blockquote>
+        <figcaption class="mt-6 flex items-center gap-3">
+          <span class="grid h-11 w-11 place-items-center rounded-full bg-red font-display font-bold">MD</span>
+          <span><span class="block text-sm font-semibold">Marcus Doyle</span><span class="block text-xs text-white/50">CEO, Northwind</span></span>
+        </figcaption>
+      </figure>
+
+      <figure class="card-lift rounded-2xl border border-white/10 bg-ink-900 p-8 hover:border-red/50 hover:shadow-lift">
+        <div class="mb-4 text-red">★★★★★</div>
+        <blockquote class="text-lg leading-relaxed text-white/85">"They treat our growth like their own. Six quarters in and the pipeline still compounds — that's the part nobody else delivered."</blockquote>
+        <figcaption class="mt-6 flex items-center gap-3">
+          <span class="grid h-11 w-11 place-items-center rounded-full bg-red font-display font-bold">PT</span>
+          <span><span class="block text-sm font-semibold">Priya Tan</span><span class="block text-xs text-white/50">Founder, Lumen</span></span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ ABOUT / VALUES ============================ -->
+<section id="about" class="relative bg-ink-900 py-24 sm:py-32">
+  <div class="mx-auto grid max-w-7xl items-center gap-16 px-5 sm:px-8 lg:grid-cols-2">
+    <div class="reveal">
+      <p class="mb-3 text-[11px] font-bold uppercase tracking-[0.28em] text-red">Who we are</p>
+      <h2 class="font-display display-tight text-4xl font-black uppercase sm:text-6xl">Built for companies preparing for their <span class="text-red">next stage of growth.</span></h2>
+      <p class="mt-6 max-w-xl text-base leading-relaxed text-white/55">
+        We're a senior team of strategists, designers, and growth engineers. No account-manager telephone game, no junior staff learning on your budget — just operators who have built and scaled categories before.
+      </p>
+      <div class="mt-8 grid grid-cols-2 gap-6">
+        <div><p class="font-display text-3xl font-extrabold text-white">Senior-only</p><p class="text-sm text-white/50">No layers between you and the people doing the work.</p></div>
+        <div><p class="font-display text-3xl font-extrabold text-white">Outcome-bound</p><p class="text-sm text-white/50">We report to revenue, not to impressions.</p></div>
+        <div><p class="font-display text-3xl font-extrabold text-white">Category-first</p><p class="text-sm text-white/50">Position before tactics, every time.</p></div>
+        <div><p class="font-display text-3xl font-extrabold text-white">Limited intake</p><p class="text-sm text-white/50">A handful of partners per quarter, by design.</p></div>
+      </div>
+    </div>
+
+    <!-- Team grid (CSS avatars, no photos) -->
+    <div class="reveal grid grid-cols-2 gap-4 sm:grid-cols-3">
+      <div class="aspect-square rounded-2xl bg-[radial-gradient(120%_120%_at_30%_20%,#3a0d0a,#16161a)] p-5 flex flex-col justify-end"><span class="grid h-12 w-12 place-items-center rounded-full bg-red font-display font-bold">AR</span><p class="mt-3 text-sm font-semibold">Avery Rhodes</p><p class="text-xs text-white/50">Founder / Strategy</p></div>
+      <div class="aspect-square rounded-2xl bg-[linear-gradient(160deg,#1d1d22,#16161a)] p-5 flex flex-col justify-end"><span class="grid h-12 w-12 place-items-center rounded-full bg-white/10 font-display font-bold">JM</span><p class="mt-3 text-sm font-semibold">Jordan Mills</p><p class="text-xs text-white/50">Creative Director</p></div>
+      <div class="aspect-square rounded-2xl bg-[radial-gradient(120%_120%_at_70%_30%,#2a0808,#16161a)] p-5 flex flex-col justify-end"><span class="grid h-12 w-12 place-items-center rounded-full bg-red font-display font-bold">NB</span><p class="mt-3 text-sm font-semibold">Noa Brandt</p><p class="text-xs text-white/50">Head of Growth</p></div>
+      <div class="aspect-square rounded-2xl bg-[linear-gradient(135deg,#1d1d22,#16161a)] p-5 flex flex-col justify-end"><span class="grid h-12 w-12 place-items-center rounded-full bg-white/10 font-display font-bold">EC</span><p class="mt-3 text-sm font-semibold">Eli Chen</p><p class="text-xs text-white/50">Lead Engineer</p></div>
+      <div class="aspect-square rounded-2xl bg-[radial-gradient(120%_120%_at_30%_70%,#3a0d0a,#16161a)] p-5 flex flex-col justify-end"><span class="grid h-12 w-12 place-items-center rounded-full bg-red font-display font-bold">MS</span><p class="mt-3 text-sm font-semibold">Mara Solis</p><p class="text-xs text-white/50">SEO &amp; Content</p></div>
+      <div class="aspect-square rounded-2xl bg-[linear-gradient(160deg,#1d1d22,#16161a)] p-5 flex flex-col justify-end"><span class="grid h-12 w-12 place-items-center rounded-full bg-white/10 font-display font-bold">+8</span><p class="mt-3 text-sm font-semibold">The studio</p><p class="text-xs text-white/50">Designers &amp; analysts</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ PARTNERS LOGO WALL ============================ -->
+<section class="relative bg-ink-800 py-20">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <p class="reveal mb-10 text-center text-[11px] font-bold uppercase tracking-[0.3em] text-white/40">Current and past partners</p>
+    <div class="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-white/10 bg-white/10 sm:grid-cols-4">
+      <span class="grid place-items-center bg-ink-900 py-8 font-display text-lg font-extrabold uppercase tracking-tight text-white/55 transition hover:text-red">Vela</span>
+      <span class="grid place-items-center bg-ink-900 py-8 font-display text-lg font-extrabold uppercase tracking-tight text-white/55 transition hover:text-red">Northwind</span>
+      <span class="grid place-items-center bg-ink-900 py-8 font-display text-lg font-extrabold uppercase tracking-tight text-white/55 transition hover:text-red">Lumen</span>
+      <span class="grid place-items-center bg-ink-900 py-8 font-display text-lg font-extrabold uppercase tracking-tight text-white/55 transition hover:text-red">Contoso</span>
+      <span class="grid place-items-center bg-ink-900 py-8 font-display text-lg font-extrabold uppercase tracking-tight text-white/55 transition hover:text-red">Aperture</span>
+      <span class="grid place-items-center bg-ink-900 py-8 font-display text-lg font-extrabold uppercase tracking-tight text-white/55 transition hover:text-red">Globex</span>
+      <span class="grid place-items-center bg-ink-900 py-8 font-display text-lg font-extrabold uppercase tracking-tight text-white/55 transition hover:text-red">Hooli</span>
+      <span class="grid place-items-center bg-ink-900 py-8 font-display text-lg font-extrabold uppercase tracking-tight text-white/55 transition hover:text-red">Umbra</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ BLOG TEASER ============================ -->
+<section id="blog" class="relative bg-ink-900 py-24 sm:py-32">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8">
+    <div class="reveal mb-14 flex flex-wrap items-end justify-between gap-6">
+      <div>
+        <p class="mb-3 text-[11px] font-bold uppercase tracking-[0.28em] text-red">From the studio</p>
+        <h2 class="font-display display-tight text-4xl font-black uppercase sm:text-6xl">Field notes on growth.</h2>
+      </div>
+      <a href="#blog" class="text-sm font-bold uppercase tracking-[0.12em] text-red hover:text-white">Read the blog →</a>
+    </div>
+
+    <div class="grid gap-5 md:grid-cols-3">
+      <a href="#blog" class="card-lift group rounded-2xl border border-white/10 bg-ink-800 p-8 hover:border-red/50 hover:shadow-lift">
+        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-red">Positioning</p>
+        <h3 class="mt-3 font-display text-xl font-extrabold leading-tight">Why "more leads" is the wrong first goal</h3>
+        <p class="mt-3 text-sm text-white/50">Most growth problems are positioning problems wearing a paid-media costume.</p>
+        <p class="mt-5 text-xs uppercase tracking-[0.14em] text-white/35">7 min read</p>
+      </a>
+      <a href="#blog" class="card-lift group rounded-2xl border border-white/10 bg-ink-800 p-8 hover:border-red/50 hover:shadow-lift">
+        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-red">AI &amp; Systems</p>
+        <h3 class="mt-3 font-display text-xl font-extrabold leading-tight">Building a lead engine that runs itself</h3>
+        <p class="mt-3 text-sm text-white/50">The automation stack we deploy in the first 30 days of every partnership.</p>
+        <p class="mt-5 text-xs uppercase tracking-[0.14em] text-white/35">9 min read</p>
+      </a>
+      <a href="#blog" class="card-lift group rounded-2xl border border-white/10 bg-ink-800 p-8 hover:border-red/50 hover:shadow-lift">
+        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-red">Paid Media</p>
+        <h3 class="mt-3 font-display text-xl font-extrabold leading-tight">Manage to CAC, not to clicks</h3>
+        <p class="mt-3 text-sm text-white/50">A simple attribution model that keeps every channel honest.</p>
+        <p class="mt-5 text-xs uppercase tracking-[0.14em] text-white/35">6 min read</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ CONTACT CTA ============================ -->
+<section id="contact" class="room grain relative overflow-hidden py-28">
+  <div class="pointer-events-none absolute -top-24 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(226,35,26,.28),transparent)]"></div>
+  <div class="relative mx-auto max-w-4xl px-5 text-center sm:px-8">
+    <h2 class="reveal font-display display-tight text-5xl font-black uppercase sm:text-7xl">Ready to be<br/>the obvious choice?</h2>
+    <p class="reveal mx-auto mt-7 max-w-xl text-lg text-white/65">Tell us where you're trying to go. If we're the right fit, we'll map the first 90 days on the call — no pitch deck, no fluff.</p>
+    <div class="reveal mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+      <a href="mailto:hello@redchair.example" class="rounded-full bg-red px-9 py-4 text-sm font-bold uppercase tracking-[0.12em] text-white shadow-redglow transition hover:-translate-y-0.5 hover:bg-red-600">Book a Strategy Call</a>
+      <a href="#work" class="rounded-full border border-white/20 px-9 py-4 text-sm font-bold uppercase tracking-[0.12em] text-white transition hover:border-white/50 hover:bg-white/5">See more work</a>
+    </div>
+    <p class="reveal mt-8 text-sm text-white/40">Limited partner intake · Currently booking for Q3</p>
+  </div>
+</section>
+
+<!-- ============================ FOOTER ============================ -->
+<footer class="relative border-t border-white/10 bg-ink-900">
+  <div class="mx-auto max-w-7xl px-5 py-16 sm:px-8">
+    <div class="grid gap-12 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
+      <!-- Brand + contact -->
+      <div>
+        <div class="flex items-center gap-3">
+          <span class="grid h-9 w-9 place-items-center rounded-[7px] bg-red shadow-redglow">
+            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v8M7 12h10M17 6v6M7 17v3M17 17v3M6 12h12"/></svg>
+          </span>
+          <span class="font-display text-[17px] font-extrabold leading-none tracking-tight">RED<span class="text-red">CHAIR</span><span class="text-white/60 font-semibold">·MKTG</span></span>
+        </div>
+        <p class="mt-5 max-w-xs text-sm leading-relaxed text-white/50">Strategic positioning and AI-enabled growth systems for companies that intend to dominate their category.</p>
+        <div class="mt-6 space-y-1.5 text-sm text-white/55">
+          <p><a href="mailto:hello@redchair.example" class="hover:text-red">hello@redchair.example</a></p>
+          <p><a href="tel:+18005550199" class="hover:text-red">+1 (800) 555-0199</a></p>
+          <p>200 Market Street, Suite 14 · Anytown, USA</p>
+        </div>
+      </div>
+
+      <div>
+        <p class="mb-4 text-[11px] font-bold uppercase tracking-[0.2em] text-white/40">Services</p>
+        <ul class="space-y-2.5 text-sm text-white/60">
+          <li><a href="#services" class="hover:text-red">Brand &amp; Positioning</a></li>
+          <li><a href="#services" class="hover:text-red">Web Design</a></li>
+          <li><a href="#services" class="hover:text-red">SEO &amp; Content</a></li>
+          <li><a href="#services" class="hover:text-red">Paid Media</a></li>
+          <li><a href="#services" class="hover:text-red">AI Growth Systems</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="mb-4 text-[11px] font-bold uppercase tracking-[0.2em] text-white/40">Company</p>
+        <ul class="space-y-2.5 text-sm text-white/60">
+          <li><a href="#about" class="hover:text-red">About</a></li>
+          <li><a href="#work" class="hover:text-red">Work</a></li>
+          <li><a href="#process" class="hover:text-red">Process</a></li>
+          <li><a href="#blog" class="hover:text-red">Blog</a></li>
+          <li><a href="#contact" class="hover:text-red">Contact</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="mb-4 text-[11px] font-bold uppercase tracking-[0.2em] text-white/40">Follow</p>
+        <div class="flex gap-3">
+          <a href="#" aria-label="LinkedIn" class="grid h-10 w-10 place-items-center rounded-full border border-white/15 text-white/70 transition hover:border-red hover:bg-red hover:text-white">
+            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M4.98 3.5a2.5 2.5 0 11-.02 5 2.5 2.5 0 01.02-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4 0 4.74 2.63 4.74 6.06V21h-4v-5.3c0-1.26-.02-2.9-1.77-2.9-1.77 0-2.04 1.38-2.04 2.8V21H9z"/></svg>
+          </a>
+          <a href="#" aria-label="X" class="grid h-10 w-10 place-items-center rounded-full border border-white/15 text-white/70 transition hover:border-red hover:bg-red hover:text-white">
+            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.9 2H22l-7.5 8.6L23 22h-6.9l-5-6.6L5.3 22H2l8-9.2L1.6 2h7l4.5 6z"/></svg>
+          </a>
+          <a href="#" aria-label="Instagram" class="grid h-10 w-10 place-items-center rounded-full border border-white/15 text-white/70 transition hover:border-red hover:bg-red hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-14 border-t border-white/10 pt-8">
+      <div class="flex flex-col gap-3 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between">
+        <p>© 2026 Red Chair Marketing (mockup). All rights reserved.</p>
+        <p class="flex gap-5"><a href="#" class="hover:text-white/70">Privacy</a><a href="#" class="hover:text-white/70">Terms</a></p>
+      </div>
+      <p class="mt-6 max-w-3xl text-[11px] leading-relaxed text-white/30">
+        Design mockup built with Tailwind CSS for layout reference only. Not affiliated with, endorsed by, or representative of Red Chair Marketing. All names and trademarks belong to their respective owners.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================ MINIMAL JS ============================ -->
+<script>
+  // Header scroll state
+  const header = document.getElementById('site-header');
+  const onScroll = () => {
+    if (window.scrollY > 24) {
+      header.classList.add('bg-ink-900/90', 'backdrop-blur', 'border-b', 'border-white/10', 'shadow-lg');
+    } else {
+      header.classList.remove('bg-ink-900/90', 'backdrop-blur', 'border-b', 'border-white/10', 'shadow-lg');
+    }
+  };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Mobile menu toggle
+  const btn = document.getElementById('menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => menu.classList.add('hidden')));
+
+  // Scroll reveal
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

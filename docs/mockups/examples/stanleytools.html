@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>STANLEY Tools — Homepage (design mockup)</title>
+<!--
+  ============================================================
+  Design-reference mockup — STANLEY Tools homepage replica.
+  Part of the /docs/mockups brand-reference gallery
+  (alongside tesla.html, notion.html, clay.html).
+
+  Self-contained: Tailwind Play CDN + inline config. No build step.
+  Everything is recreated — no real logo, no hotlinked product
+  images, no copyrighted assets. Tool "photos" are CSS gradient
+  blocks + emoji stand-ins. Names/prices are invented but plausible.
+
+  Look & feel: rugged industrial, high-contrast STANLEY yellow on
+  black, bold uppercase condensed type (Oswald), sharp corners,
+  strong section dividers.
+  ============================================================
+-->
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          head: ['Oswald', 'Arial Narrow', 'sans-serif'],
+          body: ['Inter', 'system-ui', 'sans-serif'],
+        },
+        colors: {
+          stanley: {
+            yellow: '#FFD200',
+            yellowdk: '#E6BD00',
+            black: '#111111',
+            ink: '#1a1a1a',
+            steel: '#3a3a3a',
+            ash: '#9a9a9a',
+            fog: '#f2f2f2',
+          },
+        },
+        letterSpacing: {
+          tightish: '-0.01em',
+        },
+      },
+    },
+  };
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', system-ui, sans-serif; }
+  .font-head { font-family: 'Oswald', 'Arial Narrow', sans-serif; }
+
+  /* STANLEY notched-rectangle wordmark recreated in pure CSS.
+     A yellow bar with chevron notches cut into its left & right
+     ends via clip-path, black condensed wordmark centered on top. */
+  .stanley-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #FFD200;
+    color: #111111;
+    font-family: 'Oswald', 'Arial Narrow', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    clip-path: polygon(
+      0% 0%, 100% 0%, 96% 50%, 100% 100%,
+      0% 100%, 4% 50%
+    );
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .stanley-mark.lg { font-size: 26px; padding: 9px 30px; }
+  .stanley-mark.sm { font-size: 17px; padding: 6px 20px; }
+  .stanley-mark.foot { font-size: 22px; padding: 8px 26px; }
+
+  /* Diagonal hazard-stripe accent (industrial caution tape) */
+  .hazard {
+    background-image: repeating-linear-gradient(
+      -45deg, #FFD200 0 16px, #111111 16px 32px
+    );
+  }
+
+  /* Tool image stand-ins: tactile gray/black gradient panels */
+  .tool-panel {
+    background:
+      radial-gradient(120% 90% at 30% 15%, rgba(255,255,255,0.10), transparent 55%),
+      linear-gradient(135deg, #2b2b2b 0%, #1a1a1a 55%, #050505 100%);
+  }
+  .tool-panel-light {
+    background:
+      radial-gradient(120% 90% at 25% 12%, rgba(255,255,255,0.85), transparent 55%),
+      linear-gradient(135deg, #e9e9e9 0%, #cfcfcf 60%, #aeaeae 100%);
+  }
+  .tool-panel-yellow {
+    background:
+      radial-gradient(120% 90% at 28% 14%, rgba(255,255,255,0.55), transparent 55%),
+      linear-gradient(135deg, #FFE34d 0%, #FFD200 55%, #d8b200 100%);
+  }
+  .hero-bg {
+    background:
+      linear-gradient(90deg, rgba(17,17,17,0.92) 0%, rgba(17,17,17,0.55) 48%, rgba(17,17,17,0.15) 100%),
+      repeating-linear-gradient(115deg, #3a2f1a 0 60px, #2c2410 60px 120px),
+      linear-gradient(160deg, #4a3c1e 0%, #2a2210 60%, #161106 100%);
+  }
+  .nav-link::after {
+    content: '';
+    display: block;
+    height: 3px;
+    width: 0;
+    background: #FFD200;
+    transition: width 0.18s ease;
+    margin-top: 6px;
+  }
+  .nav-link:hover::after { width: 100%; }
+  .no-scroll { overflow: hidden; }
+</style>
+</head>
+<body class="bg-white text-stanley-black antialiased">
+
+  <!-- ===================== TOP UTILITY BAR ===================== -->
+  <div class="bg-stanley-yellow text-stanley-black text-[12px] font-semibold tracking-wide">
+    <div class="mx-auto flex max-w-[1340px] items-center justify-between px-4 py-2">
+      <a href="#" class="hover:underline">Accessibility Statement</a>
+      <div class="flex items-center gap-4">
+        <div class="hidden items-center gap-3 sm:flex">
+          <span class="grid h-5 w-5 place-items-center rounded-full bg-stanley-black text-[10px] text-stanley-yellow">♿</span>
+          <span class="grid h-5 w-5 place-items-center rounded-full bg-stanley-black text-[10px] text-stanley-yellow">↗</span>
+          <span class="grid h-5 w-5 place-items-center rounded-full bg-stanley-black text-[10px] text-stanley-yellow">▤</span>
+        </div>
+        <label class="relative hidden md:block">
+          <input
+            type="search"
+            placeholder="e.g. Knives"
+            class="w-44 rounded-sm border border-stanley-black/30 bg-white px-3 py-1.5 text-[12px] text-stanley-black placeholder:text-stanley-ash focus:outline-none focus:ring-2 focus:ring-stanley-black"
+          />
+          <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-stanley-steel">⌕</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== HEADER / NAV ===================== -->
+  <header id="masthead" class="sticky top-0 z-50 bg-stanley-black text-white transition-shadow duration-200">
+    <div class="mx-auto flex max-w-[1340px] items-center gap-6 px-4 py-3">
+
+      <!-- Recreated STANLEY notched-rectangle wordmark -->
+      <a href="#top" aria-label="STANLEY home" class="shrink-0">
+        <span class="stanley-mark lg">STANLEY</span>
+      </a>
+
+      <!-- Primary nav -->
+      <nav class="ml-2 hidden flex-1 items-center gap-7 font-head text-[15px] font-600 uppercase tracking-tightish lg:flex">
+        <a href="#categories" class="nav-link">Power Tools</a>
+        <a href="#categories" class="nav-link">Hand Tools</a>
+        <a href="#categories" class="nav-link">Storage</a>
+        <a href="#products" class="nav-link">Accessories</a>
+        <a href="#retail" class="nav-link">Where to Buy</a>
+      </nav>
+
+      <!-- Right utility cluster -->
+      <div class="ml-auto flex items-center gap-4 text-[13px] font-semibold uppercase tracking-wide">
+        <a href="#" class="hidden text-stanley-ash hover:text-stanley-yellow xl:inline">MySTANLEY</a>
+        <a href="#retail" class="hidden text-stanley-ash hover:text-stanley-yellow xl:inline">Find a Retailer</a>
+        <a href="#" class="hidden items-center gap-1.5 text-white hover:text-stanley-yellow md:inline-flex">
+          <span class="text-base">👤</span><span class="hidden 2xl:inline">Account</span>
+        </a>
+        <a href="#" class="relative inline-flex items-center gap-1.5 text-white hover:text-stanley-yellow">
+          <span class="text-base">🛒</span>
+          <span class="absolute -right-2 -top-2 grid h-4 min-w-[16px] place-items-center rounded-full bg-stanley-yellow px-1 text-[10px] font-bold text-stanley-black">2</span>
+        </a>
+
+        <!-- Hamburger (mobile) -->
+        <button
+          id="hamburger"
+          aria-label="Open menu"
+          class="ml-1 inline-flex h-9 w-9 items-center justify-center rounded-sm border border-white/20 text-2xl leading-none hover:border-stanley-yellow hover:text-stanley-yellow lg:hidden"
+        >☰</button>
+      </div>
+    </div>
+    <!-- thin yellow rule under header -->
+    <div class="h-[3px] bg-stanley-yellow"></div>
+  </header>
+
+  <!-- Mobile menu drawer -->
+  <div id="mobileMenu" class="fixed inset-0 z-[60] hidden">
+    <div id="menuBackdrop" class="absolute inset-0 bg-black/60"></div>
+    <nav class="absolute right-0 top-0 flex h-full w-[82%] max-w-sm flex-col bg-stanley-black text-white shadow-2xl">
+      <div class="flex items-center justify-between border-b border-white/10 px-5 py-4">
+        <span class="stanley-mark sm">STANLEY</span>
+        <button id="closeMenu" aria-label="Close menu" class="text-3xl leading-none text-white hover:text-stanley-yellow">×</button>
+      </div>
+      <div class="flex flex-col gap-1 px-3 py-4 font-head text-lg uppercase tracking-tightish">
+        <a href="#categories" class="rounded-sm px-3 py-3 hover:bg-white/5 hover:text-stanley-yellow">Power Tools</a>
+        <a href="#categories" class="rounded-sm px-3 py-3 hover:bg-white/5 hover:text-stanley-yellow">Hand Tools</a>
+        <a href="#categories" class="rounded-sm px-3 py-3 hover:bg-white/5 hover:text-stanley-yellow">Storage</a>
+        <a href="#products" class="rounded-sm px-3 py-3 hover:bg-white/5 hover:text-stanley-yellow">Accessories</a>
+        <a href="#retail" class="rounded-sm px-3 py-3 hover:bg-white/5 hover:text-stanley-yellow">Where to Buy</a>
+      </div>
+      <div class="mt-auto flex flex-col gap-2 border-t border-white/10 px-5 py-5 text-sm font-semibold uppercase tracking-wide text-stanley-ash">
+        <a href="#" class="hover:text-stanley-yellow">MySTANLEY</a>
+        <a href="#retail" class="hover:text-stanley-yellow">Find a Retailer</a>
+        <a href="#" class="hover:text-stanley-yellow">Product Registration</a>
+        <a href="#" class="hover:text-stanley-yellow">Account</a>
+      </div>
+    </nav>
+  </div>
+
+  <main id="top">
+
+    <!-- ===================== HERO ===================== -->
+    <section class="relative isolate overflow-hidden">
+      <div class="hero-bg absolute inset-0 -z-10"></div>
+      <!-- faux jobsite silhouette accents -->
+      <div class="pointer-events-none absolute right-0 top-0 -z-10 h-full w-1/2 opacity-30"
+           style="background:linear-gradient(180deg,transparent,rgba(0,0,0,0.4)),repeating-linear-gradient(90deg,transparent 0 90px,rgba(255,255,255,0.04) 90px 92px)"></div>
+
+      <div class="mx-auto flex max-w-[1340px] flex-col px-4 py-20 sm:py-28 lg:py-36">
+        <div class="max-w-2xl">
+          <p class="mb-3 font-head text-sm font-600 uppercase tracking-[0.35em] text-stanley-yellow">Professional Grade</p>
+          <h1 class="font-head text-5xl font-700 uppercase leading-[0.95] tracking-tightish text-white sm:text-6xl lg:text-7xl">
+            The Measure<br />Of A Pro<span class="align-super text-2xl sm:text-3xl">™</span>
+          </h1>
+          <p class="mt-6 max-w-xl text-base leading-relaxed text-stanley-fog/90 sm:text-lg">
+            Solid, tried and true. For those willing to get their hands dirty to raise the
+            bar — because the measure of a pro is the work they leave behind.
+          </p>
+          <div class="mt-9 flex flex-wrap items-center gap-4">
+            <a href="#categories"
+               class="inline-flex items-center gap-2 bg-stanley-yellow px-8 py-4 font-head text-base font-700 uppercase tracking-wide text-stanley-black transition hover:bg-stanley-yellowdk">
+              Shop The Lineup <span aria-hidden="true">→</span>
+            </a>
+            <a href="#heritage"
+               class="inline-flex items-center gap-2 border-2 border-white/40 px-7 py-3.5 font-head text-base font-600 uppercase tracking-wide text-white transition hover:border-stanley-yellow hover:text-stanley-yellow">
+              <span aria-hidden="true">▶</span> Play Video
+            </a>
+          </div>
+        </div>
+      </div>
+      <!-- bottom hazard divider -->
+      <div class="hazard h-3 w-full"></div>
+    </section>
+
+    <!-- ===================== PARTNERSHIP / SPOTLIGHT BAND ===================== -->
+    <section class="bg-stanley-fog">
+      <div class="mx-auto grid max-w-[1340px] items-stretch gap-0 px-0 md:grid-cols-2">
+        <!-- recreated "team" image block -->
+        <div class="tool-panel relative min-h-[300px] overflow-hidden md:min-h-[420px]">
+          <div class="absolute inset-0 grid place-items-center">
+            <span class="font-head text-7xl text-white/15">⚽</span>
+          </div>
+          <div class="hazard absolute bottom-0 left-0 h-2 w-full"></div>
+          <span class="absolute left-5 top-5 bg-stanley-yellow px-3 py-1 font-head text-xs font-700 uppercase tracking-wider text-stanley-black">
+            Official Tools Partner
+          </span>
+        </div>
+        <!-- copy -->
+        <div class="flex flex-col justify-center px-6 py-12 md:px-12 lg:px-16">
+          <h2 class="font-head text-4xl font-700 uppercase leading-none tracking-tightish text-stanley-black lg:text-5xl">
+            Together, We Are<br />Beyond A Match
+          </h2>
+          <p class="mt-5 max-w-md text-base leading-relaxed text-stanley-steel">
+            Confident in their tools and their talents. The maintenance crews behind the
+            world's biggest stadiums trust STANLEY® to be at their side as the official
+            tools partner — every fixture, every season.
+          </p>
+          <a href="#heritage"
+             class="mt-7 inline-flex w-max items-center gap-2 bg-stanley-black px-7 py-3.5 font-head text-sm font-700 uppercase tracking-wide text-white transition hover:bg-stanley-steel">
+            Learn More <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== FEATURED CATEGORIES ===================== -->
+    <section id="categories" class="mx-auto max-w-[1340px] px-4 py-16 lg:py-20">
+      <div class="mb-9 flex items-end justify-between border-b-4 border-stanley-black pb-4">
+        <h2 class="font-head text-3xl font-700 uppercase tracking-tightish lg:text-4xl">Featured Categories</h2>
+        <a href="#products" class="hidden font-head text-sm font-600 uppercase tracking-wide text-stanley-steel hover:text-stanley-black sm:inline">All Products →</a>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3">
+        <!-- category tile template repeated -->
+        <a href="#products" class="group relative block overflow-hidden border border-stanley-fog bg-white transition hover:border-stanley-black hover:shadow-xl">
+          <div class="tool-panel-light grid aspect-[4/3] place-items-center">
+            <span class="text-6xl drop-shadow-sm transition group-hover:scale-110">🪛</span>
+          </div>
+          <div class="flex items-center justify-between bg-stanley-black px-4 py-3">
+            <span class="font-head text-lg font-600 uppercase tracking-tightish text-white">Drills</span>
+            <span class="text-stanley-yellow transition group-hover:translate-x-1">→</span>
+          </div>
+          <span class="absolute left-0 top-0 h-1.5 w-full bg-stanley-yellow opacity-0 transition group-hover:opacity-100"></span>
+        </a>
+
+        <a href="#products" class="group relative block overflow-hidden border border-stanley-fog bg-white transition hover:border-stanley-black hover:shadow-xl">
+          <div class="tool-panel-yellow grid aspect-[4/3] place-items-center">
+            <span class="text-6xl drop-shadow-sm transition group-hover:scale-110">📏</span>
+          </div>
+          <div class="flex items-center justify-between bg-stanley-black px-4 py-3">
+            <span class="font-head text-lg font-600 uppercase tracking-tightish text-white">Tape Measures</span>
+            <span class="text-stanley-yellow transition group-hover:translate-x-1">→</span>
+          </div>
+          <span class="absolute left-0 top-0 h-1.5 w-full bg-stanley-yellow opacity-0 transition group-hover:opacity-100"></span>
+        </a>
+
+        <a href="#products" class="group relative block overflow-hidden border border-stanley-fog bg-white transition hover:border-stanley-black hover:shadow-xl">
+          <div class="tool-panel grid aspect-[4/3] place-items-center">
+            <span class="text-6xl drop-shadow-sm transition group-hover:scale-110">🔧</span>
+          </div>
+          <div class="flex items-center justify-between bg-stanley-black px-4 py-3">
+            <span class="font-head text-lg font-600 uppercase tracking-tightish text-white">Hand Tools</span>
+            <span class="text-stanley-yellow transition group-hover:translate-x-1">→</span>
+          </div>
+          <span class="absolute left-0 top-0 h-1.5 w-full bg-stanley-yellow opacity-0 transition group-hover:opacity-100"></span>
+        </a>
+
+        <a href="#products" class="group relative block overflow-hidden border border-stanley-fog bg-white transition hover:border-stanley-black hover:shadow-xl">
+          <div class="tool-panel-light grid aspect-[4/3] place-items-center">
+            <span class="text-6xl drop-shadow-sm transition group-hover:scale-110">🧰</span>
+          </div>
+          <div class="flex items-center justify-between bg-stanley-black px-4 py-3">
+            <span class="font-head text-lg font-600 uppercase tracking-tightish text-white">Tool Storage</span>
+            <span class="text-stanley-yellow transition group-hover:translate-x-1">→</span>
+          </div>
+          <span class="absolute left-0 top-0 h-1.5 w-full bg-stanley-yellow opacity-0 transition group-hover:opacity-100"></span>
+        </a>
+
+        <a href="#products" class="group relative block overflow-hidden border border-stanley-fog bg-white transition hover:border-stanley-black hover:shadow-xl">
+          <div class="tool-panel grid aspect-[4/3] place-items-center">
+            <span class="text-6xl drop-shadow-sm transition group-hover:scale-110">🔪</span>
+          </div>
+          <div class="flex items-center justify-between bg-stanley-black px-4 py-3">
+            <span class="font-head text-lg font-600 uppercase tracking-tightish text-white">Knives</span>
+            <span class="text-stanley-yellow transition group-hover:translate-x-1">→</span>
+          </div>
+          <span class="absolute left-0 top-0 h-1.5 w-full bg-stanley-yellow opacity-0 transition group-hover:opacity-100"></span>
+        </a>
+
+        <a href="#products" class="group relative block overflow-hidden border border-stanley-fog bg-white transition hover:border-stanley-black hover:shadow-xl">
+          <div class="tool-panel-yellow grid aspect-[4/3] place-items-center">
+            <span class="text-6xl drop-shadow-sm transition group-hover:scale-110">📐</span>
+          </div>
+          <div class="flex items-center justify-between bg-stanley-black px-4 py-3">
+            <span class="font-head text-lg font-600 uppercase tracking-tightish text-white">Levels</span>
+            <span class="text-stanley-yellow transition group-hover:translate-x-1">→</span>
+          </div>
+          <span class="absolute left-0 top-0 h-1.5 w-full bg-stanley-yellow opacity-0 transition group-hover:opacity-100"></span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ===================== FEATURED PRODUCTS ===================== -->
+    <section id="products" class="border-t-4 border-stanley-yellow bg-stanley-fog">
+      <div class="mx-auto max-w-[1340px] px-4 py-16 lg:py-20">
+        <div class="mb-9 flex items-end justify-between border-b-4 border-stanley-black pb-4">
+          <h2 class="font-head text-3xl font-700 uppercase tracking-tightish lg:text-4xl">Featured Products</h2>
+          <span class="font-head text-sm font-600 uppercase tracking-wide text-stanley-steel">1 of 4</span>
+        </div>
+
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+
+          <!-- Product card 1 -->
+          <article class="group flex flex-col border border-stanley-fog bg-white transition hover:-translate-y-1 hover:shadow-xl">
+            <div class="tool-panel-yellow relative grid aspect-square place-items-center">
+              <span class="text-7xl transition group-hover:scale-110">📏</span>
+              <span class="absolute left-3 top-3 bg-stanley-black px-2 py-0.5 font-head text-[11px] font-600 uppercase tracking-wide text-stanley-yellow">Best Seller</span>
+            </div>
+            <div class="flex flex-1 flex-col p-4">
+              <p class="font-head text-[12px] font-600 uppercase tracking-widest text-stanley-ash">FatMax®</p>
+              <h3 class="mt-1 font-head text-lg font-600 uppercase leading-tight tracking-tightish">25 ft. Auto-Lock Tape Measure</h3>
+              <div class="mt-auto flex items-center justify-between pt-4">
+                <span class="font-head text-xl font-700 text-stanley-black">$24.98</span>
+                <button class="bg-stanley-yellow px-4 py-2 font-head text-xs font-700 uppercase tracking-wide text-stanley-black transition hover:bg-stanley-yellowdk">Add</button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Product card 2 -->
+          <article class="group flex flex-col border border-stanley-fog bg-white transition hover:-translate-y-1 hover:shadow-xl">
+            <div class="tool-panel relative grid aspect-square place-items-center">
+              <span class="text-7xl transition group-hover:scale-110">🪛</span>
+              <span class="absolute left-3 top-3 bg-stanley-yellow px-2 py-0.5 font-head text-[11px] font-700 uppercase tracking-wide text-stanley-black">New</span>
+            </div>
+            <div class="flex flex-1 flex-col p-4">
+              <p class="font-head text-[12px] font-600 uppercase tracking-widest text-stanley-ash">SharpShield™</p>
+              <h3 class="mt-1 font-head text-lg font-600 uppercase leading-tight tracking-tightish">20V MAX Cordless Drill Kit</h3>
+              <div class="mt-auto flex items-center justify-between pt-4">
+                <span class="font-head text-xl font-700 text-stanley-black">$129.00</span>
+                <button class="bg-stanley-yellow px-4 py-2 font-head text-xs font-700 uppercase tracking-wide text-stanley-black transition hover:bg-stanley-yellowdk">Add</button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Product card 3 -->
+          <article class="group flex flex-col border border-stanley-fog bg-white transition hover:-translate-y-1 hover:shadow-xl">
+            <div class="tool-panel-light relative grid aspect-square place-items-center">
+              <span class="text-7xl transition group-hover:scale-110">🔪</span>
+            </div>
+            <div class="flex flex-1 flex-col p-4">
+              <p class="font-head text-[12px] font-600 uppercase tracking-widest text-stanley-ash">FatMax®</p>
+              <h3 class="mt-1 font-head text-lg font-600 uppercase leading-tight tracking-tightish">Retractable Utility Knife</h3>
+              <div class="mt-auto flex items-center justify-between pt-4">
+                <span class="font-head text-xl font-700 text-stanley-black">$14.49</span>
+                <button class="bg-stanley-yellow px-4 py-2 font-head text-xs font-700 uppercase tracking-wide text-stanley-black transition hover:bg-stanley-yellowdk">Add</button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Product card 4 -->
+          <article class="group flex flex-col border border-stanley-fog bg-white transition hover:-translate-y-1 hover:shadow-xl">
+            <div class="tool-panel relative grid aspect-square place-items-center">
+              <span class="text-7xl transition group-hover:scale-110">🧰</span>
+              <span class="absolute left-3 top-3 bg-stanley-black px-2 py-0.5 font-head text-[11px] font-600 uppercase tracking-wide text-stanley-yellow">Pro Pick</span>
+            </div>
+            <div class="flex flex-1 flex-col p-4">
+              <p class="font-head text-[12px] font-600 uppercase tracking-widest text-stanley-ash">Essential</p>
+              <h3 class="mt-1 font-head text-lg font-600 uppercase leading-tight tracking-tightish">19 in. Rolling Tool Box</h3>
+              <div class="mt-auto flex items-center justify-between pt-4">
+                <span class="font-head text-xl font-700 text-stanley-black">$39.97</span>
+                <button class="bg-stanley-yellow px-4 py-2 font-head text-xs font-700 uppercase tracking-wide text-stanley-black transition hover:bg-stanley-yellowdk">Add</button>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- carousel control -->
+        <div class="mt-9 flex items-center justify-center gap-4">
+          <button aria-label="Previous" class="grid h-11 w-11 place-items-center rounded-full border-2 border-stanley-black text-stanley-black transition hover:bg-stanley-black hover:text-stanley-yellow">←</button>
+          <div class="flex gap-2">
+            <span class="h-2 w-8 bg-stanley-black"></span>
+            <span class="h-2 w-8 bg-stanley-ash/40"></span>
+            <span class="h-2 w-8 bg-stanley-ash/40"></span>
+            <span class="h-2 w-8 bg-stanley-ash/40"></span>
+          </div>
+          <button aria-label="Next" class="grid h-11 w-11 place-items-center rounded-full border-2 border-stanley-black text-stanley-black transition hover:bg-stanley-black hover:text-stanley-yellow">→</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== BRAND / HERITAGE BAND ===================== -->
+    <section id="heritage" class="relative overflow-hidden bg-stanley-black text-white">
+      <div class="hazard absolute left-0 top-0 h-2 w-full"></div>
+      <div class="pointer-events-none absolute -right-20 top-1/2 -z-0 -translate-y-1/2 select-none font-head text-[22rem] font-700 leading-none text-white/[0.03]">
+        1843
+      </div>
+      <div class="relative mx-auto grid max-w-[1340px] items-center gap-12 px-4 py-20 lg:grid-cols-2 lg:py-28">
+        <div>
+          <p class="mb-3 font-head text-sm font-600 uppercase tracking-[0.35em] text-stanley-yellow">Built Since 1843</p>
+          <h2 class="font-head text-4xl font-700 uppercase leading-[0.95] tracking-tightish lg:text-6xl">
+            Tools That<br /><span class="text-stanley-yellow">Earn Their Keep</span>
+          </h2>
+          <p class="mt-6 max-w-lg text-base leading-relaxed text-stanley-fog/80">
+            For over 180 years, the yellow-and-black has stood for one thing: tools built to
+            outwork the day. From the first folding rule to today's cordless platform, every
+            STANLEY® product is engineered to be the one you reach for first — and trust last.
+          </p>
+
+          <div class="mt-9 grid max-w-md grid-cols-3 gap-6 border-t border-white/10 pt-7">
+            <div>
+              <p class="font-head text-3xl font-700 text-stanley-yellow lg:text-4xl">180+</p>
+              <p class="mt-1 text-xs uppercase tracking-wide text-stanley-ash">Years on the job</p>
+            </div>
+            <div>
+              <p class="font-head text-3xl font-700 text-stanley-yellow lg:text-4xl">2,000+</p>
+              <p class="mt-1 text-xs uppercase tracking-wide text-stanley-ash">Tools in the line</p>
+            </div>
+            <div>
+              <p class="font-head text-3xl font-700 text-stanley-yellow lg:text-4xl">75+</p>
+              <p class="mt-1 text-xs uppercase tracking-wide text-stanley-ash">Countries served</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative">
+          <div class="tool-panel grid aspect-[5/4] place-items-center border-4 border-stanley-yellow">
+            <span class="text-9xl">🔧</span>
+          </div>
+          <div class="absolute -bottom-5 -left-5 bg-stanley-yellow px-6 py-4 font-head text-stanley-black shadow-xl">
+            <p class="text-3xl font-700 uppercase leading-none tracking-tightish">Lifetime</p>
+            <p class="text-sm font-600 uppercase tracking-wide">Limited Warranty</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== WHERE TO BUY / RETAILER BAND ===================== -->
+    <section id="retail" class="bg-stanley-yellow">
+      <div class="mx-auto max-w-[1340px] px-4 py-14 lg:py-16">
+        <div class="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
+          <div class="max-w-xl">
+            <h2 class="font-head text-3xl font-700 uppercase leading-none tracking-tightish text-stanley-black lg:text-4xl">
+              Where To Buy
+            </h2>
+            <p class="mt-3 text-base font-medium leading-relaxed text-stanley-black/80">
+              STANLEY® tools are stocked at home centers, hardware stores, and online
+              retailers near you. Find the nearest spot to gear up.
+            </p>
+          </div>
+          <a href="#"
+             class="inline-flex shrink-0 items-center gap-2 bg-stanley-black px-8 py-4 font-head text-base font-700 uppercase tracking-wide text-white transition hover:bg-stanley-steel">
+            <span aria-hidden="true">📍</span> Find a Retailer
+          </a>
+        </div>
+
+        <!-- retailer logo strip (recreated as styled name plates) -->
+        <div class="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          <div class="grid h-16 place-items-center border-2 border-stanley-black/15 bg-white/40 font-head text-sm font-700 uppercase tracking-widest text-stanley-black">BuildMart</div>
+          <div class="grid h-16 place-items-center border-2 border-stanley-black/15 bg-white/40 font-head text-sm font-700 uppercase tracking-widest text-stanley-black">ProDepot</div>
+          <div class="grid h-16 place-items-center border-2 border-stanley-black/15 bg-white/40 font-head text-sm font-700 uppercase tracking-widest text-stanley-black">HardwareCo</div>
+          <div class="grid h-16 place-items-center border-2 border-stanley-black/15 bg-white/40 font-head text-sm font-700 uppercase tracking-widest text-stanley-black">ToolYard</div>
+          <div class="grid h-16 place-items-center border-2 border-stanley-black/15 bg-white/40 font-head text-sm font-700 uppercase tracking-widest text-stanley-black">SiteSupply</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== EMAIL SIGN-UP ===================== -->
+    <section class="bg-white">
+      <div class="mx-auto max-w-[1340px] px-4 py-16">
+        <div class="grid items-center gap-10 lg:grid-cols-2">
+          <div>
+            <p class="font-head text-sm font-600 uppercase tracking-[0.3em] text-stanley-steel">✉ Email Sign Up</p>
+            <h2 class="mt-2 font-head text-3xl font-700 uppercase leading-none tracking-tightish lg:text-4xl">Get The Long & Short Of It</h2>
+            <p class="mt-3 max-w-md text-base leading-relaxed text-stanley-steel">
+              Sign up for the latest product drops, special offers, and pro tips — delivered
+              straight to your inbox.
+            </p>
+          </div>
+          <form class="grid gap-4 sm:grid-cols-2" onsubmit="return false">
+            <input type="text" placeholder="First Name" class="border-2 border-stanley-fog px-4 py-3 text-sm focus:border-stanley-black focus:outline-none" />
+            <input type="text" placeholder="Last Name" class="border-2 border-stanley-fog px-4 py-3 text-sm focus:border-stanley-black focus:outline-none" />
+            <input type="email" placeholder="e.g. joe@email.com" class="border-2 border-stanley-fog px-4 py-3 text-sm focus:border-stanley-black focus:outline-none sm:col-span-2" />
+            <button class="bg-stanley-black px-6 py-3.5 font-head text-base font-700 uppercase tracking-wide text-white transition hover:bg-stanley-steel sm:col-span-2">
+              Sign Me Up
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="bg-stanley-black text-stanley-fog">
+    <div class="hazard h-2 w-full"></div>
+    <div class="mx-auto max-w-[1340px] px-4 py-14">
+      <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
+
+        <!-- brand col -->
+        <div class="lg:col-span-1">
+          <span class="stanley-mark foot">STANLEY</span>
+          <p class="mt-5 max-w-xs text-sm leading-relaxed text-stanley-ash">
+            The measure of a pro since 1843. Tools built to outwork the day, every day.
+          </p>
+          <div class="mt-5 flex gap-3 text-lg">
+            <a href="#" aria-label="Facebook" class="grid h-9 w-9 place-items-center border border-white/15 transition hover:border-stanley-yellow hover:text-stanley-yellow">f</a>
+            <a href="#" aria-label="Instagram" class="grid h-9 w-9 place-items-center border border-white/15 transition hover:border-stanley-yellow hover:text-stanley-yellow">◎</a>
+            <a href="#" aria-label="YouTube" class="grid h-9 w-9 place-items-center border border-white/15 transition hover:border-stanley-yellow hover:text-stanley-yellow">▶</a>
+          </div>
+        </div>
+
+        <!-- Products -->
+        <div>
+          <h3 class="mb-4 font-head text-sm font-700 uppercase tracking-widest text-white">Products</h3>
+          <ul class="space-y-2.5 text-sm text-stanley-ash">
+            <li><a href="#categories" class="hover:text-stanley-yellow">Power Tools</a></li>
+            <li><a href="#categories" class="hover:text-stanley-yellow">Hand Tools</a></li>
+            <li><a href="#categories" class="hover:text-stanley-yellow">Tool Storage</a></li>
+            <li><a href="#products" class="hover:text-stanley-yellow">Accessories</a></li>
+            <li><a href="#categories" class="hover:text-stanley-yellow">Outdoor</a></li>
+            <li><a href="#products" class="hover:text-stanley-yellow">Workspace</a></li>
+          </ul>
+        </div>
+
+        <!-- Service & Support -->
+        <div>
+          <h3 class="mb-4 font-head text-sm font-700 uppercase tracking-widest text-white">Service &amp; Support</h3>
+          <ul class="space-y-2.5 text-sm text-stanley-ash">
+            <li><a href="#" class="hover:text-stanley-yellow">Support</a></li>
+            <li><a href="#" class="hover:text-stanley-yellow">Contact Us</a></li>
+            <li><a href="#" class="hover:text-stanley-yellow">FAQs</a></li>
+            <li><a href="#retail" class="hover:text-stanley-yellow">Find a Retailer</a></li>
+            <li><a href="#" class="hover:text-stanley-yellow">Warranty Information</a></li>
+            <li><a href="#" class="hover:text-stanley-yellow">Safety Notices &amp; Recalls</a></li>
+          </ul>
+        </div>
+
+        <!-- Company -->
+        <div>
+          <h3 class="mb-4 font-head text-sm font-700 uppercase tracking-widest text-white">Company</h3>
+          <ul class="space-y-2.5 text-sm text-stanley-ash">
+            <li><a href="#heritage" class="hover:text-stanley-yellow">About Us</a></li>
+            <li><a href="#" class="hover:text-stanley-yellow">Community</a></li>
+            <li><a href="#" class="hover:text-stanley-yellow">News &amp; Press Releases</a></li>
+            <li><a href="#" class="hover:text-stanley-yellow">Sponsorships</a></li>
+            <li><a href="#" class="hover:text-stanley-yellow">Sustainability</a></li>
+            <li><a href="#" class="hover:text-stanley-yellow">Careers</a></li>
+          </ul>
+        </div>
+
+        <!-- Guides -->
+        <div>
+          <h3 class="mb-4 font-head text-sm font-700 uppercase tracking-widest text-white">Guides</h3>
+          <ul class="space-y-2.5 text-sm text-stanley-ash">
+            <li><a href="#" class="hover:text-stanley-yellow">Carpentry Buyer Guide</a></li>
+            <li><a href="#" class="hover:text-stanley-yellow">Home Improvement Guide</a></li>
+            <li><a href="#" class="hover:text-stanley-yellow">Project Guides</a></li>
+            <li><a href="#" class="hover:text-stanley-yellow">Product Registration</a></li>
+            <li><a href="#" class="hover:text-stanley-yellow">Service Center</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- legal sub-bar -->
+    <div class="border-t border-white/10">
+      <div class="mx-auto flex max-w-[1340px] flex-col gap-4 px-4 py-6 text-xs text-stanley-ash md:flex-row md:items-center md:justify-between">
+        <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <a href="#" class="hover:text-stanley-yellow">Accessibility Statement</a>
+          <a href="#" class="hover:text-stanley-yellow">All Locations</a>
+          <a href="#" class="hover:text-stanley-yellow">Privacy Policy</a>
+          <a href="#" class="hover:text-stanley-yellow">Your Privacy Choices</a>
+          <a href="#" class="hover:text-stanley-yellow">Cookies</a>
+          <a href="#" class="hover:text-stanley-yellow">Terms of Use</a>
+        </div>
+        <p>© 2026 Sparx design mockup. All product names are fictional.</p>
+      </div>
+
+      <!-- Required disclaimer -->
+      <div class="mx-auto max-w-[1340px] px-4 pb-8">
+        <p class="max-w-4xl text-[11px] leading-relaxed text-stanley-ash/70">
+          Design mockup built with Tailwind CSS for layout reference only. Not affiliated
+          with, endorsed by, or representative of STANLEY Tools. All names and trademarks
+          belong to their respective owners.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================== MINIMAL JS ===================== -->
+  <script>
+    // Header scroll state — drop a shadow once the page is scrolled.
+    (function () {
+      var masthead = document.getElementById('masthead');
+      function onScroll() {
+        if (window.scrollY > 8) {
+          masthead.classList.add('shadow-lg', 'shadow-black/40');
+        } else {
+          masthead.classList.remove('shadow-lg', 'shadow-black/40');
+        }
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      // Mobile menu drawer
+      var menu = document.getElementById('mobileMenu');
+      var openBtn = document.getElementById('hamburger');
+      var closeBtn = document.getElementById('closeMenu');
+      var backdrop = document.getElementById('menuBackdrop');
+
+      function open() {
+        menu.classList.remove('hidden');
+        document.body.classList.add('no-scroll');
+      }
+      function close() {
+        menu.classList.add('hidden');
+        document.body.classList.remove('no-scroll');
+      }
+      openBtn.addEventListener('click', open);
+      closeBtn.addEventListener('click', close);
+      backdrop.addEventListener('click', close);
+      menu.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', close);
+      });
+    })();
+  </script>
+</body>
+</html>

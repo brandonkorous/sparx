@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>500 Designs | Impactful brands &amp; websites. Engineered growth.</title>
+    <meta
+      name="description"
+      content="Mockup replica of the 500designs.com homepage — built with Tailwind CSS for design reference only. Not affiliated with 500 Designs."
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Sora', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+              display: ['"Space Grotesk"', 'Sora', 'ui-sans-serif', 'sans-serif'],
+            },
+            colors: {
+              // warm near-black canvas seen on the real site
+              night: '#1A1611',
+              nighter: '#121009',
+              coal: '#0B0A07',
+              panel: '#221D16',
+              line: 'rgba(236,231,221,0.12)',
+              // off-white / cream type
+              cream: '#ECE7DD',
+              sand: '#C9C3B6',
+              dust: '#8E887B',
+              ink: '#15120D',
+              // vivid accent — acid green used in the hero showcase
+              acid: '#C6F24E',
+              acidsoft: '#D9FB7A',
+              ember: '#FF6A3D',
+            },
+            boxShadow: {
+              lift: '0 40px 90px -38px rgba(0,0,0,0.65), 0 8px 24px -12px rgba(0,0,0,0.4)',
+              card: '0 24px 60px -30px rgba(0,0,0,0.55)',
+              glow: '0 0 80px -10px rgba(198,242,78,0.45)',
+            },
+          },
+        },
+      };
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: 'Sora', system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        color: #c9c3b6;
+        background: #1a1611;
+      }
+      .display {
+        font-family: 'Space Grotesk', 'Sora', sans-serif;
+        font-weight: 500;
+        letter-spacing: -0.03em;
+        line-height: 0.98;
+        color: #ece7dd;
+      }
+      .ff-display { font-family: 'Space Grotesk', 'Sora', sans-serif; }
+
+      /* leading slash accent that marks the brand and headlines */
+      .slash {
+        display: inline-block;
+        transform: skewX(-12deg);
+        color: #ece7dd;
+        font-weight: 600;
+      }
+
+      /* ---------- buttons ---------- */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        height: 50px;
+        padding: 0 26px;
+        border-radius: 9999px;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        transition:
+          background-color 0.18s ease,
+          color 0.18s ease,
+          border-color 0.18s ease,
+          transform 0.12s ease;
+      }
+      .btn svg { height: 16px; width: 16px; }
+      .btn:active { transform: translateY(1px); }
+      .btn-cream { background: #ece7dd; color: #15120d; }
+      .btn-cream:hover { background: #fff; transform: translateY(-2px); }
+      .btn-acid { background: #c6f24e; color: #15120d; }
+      .btn-acid:hover { background: #d9fb7a; transform: translateY(-2px); }
+      .btn-outline { background: transparent; color: #ece7dd; border: 1px solid rgba(236,231,221,0.28); }
+      .btn-outline:hover { border-color: #ece7dd; background: rgba(236,231,221,0.06); }
+      .btn-sm { height: 42px; padding: 0 18px; font-size: 14px; }
+
+      /* ---------- nav ---------- */
+      .nav-link {
+        position: relative;
+        color: #c9c3b6;
+        font-weight: 500;
+        font-size: 15px;
+        transition: color 0.16s ease;
+      }
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -4px;
+        height: 1px;
+        width: 0;
+        background: #ece7dd;
+        transition: width 0.22s ease;
+      }
+      .nav-link:hover { color: #ece7dd; }
+      .nav-link:hover::after { width: 100%; }
+
+      header.scrolled {
+        background: rgba(18,16,9,0.82);
+        backdrop-filter: saturate(140%) blur(14px);
+        border-bottom: 1px solid rgba(236,231,221,0.1);
+      }
+
+      /* ---------- project cards ---------- */
+      .work-card {
+        transition:
+          transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+          box-shadow 0.4s ease;
+        will-change: transform;
+      }
+      .work-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--tw-shadow, 0 40px 90px -38px rgba(0,0,0,0.65));
+      }
+      .work-thumb {
+        transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+      }
+      .work-card:hover .work-thumb { transform: scale(1.04); }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(26px);
+        transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+      }
+      .reveal.in { opacity: 1; transform: none; }
+
+      .marquee-track {
+        display: flex;
+        gap: 4rem;
+        width: max-content;
+        animation: marquee 32s linear infinite;
+      }
+      @keyframes marquee {
+        to { transform: translateX(-50%); }
+      }
+
+      .grid-faint {
+        background-image:
+          linear-gradient(rgba(236,231,221,0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(236,231,221,0.05) 1px, transparent 1px);
+        background-size: 64px 64px;
+      }
+
+      .link-row {
+        transition: color 0.16s ease, padding-left 0.2s ease;
+      }
+      .link-row:hover { color: #ece7dd; padding-left: 6px; }
+
+      ::selection { background: #c6f24e; color: #15120d; }
+    </style>
+  </head>
+
+  <body class="bg-night text-sand antialiased">
+    <!-- =================== HEADER =================== -->
+    <header id="site-header" class="fixed inset-x-0 top-0 z-50 transition-all duration-300">
+      <div class="mx-auto flex h-20 max-w-[1400px] items-center justify-between px-5 sm:px-8">
+        <!-- wordmark -->
+        <a href="#top" class="flex items-center gap-2 select-none" aria-label="500 Designs home">
+          <span class="slash text-3xl leading-none">/</span>
+          <span class="flex flex-col leading-none">
+            <span class="ff-display text-[13px] font-medium tracking-wide text-cream">500</span>
+            <span class="ff-display text-[19px] font-bold tracking-tight text-cream">Designs</span>
+          </span>
+        </a>
+
+        <!-- desktop nav -->
+        <nav class="hidden items-center gap-9 lg:flex">
+          <a href="#work" class="nav-link">Work</a>
+          <a href="#services" class="nav-link">Services</a>
+          <a href="#about" class="nav-link">About</a>
+          <a href="#insights" class="nav-link">Insights</a>
+          <a href="#careers" class="nav-link">Careers</a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+          <a href="#contact" class="btn btn-cream btn-sm hidden sm:inline-flex">Let's talk</a>
+          <button
+            id="menu-btn"
+            class="flex h-11 w-11 items-center justify-center rounded-full border border-line text-cream lg:hidden"
+            aria-label="Open menu"
+            aria-expanded="false"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5">
+              <path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- mobile menu -->
+      <div id="mobile-menu" class="hidden border-t border-line bg-nighter/95 px-5 py-6 backdrop-blur lg:hidden">
+        <nav class="flex flex-col gap-1 text-lg">
+          <a href="#work" class="link-row py-3 ff-display text-cream">Work</a>
+          <a href="#services" class="link-row py-3 ff-display text-cream">Services</a>
+          <a href="#about" class="link-row py-3 ff-display text-cream">About</a>
+          <a href="#insights" class="link-row py-3 ff-display text-cream">Insights</a>
+          <a href="#careers" class="link-row py-3 ff-display text-cream">Careers</a>
+          <a href="#contact" class="btn btn-acid mt-4 w-full">Let's talk</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- =================== HERO =================== -->
+      <section class="relative overflow-hidden bg-night pt-36 pb-20 sm:pt-44 sm:pb-28">
+        <div class="pointer-events-none absolute inset-0 grid-faint opacity-60"></div>
+        <div
+          class="pointer-events-none absolute -right-40 top-10 h-[520px] w-[520px] rounded-full blur-3xl"
+          style="background: radial-gradient(closest-side, rgba(198,242,78,0.16), transparent)"
+        ></div>
+
+        <div class="relative mx-auto max-w-[1400px] px-5 sm:px-8">
+          <p class="reveal mb-7 flex items-center gap-3 text-sm font-medium tracking-wide text-dust">
+            <span class="inline-block h-2 w-2 rounded-full bg-acid"></span>
+            Brand · Web · Growth — since 2014
+          </p>
+
+          <h1 class="reveal display text-[15vw] leading-[0.94] sm:text-[11vw] lg:text-[8.4rem]">
+            <span class="slash mr-3 text-acid">/</span>Impactful brands<br class="hidden sm:block" />
+            &amp; websites. <span class="text-dust">Engineered</span> growth.
+          </h1>
+
+          <div class="reveal mt-10 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+            <p class="max-w-xl text-lg leading-relaxed text-sand">
+              An award-winning partner for brand, web, and growth marketing — trusted by
+              Fortune 100s and venture-backed startups to unlock their next era of growth.
+            </p>
+            <div class="flex flex-wrap items-center gap-4">
+              <a href="#contact" class="btn btn-acid">Start a project
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+              <a href="#work" class="btn btn-outline">View our work</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- hero showcase: recreated case-study panel (CSS only) -->
+        <div class="relative mx-auto mt-16 max-w-[1400px] px-5 sm:mt-20 sm:px-8">
+          <div class="reveal work-card overflow-hidden rounded-[28px] bg-coal shadow-lift">
+            <div class="grid items-stretch gap-0 md:grid-cols-[1.15fr_1fr]">
+              <!-- left: white case-study slab -->
+              <div class="flex flex-col justify-between bg-cream p-9 sm:p-12">
+                <div>
+                  <p class="ff-display text-sm font-medium tracking-wide text-ink/50">Voltaic Energy — Brand &amp; Web</p>
+                  <h2 class="ff-display mt-4 text-4xl font-bold leading-[1.02] tracking-tight text-ink sm:text-5xl">
+                    Fusion energy made<br />faster and simpler
+                  </h2>
+                  <p class="mt-5 max-w-md text-base leading-relaxed text-ink/60">
+                    A full rebrand and product site for a clean-energy startup reinventing the
+                    world's power supply — abundant, affordable, and beautifully explained.
+                  </p>
+                </div>
+                <div class="mt-10 flex flex-wrap gap-2">
+                  <span class="rounded-full bg-ink/5 px-3 py-1 text-xs font-medium text-ink/70">Identity</span>
+                  <span class="rounded-full bg-ink/5 px-3 py-1 text-xs font-medium text-ink/70">Web Design</span>
+                  <span class="rounded-full bg-ink/5 px-3 py-1 text-xs font-medium text-ink/70">Motion</span>
+                  <span class="rounded-full bg-ink/5 px-3 py-1 text-xs font-medium text-ink/70">Webflow</span>
+                </div>
+              </div>
+              <!-- right: vivid recreated visual -->
+              <div class="relative min-h-[300px] overflow-hidden bg-black">
+                <div class="work-thumb absolute inset-0" style="background: radial-gradient(120% 120% at 70% 40%, #0d0d0d, #000)"></div>
+                <!-- mock toroid / acid ring -->
+                <div class="absolute left-1/2 top-1/2 h-56 w-56 -translate-x-1/2 -translate-y-1/2">
+                  <div class="absolute inset-0 rounded-full" style="background: conic-gradient(from 200deg, #c6f24e, transparent 60%); filter: blur(2px); opacity:0.95"></div>
+                  <div class="absolute inset-6 rounded-full border-[10px] border-black/85"></div>
+                  <div class="absolute inset-0 rounded-full shadow-glow"></div>
+                </div>
+                <!-- floating mesh dots -->
+                <div class="absolute left-10 top-10 grid grid-cols-4 gap-2 opacity-50">
+                  <span class="h-2 w-2 rounded-sm bg-white/40"></span><span class="h-2 w-2 rounded-sm bg-white/20"></span>
+                  <span class="h-2 w-2 rounded-sm bg-white/30"></span><span class="h-2 w-2 rounded-sm bg-white/10"></span>
+                  <span class="h-2 w-2 rounded-sm bg-white/20"></span><span class="h-2 w-2 rounded-sm bg-white/30"></span>
+                  <span class="h-2 w-2 rounded-sm bg-white/10"></span><span class="h-2 w-2 rounded-sm bg-white/25"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================== LOGO / AWARDS MARQUEE =================== -->
+      <section class="border-y border-line bg-nighter py-10">
+        <div class="mx-auto mb-7 max-w-[1400px] px-5 sm:px-8">
+          <p class="text-center text-sm tracking-wide text-dust">
+            Trusted by category leaders &amp; recognized by the industry
+          </p>
+        </div>
+        <div class="relative overflow-hidden" aria-hidden="true">
+          <div class="marquee-track px-8">
+            <!-- set A -->
+            <div class="flex items-center gap-16 text-2xl ff-display font-semibold text-sand/55">
+              <span>Vela</span><span>Northwind</span><span>Lumen</span><span>Contoso</span>
+              <span>Aperture</span><span>Globex</span><span>Hooli</span><span>Umbra</span>
+            </div>
+            <!-- set B (duplicate for seamless loop) -->
+            <div class="flex items-center gap-16 text-2xl ff-display font-semibold text-sand/55">
+              <span>Vela</span><span>Northwind</span><span>Lumen</span><span>Contoso</span>
+              <span>Aperture</span><span>Globex</span><span>Hooli</span><span>Umbra</span>
+            </div>
+          </div>
+        </div>
+        <div class="mx-auto mt-10 flex max-w-[1400px] flex-wrap items-center justify-center gap-x-10 gap-y-4 px-5 text-sm text-dust sm:px-8">
+          <span class="flex items-center gap-2"><span class="text-acid">★</span> Awwwards — Site of the Day ×7</span>
+          <span class="flex items-center gap-2"><span class="text-acid">★</span> CSS Design Awards ×12</span>
+          <span class="flex items-center gap-2"><span class="text-acid">★</span> Clutch Top B2B Agency 2025</span>
+          <span class="flex items-center gap-2"><span class="text-acid">★</span> Webby Honoree</span>
+        </div>
+      </section>
+
+      <!-- =================== WORK / CASE STUDY GRID =================== -->
+      <section id="work" class="bg-night py-24 sm:py-32">
+        <div class="mx-auto max-w-[1400px] px-5 sm:px-8">
+          <div class="mb-14 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <h2 class="reveal display max-w-2xl text-5xl sm:text-6xl">
+              <span class="slash mr-2 text-acid">/</span>Selected work
+            </h2>
+            <p class="reveal max-w-md text-base text-sand">
+              Brands and digital products we've shaped end-to-end — from positioning and
+              identity to high-converting websites and launch.
+            </p>
+          </div>
+
+          <div class="grid gap-6 lg:grid-cols-2">
+            <!-- card 1 -->
+            <article class="reveal work-card group overflow-hidden rounded-3xl bg-panel shadow-card">
+              <div class="relative h-72 overflow-hidden sm:h-80">
+                <div class="work-thumb absolute inset-0" style="background: linear-gradient(135deg,#1f2b1a,#0a0a0a)"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="h-40 w-40 rotate-12 rounded-2xl border-[10px] border-acid/80 shadow-glow"></div>
+                </div>
+                <span class="absolute left-6 top-6 rounded-full bg-black/40 px-3 py-1 text-xs font-medium text-cream backdrop-blur">Fintech</span>
+              </div>
+              <div class="flex items-center justify-between p-7">
+                <div>
+                  <h3 class="ff-display text-2xl font-semibold text-cream">Northwind Capital</h3>
+                  <p class="mt-1 text-sm text-dust">Brand system · Web platform · Motion</p>
+                </div>
+                <span class="grid h-11 w-11 place-items-center rounded-full border border-line text-cream transition group-hover:bg-acid group-hover:text-ink">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4"><path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </div>
+            </article>
+
+            <!-- card 2 -->
+            <article class="reveal work-card group overflow-hidden rounded-3xl bg-panel shadow-card">
+              <div class="relative h-72 overflow-hidden sm:h-80">
+                <div class="work-thumb absolute inset-0" style="background: linear-gradient(135deg,#3a1d12,#120a06)"></div>
+                <div class="absolute inset-0 flex items-center justify-center gap-3">
+                  <div class="h-44 w-12 rounded-full bg-ember/90"></div>
+                  <div class="h-32 w-12 rounded-full bg-ember/50"></div>
+                  <div class="h-24 w-12 rounded-full bg-ember/30"></div>
+                </div>
+                <span class="absolute left-6 top-6 rounded-full bg-black/40 px-3 py-1 text-xs font-medium text-cream backdrop-blur">Consumer</span>
+              </div>
+              <div class="flex items-center justify-between p-7">
+                <div>
+                  <h3 class="ff-display text-2xl font-semibold text-cream">Lumen Fitness</h3>
+                  <p class="mt-1 text-sm text-dust">Naming · Identity · E-commerce</p>
+                </div>
+                <span class="grid h-11 w-11 place-items-center rounded-full border border-line text-cream transition group-hover:bg-acid group-hover:text-ink">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4"><path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </div>
+            </article>
+
+            <!-- card 3 -->
+            <article class="reveal work-card group overflow-hidden rounded-3xl bg-panel shadow-card">
+              <div class="relative h-72 overflow-hidden sm:h-80">
+                <div class="work-thumb absolute inset-0" style="background: linear-gradient(135deg,#15233a,#070a12)"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="grid grid-cols-3 gap-3">
+                    <span class="h-14 w-14 rounded-xl bg-sky-400/80"></span><span class="h-14 w-14 rounded-xl bg-sky-400/40"></span><span class="h-14 w-14 rounded-xl bg-sky-400/60"></span>
+                    <span class="h-14 w-14 rounded-xl bg-sky-400/30"></span><span class="h-14 w-14 rounded-xl bg-cream"></span><span class="h-14 w-14 rounded-xl bg-sky-400/40"></span>
+                    <span class="h-14 w-14 rounded-xl bg-sky-400/50"></span><span class="h-14 w-14 rounded-xl bg-sky-400/30"></span><span class="h-14 w-14 rounded-xl bg-sky-400/70"></span>
+                  </div>
+                </div>
+                <span class="absolute left-6 top-6 rounded-full bg-black/40 px-3 py-1 text-xs font-medium text-cream backdrop-blur">SaaS</span>
+              </div>
+              <div class="flex items-center justify-between p-7">
+                <div>
+                  <h3 class="ff-display text-2xl font-semibold text-cream">Aperture Cloud</h3>
+                  <p class="mt-1 text-sm text-dust">Product design · Web · Design system</p>
+                </div>
+                <span class="grid h-11 w-11 place-items-center rounded-full border border-line text-cream transition group-hover:bg-acid group-hover:text-ink">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4"><path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </div>
+            </article>
+
+            <!-- card 4 -->
+            <article class="reveal work-card group overflow-hidden rounded-3xl bg-panel shadow-card">
+              <div class="relative h-72 overflow-hidden sm:h-80">
+                <div class="work-thumb absolute inset-0" style="background: linear-gradient(135deg,#2a1538,#0c0612)"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="relative h-40 w-40">
+                    <div class="absolute inset-0 rounded-full border-[3px] border-fuchsia-400/70"></div>
+                    <div class="absolute inset-6 rounded-full border-[3px] border-fuchsia-400/45"></div>
+                    <div class="absolute inset-12 rounded-full bg-fuchsia-400/80"></div>
+                  </div>
+                </div>
+                <span class="absolute left-6 top-6 rounded-full bg-black/40 px-3 py-1 text-xs font-medium text-cream backdrop-blur">Healthtech</span>
+              </div>
+              <div class="flex items-center justify-between p-7">
+                <div>
+                  <h3 class="ff-display text-2xl font-semibold text-cream">Umbra Health</h3>
+                  <p class="mt-1 text-sm text-dust">Strategy · Brand · Marketing site</p>
+                </div>
+                <span class="grid h-11 w-11 place-items-center rounded-full border border-line text-cream transition group-hover:bg-acid group-hover:text-ink">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4"><path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </div>
+            </article>
+          </div>
+
+          <div class="mt-12 text-center">
+            <a href="#work" class="btn btn-outline">See all 240+ projects
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================== STATS =================== -->
+      <section class="border-y border-line bg-nighter py-20 sm:py-24">
+        <div class="mx-auto grid max-w-[1400px] gap-12 px-5 sm:px-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="reveal">
+            <p class="display text-6xl text-acid sm:text-7xl">240<span class="text-cream">+</span></p>
+            <p class="mt-3 text-sm text-dust">Projects shipped worldwide</p>
+          </div>
+          <div class="reveal">
+            <p class="display text-6xl text-cream sm:text-7xl">38</p>
+            <p class="mt-3 text-sm text-dust">Industry awards &amp; honors</p>
+          </div>
+          <div class="reveal">
+            <p class="display text-6xl text-cream sm:text-7xl">$2.4<span class="text-acid">B</span></p>
+            <p class="mt-3 text-sm text-dust">Client revenue influenced</p>
+          </div>
+          <div class="reveal">
+            <p class="display text-6xl text-cream sm:text-7xl">11<span class="text-dust">yrs</span></p>
+            <p class="mt-3 text-sm text-dust">Designing for growth</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================== SERVICES =================== -->
+      <section id="services" class="bg-night py-24 sm:py-32">
+        <div class="mx-auto max-w-[1400px] px-5 sm:px-8">
+          <div class="mb-14 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <h2 class="reveal display max-w-2xl text-5xl sm:text-6xl">
+              <span class="slash mr-2 text-acid">/</span>What we do
+            </h2>
+            <p class="reveal max-w-md text-base text-sand">
+              A full-service studio built around three disciplines that compound — strategy
+              that informs design, design that drives growth.
+            </p>
+          </div>
+
+          <div class="divide-y divide-line border-y border-line">
+            <!-- row -->
+            <div class="group grid items-start gap-6 py-9 md:grid-cols-[7rem_1fr_22rem]">
+              <span class="ff-display text-lg text-dust">01</span>
+              <h3 class="ff-display text-3xl font-semibold text-cream transition group-hover:text-acid sm:text-4xl">Brand &amp; Identity</h3>
+              <p class="text-base leading-relaxed text-sand">
+                Positioning, naming, visual identity, and brand systems that make ambitious
+                companies impossible to ignore.
+              </p>
+            </div>
+            <div class="group grid items-start gap-6 py-9 md:grid-cols-[7rem_1fr_22rem]">
+              <span class="ff-display text-lg text-dust">02</span>
+              <h3 class="ff-display text-3xl font-semibold text-cream transition group-hover:text-acid sm:text-4xl">Web Design &amp; Dev</h3>
+              <p class="text-base leading-relaxed text-sand">
+                Conversion-focused marketing sites and product UI — designed in Figma, built in
+                Webflow, Next.js, or your stack of choice.
+              </p>
+            </div>
+            <div class="group grid items-start gap-6 py-9 md:grid-cols-[7rem_1fr_22rem]">
+              <span class="ff-display text-lg text-dust">03</span>
+              <h3 class="ff-display text-3xl font-semibold text-cream transition group-hover:text-acid sm:text-4xl">Growth Marketing</h3>
+              <p class="text-base leading-relaxed text-sand">
+                Performance creative, SEO, lifecycle, and CRO programs that turn a great launch
+                into a compounding pipeline.
+              </p>
+            </div>
+            <div class="group grid items-start gap-6 py-9 md:grid-cols-[7rem_1fr_22rem]">
+              <span class="ff-display text-lg text-dust">04</span>
+              <h3 class="ff-display text-3xl font-semibold text-cream transition group-hover:text-acid sm:text-4xl">Motion &amp; 3D</h3>
+              <p class="text-base leading-relaxed text-sand">
+                Story-driven motion design, product animation, and real-time 3D that make digital
+                experiences feel alive.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================== PROCESS =================== -->
+      <section id="about" class="border-y border-line bg-nighter py-24 sm:py-32">
+        <div class="mx-auto max-w-[1400px] px-5 sm:px-8">
+          <h2 class="reveal display mb-14 max-w-3xl text-5xl sm:text-6xl">
+            <span class="slash mr-2 text-acid">/</span>How we engineer growth
+          </h2>
+          <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div class="reveal rounded-3xl border border-line bg-panel p-8">
+              <span class="ff-display text-sm text-acid">Phase 01</span>
+              <h3 class="ff-display mt-4 text-2xl font-semibold text-cream">Discover</h3>
+              <p class="mt-3 text-sm leading-relaxed text-sand">Audits, stakeholder interviews, and market research to find the real opportunity.</p>
+            </div>
+            <div class="reveal rounded-3xl border border-line bg-panel p-8">
+              <span class="ff-display text-sm text-acid">Phase 02</span>
+              <h3 class="ff-display mt-4 text-2xl font-semibold text-cream">Define</h3>
+              <p class="mt-3 text-sm leading-relaxed text-sand">Strategy, positioning, and a creative direction the whole team rallies behind.</p>
+            </div>
+            <div class="reveal rounded-3xl border border-line bg-panel p-8">
+              <span class="ff-display text-sm text-acid">Phase 03</span>
+              <h3 class="ff-display mt-4 text-2xl font-semibold text-cream">Design</h3>
+              <p class="mt-3 text-sm leading-relaxed text-sand">Identity, interfaces, and motion crafted to spec — pixel-tight and on-brand.</p>
+            </div>
+            <div class="reveal rounded-3xl border border-line bg-panel p-8">
+              <span class="ff-display text-sm text-acid">Phase 04</span>
+              <h3 class="ff-display mt-4 text-2xl font-semibold text-cream">Deploy</h3>
+              <p class="mt-3 text-sm leading-relaxed text-sand">Build, launch, measure, iterate — we stay on as your growth partner.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================== TESTIMONIALS =================== -->
+      <section id="insights" class="bg-night py-24 sm:py-32">
+        <div class="mx-auto max-w-[1400px] px-5 sm:px-8">
+          <h2 class="reveal display mb-14 max-w-3xl text-5xl sm:text-6xl">
+            <span class="slash mr-2 text-acid">/</span>What partners say
+          </h2>
+          <div class="grid gap-6 lg:grid-cols-3">
+            <figure class="reveal flex flex-col justify-between rounded-3xl border border-line bg-panel p-8">
+              <blockquote class="ff-display text-xl leading-snug text-cream">
+                "They didn't just redesign our site — they rebuilt how the market sees us.
+                Pipeline doubled in two quarters."
+              </blockquote>
+              <figcaption class="mt-8 flex items-center gap-3">
+                <span class="grid h-11 w-11 place-items-center rounded-full bg-acid text-sm font-bold text-ink">RV</span>
+                <span class="text-sm">
+                  <span class="block font-semibold text-cream">Renata Voss</span>
+                  <span class="text-dust">VP Marketing, Vela</span>
+                </span>
+              </figcaption>
+            </figure>
+            <figure class="reveal flex flex-col justify-between rounded-3xl border border-line bg-panel p-8">
+              <blockquote class="ff-display text-xl leading-snug text-cream">
+                "The most thoughtful, fastest-moving design team we've worked with. Every
+                deliverable raised the bar."
+              </blockquote>
+              <figcaption class="mt-8 flex items-center gap-3">
+                <span class="grid h-11 w-11 place-items-center rounded-full bg-ember text-sm font-bold text-ink">DC</span>
+                <span class="text-sm">
+                  <span class="block font-semibold text-cream">Daniel Cho</span>
+                  <span class="text-dust">CEO, Contoso</span>
+                </span>
+              </figcaption>
+            </figure>
+            <figure class="reveal flex flex-col justify-between rounded-3xl border border-line bg-panel p-8">
+              <blockquote class="ff-display text-xl leading-snug text-cream">
+                "From brand to launch in twelve weeks, with a site that finally feels like the
+                company we're becoming."
+              </blockquote>
+              <figcaption class="mt-8 flex items-center gap-3">
+                <span class="grid h-11 w-11 place-items-center rounded-full bg-sky-400 text-sm font-bold text-ink">MA</span>
+                <span class="text-sm">
+                  <span class="block font-semibold text-cream">Mara Aldous</span>
+                  <span class="text-dust">Founder, Aperture</span>
+                </span>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================== BIG CONTACT CTA =================== -->
+      <section id="contact" class="relative overflow-hidden bg-acid py-24 text-ink sm:py-32">
+        <div class="pointer-events-none absolute inset-0 opacity-[0.07]"
+             style="background-image: linear-gradient(#15120d 1px,transparent 1px),linear-gradient(90deg,#15120d 1px,transparent 1px); background-size:48px 48px"></div>
+        <div class="relative mx-auto max-w-[1400px] px-5 text-center sm:px-8">
+          <p class="reveal ff-display text-sm font-medium tracking-wide text-ink/60">Let's work together</p>
+          <h2 class="reveal display mt-5 text-[12vw] leading-[0.95] text-ink sm:text-[8rem]">
+            <span class="slash mr-2 text-ink">/</span>Start something<br />impactful.
+          </h2>
+          <div class="reveal mt-12 flex flex-wrap items-center justify-center gap-4">
+            <a href="mailto:hello@500designs.example" class="btn btn-cream">hello@500designs.example</a>
+            <a href="#contact" class="btn" style="background:#15120d;color:#ece7dd">Book a call
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+          <p class="reveal mt-8 text-sm text-ink/60">Based in Los Angeles · Working with teams worldwide</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- =================== FOOTER =================== -->
+    <footer id="careers" class="bg-coal pt-20 pb-10">
+      <div class="mx-auto max-w-[1400px] px-5 sm:px-8">
+        <div class="grid gap-12 border-b border-line pb-14 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+          <div>
+            <a href="#top" class="flex items-center gap-2 select-none" aria-label="500 Designs home">
+              <span class="slash text-3xl leading-none text-cream">/</span>
+              <span class="flex flex-col leading-none">
+                <span class="ff-display text-[13px] font-medium tracking-wide text-cream">500</span>
+                <span class="ff-display text-[19px] font-bold tracking-tight text-cream">Designs</span>
+              </span>
+            </a>
+            <p class="mt-6 max-w-xs text-sm text-dust">Transformative experiences by design.</p>
+            <p class="ff-display mt-2 text-xl font-semibold text-cream">Let's work together.</p>
+            <a href="mailto:hello@500designs.example" class="mt-4 inline-block text-sm text-sand underline-offset-4 hover:text-cream hover:underline">hello@500designs.example</a>
+          </div>
+
+          <div>
+            <h4 class="ff-display text-sm font-semibold text-cream">Studio</h4>
+            <ul class="mt-5 space-y-3 text-sm">
+              <li><a href="#work" class="link-row block text-dust">Work</a></li>
+              <li><a href="#services" class="link-row block text-dust">Services</a></li>
+              <li><a href="#about" class="link-row block text-dust">About</a></li>
+              <li><a href="#insights" class="link-row block text-dust">Insights</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="ff-display text-sm font-semibold text-cream">Services</h4>
+            <ul class="mt-5 space-y-3 text-sm">
+              <li><a href="#services" class="link-row block text-dust">Brand &amp; Identity</a></li>
+              <li><a href="#services" class="link-row block text-dust">Web Design &amp; Dev</a></li>
+              <li><a href="#services" class="link-row block text-dust">Growth Marketing</a></li>
+              <li><a href="#services" class="link-row block text-dust">Motion &amp; 3D</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="ff-display text-sm font-semibold text-cream">Connect</h4>
+            <ul class="mt-5 space-y-3 text-sm">
+              <li><a href="#" class="link-row block text-dust">Instagram</a></li>
+              <li><a href="#" class="link-row block text-dust">Dribbble</a></li>
+              <li><a href="#" class="link-row block text-dust">LinkedIn</a></li>
+              <li><a href="#careers" class="link-row block text-dust">Careers</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-4 pt-8 text-xs text-dust sm:flex-row sm:items-center sm:justify-between">
+          <p>© 2026 500 Designs (mockup). All rights reserved.</p>
+          <div class="flex gap-6">
+            <a href="#" class="hover:text-cream">Privacy</a>
+            <a href="#" class="hover:text-cream">Terms</a>
+            <a href="#" class="hover:text-cream">Cookies</a>
+          </div>
+        </div>
+
+        <p class="mt-8 max-w-3xl text-[11px] leading-relaxed text-dust/70">
+          Design mockup built with Tailwind CSS for layout reference only. Not affiliated with,
+          endorsed by, or representative of 500 Designs. All names and trademarks belong to their
+          respective owners.
+        </p>
+      </div>
+    </footer>
+
+    <!-- =================== MINIMAL JS =================== -->
+    <script>
+      // header scroll state
+      const header = document.getElementById('site-header');
+      const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 24);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      // mobile menu
+      const btn = document.getElementById('menu-btn');
+      const menu = document.getElementById('mobile-menu');
+      btn.addEventListener('click', () => {
+        const open = menu.classList.toggle('hidden') === false;
+        btn.setAttribute('aria-expanded', String(open));
+      });
+      menu.querySelectorAll('a').forEach((a) =>
+        a.addEventListener('click', () => {
+          menu.classList.add('hidden');
+          btn.setAttribute('aria-expanded', 'false');
+        }),
+      );
+
+      // scroll reveal
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add('in');
+              io.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.12 },
+      );
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+    </script>
+  </body>
+</html>

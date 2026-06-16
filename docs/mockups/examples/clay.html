@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Clay | Go to market with unique data—and the ability to act on it</title>
+    <meta
+      name="description"
+      content="Mockup replica of the Clay.com homepage — built with Tailwind CSS for design reference only. Not affiliated with Clay (Firstbase, Inc.)."
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Manrope', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            },
+            colors: {
+              ink: '#1A1917',
+              body: '#3B3A36',
+              muted: '#6E6C64',
+              faint: '#9C9A90',
+              page: '#F7F6F1',
+              cream: '#ECE9DF',
+              line: '#E4E1D7',
+              clayblue: '#2D52E0',
+              maroon: '#8A1F47',
+              royal: '#1E50C8',
+              forest: '#136B4A',
+            },
+            boxShadow: {
+              soft: '0 24px 60px -22px rgba(20,20,15,0.28), 0 4px 12px rgba(20,20,15,0.05)',
+              card: '0 1px 2px rgba(20,20,15,0.05), 0 10px 26px -12px rgba(20,20,15,0.14)',
+            },
+          },
+        },
+      };
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: 'Manrope', system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        color: #3b3a36;
+        background: #f7f6f1;
+      }
+      .display {
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 0.98;
+        color: #1a1917;
+      }
+
+      /* ---- buttons ---- */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        height: 48px;
+        padding: 0 22px;
+        border-radius: 9999px;
+        font-size: 15px;
+        font-weight: 600;
+        transition:
+          background-color 0.16s ease,
+          border-color 0.16s ease,
+          transform 0.08s ease;
+      }
+      .btn svg { height: 16px; width: 16px; }
+      .btn:active { transform: translateY(1px); }
+      .btn-dark { background: #1a1917; color: #fff; }
+      .btn-dark:hover { background: #38362f; }
+      .btn-ghost { background: transparent; color: #1a1917; border: 1px solid rgba(20,20,15,0.22); }
+      .btn-ghost:hover { background: rgba(20,20,15,0.05); }
+      .btn-sm { height: 38px; padding: 0 14px; font-size: 14px; }
+
+      .nav-link {
+        color: #3b3a36;
+        font-weight: 600;
+        font-size: 15px;
+        padding: 7px 10px;
+        border-radius: 8px;
+        transition: background-color 0.15s ease;
+        white-space: nowrap;
+      }
+      .nav-link:hover { background: rgba(20,20,15,0.06); }
+
+      #hdr {
+        transition: box-shadow 0.2s ease, background-color 0.2s ease;
+        background: rgba(247, 246, 241, 0);
+      }
+      #hdr.scrolled {
+        background: rgba(247, 246, 241, 0.88);
+        backdrop-filter: saturate(160%) blur(12px);
+        box-shadow: 0 1px 0 rgba(20, 20, 15, 0.06);
+      }
+
+      /* eyebrow labels — replicating Clay's card kickers */
+      .eyebrow {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      /* faint topographic texture for the hero panel */
+      .topo {
+        background-color: #ece9df;
+        background-image: radial-gradient(
+            120% 80% at 50% 0%,
+            rgba(255, 255, 255, 0.5),
+            transparent 60%
+          ),
+          repeating-radial-gradient(
+            circle at 30% 120%,
+            rgba(120, 110, 80, 0.05) 0,
+            rgba(120, 110, 80, 0.05) 1px,
+            transparent 1px,
+            transparent 22px
+          );
+      }
+
+      /* balancing clay-stone sculptures (CSS recreation of Clay's mascot art) */
+      .stone {
+        border-radius: 50%;
+        box-shadow:
+          inset -4px -6px 10px rgba(0, 0, 0, 0.18),
+          inset 3px 4px 8px rgba(255, 255, 255, 0.45),
+          0 6px 14px rgba(0, 0, 0, 0.12);
+      }
+      .stack { display: flex; flex-direction: column; align-items: center; }
+
+      /* clay brand mark (blobby gradient) */
+      .claymark {
+        background: conic-gradient(
+          from 200deg,
+          #ff8a3d,
+          #ffd23d,
+          #36c98c,
+          #3d8bff,
+          #b06bff,
+          #ff5d73,
+          #ff8a3d
+        );
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ================= HEADER ================= -->
+    <header id="hdr" class="sticky top-0 z-50 w-full">
+      <div class="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-4 sm:px-6">
+        <div class="flex items-center gap-1.5 lg:gap-4">
+          <a href="#top" class="mr-1 flex items-center gap-2">
+            <span class="claymark h-6 w-6 rounded-full shadow-inner"></span>
+            <span class="text-[22px] font-extrabold tracking-tight text-ink">clay</span>
+          </a>
+          <nav class="hidden items-center lg:flex">
+            <a href="#data" class="nav-link inline-flex items-center gap-1">Product <svg class="h-3.5 w-3.5 text-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></a>
+            <a href="#" class="nav-link inline-flex items-center gap-1">Use Cases <svg class="h-3.5 w-3.5 text-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></a>
+            <a href="#" class="nav-link inline-flex items-center gap-1">Solutions <svg class="h-3.5 w-3.5 text-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></a>
+            <a href="#" class="nav-link inline-flex items-center gap-1">Resources <svg class="h-3.5 w-3.5 text-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></a>
+            <a href="#" class="nav-link inline-flex items-center gap-1">Company <svg class="h-3.5 w-3.5 text-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></a>
+            <a href="#" class="nav-link">Pricing</a>
+          </nav>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button class="hidden items-center gap-1.5 rounded-lg border border-line px-2.5 py-1.5 text-sm text-muted sm:inline-flex" aria-label="Search">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>
+            <span class="text-xs">⌘K</span>
+          </button>
+          <a href="#" class="nav-link hidden sm:inline-flex">Log in</a>
+          <a href="#" class="btn btn-ghost btn-sm">Get a demo</a>
+          <a href="#cta" class="btn btn-dark btn-sm">Start free trial</a>
+          <button class="nav-link lg:hidden" aria-label="Open menu">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- ================= HERO ================= -->
+      <section class="px-3 pt-3 sm:px-4">
+        <div class="topo relative mx-auto max-w-[1200px] overflow-hidden rounded-[28px]">
+          <div class="px-6 pb-44 pt-16 text-center sm:pb-52 sm:pt-24">
+            <h1 class="display mx-auto max-w-4xl text-[44px] sm:text-7xl lg:text-[88px]">
+              Go to market with unique data
+              <span class="block">— and the ability to act on it</span>
+            </h1>
+            <p class="mx-auto mt-7 max-w-xl text-lg text-body sm:text-xl">
+              Bring AI agents, enrichment, and intent data together and turn
+              insights into relevant, timely action.
+            </p>
+            <a href="#cta" class="btn btn-dark mx-auto mt-8">
+              Start building for free
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+          </div>
+
+          <!-- balancing clay stones, bottom-left -->
+          <div class="stack absolute bottom-6 left-4 hidden gap-1 sm:flex">
+            <span class="stone h-7 w-7" style="background:#5BC8F5"></span>
+            <span class="stone h-6 w-9 -mt-1 rotate-3" style="background:#9B5DE5"></span>
+            <span class="stone h-9 w-9 -mt-1" style="background:#F15BB5"></span>
+            <span class="stone h-10 w-16 -mt-1" style="background:#FF7A3D"></span>
+            <span class="stone h-12 w-20 -mt-1" style="background:#2A9D8F"></span>
+          </div>
+          <!-- balancing clay stones, bottom-right -->
+          <div class="stack absolute bottom-6 right-4 hidden gap-1 sm:flex">
+            <span class="stone h-7 w-7" style="background:#4CC9F0"></span>
+            <span class="stone h-9 w-9 -mt-1 -rotate-3" style="background:#F15BB5"></span>
+            <span class="stone h-10 w-16 -mt-1" style="background:#FF7A3D"></span>
+            <span class="stone h-12 w-24 -mt-1" style="background:#F4A261"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TRUSTED STRIP ================= -->
+      <section class="mx-auto max-w-5xl px-6 py-14 text-center">
+        <p class="eyebrow text-faint">
+          Trusted by more than 500,000 leading GTM teams of all sizes.
+          <br class="hidden sm:block" />Built with love. Inspired by our customers.
+        </p>
+        <div class="mt-4 flex items-center justify-center gap-6 text-sm text-muted">
+          <span class="inline-flex items-center gap-1.5"><span class="font-semibold text-ink">4.9</span> ★★★★★</span>
+          <span class="hidden sm:inline">40K+ GTME community</span>
+          <span class="inline-flex items-center gap-1.5"><span class="font-semibold text-ink">5.0</span> ★★★★★</span>
+        </div>
+
+        <!-- logo grid: generic placeholder wordmarks, not real trademarks -->
+        <div class="mt-9 grid grid-cols-3 items-start gap-x-6 gap-y-7 text-lg font-bold text-[#A8A69C] sm:grid-cols-5 lg:grid-cols-6">
+          <div>Vela</div>
+          <div>Northwind<p class="mt-0.5 text-[10px] font-semibold tracking-wide text-faint">Case study</p></div>
+          <div>Lumen</div>
+          <div>Contoso<p class="mt-0.5 text-[10px] font-semibold tracking-wide text-faint">Case study</p></div>
+          <div>Aperture</div>
+          <div>Initech</div>
+          <div>Globex<p class="mt-0.5 text-[10px] font-semibold tracking-wide text-faint">Case study</p></div>
+          <div>Hooli</div>
+          <div>Umbra</div>
+          <div>Soylent</div>
+          <div>Stark Labs<p class="mt-0.5 text-[10px] font-semibold tracking-wide text-faint">Case study</p></div>
+          <div>Wernham</div>
+        </div>
+      </section>
+
+      <!-- ================= FEATURE ROW 1 ================= -->
+      <section id="data" class="mx-auto max-w-[1120px] px-6 py-12 sm:py-16">
+        <div class="grid items-center gap-10 lg:grid-cols-2">
+          <!-- product table mock -->
+          <div class="overflow-hidden rounded-2xl bg-royal p-4 shadow-soft">
+            <div class="overflow-hidden rounded-xl bg-white">
+              <div class="flex items-center gap-2 border-b border-line px-3 py-2 text-xs text-muted">
+                <span class="font-semibold text-ink">📋 Accounts</span>
+                <span class="ml-auto rounded-md bg-clayblue px-2 py-1 text-[11px] font-medium text-white">+ Add enrichment</span>
+              </div>
+              <div class="grid grid-cols-[1.4fr_1fr_1fr] bg-[#FAFAF8] px-3 py-2 text-[11px] font-semibold text-faint">
+                <span>Company</span><span>Location</span><span>Employees</span>
+              </div>
+              <div class="grid grid-cols-[1.4fr_1fr_1fr] items-center border-t border-line px-3 py-2 text-[12px]">
+                <span class="font-medium text-ink">Quantum Bloom</span><span class="text-muted">Austin, TX</span><span class="text-muted">240</span>
+              </div>
+              <div class="grid grid-cols-[1.4fr_1fr_1fr] items-center border-t border-line px-3 py-2 text-[12px]">
+                <span class="font-medium text-ink">Velvet Horizon</span><span class="text-muted">Denver, CO</span><span class="text-muted">1,180</span>
+              </div>
+              <div class="grid grid-cols-[1.4fr_1fr_1fr] items-center border-t border-line px-3 py-2 text-[12px]">
+                <span class="font-medium text-ink">Vertex Ventures</span><span class="text-muted">NYC, NY</span><span class="text-muted">62</span>
+              </div>
+              <div class="grid grid-cols-[1.4fr_1fr_1fr] items-center border-t border-line px-3 py-2 text-[12px]">
+                <span class="font-medium text-ink">LumenSphere</span><span class="text-muted">Seattle, WA</span><span class="text-muted">540</span>
+              </div>
+              <div class="grid grid-cols-[1.4fr_1fr_1fr] items-center border-t border-line px-3 py-2 text-[12px]">
+                <span class="font-medium text-ink">Nova Nexus</span><span class="text-muted">Boston, MA</span><span class="text-muted">88</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h2 class="display text-4xl sm:text-5xl">Every GTM data point imaginable, in one place</h2>
+            <p class="mt-5 text-lg text-body">
+              Understand your total market, your customers, and your prospects —
+              then act on it.
+            </p>
+            <ul class="mt-6 space-y-3 text-body">
+              <li class="flex gap-3"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ink"></span><span><strong class="font-semibold text-ink">150+ data providers:</strong> identify new leads and personalize outreach.</span></li>
+              <li class="flex gap-3"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ink"></span><span><strong class="font-semibold text-ink">Intent signals:</strong> know when prospects change jobs, visit your site, mention you online, and more.</span></li>
+              <li class="flex gap-3"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ink"></span><span><strong class="font-semibold text-ink">AI-led research:</strong> search public databases and navigate gated forms with Claygent.</span></li>
+            </ul>
+
+            <div class="mt-7 flex items-center gap-4 rounded-xl border border-line bg-white p-4">
+              <span class="text-2xl font-extrabold text-clayblue">&gt;2x</span>
+              <p class="text-sm text-body"><strong class="font-semibold text-ink">Vela</strong> more than doubled enrichment coverage from low 40% to high 80%.</p>
+              <span class="ml-auto grid h-9 w-9 shrink-0 place-items-center rounded-full border border-line text-muted">↗</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= FEATURE ROW 2 ================= -->
+      <section class="mx-auto max-w-[1120px] px-6 py-12 sm:py-16">
+        <div class="grid items-center gap-10 lg:grid-cols-2">
+          <div class="order-2 lg:order-1">
+            <h2 class="display text-4xl sm:text-5xl">AI that's contextual, consistent, and scalable</h2>
+            <p class="mt-5 text-lg text-body">
+              Create and scale context-aware AI agents, and launch GTM workflows
+              effortlessly.
+            </p>
+            <ul class="mt-6 space-y-3 text-body">
+              <li class="flex gap-3"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ink"></span><span><strong class="font-semibold text-ink">From idea to workflow:</strong> chat with Sculptor for GTM idea generation, analysis, and table building.</span></li>
+              <li class="flex gap-3"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ink"></span><span><strong class="font-semibold text-ink">Build Claygents to scale:</strong> build and version multiple AI agents and reuse them across workflows.</span></li>
+              <li class="flex gap-3"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ink"></span><span><strong class="font-semibold text-ink">Bring your own context:</strong> connect Claygent to any MCP server to enrich with deeper business context.</span></li>
+            </ul>
+
+            <div class="mt-7 flex items-center gap-4 rounded-xl border border-line bg-white p-4">
+              <span class="text-2xl font-extrabold text-clayblue">3x</span>
+              <p class="text-sm text-body"><strong class="font-semibold text-ink">Northwind</strong> tripled data coverage on contact information, firmographics, and more.</p>
+              <span class="ml-auto grid h-9 w-9 shrink-0 place-items-center rounded-full border border-line text-muted">↗</span>
+            </div>
+          </div>
+
+          <!-- maroon templates panel mock -->
+          <div class="order-1 overflow-hidden rounded-2xl bg-maroon p-4 shadow-soft lg:order-2">
+            <div class="overflow-hidden rounded-xl bg-white">
+              <div class="flex items-center justify-between border-b border-line px-4 py-2.5 text-sm">
+                <span class="font-semibold text-ink">Templates for Use AI</span>
+                <span class="text-faint">✕</span>
+              </div>
+              <div class="px-4 py-3">
+                <div class="flex items-center gap-2 rounded-lg border border-clayblue bg-white px-3 py-2 text-sm text-muted ring-2 ring-clayblue/15">
+                  <span>🔍</span> classify
+                </div>
+                <div class="mt-3 space-y-1 text-sm">
+                  <div class="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-[#FAFAF8]"><span>🧩</span> Claygent Classifier Prompt</div>
+                  <div class="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-[#FAFAF8]"><span>🏷️</span> Classify a company as B2B or B2C</div>
+                  <div class="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-[#FAFAF8]"><span>🔖</span> Classify as B2B or B2C based on …</div>
+                  <div class="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-[#FAFAF8]"><span>✉️</span> Email classification</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TURN DATA INTO ACTION (bento) ================= -->
+      <section class="mx-auto max-w-[1120px] px-6 py-14 sm:py-20">
+        <div class="text-center">
+          <h2 class="display mx-auto max-w-3xl text-4xl sm:text-5xl">
+            Turn data into action with flexible AI and flows
+          </h2>
+        </div>
+
+        <div class="mt-12 grid gap-4 lg:grid-cols-2">
+          <!-- maroon: AI formatting -->
+          <article class="flex flex-col justify-between overflow-hidden rounded-3xl bg-maroon p-7 text-white sm:p-9">
+            <div class="mb-6 rounded-xl bg-white/95 p-3 text-[12px] text-ink shadow-card">
+              <div class="grid grid-cols-2 gap-x-4 border-b border-line pb-1.5 font-semibold text-faint"><span>Raw</span><span>Cleaned</span></div>
+              <div class="grid grid-cols-2 gap-x-4 border-b border-line py-1.5"><span>walt disney STUDIOS</span><span>Walt Disney</span></div>
+              <div class="grid grid-cols-2 gap-x-4 py-1.5"><span>APPLE inc.</span><span>Apple</span></div>
+            </div>
+            <div>
+              <p class="eyebrow text-white/70">AI Formatting</p>
+              <h3 class="display mt-2 text-3xl text-white">Clean and format data with AI in seconds</h3>
+              <p class="mt-3 text-white/85">
+                Use AI to transform any record into the format you need. Concatenate
+                data, ensure consistent formatting, and remove extra emojis or
+                symbols from lists.
+              </p>
+            </div>
+          </article>
+
+          <!-- blue: conditional logic -->
+          <article class="flex flex-col justify-between overflow-hidden rounded-3xl bg-royal p-7 text-white sm:p-9">
+            <div class="mb-6 rounded-xl bg-white/95 p-3 text-[12px] text-ink shadow-card">
+              <div class="grid grid-cols-[1fr_1fr_0.8fr] gap-x-3 border-b border-line pb-1.5 font-semibold text-faint"><span>Found</span><span>Role</span><span>Phone</span></div>
+              <div class="grid grid-cols-[1fr_1fr_0.8fr] gap-x-3 border-b border-line py-1.5"><span class="text-[#C0392B]">Not found</span><span>Project mgr</span><span>(646) …</span></div>
+              <div class="grid grid-cols-[1fr_1fr_0.8fr] gap-x-3 py-1.5"><span class="text-forest">Found</span><span>Sales mgr</span><span class="text-[#C0392B]">Condition</span></div>
+            </div>
+            <div>
+              <p class="eyebrow text-white/70">AI Conditional Logic</p>
+              <h3 class="display mt-2 text-3xl text-white">Run action steps conditionally — no engineering needed</h3>
+              <p class="mt-3 text-white/85">
+                Conditionally run workflows based on any logic. Use different
+                providers for different companies, enrich only your best-fit leads,
+                or build fallbacks.
+              </p>
+            </div>
+          </article>
+
+          <!-- green: destinations (wide) -->
+          <article class="overflow-hidden rounded-3xl bg-forest p-7 text-white sm:p-9 lg:col-span-1">
+            <div class="mb-6 rounded-xl bg-white/95 p-3 text-[12px] text-ink shadow-card">
+              <div class="flex items-center gap-2 border-b border-line py-1.5"><span>🟧</span> Upsert record in Airtable</div>
+              <div class="flex items-center gap-2 border-b border-line py-1.5"><span>📧</span> Add leads to Smartlead campaign</div>
+              <div class="flex items-center gap-2 rounded-md bg-[#FAFAF8] px-2 py-1.5"><span>🟠</span> Create or update object in Hubspot <span class="ml-auto text-faint">›</span></div>
+              <div class="flex items-center gap-2 border-t border-line py-1.5"><span>☁️</span> Create/update record in Salesforce</div>
+            </div>
+            <div>
+              <p class="eyebrow text-white/70">Destinations</p>
+              <h3 class="display mt-2 text-3xl text-white">Constantly update any tool — CRM, email sequencer, website builder, or more</h3>
+              <p class="mt-3 text-white/85">
+                Push enriched data to your CRM, data warehouse, email tool, website
+                CMS, or ad manager on a recurring basis — or build your own
+                integrations without code.
+              </p>
+            </div>
+          </article>
+
+          <!-- testimonial card -->
+          <article class="flex flex-col justify-between rounded-3xl border border-line bg-white p-7 sm:p-9">
+            <div>
+              <p class="text-xl font-semibold leading-snug text-ink">
+                "Clay has helped Northwind significantly improve our lead enrichment
+                and sales data pipelines. We've been able to consolidate our tech
+                stack to core essentials."
+              </p>
+              <p class="mt-4 font-semibold text-ink">Adam Wall</p>
+              <p class="text-sm text-muted">Head of Revenue Operations at Northwind</p>
+            </div>
+            <div class="mt-6 space-y-3 border-t border-line pt-6">
+              <div class="flex items-center gap-3 text-sm"><span class="rounded-md bg-ink px-2.5 py-1 font-semibold text-white">4h/week</span> Saved automating inbound lead enrichment and scoring.</div>
+              <div class="flex items-center gap-3 text-sm"><span class="rounded-md bg-ink px-2.5 py-1 font-semibold text-white">100+</span> Providers accessed via Clay.</div>
+              <div class="flex items-center gap-3 text-sm"><span class="rounded-md bg-ink px-2.5 py-1 font-semibold text-white">100%</span> Automated all opportunity upserts.</div>
+              <a href="#" class="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-clayblue">Read case study →</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ================= CUT COSTS ================= -->
+      <section class="mx-auto max-w-[1120px] px-6 py-12 sm:py-16">
+        <div class="grid items-center gap-10 lg:grid-cols-2">
+          <div>
+            <h2 class="display text-4xl sm:text-5xl">Cut costs, access data faster in one central platform</h2>
+            <p class="mt-5 text-lg text-body">
+              Stop waiting months to purchase and implement new data tools. Clay
+              gives you immediate access to 100+ premium data sources (plus your own
+              API keys) in one subscription — no contracts, renewals, or
+              implementation hassle needed.
+            </p>
+            <div class="mt-7 flex flex-wrap gap-3">
+              <a href="#" class="btn btn-dark">Read more about Clay Enterprise <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+              <a href="#" class="btn btn-ghost">Get a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+            </div>
+          </div>
+
+          <!-- stylized 3D toolbox of data sources -->
+          <div class="flex justify-center">
+            <div class="relative h-72 w-80">
+              <div class="absolute bottom-0 left-1/2 h-40 w-72 -translate-x-1/2 rounded-2xl bg-[#1FA6E0] shadow-soft"></div>
+              <div class="absolute bottom-28 left-1/2 h-12 w-72 -translate-x-1/2 rounded-t-2xl bg-[#1488C2]"></div>
+              <!-- data-source cards peeking out -->
+              <div class="absolute bottom-32 left-[22%] h-24 w-20 -rotate-12 rounded-xl bg-white p-2 shadow-card ring-1 ring-line"><div class="h-6 w-6 rounded bg-[#FF7A3D]"></div><div class="mt-2 h-2 w-12 rounded bg-line"></div><div class="mt-1 h-2 w-9 rounded bg-line"></div></div>
+              <div class="absolute bottom-40 left-[42%] h-24 w-20 rotate-2 rounded-xl bg-white p-2 shadow-card ring-1 ring-line"><div class="h-6 w-6 rounded bg-[#2D52E0] text-center text-xs font-bold leading-6 text-white">cb</div><div class="mt-2 h-2 w-12 rounded bg-line"></div><div class="mt-1 h-2 w-9 rounded bg-line"></div></div>
+              <div class="absolute bottom-36 right-[20%] h-24 w-20 rotate-12 rounded-xl bg-white p-2 shadow-card ring-1 ring-line"><div class="h-6 w-6 rounded bg-[#9B5DE5]"></div><div class="mt-2 h-2 w-12 rounded bg-line"></div><div class="mt-1 h-2 w-9 rounded bg-line"></div></div>
+              <div class="absolute bottom-0 left-1/2 h-10 w-72 -translate-x-1/2 rounded-b-2xl bg-[#0F6FA8]"></div>
+              <div class="absolute bottom-16 left-1/2 h-3 w-16 -translate-x-1/2 rounded-full bg-[#0F6FA8]"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ENTERPRISE SECURITY ================= -->
+      <section class="bg-white py-14 sm:py-20">
+        <div class="mx-auto max-w-[1120px] px-6">
+          <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+            <h2 class="display max-w-md text-4xl sm:text-5xl">Backed by enterprise grade security</h2>
+            <a href="#" class="btn btn-ghost self-start">Security at Clay <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </div>
+
+          <div class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            <div class="rounded-2xl bg-[#FFD23D] p-5 text-ink"><div class="text-2xl">🔐</div><h3 class="mt-6 text-lg font-bold">SOC 2 Type II</h3><p class="mt-1 text-sm text-ink/70">Audited and compliant.</p></div>
+            <div class="rounded-2xl bg-[#FF7A3D] p-5 text-white"><div class="text-2xl">🛡️</div><h3 class="mt-6 text-lg font-bold">GDPR ready</h3><p class="mt-1 text-sm text-white/80">Privacy by design.</p></div>
+            <div class="rounded-2xl bg-[#F15BB5] p-5 text-white"><div class="text-2xl">🔑</div><h3 class="mt-6 text-lg font-bold">SSO &amp; SAML</h3><p class="mt-1 text-sm text-white/80">Enterprise auth.</p></div>
+            <div class="rounded-2xl bg-[#2D52E0] p-5 text-white"><div class="text-2xl">🏢</div><h3 class="mt-6 text-lg font-bold">Role controls</h3><p class="mt-1 text-sm text-white/80">Granular permissions.</p></div>
+            <div class="rounded-2xl bg-[#2A9D8F] p-5 text-white"><div class="text-2xl">📜</div><h3 class="mt-6 text-lg font-bold">Data residency</h3><p class="mt-1 text-sm text-white/80">Control where it lives.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= FINAL CTA + LANDSCAPE + FOOTER ================= -->
+      <section id="cta" class="relative overflow-hidden">
+        <!-- stylized green landscape -->
+        <div class="absolute inset-0 -z-10" aria-hidden="true">
+          <div class="h-full w-full bg-gradient-to-b from-[#7CC576] via-[#3FA34D] to-[#13693A]"></div>
+          <svg class="absolute bottom-0 h-full w-full" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice" fill="none">
+            <path d="M0 240 Q360 140 720 220 T1440 200 V900 H0 Z" fill="#52B15A"/>
+            <path d="M0 420 Q400 320 760 400 T1440 380 V900 H0 Z" fill="#2F9444"/>
+            <path d="M0 600 Q380 520 740 590 T1440 560 V900 H0 Z" fill="#1E7A36"/>
+            <path d="M0 760 Q420 700 820 750 T1440 730 V900 H0 Z" fill="#13693A"/>
+          </svg>
+          <!-- bushes (clusters of circles) -->
+          <div class="absolute bottom-10 left-6 flex gap-1 opacity-90"><span class="h-10 w-10 rounded-full bg-[#0F5E33]"></span><span class="h-14 w-14 -ml-3 rounded-full bg-[#0C5530]"></span><span class="h-9 w-9 -ml-3 rounded-full bg-[#0F5E33]"></span></div>
+          <div class="absolute bottom-24 right-10 flex gap-1 opacity-90"><span class="h-12 w-12 rounded-full bg-[#0C5530]"></span><span class="h-16 w-16 -ml-4 rounded-full bg-[#0A4A2A]"></span><span class="h-10 w-10 -ml-4 rounded-full bg-[#0C5530]"></span></div>
+          <div class="absolute bottom-2 left-1/3 flex gap-1 opacity-80"><span class="h-9 w-9 rounded-full bg-[#0F5E33]"></span><span class="h-12 w-12 -ml-3 rounded-full bg-[#0A4A2A]"></span></div>
+          <!-- red flower -->
+          <div class="absolute bottom-16 left-[18%]">
+            <div class="relative h-14 w-14">
+              <span class="absolute left-1/2 top-0 h-6 w-6 -translate-x-1/2 rounded-full bg-[#E63946]"></span>
+              <span class="absolute bottom-0 left-0 h-6 w-6 rounded-full bg-[#E63946]"></span>
+              <span class="absolute bottom-0 right-0 h-6 w-6 rounded-full bg-[#E63946]"></span>
+              <span class="absolute left-1/2 top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#FFD23D]"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mx-auto max-w-[1160px] px-4 pb-12 pt-28 sm:pt-40">
+          <!-- floating CTA card -->
+          <div class="mx-auto max-w-2xl rounded-3xl bg-page/95 p-8 text-center shadow-soft backdrop-blur sm:p-12">
+            <div class="mx-auto mb-5 flex items-center justify-center gap-2">
+              <span class="claymark h-7 w-7 rounded-full"></span>
+              <span class="text-2xl font-extrabold tracking-tight text-ink">clay</span>
+            </div>
+            <h2 class="display text-3xl sm:text-4xl">Go to market with unique data — and the ability to act on it</h2>
+            <div class="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <a href="#" class="btn btn-dark w-full sm:w-auto">Start building for free <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+              <a href="#" class="btn btn-ghost w-full sm:w-auto">Contact us <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+            </div>
+          </div>
+
+          <!-- footer columns over the landscape -->
+          <div class="mt-16 grid grid-cols-2 gap-x-6 gap-y-8 text-sm text-white/90 sm:grid-cols-3 lg:grid-cols-6">
+            <div>
+              <h4 class="font-bold text-white">Use cases</h4>
+              <ul class="mt-3 space-y-2 text-white/80">
+                <li><a href="#" class="hover:text-white">Automated inbound</a></li>
+                <li><a href="#" class="hover:text-white">Inbound research</a></li>
+                <li><a href="#" class="hover:text-white">ABM</a></li>
+                <li><a href="#" class="hover:text-white">Find people</a></li>
+                <li><a href="#" class="hover:text-white">Buy intent</a></li>
+                <li><a href="#" class="hover:text-white">CRM enrichment</a></li>
+                <li><a href="#" class="hover:text-white">TAM sourcing</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="font-bold text-white">Product</h4>
+              <ul class="mt-3 space-y-2 text-white/80">
+                <li><a href="#" class="hover:text-white">Claygent AI</a></li>
+                <li><a href="#" class="hover:text-white">Find buyers</a></li>
+                <li><a href="#" class="hover:text-white">Signals</a></li>
+                <li><a href="#" class="hover:text-white">Functions</a></li>
+                <li><a href="#" class="hover:text-white">Integrations</a></li>
+                <li><a href="#" class="hover:text-white">Pricing</a></li>
+                <li><a href="#" class="hover:text-white">Changelog</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="font-bold text-white">Blog</h4>
+              <ul class="mt-3 space-y-2 text-white/80">
+                <li><a href="#" class="hover:text-white">The rise of the GTM engineer</a></li>
+                <li><a href="#" class="hover:text-white">Finding GTM data</a></li>
+                <li><a href="#" class="hover:text-white">Clay reaches 500K MRR</a></li>
+                <li><a href="#" class="hover:text-white">The GTM engineering era</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="font-bold text-white">Resources</h4>
+              <ul class="mt-3 space-y-2 text-white/80">
+                <li><a href="#" class="hover:text-white">Get started here</a></li>
+                <li><a href="#" class="hover:text-white">University</a></li>
+                <li><a href="#" class="hover:text-white">Use case templates</a></li>
+                <li><a href="#" class="hover:text-white">Community</a></li>
+                <li><a href="#" class="hover:text-white">Status</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="font-bold text-white">Company</h4>
+              <ul class="mt-3 space-y-2 text-white/80">
+                <li><a href="#" class="hover:text-white">Contact us</a></li>
+                <li><a href="#" class="hover:text-white">About</a></li>
+                <li><a href="#" class="hover:text-white">Careers</a></li>
+                <li><a href="#" class="hover:text-white">Use case template</a></li>
+                <li><a href="#" class="hover:text-white">Integrate with Clay</a></li>
+                <li><a href="#" class="hover:text-white">Matrix</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="font-bold text-white">Legal</h4>
+              <ul class="mt-3 space-y-2 text-white/80">
+                <li><a href="#" class="hover:text-white">Privacy policy</a></li>
+                <li><a href="#" class="hover:text-white">Terms of service</a></li>
+                <li><a href="#" class="hover:text-white">Do not sell my data</a></li>
+              </ul>
+              <div class="mt-5 flex gap-3 text-white/80">
+                <a href="#" aria-label="LinkedIn" class="hover:text-white"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5A2.5 2.5 0 1 1 0 3.5a2.5 2.5 0 0 1 4.98 0ZM0 8h5v16H0V8Zm7.5 0H12v2.2h.1c.6-1.1 2.1-2.3 4.4-2.3 4.7 0 5.5 3 5.5 7V24h-5v-6.3c0-1.5 0-3.5-2.1-3.5s-2.5 1.6-2.5 3.4V24h-5V8Z"/></svg></a>
+                <a href="#" aria-label="YouTube" class="hover:text-white"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.5a3 3 0 0 0-2.1-2.1C19 4.9 12 4.9 12 4.9s-7 0-8.9.5A3 3 0 0 0 1 7.5 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.5a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.5 31 31 0 0 0-.5-4.5ZM9.7 15.3V8.7l5.8 3.3-5.8 3.3Z"/></svg></a>
+                <a href="#" aria-label="X" class="hover:text-white"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.5 8.6L23 22h-6.8l-5-6.6L5.4 22H2.3l8-9.2L1.6 2h6.9l4.5 6 5.9-6Zm-1.2 18h1.7L7.3 3.8H5.5L17.7 20Z"/></svg></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-12 flex flex-col gap-2 border-t border-white/20 pt-6 text-xs text-white/70 sm:flex-row sm:items-center sm:justify-between">
+            <span>&copy; 2026 Mockup Replica</span>
+            <p class="max-w-lg leading-relaxed">
+              Design mockup built with Tailwind CSS for layout reference only. Not
+              affiliated with, endorsed by, or representative of Clay. "Clay" and
+              all product names are trademarks of their respective owners.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        const hdr = document.getElementById('hdr');
+        const onScroll = () => hdr.classList.toggle('scrolled', window.scrollY > 8);
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+      })();
+    </script>
+  </body>
+</html>
