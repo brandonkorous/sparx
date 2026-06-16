@@ -51,3 +51,10 @@ export type {
 
 // The canvas sample product (the commerce atoms' edit-mode fallback).
 export { SAMPLE_BUILDER_PRODUCT } from './sample-product';
+
+// View HTML — serialize a node/subtree to clean publish HTML (docs/98 §3.8/§4.2).
+export {
+  serializeNodeToHtml,
+  serializeTreeToHtml,
+  type SerializeOptions,
+} from './serialize-html';

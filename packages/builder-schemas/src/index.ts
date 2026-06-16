@@ -5,6 +5,7 @@
 
 export * from './node';
 export * from './element';
+export * from './html-import';
 export * from './box-to-class';
 export * from './class-utils';
 export * from './page';

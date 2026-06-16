@@ -8,6 +8,10 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./allowlist": {
+      "types": "./src/allowlist.ts",
+      "default": "./src/allowlist.ts"
     }
   },
   "files": [

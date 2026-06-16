@@ -622,3 +622,51 @@ export function rawElementText(node: { type: string; props: Record<string, unkno
   const t = node.props.text;
   return typeof t === 'string' ? t : '';
 }
+
+// ── HTML-import support (docs/98 §4.2) ────────────────────────────────────────
+//
+// One-way HTML import (parse a Tailwind fragment → Element nodes) lives in
+// `html-import.ts`. It walks raw HTML, so it needs the INVERSE of the render-time
+// map: an HTML attribute NAME (lowercase, as the DOM reports it) → the flat
+// prop-key a node stores. Deriving this from `ATTR_NAME` keeps ONE source of
+// truth — the whitelist here governs both render-out and parse-in.
+
+/** Lowercased React/HTML attribute name → the flat prop-key for that attribute.
+ *  The inverse of {@link ATTR_NAME}, lowercased so it matches how the DOM reports
+ *  attribute names (`aria-label`, `viewbox`, `htmlfor`, …). Also accepts the
+ *  native HTML spelling where it differs from React's (`for`). Used by the
+ *  importer to map a parsed element's attributes back onto prop-keys before
+ *  {@link safeElementAttrs} re-sanitizes them at render time. */
+const HTML_ATTR_TO_KEY: Record<string, AttrKey> = (() => {
+  const map: Record<string, AttrKey> = {};
+  for (const [key, reactName] of Object.entries(ATTR_NAME) as [AttrKey, string][]) {
+    map[reactName.toLowerCase()] = key;
+  }
+  // Native HTML spelling that differs from the React attribute name.
+  map['for'] = 'for';
+  return map;
+})();
+
+/** The prop-key an HTML attribute name maps to (`aria-label` → `ariaLabel`,
+ *  `for` → `for`, `viewbox` → `viewBox`), or null if it is not a recognized
+ *  attribute key at all. Case-insensitive on the incoming name. */
+export function htmlAttrToPropKey(name: string): AttrKey | null {
+  return HTML_ATTR_TO_KEY[name.toLowerCase()] ?? null;
+}
+
+/** The full set of prop-keys allowed on a raw element of `type` (the global
+ *  identity/a11y keys plus the tag's specifics) — the allow-list the importer
+ *  filters parsed attributes against. Empty for a non-raw type. */
+export function allowedAttrKeysFor(type: string): Set<AttrKey> {
+  const meta = rawMetaOf(type);
+  if (!meta) return new Set();
+  return new Set<AttrKey>([...GLOBAL_ATTRS, ...(meta.attrs ?? [])]);
+}
+
+/** Whether a raw-element type carries inline text via `props.text` (vs. only
+ *  nesting element children). True for text/inline tags; false for pure
+ *  containers + void tags. The importer uses this to decide whether a parsed
+ *  element's text content becomes a `text` prop. */
+export function rawTagCarriesText(type: string): boolean {
+  return rawMetaOf(type)?.text === true;
+}

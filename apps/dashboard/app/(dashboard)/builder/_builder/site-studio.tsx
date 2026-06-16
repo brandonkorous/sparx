@@ -74,6 +74,7 @@ import { Inspector, LayoutSettings, PageSettings } from './inspector';
 import { AddPalette } from './add-palette';
 import { Canvas } from './canvas';
 import { ImportExportControls } from './import-export-controls';
+import { HtmlControls } from './html-controls';
 import { StudioLayers } from './studio-layers';
 import { FieldsPanel } from './fields-panel';
 import { deriveFieldKey, makeFieldDef, type CreatableType } from './field-kinds';
@@ -1057,6 +1058,17 @@ export function SiteStudio({
                   toLayoutDocument({ name: editingLayout.name, tree: editingLayout.tree })
                 }
                 onImportText={onLayoutImport}
+                disabled={busy}
+              />
+            ) : null}
+            {/* View HTML (read-only) + one-way HTML import (docs/98 §3.8/§4.2),
+                scoped to the active zone's tree — alongside the JSON import/export. */}
+            {studio.activeZone === 'page' || studio.activeZone === 'layout' ? (
+              <HtmlControls
+                tree={studio.activeZone === 'page' ? activePage.tree : editingLayout.tree}
+                selectedNode={studio.selectedNode}
+                onStamp={studio.onStamp}
+                targetName={studio.targetName}
                 disabled={busy}
               />
             ) : null}
