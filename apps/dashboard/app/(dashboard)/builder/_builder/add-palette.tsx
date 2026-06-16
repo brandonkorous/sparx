@@ -9,7 +9,14 @@ import * as React from 'react';
 import { Layers } from 'lucide-react';
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic';
 import { cn } from '@sparx/ui';
-import { customType, type ArchetypeDto, type ComponentDto } from '@sparx/builder-schemas';
+import {
+  catalogGroupsForSurface,
+  CATALOG_CATEGORY_LABELS,
+  customType,
+  type ArchetypeDto,
+  type ComponentDto,
+  type PlatformCatalogEntry,
+} from '@sparx/builder-schemas';
 
 import {
   paletteForSurface,
@@ -20,10 +27,15 @@ import {
 import { moduleColor } from './binding-catalog';
 import { MODULES } from './sample';
 
+// The PRIMITIVES — the in-code building blocks. The composed component catalog
+// (docs/98 §5) renders ABOVE these; these are the raw containers + atoms + raw
+// elements you assemble or drop beneath a stamped component.
 const GROUPS: { group: PaletteGroup; label: string }[] = [
-  { group: 'layout', label: 'Layout' },
+  { group: 'layout', label: 'Containers' },
   { group: 'content', label: 'Content & media' },
   { group: 'data', label: 'From your modules' },
+  // Raw HTML elements (docs/98 Pillar 1) — every whitelisted tag, fully classable.
+  { group: 'elements', label: 'HTML elements' },
 ];
 
 function Tile({ def, onAdd }: { def: ComponentDef; onAdd: (type: string) => void }) {
@@ -96,6 +108,34 @@ function ArchetypeTile({
   );
 }
 
+// A platform catalog component tile (docs/98 §5). The catalog is the daisyUI-grade
+// library rebuilt in our tokens — every entry a composed node tree. Clicking
+// STAMPS a forked copy (fresh ids) into the current target, exactly like an
+// archetype: the dropped nodes are ordinary, fully-editable nodes. Its icon is a
+// lucide NAME rendered lazily; the Layers glyph marks it as a composite.
+function CatalogTile({
+  entry,
+  onStamp,
+}: {
+  entry: PlatformCatalogEntry;
+  onStamp: (tree: PlatformCatalogEntry['tree']) => void;
+}) {
+  return (
+    <button
+      type="button"
+      className="bx-tile bx-tile--catalog"
+      onClick={() => onStamp(entry.tree)}
+      title={entry.description}
+    >
+      <DynamicIcon name={entry.icon as IconName} className="bx-tile__icon" aria-hidden />
+      <span className="bx-tile__name">{entry.name}</span>
+      <span className="bx-tile__kind" title="Component — a composed, editable block" aria-hidden>
+        <Layers />
+      </span>
+    </button>
+  );
+}
+
 export function AddPalette({
   targetName,
   onAdd,
@@ -120,11 +160,31 @@ export function AddPalette({
   const palette = paletteForSurface(surface);
   const mine = (customComponents ?? []).filter((c) => c.surfaces.includes(surface));
   const sections = (archetypes ?? []).filter((a) => a.surfaces.includes(surface));
+  // The platform component catalog (docs/98 §5) — the daisyUI-grade library, in our
+  // tokens, grouped by category. Stamped (forked) like an archetype, so it needs
+  // onStamp; surface-filtered so email/site see only what applies.
+  const catalogGroups = onStamp ? catalogGroupsForSurface(surface) : [];
   return (
     <div className="bx-palette">
       <p className="bx-pal-target">
         Adds inside <strong>{targetName}</strong>
       </p>
+
+      {/* Components — the platform catalog (docs/98 §5). The primary library: a
+          composed, editable block per tile, grouped by category. Rendered above the
+          primitives because assembling from these is the fast path. */}
+      {onStamp && catalogGroups.length > 0
+        ? catalogGroups.map(({ category, entries }) => (
+            <section key={`cat-${category}`} className="bx-pal-group">
+              <h4 className="bx-pal-label">{CATALOG_CATEGORY_LABELS[category]}</h4>
+              <div className="bx-tiles">
+                {entries.map((e) => (
+                  <CatalogTile key={e.key} entry={e} onStamp={onStamp} />
+                ))}
+              </div>
+            </section>
+          ))
+        : null}
       {GROUPS.map(({ group, label }) => {
         const defs = palette.filter((d) => d.group === group);
         if (defs.length === 0) return null;

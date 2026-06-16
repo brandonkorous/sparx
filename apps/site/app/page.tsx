@@ -42,7 +42,12 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
     sitePreview ? { previewToken: sitePreview } : {}
   );
   if (builderHome) {
-    const data = await loadBuilderData(site.slug, builderHome.tree);
+    const data = await loadBuilderData(
+      site.slug,
+      builderHome.tree,
+      undefined,
+      site.commerce.defaultCurrency
+    );
     const draftCss = sitePreview
       ? await getPublishedBuilderStyles(site.slug, { previewToken: sitePreview })
       : '';

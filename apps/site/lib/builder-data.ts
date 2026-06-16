@@ -14,10 +14,15 @@
 import type { BuilderNode, DataSources } from '@sparx/builder-schemas';
 
 import { publicGet, type ApiEntry, type BlogPostBody } from './content';
-import { listProducts, type PublicProduct, type PublicProductListItem } from './commerce';
+import { listProducts, type PublicProductListItem } from './commerce';
 import { mediaUrl } from './media';
 import type { ResolvedSite } from './site-context';
-import type { BuilderProduct } from '@sparx/builder-render';
+import { loadCommerceData, productToBuilderRecord } from './builder-commerce-data';
+
+// The full PublicProduct → BuilderProduct map now lives with the commerce loader
+// (builder-commerce-data); re-export it so the PDP collection-template path keeps
+// importing it from '@/lib/builder-data'.
+export { productToBuilderRecord };
 
 function walkBindings(node: BuilderNode, visit: (path: string) => void): void {
   if (node.binding?.path) visit(node.binding.path);
@@ -70,56 +75,14 @@ async function listEntries(tenantSlug: string, type: string): Promise<ApiEntry[]
 function mapProduct(p: PublicProductListItem, tenantSlug: string): Record<string, unknown> {
   const img = mediaUrl(p.primaryImageId, tenantSlug);
   return {
+    id: p.id,
+    handle: p.handle,
     title: p.title,
     price: p.priceMinCents != null ? p.priceMinCents / 100 : null,
     compareAtPrice: p.compareAtCents != null ? p.compareAtCents / 100 : null,
     description: p.description ?? '',
     images: img ? [{ url: img, alt: p.title }] : [],
     sku: '',
-  };
-}
-
-/** Map a full PublicProduct into the BuilderProduct the collection template
- *  binds: the `product.*` leaf fields (title/price/description/images/sku) PLUS
- *  options + variants (cents preserved) so the Tier-2 buy-box resolves a selected
- *  variant. The single in-scope record for a `commerce.product` collection page. */
-export function productToBuilderRecord(
-  p: PublicProduct,
-  tenantSlug: string,
-  currency: string
-): BuilderProduct {
-  return {
-    title: p.title,
-    price: p.priceMinCents != null ? p.priceMinCents / 100 : null,
-    compareAtPrice: p.compareAtCents != null ? p.compareAtCents / 100 : null,
-    description: p.description ?? '',
-    images: p.images
-      .map((img) => ({
-        url: mediaUrl(img.mediaAssetId, tenantSlug) ?? '',
-        alt: img.alt ?? p.title,
-      }))
-      .filter((i) => i.url !== ''),
-    sku: p.variants.find((v) => v.isDefault)?.sku ?? p.variants[0]?.sku ?? '',
-    currency,
-    priceMinCents: p.priceMinCents,
-    priceMaxCents: p.priceMaxCents,
-    options: p.options.map((o) => ({
-      id: o.id,
-      name: o.name,
-      displayType: o.displayType,
-      values: o.values.map((v) => ({ id: v.id, value: v.value, swatchHex: v.swatchHex })),
-    })),
-    variants: p.variants.map((v) => ({
-      id: v.id,
-      sku: v.sku,
-      title: v.title,
-      priceCents: v.priceCents,
-      compareAtPriceCents: v.compareAtPriceCents,
-      isDefault: v.isDefault,
-      inStock: v.inStock,
-      available: v.available,
-      optionValueIds: v.optionValueIds,
-    })),
   };
 }
 
@@ -178,15 +141,28 @@ function resolveEntryBodyAssets(
 /** Fetch every source the tree binds to and return the resolver `root`. A
  *  failed fetch degrades that source to empty rather than failing the page.
  *  `record` (collection templates) injects a single in-scope record at its
- *  object key (`product`, `page`, `blog_post`) so `<key>.*` bindings resolve. */
+ *  object key (`product`, `page`, `blog_post`) so `<key>.*` bindings resolve.
+ *  `currency` is the site's default — used to format the products a pinned/looped
+ *  commerce binding hydrates (docs/98 Pillar 7). */
 export async function loadBuilderData(
   tenantSlug: string,
   tree: BuilderNode,
-  record?: { key: string; value: unknown }
+  record?: { key: string; value: unknown },
+  currency = 'USD'
 ): Promise<DataSources> {
   const { cmsTypes, commerce } = neededSources(tree);
   const root: DataSources = {};
   const tasks: Promise<void>[] = [];
+
+  // docs/98 Pillar 7: hydrate the products a pin / collection source binds (under
+  // the reserved __pins / __sources roots) alongside the CMS + all-products sources.
+  tasks.push(
+    loadCommerceData(tenantSlug, tree, currency)
+      .then((commerceRoot) => {
+        Object.assign(root, commerceRoot);
+      })
+      .catch(() => undefined)
+  );
 
   for (const type of cmsTypes) {
     tasks.push(

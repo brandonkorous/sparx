@@ -17,7 +17,7 @@
 // agent would type, and they compile through @sparx/surface-compile to the
 // tenant `--st-*` tokens.
 
-import type { BuilderNode } from './node';
+import type { Binding, BuilderNode } from './node';
 
 // ── Authoring vocabulary (input only — never persisted) ───────────────────────
 
@@ -406,7 +406,7 @@ export interface LegacyNode {
   box?: BoxStyle & { hiddenOn?: unknown };
   layout?: LayoutStyle;
   props?: Record<string, unknown>;
-  binding?: { path: string };
+  binding?: Binding;
   children?: LegacyNode[];
 }
 

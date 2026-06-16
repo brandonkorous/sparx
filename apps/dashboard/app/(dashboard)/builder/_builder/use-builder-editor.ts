@@ -43,11 +43,13 @@ import {
   removeNode,
   topLevelSelected,
   updateNode,
+  type Binding,
   type BuilderNode,
   type DataSources,
   type Device,
 } from './model';
 import { buildPreviewData, scopeAt, type ScopeInfo, type SitePreviewData } from './binding-catalog';
+import { useCommercePreview } from './use-commerce-preview';
 import { acceptsChildren, getDef, makeNode, retypeDropsChildren, retypeNode } from './registry';
 import { useHistory } from './editor-history';
 import { parseClipboard, serializeClipboard } from './editor-clipboard';
@@ -166,8 +168,10 @@ export interface BuilderEditor {
   /** Set (or clear, with '') the node's class-first styling string (docs/47). In a
    *  multi-selection the change FANS OUT to the rest (docs/builder/05 §2.2). */
   onClass: (value: string) => void;
-  onBind: (path: string | null) => void;
+  onBind: (target: string | Binding | null) => void;
   onAdd: (type: string) => void;
+  /** Stamp a forked copy of a catalog component / archetype tree into the target. */
+  onStamp: (tree: BuilderNode) => void;
   /** Replace the node `id` with `next` (same position), selecting it. Used by
    *  "Save as component" to swap a subtree for a `custom:*` placement. */
   replaceNode: (id: string, next: BuilderNode) => void;
@@ -352,9 +356,12 @@ export function useBuilderEditor({
   }, [setSelection]);
 
   // ── Derived ───────────────────────────────────────────────────────────────────
+  // Real products for any pin / collection source the tree binds, so the canvas
+  // previews the published products, not the sample (docs/98 Pillar 7).
+  const commerceOverlay = useCommercePreview(tree);
   const previewData = React.useMemo(
-    () => buildPreviewData(catalog.sources, sitePreview),
-    [catalog, sitePreview]
+    () => ({ ...buildPreviewData(catalog.sources, sitePreview), ...commerceOverlay }),
+    [catalog, sitePreview, commerceOverlay]
   );
 
   const selectedId = selection.primary;
@@ -462,14 +469,16 @@ export function useBuilderEditor({
     });
   };
 
-  const onBind = (path: string | null) =>
+  // Accepts a bare PATH string (field picker) or a full Binding (the Data panel's
+  // product pin / collection source / action, docs/98 Pillar 7); null/'' clears it.
+  const onBind = (target: string | Binding | null) =>
     mutateSelected((n) => {
-      if (!path) {
+      if (target == null || target === '') {
         const next = { ...n };
         delete next.binding;
         return next;
       }
-      return { ...n, binding: { path } };
+      return { ...n, binding: typeof target === 'string' ? { path: target } : target };
     });
 
   // Add a node inside the current target. A `custom:<key>` type drops a tenant
@@ -487,6 +496,18 @@ export function useBuilderEditor({
     } else {
       child = makeNode(type);
     }
+    const targetId = target.id;
+    updateTree((t) => appendChild(t, targetId, child), { ids: [child.id], primary: child.id });
+    setRailTab('layers');
+  };
+
+  // Stamp a platform catalog component or brand-section archetype (docs/98 §5,
+  // docs/61 §6): fork a COPY of its tree (fresh, page-unique ids) into the active
+  // target. A one-time copy — the dropped nodes are ordinary, fully-editable nodes,
+  // not a live `custom:<key>` reference.
+  const onStamp = (tree: BuilderNode) => {
+    if (!target) return;
+    const child = cloneWithFreshIds(tree);
     const targetId = target.id;
     updateTree((t) => appendChild(t, targetId, child), { ids: [child.id], primary: child.id });
     setRailTab('layers');
@@ -770,6 +791,7 @@ export function useBuilderEditor({
     onClass,
     onBind,
     onAdd,
+    onStamp,
     replaceNode,
     onRemove,
     onMove,

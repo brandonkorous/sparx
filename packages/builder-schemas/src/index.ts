@@ -4,6 +4,7 @@
 // import from the editor's client components AND the server service layer.
 
 export * from './node';
+export * from './element';
 export * from './box-to-class';
 export * from './class-utils';
 export * from './page';
@@ -20,3 +21,5 @@ export * from './binding';
 export * from './nav';
 export * from './runtime';
 export * from './import-export';
+export * from './catalog';
+export * from './site-chrome';

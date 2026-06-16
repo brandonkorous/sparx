@@ -398,8 +398,10 @@ function EmailNode({
   }
 
   const isContainer = CONTAINERS.has(node.type);
-  const bound = Boolean(node.binding);
-  const value = bound ? resolvePath(scope, node.binding!.path) : undefined;
+  // Email binds by field path only (no commerce entity pins / actions — no JS in a
+  // mail client); a non-field binding resolves to nothing here.
+  const bound = Boolean(node.binding?.path);
+  const value = bound ? resolvePath(scope, node.binding!.path ?? '') : undefined;
 
   if (!isContainer) {
     return <Leaf node={node} value={value} bound={bound} scope={scope} />;

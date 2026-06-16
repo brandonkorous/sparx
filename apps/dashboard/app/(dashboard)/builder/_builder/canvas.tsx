@@ -19,11 +19,18 @@ import {
   MAX_COMPONENT_NESTING,
   REF_KEY,
   bindSlotKey,
+  bindingIsProductScope,
   customKeyOf,
   emailSampleData,
   expandComponentTree,
   isCustomType,
+  isRawContainerType,
+  isRawElementType,
+  rawTagAcceptsInlineChrome,
+  rawTagOf,
   readComponentRef,
+  resolveBinding,
+  safeElementAttrs,
   sampleEmailText,
   type BindingCatalog,
   type ComponentDto,
@@ -412,11 +419,17 @@ function CanvasNode({
 
   // A `$bind:<key>` binding is an instance SLOT (docs/53 4b), only seen while
   // editing the component itself — it has no data here (each placement supplies
-  // it), so it previews as static, flagged by a "field" chip.
-  const bindSlot = node.binding ? bindSlotKey(node.binding.path) : null;
+  // it), so it previews as static, flagged by a "field" chip. (Only a FIELD binding
+  // carries a path; entity/collection/action bindings never do.)
+  const bindSlot = node.binding?.path ? bindSlotKey(node.binding.path) : null;
   const bound = Boolean(node.binding) && bindSlot === null;
-  const value = bound ? resolvePath(scope, node.binding!.path) : undefined;
+  // docs/98 Pillar 7: resolveBinding dispatches on kind (field path / pinned entity
+  // / collection source / action). An action resolves no value (the leaf wires it).
+  const value = bound ? resolveBinding(scope, node.binding) : undefined;
   const card: Cardinality = bound ? cardinalityOf(value) : 'empty';
+  // A product pin / collection source scopes its subtree to a PRODUCT, so the
+  // buy-box context is established (per item for a collection, once for a pin).
+  const productScope = bindingIsProductScope(node.binding);
 
   const selected = node.id === selectedId;
   const multi = !selected && multiSet.has(node.id);
@@ -429,7 +442,11 @@ function CanvasNode({
   // where the live-compiled utilities (flex/grid/padding/surface) lay out + paint
   // it. `leafWearsClass` is the SHARED predicate the live renderer uses, so both
   // surfaces agree where node.class lands.
-  const leafByClass = leafWearsClass(node.type);
+  // A raw element (docs/98 Pillar 1) wears node.class on its OWN tag too: a raw
+  // LEAF/void renders through renderLeaf (like the recipe leaves), a raw CONTAINER
+  // becomes its tag below so <ul>/<table>/<nav> preview faithfully.
+  const rawContainer = isRawContainerType(node.type);
+  const leafByClass = leafWearsClass(node.type) || (isRawElementType(node.type) && !rawContainer);
   // The `.bx-node` chrome wrapper is `display:contents` (builder.css) so the live
   // renderer's wrapperless DOM is reproduced and `node.class` sizing (w-full,
   // flex-1, mx-auto) resolves against the real flex/grid parent. The selection
@@ -442,6 +459,12 @@ function CanvasNode({
     leafByClass || !hasPosition ? 'relative' : undefined,
     leafByClass ? undefined : node.class
   );
+  // The element that carries `.bx-inner`: a div for ordinary nodes, the actual tag
+  // for a raw container. The inline `.bx-tag` selection label can only be injected
+  // where the tag permits flow children (not inside ul/table/svg/select).
+  const InnerTag = (rawContainer ? rawTagOf(node.type)! : 'div') as React.ElementType;
+  const innerAttrs = rawContainer ? safeElementAttrs(node) : undefined;
+  const showInlineTag = !rawContainer || rawTagAcceptsInlineChrome(node.type);
 
   let body: React.ReactNode;
   if (node.type === 'Outlet') {
@@ -456,10 +479,10 @@ function CanvasNode({
     const kids = node.children ?? [];
     let slideNodes: React.ReactNode[];
     if (bound && card === 'array') {
-      slideNodes = (value as unknown[]).flatMap((item, i) =>
-        kids.map((child) => (
+      slideNodes = (value as unknown[]).map((item, i) => {
+        const slideKids = kids.map((child) => (
           <CanvasNode
-            key={`${i}:${child.id}`}
+            key={child.id}
             node={child}
             scope={{ ...scope, item, index: i }}
             catalog={catalog}
@@ -469,8 +492,16 @@ function CanvasNode({
             locked={locked}
             outletSlot={outletSlot}
           />
-        ))
-      );
+        ));
+        // A product carousel scopes each slide to its product (buy-box per slide).
+        return productScope ? (
+          <ProductFormProvider key={`i${i}`} product={resolveBuilderProduct(item, 'edit')}>
+            {slideKids}
+          </ProductFormProvider>
+        ) : (
+          <React.Fragment key={`i${i}`}>{slideKids}</React.Fragment>
+        );
+      });
     } else {
       const s: Scope = bound && card === 'object' ? { ...scope, item: value } : scope;
       slideNodes = kids.map((child) => (
@@ -520,8 +551,12 @@ function CanvasNode({
     if (bound && card === 'array' && scopes.length === 0) {
       body = <div className="bx-empty">Nothing to show — the list is empty</div>;
     } else {
-      const rendered = scopes.flatMap(({ s, key }) =>
-        kids.map((child) => (
+      // A collection ARRAY product scope wraps each repeated group in its own buy-box
+      // context, so a card's AddToCart sells THAT item (docs/98 Pillar 7). An object
+      // product scope (a single pin) is wrapped once by the end block below.
+      const wrapPerItem = productScope && card === 'array';
+      const rendered = scopes.map(({ s, key }) => {
+        const groupKids = kids.map((child) => (
           <CanvasNode
             key={`${key}:${child.id}`}
             node={child}
@@ -533,13 +568,20 @@ function CanvasNode({
             locked={locked}
             outletSlot={outletSlot}
           />
-        ))
-      );
-      // An empty container in edit mode shows a clear, droppable hint instead of a
-      // zero-height void (docs/builder/05 §2.7) — the wrapper stays selectable, so a
-      // canvas drag can drop straight into it.
+        ));
+        return wrapPerItem ? (
+          <ProductFormProvider key={key} product={resolveBuilderProduct(s.item, 'edit')}>
+            {groupKids}
+          </ProductFormProvider>
+        ) : (
+          <React.Fragment key={key}>{groupKids}</React.Fragment>
+        );
+      });
+      // An empty container (no children) in edit mode shows a clear, droppable hint
+      // instead of a zero-height void (docs/builder/05 §2.7) — the wrapper stays
+      // selectable, so a canvas drag can drop straight into it.
       body =
-        rendered.length === 0 && !locked ? (
+        kids.length === 0 && !locked ? (
           <div className="bx-empty">Empty — add or drop blocks here</div>
         ) : (
           rendered
@@ -576,10 +618,11 @@ function CanvasNode({
     });
   }
 
-  // A ProductForm container establishes the shared buy-box context over its subtree
-  // (mirrors the live renderer), so VariantPicker/Quantity/AddToCart placed inside
-  // stay in sync. In the canvas the product is the sample fixture (resolveBuilderProduct).
-  if (node.type === 'ProductForm') {
+  // A product OBJECT scope establishes the shared buy-box context once over its
+  // subtree (mirrors the live renderer): a ProductForm node, or any container pinned
+  // to one product (entity pin). A collection ARRAY scope wraps per item above. In
+  // the canvas an unresolved product falls back to the sample fixture.
+  if (node.type === 'ProductForm' || (productScope && card === 'object')) {
     body = (
       <ProductFormProvider product={resolveBuilderProduct(value, 'edit')}>
         {body}
@@ -592,15 +635,27 @@ function CanvasNode({
     // selection tag, no outline, not clickable.
     return (
       <div className={cn('bx-node', 'bx-chrome')} data-node-id={node.id} data-bx-type={node.type}>
-        <div className={innerClass} style={bgStyle}>
+        <InnerTag className={innerClass} style={bgStyle} {...innerAttrs}>
           {body}
-        </div>
+        </InnerTag>
       </div>
     );
   }
 
   const iterating = def.kind === 'container' && bound && card === 'array';
   const count = Array.isArray(value) ? value.length : 0;
+  // The binding chip's label + module color — kind-aware (docs/98 Pillar 7): a
+  // field shows its path; an entity/collection/action shows a friendly summary.
+  const b = node.binding;
+  let bindTagLabel = '';
+  if (b?.path) bindTagLabel = b.path;
+  else if (b?.action) bindTagLabel = `action · ${b.action}`;
+  else if (b?.source)
+    bindTagLabel = `repeat · ${b.source.from === 'all' ? 'all products' : b.source.from}`;
+  else if (b?.entity) bindTagLabel = `${b.entity} · ${b.label ?? b.id ?? ''}`;
+  const bindTagColor = moduleColor(
+    b?.path ? moduleForPath(catalog, b.path) : b?.entity === 'cms' ? 'cms' : 'commerce'
+  );
 
   return (
     <div
@@ -621,31 +676,27 @@ function CanvasNode({
         }
       }}
     >
-      <div className={innerClass} style={bgStyle}>
-        <span className="bx-tag">
-          <span className="bx-tag__name">{node.name ?? def.label}</span>
-          {bound ? (
-            <span
-              className="bx-tag__bind"
-              style={{ color: moduleColor(moduleForPath(catalog, node.binding!.path)) }}
-            >
-              <span
-                className="bx-tag__dot"
-                style={{ background: moduleColor(moduleForPath(catalog, node.binding!.path)) }}
-              />
-              {node.binding!.path}
-            </span>
-          ) : null}
-          {bindSlot !== null ? (
-            <span className="bx-tag__bind" style={{ color: 'var(--module-active)' }}>
-              <span className="bx-tag__dot" style={{ background: 'var(--module-active)' }} />
-              field · {bindSlot}
-            </span>
-          ) : null}
-          {iterating ? <span className="bx-tag__repeat">↻ {count}</span> : null}
-        </span>
+      <InnerTag className={innerClass} style={bgStyle} {...innerAttrs}>
+        {showInlineTag ? (
+          <span className="bx-tag">
+            <span className="bx-tag__name">{node.name ?? def.label}</span>
+            {bound ? (
+              <span className="bx-tag__bind" style={{ color: bindTagColor }}>
+                <span className="bx-tag__dot" style={{ background: bindTagColor }} />
+                {bindTagLabel}
+              </span>
+            ) : null}
+            {bindSlot !== null ? (
+              <span className="bx-tag__bind" style={{ color: 'var(--module-active)' }}>
+                <span className="bx-tag__dot" style={{ background: 'var(--module-active)' }} />
+                field · {bindSlot}
+              </span>
+            ) : null}
+            {iterating ? <span className="bx-tag__repeat">↻ {count}</span> : null}
+          </span>
+        ) : null}
         {body}
-      </div>
+      </InnerTag>
     </div>
   );
 }
@@ -1240,13 +1291,19 @@ export function Canvas({
   );
   const drag = useCanvasDrag(dragRoots, onMove, scrollRef);
 
-  // Scroll the selected node into view (the preview side of select→reveal — e.g.
-  // selecting a layer in the tree). `nearest` makes it a no-op when the node is
-  // already visible, so clicking a node in the canvas never makes it jump.
+  // Scroll the selected node into view (the canvas side of select→reveal — e.g.
+  // selecting a layer in the tree scrolls the canvas to its node). The `.bx-node`
+  // wrapper that carries `data-node-id` is `display:contents` (it must not affect
+  // layout — see CanvasNode), so it has NO box of its own and `scrollIntoView` on
+  // it silently no-ops. Walk down to the first descendant that actually paints a
+  // box (its `.bx-inner` content) and scroll THAT. `nearest` keeps it from jumping
+  // when the node is already on-screen, so a plain canvas click never scrolls.
   React.useEffect(() => {
     if (!selectedId) return;
-    const el = scrollRef.current?.querySelector(`[data-node-id="${CSS.escape(selectedId)}"]`);
-    el?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    const node = scrollRef.current?.querySelector(`[data-node-id="${CSS.escape(selectedId)}"]`);
+    let target: Element | null = node ?? null;
+    while (target?.getClientRects().length === 0) target = target.firstElementChild;
+    (target ?? node)?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   }, [selectedId]);
   // Email preview sample data (docs/93): the real tenant identity merged over the
   // generic placeholders, so `{{tenant.name}}` reads the store's real name in the

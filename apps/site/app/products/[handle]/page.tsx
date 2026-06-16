@@ -97,10 +97,15 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
     );
     if (builderTemplate) {
       const currency = site.commerce.defaultCurrency;
-      const data = await loadBuilderData(site.slug, builderTemplate.tree, {
-        key: 'product',
-        value: productToBuilderRecord(product, site.slug, currency),
-      });
+      const data = await loadBuilderData(
+        site.slug,
+        builderTemplate.tree,
+        {
+          key: 'product',
+          value: productToBuilderRecord(product, site.slug, currency),
+        },
+        currency
+      );
       // Render the builder tree BARE — exactly like the catch-all page route
       // ([...slug]). The template owns its own width (full-bleed hero sections,
       // contained content), so no `st-container` wrapper or breadcrumbs: those

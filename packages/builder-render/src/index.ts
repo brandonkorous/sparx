@@ -38,6 +38,7 @@ export {
   BuilderVariantPicker,
   BuilderQuantity,
   BuilderAddToCart,
+  BuilderActionButton,
   ProductFormProvider,
   useProductForm,
 } from './commerce';

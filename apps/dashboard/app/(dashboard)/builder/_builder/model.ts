@@ -252,11 +252,22 @@ export function cloneWithFreshIds(node: BuilderNode): BuilderNode {
 }
 
 let idCounter = 0;
-/** Stable-ish unique id for newly added nodes (client-only). Persisted with the
- *  tree on save, so on reload the id comes back from the server as plain data. */
+/** Globally-unique id for a newly added/stamped/pasted node (client-only),
+ *  persisted with the tree on save. It MUST NOT collide with ids already in the
+ *  saved tree: a plain from-zero counter re-mints the SAME id (`el:nav-1-38`) on
+ *  every page load / HMR, so a freshly stamped node clashes with one saved in an
+ *  earlier session — which trips React's duplicate-key guard AND breaks dnd-kit
+ *  layer reordering (it requires unique sortable ids, so a dup silently disables
+ *  the drag). So each id carries a random base (collision-resistant ACROSS
+ *  sessions) plus a monotonic counter (uniqueness WITHIN a session, even on the
+ *  off chance two calls draw the same base). */
 export function makeId(type: string): string {
   idCounter += 1;
-  return `${type.toLowerCase()}-${idCounter}-${idCounter * 31 + 7}`;
+  const base =
+    typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID().slice(0, 8)
+      : Math.random().toString(36).slice(2, 10);
+  return `${type.toLowerCase()}-${base}-${idCounter}`;
 }
 
 // ── Option tables (drive the inspector controls) ─────────────────────────────

@@ -31,6 +31,7 @@ export const GROUP_LABELS: Record<PaletteGroup, string> = {
   layout: 'Layout',
   content: 'Content & media',
   data: 'Data-aware',
+  elements: 'HTML elements',
 };
 
 export const KIND_LABELS: Record<NodeKind, string> = {
@@ -101,7 +102,12 @@ export interface CatalogFilters {
   surface?: string;
 }
 
-const GROUP_ORDER: Record<PaletteGroup, number> = { layout: 0, content: 1, data: 2 };
+const GROUP_ORDER: Record<PaletteGroup, number> = {
+  layout: 0,
+  content: 1,
+  data: 2,
+  elements: 3,
+};
 
 /** Every component in the catalog (registry order). */
 export function listComponents(): ComponentDef[] {

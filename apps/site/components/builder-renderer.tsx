@@ -16,8 +16,14 @@
 
 import * as React from 'react';
 import {
+  bindingIsProductScope,
   cardinalityOf,
+  isRawContainerType,
+  isRawElementType,
+  rawTagOf,
+  resolveBinding,
   resolvePath,
+  safeElementAttrs,
   type BuilderNode,
   type Cardinality,
   type DataSources,
@@ -115,16 +121,26 @@ function RenderNode({
    *  only — undefined when rendering a page tree, which has no Outlet). */
   outlet?: React.ReactNode;
 }): React.ReactNode {
-  const isContainer = CONTAINERS.has(node.type);
+  // A raw HTML element (docs/98 Pillar 1) renders AS its tag — a container wraps its
+  // walked children in that tag (not the default div), a leaf/void renders through
+  // renderLeaf. Either way the tag wears node.class on its own element.
+  const rawTag = rawTagOf(node.type);
+  const isContainer = CONTAINERS.has(node.type) || isRawContainerType(node.type);
   // docs/61: a presentational leaf carries node.class on its OWN element (its
   // Surface component / the Button recipe) via renderLeaf, so the renderer returns
   // it directly — no wrapper, no double-paint. Every other node gets ONE wrapper
   // div carrying node.class. Exactly one styled element per node. `leafWearsClass`
   // is the SHARED predicate the canvas uses too, so both agree where the class sits.
-  const leafStylesByClass = !isContainer && leafWearsClass(node.type);
+  const leafStylesByClass =
+    !isContainer && (leafWearsClass(node.type) || isRawElementType(node.type));
   const bound = Boolean(node.binding);
-  const value = bound ? resolvePath(scope, node.binding!.path) : undefined;
+  // docs/98 Pillar 7: resolveBinding dispatches on kind — a field path, a pinned
+  // entity (`__pins`), a collection source (`__sources`), or an action (no value).
+  const value = bound ? resolveBinding(scope, node.binding) : undefined;
   const card: Cardinality = bound ? cardinalityOf(value) : 'empty';
+  // A collection source / product pin scopes its subtree to a PRODUCT, so the
+  // buy-box context is established (per repeated item below, or once for an object).
+  const productScope = bindingIsProductScope(node.binding);
   // The only inline style left: a dynamic background image (a per-node / per-record
   // URL can't be a static class). The surface COLOR comes from node.class.
   const bgStyle = backgroundStyleFor(node, scope);
@@ -141,18 +157,24 @@ function RenderNode({
     const kids = node.children ?? [];
     let slides: React.ReactNode[];
     if (bound && card === 'array') {
-      slides = (value as unknown[]).map((item, i) => (
-        <React.Fragment key={`i${i}`}>
-          {kids.map((child) => (
-            <RenderNode
-              key={child.id}
-              node={child}
-              scope={{ ...scope, item, index: i }}
-              outlet={outlet}
-            />
-          ))}
-        </React.Fragment>
-      ));
+      slides = (value as unknown[]).map((item, i) => {
+        const itemKids = kids.map((child) => (
+          <RenderNode
+            key={child.id}
+            node={child}
+            scope={{ ...scope, item, index: i }}
+            outlet={outlet}
+          />
+        ));
+        // A product carousel scopes each slide to its product (buy-box per slide).
+        return productScope ? (
+          <ProductFormProvider key={`i${i}`} product={resolveBuilderProduct(item, 'live')}>
+            {itemKids}
+          </ProductFormProvider>
+        ) : (
+          <React.Fragment key={`i${i}`}>{itemKids}</React.Fragment>
+        );
+      });
     } else {
       const s: Scope = bound && card === 'object' ? { ...scope, item: value } : scope;
       slides = kids.map((child) => (
@@ -171,17 +193,26 @@ function RenderNode({
   } else if (isContainer) {
     const kids = node.children ?? [];
     if (bound && card === 'array') {
-      // Iterate: each record scopes its subtree to `item`.
-      body = (value as unknown[]).flatMap((item, i) =>
-        kids.map((child) => (
+      // Iterate: each record scopes its subtree to `item`. A product source
+      // additionally establishes the buy-box context per item, so a card's
+      // AddToCart/Buy-now sells THAT product's variant (docs/98 Pillar 7).
+      body = (value as unknown[]).map((item, i) => {
+        const itemKids = kids.map((child) => (
           <RenderNode
-            key={`${i}:${child.id}`}
+            key={child.id}
             node={child}
             scope={{ ...scope, item, index: i }}
             outlet={outlet}
           />
-        ))
-      );
+        ));
+        return productScope ? (
+          <ProductFormProvider key={`i${i}`} product={resolveBuilderProduct(item, 'live')}>
+            {itemKids}
+          </ProductFormProvider>
+        ) : (
+          <React.Fragment key={`i${i}`}>{itemKids}</React.Fragment>
+        );
+      });
     } else if (bound && card === 'object') {
       // Set scope: render once, descendants resolve item.*
       body = kids.map((child) => (
@@ -223,10 +254,11 @@ function RenderNode({
     });
   }
 
-  // A ProductForm container establishes the shared buy-box context over its
-  // subtree, so VariantPicker/Quantity/AddToCart atoms placed inside stay in
-  // sync. Bound to `product` → `value` is the product object.
-  if (node.type === 'ProductForm') {
+  // A product OBJECT scope establishes the shared buy-box context once over its
+  // subtree, so VariantPicker/Quantity/AddToCart/action atoms inside stay in sync:
+  // a ProductForm node bound to `product`, OR any container pinned to one product
+  // (entity pin). A collection ARRAY scope wraps per repeated item above instead.
+  if (node.type === 'ProductForm' || (productScope && card === 'object')) {
     body = (
       <ProductFormProvider product={resolveBuilderProduct(value, 'live')}>
         {body}
@@ -235,10 +267,18 @@ function RenderNode({
   }
 
   // A class-styled leaf already wears node.class on its own element → return it as
-  // is. Everything else gets one wrapper div carrying node.class (+ the dynamic
+  // is. A raw container renders AS its tag (carrying node.class + sanitized attrs).
+  // Everything else gets one wrapper div carrying node.class (+ the dynamic
   // background image, the only inline style left). The published page and the
   // editor canvas emit the same class, so preview == production.
   if (leafStylesByClass) return body;
+  if (rawTag) {
+    return React.createElement(
+      rawTag,
+      { className: cls(node.class), style: bgStyle, ...safeElementAttrs(node) },
+      body
+    );
+  }
   return (
     <div className={cls(node.class)} style={bgStyle} data-bx-type={node.type}>
       {body}

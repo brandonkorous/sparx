@@ -63,6 +63,7 @@ interface ProductFormState {
   onSale: boolean;
   inStock: boolean;
   addToCart: () => Promise<void>;
+  buyNow: () => Promise<void>;
 }
 
 const ProductFormContext = React.createContext<ProductFormState | null>(null);
@@ -152,6 +153,18 @@ function useProductFormState(product: BuilderProduct): ProductFormState {
     }
   }, [runtime, resolvedVariant, qty]);
 
+  // "Buy now" — add the resolved variant, then the runtime sends the buyer to
+  // checkout (live) / does nothing (canvas). Same guard as addToCart.
+  const buyNow = React.useCallback(async () => {
+    if (!resolvedVariant?.inStock) return;
+    setAdding(true);
+    try {
+      await runtime.buyNow(resolvedVariant.id, qty);
+    } finally {
+      setAdding(false);
+    }
+  }, [runtime, resolvedVariant, qty]);
+
   return {
     product,
     selected,
@@ -170,6 +183,7 @@ function useProductFormState(product: BuilderProduct): ProductFormState {
     onSale,
     inStock,
     addToCart,
+    buyNow,
   };
 }
 
@@ -328,6 +342,73 @@ export function BuilderAddToCart({ label }: { label?: string }) {
       onClick={() => void f.addToCart()}
     >
       {text}
+    </button>
+  );
+}
+
+/** Any element turned into a cart/navigation TRIGGER (docs/98 Pillar 7) — the
+ *  generalization of `AddToCart` to any button/link via an action binding. An
+ *  `add-to-cart`/`buy-now` action reads the shared product form an ancestor
+ *  product scope establishes (a pinned product card, or one item of a repeated
+ *  collection), so a button placed anywhere inside that scope sells the RIGHT
+ *  variant. `link` is an `<a>`; `submit` a real submit button. The element wears
+ *  the author's `className` (its Tailwind classes) verbatim. */
+export function BuilderActionButton({
+  action,
+  label,
+  className,
+  href,
+  children,
+}: {
+  action: 'add-to-cart' | 'buy-now' | 'link' | 'submit';
+  label: string;
+  className?: string;
+  href?: string;
+  children?: React.ReactNode;
+}) {
+  const f = useProductForm();
+
+  if (action === 'link') {
+    return (
+      <a href={href ?? '#'} className={className}>
+        {label}
+        {children}
+      </a>
+    );
+  }
+  if (action === 'submit') {
+    return (
+      <button type="submit" className={className}>
+        {label}
+        {children}
+      </button>
+    );
+  }
+
+  // add-to-cart / buy-now — wired to the ancestor product form. With no product
+  // scope the button still renders (so the author sees it) but is inert.
+  const text = !f
+    ? label
+    : !f.allSelected
+      ? 'Select options'
+      : !f.inStock
+        ? 'Sold out'
+        : f.adding
+          ? 'Adding…'
+          : label;
+  const disabled = !(f?.resolvedVariant && f.inStock && !f.adding);
+  return (
+    <button
+      type="button"
+      className={className}
+      disabled={disabled}
+      onClick={() => {
+        if (!f) return;
+        void (action === 'buy-now' ? f.buyNow() : f.addToCart());
+      }}
+    >
+      {text}
+      {children}
     </button>
   );
 }

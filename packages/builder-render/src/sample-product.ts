@@ -17,6 +17,8 @@
 import type { BuilderProduct } from './commerce-types';
 
 export const SAMPLE_BUILDER_PRODUCT: BuilderProduct = {
+  id: 'sample-product',
+  handle: 'sample-product',
   title: 'Sample Product — Trailhead Insulated Jacket',
   price: 148,
   compareAtPrice: 188,

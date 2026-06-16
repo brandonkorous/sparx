@@ -195,8 +195,9 @@ function renderNode(
   data: BillingRenderData,
   brand: BillingRenderBrand
 ): string {
-  const bound = Boolean(node.binding);
-  const value = bound ? resolvePath(scope, node.binding!.path) : undefined;
+  // Invoice/billing trees bind by field path only (document.* merge fields).
+  const bound = Boolean(node.binding?.path);
+  const value = bound ? resolvePath(scope, node.binding!.path ?? '') : undefined;
 
   if (!CONTAINERS.has(node.type)) {
     return renderLeaf(node, value, bound, data, brand);

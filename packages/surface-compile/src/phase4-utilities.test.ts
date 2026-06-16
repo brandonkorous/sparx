@@ -193,6 +193,178 @@ const BORDERS = [
   'rounded-bl-box',
 ];
 
+// ── Phase 2 (docs/98 §3.3) — the controls that complete the Tailwind surface.
+// Grouped by Tailwind's own documentation sections, matching the inspector cards.
+
+// Filters card — drop-shadow / sepia / invert / hue-rotate + the backdrop family
+// (brightness/contrast/saturate/opacity ride value groups; grayscale is an enum).
+const FILTERS = [
+  'drop-shadow-sm',
+  'drop-shadow-md',
+  'drop-shadow-lg',
+  'drop-shadow-xl',
+  'drop-shadow-none',
+  'sepia',
+  'sepia-0',
+  'invert',
+  'invert-0',
+  'hue-rotate-15',
+  'hue-rotate-90',
+  '-hue-rotate-15',
+  'backdrop-brightness-110',
+  'backdrop-contrast-110',
+  'backdrop-saturate-150',
+  'backdrop-opacity-75',
+  'backdrop-grayscale',
+  'backdrop-grayscale-0',
+];
+
+// Transitions & Animation card — easing curves + the platform animation library.
+const TRANSITIONS = [
+  'ease-linear',
+  'ease-in',
+  'ease-out',
+  'ease-in-out',
+  'animate-none',
+  'animate-spin',
+  'animate-ping',
+  'animate-pulse',
+  'animate-bounce',
+];
+
+// Transforms card — the per-axis scale + the negative rotate/translate steps that
+// ride the value fields (the positive steps live in the existing EFFECTS group).
+const TRANSFORMS = [
+  'scale-x-105',
+  'scale-y-95',
+  '-rotate-6',
+  '-rotate-12',
+  '-translate-y-1',
+  '-translate-x-1',
+];
+
+// Tables card — table-only utilities (shown for el:table-family raw elements).
+const TABLES = [
+  'border-collapse',
+  'border-separate',
+  'table-auto',
+  'table-fixed',
+  'caption-top',
+  'caption-bottom',
+  'border-spacing-2',
+  'border-spacing-x-2',
+  'border-spacing-y-2',
+];
+
+// SVG card — fill / stroke (token colors) + stroke-width (shown for el:svg + svg
+// child raw elements).
+const SVG = [
+  'fill-none',
+  'fill-current',
+  'fill-primary',
+  'fill-secondary',
+  'fill-accent',
+  'fill-neutral',
+  'fill-white',
+  'fill-black',
+  'stroke-none',
+  'stroke-current',
+  'stroke-primary',
+  'stroke-secondary',
+  'stroke-accent',
+  'stroke-neutral',
+  'stroke-white',
+  'stroke-black',
+  'stroke-0',
+  'stroke-1',
+  'stroke-2',
+];
+
+// Typography card — the remaining members (font-style, decoration thickness /
+// offset, list style, vertical-align, text-overflow, hyphens, text-indent).
+const TYPOGRAPHY_EXTRA = [
+  'italic',
+  'not-italic',
+  'decoration-auto',
+  'decoration-1',
+  'decoration-2',
+  'decoration-4',
+  'underline-offset-auto',
+  'underline-offset-1',
+  'underline-offset-2',
+  'underline-offset-4',
+  'list-none',
+  'list-disc',
+  'list-decimal',
+  'list-inside',
+  'list-outside',
+  'align-baseline',
+  'align-top',
+  'align-middle',
+  'align-bottom',
+  'align-sub',
+  'align-super',
+  'text-ellipsis',
+  'text-clip',
+  'hyphens-none',
+  'hyphens-manual',
+  'hyphens-auto',
+  'indent-4',
+  'indent-8',
+];
+
+// Interactivity card (NEW section) — cursor / select / pointer-events / resize /
+// scroll behavior + snap / appearance / touch-action / will-change + caret &
+// accent token colors.
+const INTERACTIVITY = [
+  'cursor-auto',
+  'cursor-default',
+  'cursor-pointer',
+  'cursor-wait',
+  'cursor-text',
+  'cursor-move',
+  'cursor-not-allowed',
+  'cursor-grab',
+  'select-none',
+  'select-text',
+  'select-all',
+  'select-auto',
+  'pointer-events-none',
+  'pointer-events-auto',
+  'resize-none',
+  'resize',
+  'resize-y',
+  'resize-x',
+  'scroll-auto',
+  'scroll-smooth',
+  'snap-none',
+  'snap-x',
+  'snap-y',
+  'snap-both',
+  'snap-start',
+  'snap-center',
+  'snap-end',
+  'snap-align-none',
+  'appearance-none',
+  'appearance-auto',
+  'touch-auto',
+  'touch-none',
+  'touch-pan-x',
+  'touch-pan-y',
+  'touch-manipulation',
+  'will-change-auto',
+  'will-change-scroll',
+  'will-change-contents',
+  'will-change-transform',
+  'caret-primary',
+  'caret-accent',
+  'caret-neutral',
+  'accent-primary',
+  'accent-secondary',
+  'accent-accent',
+  'accent-neutral',
+];
+
 const ALL = {
   TYPOGRAPHY,
   LAYOUT,
@@ -200,6 +372,13 @@ const ALL = {
   BACKGROUND,
   EFFECTS,
   BORDERS,
+  FILTERS,
+  TRANSITIONS,
+  TRANSFORMS,
+  TABLES,
+  SVG,
+  TYPOGRAPHY_EXTRA,
+  INTERACTIVITY,
 };
 
 describe('Phase 4 control tokens compile (no silent drops)', () => {

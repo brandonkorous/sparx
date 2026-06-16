@@ -50,6 +50,18 @@ describe('compileClasses', () => {
     expect(css).toMatch(/\.relative\b/);
     expect(css).not.toMatch(/\.fixed\b/);
   });
+
+  it('ships the navbar component + start/center/end zones (daisyUI-faithful)', async () => {
+    const css = await compileClasses(['navbar', 'navbar-start', 'navbar-center', 'navbar-end']);
+    expect(css).toMatch(/\.navbar\b/);
+    expect(css).toContain('.navbar-start');
+    expect(css).toContain('.navbar-center');
+    expect(css).toContain('.navbar-end');
+    // The centering mechanism: 50%-width side zones, shrink-0 center between them.
+    expect(css).toMatch(/\.navbar-start\s*\{[^}]*width:\s*50%/);
+    expect(css).toMatch(/\.navbar-end\s*\{[^}]*justify-content:\s*flex-end/);
+    expect(css).toMatch(/\.navbar-center\s*\{[^}]*flex-shrink:\s*0/);
+  });
 });
 
 describe('buildTenantStylesheet', () => {
