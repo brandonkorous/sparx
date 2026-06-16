@@ -48,6 +48,7 @@ import {
   SampleBadge,
   fmtMoneyCents,
   fmtNumber,
+  liveOr,
 } from '../_components/overview-bits';
 
 // Inventory overview — the stock-keeper's glance: what's in stock, what's low,
@@ -55,11 +56,13 @@ import {
 // — which is ALSO the semantic warning hue — so amber drives the module chrome
 // while OUT-OF-STOCK stays unmistakably red (danger) and "low" reads as a
 // warning badge. Valuation, stock-status counts, the low/out table, per-location
-// quantities, source-feed health, and the recent-change feed are wired LIVE to
-// /v1/inventory/reports/* (fail-soft to "—" / badged sample). Purchase orders
-// (no PO model) and the value-over-time chart (no valuation snapshots) stay
-// sample — both need backing data the module doesn't capture yet. The inventory
-// layout wraps this in <ModuleProvider module="inventory">.
+// quantities, source-feed health, the recent-change feed, and the value-over-
+// time chart are wired LIVE to /v1/inventory/reports/* (fail-soft to "—" / badged
+// sample). The value chart reads daily valuation snapshots
+// (rollup_inventory_daily_valuation) + a live-overlay of today, so it builds
+// forward from first capture. Purchase orders (no PO model) stay sample — they
+// need backing data the module doesn't capture yet. The inventory layout wraps
+// this in <ModuleProvider module="inventory">.
 
 export const dynamic = 'force-dynamic';
 
@@ -124,6 +127,10 @@ interface InventoryActivityRow {
   available: number;
   updatedAt: string;
 }
+interface ValuationTimeseries {
+  range: { from: string; to: string };
+  points: { bucket: string; units: number; costCents: number; retailCents: number }[];
+}
 
 // ── Sample data (shown badged only until the tenant has stock data) ──
 const SAMPLE_VALUE_14D = [
@@ -155,6 +162,15 @@ const SAMPLE_POS = [
   { name: 'PO-215 · PourCraft', when: 'Arrives Jun 24', units: '60' },
 ] as const;
 
+// Short UTC day label ("Jun 13") for the value-over-time chart x-axis.
+function shortDay(bucket: string): string {
+  return new Date(`${bucket}T00:00:00.000Z`).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
+}
+
 function timeAgo(iso: string): string {
   const mins = Math.round((Date.now() - new Date(iso).getTime()) / 60_000);
   if (mins < 1) return 'just now';
@@ -169,11 +185,12 @@ function timeAgo(iso: string): string {
 export default async function InventoryPage() {
   await requireSession();
 
-  const [locations, sources, summary, activity] = await Promise.all([
+  const [locations, sources, summary, activity, valueSeries] = await Promise.all([
     api.getPaged<InventoryLocation[]>('/v1/inventory/locations?take=20').catch(() => null),
     api.getPaged<InventorySourceRow[]>('/v1/inventory/sources?take=20').catch(() => null),
     api.get<InventorySummary>('/v1/inventory/reports/summary').catch(() => null),
     api.get<InventoryActivityRow[]>('/v1/inventory/reports/activity?limit=6').catch(() => null),
+    api.get<ValuationTimeseries>('/v1/inventory/reports/valuation-timeseries').catch(() => null),
   ]);
 
   const locationCount = locations
@@ -188,6 +205,14 @@ export default async function InventoryPage() {
     ? summary.sources.paused + summary.sources.error
     : (sources?.data.filter((s) => s.status !== 'active').length ?? 0);
   const currency = summary?.valuation.currency ?? 'USD';
+
+  // Inventory value over time — daily snapshots (+ live-overlaid today). Live once
+  // ≥2 days have been captured (a single point isn't a trend); else badged sample.
+  const valuePoints =
+    valueSeries && valueSeries.points.length > 0
+      ? valueSeries.points.map((p) => ({ label: shortDay(p.bucket), value: p.costCents }))
+      : null;
+  const valueChart = liveOr(valuePoints, [...SAMPLE_VALUE_14D], { min: 2 });
 
   // Per-location units — live from the summary, else the badged sample.
   const hasLocations = !!(summary && summary.byLocation.length > 0);
@@ -310,15 +335,15 @@ export default async function InventoryPage() {
             title="Inventory value"
             icon={<Warehouse className="h-4 w-4" />}
             description="At cost · last 14 days"
-            right={<SampleBadge />}
+            right={valueChart.isSample ? <SampleBadge reason="no-data" /> : undefined}
           >
             <AreaChart
-              data={[...SAMPLE_VALUE_14D]}
+              data={valueChart.data}
               series={[{ key: 'value', label: 'Value', color: 'module' }]}
               xKey="label"
               height={210}
               valueFormat={{ kind: 'currency', currency }}
-              ariaLabel="Inventory value at cost, last 14 days"
+              ariaLabel="Inventory value at cost over time"
             />
             <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
               {[

@@ -151,7 +151,8 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 - ✅ Location & source **counts** — `GET /v1/inventory/locations`, `GET /v1/inventory/sources`
 - ✅ Valuation (units + cost/retail) + stock-status (out/low/healthy) + per-location quantities + source-feed health + low/out attention list — `GET /v1/inventory/reports/summary` (shipped 2026-06-15; live aggregates over the module's `stock_levels`, joined to variant cost/retail; "low" is a fixed available-units threshold since the module's StockLevel has no reorder point)
 - ✅ Recent stock changes feed — `GET /v1/inventory/reports/activity` (recently-updated stock levels; a movement-feed proxy)
-- 🔴 Purchase orders (no PO model) + value-over-time chart (no valuation snapshots) — stay sample; both need backing data the module doesn't capture yet
+- ✅ **Value over time** — `GET /v1/inventory/reports/valuation-timeseries` (shipped 2026-06-15): a nightly snapshot cron (`/internal/inventory/valuation-snapshot` + k8s CronJob) captures today's valuation (units + value at cost/retail, mirroring the summary definition) into `rollup_inventory_daily_valuation`; the read returns the daily series + a live-overlay of today's current valuation. Because stock has no per-day movement ledger, this is a point-in-time snapshot that **builds forward from first capture** (no historical backfill); the chart goes live once ≥2 days are captured, else badged sample.
+- 🔴 Purchase orders (no PO model) — stay sample; needs a PO model the module doesn't have yet
 
 ### Chat — Violet
 

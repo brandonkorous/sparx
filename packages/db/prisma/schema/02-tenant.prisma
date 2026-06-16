@@ -369,6 +369,7 @@ model Tenant {
   rollupInvoicingDailyCollected RollupInvoicingDailyCollected[]
   rollupDropshipDailyOrders     RollupDropshipDailyOrders[]
   rollupAutomationDailyRuns     RollupAutomationDailyRuns[]
+  rollupInventoryDailyValuation RollupInventoryDailyValuation[]
 
   // First-party site analytics (docs/97 §5) — raw capture + daily rollup
   siteAnalyticsEvents SiteAnalyticsEvent[]

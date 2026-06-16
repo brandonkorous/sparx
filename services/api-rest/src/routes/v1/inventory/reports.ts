@@ -21,6 +21,11 @@ import { withTenant } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireInventoryModule, toInventoryContext } from '../../../lib/inventory-context.js';
+import {
+  addUtcDays,
+  startOfUtcDay,
+  valuationTimeseries,
+} from '../../../lib/inventory-valuation.js';
 
 const DEFAULT_CURRENCY = 'USD';
 // Available-units threshold below which a (variant, location) reads as "low".
@@ -28,6 +33,11 @@ const LOW_STOCK_THRESHOLD = 5;
 
 const ActivityQuery = z.object({
   limit: z.coerce.number().int().min(1).max(50).optional(),
+});
+
+const RangeQuery = z.object({
+  from: z.string().datetime().optional(),
+  to: z.string().datetime().optional(),
 });
 
 interface RawStatusRow {
@@ -185,6 +195,20 @@ const reportRoutes: FastifyPluginAsync = (app) => {
         lowStockThreshold: LOW_STOCK_THRESHOLD,
       });
     });
+  });
+
+  // Valuation over time — the daily snapshot series (rollup_inventory_daily_
+  // valuation) + a live-overlay of today's current valuation. Builds forward
+  // from first capture; no historical backfill is possible (see the model note).
+  app.get('/v1/inventory/reports/valuation-timeseries', async (request) => {
+    await requireInventoryModule(request);
+    requireRole(request, 'viewer');
+    const ctx = toInventoryContext(request);
+    const q = RangeQuery.parse(request.query);
+    const to = startOfUtcDay(q.to ? new Date(q.to) : new Date());
+    const from = startOfUtcDay(q.from ? new Date(q.from) : addUtcDays(to, -13));
+    const toExclusive = addUtcDays(to, 1);
+    return ok(await withTenant(ctx, (tx) => valuationTimeseries(tx, from, to, toExclusive)));
   });
 
   // Recently-changed stock levels — a movement-feed proxy (no per-change ledger
