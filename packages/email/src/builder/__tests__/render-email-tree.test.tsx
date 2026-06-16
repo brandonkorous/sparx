@@ -333,4 +333,46 @@ describe('renderEmailTree', () => {
     expect(out.html).toContain('12 days overdue');
     expect(out.html).toContain('https://shop.test/pay/42');
   });
+
+  it('compiles an email-safe leaf class to inline style (Email v2)', async () => {
+    const tree: BuilderNode = {
+      id: 'root',
+      type: 'Stack',
+      class: 'flex flex-col',
+      props: {},
+      children: [
+        // text-center + a semantic color reach the rendered heading…
+        node('Heading', { class: 'text-center', props: { level: 'h2', text: 'Centered head' } }),
+        // …and a class can recolor the button (bg-success → email-literal green).
+        node('Button', {
+          class: 'bg-success',
+          props: { label: 'Pay now', href: 'https://shop.test/pay' },
+        }),
+      ],
+    };
+    const out = await renderEmailTree({ tree, subject: 'S', to: 'x@y.com' }, { brand });
+    expect(out.html).toContain('Centered head');
+    expect(out.html).toMatch(/text-align:\s*center/i);
+    // bg-success compiled to the literal email green, overriding the brand fill.
+    expect(out.html.toLowerCase()).toContain('#16a34a');
+  });
+
+  it('drops web-only leaf classes without corrupting the render', async () => {
+    // A purely web-minded class (states, breakpoints, flex) contributes nothing and
+    // never throws — the content still renders.
+    const tree: BuilderNode = {
+      id: 'root',
+      type: 'Stack',
+      class: 'flex flex-col',
+      props: {},
+      children: [
+        node('Text', {
+          class: 'hover:text-primary md:text-3xl flex absolute z-50 w-[200px]',
+          props: { variant: 'body', text: 'Still here' },
+        }),
+      ],
+    };
+    const out = await renderEmailTree({ tree, subject: 'S', to: 'x@y.com' }, { brand });
+    expect(out.html).toContain('Still here');
+  });
 });
