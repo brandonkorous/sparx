@@ -49,11 +49,13 @@ import {
   removeNode,
   topLevelSelected,
   updateNode,
+  type Binding,
   type BuilderNode,
   type DataSources,
   type Device,
 } from './model';
 import { buildPreviewData, scopeAt, type ScopeInfo, type SitePreviewData } from './binding-catalog';
+import { useCommercePreview } from './use-commerce-preview';
 import { acceptsChildren, getDef, makeNode, retypeDropsChildren, retypeNode } from './registry';
 import { studioMoveZone, studioZoneOf } from './studio-routing';
 import { useHistory } from './editor-history';
@@ -205,7 +207,7 @@ export interface StudioEditor {
   onProp: (key: string, value: unknown) => void;
   onName: (name: string) => void;
   onClass: (value: string) => void;
-  onBind: (path: string | null) => void;
+  onBind: (target: string | Binding | null) => void;
   onAdd: (type: string) => void;
   /** Stamp a brand-section archetype (docs/61 §6) — fork a COPY of its tree
    *  (fresh ids) into the active drop target, NOT a live reference. */
@@ -443,14 +445,19 @@ export function useStudioEditor({
   );
   const scope = React.useMemo(() => scopeAt(activeCatalog, chain), [activeCatalog, chain]);
 
+  // Real products for the canvas — the products this tree pins / repeats, hydrated
+  // so the canvas previews what the published site renders (docs/98 Pillar 7).
+  const commerceOverlay = useCommercePreview(activeTree);
+
   // The canvas renders chrome + page against ONE data root. The page zone's sources
   // (overlaid with the real brand/social) drive it — the header/footer bind only to
   // the sitePreview-supplied identity, and the page binds to its content sources, so
   // the page catalog's preview data serves both faithfully (parity with the page
-  // editor's locked-chrome framing).
+  // editor's locked-chrome framing). The commerce overlay adds the reserved
+  // __pins / __sources roots for any pinned/looped products.
   const previewData = React.useMemo(
-    () => buildPreviewData(pageCatalog.sources, sitePreview),
-    [pageCatalog, sitePreview]
+    () => ({ ...buildPreviewData(pageCatalog.sources, sitePreview), ...commerceOverlay }),
+    [pageCatalog, sitePreview, commerceOverlay]
   );
 
   // Where a palette drop lands in the active zone: the selected container, else its
@@ -565,14 +572,17 @@ export function useStudioEditor({
     });
   };
 
-  const onBind = (path: string | null) =>
+  // Set the selected node's binding. Accepts a bare PATH string (the field picker,
+  // docs/43) or a full Binding object (the Data panel's product pin / collection
+  // source / action, docs/98 Pillar 7); null/'' clears it.
+  const onBind = (target: string | Binding | null) =>
     mutateSelected((n) => {
-      if (!path) {
+      if (target == null || target === '') {
         const next = { ...n };
         delete next.binding;
         return next;
       }
-      return { ...n, binding: { path } };
+      return { ...n, binding: typeof target === 'string' ? { path: target } : target };
     });
 
   // Add a node inside the active zone's drop target. A `custom:<key>` drops a

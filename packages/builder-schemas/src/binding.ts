@@ -156,6 +156,11 @@ export function mapCmsContentType(ct: CmsContentTypeLike): DataSource[] {
 // ── Code-defined domain sources (Commerce owns its schema; CRM likewise) ──────
 
 const PRODUCT_FIELDS: FieldSchema[] = [
+  // `id` + `handle` (docs/98 Pillar 7) let a descendant of a pinned/looped product
+  // read its identity — e.g. a card title that links to the product's PDP
+  // (`/products/{{item.handle}}`) or a node keyed by `item.id`.
+  { key: 'id', label: 'Product ID', kind: 'text', cardinality: 'scalar' },
+  { key: 'handle', label: 'Handle (URL)', kind: 'text', cardinality: 'scalar' },
   { key: 'title', label: 'Title', kind: 'text', cardinality: 'scalar' },
   { key: 'price', label: 'Price', kind: 'number', cardinality: 'scalar' },
   { key: 'compareAtPrice', label: 'Compare-at price', kind: 'number', cardinality: 'scalar' },

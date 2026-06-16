@@ -92,10 +92,15 @@ export default async function BlogPostPage({ params, searchParams }: BlogPagePro
   // as `blog_post`. Falls through to the legacy render when none is published.
   const builderTemplate = await getPublishedBuilderCollection(site.slug, 'cms.blog_post', post.id);
   if (builderTemplate) {
-    const data = await loadBuilderData(site.slug, builderTemplate.tree, {
-      key: 'blog_post',
-      value: postToBuilderRecord(post, site.slug),
-    });
+    const data = await loadBuilderData(
+      site.slug,
+      builderTemplate.tree,
+      {
+        key: 'blog_post',
+        value: postToBuilderRecord(post, site.slug),
+      },
+      site.commerce.defaultCurrency
+    );
     return (
       <>
         <ArticleJsonLd post={post} site={site} />

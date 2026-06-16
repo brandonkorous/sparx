@@ -68,6 +68,7 @@ import {
 import { renderDocToHtml } from '@sparx/cms-editor/serialize';
 
 import {
+  BuilderActionButton,
   BuilderAddToCart,
   BuilderBuyBox,
   BuilderQuantity,
@@ -300,6 +301,31 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
   // for email). `ph` supplies a placeholder string in the editor only.
   const ph = (s: string): string => (edit ? s : '');
   const boundOr = (fallback: string): string => (bound ? asText(value) : '') || tpl(fallback);
+
+  // Action triggers (docs/98 Pillar 7) — a Button / link / raw button-or-anchor
+  // carrying an ACTION binding becomes a cart/navigation trigger wired to the
+  // ancestor product scope. The element wears the author's class (leafClass), or a
+  // button recipe as the fallback. Email has no JS runtime, so an action there
+  // falls through to the normal (static) render below.
+  const action = node.binding?.action;
+  if (action && !email) {
+    const actionLabel: Record<string, string> = {
+      'add-to-cart': 'Add to cart',
+      'buy-now': 'Buy now',
+      link: 'Open link',
+      submit: 'Submit',
+    };
+    const label =
+      str('label') || str('text') || rawElementText(node) || (actionLabel[action] ?? 'Button');
+    const className = leafClass ?? legacyButtonStyleToClass(str('style'));
+    const linkHref = (node.binding?.href ?? '') || str('href');
+    const href = action === 'link' ? linkHref || undefined : undefined;
+    return (
+      <BuilderActionButton action={action} label={label} className={className} href={href}>
+        {children}
+      </BuilderActionButton>
+    );
+  }
 
   // Raw HTML elements (docs/98 Pillar 1) — render the whitelisted tag with its
   // sanitized attributes (the host walker handles raw CONTAINER tags itself; a

@@ -82,8 +82,14 @@ import { TokenInput, TokenTextarea } from './token-field';
 
 import { SeoScoreChip } from '@/components/seo/seo-score';
 
-import { type BuilderNode, type PageSeo } from './model';
+import { type Binding, type BuilderNode, type PageSeo } from './model';
 import { bindGroups, bindHint, itemBindPaths, type ScopeInfo } from './binding-catalog';
+import {
+  DataConnect,
+  dataConnectMode,
+  dataConnectSummary,
+  hasRecordOrActionBinding,
+} from './data-panel';
 import { compatibleRetypeTargets, getDef, type ComponentDef, type EditorSurface } from './registry';
 import { IconPicker } from './icon-picker';
 import { ProseControl } from './prose-control';
@@ -4334,7 +4340,10 @@ export interface InspectorProps {
   onBack: () => void;
   onName: (name: string) => void;
   onClass: (value: string) => void;
-  onBind: (path: string | null) => void;
+  /** Set the node's binding — a bare PATH (field picker) or a full Binding object
+   *  (the Data panel's product pin / collection source / action, docs/98 Pillar 7);
+   *  null clears it. */
+  onBind: (target: string | Binding | null) => void;
   onProp: (key: string, value: unknown) => void;
   onRetype: (targetType: string) => void;
   // ── Multi-select + clipboard (docs/builder/05 §2.2 / §2.5) ──────────────────
@@ -4711,15 +4720,28 @@ export function Inspector({
         {hasContent ? (
           <Card icon={Type} title="Content" summary={contentSummary(node, def)}>
             <PropsFields node={node} onProp={onProp} slotEditor={slotEditor} tokens={tokens} />
-            <DataSource
-              node={node}
-              catalog={catalog}
-              scope={scope}
-              contentTypeKey={contentTypeKey}
-              onAddField={onAddField}
-              onBind={onBind}
-              slotEditor={slotEditor}
-            />
+            {/* The field picker is hidden while a product pin / collection source /
+                action owns the binding (docs/98 Pillar 7) — one binding per node, set
+                in the Data card below. */}
+            {!hasRecordOrActionBinding(node) ? (
+              <DataSource
+                node={node}
+                catalog={catalog}
+                scope={scope}
+                contentTypeKey={contentTypeKey}
+                onAddField={onAddField}
+                onBind={onBind}
+                slotEditor={slotEditor}
+              />
+            ) : null}
+          </Card>
+        ) : null}
+
+        {/* Data (docs/98 Pillar 7) — connect a container to a product / collection,
+            or wire a button's click action. Web surfaces only (no cart in email). */}
+        {surface !== 'email' && dataConnectMode(node, def) ? (
+          <Card icon={Database} title="Data" summary={dataConnectSummary(node)}>
+            <DataConnect node={node} def={def} onBind={onBind} />
           </Card>
         ) : null}
 

@@ -30,6 +30,11 @@ export interface BuilderVariant {
 }
 
 export interface BuilderProduct {
+  /** Stable product id + URL handle (docs/98 Pillar 7) — so a pinned/looped product
+   *  exposes `item.id` / `item.handle` (e.g. a card that links to the PDP). The
+   *  buy-box doesn't use them; they ride along for field binding. */
+  id: string;
+  handle: string;
   title: string;
   price: number | null;
   compareAtPrice: number | null;

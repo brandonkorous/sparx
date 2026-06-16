@@ -90,8 +90,25 @@ function bindMeta(
   node: BuilderNode,
   catalog: BindingCatalog
 ): { path: string; color: string; repeats: boolean } | null {
-  if (!node.binding) return null;
-  const path = node.binding.path;
+  const b = node.binding;
+  if (!b) return null;
+  // Entity / collection / action bindings (docs/98 Pillar 7) carry no field path —
+  // show a friendly summary + the commerce/cms accent, and the ↻ badge for a repeater.
+  if (!b.path) {
+    const label = b.action
+      ? `action · ${b.action}`
+      : b.source
+        ? `repeat · ${b.source.from === 'all' ? 'all products' : b.source.from}`
+        : b.entity
+          ? `${b.entity} · ${b.label ?? b.id ?? ''}`
+          : '';
+    return {
+      path: label,
+      color: moduleColor(b.entity === 'cms' ? 'cms' : 'commerce'),
+      repeats: Boolean(b.source),
+    };
+  }
+  const path = b.path;
   const color = moduleColor(moduleForPath(catalog, path));
   // Best-effort cardinality for the ↻ badge (item.* can't be resolved here, so
   // it never shows the badge — its own iteration comes from an ancestor).

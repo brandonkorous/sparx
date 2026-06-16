@@ -13,11 +13,23 @@
 // Everything here is pure + deterministic (no Date.now / Math.random) so the
 // SSR'd canvas and its client hydration produce identical preview data.
 
-import type { BindingCatalog, DataSource, FieldSchema, SourceModule } from '@sparx/builder-schemas';
+import {
+  COMMERCE_SOURCES,
+  type BindingCatalog,
+  type DataSource,
+  type FieldSchema,
+  type SourceModule,
+} from '@sparx/builder-schemas';
 
 import type { BuilderNode, Cardinality, DataSources } from './model';
 
 export const EMPTY_CATALOG: BindingCatalog = { sources: [] };
+
+// The PRODUCT field set (id / handle / title / price / images / …) a node inherits
+// when an ancestor PINS a product or REPEATS a collection (docs/98 Pillar 7), so
+// the descendant's field picker offers `item.title` / `item.price` / `item.images`.
+const PRODUCT_SCOPE_FIELDS: FieldSchema[] =
+  COMMERCE_SOURCES.find((s) => s.key === 'product')?.fields ?? [];
 
 // ── Module accent colors (editor chrome — independent of the tenant brand) ────
 // Mirrors sample.ts MODULES. A bare binding path (e.g. `blog_post.title`) hides
@@ -108,7 +120,18 @@ export function scopeAt(catalog: BindingCatalog, chain: BuilderNode[]): ScopeInf
   let label: string | undefined;
   let active = false;
   for (const n of chain.slice(0, -1)) {
-    const p = n.binding?.path;
+    const b = n.binding;
+    if (!b) continue;
+    // docs/98 Pillar 7: a product pin (object) or a collection source (array) scopes
+    // descendants to PRODUCT fields — so a card pinned to a product, or one item of
+    // a repeated collection, offers item.title / item.price / item.images below.
+    if (b.entity === 'product' || b.source) {
+      fields = PRODUCT_SCOPE_FIELDS;
+      label = b.label ?? 'product';
+      active = true;
+      continue;
+    }
+    const p = b.path;
     if (!p) continue;
     if (p.startsWith('item')) {
       const f = active ? fieldAtItemPath(fields, p) : undefined;

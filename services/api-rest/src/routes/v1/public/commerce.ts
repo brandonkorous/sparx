@@ -15,6 +15,7 @@
 // All other reads run inside withTenant() so RLS scopes them.
 
 import type { FastifyPluginAsync } from 'fastify';
+import type { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 import { ok, paged } from '@sparx/api-core/envelope';
@@ -396,13 +397,70 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     return ok(ordered);
   });
 
+  // FULL products for the Builder data spine (docs/98 Pillar 7). Returns the same
+  // PDP payload (options + variants + images) so a pinned product card / collection
+  // grid renders a working buy-box. Sourced by EITHER an id list (an entity pin —
+  // order preserved), a collection id, a category id, or — with none — the whole
+  // catalog (the `all` source), capped by `limit`. Active + site-visible only, so a
+  // pinned-but-unpublished product simply doesn't render.
+  app.get('/v1/public/commerce/products/full', async (request) => {
+    const q = z
+      .object({
+        tenant: z.string().min(1).max(63),
+        property: z.string().min(1).max(63).optional(),
+        ids: z.string().optional(),
+        collection: z.string().uuid().optional(),
+        category: z.string().uuid().optional(),
+        limit: z.coerce.number().int().min(1).max(48).default(24),
+      })
+      .parse(request.query);
+    const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    const ids = q.ids
+      ? q.ids
+          .split(',')
+          .map((s) => s.trim())
+          .filter((s) => z.string().uuid().safeParse(s).success)
+          .slice(0, 48)
+      : null;
+    if (ids?.length === 0) return ok([]);
+
+    const where: Prisma.ProductWhereInput = {
+      status: 'active',
+      deletedAt: null,
+      ...productSiteVisibilityWhere(propertyId),
+      ...(ids ? { id: { in: ids } } : {}),
+      ...(q.collection ? { collectionLinks: { some: { collectionId: q.collection } } } : {}),
+      ...(q.category ? { categoryLinks: { some: { categoryId: q.category } } } : {}),
+    };
+    const rows = await withTenant({ tenantId }, (tx) =>
+      tx.product.findMany({
+        where,
+        orderBy: [{ inStock: 'desc' }, { updatedAt: 'desc' }],
+        // An id pin returns every requested product; a source is capped.
+        take: ids ? undefined : q.limit,
+        select: FULL_PRODUCT_SELECT,
+      })
+    );
+    let list = rows.map(mapFullProduct);
+    // Preserve the requested id order (Prisma's `in` does not guarantee it).
+    if (ids) {
+      const byId = new Map(list.map((p) => [p.id, p]));
+      list = ids.flatMap((id) => {
+        const p = byId.get(id);
+        return p ? [p] : [];
+      });
+    }
+    return ok(list);
+  });
+
   app.get('/v1/public/commerce/products/:handle', async (request) => {
     const { handle } = HandleParams.parse(request.params);
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
-    const result = await withTenant({ tenantId }, async (tx) => {
-      const product = await tx.product.findFirst({
+    const result = await withTenant({ tenantId }, (tx) =>
+      tx.product.findFirst({
         // Model B: a product not visible on the active site 404s by URL too.
         where: {
           handle,
@@ -410,139 +468,11 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
           deletedAt: null,
           ...productSiteVisibilityWhere(propertyId),
         },
-        select: {
-          id: true,
-          title: true,
-          handle: true,
-          description: true,
-          vendor: true,
-          productType: true,
-          tags: true,
-          priceMinCents: true,
-          priceMaxCents: true,
-          inStock: true,
-          averageRating: true,
-          reviewCount: true,
-          seoTitle: true,
-          seoDescription: true,
-          updatedAt: true,
-          fulfillmentType: true,
-          weightGrams: true,
-          lengthMm: true,
-          widthMm: true,
-          heightMm: true,
-          options: {
-            orderBy: { position: 'asc' },
-            select: {
-              id: true,
-              name: true,
-              displayType: true,
-              position: true,
-              values: {
-                orderBy: { position: 'asc' },
-                select: {
-                  id: true,
-                  value: true,
-                  swatchHex: true,
-                  position: true,
-                },
-              },
-            },
-          },
-          variants: {
-            where: { deletedAt: null },
-            orderBy: { isDefault: 'desc' },
-            select: {
-              id: true,
-              sku: true,
-              title: true,
-              priceCents: true,
-              compareAtPriceCents: true,
-              isDefault: true,
-              inventoryPolicy: true,
-              optionAssignments: { select: { optionValueId: true } },
-              inventoryLevels: { select: { onHand: true, allocated: true } },
-            },
-          },
-          images: {
-            orderBy: { position: 'asc' },
-            select: {
-              id: true,
-              mediaAssetId: true,
-              variantId: true,
-              alt: true,
-              position: true,
-              optionValueLinks: { select: { optionValueId: true } },
-            },
-          },
-          fitments: {
-            select: {
-              id: true,
-              rangeMin: true,
-              rangeMax: true,
-              notes: true,
-              domain: { select: { slug: true, displayName: true, rangeUnit: true } },
-              category: { select: { name: true } },
-              item: { select: { name: true } },
-              variant: { select: { name: true } },
-            },
-          },
-        },
-      });
-      return product;
-    });
+        select: FULL_PRODUCT_SELECT,
+      })
+    );
     if (!result) throw notFound('Product', handle);
-    return ok({
-      ...publicProduct(result),
-      fulfillmentType: result.fulfillmentType,
-      weightGrams: result.weightGrams,
-      dimensions:
-        result.lengthMm || result.widthMm || result.heightMm
-          ? { lengthMm: result.lengthMm, widthMm: result.widthMm, heightMm: result.heightMm }
-          : null,
-      options: result.options,
-      variants: result.variants.map((v) => {
-        // Sum available across every warehouse the variant lives in.
-        // The cart engine picks the actual warehouse at reserve time;
-        // here we just want a single number the PDP can render.
-        const available = v.inventoryLevels.reduce(
-          (acc, l) => acc + Math.max(0, l.onHand - l.allocated),
-          0
-        );
-        return {
-          id: v.id,
-          sku: v.sku,
-          title: v.title,
-          priceCents: v.priceCents,
-          compareAtPriceCents: v.compareAtPriceCents,
-          isDefault: v.isDefault,
-          inventoryPolicy: v.inventoryPolicy,
-          optionValueIds: v.optionAssignments.map((ov) => ov.optionValueId),
-          available,
-          inStock: available > 0 || v.inventoryPolicy !== 'deny',
-        };
-      }),
-      images: result.images.map((img) => ({
-        id: img.id,
-        mediaAssetId: img.mediaAssetId,
-        variantId: img.variantId,
-        alt: img.alt,
-        position: img.position,
-        optionValueIds: img.optionValueLinks.map((l) => l.optionValueId),
-      })),
-      fitments: result.fitments.map((f) => ({
-        id: f.id,
-        domainSlug: f.domain.slug,
-        domainLabel: f.domain.displayName,
-        rangeUnit: f.domain.rangeUnit,
-        category: f.category.name,
-        item: f.item?.name ?? null,
-        variant: f.variant?.name ?? null,
-        rangeMin: f.rangeMin === null ? null : Number(f.rangeMin),
-        rangeMax: f.rangeMax === null ? null : Number(f.rangeMax),
-        notes: f.notes,
-      })),
-    });
+    return ok(mapFullProduct(result));
   });
 
   // ─── Categories ────────────────────────────────────────────────────
@@ -709,6 +639,139 @@ function productSelect() {
       take: 1,
       select: { mediaAssetId: true },
     },
+  };
+}
+
+// The FULL product shape (options + variants + every image + fitments) — the PDP
+// payload, shared by GET …/products/:handle and the Builder's …/products/full so a
+// pinned/looped product hydrates the same interactive buy-box (docs/98 Pillar 7).
+const FULL_PRODUCT_SELECT = {
+  id: true,
+  title: true,
+  handle: true,
+  description: true,
+  vendor: true,
+  productType: true,
+  tags: true,
+  priceMinCents: true,
+  priceMaxCents: true,
+  inStock: true,
+  averageRating: true,
+  reviewCount: true,
+  seoTitle: true,
+  seoDescription: true,
+  updatedAt: true,
+  fulfillmentType: true,
+  weightGrams: true,
+  lengthMm: true,
+  widthMm: true,
+  heightMm: true,
+  options: {
+    orderBy: { position: 'asc' },
+    select: {
+      id: true,
+      name: true,
+      displayType: true,
+      position: true,
+      values: {
+        orderBy: { position: 'asc' },
+        select: { id: true, value: true, swatchHex: true, position: true },
+      },
+    },
+  },
+  variants: {
+    where: { deletedAt: null },
+    orderBy: { isDefault: 'desc' },
+    select: {
+      id: true,
+      sku: true,
+      title: true,
+      priceCents: true,
+      compareAtPriceCents: true,
+      isDefault: true,
+      inventoryPolicy: true,
+      optionAssignments: { select: { optionValueId: true } },
+      inventoryLevels: { select: { onHand: true, allocated: true } },
+    },
+  },
+  images: {
+    orderBy: { position: 'asc' },
+    select: {
+      id: true,
+      mediaAssetId: true,
+      variantId: true,
+      alt: true,
+      position: true,
+      optionValueLinks: { select: { optionValueId: true } },
+    },
+  },
+  fitments: {
+    select: {
+      id: true,
+      rangeMin: true,
+      rangeMax: true,
+      notes: true,
+      domain: { select: { slug: true, displayName: true, rangeUnit: true } },
+      category: { select: { name: true } },
+      item: { select: { name: true } },
+      variant: { select: { name: true } },
+    },
+  },
+} satisfies Prisma.ProductSelect;
+
+type FullProductRow = Prisma.ProductGetPayload<{ select: typeof FULL_PRODUCT_SELECT }>;
+
+/** Map a full product row to the PUBLIC PDP shape (the storefront's PublicProduct). */
+function mapFullProduct(result: FullProductRow) {
+  return {
+    ...publicProduct(result),
+    fulfillmentType: result.fulfillmentType,
+    weightGrams: result.weightGrams,
+    dimensions:
+      result.lengthMm || result.widthMm || result.heightMm
+        ? { lengthMm: result.lengthMm, widthMm: result.widthMm, heightMm: result.heightMm }
+        : null,
+    options: result.options,
+    variants: result.variants.map((v) => {
+      // Sum available across every warehouse; the cart engine picks the real one at
+      // reserve time — here we just want one number the buy-box can render.
+      const available = v.inventoryLevels.reduce(
+        (acc, l) => acc + Math.max(0, l.onHand - l.allocated),
+        0
+      );
+      return {
+        id: v.id,
+        sku: v.sku,
+        title: v.title,
+        priceCents: v.priceCents,
+        compareAtPriceCents: v.compareAtPriceCents,
+        isDefault: v.isDefault,
+        inventoryPolicy: v.inventoryPolicy,
+        optionValueIds: v.optionAssignments.map((ov) => ov.optionValueId),
+        available,
+        inStock: available > 0 || v.inventoryPolicy !== 'deny',
+      };
+    }),
+    images: result.images.map((img) => ({
+      id: img.id,
+      mediaAssetId: img.mediaAssetId,
+      variantId: img.variantId,
+      alt: img.alt,
+      position: img.position,
+      optionValueIds: img.optionValueLinks.map((l) => l.optionValueId),
+    })),
+    fitments: result.fitments.map((f) => ({
+      id: f.id,
+      domainSlug: f.domain.slug,
+      domainLabel: f.domain.displayName,
+      rangeUnit: f.domain.rangeUnit,
+      category: f.category.name,
+      item: f.item?.name ?? null,
+      variant: f.variant?.name ?? null,
+      rangeMin: f.rangeMin === null ? null : Number(f.rangeMin),
+      rangeMax: f.rangeMax === null ? null : Number(f.rangeMax),
+      notes: f.notes,
+    })),
   };
 }
 

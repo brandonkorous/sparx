@@ -16,10 +16,12 @@
 
 import * as React from 'react';
 import {
+  bindingIsProductScope,
   cardinalityOf,
   isRawContainerType,
   isRawElementType,
   rawTagOf,
+  resolveBinding,
   resolvePath,
   safeElementAttrs,
   type BuilderNode,
@@ -132,8 +134,13 @@ function RenderNode({
   const leafStylesByClass =
     !isContainer && (leafWearsClass(node.type) || isRawElementType(node.type));
   const bound = Boolean(node.binding);
-  const value = bound ? resolvePath(scope, node.binding!.path) : undefined;
+  // docs/98 Pillar 7: resolveBinding dispatches on kind — a field path, a pinned
+  // entity (`__pins`), a collection source (`__sources`), or an action (no value).
+  const value = bound ? resolveBinding(scope, node.binding) : undefined;
   const card: Cardinality = bound ? cardinalityOf(value) : 'empty';
+  // A collection source / product pin scopes its subtree to a PRODUCT, so the
+  // buy-box context is established (per repeated item below, or once for an object).
+  const productScope = bindingIsProductScope(node.binding);
   // The only inline style left: a dynamic background image (a per-node / per-record
   // URL can't be a static class). The surface COLOR comes from node.class.
   const bgStyle = backgroundStyleFor(node, scope);
@@ -150,18 +157,24 @@ function RenderNode({
     const kids = node.children ?? [];
     let slides: React.ReactNode[];
     if (bound && card === 'array') {
-      slides = (value as unknown[]).map((item, i) => (
-        <React.Fragment key={`i${i}`}>
-          {kids.map((child) => (
-            <RenderNode
-              key={child.id}
-              node={child}
-              scope={{ ...scope, item, index: i }}
-              outlet={outlet}
-            />
-          ))}
-        </React.Fragment>
-      ));
+      slides = (value as unknown[]).map((item, i) => {
+        const itemKids = kids.map((child) => (
+          <RenderNode
+            key={child.id}
+            node={child}
+            scope={{ ...scope, item, index: i }}
+            outlet={outlet}
+          />
+        ));
+        // A product carousel scopes each slide to its product (buy-box per slide).
+        return productScope ? (
+          <ProductFormProvider key={`i${i}`} product={resolveBuilderProduct(item, 'live')}>
+            {itemKids}
+          </ProductFormProvider>
+        ) : (
+          <React.Fragment key={`i${i}`}>{itemKids}</React.Fragment>
+        );
+      });
     } else {
       const s: Scope = bound && card === 'object' ? { ...scope, item: value } : scope;
       slides = kids.map((child) => (
@@ -180,17 +193,26 @@ function RenderNode({
   } else if (isContainer) {
     const kids = node.children ?? [];
     if (bound && card === 'array') {
-      // Iterate: each record scopes its subtree to `item`.
-      body = (value as unknown[]).flatMap((item, i) =>
-        kids.map((child) => (
+      // Iterate: each record scopes its subtree to `item`. A product source
+      // additionally establishes the buy-box context per item, so a card's
+      // AddToCart/Buy-now sells THAT product's variant (docs/98 Pillar 7).
+      body = (value as unknown[]).map((item, i) => {
+        const itemKids = kids.map((child) => (
           <RenderNode
-            key={`${i}:${child.id}`}
+            key={child.id}
             node={child}
             scope={{ ...scope, item, index: i }}
             outlet={outlet}
           />
-        ))
-      );
+        ));
+        return productScope ? (
+          <ProductFormProvider key={`i${i}`} product={resolveBuilderProduct(item, 'live')}>
+            {itemKids}
+          </ProductFormProvider>
+        ) : (
+          <React.Fragment key={`i${i}`}>{itemKids}</React.Fragment>
+        );
+      });
     } else if (bound && card === 'object') {
       // Set scope: render once, descendants resolve item.*
       body = kids.map((child) => (
@@ -232,10 +254,11 @@ function RenderNode({
     });
   }
 
-  // A ProductForm container establishes the shared buy-box context over its
-  // subtree, so VariantPicker/Quantity/AddToCart atoms placed inside stay in
-  // sync. Bound to `product` → `value` is the product object.
-  if (node.type === 'ProductForm') {
+  // A product OBJECT scope establishes the shared buy-box context once over its
+  // subtree, so VariantPicker/Quantity/AddToCart/action atoms inside stay in sync:
+  // a ProductForm node bound to `product`, OR any container pinned to one product
+  // (entity pin). A collection ARRAY scope wraps per repeated item above instead.
+  if (node.type === 'ProductForm' || (productScope && card === 'object')) {
     body = (
       <ProductFormProvider product={resolveBuilderProduct(value, 'live')}>
         {body}

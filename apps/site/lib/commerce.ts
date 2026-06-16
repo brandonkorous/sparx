@@ -462,6 +462,34 @@ export async function getProductsByIds(
   }
 }
 
+/** Hydrate FULL products (options + variants + images) for the Builder data spine
+ *  (docs/98 Pillar 7) — by a hand-picked id list (entity pins, order preserved), a
+ *  collection id, a category id, or — with none of those — the whole catalog (the
+ *  `all` source), capped by `limit`. Returns [] (never throws) so a builder page
+ *  degrades to empty rather than erroring. */
+export async function getProductsFull(
+  tenantSlug: string,
+  opts: { ids?: string[]; collection?: string; category?: string; limit?: number } = {}
+): Promise<PublicProduct[]> {
+  if (opts.ids?.length === 0) return [];
+  try {
+    const { data } = await publicGet<PublicProduct[]>(
+      '/v1/public/commerce/products/full',
+      {
+        tenant: tenantSlug,
+        ids: opts.ids && opts.ids.length > 0 ? opts.ids.join(',') : undefined,
+        collection: opts.collection,
+        category: opts.category,
+        limit: opts.limit,
+      },
+      [`commerce:${tenantSlug}:products`]
+    );
+    return data;
+  } catch {
+    return [];
+  }
+}
+
 export async function getProduct(
   tenantSlug: string,
   handle: string

@@ -28,6 +28,9 @@ import * as React from 'react';
 export interface BuilderRuntime {
   /** Add a resolved variant to the active cart (and surface the cart drawer). */
   addToCart: (variantId: string, quantity: number) => Promise<void>;
+  /** Add a resolved variant and proceed straight to checkout (the "Buy now" path).
+   *  Live navigates to the cart/checkout; the canvas leaves it inert. */
+  buyNow: (variantId: string, quantity: number) => Promise<void>;
   /** Subscribe an email address to the tenant's list via the public capture endpoint. */
   subscribeEmail: (email: string) => Promise<void>;
 }
@@ -36,6 +39,7 @@ export interface BuilderRuntime {
 // fires one in edit mode simply does nothing (no provider required).
 const NOOP_RUNTIME: BuilderRuntime = {
   addToCart: () => Promise.resolve(),
+  buyNow: () => Promise.resolve(),
   subscribeEmail: () => Promise.resolve(),
 };
 
