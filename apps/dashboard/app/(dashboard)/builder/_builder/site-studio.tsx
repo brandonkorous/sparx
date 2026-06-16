@@ -105,6 +105,7 @@ import {
 } from '../_lib/actions';
 import { publishNow } from '../_brand/lib/actions';
 import { copyComponent } from '../components/_lib/component-actions';
+import { createArchetype } from '../_governance/lib/archetype-actions';
 import { getContentTypeSchema, saveContentTypeSchema } from '../_lib/schema-actions';
 import { ThemeCenter } from '../_brand/components/theme-center';
 import type {
@@ -648,6 +649,25 @@ export function SiteStudio({
     setBusy(false);
     studio.setSaveStatus('saved');
     router.refresh();
+  };
+
+  // "Save as brand section" (docs/61 §6) — capture the selected subtree as a new
+  // archetype. Unlike "Save as component", this does NOT swap the canvas node for
+  // a reference: an archetype is a STAMP template, so the on-canvas node is left
+  // exactly as it is, and only a new catalog row is created from a COPY of its
+  // tree (the server re-ids on every future stamp). A router.refresh() picks the
+  // new section up in the Add palette.
+  const onSaveAsArchetype = async (node: BuilderNode) => {
+    const def = getDef(node.type);
+    setBusy(true);
+    const res = await createArchetype({
+      name: node.name ?? def?.label ?? 'Section',
+      family: 'content',
+      tree: node,
+    });
+    setBusy(false);
+    studio.setSaveStatus(res.ok ? 'saved' : 'error');
+    if (res.ok) router.refresh();
   };
 
   // ── Layout catalog ops (parity with the retired /builder/site editor) ───────
@@ -1279,6 +1299,7 @@ export function SiteStudio({
                       contentTypeKey={zone === 'page' ? contentTypeKey : null}
                       onAddField={zone === 'page' ? onAddField : undefined}
                       onSaveAsComponent={onSaveAsComponent}
+                      onSaveAsArchetype={onSaveAsArchetype}
                       onBack={() => studio.selectZoneHome(zone === 'layout' ? 'layout' : 'page')}
                       onName={studio.onName}
                       onClass={studio.onClass}

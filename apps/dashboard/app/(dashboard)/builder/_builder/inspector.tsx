@@ -3618,6 +3618,10 @@ export interface InspectorProps {
    *  tenant component, replacing it with a placement. Omitted ⇒ the action is
    *  hidden (e.g. inside the component editor itself — no nesting). */
   onSaveAsComponent?: (node: BuilderNode) => void;
+  /** "Save as brand section" (docs/61 §6): save the selected subtree as a brand
+   *  archetype (a stamp template) WITHOUT replacing the on-canvas node. Omitted ⇒
+   *  hidden (e.g. inside the component editor). */
+  onSaveAsArchetype?: (node: BuilderNode) => void;
   /** Slot authoring (docs/53 P-D) — present only in the component editor: lets a
    *  node's text prop become a configurable field. */
   slotEditor?: SlotEditor;
@@ -3801,6 +3805,7 @@ export function Inspector({
   contentTypeKey,
   onAddField,
   onSaveAsComponent,
+  onSaveAsArchetype,
   slotEditor,
   tokens,
   onBack,
@@ -3908,6 +3913,16 @@ export function Inspector({
             title="Turn this block into a reusable component"
           >
             <Boxes aria-hidden /> Save as component
+          </button>
+        ) : null}
+        {onSaveAsArchetype ? (
+          <button
+            type="button"
+            className="bx-ins-saveas"
+            onClick={() => onSaveAsArchetype(node)}
+            title="Save this section as a reusable brand section (a stamp template)"
+          >
+            <Sparkles aria-hidden /> Save as brand section
           </button>
         ) : null}
         <StyleClipRow
