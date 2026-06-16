@@ -81,9 +81,7 @@ export default async function DealsPage({ searchParams }: PageProps) {
   const pipelineNames = new Map(pipelines.map((p) => [p.id, p.name]));
   const stageMeta = new Map(
     pipelines.flatMap((p) =>
-      p.stages.map(
-        (s) => [s.id, { name: s.name, color: s.color, stageType: s.stageType }] as const
-      )
+      p.stages.map((s) => [s.id, { name: s.name, color: s.color, stageType: s.stageType }] as const)
     )
   );
   const rows: DealRow[] = deals.map((d) => ({

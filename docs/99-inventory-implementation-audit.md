@@ -38,13 +38,13 @@ not live in any functional sense, and the others are live only on the operationa
 
 ## 1. The root cause: two inventory systems that don't talk
 
-| | **Commerce inventory** (operational, real data) | **Inventory-sync module** (what `/inventory` shows) |
-|---|---|---|
-| Stock table | `commerce_inventory_levels` — [`InventoryLevel`](../packages/db/prisma/schema/34-commerce-inventory.prisma) | `stock_levels` — [`StockLevel`](../packages/db/prisma/schema/66-inventory.prisma) |
-| Location table | `commerce_warehouses` (`Warehouse`) | `stock_locations` (`StockLocation`) |
-| Written by | manual adjust, transfer, reorder-policy (via `inventoryService`) | **only** the [`inventory-worker` sync](../services/inventory-worker/src/handlers/sync.ts) + `POST /v1/inventory/sources/:id/push` |
-| Read by | [`/commerce/inventory`](../apps/dashboard/app/\(dashboard\)/commerce/inventory/page.tsx), product-detail panel | [`/inventory` overview](../apps/dashboard/app/\(dashboard\)/inventory/page.tsx), valuation chart, reports |
-| Populated today? | Yes (manual/seed/MCP) | **No** — needs a configured `InventorySource` + sync; no adapter is built |
+|                  | **Commerce inventory** (operational, real data)                                                                | **Inventory-sync module** (what `/inventory` shows)                                                                               |
+| ---------------- | -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Stock table      | `commerce_inventory_levels` — [`InventoryLevel`](../packages/db/prisma/schema/34-commerce-inventory.prisma)    | `stock_levels` — [`StockLevel`](../packages/db/prisma/schema/66-inventory.prisma)                                                 |
+| Location table   | `commerce_warehouses` (`Warehouse`)                                                                            | `stock_locations` (`StockLocation`)                                                                                               |
+| Written by       | manual adjust, transfer, reorder-policy (via `inventoryService`)                                               | **only** the [`inventory-worker` sync](../services/inventory-worker/src/handlers/sync.ts) + `POST /v1/inventory/sources/:id/push` |
+| Read by          | [`/commerce/inventory`](<../apps/dashboard/app/(dashboard)/commerce/inventory/page.tsx>), product-detail panel | [`/inventory` overview](<../apps/dashboard/app/(dashboard)/inventory/page.tsx>), valuation chart, reports                         |
+| Populated today? | Yes (manual/seed/MCP)                                                                                          | **No** — needs a configured `InventorySource` + sync; no adapter is built                                                         |
 
 The valuation/“value over time” feature shipped recently (commit `223b4fec`) computes
 `Σ(onHand × cost/retail)` — but off `stock_levels`
@@ -64,24 +64,24 @@ Legend — **Status:** ✅ Met · 🟡 Partial / not wired · ❌ Missing · �
 
 ### 2.1 Core stock model
 
-| Requirement | Source | Doc says | Actual | Evidence |
-|---|---|---|---|---|
-| Per-variant on-hand / available | docs/05 §3, docs/09 §2 | ✅ | ✅ | `InventoryLevel.onHand/allocated`; derived `available` |
-| `inventory_policy` deny / continue (backorder) | docs/05 §3, docs/09 §4 | ✅ | 🟡 | policy field + branch logic in `inventoryService.reserve` — but `reserve` is never called, so the policy is never evaluated at checkout |
-| Reorder point / qty / lead time | docs/89 §9 | ✅ | ✅ | `InventoryLevel.reorderPoint/reorderQuantity/leadTimeDays`; editable in UI |
-| Per-variant cost (for valuation/margin) | docs/05 §3, docs/09 §8 | ✅ | ✅ | `ProductVariant.costCents`, `InventoryLevel.unitCostCents` |
-| Multi-warehouse (owned/3PL/dropship/virtual) | docs/89 §9, docs/28 §4 | ✅ | ✅ (but duplicated) | `Warehouse` **and** `StockLocation` are two separate location models |
+| Requirement                                    | Source                 | Doc says | Actual              | Evidence                                                                                                                                |
+| ---------------------------------------------- | ---------------------- | -------- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Per-variant on-hand / available                | docs/05 §3, docs/09 §2 | ✅       | ✅                  | `InventoryLevel.onHand/allocated`; derived `available`                                                                                  |
+| `inventory_policy` deny / continue (backorder) | docs/05 §3, docs/09 §4 | ✅       | 🟡                  | policy field + branch logic in `inventoryService.reserve` — but `reserve` is never called, so the policy is never evaluated at checkout |
+| Reorder point / qty / lead time                | docs/89 §9             | ✅       | ✅                  | `InventoryLevel.reorderPoint/reorderQuantity/leadTimeDays`; editable in UI                                                              |
+| Per-variant cost (for valuation/margin)        | docs/05 §3, docs/09 §8 | ✅       | ✅                  | `ProductVariant.costCents`, `InventoryLevel.unitCostCents`                                                                              |
+| Multi-warehouse (owned/3PL/dropship/virtual)   | docs/89 §9, docs/28 §4 | ✅       | ✅ (but duplicated) | `Warehouse` **and** `StockLocation` are two separate location models                                                                    |
 
 ### 2.2 Reservations & order flow — **the biggest gap**
 
-| Requirement | Source | Doc says | Actual | Evidence |
-|---|---|---|---|---|
-| Soft holds (cart, TTL) | docs/89 §9, docs/28 §5.3 | ✅ Live | ❌ not wired | `cart-service.ts` makes **no** reservation call |
-| Hard holds (order/subscription) | docs/89 §9 | ✅ Live | ❌ not wired | `order-service` has zero inventory references |
-| Atomic decrement on order create | docs/09 §4, docs/65 Phase 6 | ✅ | ❌ | `commit()` has **zero callers**; no `order.created`/`order.paid` consumer adjusts stock |
-| Release on payment failure / cancel | docs/09 §4 | ✅ | ❌ | `release()` has zero callers |
-| TTL reaper for abandoned carts | (reservation engine) | — | 🟡 | [reservation-reaper](../packages/commerce/src/schedulers/reservation-reaper.ts) cron runs, but there are never any reservations to reap |
-| `allocated` quantity surfaced in UI | docs/89 §9 | ✅ | 🟡 | column renders, but is always `0` because nothing reserves |
+| Requirement                         | Source                      | Doc says | Actual       | Evidence                                                                                                                                |
+| ----------------------------------- | --------------------------- | -------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Soft holds (cart, TTL)              | docs/89 §9, docs/28 §5.3    | ✅ Live  | ❌ not wired | `cart-service.ts` makes **no** reservation call                                                                                         |
+| Hard holds (order/subscription)     | docs/89 §9                  | ✅ Live  | ❌ not wired | `order-service` has zero inventory references                                                                                           |
+| Atomic decrement on order create    | docs/09 §4, docs/65 Phase 6 | ✅       | ❌           | `commit()` has **zero callers**; no `order.created`/`order.paid` consumer adjusts stock                                                 |
+| Release on payment failure / cancel | docs/09 §4                  | ✅       | ❌           | `release()` has zero callers                                                                                                            |
+| TTL reaper for abandoned carts      | (reservation engine)        | —        | 🟡           | [reservation-reaper](../packages/commerce/src/schedulers/reservation-reaper.ts) cron runs, but there are never any reservations to reap |
+| `allocated` quantity surfaced in UI | docs/89 §9                  | ✅       | 🟡           | column renders, but is always `0` because nothing reserves                                                                              |
 
 > The entire `InventoryReservation` table, the `reserve/commit/release` service methods, the
 > deny/continue policy branch, and the reaper cron form a complete, **unreferenced** subsystem.
@@ -90,90 +90,90 @@ Legend — **Status:** ✅ Met · 🟡 Partial / not wired · ❌ Missing · �
 
 ### 2.3 Adjustments & audit
 
-| Requirement | Source | Doc says | Actual | Evidence |
-|---|---|---|---|---|
-| Adjustment with reason/reference/actor/note | docs/89 §9, docs/09 §2 | ✅ | ✅ | `InventoryAdjustment` rows on every `adjust()` |
-| Reason taxonomy (sale/return/recount/loss/damage/transfer/receive/manual) | docs/89 §9 | ✅ | 🟡 | reasons exist; `sale`/`return` reasons are unreachable (no order path writes them) |
-| **Audit-log viewer** in dashboard | docs/89 §9 (“audit log”) | ✅ | ❌ | rows are written, never surfaced in any UI |
-| Bulk CSV import / adjust (operational) | docs/89 §9, docs/06 §7 | ✅ | ❌ | only CSV path is [`inventory-worker/csv.ts`](../services/inventory-worker/src/csv.ts) for the **sync** module → writes `stock_levels`, not operational stock. No `POST /v1/inventory/adjustments`. |
-| Transfers between warehouses | docs/89 §9 | ✅ | 🟡 | `inventoryService.transfer()` + `POST /v1/commerce/inventory/transfer` exist; **no dashboard UI** |
+| Requirement                                                               | Source                   | Doc says | Actual | Evidence                                                                                                                                                                                           |
+| ------------------------------------------------------------------------- | ------------------------ | -------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Adjustment with reason/reference/actor/note                               | docs/89 §9, docs/09 §2   | ✅       | ✅     | `InventoryAdjustment` rows on every `adjust()`                                                                                                                                                     |
+| Reason taxonomy (sale/return/recount/loss/damage/transfer/receive/manual) | docs/89 §9               | ✅       | 🟡     | reasons exist; `sale`/`return` reasons are unreachable (no order path writes them)                                                                                                                 |
+| **Audit-log viewer** in dashboard                                         | docs/89 §9 (“audit log”) | ✅       | ❌     | rows are written, never surfaced in any UI                                                                                                                                                         |
+| Bulk CSV import / adjust (operational)                                    | docs/89 §9, docs/06 §7   | ✅       | ❌     | only CSV path is [`inventory-worker/csv.ts`](../services/inventory-worker/src/csv.ts) for the **sync** module → writes `stock_levels`, not operational stock. No `POST /v1/inventory/adjustments`. |
+| Transfers between warehouses                                              | docs/89 §9               | ✅       | 🟡     | `inventoryService.transfer()` + `POST /v1/commerce/inventory/transfer` exist; **no dashboard UI**                                                                                                  |
 
 ### 2.4 Valuation, reporting & analytics
 
-| Requirement | Source | Doc says | Actual | Evidence |
-|---|---|---|---|---|
-| Inventory valuation (Σ on-hand × cost) | docs/09 §8, docs/89 §9 | ✅ | 🟡 broken | computed off **empty** `stock_levels` → reads $0; [inventory-valuation.ts](../services/api-rest/src/lib/inventory-valuation.ts) |
-| Value-over-time (daily snapshots) | docs/97 §5 | ✅ | 🟡 broken | `rollupInventoryDailyValuation` cron works, but snapshots zero for stock-less tenants |
-| Low-stock report / watchlist | docs/89 §9, docs/09 §2 | ✅ | ✅ | `listLowStock()` (raw SQL on `commerce_inventory_levels`); watch panel on `/commerce/inventory` |
-| `inventory.low` / `inventory.depleted` events | docs/89 §9 | ✅ | ✅ | published from `inventoryService.adjust` |
-| Low-stock automation alert | docs/89 §11 | ✅ | ✅ | `COMMERCE_LOW_INVENTORY_ALERT` system automation |
-| Turnover / DIO / reorder analysis reports | docs/09 §8 | ✅ | ❌ | not implemented |
+| Requirement                                   | Source                 | Doc says | Actual    | Evidence                                                                                                                        |
+| --------------------------------------------- | ---------------------- | -------- | --------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Inventory valuation (Σ on-hand × cost)        | docs/09 §8, docs/89 §9 | ✅       | 🟡 broken | computed off **empty** `stock_levels` → reads $0; [inventory-valuation.ts](../services/api-rest/src/lib/inventory-valuation.ts) |
+| Value-over-time (daily snapshots)             | docs/97 §5             | ✅       | 🟡 broken | `rollupInventoryDailyValuation` cron works, but snapshots zero for stock-less tenants                                           |
+| Low-stock report / watchlist                  | docs/89 §9, docs/09 §2 | ✅       | ✅        | `listLowStock()` (raw SQL on `commerce_inventory_levels`); watch panel on `/commerce/inventory`                                 |
+| `inventory.low` / `inventory.depleted` events | docs/89 §9             | ✅       | ✅        | published from `inventoryService.adjust`                                                                                        |
+| Low-stock automation alert                    | docs/89 §11            | ✅       | ✅        | `COMMERCE_LOW_INVENTORY_ALERT` system automation                                                                                |
+| Turnover / DIO / reorder analysis reports     | docs/09 §8             | ✅       | ❌        | not implemented                                                                                                                 |
 
 ### 2.5 Dashboard UI
 
-| Requirement (mockup `inventory-overview.html` / docs/89) | Doc says | Actual | Evidence |
-|---|---|---|---|
-| KPI strip (SKUs / units / value / low-out) | ✅ | 🟡 | renders on `/inventory`, but off the empty table → zeros |
-| Action queue: Out / Low / Reorder / **Incoming POs** | ✅ | ❌ | “Incoming POs” tile is sample data; no PO backing |
-| “Adjust stock” action | ✅ | ✅ | inline editor on `/commerce/inventory` + product panel |
-| “Receive stock” action | ✅ | ❌ | no receiving workflow |
-| “Locations” management | ✅ | 🟡 | `/inventory/locations` (sync `StockLocation`) and `/commerce/warehouses` (operational) — two separate location UIs |
-| Per-location stock breakdown | ✅ | 🟡 | exists on `/inventory` but off empty data |
-| Recent adjustments timeline | ✅ | 🟡 | `/inventory` activity feed reads `stock_levels` changes, not `InventoryAdjustment` |
+| Requirement (mockup `inventory-overview.html` / docs/89) | Doc says | Actual | Evidence                                                                                                           |
+| -------------------------------------------------------- | -------- | ------ | ------------------------------------------------------------------------------------------------------------------ |
+| KPI strip (SKUs / units / value / low-out)               | ✅       | 🟡     | renders on `/inventory`, but off the empty table → zeros                                                           |
+| Action queue: Out / Low / Reorder / **Incoming POs**     | ✅       | ❌     | “Incoming POs” tile is sample data; no PO backing                                                                  |
+| “Adjust stock” action                                    | ✅       | ✅     | inline editor on `/commerce/inventory` + product panel                                                             |
+| “Receive stock” action                                   | ✅       | ❌     | no receiving workflow                                                                                              |
+| “Locations” management                                   | ✅       | 🟡     | `/inventory/locations` (sync `StockLocation`) and `/commerce/warehouses` (operational) — two separate location UIs |
+| Per-location stock breakdown                             | ✅       | 🟡     | exists on `/inventory` but off empty data                                                                          |
+| Recent adjustments timeline                              | ✅       | 🟡     | `/inventory` activity feed reads `stock_levels` changes, not `InventoryAdjustment`                                 |
 
 ### 2.6 API contract
 
-| Documented endpoint (docs/06 §7) | Implemented? | Actual location |
-|---|---|---|
-| `GET /v1/inventory` (list levels) | ❌ as written | `/v1/inventory/reports/*` is the sync module instead |
-| `PATCH /v1/inventory/:variant_id` | ❌ | operational adjust is `POST /v1/commerce/inventory/adjust` |
-| `POST /v1/inventory/adjustments` (bulk) | ❌ | no bulk operational endpoint |
-| `GET /v1/inventory/alerts` | ❌ | low-stock is `GET /v1/commerce/inventory/low-stock` |
-| `GET /v1/products?inventory_lt=10` filter | ❓ unverified | — |
+| Documented endpoint (docs/06 §7)          | Implemented?  | Actual location                                            |
+| ----------------------------------------- | ------------- | ---------------------------------------------------------- |
+| `GET /v1/inventory` (list levels)         | ❌ as written | `/v1/inventory/reports/*` is the sync module instead       |
+| `PATCH /v1/inventory/:variant_id`         | ❌            | operational adjust is `POST /v1/commerce/inventory/adjust` |
+| `POST /v1/inventory/adjustments` (bulk)   | ❌            | no bulk operational endpoint                               |
+| `GET /v1/inventory/alerts`                | ❌            | low-stock is `GET /v1/commerce/inventory/low-stock`        |
+| `GET /v1/products?inventory_lt=10` filter | ❓ unverified | —                                                          |
 
 > The `/v1/inventory/*` namespace the API spec reserves for operational inventory was claimed by the
 > sync module. Either the spec or the routes need to be reconciled.
 
 ### 2.7 MCP / AI
 
-| Requirement | Source | Actual | Evidence |
-|---|---|---|---|
-| `get_low_inventory` read tool | docs/07 §3, docs/65 | ✅ | [read-tools.ts](../packages/commerce/src/mcp/read-tools.ts) → `listLowStock` |
-| `update_inventory` write tool (with confirm) | docs/07 §3, docs/65 | ✅ | [write-tools.ts](../packages/commerce/src/mcp/write-tools.ts) → `adjust`; registered via `commerceMcpTools` in [api-mcp](../services/api-mcp/src/tool-registry.ts) |
-| `commerce.update_inventory` automation action | docs/89 §11 | ✅ | automation catalog + action schema |
-| AI inventory changes hit the audit trail | docs/07 | ✅ | MCP `adjust` writes `InventoryAdjustment` with actor |
+| Requirement                                   | Source              | Actual | Evidence                                                                                                                                                           |
+| --------------------------------------------- | ------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `get_low_inventory` read tool                 | docs/07 §3, docs/65 | ✅     | [read-tools.ts](../packages/commerce/src/mcp/read-tools.ts) → `listLowStock`                                                                                       |
+| `update_inventory` write tool (with confirm)  | docs/07 §3, docs/65 | ✅     | [write-tools.ts](../packages/commerce/src/mcp/write-tools.ts) → `adjust`; registered via `commerceMcpTools` in [api-mcp](../services/api-mcp/src/tool-registry.ts) |
+| `commerce.update_inventory` automation action | docs/89 §11         | ✅     | automation catalog + action schema                                                                                                                                 |
+| AI inventory changes hit the audit trail      | docs/07             | ✅     | MCP `adjust` writes `InventoryAdjustment` with actor                                                                                                               |
 
 This is the one area that is genuinely **complete and correct** against the docs.
 
 ### 2.8 Lots, serials, recalls
 
-| Requirement | Doc says | Actual | Evidence |
-|---|---|---|---|
-| Lot batches (expiry, hazmat, supplier ref, CoA) | (beyond docs/89) | 🔵 ✅ model + partial UI | [`LotBatch`](../packages/db/prisma/schema/35-commerce-lot-serial.prisma); `/commerce/lots` shows expiring + recalls |
-| Serial units | — | 🟡 | `SerialUnit` model exists; **no UI** |
-| Recalls (+ customer notification) | — | 🟡 | `initiateRecall()` + active-recall view; notification list generated, wiring to email unverified |
-| Per-product lot creation tab | (noted “Phase 2”) | ❌ | product-detail Inventory tab does not exist yet |
+| Requirement                                     | Doc says          | Actual                   | Evidence                                                                                                            |
+| ----------------------------------------------- | ----------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| Lot batches (expiry, hazmat, supplier ref, CoA) | (beyond docs/89)  | 🔵 ✅ model + partial UI | [`LotBatch`](../packages/db/prisma/schema/35-commerce-lot-serial.prisma); `/commerce/lots` shows expiring + recalls |
+| Serial units                                    | —                 | 🟡                       | `SerialUnit` model exists; **no UI**                                                                                |
+| Recalls (+ customer notification)               | —                 | 🟡                       | `initiateRecall()` + active-recall view; notification list generated, wiring to email unverified                    |
+| Per-product lot creation tab                    | (noted “Phase 2”) | ❌                       | product-detail Inventory tab does not exist yet                                                                     |
 
 ### 2.9 B2B (Gillett Diesel)
 
-| Requirement | Source | Actual | Evidence |
-|---|---|---|---|
-| Fitment-aware catalog | docs/10 | ✅ (separate from inventory pages) | `fitment-service.ts` |
-| Per-account inventory visibility rules | docs/10 | ❓ out of scope of this audit | — |
-| Fishbowl (on-prem, Tier A agent) sync | docs/28 §3, §8 | ❌ | no Fishbowl adapter; only generic source framework + CSV |
-| PO & receiving workflow | docs/10, mockup | ❌ | no PO/supplier model anywhere |
+| Requirement                            | Source          | Actual                             | Evidence                                                 |
+| -------------------------------------- | --------------- | ---------------------------------- | -------------------------------------------------------- |
+| Fitment-aware catalog                  | docs/10         | ✅ (separate from inventory pages) | `fitment-service.ts`                                     |
+| Per-account inventory visibility rules | docs/10         | ❓ out of scope of this audit      | —                                                        |
+| Fishbowl (on-prem, Tier A agent) sync  | docs/28 §3, §8  | ❌                                 | no Fishbowl adapter; only generic source framework + CSV |
+| PO & receiving workflow                | docs/10, mockup | ❌                                 | no PO/supplier model anywhere                            |
 
 ### 2.10 External inventory sync (docs/28 — explicitly backlog)
 
-| Requirement | Status | Evidence |
-|---|---|---|
-| Source-agnostic tables (`stock_locations`, `stock_levels`, `inventory_source_links`, `inventory_sources`) | 🔵 ✅ built | [schema 66](../packages/db/prisma/schema/66-inventory.prisma) |
-| Sync worker (drain Pub/Sub, upsert mirror) | 🔵 🟡 | [`inventory-worker`](../services/inventory-worker/src/handlers/sync.ts) exists |
-| Push endpoint for external systems | 🔵 ✅ | `POST /v1/inventory/sources/:id/push` |
-| CSV source adapter | 🔵 🟡 | [`csv.ts`](../services/inventory-worker/src/csv.ts) |
-| Tier A on-prem agent / Tier B SaaS adapters (Fishbowl, NetSuite…) | ❌ | none built |
-| SKU-mapping & sync-health UI | 🟡 | `/inventory/sources` scaffold |
-| Per-delta movement ledger for synced stock | ❌ | `stock_levels` holds current qty only; no audit ledger on the sync side |
+| Requirement                                                                                               | Status      | Evidence                                                                       |
+| --------------------------------------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------ |
+| Source-agnostic tables (`stock_locations`, `stock_levels`, `inventory_source_links`, `inventory_sources`) | 🔵 ✅ built | [schema 66](../packages/db/prisma/schema/66-inventory.prisma)                  |
+| Sync worker (drain Pub/Sub, upsert mirror)                                                                | 🔵 🟡       | [`inventory-worker`](../services/inventory-worker/src/handlers/sync.ts) exists |
+| Push endpoint for external systems                                                                        | 🔵 ✅       | `POST /v1/inventory/sources/:id/push`                                          |
+| CSV source adapter                                                                                        | 🔵 🟡       | [`csv.ts`](../services/inventory-worker/src/csv.ts)                            |
+| Tier A on-prem agent / Tier B SaaS adapters (Fishbowl, NetSuite…)                                         | ❌          | none built                                                                     |
+| SKU-mapping & sync-health UI                                                                              | 🟡          | `/inventory/sources` scaffold                                                  |
+| Per-delta movement ledger for synced stock                                                                | ❌          | `stock_levels` holds current qty only; no audit ledger on the sync side        |
 
 > The sync module is **ahead** of where docs/28 says it should be (docs/28 calls it backlog), but it
 > was built as a _parallel_ system rather than as a feed _into_ the operational inventory — which is
@@ -183,14 +183,14 @@ This is the one area that is genuinely **complete and correct** against the docs
 
 ## 3. Defects ranked by severity
 
-| # | Severity | Defect | Why it matters |
-|---|---|---|---|
-| D1 | **P0** | Two disconnected stock models; `/inventory` reads the empty one | The entire `/inventory` module shows zeros → “almost useless”; valuation reads $0 |
-| D2 | **P0** | Orders never reserve/decrement inventory | Stock is fiction during selling; oversell is guaranteed; `inventory_policy` never enforced |
-| D3 | **P1** | API contract (docs/06 §7) unimplemented as written | Headless/MCP/API consumers can’t use inventory per spec; “API-first” violated |
-| D4 | **P1** | No PO / receiving / supplier model | “Incoming POs” + “Receive stock” are mockup-only; no inbound stock workflow |
-| D5 | **P2** | No audit-log viewer; no transfer UI; no cycle counts | Adjustment data captured but not actionable; transfers API-only |
-| D6 | **P2** | Catalog (docs/89 §9) overstates status (Reservations “✅ Live”) | Source-of-truth doc is misleading; needs correction regardless of build decision |
+| #   | Severity | Defect                                                          | Why it matters                                                                             |
+| --- | -------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| D1  | **P0**   | Two disconnected stock models; `/inventory` reads the empty one | The entire `/inventory` module shows zeros → “almost useless”; valuation reads $0          |
+| D2  | **P0**   | Orders never reserve/decrement inventory                        | Stock is fiction during selling; oversell is guaranteed; `inventory_policy` never enforced |
+| D3  | **P1**   | API contract (docs/06 §7) unimplemented as written              | Headless/MCP/API consumers can’t use inventory per spec; “API-first” violated              |
+| D4  | **P1**   | No PO / receiving / supplier model                              | “Incoming POs” + “Receive stock” are mockup-only; no inbound stock workflow                |
+| D5  | **P2**   | No audit-log viewer; no transfer UI; no cycle counts            | Adjustment data captured but not actionable; transfers API-only                            |
+| D6  | **P2**   | Catalog (docs/89 §9) overstates status (Reservations “✅ Live”) | Source-of-truth doc is misleading; needs correction regardless of build decision           |
 
 ---
 
@@ -212,7 +212,7 @@ first-class (Sparx is content **and/or** commerce — selling is one capability,
 **Standalone-usable is a hard requirement.** A tenant can activate **Inventory alone** — warehouse /
 stock / supplier / PO / receiving / count / valuation / ERP-sync management as a standalone WMS-lite
 product — with **no** commerce, no storefront, no orders. Every inventory capability must work without a
-sale path; commerce and B2B are *integrations layered on top*, not prerequisites. Inventory gets the same
+sale path; commerce and B2B are _integrations layered on top_, not prerequisites. Inventory gets the same
 first-class treatment as any other module: its own module color (amber), its own marketing surface, its
 own overview dashboard, and its own MCP/AI tool surface.
 
@@ -220,17 +220,17 @@ The current code scattered this — supply logic was built inside `@sparx/commer
 `/commerce/lots`) while a half-built parallel sync module squatted on `/inventory`. The fix **promotes
 inventory to its own product/module**, it does not fold it into commerce.
 
-| | **Inventory** (`inventory` — supply) | **Commerce** (`commerce` — demand) |
-|---|---|---|
-| Owns | warehouses/locations, the stock ledger (levels + movements), reservations engine, suppliers, POs, receiving, lots/serials, counts, transfers, ERP/WMS sync | catalog (products/variants/collections), pricing, carts, checkout, orders, returns, sales channels |
-| Package | **new `@sparx/inventory`** (extract today's `inventoryService` out of `@sparx/commerce`) | `@sparx/commerce` (depends on `@sparx/inventory`) |
-| Pages | `/inventory/*` (warehouses, stock, movements, POs, receiving, counts, lots, sync) | `/commerce/*` (products, orders, carts…) |
+|         | **Inventory** (`inventory` — supply)                                                                                                                       | **Commerce** (`commerce` — demand)                                                                 |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Owns    | warehouses/locations, the stock ledger (levels + movements), reservations engine, suppliers, POs, receiving, lots/serials, counts, transfers, ERP/WMS sync | catalog (products/variants/collections), pricing, carts, checkout, orders, returns, sales channels |
+| Package | **new `@sparx/inventory`** (extract today's `inventoryService` out of `@sparx/commerce`)                                                                   | `@sparx/commerce` (depends on `@sparx/inventory`)                                                  |
+| Pages   | `/inventory/*` (warehouses, stock, movements, POs, receiving, counts, lots, sync)                                                                          | `/commerce/*` (products, orders, carts…)                                                           |
 
 **The seam (event-driven, thin):** the `ProductVariant` stays owned by commerce; inventory holds stock
-*per variant per location* (`InventoryLevel.variantId` → commerce variant). At checkout **commerce calls
+_per variant per location_ (`InventoryLevel.variantId` → commerce variant). At checkout **commerce calls
 `inventory.reserve()` then `inventory.commit()`**; storefront PDP + B2B query inventory for availability;
 inventory publishes `inventory.low` / `inventory.changed` and commerce flips the denormalized `inStock`.
-Shipping references inventory's locations for origin. Dropship remains a *parallel* supply source — a
+Shipping references inventory's locations for origin. Dropship remains a _parallel_ supply source — a
 tenant may activate inventory, dropship, or both. Inventory becomes properly module-gated (wire the
 `inventory` slug into the ~8 hardcoded module lists incl. `api-rest` `MODULE_SLUGS`, or activation 400s).
 `/commerce/inventory`, `/commerce/warehouses`, `/commerce/lots` **move to `/inventory/*`**.
@@ -240,7 +240,7 @@ tenant may activate inventory, dropship, or both. Inventory becomes properly mod
 1. **One inventory source of truth, owned by the inventory module.** `InventoryLevel` keyed by
    `(variant, location)` is the master ledger of `onHand` / `allocated` / `available` / cost — extracted
    into `@sparx/inventory` (tables renamed to the `inventory_*` namespace). `Warehouse` absorbs the
-   location *types* the sync module invented (`bin` / `3pl` / `transit` / `virtual`), so there is exactly
+   location _types_ the sync module invented (`bin` / `3pl` / `transit` / `virtual`), so there is exactly
    **one** location model. `stock_levels` / `StockLocation` are retired (or demoted to raw inbound-staging
    used only for reconciliation diffing). The sync module becomes an **ingestion source that writes into
    the master**, never a parallel store. Commerce/B2B/Dropship are **consumers** of this module, not
@@ -334,14 +334,14 @@ front-door as every other Sparx product.
 
 ### 4.8 Build order (deployable slices, full surface committed)
 
-| Phase | Lands | Ships value |
-|---|---|---|
-| **P1 Foundation** | One location + one stock table; sync feeds master; movement-ledger is the only write path; re-point overview/valuation/reports at master | `/inventory` shows real numbers + non-zero valuation day one |
-| **P2 Sell path** | reserve/commit/release wired into cart→checkout→order; policy enforcement; allocator; returns→restock | Inventory is real-time accurate; oversell protected |
-| **P3 Supply path** | Supplier + PO + Receiving models/lifecycle/UI; reorder suggestions; lot capture | Inbound stock + replenishment workflow |
-| **P4 Counts/transfers/audit** | Cycle+physical counts w/ variance approval; transfers UI + in-transit; movement viewer | Auditable corrections + stock moves between locations |
-| **P5 External sync** | Tier C hardening, Tier B adapter, **Tier A Fishbowl agent (Gillett)**; SKU-mapping + sync-health; conflict rules/buffers/UoM | ERP-backed merchants live |
-| **P6 API/reporting/MCP/B2B** | Documented `/v1/inventory*` API; turnover/DIO/aging/dead-stock + exports; MCP supply tools; B2B visibility + fleet holds | Headless + AI + wholesale complete |
+| Phase                         | Lands                                                                                                                                    | Ships value                                                  |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| **P1 Foundation**             | One location + one stock table; sync feeds master; movement-ledger is the only write path; re-point overview/valuation/reports at master | `/inventory` shows real numbers + non-zero valuation day one |
+| **P2 Sell path**              | reserve/commit/release wired into cart→checkout→order; policy enforcement; allocator; returns→restock                                    | Inventory is real-time accurate; oversell protected          |
+| **P3 Supply path**            | Supplier + PO + Receiving models/lifecycle/UI; reorder suggestions; lot capture                                                          | Inbound stock + replenishment workflow                       |
+| **P4 Counts/transfers/audit** | Cycle+physical counts w/ variance approval; transfers UI + in-transit; movement viewer                                                   | Auditable corrections + stock moves between locations        |
+| **P5 External sync**          | Tier C hardening, Tier B adapter, **Tier A Fishbowl agent (Gillett)**; SKU-mapping + sync-health; conflict rules/buffers/UoM             | ERP-backed merchants live                                    |
+| **P6 API/reporting/MCP/B2B**  | Documented `/v1/inventory*` API; turnover/DIO/aging/dead-stock + exports; MCP supply tools; B2B visibility + fleet holds                 | Headless + AI + wholesale complete                           |
 
 Correct [docs/89 §9](89-feature-catalog.md) status flags as each phase lands, and fold the relevant
 parts of docs/28 from backlog into shipped. End state: every row in §2 reads ✅.
@@ -366,9 +366,9 @@ parts of docs/28 from backlog into shipped. End state: every row in §2 reads �
 
 **Worker:** [`services/inventory-worker/`](../services/inventory-worker/)
 
-**Dashboard:** [`/commerce/inventory`](../apps/dashboard/app/\(dashboard\)/commerce/inventory/) ·
-[`/commerce/lots`](../apps/dashboard/app/\(dashboard\)/commerce/lots/) ·
-[`/inventory`](../apps/dashboard/app/\(dashboard\)/inventory/) (sync module overview)
+**Dashboard:** [`/commerce/inventory`](<../apps/dashboard/app/(dashboard)/commerce/inventory/>) ·
+[`/commerce/lots`](<../apps/dashboard/app/(dashboard)/commerce/lots/>) ·
+[`/inventory`](<../apps/dashboard/app/(dashboard)/inventory/>) (sync module overview)
 
 **Docs cited:** [05](05-data-model.md) §3 · [06](06-api-specification.md) §7 ·
 [07](07-mcp-server-spec.md) §3 · [09](09-ecommerce-engine-prd.md) §2/§4/§8 · [10](10-b2b-wholesale-prd.md) ·

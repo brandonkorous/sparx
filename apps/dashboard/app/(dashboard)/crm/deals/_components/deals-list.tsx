@@ -50,7 +50,12 @@ interface DealsListProps {
 
 export function DealsList({ deals, view }: DealsListProps) {
   const dealLink = (d: DealRow, className: string) => (
-    <EntityRowLink href={`/crm/deals/${d.id}`} entityType="deal" entityId={d.id} className={className}>
+    <EntityRowLink
+      href={`/crm/deals/${d.id}`}
+      entityType="deal"
+      entityId={d.id}
+      className={className}
+    >
       {d.title}
     </EntityRowLink>
   );
