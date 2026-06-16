@@ -44,8 +44,15 @@ The module is **half-scaffolded** already — completing it, not inventing it:
 1. `services/api-rest/src/routes/v1/dashboard.ts` — `MODULE_SLUGS` (home-card metrics)
 2. `services/api-rest/src/routes/v1/properties.ts` — `MODULE_SLUGS` (per-site scope)
 3. `apps/dashboard/lib/modules.ts` — `SWITCHBOARD_MODULES` (pricing switchboard)
-4. `packages/billing/src/price-catalog.ts` — `MODULE_MONTHLY_CENTS` (billable price — see §7 open decision)
+4. `packages/billing/src/price-catalog.ts` — `MODULE_MONTHLY_CENTS.inventory = 2900` ($29/mo)
 5. `packages/blueprints/src/manifest.ts` — `BlueprintModuleSlug` enum (if inventory is blueprintable)
+6. `packages/modules/src/index.ts` + `apps/dashboard/lib/modules.ts` — `BUNDLED_FREE`: bundle `inventory`
+   free when `commerce` **or** `b2b` is active (mirrors invoicing↔b2b). Standalone activation bills $29.
+
+**Packaging (§7):** Inventory is **bundled-free with Commerce or B2B**, and **$29/mo standalone** for
+inventory/WMS-only tenants. Either way commerce/b2b must **degrade gracefully without inventory** — when
+it's off, variants are untracked (always available) and the seam calls are no-ops; stock tracking switches
+on with the module.
 
 ---
 
@@ -79,9 +86,10 @@ extraction must also lift the shared primitives inventory currently borrows from
 | `@sparx/db` (Prisma)                                        | unchanged — single shared client                                                                                               |
 
 > Prisma is **one shared client over one schema folder** — "extracting a package" is **code
-> organization + ownership**, not a separate database. Tables keep their physical names to avoid a
-> destructive rename migration; ownership moves in code. (Optional cosmetic `inventory_*` rename can
-> come later, gated on appetite — it is RLS-sensitive and not on the critical path.)
+> organization + ownership**, not a separate database. **Tables are renamed `commerce_* → inventory_*`
+> now** (pre-launch, no user data to preserve — §7), and the ledger model `InventoryAdjustment` →
+> **`InventoryMovement`** (`inventory_movements`) to reflect that it records every kind of stock
+> movement, not just manual adjustments. RLS policies are re-applied on the renamed tables via the pipeline.
 
 ### 2.3 Data ownership — survivors, new, retired
 
@@ -94,8 +102,15 @@ extraction must also lift the shared primitives inventory currently borrows from
 | `LotBatch`, `SerialUnit`                                  | `RollupInventoryDailyValuation` already exists |                                                |
 | `InventorySource`, `InventorySourceLink` (ingestion only) | (reused as the sync feed)                      |                                                |
 
-**Movement ledger invariant:** the only writer of `InventoryLevel.onHand` is a function that also
-appends an `InventoryAdjustment` row, so `onHand == Σ(movements)` always holds and is auditable.
+**Movement ledger invariant:** the only writer of `InventoryLevel.onHand` is one internal
+`applyMovement()` that also appends an `InventoryMovement` row, so `onHand == Σ(movements)` always holds
+and is auditable. **Every** mutation source funnels through it — checkout, manual dashboard edits, MCP/AI,
+3rd-party/ERP sync, returns, the reaper — see §2.5.
+
+**Moving-average cost (from day one):** each cost-bearing inbound movement (receipt, costed adjustment,
+sync) updates a stored `avgCostCents` on the level —
+`new_avg = (onHand·old_avg + qtyIn·costIn) / (onHand + qtyIn)`. Valuation and margin read `avgCostCents`
+(falling back to `ProductVariant.costCents` before the first receipt). No latest-cost interim.
 
 ### 2.4 The seam (commerce ↔ inventory)
 
@@ -106,6 +121,26 @@ appends an `InventoryAdjustment` row, so `onHand == Σ(movements)` always holds 
   consumes to flip the denormalized `Product.inStock` and hide/show, and to fire automations.
 - **Shipping** references inventory `Warehouse` for origin.
 - All seam calls are **inert when commerce is inactive** — inventory never depends on commerce being on.
+- **Degrade-without-inventory:** when the `inventory` module is off, commerce/b2b treat variants as
+  untracked (always available) and the seam calls are no-ops — no reserve/commit/decrement. Stock
+  tracking switches on only when inventory is active (bundled-free with commerce/b2b — §1).
+
+### 2.5 One ledger, many writers (concurrency, idempotency, actors)
+
+Stock is mutated concurrently by **many sources** — checkout sales, internal users (dashboard adjust /
+receive / count / transfer), MCP/AI, 3rd-party & ERP integrations (Fishbowl push, CSV), returns, and the
+reservation reaper. All of them go through `applyMovement()`; none writes `onHand` directly. That funnel
+gives three guarantees the product needs:
+
+- **Concurrency-safe:** `onHand` updates take a row lock (atomic increment / `SELECT … FOR UPDATE`), so a
+  simultaneous sale + sync delta + manual adjust cannot lose an update or oversell the last unit.
+- **Idempotent:** every movement carries an optional `idempotencyKey` (+ unique index). Integration
+  retries, redelivered Pub/Sub events (`order.cancelled`), and double-clicks apply **once**.
+- **Attributed:** every movement records `actorType` ∈ {`user`,`ai`,`system`,`integration`} + `actorId`
+  (+ `source` for integrations), so the audit log answers who moved stock, when, why, and by how much.
+
+Reconciliation from an authoritative external source writes a **corrective movement** (a delta to match),
+never a blind overwrite — the audit trail stays intact.
 
 ---
 
@@ -143,9 +178,14 @@ and commerce off.
    - Repoint the **sync worker** (`services/inventory-worker/src/handlers/sync.ts`) and the
      `POST /v1/inventory/sources/:id/push` + `/sync` endpoints to upsert `InventoryLevel` via the
      ledger (`sync_reconcile` movement), not `stock_levels`.
+   - **Rename now:** `commerce_* → inventory_*` tables and `InventoryAdjustment → InventoryMovement`
+     (`inventory_movements`); re-apply RLS (§2.2, §7).
    - Retire `stock_levels`/`StockLocation` (drop after data move; RLS-aware migration via the pipeline).
-3. **Movement ledger as sole write path.** Audit `inventory-service` so every `onHand` mutation routes
-   through one internal `applyMovement()` that appends `InventoryAdjustment`. Add a reconcile check.
+3. **Movement ledger as the sole write path** (§2.5). Route every `onHand` mutation through one internal
+   `applyMovement()` that appends an `InventoryMovement` with `actorType`/`actorId`/`source` + an optional
+   unique `idempotencyKey`, taking a row lock on the level for concurrency safety. Add a reconcile check
+   (`onHand == Σ(movements)`) and a stored `avgCostCents` updated on costed inbound movements
+   (moving-average, §2.3).
 4. **Re-point reads at the master:**
    - `inventory-valuation.ts` `computeValuation()` → `InventoryLevel` (valuation now non-zero).
    - `routes/v1/inventory/reports.ts` (summary/by-location/activity/valuation) → master + the ledger
@@ -154,7 +194,8 @@ and commerce off.
 5. **Move the operational pages under `/inventory`:** `/commerce/inventory` → `/inventory` (stock grid),
    `/commerce/warehouses` → `/inventory/warehouses`, `/commerce/lots` → `/inventory/lots`. Rebuild the
    `/inventory` overview off the master. Update the `inventoryManifest` sections.
-6. **Finish module wiring** — add `'inventory'` to the 5 lists in §1; set a price (§7).
+6. **Finish module wiring** — add `'inventory'` to the lists in §1 (price `2900`, `BUNDLED_FREE` with
+   commerce/b2b) and build the commerce/b2b **degrade-without-inventory** path (untracked = always available).
 7. **Seed** real inventory data (warehouses + levels + movements + lots) so a fresh tenant shows a
    populated module (per the "seed rich local data" rule).
 
@@ -228,8 +269,8 @@ expected arrival, line cost), `GoodsReceipt` + `GoodsReceiptLine` (receive again
 **Deploy gate:** create supplier → draft PO → receive (partial then full) → `onHand` rises via `receive`
 movements; reorder suggestion drafts a PO. All with commerce off.
 
-**Risks:** PO↔receipt partial-quantity accounting; cost layering for valuation (use latest cost or
-moving-average — decide; default latest-cost to start).
+**Risks:** PO↔receipt partial-quantity accounting; receipts update the moving-average `avgCostCents`
+(§2.3) — guard divide-by-zero when `onHand` is 0 (seed the average from the receipt cost).
 
 ---
 
@@ -331,15 +372,18 @@ Every requirement row in [docs/99 §2](99-inventory-implementation-audit.md) rea
 flags corrected; docs/28 folded from backlog into shipped; docs/06 §7 matches the routes. Inventory is
 activatable and fully usable as a standalone product, and richens Commerce/B2B/Dropship when those are on.
 
-## 7. Open decisions (need a call before/while building)
+## 7. Resolved decisions (2026-06-16)
 
-1. **Module price** — `MODULE_MONTHLY_CENTS.inventory` is unset. Proposal: **$29/mo** (2900, parity with
-   dropship/email/invoicing/chat) given it's an add-on to commerce for most, but it's a deep standalone
-   product — could justify $49 (4900, parity with commerce/cms/crm). **Decision needed.**
-2. **Physical table rename** (`commerce_inventory_levels` → `inventory_levels`, etc.) — clean ownership
-   vs. a risky RLS-sensitive data migration off the critical path. Proposal: **defer** (keep names,
-   own in code). **Confirm.**
-3. **Valuation cost basis** — latest-cost vs. moving-average (affects P3 receiving + P1 valuation).
-   Proposal: **latest-cost** to start, moving-average later. **Confirm.**
-4. **Decrement authority** — checkout `commit()` vs. an `order.created` consumer. Proposal: **checkout
-   commit** (atomic), consumer only for release-on-cancel. **Confirm.**
+1. **Price & packaging** — **$29/mo standalone** (`MODULE_MONTHLY_CENTS.inventory = 2900`), **bundled-free
+   when Commerce or B2B is active** (`BUNDLED_FREE`, mirrors invoicing↔b2b). Selling merchants get stock
+   tracking at no surcharge; inventory/WMS-only tenants pay $29. Requires commerce/b2b to **work without
+   inventory** (untracked = always available; seam no-ops) — built regardless (§1, §2.4).
+2. **Table rename — YES, now.** Pre-launch, no user data to preserve, so rename `commerce_* → inventory_*`
+   and `InventoryAdjustment → InventoryMovement` in P1 rather than carry the misnomer (§2.2). No deferral —
+   "why defer to when we have users?"
+3. **Valuation cost basis — moving-average, now.** Stored `avgCostCents` per level, updated on every
+   costed inbound movement; no latest-cost interim (§2.3).
+4. **Decrement authority — checkout `commit()`** (atomic with the order insert) is the single sale
+   authority; an idempotent `order.cancelled` consumer only releases. All other writers (manual / AI /
+   integration / return / reaper) funnel through the same `applyMovement()` with concurrency, idempotency,
+   and actor attribution (§2.5).
