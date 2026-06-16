@@ -7,9 +7,9 @@
 // alternative the catalog already uses where one-at-a-time grouping isn't needed.
 // Fully live in the editor canvas — clicking to open a section never fights authoring.
 
-import { type Behavior, boolAttr, disposer, on, uid } from './types';
+import { type Behavior, boolAttr, disposer, noop, on, uid } from './types';
 
-export const disclosure: Behavior = (root) => {
+export const disclosure: Behavior = (root, ctx) => {
   const d = disposer();
   const single = boolAttr(root, 'single', false);
   const items = Array.from(root.querySelectorAll<HTMLElement>('[data-sx-item]'));
@@ -21,6 +21,13 @@ export const disclosure: Behavior = (root) => {
     trigger?.setAttribute('aria-expanded', String(open));
     if (panel) panel.hidden = !open;
   };
+
+  // Canvas: reveal every panel so the author can see + select all content; the
+  // toggle is inert (nothing collapses under the cursor).
+  if (ctx.edit) {
+    for (const item of items) setOpen(item, true);
+    return noop;
+  }
 
   for (const item of items) {
     const trigger = item.querySelector<HTMLElement>('[data-sx-trigger]');

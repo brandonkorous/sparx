@@ -36,6 +36,7 @@ import {
   leafWearsClass,
   renderLeaf,
   resolveBuilderProduct,
+  sxAttrs,
 } from '@sparx/builder-render';
 
 // ── Class-only rendering (docs/61) ────────────────────────────────────────────
@@ -275,12 +276,12 @@ function RenderNode({
   if (rawTag) {
     return React.createElement(
       rawTag,
-      { className: cls(node.class), style: bgStyle, ...safeElementAttrs(node) },
+      { className: cls(node.class), style: bgStyle, ...sxAttrs(node), ...safeElementAttrs(node) },
       body
     );
   }
   return (
-    <div className={cls(node.class)} style={bgStyle} data-bx-type={node.type}>
+    <div className={cls(node.class)} style={bgStyle} data-bx-type={node.type} {...sxAttrs(node)}>
       {body}
     </div>
   );

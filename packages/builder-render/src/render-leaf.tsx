@@ -78,6 +78,7 @@ import {
 import { BuilderIcon } from './icon';
 import { SignupForm } from './signup';
 import { SAMPLE_BUILDER_PRODUCT } from './sample-product';
+import { sxAttrs } from './behaviors/attrs';
 import {
   EmailButtonLeaf,
   EmailDividerLeaf,
@@ -333,7 +334,9 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
   // own tag, so the walker passes it as `leafClass` and omits its wrapper.
   if (isRawElementType(node.type)) {
     const tag = rawTagOf(node.type)!;
-    const attrs = safeElementAttrs(node);
+    // Sanctioned behavior markers (Pillar 5) ride along as data-sx-* on the raw tag,
+    // so a raw leaf used as a carousel dot / accordion trigger is wired by the runtime.
+    const attrs = { ...sxAttrs(node), ...safeElementAttrs(node) };
     if (isRawVoidType(node.type)) {
       // An unsourced media void previews as a slot in the editor so it stays selectable.
       if (edit && (tag === 'img' || tag === 'source') && !attrs.src) {

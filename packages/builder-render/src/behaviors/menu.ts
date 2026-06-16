@@ -6,9 +6,9 @@
 // link inside the panel is followed. Live in the canvas so the author can open it to
 // edit its contents; the open/close state is visual only, never a page effect.
 
-import { type Behavior, disposer, on, uid } from './types';
+import { type Behavior, disposer, noop, on, uid } from './types';
 
-export const menu: Behavior = (root) => {
+export const menu: Behavior = (root, ctx) => {
   const d = disposer();
   const trigger = root.querySelector<HTMLElement>('[data-sx-trigger]');
   const panel = root.querySelector<HTMLElement>('[data-sx-panel]');
@@ -24,6 +24,12 @@ export const menu: Behavior = (root) => {
     trigger.setAttribute('aria-expanded', String(open));
     panel.hidden = !open;
   };
+
+  // Canvas: open the panel so the author can see + select its contents; inert.
+  if (ctx.edit) {
+    set(true);
+    return noop;
+  }
   set(false);
 
   d.add(on(trigger, 'click', (e) => (e.preventDefault(), set(!isOpen()))));

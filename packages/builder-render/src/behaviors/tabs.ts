@@ -5,13 +5,23 @@
 // navigation for keyboard users. A tab authored `data-active="true"` starts selected
 // (else the first). Live in the canvas — switching tabs to preview each is wanted.
 
-import { type Behavior, disposer, on } from './types';
+import { type Behavior, disposer, noop, on } from './types';
 
-export const tabs: Behavior = (root) => {
+export const tabs: Behavior = (root, ctx) => {
   const d = disposer();
   const tabEls = Array.from(root.querySelectorAll<HTMLElement>('[data-sx-tab]'));
   const panelEls = Array.from(root.querySelectorAll<HTMLElement>('[data-sx-panel]'));
   if (tabEls.length === 0) return d.run;
+
+  // Canvas: show every panel so all tab content is visible + selectable; inert.
+  if (ctx.edit) {
+    tabEls.forEach((t) => t.setAttribute('role', 'tab'));
+    panelEls.forEach((p) => {
+      p.setAttribute('role', 'tabpanel');
+      p.hidden = false;
+    });
+    return noop;
+  }
 
   const select = (i: number): void => {
     tabEls.forEach((t, j) => {

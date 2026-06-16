@@ -56,12 +56,14 @@ import type { SelectMods } from './use-builder-editor';
 // selection chrome, then renders this for the leaf body in `edit` mode — so the
 // preview IS what ships, no parallel mock render tree.
 import {
+  BuilderBehaviors,
   BuilderCarousel,
   EditModeProvider,
   ProductFormProvider,
   leafWearsClass,
   renderLeaf,
   resolveBuilderProduct,
+  sxAttrs,
 } from '@sparx/builder-render';
 
 // ── Class-only rendering (docs/61) ────────────────────────────────────────────
@@ -463,7 +465,13 @@ function CanvasNode({
   // for a raw container. The inline `.bx-tag` selection label can only be injected
   // where the tag permits flow children (not inside ul/table/svg/select).
   const InnerTag = (rawContainer ? rawTagOf(node.type)! : 'div') as React.ElementType;
-  const innerAttrs = rawContainer ? safeElementAttrs(node) : undefined;
+  // The wrapper carries the node's sanctioned behavior markers (Pillar 5) so a
+  // container behavior root / structural marker is wired; a class-styled leaf wears
+  // its own (renderLeaf), so its display:contents wrapper omits them.
+  const innerAttrs = {
+    ...(leafByClass ? {} : sxAttrs(node)),
+    ...(rawContainer ? safeElementAttrs(node) : {}),
+  };
   const showInlineTag = !rawContainer || rawTagAcceptsInlineChrome(node.type);
 
   let body: React.ReactNode;
@@ -1554,7 +1562,11 @@ export function Canvas({
                     if (e.key === 'Escape') onSelect(null);
                   }}
                 >
-                  {zoomed}
+                  {/* Hydrate the sanctioned behavior runtime over the rendered tree in
+                      PREVIEW mode (edit): interactions are clickable but autoplay /
+                      scroll effects + content-hiding are suppressed so they never
+                      fight authoring (docs/98 Pillar 5). */}
+                  <BuilderBehaviors edit>{zoomed}</BuilderBehaviors>
                 </div>
               </MultiSelectContext.Provider>
             </VersionResolverContext.Provider>
