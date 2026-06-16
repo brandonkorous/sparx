@@ -295,6 +295,11 @@ model Tenant {
 
   // SEO — stored audit scorecard snapshots for the site-wide overview (docs/50 §7)
   seoAudits SeoAudit[]
+  // SEO — Google Search Console: per-(tenant, property) OAuth connection + the
+  // ingested organic-search rollup and top queries (docs/50 §7, docs/97 §4)
+  searchConsoleConnections  SearchConsoleConnection[]
+  rollupSearchConsoleDaily  RollupSearchConsoleDaily[]
+  searchConsoleQueries      SearchConsoleQuery[]
 
   // Email platform — management surface (docs/13)
   emailSettings       EmailSettings?

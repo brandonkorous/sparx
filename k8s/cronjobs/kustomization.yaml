@@ -12,3 +12,4 @@ resources:
   - dropship-orders-rollup.yaml
   - automation-runs-rollup.yaml
   - site-analytics-rollup.yaml
+  - search-console-sync.yaml

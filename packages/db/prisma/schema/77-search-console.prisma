@@ -1,0 +1,87 @@
+// Google Search Console integration (docs/50 §7, docs/97 §4) — organic-search
+// performance for the SEO overview. Per-tenant OAuth: each tenant connects THEIR
+// own Search Console property; a nightly job pulls the Search Analytics API and
+// stores the daily metrics + top queries here, so the SEO overview's organic
+// cards read pre-aggregated rows (never a live Google call on the hot path).
+//
+// OAuth tokens are encrypted at rest (AES-256-GCM, lib/search-console crypto) —
+// the columns hold opaque ciphertext bundles, never plaintext. All three tables
+// are tenant-scoped with ENABLE + FORCE RLS + a current_tenant_id() policy
+// (hand-authored in the migration SQL).
+
+// One Search Console connection per (tenant, property). Holds the encrypted
+// OAuth grant + the chosen GSC site URL + sync bookkeeping.
+model SearchConsoleConnection {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  propertyId String @map("property_id") @db.Uuid
+
+  // The Search Console property URL the tenant chose (e.g.
+  // "sc-domain:example.com" or "https://example.com/"). Null until the OAuth
+  // grant is exchanged and a site is selected.
+  siteUrl String? @map("site_url") @db.VarChar(2048)
+
+  // connected | needs_site | error | disconnected
+  status String @default("needs_site") @db.VarChar(20)
+
+  // AES-256-GCM ciphertext bundles (iv:tag:cipher, base64) — never plaintext.
+  accessTokenEnc  String?   @map("access_token_enc") @db.Text
+  refreshTokenEnc String?   @map("refresh_token_enc") @db.Text
+  tokenExpiresAt  DateTime? @map("token_expires_at") @db.Timestamptz
+
+  lastSyncAt DateTime? @map("last_sync_at") @db.Timestamptz
+  lastError  String?   @map("last_error") @db.Text
+
+  connectedByUserId String? @map("connected_by_user_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, propertyId], map: "search_console_connections_tenant_property_unique")
+  @@map("search_console_connections")
+}
+
+// One row per (tenant, property, UTC day) of organic-search performance. CTR and
+// average position are DERIVED in the read: ctr = clicks / impressions, and the
+// impression-weighted avg position = sum_position / impressions (sum_position is
+// Σ position × impressions for the day, so it aggregates correctly across days).
+model RollupSearchConsoleDaily {
+  tenantId    String   @map("tenant_id") @db.Uuid
+  propertyId  String   @map("property_id") @db.Uuid
+  bucket      DateTime @db.Date
+
+  clicks      Int    @default(0)
+  impressions Int    @default(0)
+  // Σ (position × impressions) — the impression-weighted position numerator.
+  sumPosition BigInt @default(0) @map("sum_position")
+
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@id([tenantId, propertyId, bucket], map: "rollup_search_console_daily_pkey")
+  @@map("rollup_search_console_daily")
+}
+
+// The current top search queries per (tenant, property) — replaced wholesale each
+// sync with the top rows for the standard trailing window. Position aggregates
+// the same impression-weighted way (sum_position = Σ position × impressions).
+model SearchConsoleQuery {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  propertyId String @map("property_id") @db.Uuid
+
+  query       String @db.VarChar(512)
+  clicks      Int    @default(0)
+  impressions Int    @default(0)
+  sumPosition BigInt @default(0) @map("sum_position")
+
+  capturedAt DateTime @default(now()) @map("captured_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, propertyId, clicks(sort: Desc)])
+  @@map("search_console_queries")
+}

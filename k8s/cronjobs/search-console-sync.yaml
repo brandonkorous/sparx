@@ -1,0 +1,74 @@
+# Ingests Google Search Console organic-search metrics (docs/50 §7, docs/97 §4).
+# For every active Builder tenant with a CONNECTED Search Console site, pulls the
+# Search Analytics API and overwrites the organic daily rollup + top queries, so
+# the SEO overview's organic cards read pre-aggregated rows instead of a live
+# Google call on the hot path.
+#
+# Runs nightly at 10:00 UTC — after the site-analytics rollup (09:00) and the
+# other nightly reconciles, so they don't pile onto the DB at once. GSC data lags
+# ~2-3 days, so the exact run time is not sensitive; a missed run only delays
+# refreshing the organic figures by a day. Forbid concurrency so a slow run
+# (many tenants × two Google calls each) never overlaps the next.
+#
+# Inert until the platform provisions the Google OAuth client + token key and
+# tenants authorize their Search Console — with no connected tenants the job
+# enumerates zero connections and exits cleanly.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: search-console-sync
+  namespace: sparx-prod
+  labels:
+    app: search-console-cron
+    job: search-console-sync
+spec:
+  schedule: '0 10 * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: search-console-cron
+            job: search-console-sync
+        spec:
+          serviceAccountName: sparx-app
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 280
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://api-rest.sparx-prod.svc.cluster.local:3000/internal/seo/search-console-sync
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '25m'
+                  memory: '16Mi'
+                limits:
+                  cpu: '100m'
+                  memory: '32Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

@@ -47,20 +47,27 @@ import {
   OverviewRow,
   SampleBadge,
   fmtNumber,
+  fmtPercentRatio,
   liveOr,
 } from '../_components/overview-bits';
 import { RescanButton } from './_components/rescan-button';
+import {
+  SearchConsoleControl,
+  type ConnectionView,
+} from './_components/search-console-control';
 
 // SEO overview — "Am I getting found, and what do I fix?". Substantially LIVE:
 // the health score, pages-scored, issue counts, the issue breakdown, and the
 // worst-pages table all derive from the stored audit snapshots
 // (`GET /v1/seo/audits`); the technical checklist rolls every page's audit
 // checks up site-wide (`GET /v1/seo/reports/checklist`) and the activity feed
-// reads recent audit runs (`GET /v1/seo/reports/activity`). Search-console-style
-// figures (organic clicks / impressions / CTR / position, top queries) have no
-// backing endpoint yet (GSC ingestion, workload B) and render as representative
-// data behind a <SampleBadge>. The seo layout wraps this in
-// <ModuleProvider module="seo">, so the page never re-wraps.
+// reads recent audit runs (`GET /v1/seo/reports/activity`). Organic-search
+// figures (clicks / impressions / CTR / position, top queries) come from Google
+// Search Console once the tenant connects it (`GET /v1/seo/organic/*`); until
+// then — or while the platform hasn't provisioned the OAuth client — they render
+// as representative data behind a <SampleBadge> with a "Connect Search Console"
+// CTA. The seo layout wraps this in <ModuleProvider module="seo">, so the page
+// never re-wraps.
 
 export const dynamic = 'force-dynamic';
 
@@ -104,6 +111,42 @@ interface SeoActivityItem {
   computedAt: string;
 }
 
+// ── Search Console organic shapes (/v1/seo/search-console/status, /organic/*) ──
+interface GscStatus {
+  configured: boolean;
+  connection: ConnectionView | null;
+}
+interface OrganicSummary {
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  avgPosition: number;
+}
+interface OrganicPoint {
+  bucket: string;
+  clicks: number;
+  impressions: number;
+}
+interface OrganicTimeseries {
+  points: OrganicPoint[];
+  totals: { clicks: number; impressions: number };
+}
+interface OrganicQuery {
+  query: string;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+}
+// The normalized query row the cards render (shared by live + sample). The chart
+// row type is inferred from inline literals at the liveOr call (so it satisfies
+// AreaChart's Record<string, unknown> data constraint without a named type).
+interface OrganicQueryRow {
+  q: string;
+  hint: string;
+  clicks: string;
+}
+
 // The normalized rows the cards render — shared by live + sample so liveOr can
 // fall back cleanly.
 interface ChecklistRow {
@@ -129,6 +172,15 @@ const CHECK_STATUS_META: Record<
   fail: { tone: 'danger', label: 'Needs work' },
   info: { tone: 'neutral', label: 'Info' },
 };
+
+// Short UTC day label ("Jun 13") for the organic-traffic chart x-axis.
+function shortDay(bucket: string): string {
+  return new Date(`${bucket}T00:00:00.000Z`).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
+}
 
 // Compact relative time for the activity feed (server-rendered).
 function timeAgo(iso: string, nowMs: number): string {
@@ -204,14 +256,19 @@ export default async function SeoPage() {
   const canScan = role === 'owner' || role === 'admin' || role === 'editor';
 
   const nowMs = Date.now();
-  const [rows, checklist, activity] = await Promise.all([
-    api
-      .get<SeoAuditRow[]>('/v1/seo/audits')
-      .then((r) => r ?? [])
-      .catch(() => [] as SeoAuditRow[]),
-    api.get<SeoChecklist>('/v1/seo/reports/checklist').catch(() => null),
-    api.get<SeoActivityItem[]>('/v1/seo/reports/activity?limit=8').catch(() => null),
-  ]);
+  const [rows, checklist, activity, gsc, organicSummary, organicSeries, organicQueries] =
+    await Promise.all([
+      api
+        .get<SeoAuditRow[]>('/v1/seo/audits')
+        .then((r) => r ?? [])
+        .catch(() => [] as SeoAuditRow[]),
+      api.get<SeoChecklist>('/v1/seo/reports/checklist').catch(() => null),
+      api.get<SeoActivityItem[]>('/v1/seo/reports/activity?limit=8').catch(() => null),
+      api.get<GscStatus>('/v1/seo/search-console/status').catch(() => null),
+      api.get<OrganicSummary>('/v1/seo/organic/summary').catch(() => null),
+      api.get<OrganicTimeseries>('/v1/seo/organic/timeseries').catch(() => null),
+      api.get<OrganicQuery[]>('/v1/seo/organic/top-queries?limit=4').catch(() => null),
+    ]);
 
   const count = rows.length;
   const avg = count ? Math.round(rows.reduce((sum, r) => sum + r.score, 0) / count) : null;
@@ -263,6 +320,43 @@ export default async function SeoPage() {
       : null;
   const activityFeed = liveOr<ActivityEntry[]>(activityRows, SAMPLE_ACTIVITY);
 
+  // ── Organic search (Search Console) — live when connected + has data ──
+  const gscConfigured = gsc?.configured ?? false;
+  const gscConnection = gsc?.connection ?? null;
+  const organicLive =
+    gscConnection?.status === 'connected' && (organicSummary?.impressions ?? 0) > 0;
+
+  const trafficDisplay = liveOr(
+    organicLive && organicSeries && organicSeries.points.length > 0
+      ? organicSeries.points.map((p) => ({
+          label: shortDay(p.bucket),
+          clicks: p.clicks,
+          impressions: p.impressions,
+        }))
+      : null,
+    [...SAMPLE_TRAFFIC_14D]
+  );
+
+  const organicQueryRows: OrganicQueryRow[] | null =
+    organicLive && organicQueries && organicQueries.length > 0
+      ? organicQueries.map((q) => ({
+          q: q.query,
+          hint: `Position ${q.position.toFixed(1)} · ${fmtPercentRatio(q.ctr)} CTR`,
+          clicks: fmtNumber(q.clicks),
+        }))
+      : null;
+  const queriesDisplay = liveOr<OrganicQueryRow[]>(organicQueryRows, [...SAMPLE_QUERIES]);
+
+  // KPI + footer figures: live summary when connected, else the sample numbers.
+  const organicKpis = organicLive
+    ? {
+        clicks: fmtNumber(organicSummary?.clicks),
+        impressions: fmtNumber(organicSummary?.impressions),
+        ctr: fmtPercentRatio(organicSummary?.ctr),
+        position: (organicSummary?.avgPosition ?? 0).toFixed(1),
+      }
+    : { clicks: '6,840', impressions: '142k', ctr: '4.8%', position: '14.2' };
+
   const allAuditsBtn = (
     <Button asChild variant="outline" leftIcon={<Gauge className="h-4 w-4" />}>
       <Link href="/seo/audits">All audits</Link>
@@ -299,7 +393,8 @@ export default async function SeoPage() {
           </Card>
         ) : (
           <>
-            {/* KPI strip — pages scored + issues live; search figures sample */}
+            {/* KPI strip — pages scored + issues live; organic live once Search
+                Console is connected, else representative figures */}
             <Grid cols={1} mdCols={2} lgCols={4} gap={4}>
               <Stat
                 icon={<Globe className="h-4 w-4" />}
@@ -309,15 +404,15 @@ export default async function SeoPage() {
               />
               <Stat
                 icon={<TrendingUp className="h-4 w-4" />}
-                label="Organic clicks · 30d"
-                value="6,840"
-                hint="Clicks from search"
+                label="Organic clicks · 28d"
+                value={organicKpis.clicks}
+                hint={organicLive ? 'Clicks from search' : 'Sample · connect Search Console'}
               />
               <Stat
                 icon={<Target className="h-4 w-4" />}
                 label="Avg. position"
-                value="14.2"
-                hint="Across ranked queries"
+                value={organicKpis.position}
+                hint={organicLive ? 'Across ranked queries' : 'Sample · connect Search Console'}
               />
               <Stat
                 icon={<AlertTriangle className="h-4 w-4" />}
@@ -404,11 +499,11 @@ export default async function SeoPage() {
               <OverviewCard
                 title="Organic traffic"
                 icon={<TrendingUp className="h-4 w-4" />}
-                description="Clicks from search · last 14 days"
-                right={<SampleBadge />}
+                description={`Clicks from search · last ${organicLive ? '28' : '14'} days`}
+                right={<SearchConsoleControl configured={gscConfigured} connection={gscConnection} />}
               >
                 <AreaChart
-                  data={[...SAMPLE_TRAFFIC_14D]}
+                  data={trafficDisplay.data}
                   series={[
                     { key: 'clicks', label: 'Clicks', color: 'module' },
                     {
@@ -420,14 +515,14 @@ export default async function SeoPage() {
                   xKey="label"
                   height={210}
                   valueFormat="number"
-                  ariaLabel="Organic clicks and impressions, last 14 days"
+                  ariaLabel="Organic clicks and impressions"
                 />
                 <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
                   {[
-                    ['Clicks', '6,840'],
-                    ['Impressions', '142k'],
-                    ['CTR', '4.8%'],
-                    ['Avg. position', '14.2'],
+                    ['Clicks', organicKpis.clicks],
+                    ['Impressions', organicKpis.impressions],
+                    ['CTR', organicKpis.ctr],
+                    ['Avg. position', organicKpis.position],
                   ].map(([label, value]) => (
                     <div key={label}>
                       <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
@@ -435,6 +530,11 @@ export default async function SeoPage() {
                     </div>
                   ))}
                 </div>
+                {trafficDisplay.isSample && (
+                  <div className="mt-3">
+                    <SampleBadge reason="no-data" />
+                  </div>
+                )}
               </OverviewCard>
             </div>
 
@@ -510,9 +610,9 @@ export default async function SeoPage() {
               <OverviewCard
                 title="Top queries"
                 icon={<Search className="h-4 w-4" />}
-                right={<SampleBadge />}
+                right={queriesDisplay.isSample ? <SampleBadge reason="no-data" /> : undefined}
               >
-                {SAMPLE_QUERIES.map((q) => (
+                {queriesDisplay.data.map((q) => (
                   <OverviewRow
                     key={q.q}
                     icon={<Search className="h-4 w-4" />}

@@ -57,6 +57,18 @@ const EnvSchema = z
     // to storefront messages via Claude Haiku. Unset → AI is disabled and every
     // inbound customer message routes straight to a human (notification fires).
     ANTHROPIC_API_KEY: z.string().optional(),
+    // Google Search Console connector (docs/50 §7, docs/97 §4). Per-tenant OAuth:
+    // each tenant authorizes THEIR Search Console; a nightly job ingests organic
+    // metrics. The whole connector is INERT until these are set — the connect
+    // endpoints return a clear "not configured" error and the SEO overview keeps
+    // showing representative data.
+    //   GOOGLE_OAUTH_CLIENT_ID / _SECRET  — the GCP OAuth 2.0 Web client.
+    //   SEARCH_CONSOLE_TOKEN_KEY          — 32-byte AES-256-GCM key (base64 or hex)
+    //     encrypting the stored OAuth tokens at rest. Rotating it invalidates every
+    //     stored grant (tenants re-authorize) — never log or expose it.
+    GOOGLE_OAUTH_CLIENT_ID: z.string().optional(),
+    GOOGLE_OAUTH_CLIENT_SECRET: z.string().optional(),
+    SEARCH_CONSOLE_TOKEN_KEY: z.string().optional(),
     // GoDaddy Reseller API credentials (docs/24 §3, docs/24 §10).
     // OTE (staging) credentials — used when the resolved env is OTE.
     GODADDY_API_KEY_OTE: z.string().optional(),
@@ -125,7 +137,46 @@ const EnvSchema = z
         message: 'Required when GCS_MEDIA_BUCKET is set (split-bucket setup).',
       });
     }
+
+    // Search Console: enabling the OAuth client means the token-encryption key +
+    // client secret are mandatory — a half-configured connector would store
+    // plaintext tokens or fail every exchange. Validate as a set, not piecemeal.
+    if (data.GOOGLE_OAUTH_CLIENT_ID) {
+      if (!data.GOOGLE_OAUTH_CLIENT_SECRET) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['GOOGLE_OAUTH_CLIENT_SECRET'],
+          message: 'Required when GOOGLE_OAUTH_CLIENT_ID is set.',
+        });
+      }
+      if (!data.SEARCH_CONSOLE_TOKEN_KEY) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['SEARCH_CONSOLE_TOKEN_KEY'],
+          message: 'Required when GOOGLE_OAUTH_CLIENT_ID is set (encrypts stored tokens).',
+        });
+      }
+    }
+    // A provided key must decode to exactly 32 bytes (AES-256), as base64 or hex.
+    if (data.SEARCH_CONSOLE_TOKEN_KEY && decodeKeyBytes(data.SEARCH_CONSOLE_TOKEN_KEY) !== 32) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['SEARCH_CONSOLE_TOKEN_KEY'],
+        message: 'Must be a 32-byte key encoded as base64 (44 chars) or hex (64 chars).',
+      });
+    }
   });
+
+/** Decode a base64- or hex-encoded key to its byte length (0 if unparseable),
+ *  so env validation can reject a wrong-sized AES key at boot. */
+function decodeKeyBytes(raw: string): number {
+  if (/^[0-9a-fA-F]{64}$/.test(raw)) return 32;
+  try {
+    return Buffer.from(raw, 'base64').length;
+  } catch {
+    return 0;
+  }
+}
 
 export type Env = z.infer<typeof EnvSchema>;
 

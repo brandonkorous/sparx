@@ -1,6 +1,6 @@
 # Dashboard Overview — Data Gaps & Wiring Backlog
 
-**Version:** 2.1
+**Version:** 2.2
 **Author:** Brandon Korous / WizeWorks
 **Last Updated:** 2026-06-15
 
@@ -164,11 +164,11 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 - ✅ Per-automation run history — `GET /v1/automations/:id/runs`
 - ✅ Run-activity **timeseries** & success-rate — `GET /v1/automations/reports/runs` (shipped 2026-06-15; **fourth rollup** — `rollup_automation_daily_runs` + nightly reconcile + live-overlay read per docs/97 §5; aggregate across every automation, powers the "Run activity" chart + Runs/Success-rate footer)
 
-### SEO — Yellow
+### SEO — Live
 
 - ✅ Health score, pages scored, issue breakdown, worst-pages table — `GET /v1/seo/audits`
 - ✅ Technical checklist status & activity feed — `GET /v1/seo/reports/{checklist,activity}` (shipped 2026-06-15): the checklist **rolls every page's audit `card->'checks'` up site-wide** (per check: how many pages pass/warn/fail → a derived site status + pass rate, attention-first); the activity feed reads recent audit runs (`computedAt` desc). Both `liveOr`-fall back to a badged sample until the site is audited. The checklist is the REAL audit signal (title/description/structured-data/alt-text/headings/sitemap/indexable/…), not invented sitemap/robots/CWV rows
-- 🔴 Organic clicks / impressions / CTR / avg position, top queries — needs **Search Console ingestion** (no endpoint)
+- ✅ Organic clicks / impressions / CTR / avg position, top queries — **Google Search Console ingestion** (shipped 2026-06-15): full per-tenant OAuth connector. `GET /v1/seo/search-console/status` + the connect lifecycle (`connect-url` → dashboard-hosted callback → `exchange` → `select-site`, plus `sync`/disconnect); a nightly `search-console-sync` CronJob (and "Sync now") pulls the Search Analytics API and overwrites `rollup_search_console_daily` + `search_console_queries` (RLS, impression-weighted `sum_position` so avg position aggregates across days). Reads via `GET /v1/seo/organic/{summary,timeseries,top-queries}`; the overview's KPIs + organic chart + top-queries go live once a tenant connects, else `liveOr`-fall back to a badged sample with a **"Connect Search Console"** CTA. OAuth tokens are AES-256-GCM-encrypted at rest. **Inert** until the platform sets `GOOGLE_OAUTH_CLIENT_ID/_SECRET` + `SEARCH_CONSOLE_TOKEN_KEY` and each tenant authorizes their property
 
 ---
 
@@ -177,6 +177,6 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 1. **🟡 Wire-now pass (frontend-only).** Commerce (top products, top customers, inventory value), CRM (pipeline, win rate, top customers, tasks, segment sizes), Email (broadcasts, domains), Dropship (supplier breakdown, orders). Each drops a `<SampleBadge>` and replaces sample constants with an `api.get(...)` call — no backend change.
 2. **🔴 Timeseries reports** are the most common backend gap and power the signature charts: commerce `revenue-timeseries` **✅ (shipped 2026-06-15 — the rollup reference impl, docs/97)**, invoicing `collected-timeseries` **✅ (shipped 2026-06-15 — `rollup_invoicing_daily_collected`)**, dropship `reports/orders-timeseries` **✅ (shipped 2026-06-15 — `rollup_dropship_daily_orders`)**, automations `reports/runs` **✅ (shipped 2026-06-15 — `rollup_automation_daily_runs`)**. **All four signature timeseries are now live.** The shared "daily bucket over a date range" rollup pattern (table + nightly reconcile + live-overlay read) is established — copy it for the remaining metric rollups (CMS counts, B2B reporting, invoicing days-to-pay, etc.).
 3. **🔴 Net-new analytics surfaces** (larger): site analytics (builder), chat analytics, CMS reporting, B2B reporting, and the entire AI reports surface. These need new aggregation + likely event capture, not just a query.
-4. **🔴 External ingestion:** SEO Search Console (organic traffic / queries) and email revenue attribution depend on data we don't yet collect.
+4. **External ingestion:** SEO Search Console (organic traffic / queries) **✅ (shipped 2026-06-15 — full per-tenant OAuth connector + nightly ingestion, inert until OAuth creds are provisioned)**. Email revenue attribution still depends on conversion event capture we don't yet collect.
 
 When a section graduates from sample to live, delete its `<SampleBadge>` and update its row here.
