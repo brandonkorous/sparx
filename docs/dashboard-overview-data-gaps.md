@@ -88,7 +88,8 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 - ✅ Counts (published-30d / drafts / scheduled / total) + status pipeline + content-by-type — `GET /v1/content/reports/summary` (shipped 2026-06-15)
 - ✅ Publishing **cadence** (entries published per day/week/month) — `GET /v1/content/reports/cadence` (shipped 2026-06-15; live aggregate over `content_entries`, same daily-bucket chart shape as the rollups)
 - ✅ Recently-published / upcoming-scheduled / recent-activity feeds — `GET /v1/content/reports/recent` (shipped 2026-06-15)
-- 🔴 Content **views** / read-time / top-content-by-views — needs analytics event capture (workload B); KPIs + SEO-health card stay sample until site analytics lands
+- ✅ **Top content by views** — `GET /v1/content/reports/top-content` (shipped 2026-06-15): joins first-party site-analytics pageviews to each published entry's resolved public path (`urlPattern.replace('{slug}', slug)` — the same construction the sitemap uses — normalized with the beacon's `normalizePath`), scoped to the active site. The CMS overview's "Top content by views" card (views + visitors per entry + window total) goes live once the site captures traffic, else `liveOr`-falls back to a badged sample. Unlocked by the site-analytics capture that landed with the Builder overview.
+- 🔴 Read-time / time-on-page — still needs dwell-time capture (a beacon unload/heartbeat event) we don't collect yet
 
 ### CRM — Cyan
 

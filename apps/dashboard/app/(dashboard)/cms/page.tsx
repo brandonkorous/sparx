@@ -56,9 +56,10 @@ import {
 // CMS overview — the editor's morning glance at how content is performing.
 // Counts, publishing cadence, content-by-type, recently-published, upcoming
 // schedule and recent activity are all LIVE from `/v1/content/reports/*` (live
-// aggregates over content_entries). Page-view / read-time / signup metrics, the
-// editorial issue queue, and the SEO-crawl card still need analytics event
-// capture (docs/97 §4) + the SEO module surface, so they stay badged sample.
+// aggregates over content_entries). Top-content-by-views is LIVE too, joining
+// first-party site-analytics pageviews to each published entry's resolved path
+// (`/v1/content/reports/top-content`). Read-time, the editorial issue queue, and
+// the SEO-crawl card still need their own capture, so they stay badged sample.
 
 export const dynamic = 'force-dynamic';
 
@@ -108,6 +109,27 @@ interface CmsRecent {
   published: RecentEntry[];
   upcoming: RecentEntry[];
 }
+interface TopContentItem {
+  id: string;
+  title: string;
+  typeName: string;
+  path: string;
+  views: number;
+  visitors: number;
+}
+interface TopContent {
+  totalViews: number;
+  contentPagesViewed: number;
+  items: TopContentItem[];
+}
+// The normalized row the Top-content card renders (shared by live + sample).
+interface TopContentRow {
+  key: string;
+  title: string;
+  typeName: string;
+  views: string;
+  visitors: string;
+}
 
 // ── Sample fallbacks (shown badged only until the tenant has content) ──
 const SAMPLE_CADENCE_14D: { label: string; published: number }[] = [
@@ -139,6 +161,32 @@ const SAMPLE_BY_TYPE = [
   { label: 'Recipes', value: 22, color: 'var(--module-active-tint)' },
   { label: 'Brew guides', value: 18, color: '#99ddd5' },
   { label: 'Pages', value: 12, color: '#d6f5f0' },
+];
+
+const SAMPLE_TOP_CONTENT: TopContentRow[] = [
+  {
+    key: 't1',
+    title: 'How to brew the perfect cup',
+    typeName: 'Blog',
+    views: '2,140',
+    visitors: '1,780',
+  },
+  {
+    key: 't2',
+    title: 'Cold brew concentrate guide',
+    typeName: 'Brew guide',
+    views: '1,460',
+    visitors: '1,205',
+  },
+  { key: 't3', title: 'Ethiopia single origin', typeName: 'Blog', views: '980', visitors: '845' },
+  {
+    key: 't4',
+    title: 'Our subscription, explained',
+    typeName: 'Page',
+    views: '720',
+    visitors: '640',
+  },
+  { key: 't5', title: 'Iced latte recipe', typeName: 'Recipe', views: '540', visitors: '470' },
 ];
 
 function shortDate(iso: string | null): string {
@@ -183,10 +231,11 @@ export default async function CmsPage() {
     to: cadenceTo.toISOString(),
   });
 
-  const [summary, cadence, recent] = await Promise.all([
+  const [summary, cadence, recent, topContent] = await Promise.all([
     api.get<CmsSummary>('/v1/content/reports/summary').catch(() => null),
     api.get<CmsCadence>(`/v1/content/reports/cadence?${cadenceQs.toString()}`).catch(() => null),
     api.get<CmsRecent>('/v1/content/reports/recent?limit=6').catch(() => null),
+    api.get<TopContent>('/v1/content/reports/top-content?limit=6').catch(() => null),
   ]);
 
   const hasContent = !!summary && summary.total > 0;
@@ -228,6 +277,21 @@ export default async function CmsPage() {
       : null;
   const byType = liveOr(typeData, SAMPLE_BY_TYPE);
   const topType = hasContent ? summary.byType[0] : undefined;
+
+  // Top content by views — joins site-analytics pageviews to published entries
+  // (live once the site captures traffic; badged sample until then).
+  const topContentRows: TopContentRow[] | null =
+    topContent && topContent.items.length > 0
+      ? topContent.items.map((it) => ({
+          key: it.id,
+          title: it.title,
+          typeName: it.typeName,
+          views: fmtNumber(it.views),
+          visitors: fmtNumber(it.visitors),
+        }))
+      : null;
+  const topContentDisplay = liveOr<TopContentRow[]>(topContentRows, SAMPLE_TOP_CONTENT);
+  const contentViewsTotal = topContent && topContent.totalViews > 0 ? topContent.totalViews : null;
 
   return (
     <Container size="xl">
@@ -464,6 +528,49 @@ export default async function CmsPage() {
             )}
           </OverviewCard>
         </div>
+
+        {/* Top content by views — site-analytics pageviews joined to entries */}
+        <OverviewCard
+          title="Top content by views"
+          icon={<TrendingUp className="h-4 w-4" />}
+          description="Your most-viewed published content · last 30 days"
+          right={
+            topContentDisplay.isSample ? (
+              <SampleBadge reason="no-data" />
+            ) : contentViewsTotal != null ? (
+              <span className="text-xs text-[var(--color-text-tertiary)]">
+                {fmtNumber(contentViewsTotal)} total views
+              </span>
+            ) : undefined
+          }
+        >
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Title</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead className="text-right">Views</TableHead>
+                <TableHead className="text-right">Visitors</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {topContentDisplay.data.map((c) => (
+                <TableRow key={c.key}>
+                  <TableCell className="font-medium">{c.title}</TableCell>
+                  <TableCell>
+                    <Badge color="neutral" variant="soft">
+                      {c.typeName}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">{c.views}</TableCell>
+                  <TableCell className="text-right text-[var(--color-text-secondary)] tabular-nums">
+                    {c.visitors}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </OverviewCard>
 
         {/* Content types + recent activity + SEO health */}
         <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
