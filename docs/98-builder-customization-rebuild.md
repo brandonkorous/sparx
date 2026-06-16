@@ -1,8 +1,10 @@
 # Builder v2 — Full Customization Rebuild
 
-**Version:** 1.0
+**Version:** 1.4
 **Author:** Brandon Korous / WizeWorks
-**Last Updated:** 2026-06-15
+**Last Updated:** 2026-06-16
+
+> **Status (v1.3):** Pillars 1–3 shipped (raw elements, full-surface inspector, binding spine). The **component library (§5) is built** as a static data-as-code catalog — **86 components across 8 categories** in `packages/builder-schemas/src/catalog/`, surfaced directly in the Add palette (no DB round-trip for the published initial library; the DB-backed `PlatformComponent` table + lifecycle API is the deferred admin-authoring layer). `PLATFORM_ARCHETYPES` is **removed** — the catalog is the platform library; `BuilderArchetype` is now purely tenant-authored. The **site layout is a free canvas** whose only structural invariant is the Outlet (§3.7). The **navbar is a real component** — a `<nav class="navbar">` with `navbar-start`/`navbar-center`/`navbar-end` zones (CSS verbatim from daisyUI, in surface-compile); the bare `navbar` catalog entry is JUST the bar + empty zones (common), while a pre-filled `navbar_brand` (brand + nav + action) is a separate **comprehensive** entry. There is still ONE navbar primitive — no "centered" variant; centering the brand is just moving it into `navbar-center` (§5). _(v1.3 also fixed a load-bearing studio bug: the Layers-tree rows were missing `ref={sortable.setNodeRef}`, so dnd-kit never measured them and tree drag-reorder silently never landed.)_ **(v1.4)** Adds the §3.8/§4.2 spec for **View HTML** (read-only "view/copy source," both web + email) and **one-way HTML import** (paste a Tailwind fragment → validated Pillar-1 `Element` nodes); **two-way / live HTML editing is explicitly rejected** (§9). Design only — not yet built.
 
 ---
 
@@ -108,6 +110,25 @@ The **Component designer** (`/builder/components`, the existing `BuilderComponen
 
 Extend `Binding` to carry an **entity** (a concrete product/collection/category/CMS record), a **collection source** (a real repeater over a chosen collection/category, not "all products"), and an **action** (a button that adds-to-cart / buys-now / links / submits against the entity in scope). Scope propagates down the subtree so a button, price, and image inside a product-pinned card all resolve against that product.
 
+### 3.7 The site layout is a free canvas — the Outlet is the only invariant
+
+A "site layout" is **not** a thing that requires a header and a footer. It is a canvas with exactly **one inversion-of-control point — the `Outlet`** (the content box where each routed page renders). The Outlet is the **only** structural necessity; header, footer, subfooter, sidebars are all just **author-composed content around it**, no different from anything on a page. So the page-vs-layout distinction collapses to: _a layout is a page that wraps the routed content._ Same editor, same catalog, same primitives — one special node.
+
+- **The Outlet is `pinned`** (registry def): it cannot be deleted or dragged, and its layers "Remove" affordance is hidden — reusing the existing `pinned` mechanism (the email-wordmark precedent). This guarantees exactly one content box. Nothing else is protected.
+- **The default seeded on site creation is composable chrome, fully deletable:** `root(stack) → [ Navbar (the navbar component — `navbar-start`/`navbar-center`/`navbar-end`), Main(row, full-width) → Outlet, Footer (catalog) ]`. Delete the navbar + footer → a **blank slate** (just the content box). Drop an `<aside>` into `Main` beside the Outlet → a **sidebar** — so sidebars work without the Outlet needing to move.
+- **Nothing is hardcoded or required.** The default exists only so a new site looks live immediately (the <5-min onboarding goal); it is ordinary, editable seed data. Layouts seed **once**, so this changes only newly created sites — existing layouts are untouched (no migration).
+- The default's navbar is the **navbar component** (`navbar` + zones, §5), not a bespoke `navbarHeader()` helper and not a rigid `Section "Header"`. The site "header" is just a navbar placed at the top — placement, not a type. The default centers the brand by putting the Wordmark in `navbar-center`.
+
+### 3.8 Authoring in HTML → view + one-way import, never a two-way source of truth
+
+The node tree is the **canonical model**; HTML is a **lossy projection** of it — flattening to `<div class="…">` discards what the tree carries: bindings (a card pinned to Product X, a repeater over a collection), component identity (a `BuyBox`, not a div), and behaviors (`data-sx-*`). So "let users work in HTML" resolves three ways, not one:
+
+- **View HTML — yes, read-only, both surfaces.** A "View / Copy HTML" affordance that serializes the node/subtree's **clean publish output** (§4.2). Cheap, and it reinforces the canvas==production guarantee. For **email** it is near-expected — the inline-styled output authors paste into other tools or inspect for deliverability.
+- **Edit HTML in place (two-way) — no.** Accepting hand-typed HTML back as the source would: (a) collapse the **tighten-only security invariant** (§3.1) from "insecure state un-representable" into free-text sanitize/parse — "we _try_ to catch bad input"; (b) **lose** bindings/behaviors/component identity on every round-trip (a live `BuyBox` silently demotes to a dead div); (c) create a **second source of truth** to reconcile — the Custom-CSS round-trip clash (eval F10), an order of magnitude worse; (d) break **canvas==production** the moment hand-HTML can diverge from the compiled tree. The depth this is reaching for is already served by raw elements (Pillar 1) + the full-surface inspector (Pillar 2) + the Custom CSS class card + JSON import/export of the _real_ model.
+- **HTML import — yes, one-way, at insert.** The one genuinely missing capability — the workflow that built the 15 reference mockups (`docs/mockups/examples/`): paste/insert an HTML+Tailwind fragment → parse → §4.1/allowlist-validate → emit real `Element` nodes (Pillar 1) with fresh ids → bind/behavior them in the inspector afterward. One-way, exactly like stamping a catalog entry; no reverse sync (§4.2).
+
+---
+
 ## 4. Rendering architecture: raw elements across both walkers
 
 The renderer is deliberately split (docs/builder/02): `renderLeaf` (`packages/builder-render/src/render-leaf.tsx`) is the **one per-type leaf map** both surfaces call; the **host walkers** own the tree walk, per-node wrapper, iteration, and containers — the dashboard canvas (`apps/dashboard/.../_builder/canvas.tsx`) and the site renderer (`apps/site/components/builder-renderer.tsx`).
@@ -124,9 +145,36 @@ A universal raw element therefore lands in **three** places, kept in lockstep:
 - **Denied tags** — `script style object embed link meta base noscript template`. `iframe` is gated behind a separate trusted "embed" control (the existing `EmbedFrame` path for video/maps already proves the pattern).
 - **Allowed attributes** — `href src alt type placeholder name value role aria-* id target rel` plus per-tag specifics; `rel="noopener noreferrer"` is forced whenever `target="_blank"`. No `on*` handlers. No raw `style` except the sanctioned background/position emitters (§3.1).
 
+### 4.2 View HTML (serialize) + HTML import (parse) — both ride the §4.1 whitelist
+
+Two additive affordances on the raw-element foundation, decided in §3.8. **Spec only — not yet built;** sequenced after the raw-element/behavior core (§7).
+
+**View HTML (read-only).** Serialize a node/subtree to an HTML string and show it in a read-only panel with a copy button — per-node (the selected subtree) and whole-document.
+
+- The source is the **clean publish render, NOT `canvas.innerHTML`.** The canvas DOM carries editor chrome that never ships: the `data-node-id` / `.bx-node` `display:contents` layer wrappers, `.bx-canvas`-scoped utilities, selection rings. Serialize through the shared `@sparx/builder-render` path in a chrome-free mode (the publish path already emits exactly this), so "View HTML" shows what the storefront actually serves.
+- **Web:** the string references compiled `tenant.css` classes (not inlined); the panel notes that pasting it elsewhere needs that stylesheet. An "inline the styles" option is a deferred nicety.
+- **Email:** the serialized form is the **inline-styled, table-based publish HTML** (the §3.6c compile path) — self-contained, and the representation authors actually want.
+
+**HTML import (one-way → nodes).** An "Import HTML" palette action (and/or a paste handler) takes an HTML+Tailwind fragment and inserts it as model nodes:
+
+1. **Parse** the fragment to a DOM (a real parser, not regex).
+2. **Walk + validate** each element against §4.1: tag against the allow-list (denied tags — `script/style/object/embed/iframe/…` — are dropped); attributes against the attr allow-list (strip `on*` and raw `style` except the sanctioned background/position emitters; force `rel="noopener noreferrer"` on `target="_blank"`); each `class` token allowlist-validated through `@sparx/surface-compile` (out-of-allowlist classes dropped/flagged).
+3. **Emit** `Element` nodes (tag + safe attrs + surviving classes) + `Text` for text, with **fresh ids**, via the existing stamp / `cloneWithFreshIds` insert path.
+4. **Bindings/behaviors are NOT inferred** — import yields inert styled structure; the author wires data/actions/behaviors in the inspector afterward.
+
+The import is **lossy by design and one-way** — there is no HTML→tree reverse sync; importing is an insert, like stamping a catalog entry, after which the page owns an editable node copy. The validation step **reports what it dropped or changed** (removed tags, stripped classes/attributes) so the import is honest rather than silent. **Web-first;** an email-targeted import would be narrower (the §3.6c curated, table-based, inline-safe subset) and is deferred.
+
+_Reuses:_ the §4.1 `elementTag`/`safeAttrs` whitelists, the `@sparx/surface-compile` allowlist for class validation, and the catalog stamp insert path (`cloneWithFreshIds`).
+
 ## 5. The component library is DATA, not code — a platform-managed catalog
 
-The common + comprehensive components must be **addable ad-hoc** (from a future admin app, without a deploy) and **submittable for review** by outside consultants. So they are **never** hardcoded TS literals (`PLATFORM_ARCHETYPES`-as-the-library is rejected). They live in a new **global, platform-managed component catalog**:
+The component library is **data, not code** — never bespoke renderer branches or hardcoded guided types.
+
+**What's built today (v1.1).** The initial published library is a **static catalog of composed `BuilderNode` trees** — **86 components across 8 categories** (Layout · Navigation · Actions · Data display · Data input · Feedback · Marketing · Mockup) in `packages/builder-schemas/src/catalog/` (data-as-code, line-limit-exempt; authoring contract in `catalog/CONTRACT.md` + `_kit.ts`). Each entry composes raw elements + named atoms + our `--st-*` token utilities (daisyUI is a breadth/naming reference only — no competitor names ship). The Add palette consumes the published catalog **directly** (it is platform data, identical for every tenant, like the in-code registry — no DB round-trip), grouped by category; stamping forks an entry's `tree` (fresh ids) into the page exactly like an archetype. CSS-native interactivity (`<details>`, scroll-snap, `peer`) makes the interactive entries work before the behavior runtime lands. `PLATFORM_ARCHETYPES` is **removed** (not merely "demoted to a seed"): the catalog is the platform library, authored independently; `BuilderArchetype` is now **purely tenant-authored** ("save as brand section").
+
+**A component is a class + zones, not a bespoke type — the navbar is the exemplar.** A "header" was the original over-built guided type. It is now just the **navbar component**: a `<nav class="navbar">` whose three zones are `navbar-start` / `navbar-center` / `navbar-end`. The zone layout is a real, reusable **utility** — `navbar`, `navbar-start`, `navbar-center`, `navbar-end` live in the surface theme (`packages/surface-compile/src/theme.ts`, `@layer components` so author utilities like `bg-base-100`/`hidden @3xl:flex` always override) and are **verbatim from daisyUI**: the side zones are `width: 50%` (one justifies start, the other end) and the center is `flex-shrink: 0` between them, so center content is dead-center regardless of what sits on either side. There is **ONE navbar primitive** — _not_ a "navbar" plus a separate "centered brand" variant: **centering the brand is just moving the Wordmark into `navbar-center`.** The common/comprehensive split falls out of this cleanly: the catalog's bare **`navbar`** (common) is JUST the bar — the `<nav class="navbar">` shell with its three **empty** zones, which you fill yourself — while **`navbar_brand`** (comprehensive) is that same bar already populated (brand in `navbar-start`, primary nav in `navbar-center`, an action in `navbar-end`, plus a mobile menu). A populated bar is a bigger composite, so it is its own entry; the bare `navbar` never carries content. The seed factory (`navbar()` in `site-chrome.ts`, used by the blank-site starter and every blueprint) emits the same `navbar`/`navbar-*` classes as the catalog, populated like `navbar_brand` so the default site ships a real header. The site "header" is a navbar at the top of the layout — placement, never a type. (This is why the daisyUI library is a _naming + CSS_ reference, not just visual breadth: where a component pattern has well-known, descriptive class names, we adopt them.)
+
+**Deferred — the admin-authoring layer.** So the library can also be **added ad-hoc** (from a future admin app, no deploy) and **submitted for review** by consultants, the catalog gets a DB-backed home + lifecycle API. This is **additive** (it changes only WHERE non-seed entries come from, never how a tenant uses them) and has no consumer yet, so it follows the static library:
 
 - **Data model — `PlatformComponent`** (platform-scoped, NOT per-tenant): `{ id, key, name, family, kind (section|common|comprehensive), tree (JSON BuilderNode), behaviors, thumbnail, tags, status, authorId, reviewerId, version, visibility, createdAt/updatedAt }`. `tree` is the same serialized `BuilderNode` a tenant archetype carries — raw elements + Tailwind + behaviors.
 - **Lifecycle / review workflow** — `status ∈ { draft, submitted, in_review, approved, published, archived, rejected }`. A consultant authors a `draft`, **submits** it (`submitted`), a reviewer moves it to `in_review` → `approved` → **publishes** it (`published`). Only `published` entries reach tenants. This is the consultant-submission pipeline the user requires.
@@ -134,7 +182,7 @@ The common + comprehensive components must be **addable ad-hoc** (from a future 
 - **Admin app + API (API-first, admin app is future)** — the **API ships now** (`/v1/platform/catalog/*`: CRUD + status transitions + submit/review/publish), so the catalog is fully operable before any admin UI exists; the future admin app is just another consumer. Seed populates the **initial** library AS catalog rows (data-as-code via the seed pipeline, line-limit-exempt), so nothing is baked into the runtime.
 - **Consumption** — a tenant's Add palette merges the **published platform catalog** with the tenant's own `BuilderArchetype` rows (Phase 6b, tenant-authored "save as brand section"). Stamping a catalog entry forks its `tree` (fresh ids) into the page exactly like an archetype — the catalog is the _source_, the page gets an editable copy.
 
-This **reconciles Phase 6b**: the global catalog becomes the source of _platform-provided_ components; `BuilderArchetype` stays for _tenant-authored_ sections. The shipped `PLATFORM_ARCHETYPES` constant is demoted to a **seed of the catalog**, not a per-tenant runtime seed.
+This **reconciles Phase 6b**: the catalog is the source of _platform-provided_ components; `BuilderArchetype` stays for _tenant-authored_ sections. (v1.1: the `PLATFORM_ARCHETYPES` constant is **removed entirely** — the static catalog replaces it, and the platform-archetype seed is a no-op.)
 
 daisyUI is a **reference for breadth/naming only** — catalog entries are skinned via our token system and described in our own language (no competitor names in shipped artifacts).
 
@@ -145,7 +193,7 @@ daisyUI is a **reference for breadth/naming only** — catalog entries are skinn
 3. **Binding spine** — entity/collection binding + scope propagation + actions + a Data panel + live load (the store fix).
 4. **Mediated unlocks** — background-image-anywhere, animation library, position control, extended z-scale.
 5. **Behavior runtime** — `behaviors/` in `@sparx/builder-render`, hydrated on storefront + previewed in canvas, Behavior panel.
-6. **Platform component catalog (data-driven)** — the `PlatformComponent` model + review-workflow API (§5), seeded with the daisyUI-grade **common** library and the **comprehensive** composites (carousel hero, brand marquee, scroll-adaptive nav, hover-reveal cards, bento, testimonial slider, mega-menu, mobile menu, FAQ accordion, pricing) AS catalog rows. The Add palette merges published catalog + tenant archetypes.
+6. **Platform component catalog (data-driven)** — **built (v1.1)** as a static data-as-code catalog: the daisyUI-grade **common** library (86 components, 8 categories) in `packages/builder-schemas/src/catalog/`, surfaced directly in the Add palette merged with tenant archetypes. The behavior-heavy **comprehensive** composites (carousel hero, brand marquee, scroll-adaptive nav, mega-menu, …) and the DB-backed `PlatformComponent` model + review-workflow API (§5) are the deferred follow-on.
 7. **Catalog content + acceptance** — author the initial published library (seed), and prove ad-hoc add + consultant submit→review→publish through the API.
 
 ## 7. Sequencing (deploy-early, each phase ships)
@@ -158,4 +206,4 @@ A tenant can, end-to-end on the live storefront: build a product grid pinned to 
 
 ## 9. Out of scope
 
-Tenant-authored raw JS and raw `@keyframes` (mediated unlocks instead); the Phase 6a re-author of the ~657 box-DTO seed literals onto archetypes (separate sweep); an open behavior/plugin marketplace (closed platform set for now).
+Tenant-authored raw JS and raw `@keyframes` (mediated unlocks instead); **two-way / live HTML editing** — HTML as a second, editable source of truth (view is read-only and import is one-way → nodes, §3.8/§4.2); the Phase 6a re-author of the ~657 box-DTO seed literals onto archetypes (separate sweep); an open behavior/plugin marketplace (closed platform set for now).
