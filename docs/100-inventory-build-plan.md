@@ -27,17 +27,17 @@ doc is the _how_: package topology, data model, the six phases, and the exact in
 
 The module is **half-scaffolded** already — completing it, not inventing it:
 
-| Already exists | Location |
-| --- | --- |
-| `inventory` module slug + type | `packages/modules/src/index.ts` (`ModuleSlug`, `ALL_MODULES`) |
-| Activation validation slug | `services/api-rest/src/routes/v1/tenant.ts` `MODULE_SLUGS`; `settings/modules/actions.ts` `VALID_SLUGS` |
-| Module color (amber `#F59E0B`) | `packages/ui/src/providers/module-provider.tsx` `MODULE_COLORS`; `variants.ts` `MODULE_COLOR_KEYS` |
-| Marketing catalog entry | `apps/web/lib/capabilities.ts`; `apps/dashboard/components/module-catalog.ts` |
-| Dashboard nav manifest | `apps/dashboard/app/(dashboard)/_shell/registry.ts` imports `inventoryManifest` |
-| Operational stock engine | `packages/commerce/src/services/inventory-service.ts` (21 fns) — **to extract** |
-| Operational tables | `schema/34-commerce-inventory.prisma`, `35-commerce-lot-serial.prisma` — **survivors** |
+| Already exists                     | Location                                                                                                 |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `inventory` module slug + type     | `packages/modules/src/index.ts` (`ModuleSlug`, `ALL_MODULES`)                                            |
+| Activation validation slug         | `services/api-rest/src/routes/v1/tenant.ts` `MODULE_SLUGS`; `settings/modules/actions.ts` `VALID_SLUGS`  |
+| Module color (amber `#F59E0B`)     | `packages/ui/src/providers/module-provider.tsx` `MODULE_COLORS`; `variants.ts` `MODULE_COLOR_KEYS`       |
+| Marketing catalog entry            | `apps/web/lib/capabilities.ts`; `apps/dashboard/components/module-catalog.ts`                            |
+| Dashboard nav manifest             | `apps/dashboard/app/(dashboard)/_shell/registry.ts` imports `inventoryManifest`                          |
+| Operational stock engine           | `packages/commerce/src/services/inventory-service.ts` (21 fns) — **to extract**                          |
+| Operational tables                 | `schema/34-commerce-inventory.prisma`, `35-commerce-lot-serial.prisma` — **survivors**                   |
 | Sync module (parallel, to fold in) | `schema/66-inventory.prisma`, `services/api-rest/src/routes/v1/inventory/`, `services/inventory-worker/` |
-| Valuation cron + lib | `services/api-rest/src/lib/inventory-valuation.ts`, `routes/internal/inventory-cron.ts` |
+| Valuation cron + lib               | `services/api-rest/src/lib/inventory-valuation.ts`, `routes/internal/inventory-cron.ts`                  |
 
 **Missing module wiring** (the footgun lists — add `'inventory'`):
 
@@ -70,13 +70,13 @@ extraction must also lift the shared primitives inventory currently borrows from
 
 `inventory-service.ts` today imports from `@sparx/commerce`'s internals:
 
-| Borrowed today | Resolution |
-| --- | --- |
-| `@sparx/commerce-schemas` (inputs/types) | move inventory Zod schemas → new `@sparx/inventory-schemas` |
-| `../audit` (`writeAuditLog`) | `writeAuditLog` writes the shared `AuditLog` table → lift to a shared util (or `@sparx/db`) both modules import |
+| Borrowed today                                              | Resolution                                                                                                                     |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `@sparx/commerce-schemas` (inputs/types)                    | move inventory Zod schemas → new `@sparx/inventory-schemas`                                                                    |
+| `../audit` (`writeAuditLog`)                                | `writeAuditLog` writes the shared `AuditLog` table → lift to a shared util (or `@sparx/db`) both modules import                |
 | `../events` (`publishCommerceEvent`, `indexCommerceEntity`) | publish `inventory.*` via the **shared low-level publisher** (`createPublisher`) directly; inventory owns its own event helper |
-| `../errors` (`CommerceOutOfStockError`, …) | define `@sparx/inventory` error classes (or a shared `@sparx/errors`) |
-| `@sparx/db` (Prisma) | unchanged — single shared client |
+| `../errors` (`CommerceOutOfStockError`, …)                  | define `@sparx/inventory` error classes (or a shared `@sparx/errors`)                                                          |
+| `@sparx/db` (Prisma)                                        | unchanged — single shared client                                                                                               |
 
 > Prisma is **one shared client over one schema folder** — "extracting a package" is **code
 > organization + ownership**, not a separate database. Tables keep their physical names to avoid a
@@ -85,14 +85,14 @@ extraction must also lift the shared primitives inventory currently borrows from
 
 ### 2.3 Data ownership — survivors, new, retired
 
-| Survives (master) | New (this plan) | Retired / folded |
-| --- | --- | --- |
-| `Warehouse` (gains types: bin/3pl/transit/virtual) | `Supplier` | `StockLocation` → `Warehouse` |
-| `InventoryLevel` (onHand/allocated/available/cost) | `PurchaseOrder` + `PurchaseOrderLine` | `StockLevel` → `InventoryLevel` |
-| `InventoryAdjustment` (the **movement ledger**) | `GoodsReceipt` + `GoodsReceiptLine` | (sync writes the master, not a parallel table) |
-| `InventoryReservation` | `InventoryCount` + `InventoryCountLine` | |
-| `LotBatch`, `SerialUnit` | `RollupInventoryDailyValuation` already exists | |
-| `InventorySource`, `InventorySourceLink` (ingestion only) | (reused as the sync feed) | |
+| Survives (master)                                         | New (this plan)                                | Retired / folded                               |
+| --------------------------------------------------------- | ---------------------------------------------- | ---------------------------------------------- |
+| `Warehouse` (gains types: bin/3pl/transit/virtual)        | `Supplier`                                     | `StockLocation` → `Warehouse`                  |
+| `InventoryLevel` (onHand/allocated/available/cost)        | `PurchaseOrder` + `PurchaseOrderLine`          | `StockLevel` → `InventoryLevel`                |
+| `InventoryAdjustment` (the **movement ledger**)           | `GoodsReceipt` + `GoodsReceiptLine`            | (sync writes the master, not a parallel table) |
+| `InventoryReservation`                                    | `InventoryCount` + `InventoryCountLine`        |                                                |
+| `LotBatch`, `SerialUnit`                                  | `RollupInventoryDailyValuation` already exists |                                                |
+| `InventorySource`, `InventorySourceLink` (ingestion only) | (reused as the sync feed)                      |                                                |
 
 **Movement ledger invariant:** the only writer of `InventoryLevel.onHand` is a function that also
 appends an `InventoryAdjustment` row, so `onHand == Σ(movements)` always holds and is auditable.
@@ -115,14 +115,14 @@ Each phase is independently deployable (docs/03 deploy-early) and the **whole su
 phases are a deploy order, not a scope cut. "Standalone?" = does this phase work with inventory active
 and commerce off.
 
-| Phase | Theme | Standalone? | Ships |
-| --- | --- | --- | --- |
-| P1 | Foundation: extract `@sparx/inventory`, unify to one ledger, re-point UI | ✅ | `/inventory` shows real data + non-zero valuation |
-| P2 | Sell path: wire reserve/commit/release into commerce | n/a (integration) | real-time accurate stock, oversell protection |
-| P3 | Supply path: suppliers, POs, receiving, reorder engine | ✅ | inbound + replenishment workflow |
-| P4 | Counts, transfers, audit UI | ✅ | auditable corrections + cross-location moves |
-| P5 | External sync: Tier C/B/A adapters (Fishbowl) | ✅ | ERP/WMS-backed merchants live |
-| P6 | API contract + reporting + MCP + B2B | ✅ | headless + AI + wholesale complete |
+| Phase | Theme                                                                    | Standalone?       | Ships                                             |
+| ----- | ------------------------------------------------------------------------ | ----------------- | ------------------------------------------------- |
+| P1    | Foundation: extract `@sparx/inventory`, unify to one ledger, re-point UI | ✅                | `/inventory` shows real data + non-zero valuation |
+| P2    | Sell path: wire reserve/commit/release into commerce                     | n/a (integration) | real-time accurate stock, oversell protection     |
+| P3    | Supply path: suppliers, POs, receiving, reorder engine                   | ✅                | inbound + replenishment workflow                  |
+| P4    | Counts, transfers, audit UI                                              | ✅                | auditable corrections + cross-location moves      |
+| P5    | External sync: Tier C/B/A adapters (Fishbowl)                            | ✅                | ERP/WMS-backed merchants live                     |
+| P6    | API contract + reporting + MCP + B2B                                     | ✅                | headless + AI + wholesale complete                |
 
 ---
 
@@ -177,7 +177,7 @@ enforced. Fixes docs/99 defect D2. This is the commerce **integration** layer.
 
 1. **Cart soft-hold** — `packages/commerce/src/services/cart-service.ts`:
    - `addItem()` (~L206, after `cartItem.create`): `inventory.reserve({variantId, quantity,
-     holderType:'cart', holderId:cartId, ttlSeconds:1800})`; store `reservationId` on the line.
+holderType:'cart', holderId:cartId, ttlSeconds:1800})`; store `reservationId` on the line.
    - `updateItem()` (~L257–260): release + re-reserve on qty change; release on remove.
    - **Schema add:** `CartItem.inventoryReservationId` (migration).
 2. **Hard-hold / decrement at checkout** — `checkout-service.ts` `complete()` (~L537, inside the order
