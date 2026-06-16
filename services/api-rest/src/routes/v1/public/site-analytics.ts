@@ -1,9 +1,10 @@
 // First-party site analytics — public ingestion (docs/97 §5, docs/08).
 //
 //   POST /v1/public/site/collect?tenant=<slug>
-//     body: { path, referrer?, type?, property? }
+//     body: { path, referrer?, type?, property?, metrics? }
 //
-// The storefront beacon (apps/site) calls this on each pageview. Cookieless +
+// The storefront beacon (apps/site) calls this on each pageview, and once per
+// page load with `type:'vital'` + a `metrics` map (web-vitals RUM). Cookieless +
 // PII-free: the visitor hash is derived server-side from the request IP + UA and
 // the IP is never stored (lib/site-analytics.ts). Do-Not-Track and obvious bots
 // are accepted-and-dropped (204, so the beacon never retries). The tenant is
@@ -27,9 +28,23 @@ import {
 const CollectBody = z.object({
   path: z.string().min(1).max(2048),
   referrer: z.string().max(2048).optional(),
-  type: z.enum(['pageview', 'signup']).optional(),
+  type: z.enum(['pageview', 'signup', 'vital']).optional(),
   property: z.string().min(1).max(63).optional(),
+  // Web-vitals RUM (type='vital' only): metric name → value. Server-validated
+  // against the allowlist + sane bounds below before any row is written.
+  metrics: z.record(z.string().max(16), z.number().finite()).optional(),
 });
+
+// Accepted vitals + their max sane value (drops garbage / adversarial outliers).
+// Timing metrics are milliseconds; cls is a unitless score.
+const VITAL_MAX: Record<string, number> = {
+  load: 600_000,
+  lcp: 600_000,
+  fcp: 600_000,
+  ttfb: 600_000,
+  inp: 600_000,
+  cls: 100,
+};
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const siteAnalyticsRoutes: FastifyPluginAsync = async (app) => {
@@ -53,6 +68,9 @@ const siteAnalyticsRoutes: FastifyPluginAsync = async (app) => {
     const country =
       (request.headers['x-country'] as string | undefined)?.slice(0, 2).toUpperCase() ?? null;
 
+    const type = body.type ?? 'pageview';
+    const path = normalizePath(body.path);
+
     await withTenant({ tenantId }, async (tx) => {
       const property = await tx.property.findFirst({
         where: body.property ? { slug: body.property } : { isPrimary: true },
@@ -65,19 +83,29 @@ const siteAnalyticsRoutes: FastifyPluginAsync = async (app) => {
         (await tx.property.findFirst({ where: { isPrimary: true }, select: { id: true } }))?.id ??
         null;
 
-      await tx.siteAnalyticsEvent.create({
-        data: {
-          tenantId,
-          propertyId,
-          type: body.type ?? 'pageview',
-          path: normalizePath(body.path),
-          source,
-          referrerHost: refHost,
-          visitorHash,
-          sessionHash,
-          country,
-        },
-      });
+      const base = {
+        tenantId,
+        propertyId,
+        path,
+        source,
+        referrerHost: refHost,
+        visitorHash,
+        sessionHash,
+        country,
+      };
+
+      if (type === 'vital') {
+        // One row per accepted metric; values out of allowlist/bounds are dropped.
+        const rows = Object.entries(body.metrics ?? {}).flatMap(([metric, value]) => {
+          const max = VITAL_MAX[metric];
+          if (max === undefined || value < 0 || value > max) return [];
+          return [{ ...base, type: 'vital', metric, value }];
+        });
+        if (rows.length > 0) await tx.siteAnalyticsEvent.createMany({ data: rows });
+        return;
+      }
+
+      await tx.siteAnalyticsEvent.create({ data: { ...base, type } });
     });
 
     return reply.code(204).send();

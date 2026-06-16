@@ -12,11 +12,11 @@
 //   · Site health + Needs attention (SEO) — /v1/seo/audits?type=builder_page
 //   · Recent activity — derived from the page/layout catalog timestamps
 //   · Analytics cards — visitors / pageviews / signups KPIs, the traffic chart,
-//     sources, and top pages — from /v1/builder/analytics/* (first-party,
-//     cookieless capture via the storefront beacon; per active site). Each
-//     liveOr-falls back to a badged sample until the site has traffic.
-// SAMPLE (no capture yet — see docs/dashboard-overview-data-gaps.md §Site builder):
-//   · "Avg. load time" (needs RUM/Web-Vitals capture).
+//     sources, top pages, and the "Avg. load time" web-vitals KPI — from
+//     /v1/builder/analytics/* (first-party, cookieless capture via the storefront
+//     beacon; per active site). Each falls back to a badged sample until the site
+//     has traffic; "Avg. load time" shows real-user load/LCP/CLS once the beacon
+//     captures timing.
 //
 // The builder layout is gate-only (no ModuleProvider, so the editor's full-height
 // shell isn't disturbed), so this page supplies its own module color via
@@ -408,6 +408,12 @@ interface SiteSourceRow {
   source: string;
   visits: number;
 }
+interface SiteVitals {
+  load: number | null; // avg ms
+  lcp: number | null; // avg ms
+  cls: number | null; // avg unitless
+  samples: number;
+}
 
 // Source class → friendly label for the "where visitors come from" bars.
 const SOURCE_LABEL: Record<string, string> = {
@@ -443,6 +449,7 @@ export default async function BuilderOverviewPage() {
     anTimeseries,
     anTopPages,
     anSources,
+    anVitals,
   ] = await Promise.all([
     listPages().catch(() => null),
     listLayouts().catch(() => null),
@@ -455,12 +462,12 @@ export default async function BuilderOverviewPage() {
       .catch(() => null),
     api.get<SiteTopPage[]>('/v1/builder/analytics/top-pages?limit=6').catch(() => null),
     api.get<SiteSourceRow[]>('/v1/builder/analytics/sources').catch(() => null),
+    api.get<SiteVitals>('/v1/builder/analytics/vitals').catch(() => null),
   ]);
 
   // Site analytics — live once the active site has captured any pageview, else
   // the illustrative sample (visitors / pageviews / signups KPIs + the traffic
-  // chart, sources, and top-pages cards). "Avg load time" has no capture and
-  // stays sample.
+  // chart, sources, and top-pages cards).
   const anLive = anSummary != null && anSummary.pageviews > 0;
   const visitorsKpi = anLive ? fmtNumber(anSummary.visitors) : '8,420';
   const pageviewsKpi = anLive ? fmtNumber(anSummary.pageviews) : '23,180';
@@ -468,6 +475,18 @@ export default async function BuilderOverviewPage() {
     ? `${anSummary.pagesPerVisit} pages per visit`
     : '2.75 pages per visit';
   const signupsKpi = anLive ? fmtNumber(anSummary.signups) : '312';
+
+  // Real-user web vitals — live once the beacon has captured timing samples.
+  const vitalsLive = anVitals != null && anVitals.samples > 0 && anVitals.load != null;
+  const loadKpi = vitalsLive ? `${(anVitals.load! / 1000).toFixed(1)}s` : '0.9s';
+  const loadHint = vitalsLive
+    ? [
+        anVitals.lcp != null ? `LCP ${(anVitals.lcp / 1000).toFixed(1)}s` : null,
+        anVitals.cls != null ? `CLS ${anVitals.cls.toFixed(2)}` : null,
+      ]
+        .filter(Boolean)
+        .join(' · ') || 'Real-user timing'
+    : 'LCP 1.2s · CLS 0.02';
 
   const trafficChart = liveOr(
     anTimeseries && anTimeseries.totals.pageviews > 0
@@ -687,8 +706,8 @@ export default async function BuilderOverviewPage() {
             <Stat
               icon={<Zap className="h-4 w-4" />}
               label="Avg. load time"
-              value="0.9s"
-              hint="LCP 1.2s · CLS 0.02"
+              value={loadKpi}
+              hint={loadHint}
             />
             <Stat
               icon={<Mail className="h-4 w-4" />}

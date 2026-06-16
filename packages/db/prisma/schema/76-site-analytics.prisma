@@ -30,8 +30,15 @@ model SiteAnalyticsEvent {
   // The web property (site) the hit landed on, resolved server-side at ingestion.
   propertyId String? @map("property_id") @db.Uuid
 
-  // pageview | signup — the two storefront events the overview reports on.
+  // pageview | signup | vital — the storefront events the overview reports on.
   type String @default("pageview") @db.VarChar(20)
+
+  // Web-vitals capture (type='vital' only): the metric name (load | lcp | cls |
+  // inp | ttfb | fcp) and its real-user value — milliseconds for timing metrics,
+  // unitless for cls. Null on pageview/signup rows. Powers the Builder overview's
+  // "Avg. load time" KPI as an AVG(value) per metric over the window.
+  metric String? @db.VarChar(16)
+  value  Float?  @db.DoublePrecision
 
   // Normalized request path (query string + hash stripped), e.g. "/shop".
   path String @db.VarChar(2048)

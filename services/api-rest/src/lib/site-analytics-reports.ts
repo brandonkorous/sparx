@@ -294,6 +294,49 @@ export async function sources(
   return rows.map((r) => ({ source: r.source, visits: Number(r.visits) }));
 }
 
+// ── Web vitals (avg per metric over the window) ──────────────────────
+export interface SiteVitals {
+  load: number | null; // avg page load time, ms (rounded)
+  lcp: number | null; // avg Largest Contentful Paint, ms
+  cls: number | null; // avg Cumulative Layout Shift, unitless
+  samples: number; // total vital rows in the window
+}
+
+interface RawVital {
+  metric: string;
+  avg: number;
+  samples: number;
+}
+
+export async function vitals(
+  tx: TxClient,
+  propertyId: string,
+  from: Date,
+  toExclusive: Date
+): Promise<SiteVitals> {
+  const rows = await tx.$queryRaw<RawVital[]>`
+    SELECT metric, AVG(value)::float8 AS avg, COUNT(*)::int AS samples
+    FROM site_analytics_events
+    WHERE property_id = ${propertyId}::uuid
+      AND type = 'vital'
+      AND metric IS NOT NULL AND value IS NOT NULL
+      AND created_at >= ${from} AND created_at < ${toExclusive}
+    GROUP BY metric
+  `;
+  const avgByMetric = new Map(rows.map((r) => [r.metric, Number(r.avg)]));
+  const ms = (m: string): number | null => {
+    const v = avgByMetric.get(m);
+    return v == null ? null : Math.round(v);
+  };
+  const cls = avgByMetric.get('cls');
+  return {
+    load: ms('load'),
+    lcp: ms('lcp'),
+    cls: cls == null ? null : Math.round(cls * 1000) / 1000,
+    samples: rows.reduce((s, r) => s + Number(r.samples), 0),
+  };
+}
+
 // ── Rollup reconcile (nightly) ───────────────────────────────────────
 // Recompute a trailing window from the raw events and overwrite the rollup, for
 // every property that has events in the window. Delete-window-then-insert keeps

@@ -82,6 +82,17 @@ const builderAnalyticsRoutes: FastifyPluginAsync = (app) => {
     );
   });
 
+  // Real-user web vitals (avg load time / LCP / CLS) — the "Avg. load time" KPI.
+  app.get('/v1/builder/analytics/vitals', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const { tenantId, propertyId } = await toBuilderContext(request);
+    const { from, toExclusive } = reports.resolveRange(RangeQuery.parse(request.query));
+    return ok(
+      await withTenant({ tenantId }, (tx) => reports.vitals(tx, propertyId, from, toExclusive))
+    );
+  });
+
   return Promise.resolve();
 };
 
