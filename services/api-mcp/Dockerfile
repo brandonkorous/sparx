@@ -45,6 +45,10 @@ COPY packages/integration-framework ./packages/integration-framework
 # must be in the image. Its only workspace dep is @sparx/db (above). Omitting it
 # crashlooped api-mcp with ERR_MODULE_NOT_FOUND on '@sparx/payments'.
 COPY packages/payments ./packages/payments
+# @sparx/commerce re-exports inventoryService from @sparx/inventory (the commerce
+# MCP tools call it), so the inventory package must be in the image. Its workspace
+# deps (@sparx/db, @sparx/commerce-schemas, @sparx/events) are all copied above.
+COPY packages/inventory ./packages/inventory
 COPY packages/commerce ./packages/commerce
 COPY packages/crm-schemas ./packages/crm-schemas
 COPY packages/crm ./packages/crm

@@ -48,6 +48,7 @@
     "@sparx/events": "workspace:*",
     "@sparx/godaddy": "workspace:*",
     "@sparx/integration-framework": "workspace:*",
+    "@sparx/inventory": "workspace:*",
     "@sparx/legal": "workspace:*",
     "@sparx/legal-templates": "workspace:*",
     "@sparx/marketplace-schemas": "workspace:*",

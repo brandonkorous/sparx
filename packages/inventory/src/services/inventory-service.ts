@@ -12,7 +12,7 @@
 //   1. Validate input via @sparx/commerce-schemas
 //   2. withTenant() transaction with RLS context
 //   3. writeAuditLog inside the same transaction
-//   4. publishCommerceEvent AFTER commit
+//   4. publishInventoryEvent AFTER commit
 
 import {
   AdjustInventoryInput,
@@ -30,13 +30,13 @@ import type { Prisma, TxClient, Warehouse } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import {
-  CommerceConflictError,
-  CommerceNotFoundError,
-  CommerceOutOfStockError,
-  CommerceValidationError,
+  InventoryConflictError,
+  InventoryNotFoundError,
+  InventoryOutOfStockError,
+  InventoryValidationError,
 } from '../errors';
 import type { ServiceContext } from '../errors';
-import { indexCommerceEntity, publishCommerceEvent } from '../events';
+import { indexInventoryEntity, publishInventoryEvent } from '../events';
 
 const CART_TTL_SECONDS_DEFAULT = 30 * 60;
 
@@ -91,7 +91,7 @@ export async function getWarehouse(
   const row = await withTenant(ctx, (tx) =>
     tx.warehouse.findFirst({ where: { id: warehouseId, deletedAt: null } })
   );
-  if (!row) throw new CommerceNotFoundError('Warehouse', warehouseId);
+  if (!row) throw new InventoryNotFoundError('Warehouse', warehouseId);
   return serializeWarehouse(row);
 }
 
@@ -107,7 +107,7 @@ export async function createWarehouse(
       select: { id: true },
     });
     if (existing) {
-      throw new CommerceConflictError(`Warehouse code "${input.code}" is already in use`, 'code');
+      throw new InventoryConflictError(`Warehouse code "${input.code}" is already in use`, 'code');
     }
 
     const warehouse = await tx.warehouse.create({
@@ -145,7 +145,7 @@ export async function createWarehouse(
     return warehouse;
   });
 
-  await indexCommerceEntity(ctx, 'warehouse', result.id);
+  await indexInventoryEntity(ctx, 'warehouse', result.id);
 
   return { id: result.id };
 }
@@ -161,7 +161,7 @@ export async function updateWarehouse(
     const before = await tx.warehouse.findFirst({
       where: { id: warehouseId, deletedAt: null },
     });
-    if (!before) throw new CommerceNotFoundError('Warehouse', warehouseId);
+    if (!before) throw new InventoryNotFoundError('Warehouse', warehouseId);
 
     if (input.code !== undefined && input.code !== before.code) {
       const collision = await tx.warehouse.findFirst({
@@ -169,7 +169,10 @@ export async function updateWarehouse(
         select: { id: true },
       });
       if (collision) {
-        throw new CommerceConflictError(`Warehouse code "${input.code}" is already in use`, 'code');
+        throw new InventoryConflictError(
+          `Warehouse code "${input.code}" is already in use`,
+          'code'
+        );
       }
     }
 
@@ -219,7 +222,7 @@ export async function updateWarehouse(
     return updated;
   });
 
-  await indexCommerceEntity(ctx, 'warehouse', warehouseId);
+  await indexInventoryEntity(ctx, 'warehouse', warehouseId);
 
   return serializeWarehouse(result);
 }
@@ -229,14 +232,14 @@ export async function archiveWarehouse(ctx: ServiceContext, warehouseId: string)
     const before = await tx.warehouse.findFirst({
       where: { id: warehouseId, deletedAt: null },
     });
-    if (!before) throw new CommerceNotFoundError('Warehouse', warehouseId);
+    if (!before) throw new InventoryNotFoundError('Warehouse', warehouseId);
 
     const activeStock = await tx.inventoryLevel.findFirst({
       where: { warehouseId, onHand: { gt: 0 } },
       select: { variantId: true, onHand: true },
     });
     if (activeStock) {
-      throw new CommerceValidationError(
+      throw new InventoryValidationError(
         'Cannot archive a warehouse that still holds stock — transfer or zero out levels first'
       );
     }
@@ -258,7 +261,7 @@ export async function archiveWarehouse(ctx: ServiceContext, warehouseId: string)
     });
   });
 
-  await indexCommerceEntity(ctx, 'warehouse', warehouseId, 'delete');
+  await indexInventoryEntity(ctx, 'warehouse', warehouseId, 'delete');
 }
 
 // ─── Inventory levels ─────────────────────────────────────────────────
@@ -367,7 +370,7 @@ export async function adjust(
 
     const newOnHand = before.onHand + input.delta;
     if (newOnHand < 0) {
-      throw new CommerceValidationError(
+      throw new InventoryValidationError(
         `Adjustment would drive onHand negative (current ${before.onHand}, delta ${input.delta})`
       );
     }
@@ -428,7 +431,7 @@ export async function adjust(
 
   const newAvailable = result.onHand - result.allocated;
 
-  await publishCommerceEvent({
+  await publishInventoryEvent({
     tenantId: ctx.tenantId,
     actorId: ctx.userId ?? null,
     topic: 'inventory.adjusted',
@@ -446,7 +449,7 @@ export async function adjust(
   // we don't spam subscribers on every adjustment past the line.
   const reorderPoint = result.reorderPoint;
   if (reorderPoint !== null && newAvailable <= reorderPoint) {
-    await publishCommerceEvent({
+    await publishInventoryEvent({
       tenantId: ctx.tenantId,
       actorId: ctx.userId ?? null,
       topic: 'inventory.low',
@@ -459,7 +462,7 @@ export async function adjust(
     });
   }
   if (newAvailable <= 0) {
-    await publishCommerceEvent({
+    await publishInventoryEvent({
       tenantId: ctx.tenantId,
       actorId: ctx.userId ?? null,
       topic: 'inventory.depleted',
@@ -527,7 +530,7 @@ export async function setReorderPolicy(ctx: ServiceContext, rawInput: unknown): 
 export async function transfer(ctx: ServiceContext, rawInput: unknown): Promise<void> {
   const input = TransferInventoryInput.parse(rawInput);
   if (input.fromWarehouseId === input.toWarehouseId) {
-    throw new CommerceValidationError('Transfer source and destination must differ');
+    throw new InventoryValidationError('Transfer source and destination must differ');
   }
 
   // Two adjustments in one tx so the journal records both legs and the
@@ -546,7 +549,7 @@ export async function transfer(ctx: ServiceContext, rawInput: unknown): Promise<
       },
     });
     if (!source || source.onHand - source.allocated < input.quantity) {
-      throw new CommerceOutOfStockError(
+      throw new InventoryOutOfStockError(
         input.variantId,
         input.quantity,
         Math.max(0, (source?.onHand ?? 0) - (source?.allocated ?? 0))
@@ -640,7 +643,7 @@ export interface ReservationResult {
 /**
  * Reserve stock for a cart line, order line, or subscription occurrence.
  * Picks a warehouse if not specified (the first active one with enough
- * available stock). Throws CommerceOutOfStockError when stock is short
+ * available stock). Throws InventoryOutOfStockError when stock is short
  * and the variant's inventoryPolicy is `deny`. For `continue` /
  * `preorder` policies, succeeds even when stock is short (allocated may
  * temporarily exceed onHand — surfaces as a negative `available` in the
@@ -654,7 +657,7 @@ export async function reserve(ctx: ServiceContext, rawInput: unknown): Promise<R
       where: { id: input.variantId, deletedAt: null },
       select: { id: true, inventoryPolicy: true },
     });
-    if (!variant) throw new CommerceNotFoundError('Variant', input.variantId);
+    if (!variant) throw new InventoryNotFoundError('Variant', input.variantId);
 
     const warehouseId = input.warehouseId ?? (await pickWarehouseFor(tx, input));
 
@@ -677,7 +680,7 @@ export async function reserve(ctx: ServiceContext, rawInput: unknown): Promise<R
 
     const available = level.onHand - level.allocated;
     if (available < input.quantity && variant.inventoryPolicy === 'deny') {
-      throw new CommerceOutOfStockError(input.variantId, input.quantity, Math.max(0, available));
+      throw new InventoryOutOfStockError(input.variantId, input.quantity, Math.max(0, available));
     }
 
     await tx.inventoryLevel.update({
@@ -723,7 +726,7 @@ export async function release(ctx: ServiceContext, reservationId: string): Promi
     const reservation = await tx.inventoryReservation.findFirst({
       where: { id: reservationId },
     });
-    if (!reservation) throw new CommerceNotFoundError('InventoryReservation', reservationId);
+    if (!reservation) throw new InventoryNotFoundError('InventoryReservation', reservationId);
     if (reservation.status !== 'active') return; // idempotent
 
     await tx.inventoryReservation.update({
@@ -754,7 +757,7 @@ export async function commit(ctx: ServiceContext, reservationId: string): Promis
     const reservation = await tx.inventoryReservation.findFirst({
       where: { id: reservationId },
     });
-    if (!reservation) throw new CommerceNotFoundError('InventoryReservation', reservationId);
+    if (!reservation) throw new InventoryNotFoundError('InventoryReservation', reservationId);
     if (reservation.status !== 'active') return;
 
     await tx.inventoryReservation.update({
@@ -841,7 +844,7 @@ export async function createLotBatch(
       select: { id: true },
     });
     if (existing) {
-      throw new CommerceConflictError(
+      throw new InventoryConflictError(
         `Lot number "${input.lotNumber}" already exists for this variant`,
         'lotNumber'
       );
@@ -942,7 +945,7 @@ export async function createSerialUnit(
       select: { id: true },
     });
     if (existing) {
-      throw new CommerceConflictError(
+      throw new InventoryConflictError(
         `Serial number "${input.serial}" already exists for this variant`,
         'serial'
       );
@@ -954,7 +957,7 @@ export async function createSerialUnit(
         select: { id: true },
       });
       if (!lot) {
-        throw new CommerceValidationError('Lot batch does not belong to this variant', [
+        throw new InventoryValidationError('Lot batch does not belong to this variant', [
           { field: 'lotBatchId', message: 'Mismatched variant' },
         ]);
       }
@@ -1005,7 +1008,7 @@ export async function initiateRecall(
       select: { id: true, lotNumber: true },
     });
     if (lots.length !== input.lotBatchIds.length) {
-      throw new CommerceValidationError('One or more lot batches were not found in this tenant', [
+      throw new InventoryValidationError('One or more lot batches were not found in this tenant', [
         { field: 'lotBatchIds', message: `Found ${lots.length} of ${input.lotBatchIds.length}` },
       ]);
     }
@@ -1104,7 +1107,7 @@ async function ensureWarehouseActive(tx: TxClient, warehouseId: string): Promise
     where: { id: warehouseId, deletedAt: null, isActive: true },
     select: { id: true },
   });
-  if (!w) throw new CommerceNotFoundError('Warehouse', warehouseId);
+  if (!w) throw new InventoryNotFoundError('Warehouse', warehouseId);
 }
 
 async function ensureVariantExists(tx: TxClient, variantId: string): Promise<void> {
@@ -1112,7 +1115,7 @@ async function ensureVariantExists(tx: TxClient, variantId: string): Promise<voi
     where: { id: variantId, deletedAt: null },
     select: { id: true },
   });
-  if (!v) throw new CommerceNotFoundError('Variant', variantId);
+  if (!v) throw new InventoryNotFoundError('Variant', variantId);
 }
 
 async function pickWarehouseFor(
@@ -1142,7 +1145,7 @@ async function pickWarehouseFor(
   const ordered = matchingChannel.length > 0 ? matchingChannel : candidates;
 
   if (ordered.length === 0) {
-    throw new CommerceValidationError(
+    throw new InventoryValidationError(
       'No active warehouses exist — create one before reserving stock'
     );
   }

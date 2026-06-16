@@ -39,6 +39,7 @@ COPY packages/legal-templates ./packages/legal-templates
 COPY packages/search ./packages/search
 COPY packages/seo-audit ./packages/seo-audit
 COPY packages/commerce ./packages/commerce
+COPY packages/inventory ./packages/inventory
 COPY packages/provider-shippo ./packages/provider-shippo
 COPY packages/customer-auth ./packages/customer-auth
 COPY packages/site-themes ./packages/site-themes

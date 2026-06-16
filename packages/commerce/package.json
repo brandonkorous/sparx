@@ -40,6 +40,7 @@
     "@sparx/db": "workspace:*",
     "@sparx/events": "workspace:*",
     "@sparx/integration-framework": "workspace:*",
+    "@sparx/inventory": "workspace:*",
     "@sparx/payments": "workspace:*",
     "@sparx/search": "workspace:*",
     "@sparx/ui": "workspace:*",
