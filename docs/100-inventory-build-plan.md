@@ -189,13 +189,21 @@ and commerce off.
      `POST /v1/inventory/sources/:id/push` + `/sync` endpoints to upsert `InventoryLevel` via the
      ledger (`sync_reconcile` movement), not `stock_levels`.
    - **Rename now:** `commerce_* → inventory_*` tables and `InventoryAdjustment → InventoryMovement`
-     (`inventory_movements`); re-apply RLS (§2.2, §7).
+     (`inventory_movements`); re-apply RLS (§2.2, §7). ✅ **DONE (P1b)** — migration
+     `20260901000000_inventory_module_ledger` (data-preserving ALTER RENAME of all six tables + their
+     PKs/FKs/indexes/RLS policies).
    - Retire `stock_levels`/`StockLocation` (drop after data move; RLS-aware migration via the pipeline).
+     _(Pending — P1c.)_
 3. **Movement ledger as the sole write path** (§2.5). Route every `onHand` mutation through one internal
    `applyMovement()` that appends an `InventoryMovement` with `actorType`/`actorId`/`source` + an optional
    unique `idempotencyKey`, taking a row lock on the level for concurrency safety. Add a reconcile check
    (`onHand == Σ(movements)`) and a stored `avgCostCents` updated on costed inbound movements
-   (moving-average, §2.3).
+   (moving-average, §2.3). ✅ **DONE (P1b)** — `applyMovement` (services/ledger.ts) is the sole onHand
+   writer (`SELECT … FOR UPDATE` lock, idempotency dedupe, actor attribution, `balanceAfter` running
+   balance, moving-average `avgCostCents`); `adjust`/`transfer`/`commit` all route through it. The 1085-line
+   service was split by concern (warehouses · levels · ledger · movements · reservations · lots). The
+   `onHand == Σ(movements)` reconcile invariant is guaranteed structurally (single writer + `balanceAfter`);
+   a standalone reconcile/audit report is P4.
 4. **Re-point reads at the master:**
    - `inventory-valuation.ts` `computeValuation()` → `InventoryLevel` (valuation now non-zero).
    - `routes/v1/inventory/reports.ts` (summary/by-location/activity/valuation) → master + the ledger

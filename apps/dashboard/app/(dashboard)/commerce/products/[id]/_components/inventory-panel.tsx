@@ -119,7 +119,7 @@ function VariantInventoryCard({
             </Heading>
             <CardDescription>
               On hand, allocated, and available per warehouse. Inline adjust + reorder edits record
-              an audit-logged InventoryAdjustment.
+              an audit-logged inventory movement.
             </CardDescription>
           </Stack>
         </Stack>

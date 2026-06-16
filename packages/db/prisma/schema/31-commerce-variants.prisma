@@ -90,7 +90,7 @@ model ProductVariant {
   optionAssignments     ProductVariantOptionValue[]
   images                VariantImage[]
   inventoryLevels       InventoryLevel[]
-  inventoryAdjustments  InventoryAdjustment[]
+  inventoryMovements    InventoryMovement[]
   inventoryReservations InventoryReservation[]
   lotBatches            LotBatch[]
   serialUnits           SerialUnit[]
