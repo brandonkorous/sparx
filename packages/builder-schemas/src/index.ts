@@ -13,6 +13,7 @@ export * from './email';
 export * from './email-tokens';
 export * from './merge-tags';
 export * from './email-design';
+export * from './email-style';
 export * from './component';
 export * from './starters';
 export * from './archetypes';
