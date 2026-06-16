@@ -67,7 +67,11 @@ export const BuilderNodeSchema: z.ZodType<BuilderNode> = z.lazy(() =>
     name: z.string().max(120).optional(),
     // Bounded free string; the class VOCABULARY is enforced at compile time by the
     // allowlist (@sparx/surface-compile). The cap is the only guard at this tier.
-    class: z.string().max(500).optional(),
+    // Raised for Builder v2 (docs/98): a single node can now carry the base layer
+    // plus per-breakpoint (@sm…@4xl) and per-state (hover/focus/active/dark) variants
+    // of many utilities, so 500 is too tight — 2000 is generous without being a DoS
+    // vector (the compile allowlist still gates every token).
+    class: z.string().max(2000).optional(),
     props: z.record(z.string(), z.unknown()),
     binding: BindingSchema.optional(),
     children: z.array(BuilderNodeSchema).optional(),

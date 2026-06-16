@@ -26,8 +26,10 @@ describe('BuilderNode.class', () => {
   });
 
   it('rejects a class string past the length cap', () => {
-    const parsed = BuilderNodeSchema.safeParse(leaf({ class: 'x'.repeat(501) }));
-    expect(parsed.success).toBe(false);
+    // docs/98: raised to 2000 so a node can carry base + per-breakpoint + per-state
+    // variants. A long-but-valid string passes; past the cap fails.
+    expect(BuilderNodeSchema.safeParse(leaf({ class: 'x'.repeat(2000) })).success).toBe(true);
+    expect(BuilderNodeSchema.safeParse(leaf({ class: 'x'.repeat(2001) })).success).toBe(false);
   });
 });
 

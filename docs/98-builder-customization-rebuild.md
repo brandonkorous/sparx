@@ -54,9 +54,18 @@ A small, **closed, platform-authored** set of declarative behaviors, attached by
 
 No tenant-authored scripts (cross-tenant XSS surface, and it would break the single-renderer guarantee). Comprehensive components are **raw elements + Tailwind + a behavior**, parameterized by attributes from a Behavior panel.
 
-### 3.3 Inspector → full-surface + a friendly layer
+### 3.3 Inspector → the full Tailwind surface, organized exactly like Tailwind
 
-Rebuild the inspector around a **state × breakpoint matrix** as its organizing spine. Every control writes into the active `prefix` layer (e.g. selecting "center" under `md:`+`hover` writes `md:hover:justify-center`). `applyValue(class, control, value, prefix)` already takes a prefix — generalize it to the full matrix. On top of an exhaustive, **searchable** property panel covering the entire Tailwind surface, keep **curated quick-controls** for the common 20% so "center this header" stays one click.
+**The binding instruction (repeated by the user, now the spec): every Tailwind class settable on every object, and the inspector's information architecture mirrors Tailwind's OWN documentation sections.** We are implementing Tailwind, so the UI follows Tailwind's published convention — a well-tested, conventional structure — rather than inventing a bespoke "intent layer." No reinvention. The panels ARE Tailwind's categories:
+
+**Layout · Flexbox & Grid · Spacing · Sizing · Typography · Backgrounds · Borders · Effects · Filters · Tables · Transitions & Animation · Transforms · Interactivity · SVG** (base/preflight is global, not per-node).
+
+- **Every object gets the complete set** — the 34 named components AND raw `el:<tag>` elements — with **no per-type gating** of the surface.
+- **State + breakpoint are just Tailwind variants** (`hover:`/`focus:`/`active:`/`dark:` and the responsive prefixes), via the already prefix-aware `applyValue(class, control, value, prefix)`.
+- A **searchable raw-class add** (allowlist-validated) stays underneath for anything not surfaced as a control.
+- "Center a header" was only an EXAMPLE of the real requirement; it is solved for free because `justify-*` / `items-*` / `self-*` / `mx-auto` all live under **Layout** and **Flexbox & Grid** exactly where Tailwind documents them. (The earlier `text-align`-as-element-centering confusion just proves the surface must be complete + correctly placed per Tailwind, not curated.)
+
+`class-controls.ts` already covers much of this vocabulary and is prefix-aware. Phase 2 **reorganizes the inspector panels into Tailwind's sections and fills the gaps to completeness**, then applies the whole surface to every object. The `node.class` cap is raised (500→2000, done) to hold the resulting base+variant strings.
 
 ### 3.4 Migration → additive
 

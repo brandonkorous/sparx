@@ -72,7 +72,6 @@ import {
   setClassGroup,
   type AttrKey,
   type RawElementGroup,
-  type RawElementMeta,
 } from '@sparx/builder-schemas';
 
 import {
@@ -1168,7 +1167,7 @@ const TEXTAREA_TAGS = new Set(['p', 'blockquote', 'pre', 'code', 'td', 'th', 'ca
 
 function rawElementDef(type: string): ComponentDef {
   const tag = rawTagOf(type)!;
-  const meta = RAW_ELEMENTS.get(tag) as RawElementMeta;
+  const meta = RAW_ELEMENTS.get(tag)!;
   const props: PropSpec[] = [];
   if (meta.text) {
     props.push({

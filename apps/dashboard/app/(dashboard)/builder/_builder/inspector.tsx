@@ -20,6 +20,7 @@
 
 import * as React from 'react';
 import {
+  Aperture,
   Box,
   Boxes,
   Check,
@@ -33,19 +34,25 @@ import {
   Database,
   ExternalLink,
   FileText,
+  Frame,
   LayoutGrid,
   Layers,
   Link2,
   Mail,
   Maximize2,
+  MousePointerClick,
+  Move3d,
   Palette,
   Pencil,
+  Play,
   Plus,
   Rocket,
   Search,
   Sparkles,
   SlidersHorizontal,
+  Spline,
   Square,
+  Table,
   Trash2,
   Type,
   X,
@@ -59,7 +66,9 @@ import {
   customKeyOf,
   isCustomType,
   isPropSlot,
+  isRawElementType,
   parseNavLinks,
+  rawTagOf,
   readComponentRef,
   type BindingCatalog,
   type ComponentDto,
@@ -79,12 +88,16 @@ import { compatibleRetypeTargets, getDef, type ComponentDef, type EditorSurface 
 import { IconPicker } from './icon-picker';
 import { ProseControl } from './prose-control';
 import {
+  ACCENT_COLOR_CONTROL,
   ALIGN_CONTENT_CONTROL,
   ALIGN_ITEMS_CONTROL,
   ALIGN_SELF_CONTROL,
+  ANIMATE_CONTROL,
+  APPEARANCE_CONTROL,
   ARRANGEMENT_CONTEXTS,
   ASPECT_CONTROL,
   BACKDROP_BLUR_CONTROL,
+  BACKDROP_GRAYSCALE_CONTROL,
   BACKGROUND_CONTROL,
   BASE_CONTEXT,
   BG_POSITION_CONTROL,
@@ -92,18 +105,28 @@ import {
   BG_SIZE_CONTROL,
   BLUR_CONTROL,
   BORDER_CONTROL,
+  BORDER_COLLAPSE_CONTROL,
   BORDER_COLOR_CONTROL,
   BORDER_SIDES,
   BORDER_STYLE_CONTROL,
   BOX_DISPLAY_CONTROL,
+  CAPTION_SIDE_CONTROL,
+  CARET_COLOR_CONTROL,
   COLOR_CONTROL,
+  CURSOR_CONTROL,
+  DECORATION_OFFSET_CONTROL,
+  DECORATION_THICKNESS_CONTROL,
   DIRECTION_CONTROL,
   DISPLAY_CONTROL,
+  DROP_SHADOW_CONTROL,
+  EASE_CONTROL,
+  FILL_CONTROL,
   FLEX_GROW_CONTROL,
   FLEX_SHRINK_CONTROL,
   FLEX_WRAP_CONTROL,
   FONT_FAMILY_CONTROL,
   FONT_SIZE_CONTROL,
+  FONT_STYLE_CONTROL,
   FONT_WEIGHT_CONTROL,
   GAP_CONTROL,
   GRADIENT_DIRECTION_CONTROL,
@@ -113,31 +136,49 @@ import {
   GRAYSCALE_CONTROL,
   GRID_FLOW_CONTROL,
   GRID_ROWS_CONTROL,
+  HYPHENS_CONTROL,
+  INVERT_CONTROL,
   JUSTIFY_CONTROL,
   JUSTIFY_ITEMS_CONTROL,
   LEADING_CONTROL,
   LINE_CLAMP_CONTROL,
+  LIST_STYLE_POSITION_CONTROL,
+  LIST_STYLE_TYPE_CONTROL,
   MIX_BLEND_CONTROL,
   OVERFLOW_CONTROL,
+  POINTER_EVENTS_CONTROL,
   POSITION_CONTROL,
   RADIUS_CONTROL,
   RADIUS_CORNERS,
+  RESIZE_CONTROL,
   RING_COLOR_CONTROL,
   RING_CONTROL,
+  SCROLL_BEHAVIOR_CONTROL,
+  SCROLL_SNAP_ALIGN_CONTROL,
+  SCROLL_SNAP_TYPE_CONTROL,
+  SEPIA_CONTROL,
   SHADOW_COLOR_CONTROL,
   SHADOW_CONTROL,
   SKIN_CONTEXTS,
+  STROKE_CONTROL,
+  STROKE_WIDTH_CONTROL,
   STYLE_CONTROLS,
   STAGGER_CONTROL,
+  TABLE_LAYOUT_CONTROL,
   TEXT_ALIGN_CONTROL,
   TEXT_CASE_CONTROL,
   TEXT_COLOR_CONTROL,
   TEXT_DECORATION_CONTROL,
+  TEXT_OVERFLOW_CONTROL,
+  TOUCH_ACTION_CONTROL,
   TRACKING_CONTROL,
   TRANSFORM_ORIGIN_CONTROL,
   TRANSITION_CONTROL,
+  USER_SELECT_CONTROL,
   VARIANT_CONTROL,
+  VERTICAL_ALIGN_CONTROL,
   WHITESPACE_CONTROL,
+  WILL_CHANGE_CONTROL,
   WORD_BREAK_CONTROL,
   Z_INDEX_CONTROL,
   MOTION_ENTRANCES,
@@ -309,6 +350,20 @@ function layoutSummary(node: BuilderNode): string {
   const arrange = ARRANGE_OPTIONS.find((o) => o.value === readArrangeAs(node.class))?.label;
   const spacing = activeLabel(node, JUSTIFY_CONTROL);
   return [arrange, spacing].filter(Boolean).join(' · ') || 'Default';
+}
+
+// The Layout card (display / overflow / aspect) preview — distinct from the
+// Flexbox & Grid arrangement summary above.
+function generalLayoutSummary(node: BuilderNode): string {
+  return (
+    [
+      activeLabel(node, BOX_DISPLAY_CONTROL),
+      activeLabel(node, OVERFLOW_CONTROL),
+      activeLabel(node, ASPECT_CONTROL),
+    ]
+      .filter(Boolean)
+      .join(' · ') || 'Default'
+  );
 }
 
 function motionSummary(node: BuilderNode): string {
@@ -731,7 +786,23 @@ function ColumnsField({
   );
 }
 
-function LayoutCard({
+// Flexbox & Grid (Tailwind: Flexbox & Grid) — how a CONTAINER arranges its
+// children (the page-builder's structural surface, docs/61 §5.2) PLUS how a
+// flex/grid CHILD sizes & orders itself (grow / shrink / basis / order / self).
+// The friendly "Arrange as Row / Stack / Grid" merges the underlying display +
+// direction class groups; Grid then reveals Columns + grid detail. Gap /
+// alignment / wrap follow. Padding lives in the Spacing card (so it isn't offered
+// twice). Responsive via the "Editing for" pill — pick a screen size to set that
+// layer (`@lg:grid-cols-3`). The arrangement half shows for containers only; the
+// child-layout half shows for any node (harmless on a non-flex parent).
+// Grid columns — fluid by default rather than a hardcoded breakpoint ramp.
+// "Auto-fit (fluid)" emits `grid-cols-[repeat(auto-fit,minmax(<min>,1fr))]`: the
+// grid fits as many columns of at least <min> as the row allows and wraps the rest
+// — no `@2xl:grid-cols-2 @4xl:grid-cols-4` to maintain. Fixed counts (1–6) are
+// still available; picking a fluid mode at the base layer clears any hardcoded
+// responsive ramp so it actually takes effect. Per-breakpoint counts are still
+// possible via the "Editing for" pill (writes that layer only).
+function FlexGridCard({
   node,
   def,
   contexts,
@@ -751,41 +822,23 @@ function LayoutCard({
   // Wrap is a flex concept; the grid-specific distribution controls only apply to
   // a grid. The inspector reveals each by the node's current "Arrange as".
   const gridControls = [GRID_FLOW_CONTROL, JUSTIFY_ITEMS_CONTROL, ALIGN_CONTENT_CONTROL];
+  const isContainer = def.kind === 'container';
   return (
     <Card
       icon={LayoutGrid}
-      title="Layout"
+      title="Flexbox & Grid"
       summary={layoutSummary(node)}
-      caption="How the blocks inside line up. Pick a screen size to make it responsive."
+      defaultOpen={isContainer}
+      caption="How the blocks inside line up, and how this block sits inside its parent. Pick a screen size to make it responsive."
     >
       {selector}
-      <Field label="Arrange as">
-        <Segmented value={arrange} options={ARRANGE_OPTIONS} onChange={setArrange} />
-      </Field>
-      {arrange === 'grid' ? <ColumnsField node={node} prefix={prefix} commit={commit} /> : null}
-      {detailControls.map((control) => (
-        <StyleControlField
-          key={control.id}
-          node={node}
-          def={def}
-          control={control}
-          prefix={prefix}
-          onClass={onClass}
-        />
-      ))}
-      {arrange !== 'grid' ? (
-        <StyleControlField
-          node={node}
-          def={def}
-          control={FLEX_WRAP_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-      ) : null}
-      {arrange === 'grid' ? (
-        <Subgroup title="Grid detail">
-          <GridRowsField node={node} prefix={prefix} commit={commit} />
-          {gridControls.map((control) => (
+      {isContainer ? (
+        <>
+          <Field label="Arrange as">
+            <Segmented value={arrange} options={ARRANGE_OPTIONS} onChange={setArrange} />
+          </Field>
+          {arrange === 'grid' ? <ColumnsField node={node} prefix={prefix} commit={commit} /> : null}
+          {detailControls.map((control) => (
             <StyleControlField
               key={control.id}
               node={node}
@@ -795,28 +848,155 @@ function LayoutCard({
               onClass={onClass}
             />
           ))}
-        </Subgroup>
+          {arrange !== 'grid' ? (
+            <StyleControlField
+              node={node}
+              def={def}
+              control={FLEX_WRAP_CONTROL}
+              prefix={prefix}
+              onClass={onClass}
+            />
+          ) : null}
+          {arrange === 'grid' ? (
+            <Subgroup title="Grid detail">
+              <GridRowsField node={node} prefix={prefix} commit={commit} />
+              {gridControls.map((control) => (
+                <StyleControlField
+                  key={control.id}
+                  node={node}
+                  def={def}
+                  control={control}
+                  prefix={prefix}
+                  onClass={onClass}
+                />
+              ))}
+            </Subgroup>
+          ) : null}
+          <Subgroup title="Independent spacing">
+            <div className="bx-row2">
+              <LengthField
+                label="Column gap"
+                node={node}
+                prefix="gap-x"
+                ctx={prefix}
+                presets={GAP_VALUE_PRESETS}
+                commit={commit}
+              />
+              <LengthField
+                label="Row gap"
+                node={node}
+                prefix="gap-y"
+                ctx={prefix}
+                presets={GAP_VALUE_PRESETS}
+                commit={commit}
+              />
+            </div>
+          </Subgroup>
+        </>
       ) : null}
-      <Subgroup title="Independent spacing">
+      {/* Child layout — how this block sizes / orders itself inside a flex or grid
+          parent (grow, shrink, basis, order, align-self). Harmless on a non-flex
+          parent, so shown for any node rather than threading the parent's display. */}
+      <Subgroup title="As a child (in a flex/grid parent)">
+        <div className="bx-row2">
+          <StyleControlField
+            node={node}
+            def={def}
+            control={FLEX_GROW_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+          <StyleControlField
+            node={node}
+            def={def}
+            control={FLEX_SHRINK_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+        </div>
         <div className="bx-row2">
           <LengthField
-            label="Column gap"
+            label="Basis"
             node={node}
-            prefix="gap-x"
+            prefix="basis"
             ctx={prefix}
-            presets={GAP_VALUE_PRESETS}
+            presets={BASIS_PRESETS}
             commit={commit}
           />
           <LengthField
-            label="Row gap"
+            label="Order"
             node={node}
-            prefix="gap-y"
+            prefix="order"
             ctx={prefix}
-            presets={GAP_VALUE_PRESETS}
+            presets={ORDER_PRESETS}
             commit={commit}
           />
         </div>
+        <StyleControlField
+          node={node}
+          def={def}
+          control={ALIGN_SELF_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
       </Subgroup>
+    </Card>
+  );
+}
+
+// Layout (Tailwind: Layout) — the box-level layout primitives that aren't flex/grid
+// arrangement: display, overflow (clipping/scroll), and aspect ratio. Position +
+// offsets + z-index keep their own card (the Position card) so the cascade reads
+// cleanly. Per state / breakpoint via the pill. Shown for every node.
+function LayoutCard({
+  node,
+  def,
+  contexts,
+  onClass,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  contexts: StyleContext[];
+  onClass: (value: string) => void;
+}) {
+  const { prefix, selector } = useLayerContext(contexts);
+  // A container's display is driven by the Flexbox & Grid card's "Arrange as"
+  // (same token group); offering Display here too would fight it, so it's a
+  // leaf-only control (matching the old SizeCard behavior).
+  return (
+    <Card
+      icon={Frame}
+      title="Layout"
+      summary={generalLayoutSummary(node)}
+      defaultOpen={false}
+      caption="How the box itself behaves — display, clipping, and shape."
+    >
+      {selector}
+      {def.kind === 'leaf' ? (
+        <StyleControlField
+          node={node}
+          def={def}
+          control={BOX_DISPLAY_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      ) : null}
+      <div className="bx-row2">
+        <StyleControlField
+          node={node}
+          def={def}
+          control={OVERFLOW_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={ASPECT_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      </div>
     </Card>
   );
 }
@@ -1503,6 +1683,12 @@ const MAXH_PRESETS: LengthPreset[] = [
   { label: 'Screen', suffix: 'screen' },
 ];
 const OFFSET_PRESETS: LengthPreset[] = [{ label: 'Edge (0)', suffix: '0' }];
+const INDENT_PRESETS: LengthPreset[] = [
+  { label: 'None', suffix: '0' },
+  { label: 'S', suffix: '4' },
+  { label: 'M', suffix: '8' },
+  { label: 'L', suffix: '12' },
+];
 const SCALE_PRESETS: LengthPreset[] = [
   { label: '90%', suffix: '90' },
   { label: '95%', suffix: '95' },
@@ -1510,7 +1696,11 @@ const SCALE_PRESETS: LengthPreset[] = [
   { label: '105%', suffix: '105' },
   { label: '110%', suffix: '110' },
 ];
-const ROTATE_PRESETS: LengthPreset[] = [
+// Signed rotate / translate (the Transforms card) — negatives ride the same value
+// group (`-rotate-6` → suffix `-6`); a bare custom value covers anything else.
+const ROTATE_SIGNED_PRESETS: LengthPreset[] = [
+  { label: '-12°', suffix: '-12' },
+  { label: '-6°', suffix: '-6' },
   { label: '0°', suffix: '0' },
   { label: '3°', suffix: '3' },
   { label: '6°', suffix: '6' },
@@ -1518,7 +1708,32 @@ const ROTATE_PRESETS: LengthPreset[] = [
   { label: '45°', suffix: '45' },
   { label: '90°', suffix: '90' },
 ];
-const MOVE_PRESETS: LengthPreset[] = [{ label: 'None', suffix: '0' }];
+const MOVE_SIGNED_PRESETS: LengthPreset[] = [
+  { label: '-2', suffix: '-2' },
+  { label: '-1', suffix: '-1' },
+  { label: 'None', suffix: '0' },
+  { label: '1', suffix: '1' },
+  { label: '2', suffix: '2' },
+  { label: 'Full', suffix: 'full' },
+];
+// Hue rotate (degrees) — signed; the Filters card. Custom covers any angle.
+const HUE_PRESETS: LengthPreset[] = [
+  { label: '-90°', suffix: '-90' },
+  { label: '-15°', suffix: '-15' },
+  { label: '15°', suffix: '15' },
+  { label: '30°', suffix: '30' },
+  { label: '60°', suffix: '60' },
+  { label: '90°', suffix: '90' },
+  { label: '180°', suffix: '180' },
+];
+// Backdrop opacity (the Filters card backdrop family) — the Tailwind opacity scale.
+const OPACITY_VALUE_PRESETS: LengthPreset[] = [
+  { label: '10%', suffix: '10' },
+  { label: '25%', suffix: '25' },
+  { label: '50%', suffix: '50' },
+  { label: '75%', suffix: '75' },
+  { label: '90%', suffix: '90' },
+];
 // Spacing scale steps for the independent gap / filter-intensity value fields.
 const GAP_VALUE_PRESETS: LengthPreset[] = [
   { label: 'None', suffix: '0' },
@@ -1607,13 +1822,65 @@ function effectsSummary(node: BuilderNode): string {
       .join(' · ') || 'None'
   );
 }
+function filtersSummary(node: BuilderNode): string {
+  return (
+    [
+      activeLabel(node, BLUR_CONTROL) && 'Blur',
+      readValueGroup(node.class, 'brightness') && 'Brightness',
+      activeLabel(node, GRAYSCALE_CONTROL) === 'On' && 'Grayscale',
+      activeLabel(node, DROP_SHADOW_CONTROL) && 'Drop shadow',
+    ]
+      .filter(Boolean)
+      .join(' · ') || 'None'
+  );
+}
+function transformsSummary(node: BuilderNode): string {
+  return (
+    [
+      readValueGroup(node.class, 'scale') && 'Scale',
+      readValueGroup(node.class, 'rotate') && 'Rotate',
+      (readValueGroup(node.class, 'translate-x') ?? readValueGroup(node.class, 'translate-y')) &&
+        'Move',
+    ]
+      .filter(Boolean)
+      .join(' · ') || 'None'
+  );
+}
+function transitionsSummary(node: BuilderNode): string {
+  return (
+    [activeLabel(node, TRANSITION_CONTROL), activeLabel(node, ANIMATE_CONTROL)]
+      .filter(Boolean)
+      .join(' · ') || 'None'
+  );
+}
+function interactivitySummary(node: BuilderNode): string {
+  return (
+    [activeLabel(node, CURSOR_CONTROL), activeLabel(node, USER_SELECT_CONTROL)]
+      .filter(Boolean)
+      .join(' · ') || 'Default'
+  );
+}
+function tablesSummary(node: BuilderNode): string {
+  return (
+    activeLabel(node, BORDER_COLLAPSE_CONTROL) ??
+    activeLabel(node, TABLE_LAYOUT_CONTROL) ??
+    'Default'
+  );
+}
+function svgSummary(node: BuilderNode): string {
+  return (
+    [activeLabel(node, FILL_CONTROL), activeLabel(node, STROKE_CONTROL)]
+      .filter(Boolean)
+      .join(' · ') || 'Inherited'
+  );
+}
 
 // ── Power-user style sections ───────────────────────────────────────────────────
 
-// Size — width / height (preset + Custom), a Min & max reveal, aspect, overflow,
-// and (for a flex/grid child) a Child-layout subgroup. Leaves also get Display
-// (block/inline/hidden); a container's display is the Layout card's "Arrange as".
-// Per-breakpoint via the "Editing for" pill (docs/builder/04 §2.3).
+// Sizing (Tailwind: Sizing) — width / height (preset + Custom) and a Min & max
+// reveal. Display moved to the Layout card; aspect / overflow to Layout; the
+// flex/grid child-sizing controls to the Flexbox & Grid card (Tailwind's home for
+// them). Per-breakpoint via the "Editing for" pill (docs/builder/04 §2.3).
 function SizeCard({
   node,
   def,
@@ -1628,17 +1895,8 @@ function SizeCard({
   const { prefix, selector } = useLayerContext(contexts);
   const commit = (c: string) => onClass(ensureArchetypeDefaults(c, def.defaults.class));
   return (
-    <Card icon={Maximize2} title="Size" summary={sizeSummary(node)} defaultOpen={false}>
+    <Card icon={Maximize2} title="Sizing" summary={sizeSummary(node)} defaultOpen={false}>
       {selector}
-      {def.kind === 'leaf' ? (
-        <StyleControlField
-          node={node}
-          def={def}
-          control={BOX_DISPLAY_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-      ) : null}
       <div className="bx-row2">
         <LengthField
           label="Width"
@@ -1694,68 +1952,6 @@ function SizeCard({
             commit={commit}
           />
         </div>
-      </Subgroup>
-      <div className="bx-row2">
-        <StyleControlField
-          node={node}
-          def={def}
-          control={ASPECT_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-        <StyleControlField
-          node={node}
-          def={def}
-          control={OVERFLOW_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-      </div>
-      {/* Child layout — how this block sizes / orders itself inside a flex or grid
-          parent (grow, shrink, basis, order, align-self). Harmless on a non-flex
-          parent, so shown for any node rather than threading the parent's display. */}
-      <Subgroup title="Child layout (in a flex/grid parent)">
-        <div className="bx-row2">
-          <StyleControlField
-            node={node}
-            def={def}
-            control={FLEX_GROW_CONTROL}
-            prefix={prefix}
-            onClass={onClass}
-          />
-          <StyleControlField
-            node={node}
-            def={def}
-            control={FLEX_SHRINK_CONTROL}
-            prefix={prefix}
-            onClass={onClass}
-          />
-        </div>
-        <div className="bx-row2">
-          <LengthField
-            label="Basis"
-            node={node}
-            prefix="basis"
-            ctx={prefix}
-            presets={BASIS_PRESETS}
-            commit={commit}
-          />
-          <LengthField
-            label="Order"
-            node={node}
-            prefix="order"
-            ctx={prefix}
-            presets={ORDER_PRESETS}
-            commit={commit}
-          />
-        </div>
-        <StyleControlField
-          node={node}
-          def={def}
-          control={ALIGN_SELF_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
       </Subgroup>
     </Card>
   );
@@ -2075,10 +2271,9 @@ function StyleCard({
   );
 }
 
-// Effects — opacity, shadow (+ color), ring (+ color), blend mode, filters,
-// transforms, transitions. Per state / breakpoint via the pill (a hover ring, a
-// hover scale). The transform / transition pieces pair naturally with a Hover or
-// Focus context for interactive effects.
+// Effects (Tailwind: Effects) — opacity, shadow (+ color), ring (+ color), blend
+// mode. Filters / Transforms / Transitions are their own Tailwind sections (their
+// own cards below). Per state / breakpoint via the pill (a hover ring).
 function EffectsCard({
   node,
   def,
@@ -2135,36 +2330,126 @@ function EffectsCard({
         prefix={prefix}
         onClass={onClass}
       />
-      <Subgroup title="Filters">
-        <div className="bx-row2">
-          <StyleControlField
-            node={node}
-            def={def}
-            control={BLUR_CONTROL}
-            prefix={prefix}
-            onClass={onClass}
-          />
-          <StyleControlField
-            node={node}
-            def={def}
-            control={BACKDROP_BLUR_CONTROL}
-            prefix={prefix}
-            onClass={onClass}
-          />
-        </div>
+    </Card>
+  );
+}
+
+// Filters (Tailwind: Filters) — blur, brightness, contrast, saturate, grayscale,
+// sepia, invert, hue-rotate, drop-shadow, plus the full backdrop-filter family
+// (what shows THROUGH a translucent element — frosted glass). Per state /
+// breakpoint via the pill. Shown for every node.
+function FiltersCard({
+  node,
+  def,
+  contexts,
+  onClass,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  contexts: StyleContext[];
+  onClass: (value: string) => void;
+}) {
+  const { prefix, selector } = useLayerContext(contexts);
+  const commit = (c: string) => onClass(ensureArchetypeDefaults(c, def.defaults.class));
+  return (
+    <Card icon={Aperture} title="Filters" summary={filtersSummary(node)} defaultOpen={false}>
+      {selector}
+      <StyleControlField
+        node={node}
+        def={def}
+        control={BLUR_CONTROL}
+        prefix={prefix}
+        onClass={onClass}
+      />
+      <div className="bx-row2">
+        <LengthField
+          label="Brightness"
+          node={node}
+          prefix="brightness"
+          ctx={prefix}
+          presets={FILTER_PRESETS}
+          commit={commit}
+        />
+        <LengthField
+          label="Contrast"
+          node={node}
+          prefix="contrast"
+          ctx={prefix}
+          presets={FILTER_PRESETS}
+          commit={commit}
+        />
+      </div>
+      <div className="bx-row2">
+        <LengthField
+          label="Saturation"
+          node={node}
+          prefix="saturate"
+          ctx={prefix}
+          presets={FILTER_PRESETS}
+          commit={commit}
+        />
+        <LengthField
+          label="Hue rotate"
+          node={node}
+          prefix="hue-rotate"
+          ctx={prefix}
+          presets={HUE_PRESETS}
+          commit={commit}
+        />
+      </div>
+      <div className="bx-row2">
+        <StyleControlField
+          node={node}
+          def={def}
+          control={GRAYSCALE_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={SEPIA_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      </div>
+      <div className="bx-row2">
+        <StyleControlField
+          node={node}
+          def={def}
+          control={INVERT_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={DROP_SHADOW_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      </div>
+      <Subgroup title="Backdrop (behind a translucent element)">
+        <StyleControlField
+          node={node}
+          def={def}
+          control={BACKDROP_BLUR_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
         <div className="bx-row2">
           <LengthField
-            label="Brightness"
+            label="Backdrop brightness"
             node={node}
-            prefix="brightness"
+            prefix="backdrop-brightness"
             ctx={prefix}
             presets={FILTER_PRESETS}
             commit={commit}
           />
           <LengthField
-            label="Contrast"
+            label="Backdrop contrast"
             node={node}
-            prefix="contrast"
+            prefix="backdrop-contrast"
             ctx={prefix}
             presets={FILTER_PRESETS}
             commit={commit}
@@ -2172,86 +2457,163 @@ function EffectsCard({
         </div>
         <div className="bx-row2">
           <LengthField
-            label="Saturation"
+            label="Backdrop saturation"
             node={node}
-            prefix="saturate"
+            prefix="backdrop-saturate"
             ctx={prefix}
             presets={FILTER_PRESETS}
             commit={commit}
           />
-          <StyleControlField
-            node={node}
-            def={def}
-            control={GRAYSCALE_CONTROL}
-            prefix={prefix}
-            onClass={onClass}
-          />
-        </div>
-      </Subgroup>
-      <Subgroup title="Transform">
-        <div className="bx-row2">
           <LengthField
-            label="Scale"
+            label="Backdrop opacity"
             node={node}
-            prefix="scale"
+            prefix="backdrop-opacity"
             ctx={prefix}
-            presets={SCALE_PRESETS}
-            commit={commit}
-          />
-          <LengthField
-            label="Rotate"
-            node={node}
-            prefix="rotate"
-            ctx={prefix}
-            presets={ROTATE_PRESETS}
-            commit={commit}
-          />
-        </div>
-        <div className="bx-row2">
-          <LengthField
-            label="Move X"
-            node={node}
-            prefix="translate-x"
-            ctx={prefix}
-            presets={MOVE_PRESETS}
-            commit={commit}
-          />
-          <LengthField
-            label="Move Y"
-            node={node}
-            prefix="translate-y"
-            ctx={prefix}
-            presets={MOVE_PRESETS}
-            commit={commit}
-          />
-        </div>
-        <div className="bx-row2">
-          <LengthField
-            label="Skew X"
-            node={node}
-            prefix="skew-x"
-            ctx={prefix}
-            presets={SKEW_PRESETS}
-            commit={commit}
-          />
-          <LengthField
-            label="Skew Y"
-            node={node}
-            prefix="skew-y"
-            ctx={prefix}
-            presets={SKEW_PRESETS}
+            presets={OPACITY_VALUE_PRESETS}
             commit={commit}
           />
         </div>
         <StyleControlField
           node={node}
           def={def}
-          control={TRANSFORM_ORIGIN_CONTROL}
+          control={BACKDROP_GRAYSCALE_CONTROL}
           prefix={prefix}
           onClass={onClass}
         />
       </Subgroup>
-      <Subgroup title="Transition">
+    </Card>
+  );
+}
+
+// Transforms (Tailwind: Transforms) — scale (uniform + per-axis), rotate,
+// translate, skew, and transform-origin. These pair naturally with a Hover /
+// Focus context for interactive effects. Per state / breakpoint via the pill.
+function TransformsCard({
+  node,
+  def,
+  contexts,
+  onClass,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  contexts: StyleContext[];
+  onClass: (value: string) => void;
+}) {
+  const { prefix, selector } = useLayerContext(contexts);
+  const commit = (c: string) => onClass(ensureArchetypeDefaults(c, def.defaults.class));
+  return (
+    <Card icon={Move3d} title="Transforms" summary={transformsSummary(node)} defaultOpen={false}>
+      {selector}
+      <div className="bx-row2">
+        <LengthField
+          label="Scale"
+          node={node}
+          prefix="scale"
+          ctx={prefix}
+          presets={SCALE_PRESETS}
+          commit={commit}
+        />
+        <LengthField
+          label="Rotate"
+          node={node}
+          prefix="rotate"
+          ctx={prefix}
+          presets={ROTATE_SIGNED_PRESETS}
+          commit={commit}
+        />
+      </div>
+      <div className="bx-row2">
+        <LengthField
+          label="Scale X"
+          node={node}
+          prefix="scale-x"
+          ctx={prefix}
+          presets={SCALE_PRESETS}
+          commit={commit}
+        />
+        <LengthField
+          label="Scale Y"
+          node={node}
+          prefix="scale-y"
+          ctx={prefix}
+          presets={SCALE_PRESETS}
+          commit={commit}
+        />
+      </div>
+      <div className="bx-row2">
+        <LengthField
+          label="Move X"
+          node={node}
+          prefix="translate-x"
+          ctx={prefix}
+          presets={MOVE_SIGNED_PRESETS}
+          commit={commit}
+        />
+        <LengthField
+          label="Move Y"
+          node={node}
+          prefix="translate-y"
+          ctx={prefix}
+          presets={MOVE_SIGNED_PRESETS}
+          commit={commit}
+        />
+      </div>
+      <div className="bx-row2">
+        <LengthField
+          label="Skew X"
+          node={node}
+          prefix="skew-x"
+          ctx={prefix}
+          presets={SKEW_PRESETS}
+          commit={commit}
+        />
+        <LengthField
+          label="Skew Y"
+          node={node}
+          prefix="skew-y"
+          ctx={prefix}
+          presets={SKEW_PRESETS}
+          commit={commit}
+        />
+      </div>
+      <StyleControlField
+        node={node}
+        def={def}
+        control={TRANSFORM_ORIGIN_CONTROL}
+        prefix={prefix}
+        onClass={onClass}
+      />
+    </Card>
+  );
+}
+
+// Transitions & Animation (Tailwind: Transitions & Animation) — what transitions,
+// how long, the easing curve, the delay, and a raw animation (animate-*). The
+// entrance Motion card (docs/61 §9) stays separate — it's the friendly,
+// cross-surface "how this block appears"; this is the raw Tailwind surface. Per
+// state / breakpoint via the pill.
+function TransitionsCard({
+  node,
+  def,
+  contexts,
+  onClass,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  contexts: StyleContext[];
+  onClass: (value: string) => void;
+}) {
+  const { prefix, selector } = useLayerContext(contexts);
+  const commit = (c: string) => onClass(ensureArchetypeDefaults(c, def.defaults.class));
+  return (
+    <Card
+      icon={Play}
+      title="Transitions & Animation"
+      summary={transitionsSummary(node)}
+      defaultOpen={false}
+    >
+      {selector}
+      <div className="bx-row2">
         <StyleControlField
           node={node}
           def={def}
@@ -2259,25 +2621,291 @@ function EffectsCard({
           prefix={prefix}
           onClass={onClass}
         />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={EASE_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      </div>
+      <div className="bx-row2">
+        <LengthField
+          label="Duration"
+          node={node}
+          prefix="duration"
+          ctx={prefix}
+          presets={DURATION_PRESETS}
+          commit={commit}
+        />
+        <LengthField
+          label="Delay"
+          node={node}
+          prefix="delay"
+          ctx={prefix}
+          presets={DURATION_PRESETS}
+          commit={commit}
+        />
+      </div>
+      <StyleControlField
+        node={node}
+        def={def}
+        control={ANIMATE_CONTROL}
+        prefix={prefix}
+        onClass={onClass}
+      />
+    </Card>
+  );
+}
+
+// Interactivity (Tailwind: Interactivity) — cursor, text selection, pointer
+// events, resize, scroll behavior + snap, native appearance, touch action,
+// will-change, and the caret / accent token colors. Per state / breakpoint via
+// the pill. Shown for every node.
+function InteractivityCard({
+  node,
+  def,
+  contexts,
+  onClass,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  contexts: StyleContext[];
+  onClass: (value: string) => void;
+}) {
+  const { prefix, selector } = useLayerContext(contexts);
+  return (
+    <Card
+      icon={MousePointerClick}
+      title="Interactivity"
+      summary={interactivitySummary(node)}
+      defaultOpen={false}
+    >
+      {selector}
+      <div className="bx-row2">
+        <StyleControlField
+          node={node}
+          def={def}
+          control={CURSOR_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={USER_SELECT_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      </div>
+      <div className="bx-row2">
+        <StyleControlField
+          node={node}
+          def={def}
+          control={POINTER_EVENTS_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={RESIZE_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      </div>
+      <div className="bx-row2">
+        <StyleControlField
+          node={node}
+          def={def}
+          control={CARET_COLOR_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={ACCENT_COLOR_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      </div>
+      <Subgroup title="Scrolling & touch">
         <div className="bx-row2">
-          <LengthField
-            label="Duration"
+          <StyleControlField
             node={node}
-            prefix="duration"
-            ctx={prefix}
-            presets={DURATION_PRESETS}
-            commit={commit}
+            def={def}
+            control={SCROLL_BEHAVIOR_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
           />
-          <LengthField
-            label="Delay"
+          <StyleControlField
             node={node}
-            prefix="delay"
-            ctx={prefix}
-            presets={DURATION_PRESETS}
-            commit={commit}
+            def={def}
+            control={SCROLL_SNAP_TYPE_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+        </div>
+        <div className="bx-row2">
+          <StyleControlField
+            node={node}
+            def={def}
+            control={SCROLL_SNAP_ALIGN_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+          <StyleControlField
+            node={node}
+            def={def}
+            control={TOUCH_ACTION_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
           />
         </div>
       </Subgroup>
+      <Subgroup title="Advanced">
+        <div className="bx-row2">
+          <StyleControlField
+            node={node}
+            def={def}
+            control={APPEARANCE_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+          <StyleControlField
+            node={node}
+            def={def}
+            control={WILL_CHANGE_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+        </div>
+      </Subgroup>
+    </Card>
+  );
+}
+
+// Tables (Tailwind: Tables) — border model, column sizing, border spacing, caption
+// side. Only meaningful on table-family elements; the inspector reveals it for
+// el:table/thead/tbody/tfoot/tr/td/th. Per state / breakpoint via the pill.
+const TABLE_TAGS = new Set(['table', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th', 'caption']);
+function isTableNode(node: BuilderNode): boolean {
+  const tag = rawTagOf(node.type);
+  return tag !== null && TABLE_TAGS.has(tag);
+}
+function TablesCard({
+  node,
+  def,
+  contexts,
+  onClass,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  contexts: StyleContext[];
+  onClass: (value: string) => void;
+}) {
+  const { prefix, selector } = useLayerContext(contexts);
+  const commit = (c: string) => onClass(ensureArchetypeDefaults(c, def.defaults.class));
+  return (
+    <Card icon={Table} title="Tables" summary={tablesSummary(node)} defaultOpen={false}>
+      {selector}
+      <div className="bx-row2">
+        <StyleControlField
+          node={node}
+          def={def}
+          control={BORDER_COLLAPSE_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={TABLE_LAYOUT_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      </div>
+      <div className="bx-row2">
+        <LengthField
+          label="Border spacing"
+          node={node}
+          prefix="border-spacing"
+          ctx={prefix}
+          presets={GAP_VALUE_PRESETS}
+          commit={commit}
+        />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={CAPTION_SIDE_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      </div>
+    </Card>
+  );
+}
+
+// SVG (Tailwind: SVG) — fill, stroke (token colors), stroke width. Only meaningful
+// on an svg / svg-child element; the inspector reveals it for those raw elements.
+// Per state / breakpoint via the pill.
+const SVG_TAGS = new Set([
+  'svg',
+  'path',
+  'g',
+  'rect',
+  'circle',
+  'ellipse',
+  'line',
+  'polyline',
+  'polygon',
+  'use',
+  'text',
+  'tspan',
+]);
+function isSvgNode(node: BuilderNode): boolean {
+  const tag = rawTagOf(node.type);
+  return tag !== null && SVG_TAGS.has(tag);
+}
+function SvgCard({
+  node,
+  def,
+  contexts,
+  onClass,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  contexts: StyleContext[];
+  onClass: (value: string) => void;
+}) {
+  const { prefix, selector } = useLayerContext(contexts);
+  return (
+    <Card icon={Spline} title="SVG" summary={svgSummary(node)} defaultOpen={false}>
+      {selector}
+      <div className="bx-row2">
+        <StyleControlField
+          node={node}
+          def={def}
+          control={FILL_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={STROKE_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      </div>
+      <StyleControlField
+        node={node}
+        def={def}
+        control={STROKE_WIDTH_CONTROL}
+        prefix={prefix}
+        onClass={onClass}
+      />
     </Card>
   );
 }
@@ -2356,6 +2984,22 @@ function TypographyCard({
           prefix={prefix}
           onClass={onClass}
         />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={FONT_STYLE_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      </div>
+      <div className="bx-row2">
+        <StyleControlField
+          node={node}
+          def={def}
+          control={VERTICAL_ALIGN_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
         <ColorOpacityField
           node={node}
           def={def}
@@ -2364,7 +3008,7 @@ function TypographyCard({
           onClass={onClass}
         />
       </div>
-      <Subgroup title="Decoration & wrapping">
+      <Subgroup title="Decoration">
         <div className="bx-row2">
           <StyleControlField
             node={node}
@@ -2376,11 +3020,20 @@ function TypographyCard({
           <StyleControlField
             node={node}
             def={def}
-            control={LINE_CLAMP_CONTROL}
+            control={DECORATION_THICKNESS_CONTROL}
             prefix={prefix}
             onClass={onClass}
           />
         </div>
+        <StyleControlField
+          node={node}
+          def={def}
+          control={DECORATION_OFFSET_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      </Subgroup>
+      <Subgroup title="Wrapping & overflow">
         <div className="bx-row2">
           <StyleControlField
             node={node}
@@ -2397,6 +3050,55 @@ function TypographyCard({
             onClass={onClass}
           />
         </div>
+        <div className="bx-row2">
+          <StyleControlField
+            node={node}
+            def={def}
+            control={LINE_CLAMP_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+          <StyleControlField
+            node={node}
+            def={def}
+            control={TEXT_OVERFLOW_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+        </div>
+        <StyleControlField
+          node={node}
+          def={def}
+          control={HYPHENS_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      </Subgroup>
+      <Subgroup title="Lists & indent">
+        <div className="bx-row2">
+          <StyleControlField
+            node={node}
+            def={def}
+            control={LIST_STYLE_TYPE_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+          <StyleControlField
+            node={node}
+            def={def}
+            control={LIST_STYLE_POSITION_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+        </div>
+        <LengthField
+          label="Text indent"
+          node={node}
+          prefix="indent"
+          ctx={prefix}
+          presets={INDENT_PRESETS}
+          commit={(c) => onClass(ensureArchetypeDefaults(c, def.defaults.class))}
+        />
       </Subgroup>
     </Card>
   );
@@ -3654,6 +4356,84 @@ export interface InspectorProps {
   canPasteStyles?: boolean;
 }
 
+// The full Tailwind surface, organized exactly like Tailwind's OWN documentation
+// sections (docs/98 §3.3): Layout · Flexbox & Grid · Spacing · Sizing · Typography
+// · Backgrounds · Borders · Effects · Filters · Tables · Transitions & Animation ·
+// Transforms · Interactivity · SVG. Every object gets the COMPLETE set — the 34
+// named components AND raw el:* elements — with no per-type gating of the surface
+// (a raw el:div gets Typography, Backgrounds, Filters, … just like any node). The
+// only conditionals are structural-vs-cosmetic (the Flexbox & Grid arrangement
+// half is container-only; Tables shows for table-family elements, SVG for svg
+// elements) — never a Tailwind section hidden by node type. Shared by the
+// single-node inspector and the multi-select bulk panel so both render identically
+// (the bulk panel fans each change out to the whole selection via onClass). Each
+// card carries its own "Editing for" pill (state / breakpoint); email collapses
+// every card to the base layer (mail clients strip variants).
+function TailwindSurface({
+  node,
+  def,
+  skinContexts,
+  arrangeContexts,
+  onClass,
+  onProp,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  /** Responsive + state + dark layers (skin cards). */
+  skinContexts: StyleContext[];
+  /** Responsive-only layers (layout / flex / grid / spacing / size / position). */
+  arrangeContexts: StyleContext[];
+  onClass: (value: string) => void;
+  onProp: (key: string, value: unknown) => void;
+}) {
+  return (
+    <>
+      {/* Layout — display / overflow / aspect (Tailwind: Layout). */}
+      <LayoutCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+      {/* Flexbox & Grid — how children arrange + how this block sits as a child. */}
+      <FlexGridCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+      {/* Spacing — padding / margin. */}
+      <SpacingCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+      {/* Sizing — width / height / min / max. */}
+      <SizeCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+      {/* Typography. */}
+      <TypographyCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+      {/* Backgrounds — fill / gradient / image. */}
+      <BackgroundCard
+        node={node}
+        def={def}
+        contexts={skinContexts}
+        onClass={onClass}
+        onProp={onProp}
+      />
+      {/* Borders. */}
+      <BordersCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+      {/* Effects — opacity / shadow / ring / blend. */}
+      <EffectsCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+      {/* Filters — blur / brightness / … / backdrop family. */}
+      <FiltersCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+      {/* Tables — only for table-family raw elements. */}
+      {isTableNode(node) ? (
+        <TablesCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+      ) : null}
+      {/* Transitions & Animation — raw transition / duration / ease / delay /
+          animate (the friendly entrance Motion card stays separate). */}
+      <TransitionsCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+      {/* Transforms — scale / rotate / translate / skew / origin. */}
+      <TransformsCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+      {/* Interactivity — cursor / select / scroll / snap / caret / accent / … . */}
+      <InteractivityCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+      {/* SVG — only for svg / svg-child raw elements. */}
+      {isSvgNode(node) ? (
+        <SvgCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+      ) : null}
+      {/* Position — kept its own card (Tailwind groups it under Layout, but the
+          offset/z cascade reads cleaner standalone). */}
+      <PositionCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+    </>
+  );
+}
+
 // The bulk-edit panel (docs/builder/05 §2.2) shown when more than one node is
 // selected: only the UNIVERSAL style controls — driven by the primary node, but
 // every change fans out to the whole selection via `onClass` — plus the bulk
@@ -3732,23 +4512,17 @@ function MultiSelectPanel({
       </header>
       {def ? (
         <div className="bx-ins-stack">
-          <StyleCard node={node} def={def} onClass={onClass} />
-          {def.kind === 'container' ? (
-            <LayoutCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+          {!isRawElementType(node.type) ? (
+            <StyleCard node={node} def={def} onClass={onClass} />
           ) : null}
-          <BackgroundCard
+          <TailwindSurface
             node={node}
             def={def}
-            contexts={skinContexts}
+            skinContexts={skinContexts}
+            arrangeContexts={arrangeContexts}
             onClass={onClass}
             onProp={onProp}
           />
-          <TypographyCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
-          <BordersCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
-          <EffectsCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
-          <SizeCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
-          <SpacingCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
-          <PositionCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
           {surface !== 'email' ? <MotionCard node={node} def={def} onClass={onClass} /> : null}
           <CustomCssCard node={node} onClass={onClass} />
         </div>
@@ -3950,37 +4724,25 @@ export function Inspector({
         ) : null}
 
         {/* Style — the recipe axes (Color + Emphasis): the everyday default,
-            kept open. The free fills / type / edges / effects are their own
-            collapsed cards below — Advanced is the escape from the recipe ceiling,
-            not the default (docs/builder/04 §2.5). */}
-        <StyleCard node={node} def={def} onClass={onClass} />
-
-        {/* Containers arrange their children (docs/61 §5.2). Leaves arrange
-            nothing, so the card is hidden. */}
-        {def.kind === 'container' ? (
-          <LayoutCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+            kept open. Only for NAMED components — a raw el:* element has no recipe
+            (no Color/Emphasis to set), so the card is hidden for it; its styling is
+            the full Tailwind surface below. */}
+        {!isRawElementType(node.type) ? (
+          <StyleCard node={node} def={def} onClass={onClass} />
         ) : null}
 
-        {/* The full design surface — collapsed by default, reachable on EVERY
-            surface, each per breakpoint / state via its "Editing for" pill
-            (docs/builder/04 §2.1–2.3). */}
-        <BackgroundCard
+        <TailwindSurface
           node={node}
           def={def}
-          contexts={skinContexts}
+          skinContexts={skinContexts}
+          arrangeContexts={arrangeContexts}
           onClass={onClass}
           onProp={onProp}
         />
-        <TypographyCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
-        <BordersCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
-        <EffectsCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
 
-        <SizeCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
-        <SpacingCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
-        <PositionCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
-
-        {/* Motion (docs/61 §9) — entrance on every node. Hidden on the email
-            surface (mail clients strip classes, so an entrance is inert there). */}
+        {/* Motion (docs/61 §9) — friendly entrance on every node. Hidden on the
+            email surface (mail clients strip classes, so an entrance is inert
+            there). Kept alongside the raw Transitions & Animation card. */}
         {surface !== 'email' ? <MotionCard node={node} def={def} onClass={onClass} /> : null}
 
         <CustomCssCard node={node} onClass={onClass} />

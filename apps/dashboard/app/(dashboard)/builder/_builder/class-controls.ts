@@ -233,7 +233,10 @@ export const OVERFLOW_CONTROL: ClassControl = {
 
 export const TEXT_ALIGN_CONTROL: ClassControl = {
   id: 'textAlign',
-  label: 'Alignment',
+  // `text-align` is where text sits inside its line, NOT where the element sits —
+  // element placement lives under Flexbox & Grid (justify/items/self/mx-auto). The
+  // label says "Text alignment" so the two are never confused (docs/98 §3.3).
+  label: 'Text alignment',
   options: [
     { value: 'left', label: 'Left', token: 'text-left' },
     { value: 'center', label: 'Center', token: 'text-center' },
@@ -1207,3 +1210,384 @@ export function applyColorOpacity(
   if (token) kept.push(ctx + token + (opacity < 100 ? `/${opacity}` : ''));
   return kept.join(' ');
 }
+
+// ════════════════════════════════════════════════════════════════════════════
+// Phase 2 — the COMPLETE Tailwind surface, organized exactly like Tailwind's own
+// documentation sections (docs/98 §3.3). The controls below fill the remaining
+// gaps so every Tailwind utility is settable on every object: Filters,
+// Interactivity, Tables, SVG, plus the missing Typography / Transitions /
+// Transforms members. Every token here is a real Tailwind v4 utility, proven to
+// compile by packages/surface-compile/src/phase4-utilities.test.ts (a control
+// that emits a class the compiler drops is a bug). They drive through the same
+// single-token group model as every other control, so the context selector
+// re-prefixes them for free.
+
+// ── Filters (Tailwind: Filters) ───────────────────────────────────────────────
+// brightness / contrast / saturate are OPEN-ENDED value groups (read/write via
+// LengthField + the filter presets), already wired in the Filters card. The enum
+// toggles below cover the fixed-vocabulary filters; drop-shadow + hue-rotate ride
+// LengthField value groups (`drop-shadow`, `hue-rotate`).
+export const SEPIA_CONTROL: ClassControl = {
+  id: 'sepia',
+  label: 'Sepia',
+  options: [
+    { value: 'on', label: 'On', token: 'sepia' },
+    { value: 'off', label: 'Off', token: 'sepia-0' },
+  ],
+};
+
+export const INVERT_CONTROL: ClassControl = {
+  id: 'invert',
+  label: 'Invert',
+  options: [
+    { value: 'on', label: 'On', token: 'invert' },
+    { value: 'off', label: 'Off', token: 'invert-0' },
+  ],
+};
+
+export const DROP_SHADOW_CONTROL: ClassControl = {
+  id: 'dropShadow',
+  label: 'Drop shadow',
+  options: [
+    { value: 'sm', label: 'Small', token: 'drop-shadow-sm' },
+    { value: 'md', label: 'Medium', token: 'drop-shadow-md' },
+    { value: 'lg', label: 'Large', token: 'drop-shadow-lg' },
+    { value: 'xl', label: 'XL', token: 'drop-shadow-xl' },
+    { value: 'none', label: 'None', token: 'drop-shadow-none' },
+  ],
+};
+
+// Backdrop filters (apply to what's BEHIND a translucent element — frosted glass).
+// backdrop-blur already exists (BACKDROP_BLUR_CONTROL); these complete the set.
+export const BACKDROP_GRAYSCALE_CONTROL: ClassControl = {
+  id: 'backdropGrayscale',
+  label: 'Backdrop grayscale',
+  options: [
+    { value: 'on', label: 'On', token: 'backdrop-grayscale' },
+    { value: 'off', label: 'Off', token: 'backdrop-grayscale-0' },
+  ],
+};
+
+// ── Transitions & Animation (Tailwind: Transitions & Animation) ───────────────
+// transition / duration / delay already exist (TRANSITION_CONTROL + the
+// duration/delay value groups). These add the timing function (ease-*) and the
+// platform animation library (animate-*) as a flat enum — the same animations the
+// Motion card emits, exposed raw here per Tailwind's section convention.
+export const EASE_CONTROL: ClassControl = {
+  id: 'ease',
+  label: 'Easing',
+  options: [
+    { value: 'linear', label: 'Linear', token: 'ease-linear' },
+    { value: 'in', label: 'Ease in', token: 'ease-in' },
+    { value: 'out', label: 'Ease out', token: 'ease-out' },
+    { value: 'in-out', label: 'Ease in-out', token: 'ease-in-out' },
+  ],
+};
+
+export const ANIMATE_CONTROL: ClassControl = {
+  id: 'animate',
+  label: 'Animation',
+  options: [
+    { value: 'none', label: 'None', token: 'animate-none' },
+    { value: 'spin', label: 'Spin', token: 'animate-spin' },
+    { value: 'ping', label: 'Ping', token: 'animate-ping' },
+    { value: 'pulse', label: 'Pulse', token: 'animate-pulse' },
+    { value: 'bounce', label: 'Bounce', token: 'animate-bounce' },
+  ],
+};
+
+// ── Transforms (Tailwind: Transforms) ─────────────────────────────────────────
+// scale / rotate / translate / skew are OPEN-ENDED value groups (LengthField +
+// presets), wired in the Transforms card. scale-x / scale-y are independent axes;
+// transform-origin (TRANSFORM_ORIGIN_CONTROL) already exists. Negative rotate /
+// translate ride the value field (`-rotate-6` → suffix `-6`, or a custom value).
+
+// ── Tables (Tailwind: Tables) ─────────────────────────────────────────────────
+// Only meaningful on table-family raw elements; the inspector reveals the Tables
+// card for el:table/thead/tbody/tfoot/tr/td/th (and always-on is harmless).
+export const BORDER_COLLAPSE_CONTROL: ClassControl = {
+  id: 'borderCollapse',
+  label: 'Border model',
+  options: [
+    { value: 'collapse', label: 'Collapse', token: 'border-collapse' },
+    { value: 'separate', label: 'Separate', token: 'border-separate' },
+  ],
+};
+
+export const TABLE_LAYOUT_CONTROL: ClassControl = {
+  id: 'tableLayout',
+  label: 'Column sizing',
+  options: [
+    { value: 'auto', label: 'Auto', token: 'table-auto' },
+    { value: 'fixed', label: 'Fixed', token: 'table-fixed' },
+  ],
+};
+
+export const CAPTION_SIDE_CONTROL: ClassControl = {
+  id: 'captionSide',
+  label: 'Caption side',
+  options: [
+    { value: 'top', label: 'Top', token: 'caption-top' },
+    { value: 'bottom', label: 'Bottom', token: 'caption-bottom' },
+  ],
+};
+
+// ── SVG (Tailwind: SVG) ───────────────────────────────────────────────────────
+// fill / stroke draw from the recipe palette (token colors only — arbitrary hex is
+// blocked by the allowlist). stroke-width is a small enum. Shown for el:svg + svg
+// child raw elements.
+export const FILL_CONTROL: ClassControl = {
+  id: 'fill',
+  label: 'Fill',
+  options: [
+    { value: 'none', label: 'None', token: 'fill-none' },
+    { value: 'current', label: 'Current color', token: 'fill-current' },
+    { value: 'primary', label: 'Primary', token: 'fill-primary' },
+    { value: 'secondary', label: 'Secondary', token: 'fill-secondary' },
+    { value: 'accent', label: 'Accent', token: 'fill-accent' },
+    { value: 'neutral', label: 'Neutral', token: 'fill-neutral' },
+    { value: 'white', label: 'White', token: 'fill-white' },
+    { value: 'black', label: 'Black', token: 'fill-black' },
+  ],
+};
+
+export const STROKE_CONTROL: ClassControl = {
+  id: 'stroke',
+  label: 'Stroke',
+  options: [
+    { value: 'none', label: 'None', token: 'stroke-none' },
+    { value: 'current', label: 'Current color', token: 'stroke-current' },
+    { value: 'primary', label: 'Primary', token: 'stroke-primary' },
+    { value: 'secondary', label: 'Secondary', token: 'stroke-secondary' },
+    { value: 'accent', label: 'Accent', token: 'stroke-accent' },
+    { value: 'neutral', label: 'Neutral', token: 'stroke-neutral' },
+    { value: 'white', label: 'White', token: 'stroke-white' },
+    { value: 'black', label: 'Black', token: 'stroke-black' },
+  ],
+};
+
+export const STROKE_WIDTH_CONTROL: ClassControl = {
+  id: 'strokeWidth',
+  label: 'Stroke width',
+  options: [
+    { value: '0', label: '0', token: 'stroke-0' },
+    { value: '1', label: '1', token: 'stroke-1' },
+    { value: '2', label: '2', token: 'stroke-2' },
+  ],
+};
+
+// ── Typography — the remaining members (Tailwind: Typography) ─────────────────
+export const FONT_STYLE_CONTROL: ClassControl = {
+  id: 'fontStyle',
+  label: 'Style',
+  options: [
+    { value: 'italic', label: 'Italic', token: 'italic' },
+    { value: 'normal', label: 'Normal', token: 'not-italic' },
+  ],
+};
+
+export const DECORATION_THICKNESS_CONTROL: ClassControl = {
+  id: 'decorationThickness',
+  label: 'Underline thickness',
+  options: [
+    { value: 'auto', label: 'Auto', token: 'decoration-auto' },
+    { value: 'thin', label: 'Thin', token: 'decoration-1' },
+    { value: 'medium', label: 'Medium', token: 'decoration-2' },
+    { value: 'thick', label: 'Thick', token: 'decoration-4' },
+  ],
+};
+
+export const DECORATION_OFFSET_CONTROL: ClassControl = {
+  id: 'decorationOffset',
+  label: 'Underline offset',
+  options: [
+    { value: 'auto', label: 'Auto', token: 'underline-offset-auto' },
+    { value: '1', label: 'Close', token: 'underline-offset-1' },
+    { value: '2', label: 'Medium', token: 'underline-offset-2' },
+    { value: '4', label: 'Far', token: 'underline-offset-4' },
+  ],
+};
+
+export const LIST_STYLE_TYPE_CONTROL: ClassControl = {
+  id: 'listStyleType',
+  label: 'List marker',
+  options: [
+    { value: 'none', label: 'None', token: 'list-none' },
+    { value: 'disc', label: 'Bullets', token: 'list-disc' },
+    { value: 'decimal', label: 'Numbers', token: 'list-decimal' },
+  ],
+};
+
+export const LIST_STYLE_POSITION_CONTROL: ClassControl = {
+  id: 'listStylePosition',
+  label: 'Marker position',
+  options: [
+    { value: 'inside', label: 'Inside', token: 'list-inside' },
+    { value: 'outside', label: 'Outside', token: 'list-outside' },
+  ],
+};
+
+export const VERTICAL_ALIGN_CONTROL: ClassControl = {
+  id: 'verticalAlign',
+  label: 'Vertical align',
+  options: [
+    { value: 'baseline', label: 'Baseline', token: 'align-baseline' },
+    { value: 'top', label: 'Top', token: 'align-top' },
+    { value: 'middle', label: 'Middle', token: 'align-middle' },
+    { value: 'bottom', label: 'Bottom', token: 'align-bottom' },
+    { value: 'sub', label: 'Subscript', token: 'align-sub' },
+    { value: 'super', label: 'Superscript', token: 'align-super' },
+  ],
+};
+
+export const TEXT_OVERFLOW_CONTROL: ClassControl = {
+  id: 'textOverflow',
+  label: 'Overflow text',
+  options: [
+    { value: 'ellipsis', label: 'Ellipsis (…)', token: 'text-ellipsis' },
+    { value: 'clip', label: 'Clip', token: 'text-clip' },
+  ],
+};
+
+export const HYPHENS_CONTROL: ClassControl = {
+  id: 'hyphens',
+  label: 'Hyphenation',
+  options: [
+    { value: 'none', label: 'None', token: 'hyphens-none' },
+    { value: 'manual', label: 'Manual', token: 'hyphens-manual' },
+    { value: 'auto', label: 'Auto', token: 'hyphens-auto' },
+  ],
+};
+
+// ── Interactivity (Tailwind: Interactivity) ───────────────────────────────────
+export const CURSOR_CONTROL: ClassControl = {
+  id: 'cursor',
+  label: 'Cursor',
+  options: [
+    { value: 'auto', label: 'Auto', token: 'cursor-auto' },
+    { value: 'default', label: 'Default', token: 'cursor-default' },
+    { value: 'pointer', label: 'Pointer', token: 'cursor-pointer' },
+    { value: 'wait', label: 'Wait', token: 'cursor-wait' },
+    { value: 'text', label: 'Text', token: 'cursor-text' },
+    { value: 'move', label: 'Move', token: 'cursor-move' },
+    { value: 'not-allowed', label: 'Blocked', token: 'cursor-not-allowed' },
+    { value: 'grab', label: 'Grab', token: 'cursor-grab' },
+  ],
+};
+
+export const USER_SELECT_CONTROL: ClassControl = {
+  id: 'userSelect',
+  label: 'Text selection',
+  options: [
+    { value: 'none', label: 'Block', token: 'select-none' },
+    { value: 'text', label: 'Text', token: 'select-text' },
+    { value: 'all', label: 'Select all', token: 'select-all' },
+    { value: 'auto', label: 'Auto', token: 'select-auto' },
+  ],
+};
+
+export const POINTER_EVENTS_CONTROL: ClassControl = {
+  id: 'pointerEvents',
+  label: 'Pointer events',
+  options: [
+    { value: 'none', label: 'Ignore clicks', token: 'pointer-events-none' },
+    { value: 'auto', label: 'Normal', token: 'pointer-events-auto' },
+  ],
+};
+
+export const RESIZE_CONTROL: ClassControl = {
+  id: 'resize',
+  label: 'Resizable',
+  options: [
+    { value: 'none', label: 'None', token: 'resize-none' },
+    { value: 'both', label: 'Both', token: 'resize' },
+    { value: 'y', label: 'Vertical', token: 'resize-y' },
+    { value: 'x', label: 'Horizontal', token: 'resize-x' },
+  ],
+};
+
+export const SCROLL_BEHAVIOR_CONTROL: ClassControl = {
+  id: 'scrollBehavior',
+  label: 'Scroll behavior',
+  options: [
+    { value: 'auto', label: 'Instant', token: 'scroll-auto' },
+    { value: 'smooth', label: 'Smooth', token: 'scroll-smooth' },
+  ],
+};
+
+export const SCROLL_SNAP_TYPE_CONTROL: ClassControl = {
+  id: 'scrollSnapType',
+  label: 'Snap',
+  options: [
+    { value: 'none', label: 'None', token: 'snap-none' },
+    { value: 'x', label: 'Horizontal', token: 'snap-x' },
+    { value: 'y', label: 'Vertical', token: 'snap-y' },
+    { value: 'both', label: 'Both', token: 'snap-both' },
+  ],
+};
+
+export const SCROLL_SNAP_ALIGN_CONTROL: ClassControl = {
+  id: 'scrollSnapAlign',
+  label: 'Snap align',
+  options: [
+    { value: 'start', label: 'Start', token: 'snap-start' },
+    { value: 'center', label: 'Center', token: 'snap-center' },
+    { value: 'end', label: 'End', token: 'snap-end' },
+    { value: 'none', label: 'None', token: 'snap-align-none' },
+  ],
+};
+
+export const APPEARANCE_CONTROL: ClassControl = {
+  id: 'appearance',
+  label: 'Native styling',
+  options: [
+    { value: 'none', label: 'Strip', token: 'appearance-none' },
+    { value: 'auto', label: 'Keep', token: 'appearance-auto' },
+  ],
+};
+
+export const TOUCH_ACTION_CONTROL: ClassControl = {
+  id: 'touchAction',
+  label: 'Touch action',
+  options: [
+    { value: 'auto', label: 'Auto', token: 'touch-auto' },
+    { value: 'none', label: 'None', token: 'touch-none' },
+    { value: 'pan-x', label: 'Pan X', token: 'touch-pan-x' },
+    { value: 'pan-y', label: 'Pan Y', token: 'touch-pan-y' },
+    { value: 'manipulation', label: 'Manipulation', token: 'touch-manipulation' },
+  ],
+};
+
+export const WILL_CHANGE_CONTROL: ClassControl = {
+  id: 'willChange',
+  label: 'Optimize for',
+  options: [
+    { value: 'auto', label: 'Auto', token: 'will-change-auto' },
+    { value: 'scroll', label: 'Scroll', token: 'will-change-scroll' },
+    { value: 'contents', label: 'Contents', token: 'will-change-contents' },
+    { value: 'transform', label: 'Transform', token: 'will-change-transform' },
+  ],
+};
+
+// caret / accent draw from the recipe palette (token colors only). The caret is
+// the text-input cursor color; accent themes native checkboxes / radios / range.
+export const CARET_COLOR_CONTROL: ClassControl = {
+  id: 'caretColor',
+  label: 'Cursor color',
+  options: [
+    { value: 'primary', label: 'Primary', token: 'caret-primary' },
+    { value: 'accent', label: 'Accent', token: 'caret-accent' },
+    { value: 'neutral', label: 'Neutral', token: 'caret-neutral' },
+  ],
+};
+
+export const ACCENT_COLOR_CONTROL: ClassControl = {
+  id: 'accentColor',
+  label: 'Accent color',
+  options: [
+    { value: 'primary', label: 'Primary', token: 'accent-primary' },
+    { value: 'secondary', label: 'Secondary', token: 'accent-secondary' },
+    { value: 'accent', label: 'Accent', token: 'accent-accent' },
+    { value: 'neutral', label: 'Neutral', token: 'accent-neutral' },
+  ],
+};
