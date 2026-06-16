@@ -129,6 +129,7 @@ import searchConsoleRoutes from './routes/v1/seo/search-console.js';
 import organicRoutes from './routes/v1/seo/organic.js';
 import aiReportRoutes from './routes/v1/ai/reports.js';
 import automationRoutes from './routes/v1/automations/index.js';
+import platformRoutes from './routes/v1/platform/index.js';
 import { bootstrapProviders } from './lib/providers-bootstrap.js';
 import pretty from 'pino-pretty';
 
@@ -673,6 +674,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(organicRoutes);
   await app.register(aiReportRoutes);
   await app.register(automationRoutes);
+  await app.register(platformRoutes);
 
   return app;
 }

@@ -22,4 +22,5 @@ export * from './nav';
 export * from './runtime';
 export * from './import-export';
 export * from './catalog';
+export * from './platform-catalog';
 export * from './site-chrome';
