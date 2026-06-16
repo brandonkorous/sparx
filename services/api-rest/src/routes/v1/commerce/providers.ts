@@ -31,7 +31,7 @@ const providerRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const q = request.query as Record<string, string | undefined>;
     return ok(
-      providerService.listAvailable({
+      await providerService.listAvailable({
         ...(q?.kind ? { kind: q.kind as never } : {}),
       })
     );
@@ -54,7 +54,7 @@ const providerRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
     const { slug } = SlugParam.parse(request.params);
-    return ok(providerService.getMetadata(slug));
+    return ok(await providerService.getMetadata(slug));
   });
 
   app.post('/v1/commerce/providers/install', async (request, reply) => {
