@@ -12,7 +12,7 @@ reference — match its quality, structure, and comment style exactly).
 ## Imports (always)
 
 ```ts
-import { el, atom, bound, entry, type PlatformCatalogEntry } from './_kit';
+import { el, atom, bound, behave, part, entry, type PlatformCatalogEntry } from './_kit';
 ```
 
 ## Helpers
@@ -29,6 +29,9 @@ import { el, atom, bound, entry, type PlatformCatalogEntry } from './_kit';
 - `bound(node, 'path')` → attach a data binding (e.g. `bound(atom('Wordmark',''),'site.identity')`,
   `bound(atom('Heading','',{level:'h2'}),'product.title')`). Use only where a real
   data field fits; otherwise author static placeholder text.
+- `behave(node, { type, ...params })` → mark a node a behavior ROOT (Pillar 5). See
+  the interactivity section below.
+- `part(node, role)` → mark a node a structural PART of its enclosing behavior.
 - `entry({...})` → wraps each catalog entry (pins the type).
 
 ## Entry shape
@@ -87,7 +90,9 @@ stroke,strokeWidth,strokeLinecap,strokeLinejoin`. There is NO generic `aria-*` e
 - Icons: prefer the `atom('Icon','',{name:'lucide-name'})` atom, OR inline `el('svg',…)`
   with `el('path',…)`. Simple unicode glyphs in `text` (e.g. ☰ ✓ › ★) are fine too.
 
-## Interactivity WITHOUT JavaScript (there is no behavior runtime yet)
+## Interactivity — two tracks
+
+### CSS-only (prefer for `common` blocks; no runtime needed)
 
 - Disclosure / accordion / dropdown / mobile menu → native `el('details', …, { children:
 [ el('summary', '… [&::-webkit-details-marker]:hidden', { text }), el('div', 'absolute …
@@ -96,6 +101,43 @@ panel') ] })`. Hide the marker with `list-none [&::-webkit-details-marker]:hidde
   and children `snap-start shrink-0`.
 - Toggle / swap → a `peer` checkbox + `peer-checked:` siblings, or just a styled static.
 - Tabs → static visual (active underline) is fine; panels wire up later.
+
+### The behavior runtime (for `comprehensive` composites that genuinely need JS)
+
+A small, CLOSED, platform-authored runtime (`@sparx/builder-render` behaviors, Pillar 5)
+drives autoplay carousels, a continuous marquee, scroll-adaptive nav, click-open menus,
+single-open accordions, and JS-wired tabs. You author it with `behave`/`part` — NEVER raw
+`data-*` (the element whitelist strips those). The interactive composites live in
+`interactive.ts`; copy its patterns. The runtime runs in BOTH surfaces: the live
+storefront gets full behavior; the canvas previews (autoplay suppressed, panels revealed
+for editing). Authoring rules:
+
+- **Root:** `behave(node, { type, ...params })`. `type` is one of `carousel` | `marquee`
+  | `disclosure` | `tabs` | `menu` | `scrollspy`. Params per behavior:
+  `carousel` → `{ autoplay?: boolean, interval?: number /*sec*/ }`;
+  `marquee` → `{ pauseOnHover?: boolean }` (give the moving track `animate-marquee`);
+  `disclosure` → `{ single?: boolean }`; `scrollspy` → `{ threshold?: number /*px*/ }`;
+  `tabs` / `menu` → no params.
+- **Parts:** `part(node, role)`, role one of `track` `slide` `prev` `next` `dot` `trigger`
+  `panel` `item` `tab`. Each behavior reads specific parts:
+  - `carousel` → a `track` wrapping N `slide`s; optional `prev`/`next` buttons and one
+    `dot` button per slide (the behavior sets `data-active` on the current dot — style with
+    `data-[active=true]:…`). Wrap the root in `overflow-hidden`.
+  - `marquee` → a single `track` with `animate-marquee`; the live surface clones its
+    children for a seamless loop.
+  - `disclosure` → N `item`s, each holding a `trigger` button + a `panel`. `single` keeps
+    one open. The item carries `data-open`; flip a chevron with `group` +
+    `group-data-[open=true]:rotate-180`.
+  - `tabs` → `tab` buttons index-matched (DOM order) to `panel`s. The behavior sets
+    `data-active` on the current tab.
+  - `menu` → one `trigger` + one `panel` (absolute-positioned dropdown / mega-menu).
+  - `scrollspy` → put it on the `nav`; it sets `data-scrolled` on the root past `threshold`
+    (style with `data-[scrolled=true]:…`) and `data-active` on the `a[href="#id"]` whose
+    section is in view (no `part` needed — it keys off the hash href).
+- **Closed panels ship hidden:** any panel that starts collapsed (menu dropdown, inactive
+  tab panels, accordion answers) gets `attrs: { hidden: true }` so it doesn't flash open
+  before hydration. The active tab panel / open item omits it. The canvas reveals all of
+  them regardless.
 
 ## Quality bar
 

@@ -72,6 +72,26 @@ describe('compileClasses', () => {
     expect(css).not.toMatch(/\.fixed\b/);
   });
 
+  it('compiles the Pillar 6 behavior-composite class patterns', async () => {
+    // The data-attribute variants the behavior runtime drives at runtime: the
+    // carousel sets data-active on the current dot, the scrollspy sets data-scrolled
+    // on the nav, the disclosure sets data-open on the open item (read via group-).
+    const css = await compileClasses([
+      'data-[active=true]:w-6',
+      'data-[scrolled=true]:bg-base-100/90',
+      'group-data-[open=true]:rotate-180',
+      'animate-marquee',
+      'w-max',
+      'backdrop-blur',
+    ]);
+    expect(css).toContain('[data-active="true"]');
+    expect(css).toContain('[data-scrolled="true"]');
+    expect(css).toContain('[data-open="true"]');
+    expect(css).toMatch(/width:\s*max-content/);
+    expect(css).toMatch(/\.animate-marquee\b/);
+    expect(css).toContain('backdrop-filter');
+  });
+
   it('ships the navbar component + start/center/end zones (daisyUI-faithful)', async () => {
     const css = await compileClasses(['navbar', 'navbar-start', 'navbar-center', 'navbar-end']);
     expect(css).toMatch(/\.navbar\b/);
