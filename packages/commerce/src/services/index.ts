@@ -9,8 +9,11 @@ export * as categoryService from './category-service';
 export * as collectionService from './collection-service';
 export * as fitmentService from './fitment-service';
 
-// Phase 2 — inventory
-export * as inventoryService from './inventory-service';
+// Phase 2 — inventory. Extracted into its own first-class module/product
+// (@sparx/inventory, docs/100). Re-exported here so existing consumers
+// (MCP tools, reservation-reaper, REST routes via `@sparx/commerce`) keep
+// importing `inventoryService` unchanged while ownership lives in inventory.
+export { inventoryService } from '@sparx/inventory';
 
 // Phase 3 — pricing + discounts
 export * as pricingService from './pricing-service';
