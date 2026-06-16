@@ -26,6 +26,7 @@
 //     collapse 1→2→N and rows-of-containers stack on mobile automatically.
 
 import {
+  navbar,
   seedNode,
   type BoxStyle,
   type BuilderNode,
@@ -50,6 +51,8 @@ function node(
     bind?: string;
     /** Extra verbatim classes (e.g. an archetype/recipe seed). */
     cls?: string;
+    /** Verbatim node name (e.g. for raw `el:*` site-chrome zones). */
+    name?: string;
     children?: BuilderNode[];
   } = {}
 ): BuilderNode {
@@ -799,16 +802,8 @@ function siteLayoutTree(): BuilderNode {
     box: { name: 'Site layout', padding: 'none', backgroundWidth: 'full', contentWidth: 'full' },
     layout: { direction: 'stack', gap: 'none' },
     children: [
-      node('Section', {
-        box: {
-          name: 'Header',
-          surface: 'none',
-          backgroundWidth: 'full',
-          contentWidth: 'contained',
-          padding: 'md',
-        },
-        layout: { direction: 'row', collapse: false, justify: 'between', alignItems: 'center' },
-        children: [
+      navbar(node, {
+        start: [
           node('Stack', {
             box: { padding: 'none' },
             layout: { direction: 'row', collapse: false, gap: 'sm', alignItems: 'center' },
@@ -817,6 +812,8 @@ function siteLayoutTree(): BuilderNode {
               node('Heading', { props: { level: 'h3', text: 'Endura Wellness' } }),
             ],
           }),
+        ],
+        end: [
           node('NavMenu', {
             props: {
               orientation: 'row',

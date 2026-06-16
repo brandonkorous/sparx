@@ -89,4 +89,45 @@ export const SURFACE_THEME_CSS = `
 @keyframes scale-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
 @keyframes slide-in-left { from { opacity: 0; transform: translateX(-1.5rem); } to { opacity: 1; transform: translateX(0); } }
 @keyframes slide-in-right { from { opacity: 0; transform: translateX(1.5rem); } to { opacity: 1; transform: translateX(0); } }
+
+/* ── Navbar — a real component: a div with the \`navbar\` class that HAS three
+      zones, navbar-start / navbar-center / navbar-end (docs/98 §5). Verbatim
+      from daisyUI's navbar.css (our breadth reference): the two SIDE zones are
+      \`width: 50%\` — start justifies its content to the left, end to the right —
+      and the center is \`flex-shrink: 0\` BETWEEN them, so center content lands
+      dead-center regardless of how much sits on either side. There is no
+      "centered brand" variant: centering the wordmark is just putting it in
+      \`.navbar-center\`.
+
+      Authored in the \`components\` layer (declared before \`utilities\`), so author
+      utilities always win — \`bg-base-100\`/\`border-b\` skin it, \`hidden @3xl:flex\`
+      collapses a zone responsively, \`px-*\`/\`gap-*\` retune spacing. Content
+      spacing (gap) lives on the composed tree, not here, exactly like daisyUI. ── */
+@layer components {
+  .navbar {
+    position: relative;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    min-height: 4rem;
+    padding: 0.5rem;
+  }
+  .navbar-start {
+    display: inline-flex;
+    align-items: center;
+    width: 50%;
+    justify-content: flex-start;
+  }
+  .navbar-center {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .navbar-end {
+    display: inline-flex;
+    align-items: center;
+    width: 50%;
+    justify-content: flex-end;
+  }
+}
 `;

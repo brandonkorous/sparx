@@ -67,6 +67,9 @@ const ORDER: Prisma.BuilderArchetypeOrderByWithRelationInput[] = [
  *  key): a re-seed never duplicates, and it HEALS existing tenants with no
  *  migration backfill. Runs inside the caller's tx. */
 async function seedIfEmpty(tx: Prisma.TransactionClient, ctx: ServiceContext): Promise<void> {
+  // The platform library is the catalog now (docs/98 §5) — PLATFORM_ARCHETYPES is
+  // empty, so platform seeding is a no-op. Bail before any query/audit write.
+  if (PLATFORM_ARCHETYPES.length === 0) return;
   const platformCount = await tx.builderArchetype.count({ where: { source: 'platform' } });
   if (platformCount > 0) return;
   await tx.builderArchetype.createMany({

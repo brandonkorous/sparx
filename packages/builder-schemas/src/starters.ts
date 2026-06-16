@@ -14,6 +14,7 @@
 import { seedNode, type BoxStyle, type LayoutStyle } from './box-to-class';
 import type { BuilderNode } from './node';
 import type { BuilderPageKind } from './page';
+import { navbar } from './site-chrome';
 
 let n = 0;
 const sid = (t: string): string => `seed-${t}-${(n += 1)}`;
@@ -29,6 +30,11 @@ function node(
     layout?: LayoutStyle;
     props?: Record<string, unknown>;
     bind?: string;
+    /** Verbatim utility classes — used to author raw `el:*` chrome (e.g. the
+     *  navbar's start/center/end flex zones, docs/98 §3.7). */
+    cls?: string;
+    /** Author label (Layers tree). For raw `el:*` nodes that carry no `box.name`. */
+    name?: string;
     children?: BuilderNode[];
   } = {}
 ): BuilderNode {
@@ -272,29 +278,30 @@ const STARTER_NAV_LINKS = [
   { label: 'About', href: '/about' },
 ];
 
-// The starter SITE LAYOUT (docs/45) — the chrome shell every page renders inside.
-// A header (logo + primary nav), the content Outlet, and a footer (footer nav +
-// social + copyright). The Logo + SocialLinks bind to `site` sources; the NavMenu
-// nodes OWN their links (docs/57). The Outlet marks where the routed page goes.
-// One layout per tenant in v1.
+// The starter SITE LAYOUT (docs/45, docs/98 §3.7). A layout is a FREE CANVAS whose
+// only structural invariant is the `Outlet` (the content box where each routed
+// page renders — `pinned` in the registry, so it can't be deleted or dragged).
+// Everything else is author-composed and fully deletable: this default seeds a
+// composable navbar (a raw <nav> with start/center/end zones) + the Outlet + a
+// footer, so a new site looks live immediately — delete the chrome and you're at a
+// blank slate (just the content box). Nothing here is required or hardcoded; it's
+// ordinary editable seed data. One layout per site (seeded once on first load).
 function siteLayoutTree(): BuilderNode {
   return node('Section', {
     box: { name: 'Site layout', padding: 'none', backgroundWidth: 'full', contentWidth: 'full' },
     layout: { direction: 'stack', gap: 'none' },
     children: [
-      node('Section', {
-        box: {
-          name: 'Header',
-          surface: 'none',
-          backgroundWidth: 'full',
-          contentWidth: 'contained',
-          padding: 'md',
-        },
-        layout: { direction: 'row', collapse: false, justify: 'between', alignItems: 'center' },
-        children: [
-          node('Wordmark', { bind: 'site.identity' }),
-          node('NavMenu', { props: { orientation: 'row', links: STARTER_NAV_LINKS } }),
-        ],
+      // Header — the shared `navbar` component (docs/98 §5): a <nav class="navbar">
+      // with navbar-start / navbar-center / navbar-end zones. Here the brand
+      // WORDMARK sits in navbar-center, so it's dead-center — centering the logo is
+      // just "put the Wordmark in the center zone", no special variant. Primary nav
+      // in the start zone, an action at the end. The "header" is simply a navbar at
+      // the top of the layout. Fully editable + deletable; the SAME navbar every
+      // blueprint uses (site-chrome.ts).
+      navbar(node, {
+        start: [node('NavMenu', { props: { orientation: 'row', links: STARTER_NAV_LINKS } })],
+        center: [node('Wordmark', { bind: 'site.identity' })],
+        end: [node('Button', { props: { label: 'Get started', style: 'primary' } })],
       }),
       node('Outlet', {
         box: { padding: 'none', backgroundWidth: 'full', contentWidth: 'full' },

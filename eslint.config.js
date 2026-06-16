@@ -120,6 +120,9 @@ export default tseslint.config(
       'marketplace-catalog/**',
       'packages/legal-templates/**',
       'packages/builder-schemas/src/default-emails.ts',
+      // The platform component catalog (docs/98 §5) — composed component trees are
+      // declarative data-as-code, like blueprints/seeds.
+      'packages/builder-schemas/src/catalog/**',
       '**/seed.ts',
       '**/_lib/catalog.ts',
       '**/module-catalog.ts',

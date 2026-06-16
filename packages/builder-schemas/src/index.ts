@@ -21,3 +21,5 @@ export * from './binding';
 export * from './nav';
 export * from './runtime';
 export * from './import-export';
+export * from './catalog';
+export * from './site-chrome';

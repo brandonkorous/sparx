@@ -21,6 +21,7 @@
 //     muted(base-300) · inverse(base-content bg / base-100 fg) · brand(primary).
 
 import {
+  navbar,
   seedNode,
   type BoxStyle,
   type BuilderNode,
@@ -45,6 +46,8 @@ function node(
     bind?: string;
     /** Extra verbatim classes (e.g. an archetype/recipe seed). */
     cls?: string;
+    /** Editor-facing node name (forwarded to seedNode). */
+    name?: string;
     children?: BuilderNode[];
   } = {}
 ): BuilderNode {
@@ -809,39 +812,15 @@ function siteLayoutTree(): BuilderNode {
     box: { name: 'Site layout', padding: 'none', backgroundWidth: 'full', contentWidth: 'full' },
     layout: { direction: 'stack', gap: 'none' },
     children: [
-      // HEADER — a true app-bar: logo left, an actions group (nav + CTA) right.
-      // `collapse: false` keeps the row inline at EVERY width (docs/62 D3) instead
-      // of the default stack-on-mobile, so the bar reads correctly on a phone. The
-      // row NavMenu folds its links into a hamburger drawer on phones; logo + CTA
-      // stay inline, so a phone reads `logo · [hamburger + CTA]`.
-      node('Section', {
-        box: {
-          name: 'Header',
-          surface: 'none',
-          backgroundWidth: 'full',
-          contentWidth: 'contained',
-          padding: 'md',
-        },
-        layout: {
-          direction: 'row',
-          collapse: false,
-          justify: 'between',
-          alignItems: 'center',
-          gap: 'md',
-        },
-        children: [
-          node('Wordmark', { bind: 'site.identity' }),
-          // contentWidth:'full' drops the default contained `mx-auto w-full
-          // max-w-site` column so this group sizes to its content — letting the
-          // header's justify-between pin it to the right (docs/62 D3).
-          node('Stack', {
-            box: { padding: 'none', contentWidth: 'full' },
-            layout: { direction: 'row', collapse: false, alignItems: 'center', gap: 'md' },
-            children: [
-              node('NavMenu', { props: { orientation: 'row', links: navLinks } }),
-              node('Button', { props: { label: 'Get Mosaic free', style: 'primary', href: '/' } }),
-            ],
-          }),
+      // HEADER — the shared `navbar` component: logo-left (`start`), nav + CTA
+      // right (`end`). navbar builds a <nav class="navbar"> with navbar-start /
+      // navbar-center / navbar-end zones; we only supply each zone's children,
+      // preserving the original logo-left / nav+CTA-right intent.
+      navbar(node, {
+        start: [node('Wordmark', { bind: 'site.identity' })],
+        end: [
+          node('NavMenu', { props: { orientation: 'row', links: navLinks } }),
+          node('Button', { props: { label: 'Get Mosaic free', style: 'primary', href: '/' } }),
         ],
       }),
       node('Outlet', { box: { padding: 'none', backgroundWidth: 'full', contentWidth: 'full' } }),
