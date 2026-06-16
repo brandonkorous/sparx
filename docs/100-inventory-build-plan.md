@@ -62,13 +62,22 @@ on with the module.
 
 ```
 @sparx/inventory          NEW — owns the supply domain (service + events + errors + MCP tools)
-   ├─ depends on: @sparx/db, @sparx/inventory-schemas, shared low-level publisher
+   ├─ depends on: @sparx/db, @sparx/commerce-schemas¹, shared low-level publisher
    └─ depends on NO other module package  ← keeps the dependency graph acyclic
-@sparx/inventory-schemas  NEW — Zod inputs + row types (moved from @sparx/commerce-schemas)
+@sparx/inventory-schemas  DEFERRED¹ — Zod inputs stay in @sparx/commerce-schemas for now
 @sparx/commerce           consumes @sparx/inventory (checkout reserve/commit, return restock)
 @sparx/crm                emits order.* events; an inventory consumer reacts (no direct dep)
 services/inventory-worker EXISTING — repurposed to write the master ledger, + sync adapters
 ```
+
+> **¹ Deferral (as built in P1a, 2026-06-16).** The standalone `@sparx/inventory-schemas` split was
+> **deferred**. The inventory Zod inputs continue to live in `@sparx/commerce-schemas`, which is a
+> dependency-free **shared leaf** — `@sparx/inventory` importing it keeps the graph acyclic, so the split
+> buys ownership tidiness, not correctness. The blocker: inventory's Zod inputs share primitives
+> (`AddressSnapshot`, `HazmatClass`, money/units helpers) with the commerce schemas, so a clean split
+> means first extracting those primitives to a third shared leaf — a knot not worth untying mid-foundation.
+> Revisit once the supply-side schema surface (PO/receiving/count inputs) is large enough to justify its
+> own home. Tracked here so the topology above reads as intent, not current state.
 
 **Dependency rule:** consumers point _at_ inventory; inventory points at no module. This is why the
 extraction must also lift the shared primitives inventory currently borrows from commerce.
@@ -79,7 +88,7 @@ extraction must also lift the shared primitives inventory currently borrows from
 
 | Borrowed today                                              | Resolution                                                                                                                     |
 | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `@sparx/commerce-schemas` (inputs/types)                    | move inventory Zod schemas → new `@sparx/inventory-schemas`                                                                    |
+| `@sparx/commerce-schemas` (inputs/types)                    | **DEFERRED** — Zod inputs stay in `@sparx/commerce-schemas` (shared leaf, acyclic); `@sparx/inventory-schemas` split postponed (see §2.1 ¹) |
 | `../audit` (`writeAuditLog`)                                | `writeAuditLog` writes the shared `AuditLog` table → lift to a shared util (or `@sparx/db`) both modules import                |
 | `../events` (`publishCommerceEvent`, `indexCommerceEntity`) | publish `inventory.*` via the **shared low-level publisher** (`createPublisher`) directly; inventory owns its own event helper |
 | `../errors` (`CommerceOutOfStockError`, …)                  | define `@sparx/inventory` error classes (or a shared `@sparx/errors`)                                                          |
@@ -168,10 +177,11 @@ and commerce off.
 
 **Work:**
 
-1. **Create `@sparx/inventory` + `@sparx/inventory-schemas`** (use the `new-workspace-package` skill).
-   Move `inventory-service.ts` + inventory Zod schemas; resolve the §2.2 untangle (own events/errors,
-   shared audit). Re-export so existing importers (MCP read/write tools, reservation-reaper) switch to
-   `@sparx/inventory`. `@sparx/commerce` keeps a thin re-export shim only if needed for an interim.
+1. **Create `@sparx/inventory`** (use the `new-workspace-package` skill). _(`@sparx/inventory-schemas`
+   split **deferred** — Zod inputs stay in `@sparx/commerce-schemas`; see §2.1 ¹.)_
+   Move `inventory-service.ts`; resolve the §2.2 untangle (own events/errors, shared audit). Re-export so
+   existing importers (MCP read/write tools, reservation-reaper) switch to `@sparx/inventory`.
+   `@sparx/commerce` keeps a thin re-export shim only if needed for an interim. ✅ **DONE (P1a, PR #64).**
 2. **Unify the stock model.** Make `InventoryLevel`/`Warehouse` the single master:
    - Migrate any `StockLevel`/`StockLocation` data into `InventoryLevel`/`Warehouse`; map location
      types; add `transit`/`bin`/`virtual` to `Warehouse.type`.
