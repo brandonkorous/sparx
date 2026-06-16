@@ -60,7 +60,9 @@ export async function selectSearchConsoleSite(siteUrl: string): Promise<ActionRe
 }
 
 /** Re-ingest the latest Search Console data now. */
-export async function syncSearchConsole(): Promise<ActionResult<{ days: number; queries: number }>> {
+export async function syncSearchConsole(): Promise<
+  ActionResult<{ days: number; queries: number }>
+> {
   try {
     const data = await api.post<{ sync: { days: number; queries: number } }>(
       '/v1/seo/search-console/sync'

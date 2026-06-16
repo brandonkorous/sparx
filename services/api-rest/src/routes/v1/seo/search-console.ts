@@ -49,12 +49,14 @@ interface ConnectionView {
   lastError: string | null;
 }
 
-function view(c: {
-  status: string;
-  siteUrl: string | null;
-  lastSyncAt: Date | null;
-  lastError: string | null;
-} | null): ConnectionView | null {
+function view(
+  c: {
+    status: string;
+    siteUrl: string | null;
+    lastSyncAt: Date | null;
+    lastError: string | null;
+  } | null
+): ConnectionView | null {
   if (!c) return null;
   return {
     status: c.status,

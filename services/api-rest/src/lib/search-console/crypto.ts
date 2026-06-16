@@ -26,9 +26,7 @@ function key(): Buffer | null {
     cachedKey = null;
     return cachedKey;
   }
-  cachedKey = /^[0-9a-fA-F]{64}$/.test(raw)
-    ? Buffer.from(raw, 'hex')
-    : Buffer.from(raw, 'base64');
+  cachedKey = /^[0-9a-fA-F]{64}$/.test(raw) ? Buffer.from(raw, 'hex') : Buffer.from(raw, 'base64');
   return cachedKey;
 }
 

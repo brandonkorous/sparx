@@ -51,10 +51,7 @@ import {
   liveOr,
 } from '../_components/overview-bits';
 import { RescanButton } from './_components/rescan-button';
-import {
-  SearchConsoleControl,
-  type ConnectionView,
-} from './_components/search-console-control';
+import { SearchConsoleControl, type ConnectionView } from './_components/search-console-control';
 
 // SEO overview — "Am I getting found, and what do I fix?". Substantially LIVE:
 // the health score, pages-scored, issue counts, the issue breakdown, and the
@@ -500,7 +497,9 @@ export default async function SeoPage() {
                 title="Organic traffic"
                 icon={<TrendingUp className="h-4 w-4" />}
                 description={`Clicks from search · last ${organicLive ? '28' : '14'} days`}
-                right={<SearchConsoleControl configured={gscConfigured} connection={gscConnection} />}
+                right={
+                  <SearchConsoleControl configured={gscConfigured} connection={gscConnection} />
+                }
               >
                 <AreaChart
                   data={trafficDisplay.data}
