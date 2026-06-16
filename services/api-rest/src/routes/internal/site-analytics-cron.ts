@@ -59,10 +59,20 @@ const siteAnalyticsCronRoutes: FastifyPluginAsync = (app) => {
       const toExclusive = addUtcDays(startOfUtcDay(new Date()), 1);
       const windowStart = addUtcDays(toExclusive, -(days + 1));
 
-      // Active tenants that have captured ≥1 site-analytics event — a tenant with
-      // none would reconcile an empty window for nothing.
+      // Active Builder tenants (Builder is the gate for having a published site
+      // that captures traffic). Enumerate by the `settings.modules.builder`
+      // JSON flag, NOT a relation to site_analytics_events: that table is
+      // FORCE-RLS, so a platform-level (no tenant context) relation query returns
+      // zero rows and the cron would silently no-op in prod (it only "works"
+      // locally because sparx_owner is a superuser there). Tenants is the non-RLS
+      // dispatch row, so the flag filter is safe; the reconcile then reads the
+      // raw events INSIDE withTenant where RLS lets them through. A Builder tenant
+      // with no events reconciles an empty window cheaply (delete-nothing).
       const tenants = await prisma.tenant.findMany({
-        where: { status: 'active', siteAnalyticsEvents: { some: {} } },
+        where: {
+          status: 'active',
+          settings: { path: ['modules', 'builder', 'enabled'], equals: true },
+        },
         select: { id: true },
       });
 
