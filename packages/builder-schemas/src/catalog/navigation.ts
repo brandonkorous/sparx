@@ -141,33 +141,9 @@ export const NAVIGATION_CATALOG: PlatformCatalogEntry[] = [
     description: 'A trail of links showing where the current page sits in the hierarchy.',
     surfaces: ['page', 'site'],
     tags: ['breadcrumb', 'trail', 'path', 'navigation'],
-    tree: el('nav', 'w-full', {
-      attrs: { ariaLabel: 'Breadcrumb' },
-      children: [
-        el('ol', 'flex flex-wrap items-center gap-2 text-sm text-base-content/60', {
-          children: [
-            el('li', '', {
-              children: [
-                el('a', 'transition-colors hover:text-primary', {
-                  text: 'Home',
-                  attrs: { href: '/' },
-                }),
-              ],
-            }),
-            el('li', 'select-none text-base-content/30', { text: '/' }),
-            el('li', '', {
-              children: [
-                el('a', 'transition-colors hover:text-primary', {
-                  text: 'Collections',
-                  attrs: { href: '/collections' },
-                }),
-              ],
-            }),
-            el('li', 'select-none text-base-content/30', { text: '/' }),
-            el('li', 'font-medium text-base-content', { text: 'Current page' }),
-          ],
-        }),
-      ],
+    // The real Breadcrumb atom (st-breadcrumb) — the last crumb is the current page.
+    tree: atom('Breadcrumb', 'w-full', {
+      items: 'Home | /\nCollections | /collections\nCurrent page',
     }),
   }),
 
@@ -181,62 +157,11 @@ export const NAVIGATION_CATALOG: PlatformCatalogEntry[] = [
     description: 'A stacked navigation list — a sidebar or in-page section menu.',
     surfaces: ['page', 'site'],
     tags: ['menu', 'sidebar', 'list', 'navigation', 'vertical'],
-    tree: el('nav', 'w-full max-w-xs rounded-box border border-base-200 bg-base-100 p-2', {
-      attrs: { ariaLabel: 'Section' },
-      children: [
-        el('ul', 'flex flex-col gap-1', {
-          children: [
-            el('li', '', {
-              children: [
-                el(
-                  'a',
-                  'block rounded-field bg-primary/10 px-3 py-2 text-sm font-medium text-primary',
-                  {
-                    text: 'Overview',
-                    attrs: { href: '#' },
-                  }
-                ),
-              ],
-            }),
-            el('li', '', {
-              children: [
-                el(
-                  'a',
-                  'block rounded-field px-3 py-2 text-sm text-base-content hover:bg-base-200',
-                  {
-                    text: 'Features',
-                    attrs: { href: '#' },
-                  }
-                ),
-              ],
-            }),
-            el('li', '', {
-              children: [
-                el(
-                  'a',
-                  'block rounded-field px-3 py-2 text-sm text-base-content hover:bg-base-200',
-                  {
-                    text: 'Pricing',
-                    attrs: { href: '#' },
-                  }
-                ),
-              ],
-            }),
-            el('li', '', {
-              children: [
-                el(
-                  'a',
-                  'block rounded-field px-3 py-2 text-sm text-base-content hover:bg-base-200',
-                  {
-                    text: 'Support',
-                    attrs: { href: '#' },
-                  }
-                ),
-              ],
-            }),
-          ],
-        }),
-      ],
+    // The real Menu atom (st-menu) — the first item renders active. (Was a hand-rolled
+    // <ul> of styled links.)
+    tree: atom('Menu', 'w-full max-w-xs rounded-box border border-base-200 bg-base-100 p-2', {
+      orientation: 'vertical',
+      items: 'Overview | #\nFeatures | #\nPricing | #\nSupport | #',
     }),
   }),
 
@@ -281,41 +206,11 @@ export const NAVIGATION_CATALOG: PlatformCatalogEntry[] = [
     description: 'A horizontal progress indicator across a multi-step flow.',
     surfaces: ['page', 'site'],
     tags: ['steps', 'stepper', 'progress', 'wizard', 'navigation'],
-    tree: el('ol', 'flex w-full items-center gap-2', {
-      children: [
-        el('li', 'flex flex-1 items-center gap-2', {
-          children: [
-            el(
-              'span',
-              'flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-content',
-              { text: '1' }
-            ),
-            el('span', 'text-sm font-medium text-base-content', { text: 'Cart' }),
-            el('span', 'h-px flex-1 bg-primary', {}),
-          ],
-        }),
-        el('li', 'flex flex-1 items-center gap-2', {
-          children: [
-            el(
-              'span',
-              'flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-content',
-              { text: '2' }
-            ),
-            el('span', 'text-sm font-medium text-base-content', { text: 'Shipping' }),
-            el('span', 'h-px flex-1 bg-base-300', {}),
-          ],
-        }),
-        el('li', 'flex items-center gap-2', {
-          children: [
-            el(
-              'span',
-              'flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-base-200 text-sm font-semibold text-base-content/60',
-              { text: '3' }
-            ),
-            el('span', 'text-sm font-medium text-base-content/60', { text: 'Payment' }),
-          ],
-        }),
-      ],
+    // The real Steps atom (st-steps) — "x " marks a completed step, "* " the active
+    // one. (Was hand-rolled numbered circles + connector rails.)
+    tree: atom('Steps', 'st-c-primary w-full', {
+      orientation: 'horizontal',
+      items: 'x Cart\n* Shipping\nPayment',
     }),
   }),
 
@@ -329,47 +224,8 @@ export const NAVIGATION_CATALOG: PlatformCatalogEntry[] = [
     description: 'Numbered page controls with previous / next.',
     surfaces: ['page', 'site'],
     tags: ['pagination', 'pager', 'pages', 'navigation'],
-    tree: el('nav', 'flex w-full items-center justify-center gap-1', {
-      attrs: { ariaLabel: 'Pagination' },
-      children: [
-        el(
-          'a',
-          'flex h-9 min-w-9 items-center justify-center rounded-field border border-base-200 px-3 text-sm text-base-content hover:bg-base-200',
-          { text: '‹', attrs: { href: '#' } }
-        ),
-        el(
-          'a',
-          'flex h-9 min-w-9 items-center justify-center rounded-field bg-primary px-3 text-sm font-medium text-primary-content',
-          { text: '1', attrs: { href: '#' } }
-        ),
-        el(
-          'a',
-          'flex h-9 min-w-9 items-center justify-center rounded-field border border-base-200 px-3 text-sm text-base-content hover:bg-base-200',
-          { text: '2', attrs: { href: '#' } }
-        ),
-        el(
-          'a',
-          'flex h-9 min-w-9 items-center justify-center rounded-field border border-base-200 px-3 text-sm text-base-content hover:bg-base-200',
-          { text: '3', attrs: { href: '#' } }
-        ),
-        el(
-          'span',
-          'flex h-9 min-w-9 items-center justify-center px-2 text-sm text-base-content/40',
-          {
-            text: '…',
-          }
-        ),
-        el(
-          'a',
-          'flex h-9 min-w-9 items-center justify-center rounded-field border border-base-200 px-3 text-sm text-base-content hover:bg-base-200',
-          { text: '12', attrs: { href: '#' } }
-        ),
-        el(
-          'a',
-          'flex h-9 min-w-9 items-center justify-center rounded-field border border-base-200 px-3 text-sm text-base-content hover:bg-base-200',
-          { text: '›', attrs: { href: '#' } }
-        ),
-      ],
-    }),
+    // The real Pagination atom (st-pagination) — page/total drive the numbers,
+    // sibling window, and prev/next. (Was hand-rolled page links.)
+    tree: atom('Pagination', 'w-full justify-center', { page: '1', total: '12' }),
   }),
 ];

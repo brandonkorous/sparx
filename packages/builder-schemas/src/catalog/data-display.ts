@@ -2,37 +2,23 @@
 //
 // The "show me a record" family — every entry presents content the tenant already
 // has (a product, a customer, an order, an activity feed) rather than navigating
-// or collecting input. Each is a composed node tree of raw `el()` + named atoms,
-// skinned with our token utilities: a card is a `rounded-box` figure, a stat row
-// is a responsive grid, a data table is a real `<table>`. Interactivity that would
+// or collecting input. Where a real site-ui atom exists for a primitive it is
+// composed directly (Layer 1, docs/102): the Tag, Kbd, and Rating atoms carry the
+// recipe on node.class so the inspector recolors them. The larger compositions
+// (cards, stat rows, tables with colored cells, timelines, chat) stay token-utility
+// node trees — bespoke arrangements with no single atom. Interactivity that would
 // normally need JS (accordions, "show more", carousels) is done CSS-natively with
-// `<details>` and scroll-snap, exactly like navigation.ts.
+// `<details>` and scroll-snap; the JS-driven equivalents land in Track C.
 
 import type { BuilderNode } from '../node';
 import { el, atom, bound, entry, type PlatformCatalogEntry } from './_kit';
 
-// A semantic badge pill — one of our color roles, soft-filled.
+// A semantic badge pill — the real Tag atom (st-tag), recolored by st-c-<color>.
 const pill = (label: string, color: string) =>
-  el(
-    'span',
-    `inline-flex items-center rounded-selector bg-${color}/10 px-2.5 py-1 text-xs font-medium text-${color}`,
-    {
-      text: label,
-    }
-  );
+  atom('Tag', `st-c-${color} st-v-soft`, { text: label });
 
-// One filled or empty star glyph (static rating display).
-const star = (filled: boolean) =>
-  el('span', filled ? 'text-warning' : 'text-base-content/20', { text: '★' });
-
-// A single keycap, styled like a physical key (no native <kbd> needed — a span
-// wears the chrome; the contract whitelists `code`/`span` text tags).
-const keycap = (glyph: string) =>
-  el(
-    'span',
-    'inline-flex min-w-7 items-center justify-center rounded-field border border-base-300 bg-base-200 px-2 py-1 text-xs font-semibold text-base-content shadow-sm',
-    { text: glyph }
-  );
+// A single keycap — the real Kbd atom (st-kbd).
+const keycap = (glyph: string) => atom('Kbd', '', { text: glyph });
 
 // One overlapping avatar in a stack — a colored initials circle, ringed against
 // the surface so the overlap reads cleanly.
@@ -442,11 +428,11 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
     description: 'A static five-star rating with filled stars and a review count beside it.',
     surfaces: ['page', 'site'],
     tags: ['rating', 'stars', 'review', 'score', 'data-display'],
+    // The real Rating atom (st-rating) — value/count drive the fill, st-c-* recolors
+    // it. (Was hand-rolled ★ glyph spans.)
     tree: el('div', 'flex w-full items-center gap-2', {
       children: [
-        el('div', 'flex items-center gap-0.5 text-lg leading-none', {
-          children: [star(true), star(true), star(true), star(true), star(false)],
-        }),
+        atom('Rating', 'st-c-warning', { value: '4', count: '5' }),
         el('span', 'text-sm font-medium text-base-content', { text: '4.0' }),
         el('span', 'text-sm text-base-content/50', { text: '(218 reviews)' }),
       ],
