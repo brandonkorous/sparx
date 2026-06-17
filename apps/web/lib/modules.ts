@@ -401,37 +401,37 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
     headlineSecondary: 'fulfillment',
     title: 'sparx Dropship — Suppliers, sync, fulfillment.',
     description: 'Catalog sync, margin math, automated order routing. Sell without inventory.',
-    lede: 'Catalog sync, margin math, automated order routing. Sell without holding inventory — but with a real platform underneath, not a Shopify app stacked on a Shopify app.',
+    lede: 'Connect a supplier, import their catalog, set a markup rule, and let orders route themselves. Sell without holding inventory — on a real platform underneath, where your suppliers, products, and orders all live in one place.',
     features: [
       {
         number: '01',
         title: 'Supplier connectors.',
-        body: 'Native integrations for major suppliers + a generic CSV/FTP/API import for the long tail. Hourly sync, conflict resolution included.',
+        body: 'Connect Printify, Printful, DSers, or Spocket by API, or import any supplier by CSV feed. Validated on connect, scheduled sync, several suppliers at once.',
       },
       {
         number: '02',
         title: 'Margin math.',
-        body: 'Set per-supplier markup rules (flat, percentage, tiered). sparx maintains your retail price as supplier costs change.',
+        body: 'Set a per-supplier pricing rule — percentage markup, multiplier, flat markup, or a target margin. sparx prices imported products automatically as supplier costs change.',
       },
       {
         number: '03',
         title: 'Automated routing.',
-        body: 'Order comes in → routed to the right supplier instantly. Multi-supplier orders split correctly with one customer-facing tracking.',
+        body: 'An order comes in and routes to the right supplier instantly. Multi-supplier orders split into a fulfillment group per supplier, with one customer-facing tracking.',
       },
       {
         number: '04',
         title: 'Inventory sync.',
-        body: 'Real-time stock levels from supplier. Out-of-stock products auto-hidden, back-in-stock auto-relisted.',
+        body: 'Live stock levels pulled from the supplier; out-of-stock combos grey out and a discontinued product is flagged. Print-on-demand suppliers are made-to-order, so stock is unlimited.',
       },
       {
         number: '05',
         title: 'Tracking & fulfillment.',
-        body: 'Supplier sends tracking, sparx forwards to customer via sparx Email with your branding.',
+        body: 'The supplier returns tracking, sparx forwards it to the customer via sparx Email with your branding, and logs the shipment on the customer record.',
       },
       {
         number: '06',
-        title: 'No middleman markup.',
-        body: 'You connect directly to your suppliers. sparx takes $29/mo flat — no per-order sparx fee, no Oberlo-style cut.',
+        title: 'No per-order cut.',
+        body: 'You connect directly to your own suppliers. sparx is a flat $29/mo — no per-order dropship fee and no reseller markup between you and your supplier.',
       },
     ],
     pricing: {
@@ -439,7 +439,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       period: '/mo',
       modifier: '+',
       bundleNote:
-        'A flat $29/mo, layered on Commerce. Supplier sync, margin rules, and automated routing — sell without holding inventory, on one bill with everything else.',
+        'A flat $29/mo. Connect a supplier, import the catalog, set a markup rule, and route orders automatically — sell without holding inventory. Works alongside Commerce, so imported products land in your catalog and your orders route back to the supplier, all on one bill.',
     },
   },
 };

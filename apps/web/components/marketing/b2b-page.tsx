@@ -1,8 +1,10 @@
 import type { ReactNode } from 'react';
 import { Button } from '@sparx/ui';
 import { Container, Display, getModuleColor, Section, Spark } from './primitives';
-import { B2bHero, B2bPriceList, B2bRfq } from './b2b-sections';
-import { B2bTerms, B2bBulkPo, B2bFleet, B2bSameEngine } from './b2b-devices';
+import { B2bHero } from './b2b-hero';
+import { B2bPriceList, B2bRfq } from './b2b-sections';
+import { B2bTerms, B2bBulkPo } from './b2b-devices';
+import { B2bFleet, B2bSameEngine } from './b2b-extras';
 import { Faq, type FaqItem } from './faq';
 
 /**

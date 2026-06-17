@@ -164,6 +164,31 @@ export type {
   InventoryCountDetail,
 } from './inventory-count-shared';
 
+// ─── Inventory transfers (P4 corrections) ─────────────────────────────
+// Move stock between warehouses through a system in-transit holding location so
+// total stock is conserved while in motion. Draft (compose lines) → ship
+// (source → in-transit) → receive (in-transit → destination); cancel returns an
+// in-transit transfer's goods to source. Every leg routes through the ledger.
+export {
+  listInventoryTransfers,
+  getInventoryTransfer,
+  createInventoryTransfer,
+  addTransferLine,
+  updateTransferLine,
+  removeTransferLine,
+  deleteInventoryTransfer,
+} from './inventory-transfers';
+export {
+  shipInventoryTransfer,
+  receiveInventoryTransfer,
+  cancelInventoryTransfer,
+} from './inventory-transfer-lifecycle';
+export type {
+  InventoryTransferRow,
+  InventoryTransferLineRow,
+  InventoryTransferDetail,
+} from './inventory-transfer-shared';
+
 // ─── Movement ledger primitive ────────────────────────────────────────
 // Exposed for callers composing a movement inside their OWN tenant transaction
 // (e.g. an order service decrementing stock atomically with the order insert).

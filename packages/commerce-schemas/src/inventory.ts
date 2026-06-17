@@ -393,3 +393,60 @@ export const EnterCountsInput = z.object({
   entries: z.array(CountEntryInput).min(1).max(5000),
 });
 export type EnterCountsInput = z.infer<typeof EnterCountsInput>;
+
+// ─── Inventory transfers (P4) ─────────────────────────────────────────────────────
+//
+// Move stock between two warehouses through an in-transit holding location. A
+// transfer is composed as a `draft` (one or more variant lines), `shipped` (each
+// line leaves the source and lands in the system in-transit warehouse — so total
+// stock is conserved while in motion), then `received` (in-transit → destination).
+// Cancelling an in-transit transfer returns the goods to source. The single-shot
+// `TransferInventoryInput` above stays the programmatic instant-move path; this is
+// the document-driven two-phase flow.
+
+export const InventoryTransferStatus = z.enum([
+  'draft',
+  'in_transit',
+  'received',
+  'cancelled',
+]);
+export type InventoryTransferStatus = z.infer<typeof InventoryTransferStatus>;
+
+// One line on a transfer: a variant + the quantity to move.
+export const TransferLineInput = z.object({
+  variantId: Uuid,
+  quantity: z.number().int().positive(),
+});
+export type TransferLineInput = z.infer<typeof TransferLineInput>;
+
+export const CreateInventoryTransferInput = z.object({
+  fromWarehouseId: Uuid,
+  toWarehouseId: Uuid,
+  note: z.string().max(2000).optional(),
+  lines: z.array(TransferLineInput).max(500).default([]),
+});
+export type CreateInventoryTransferInput = z.infer<typeof CreateInventoryTransferInput>;
+
+// Add a line to a draft transfer (one variant; re-adding the same variant is a
+// conflict — edit the existing line's quantity instead).
+export const AddTransferLineInput = TransferLineInput;
+export type AddTransferLineInput = z.infer<typeof AddTransferLineInput>;
+
+export const UpdateTransferLineInput = z.object({
+  quantity: z.number().int().positive(),
+});
+export type UpdateTransferLineInput = z.infer<typeof UpdateTransferLineInput>;
+
+// Receive an in-transit transfer. Lines are optional per-line overrides — any line
+// not listed receives its full shipped quantity; a `receivedQuantity` short of the
+// shipped amount writes the shortfall off the in-transit level as a `loss`.
+export const ReceiveTransferLineInput = z.object({
+  lineId: Uuid,
+  receivedQuantity: z.number().int().nonnegative(),
+});
+export type ReceiveTransferLineInput = z.infer<typeof ReceiveTransferLineInput>;
+
+export const ReceiveTransferInput = z.object({
+  lines: z.array(ReceiveTransferLineInput).max(500).optional(),
+});
+export type ReceiveTransferInput = z.infer<typeof ReceiveTransferInput>;

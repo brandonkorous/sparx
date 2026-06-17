@@ -632,6 +632,57 @@
   }
 }
 
+/* ── DROPSHIP: supplier-connect split, margin rows ───────────────
+   Structural devices for the /dropship page. The connect split puts the
+   supplier-picker rail beside the synced-catalog panel (stacks on tablet);
+   the margin row is a 4-column ledger (cost → markup rule → sell price →
+   margin) that collapses to a stacked card on mobile. The routed-order flow
+   reuses the shared `.mkt-pipeline` rail. Surface/colors come from inline
+   CSS-var styles in dropship-sections.tsx; these classes only do layout. */
+
+.mkt-ds-split {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .mkt-ds-split {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+.mkt-margin-row {
+  display: grid;
+  grid-template-columns: 1.6fr 1.1fr 1fr 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 15px 22px;
+}
+.mkt-margin-head {
+  display: grid;
+  grid-template-columns: 1.6fr 1.1fr 1fr 1fr;
+  gap: 16px;
+  padding: 13px 22px;
+}
+@media (max-width: 640px) {
+  .mkt-margin-head {
+    display: none;
+  }
+  .mkt-margin-row {
+    grid-template-columns: 1fr auto;
+    gap: 4px 12px;
+    padding: 16px 18px;
+  }
+  .mkt-margin-item {
+    grid-column: 1 / -1;
+  }
+  .mkt-margin-cell {
+    text-align: right;
+  }
+}
+
 /* EMAIL: deliverability split, broadcast stats, automation rows ─
    Structural devices for the /email page. The deliverability split puts the
    sender-health checklist beside the auto-configured DNS panel (stacks on

@@ -54,4 +54,7 @@ export type {
   InventoryCountRow,
   InventoryCountLineRow,
   InventoryCountDetail,
+  InventoryTransferRow,
+  InventoryTransferLineRow,
+  InventoryTransferDetail,
 } from './services/inventory-service';

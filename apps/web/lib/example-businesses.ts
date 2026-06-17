@@ -162,6 +162,56 @@ export interface ExampleB2b {
   quote: { number: string; lines: number; total: string; status: string; expires: string };
 }
 
+/**
+ * A representative Dropship facet per business — the supply-chain counterpart to
+ * `order`/`article`/`crm`/`email`/`b2b`, for the /dropship surfaces (a connected
+ * supplier with its synced catalog, a routed order split by supplier, the
+ * supplier-cost → markup → sell-price margin math, and the tracking that flows
+ * back to the customer). Keep every field present on every entry so rotating
+ * dropship surfaces never reflow as they crossfade. Numbers are internally
+ * coherent: every routed line's `sell` − `cost` === `margin` and
+ * `marginPct` ≈ margin ÷ sell; the order `total` (= sum of sell) − `cost`
+ * (= sum of supplier cost) === `profit`. Vocabulary mirrors the real dashboard
+ * dropship surfaces (the vendor catalog Printify/Printful/DSers/Spocket/CSV, the
+ * `percentage_markup`/`multiplier`/`flat_markup`/`fixed_margin` pricing rules,
+ * the submitted → shipped → delivered routed-order status, the per-supplier
+ * profitability table cost/revenue/profit/margin) — see docs/14 (Dropship PRD),
+ * `@sparx/dropship`, and the apps/dashboard dropship module. Dropship works
+ * alongside Commerce: imported products land in your catalog, and the orders
+ * your store takes route automatically back to the right supplier.
+ */
+export interface ExampleDropship {
+  /** the connected supplier the catalog + orders route through (a real vendor
+   *  from VENDOR_CATALOG: Printify, Printful, DSers, Spocket, CSV feed). */
+  supplier: string;
+  /** how the connection runs — 'API' (automated) or 'CSV feed' (manual). */
+  connection: string;
+  /** print-on-demand supplier (made-to-order, unlimited stock) vs stocked. */
+  pod: boolean;
+  /** the pricing rule that turns supplier cost into the sell price — one of the
+   *  real rule types, e.g. '2.4× multiplier' or '60% markup'. */
+  rule: string;
+  /** a synced catalog product priced for this store: the supplier `cost`, the
+   *  `sell` price after the rule, the `margin` (= sell − cost), and `marginPct`
+   *  (≈ margin ÷ sell). Proves the markup math. */
+  pricing: { item: string; sku: string; cost: string; sell: string; margin: string; marginPct: string };
+  /** live stock pulled from the supplier on sync — a count for stocked suppliers,
+   *  or 'unlimited' for POD (made-to-order). */
+  stock: string;
+  /** a routed order: its number, the supplier group it routed to, the lifecycle
+   *  status (submitted | shipped | delivered), the customer-facing tracking
+   *  number, and the order-level cost/revenue/profit (= revenue − cost). */
+  routed: {
+    number: string;
+    status: string;
+    tracking: string;
+    carrier: string;
+    cost: string;
+    revenue: string;
+    profit: string;
+  };
+}
+
 export interface ExampleBusiness {
   /** short vertical label — for clarity + aria, not usually shown. */
   vertical: string;
@@ -192,6 +242,8 @@ export interface ExampleBusiness {
   email: ExampleEmail;
   /** wholesale-account fixture for B2B surfaces — see ExampleB2b. */
   b2b: ExampleB2b;
+  /** supply-chain fixture for Dropship surfaces — see ExampleDropship. */
+  dropship: ExampleDropship;
 }
 
 export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
@@ -271,6 +323,30 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
         expires: 'in 7 days',
       },
     },
+    dropship: {
+      supplier: 'Printify',
+      connection: 'API',
+      pod: true,
+      rule: '60% markup',
+      pricing: {
+        item: 'Botanical Throw Pillow',
+        sku: 'PFY-THP-18',
+        cost: '$22.50',
+        sell: '$36.00',
+        margin: '$13.50',
+        marginPct: '37.5%',
+      },
+      stock: 'unlimited',
+      routed: {
+        number: 'Order #1042',
+        status: 'Shipped',
+        tracking: '9400 1234 5678 9012',
+        carrier: 'USPS',
+        cost: '$22.50',
+        revenue: '$36.00',
+        profit: '$13.50',
+      },
+    },
   },
   {
     vertical: 'grocery',
@@ -346,6 +422,30 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
         total: '$2,310.00',
         status: 'Under review',
         expires: 'in 5 days',
+      },
+    },
+    dropship: {
+      supplier: 'Spocket',
+      connection: 'API',
+      pod: false,
+      rule: '2.2× multiplier',
+      pricing: {
+        item: 'Stoneware Serving Bowl',
+        sku: 'SPK-BWL-09',
+        cost: '$12.00',
+        sell: '$26.40',
+        margin: '$14.40',
+        marginPct: '54.5%',
+      },
+      stock: '184 in stock',
+      routed: {
+        number: 'Order #1043',
+        status: 'Delivered',
+        tracking: '1Z 999 AA1 01 2345 6784',
+        carrier: 'UPS',
+        cost: '$24.00',
+        revenue: '$52.80',
+        profit: '$28.80',
       },
     },
   },
@@ -430,6 +530,30 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
         expires: 'converting to order',
       },
     },
+    dropship: {
+      supplier: 'DSers',
+      connection: 'API',
+      pod: false,
+      rule: '55% target margin',
+      pricing: {
+        item: 'Travel Pet Water Bottle',
+        sku: 'DSR-PWB-04',
+        cost: '$5.40',
+        sell: '$12.00',
+        margin: '$6.60',
+        marginPct: '55.0%',
+      },
+      stock: '512 in stock',
+      routed: {
+        number: 'Order #1044',
+        status: 'Submitted',
+        tracking: 'pending supplier',
+        carrier: 'awaiting label',
+        cost: '$5.40',
+        revenue: '$12.00',
+        profit: '$6.60',
+      },
+    },
   },
   {
     vertical: 'coffee',
@@ -510,6 +634,30 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
         total: '$3,860.00',
         status: 'Submitted',
         expires: 'awaiting your reply',
+      },
+    },
+    dropship: {
+      supplier: 'Printful',
+      connection: 'API',
+      pod: true,
+      rule: '+$14.00 flat markup',
+      pricing: {
+        item: 'Roastery Logo Mug',
+        sku: 'PFL-MUG-11',
+        cost: '$11.00',
+        sell: '$25.00',
+        margin: '$14.00',
+        marginPct: '56.0%',
+      },
+      stock: 'unlimited',
+      routed: {
+        number: 'Order #1045',
+        status: 'Shipped',
+        tracking: '9405 5111 9876 5432',
+        carrier: 'USPS',
+        cost: '$11.00',
+        revenue: '$25.00',
+        profit: '$14.00',
       },
     },
   },
@@ -596,6 +744,30 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
         total: '$14,280.00',
         status: 'Quoted',
         expires: 'in 14 days',
+      },
+    },
+    dropship: {
+      supplier: 'CSV feed',
+      connection: 'CSV feed',
+      pod: false,
+      rule: '45% markup',
+      pricing: {
+        item: 'Shop Towel Roll, 12-pack',
+        sku: 'CSV-TWL-12',
+        cost: '$18.00',
+        sell: '$26.10',
+        margin: '$8.10',
+        marginPct: '31.0%',
+      },
+      stock: '96 in stock',
+      routed: {
+        number: 'Order #1046',
+        status: 'Delivered',
+        tracking: 'fulfilled manually',
+        carrier: 'supplier freight',
+        cost: '$36.00',
+        revenue: '$52.20',
+        profit: '$16.20',
       },
     },
   },

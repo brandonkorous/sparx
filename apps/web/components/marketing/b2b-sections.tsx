@@ -1,312 +1,23 @@
-import { Button } from '@sparx/ui';
-import {
-  Container,
-  Display,
-  Dot,
-  getModuleColor,
-  Section,
-  SectionHeader,
-  Spark,
-} from './primitives';
+import { Dot, getModuleColor, Section, SectionHeader } from './primitives';
 import { Cycle } from './cycle';
 import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-businesses';
 
 /**
- * The markup-heavy structural devices for the /b2b page, split out of
- * b2b-page.tsx so each file stays cohesive:
+ * Two structural devices for the /b2b page, split out of b2b-page.tsx:
  *
- *  - B2bHero ......... tinted-band hero: split copy + the WHOLESALE ACCOUNT card
- *    (tier, net terms, credit limit/used, an open quote) that crossfades through
- *    EXAMPLE_BUSINESSES so B2B reads as the engine for ANY kind of account.
  *  - B2bPriceList .... account-specific pricing: the account card beside a
- *    same-SKU "list price vs account price" panel — proves login determines price.
+ *    same-SKU "list price vs account price" panel — proves login decides price.
  *  - B2bRfq .......... the RFQ → quote → order flow as a connected 4-stage rail.
  *
- * Grounded in docs/10 (B2B PRD) + the real dashboard B2B surfaces (accounts,
- * pricing tiers "% off list", credit limit/used, payment terms, the quote
- * lifecycle). B2B slate is a signal, not fill. B2B layers on Commerce.
+ * Both crossfade through EXAMPLE_BUSINESSES so neither anchors on one vertical.
+ * Grounded in docs/10 (B2B PRD) + the real dashboard B2B surfaces (pricing tiers
+ * "% off list", account overrides, the quote lifecycle). B2B slate is a signal,
+ * not fill. (The hero + account card live in b2b-hero.tsx.)
  */
 
 const M = getModuleColor('b2b');
 const SANS = 'var(--font-sans)';
 const MONO = 'var(--font-mono)';
-
-// ── HERO ──────────────────────────────────────────────────────────────────────
-export function B2bHero() {
-  const lede =
-    'sparx B2B is wholesale on the same engine as your retail orders — one catalog, one checkout, one customer record. Each business buyer logs in to their own price list, their net terms, and an RFQ-to-quote flow. Account pricing, credit limits, bulk POs, fleet and service scheduling — native, not a bolt-on.';
-  const chips = ['account price lists', 'net terms + credit', 'RFQ → quote', 'layered on commerce'];
-  return (
-    <section
-      style={{
-        paddingTop: 'clamp(56px, 9vw, 96px)',
-        paddingBottom: 'var(--section-py-lg)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: M.tint,
-      }}
-    >
-      <Container>
-        <div
-          className="mkt-stack-on-tablet"
-          style={{ gap: 'clamp(40px, 6vw, 72px)', alignItems: 'center' }}
-        >
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <Display as="h1" size={84} lineHeight={80}>
-              Wholesale, done right
-              <Spark color={M.color} />
-            </Display>
-            <p
-              style={{
-                fontFamily: SANS,
-                fontWeight: 400,
-                fontSize: 'clamp(16px, 1.6vw, 20px)',
-                lineHeight: 1.55,
-                color: 'var(--color-text-secondary)',
-                maxWidth: '580px',
-                margin: '28px 0 0',
-              }}
-            >
-              {lede}
-            </p>
-            <div className="mkt-cluster" style={{ gap: '12px', marginTop: '34px' }}>
-              <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
-                Activate B2B →
-              </Button>
-              <a href="#price-list">
-                <Button size="lg" variant="outline">
-                  See account pricing
-                </Button>
-              </a>
-            </div>
-            <ul
-              className="mkt-cluster"
-              style={{ gap: '10px', marginTop: '26px', listStyle: 'none', padding: 0 }}
-            >
-              {chips.map((c) => (
-                <li
-                  key={c}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '7px 13px',
-                    backgroundColor: 'var(--color-bg-surface)',
-                    border: '1px solid var(--color-border-default)',
-                    borderRadius: '9999px',
-                  }}
-                >
-                  <Dot color={M.color} size={6} />
-                  <span
-                    style={{
-                      fontFamily: MONO,
-                      fontSize: '12px',
-                      color: 'var(--color-text-secondary)',
-                    }}
-                  >
-                    {c}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div style={{ flex: 1, minWidth: 0, width: '100%' }}>
-            <Cycle
-              items={EXAMPLE_BUSINESSES.map((b) => (
-                <AccountCard key={b.domain} business={b} />
-              ))}
-            />
-          </div>
-        </div>
-      </Container>
-    </section>
-  );
-}
-
-/** The hero's product-surface proof — one real wholesale account: its tier,
- *  net terms, credit, and an open quote. Crossfades through EXAMPLE_BUSINESSES;
- *  every scene has the same shape so the card never reflows. */
-function AccountCard({ business }: { business: ExampleBusiness }) {
-  const { b2b } = business;
-  return (
-    <div
-      style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
-        borderRadius: '16px',
-        boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
-        overflow: 'hidden',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '13px',
-          padding: '18px 20px',
-          borderBottom: '1px solid var(--color-border-default)',
-        }}
-      >
-        <span
-          style={{
-            width: 42,
-            height: 42,
-            borderRadius: '10px',
-            backgroundColor: M.tint,
-            border: `1.5px solid ${M.color}`,
-            flexShrink: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Dot color={M.color} size={9} />
-        </span>
-        <span style={{ minWidth: 0 }}>
-          <span style={{ display: 'block', fontFamily: SANS, fontWeight: 500, fontSize: '16px' }}>
-            {b2b.account}
-          </span>
-          <span style={{ fontFamily: MONO, fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
-            B2B account · {b2b.terms}
-          </span>
-        </span>
-        <span
-          style={{
-            marginLeft: 'auto',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '7px',
-            padding: '5px 11px',
-            borderRadius: '9999px',
-            backgroundColor: M.tint,
-            color: M.text,
-            fontFamily: SANS,
-            fontSize: '12px',
-            fontWeight: 500,
-            flexShrink: 0,
-          }}
-        >
-          {b2b.tier}
-        </span>
-      </div>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          borderBottom: '1px solid var(--color-border-default)',
-        }}
-      >
-        {[
-          [b2b.tierDiscount.replace(' off list', ''), 'price tier'],
-          [b2b.creditLimit, 'credit limit'],
-          [b2b.creditUsedPct, 'credit used'],
-        ].map(([v, l], i) => (
-          <div
-            key={l}
-            style={{
-              padding: '14px 16px',
-              borderLeft: i === 0 ? 'none' : '1px solid var(--color-bg-subtle)',
-            }}
-          >
-            <div
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '17px',
-                letterSpacing: '-0.01em',
-              }}
-            >
-              {v}
-            </div>
-            <div
-              style={{
-                fontFamily: MONO,
-                fontSize: '11px',
-                color: 'var(--color-text-tertiary)',
-                marginTop: '2px',
-              }}
-            >
-              {l}
-            </div>
-          </div>
-        ))}
-      </div>
-      <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span
-            style={{
-              fontFamily: MONO,
-              fontSize: '10.5px',
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-              color: 'var(--color-text-tertiary)',
-            }}
-          >
-            credit · {b2b.creditUsed} of {b2b.creditLimit}
-          </span>
-          <span style={{ fontFamily: MONO, fontSize: '11px', color: M.text }}>
-            {b2b.creditUsedPct}
-          </span>
-        </div>
-        <span
-          style={{
-            display: 'block',
-            height: '7px',
-            borderRadius: '9999px',
-            backgroundColor: 'var(--color-bg-subtle)',
-            overflow: 'hidden',
-          }}
-        >
-          <span
-            style={{
-              display: 'block',
-              height: '100%',
-              width: b2b.creditUsedPct,
-              backgroundColor: M.color,
-              borderRadius: '9999px',
-            }}
-          />
-        </span>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            marginTop: '4px',
-            padding: '12px 14px',
-            backgroundColor: 'var(--color-bg-page)',
-            border: '1px solid var(--color-border-default)',
-            borderRadius: '10px',
-          }}
-        >
-          <span style={{ fontFamily: MONO, fontSize: '12px', color: M.text, flexShrink: 0 }}>
-            {b2b.quote.number}
-          </span>
-          <span
-            style={{ fontFamily: SANS, fontSize: '13px', color: 'var(--color-text-secondary)' }}
-          >
-            {b2b.quote.lines} lines · {b2b.quote.total}
-          </span>
-          <span
-            style={{
-              marginLeft: 'auto',
-              fontFamily: SANS,
-              fontSize: '11.5px',
-              fontWeight: 500,
-              padding: '3px 9px',
-              borderRadius: '9999px',
-              backgroundColor: M.tint,
-              color: M.text,
-              flexShrink: 0,
-            }}
-          >
-            {b2b.quote.status}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // ── ACCOUNT PRICE LIST (same SKU, account-specific price) ───────────────────
 export function B2bPriceList() {
@@ -336,6 +47,11 @@ export function B2bPriceList() {
 /** Left card: who the account is and which tier resolves their price. */
 function PriceTierCard({ business }: { business: ExampleBusiness }) {
   const { b2b } = business;
+  const rows: [string, string][] = [
+    ['Pricing tier', b2b.tier],
+    ['Tier discount', b2b.tierDiscount],
+    ['Payment terms', b2b.terms],
+  ];
   return (
     <div
       style={{
@@ -379,11 +95,7 @@ function PriceTierCard({ business }: { business: ExampleBusiness }) {
         </div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '4px' }}>
-        {[
-          ['Pricing tier', b2b.tier],
-          ['Tier discount', b2b.tierDiscount],
-          ['Payment terms', b2b.terms],
-        ].map(([l, v]) => (
+        {rows.map(([l, v]) => (
           <div
             key={l}
             style={{
@@ -414,12 +126,7 @@ function PriceTierCard({ business }: { business: ExampleBusiness }) {
 /** Right panel: the SAME catalog SKU shown at list price vs the account price. */
 function PriceListPanel({ business }: { business: ExampleBusiness }) {
   const { b2b } = business;
-  const list = b2b.priceList.list;
-  const acct = b2b.priceList.account;
-  const save = formatSaving(list, acct);
-  const rows: { item: string; sku: string; list: string; account: string; save: string }[] = [
-    { item: b2b.priceList.item, sku: b2b.priceList.sku, list, account: acct, save },
-  ];
+  const save = formatSaving(b2b.priceList.list, b2b.priceList.account);
   return (
     <div
       style={{
@@ -451,69 +158,61 @@ function PriceListPanel({ business }: { business: ExampleBusiness }) {
           </span>
         ))}
       </div>
-      {rows.map((r) => (
-        <div
-          key={r.sku}
-          className="mkt-pricerow"
-          style={{ borderBottom: '1px solid var(--color-bg-subtle)' }}
+      <div className="mkt-pricerow" style={{ borderBottom: '1px solid var(--color-bg-subtle)' }}>
+        <span
+          className="mkt-pricerow-item"
+          style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
         >
           <span
-            className="mkt-pricerow-item"
-            style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
-          >
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: '8px',
+              backgroundColor: 'var(--color-bg-subtle)',
+              flexShrink: 0,
+              boxShadow: 'inset 0 0 0 1px rgba(9, 9, 11, 0.05)',
+            }}
+          />
+          <span style={{ minWidth: 0 }}>
+            <span style={{ display: 'block', fontFamily: SANS, fontSize: '14px', fontWeight: 500 }}>
+              {b2b.priceList.item}
+            </span>
             <span
-              style={{
-                width: 34,
-                height: 34,
-                borderRadius: '8px',
-                backgroundColor: 'var(--color-bg-subtle)',
-                flexShrink: 0,
-                boxShadow: 'inset 0 0 0 1px rgba(9, 9, 11, 0.05)',
-              }}
-            />
-            <span style={{ minWidth: 0 }}>
-              <span
-                style={{ display: 'block', fontFamily: SANS, fontSize: '14px', fontWeight: 500 }}
-              >
-                {r.item}
-              </span>
-              <span
-                style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}
-              >
-                {r.sku}
-              </span>
+              style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}
+            >
+              {b2b.priceList.sku}
             </span>
           </span>
-          <span
-            className="mkt-pricerow-cell"
-            style={{
-              fontFamily: SANS,
-              fontSize: '14px',
-              color: 'var(--color-text-tertiary)',
-              textDecoration: 'line-through',
-            }}
-          >
-            {r.list}
-          </span>
-          <span
-            className="mkt-pricerow-cell"
-            style={{
-              fontFamily: SANS,
-              fontSize: '15px',
-              fontWeight: 500,
-              color: 'var(--color-text-primary)',
-            }}
-          >
-            {r.account}
-          </span>
-          <span
-            className="mkt-pricerow-cell"
-            style={{ fontFamily: SANS, fontSize: '13px', fontWeight: 500, color: M.text }}
-          >
-            {r.save}
-          </span>
-        </div>
-      ))}
+        </span>
+        <span
+          className="mkt-pricerow-cell"
+          style={{
+            fontFamily: SANS,
+            fontSize: '14px',
+            color: 'var(--color-text-tertiary)',
+            textDecoration: 'line-through',
+          }}
+        >
+          {b2b.priceList.list}
+        </span>
+        <span
+          className="mkt-pricerow-cell"
+          style={{
+            fontFamily: SANS,
+            fontSize: '15px',
+            fontWeight: 500,
+            color: 'var(--color-text-primary)',
+          }}
+        >
+          {b2b.priceList.account}
+        </span>
+        <span
+          className="mkt-pricerow-cell"
+          style={{ fontFamily: SANS, fontSize: '13px', fontWeight: 500, color: M.text }}
+        >
+          {save}
+        </span>
+      </div>
       <div
         style={{
           display: 'flex',

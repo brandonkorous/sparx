@@ -181,6 +181,8 @@ model Tenant {
   goodsReceiptLines     GoodsReceiptLine[]
   inventoryCounts       InventoryCount[]
   inventoryCountLines   InventoryCountLine[]
+  inventoryTransfers    InventoryTransfer[]
+  inventoryTransferLines InventoryTransferLine[]
 
   // Commerce module — pricing + discounts
   priceLists             PriceList[]
