@@ -14,7 +14,11 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { BuilderRuntimeProvider, type BuilderRuntime } from '@sparx/builder-render';
+import {
+  BuilderBehaviors,
+  BuilderRuntimeProvider,
+  type BuilderRuntime,
+} from '@sparx/builder-render';
 
 import { useCart } from './cart-provider';
 import { useCustomer } from './customer-provider';
@@ -37,5 +41,12 @@ export function StorefrontBuilderRuntime({ children }: { children: React.ReactNo
     }),
     [addItem, router, tenantSlug, propertySlug]
   );
-  return <BuilderRuntimeProvider runtime={runtime}>{children}</BuilderRuntimeProvider>;
+  // Hydrate the sanctioned behavior runtime (docs/98 Pillar 5) over the live tree —
+  // full behavior here (autoplay, scroll listeners, marquee cloning), unlike the
+  // canvas's suppressed preview mode.
+  return (
+    <BuilderRuntimeProvider runtime={runtime}>
+      <BuilderBehaviors>{children}</BuilderBehaviors>
+    </BuilderRuntimeProvider>
+  );
 }

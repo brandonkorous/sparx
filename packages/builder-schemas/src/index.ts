@@ -5,6 +5,7 @@
 
 export * from './node';
 export * from './element';
+export * from './html-import';
 export * from './box-to-class';
 export * from './class-utils';
 export * from './page';
@@ -13,6 +14,7 @@ export * from './email';
 export * from './email-tokens';
 export * from './merge-tags';
 export * from './email-design';
+export * from './email-style';
 export * from './component';
 export * from './starters';
 export * from './archetypes';
@@ -22,4 +24,5 @@ export * from './nav';
 export * from './runtime';
 export * from './import-export';
 export * from './catalog';
+export * from './platform-catalog';
 export * from './site-chrome';

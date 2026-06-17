@@ -140,6 +140,9 @@ importers:
       '@sparx/sitebuilder-schemas':
         specifier: workspace:*
         version: link:../../packages/sitebuilder-schemas
+      '@sparx/surface-compile':
+        specifier: workspace:*
+        version: link:../../packages/surface-compile
       '@sparx/ui':
         specifier: workspace:*
         version: link:../../packages/ui

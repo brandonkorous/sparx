@@ -148,6 +148,66 @@ export function bound(node: BuilderNode, path: string): BuilderNode {
   return node;
 }
 
+// ── Behavior authoring (docs/98 Pillar 5) ──────────────────────────────────────
+//
+// A comprehensive composite wires interactivity through TWO sanctioned props the
+// render walkers lower to the controlled `data-sx-*` vocabulary (NOT raw `data-*`,
+// which the element whitelist would strip): `props.behavior` = the behavior ROOT
+// (`{ type, ...params }`), `props.sxRole` = an inner STRUCTURAL marker. The runtime
+// (`@sparx/builder-render` behaviors) is the source of truth for the closed sets;
+// the unions below MIRROR it and are pinned together by a cross-package drift test
+// (behaviors.test.ts asserts BEHAVIOR_NAMES/SX_ROLES match these). builder-schemas
+// is the lower package, so it cannot import the runtime — hence the mirror.
+
+/** The closed behavior vocabulary a composite may declare. Mirrors the runtime's
+ *  `BEHAVIOR_NAMES`. */
+export const SX_BEHAVIOR_NAMES = [
+  'carousel',
+  'disclosure',
+  'tabs',
+  'scrollspy',
+  'marquee',
+  'menu',
+] as const;
+export type SxBehaviorName = (typeof SX_BEHAVIOR_NAMES)[number];
+
+/** The closed structural-role vocabulary a composite's inner nodes may declare.
+ *  Mirrors the runtime's `SX_ROLES`. */
+export const SX_ROLE_NAMES = [
+  'track',
+  'slide',
+  'prev',
+  'next',
+  'dot',
+  'dots',
+  'trigger',
+  'panel',
+  'item',
+  'tab',
+  'spy',
+] as const;
+export type SxRoleName = (typeof SX_ROLE_NAMES)[number];
+
+/** A behavior root spec: the behavior name plus its tunable params (autoplay,
+ *  interval, single, …), each a primitive the walker lowers to `data-sx-<kebab>`. */
+export type SxBehaviorSpec = {
+  type: SxBehaviorName;
+} & Record<string, string | number | boolean>;
+
+/** Mark a node as a behavior ROOT (`data-sx-carousel`, …) and return it. The runtime
+ *  hydrates this element and wires the `part(...)`-marked descendants it finds. */
+export function behave(node: BuilderNode, spec: SxBehaviorSpec): BuilderNode {
+  node.props.behavior = spec;
+  return node;
+}
+
+/** Mark a node as a structural PART of its enclosing behavior (`data-sx-track`,
+ *  `data-sx-slide`, `data-sx-trigger`, …) and return it. */
+export function part(node: BuilderNode, role: SxRoleName): BuilderNode {
+  node.props.sxRole = role;
+  return node;
+}
+
 /** Identity passthrough that pins the entry shape at the author site (so a typo in
  *  `category`/`kind` is a type error in the category file, not at assembly). */
 export function entry(e: PlatformCatalogEntry): PlatformCatalogEntry {

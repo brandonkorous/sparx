@@ -156,6 +156,8 @@ export type {
   BuilderComponentVersion,
   BuilderGovernance,
   BuilderArchetype,
+  // Platform component catalog (global, docs/98 §5)
+  PlatformComponent,
   // Email platform
   EmailSettings,
   SendingDomain,

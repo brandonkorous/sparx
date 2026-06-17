@@ -28,19 +28,24 @@ export interface EmailHeadingProps {
   children: React.ReactNode;
   /** h1 (display) vs h2 (section). Default h1. */
   level?: 1 | 2;
+  /** Builder-supplied overrides compiled from the node's class (Email v2). Merged
+   *  LAST so an author's size/weight/color/alignment wins over the brand default;
+   *  hand-authored templates leave it unset and keep the fixed chrome. */
+  style?: React.CSSProperties;
 }
 
-export function EmailHeading({ children, level = 1 }: EmailHeadingProps) {
+export function EmailHeading({ children, level = 1, style }: EmailHeadingProps) {
   const brand = useBrand();
-  const style = level === 1 ? typography.heading : typography.subheading;
+  const base = level === 1 ? typography.heading : typography.subheading;
   return (
     <ReHeading
       as={level === 1 ? 'h1' : 'h2'}
       style={{
-        ...style,
+        ...base,
         color: brand.foreground,
         margin: `0 0 ${spacing.sm}px`,
         fontFamily: brand.fontHeading,
+        ...style,
       }}
     >
       {children}
@@ -53,9 +58,11 @@ export interface EmailParagraphProps {
   /** Drops bottom margin — use when this paragraph is the last child of a
    *  section so the next-section spacer doesn't double up. */
   flush?: boolean;
+  /** Builder class-compiled overrides (Email v2), merged last. */
+  style?: React.CSSProperties;
 }
 
-export function EmailParagraph({ children, flush = false }: EmailParagraphProps) {
+export function EmailParagraph({ children, flush = false, style }: EmailParagraphProps) {
   const brand = useBrand();
   return (
     <ReText
@@ -64,6 +71,7 @@ export function EmailParagraph({ children, flush = false }: EmailParagraphProps)
         color: brand.foreground,
         fontFamily: brand.fontBody,
         margin: `0 0 ${flush ? 0 : spacing.md}px`,
+        ...style,
       }}
     >
       {children}
@@ -73,9 +81,11 @@ export function EmailParagraph({ children, flush = false }: EmailParagraphProps)
 
 export interface EmailMutedProps {
   children: React.ReactNode;
+  /** Builder class-compiled overrides (Email v2), merged last. */
+  style?: React.CSSProperties;
 }
 
-export function EmailMuted({ children }: EmailMutedProps) {
+export function EmailMuted({ children, style }: EmailMutedProps) {
   const brand = useBrand();
   return (
     <ReText
@@ -84,6 +94,7 @@ export function EmailMuted({ children }: EmailMutedProps) {
         color: colors.textMuted,
         fontFamily: brand.fontBody,
         margin: `${spacing.md}px 0 0`,
+        ...style,
       }}
     >
       {children}
@@ -125,9 +136,12 @@ export interface EmailButtonProps {
   children: React.ReactNode;
   /** primary: filled brand (default). secondary: outlined. */
   variant?: 'primary' | 'secondary';
+  /** Builder class-compiled overrides (Email v2), merged last — an author can recolor
+   *  or resize the button from its class while the layout/hit-area defaults remain. */
+  style?: React.CSSProperties;
 }
 
-export function EmailButton({ href, children, variant = 'primary' }: EmailButtonProps) {
+export function EmailButton({ href, children, variant = 'primary', style }: EmailButtonProps) {
   const brand = useBrand();
   const variantStyle =
     variant === 'primary'
@@ -149,6 +163,7 @@ export function EmailButton({ href, children, variant = 'primary' }: EmailButton
         textDecoration: 'none',
         display: 'inline-block',
         fontFamily: brand.fontBody,
+        ...style,
       }}
     >
       {children}

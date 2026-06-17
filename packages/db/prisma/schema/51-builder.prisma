@@ -366,3 +366,92 @@ model BuilderArchetype {
   @@index([tenantId, family, position])
   @@map("builder_archetypes")
 }
+
+// Platform-level COMPONENT CATALOG (docs/98 §5) — the DB-backed home for the
+// platform's component library. Unlike all other builder_* tables, this is GLOBAL
+// (no tenant_id): every tenant reads the published set; only platform admins write.
+// The API layer enforces the owner-role gate for writes / non-published reads.
+// RLS: sparx_app can SELECT published rows only; sparx_owner is unrestricted.
+// See packages/db/CLAUDE.md §Global tables.
+// A persisted catalog entry: key/name/category/kind/icon/description/surfaces/tags/
+// tree mirror the data-as-code `PlatformCatalogEntry` (so a published row is palette-
+// renderable, docs/98 §5), plus the lifecycle/governance columns. `category` and
+// `surfaces` are validated STRINGS (the shared CatalogCategory / ComponentSurface
+// vocabulary in @sparx/builder-schemas) rather than DB enums — category slugs are
+// hyphenated (`data-display`), invalid as Postgres enum identifiers, and this matches
+// the package's "validated by builder-schemas, never the DB" convention (cf. `tree`).
+model PlatformComponent {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  // URL-safe, unique catalog identifier (e.g. "navbar_brand", "hero_split").
+  key         String   @unique @db.VarChar(64)
+  name        String   @db.VarChar(120)
+  // Palette grouping — the shared CatalogCategory set (layout | navigation | actions
+  // | data-display | data-input | feedback | marketing | mockup). VARCHAR, not an
+  // enum (hyphenated slugs); validated by @sparx/builder-schemas.
+  category    String   @db.VarChar(32)
+  // common | comprehensive — the shared CatalogKind composite-size set (docs/98 §5).
+  kind        PlatformComponentKind
+  // Lucide icon name for the palette tile.
+  icon        String   @db.VarChar(64)
+  // One-line palette description.
+  description String   @db.VarChar(280)
+  // Editor surfaces this entry appears in — the shared ComponentSurface set
+  // (page | site | email). TEXT[], validated by @sparx/builder-schemas.
+  surfaces    String[]
+  // The BuilderNode root tree (same shape as any archetype/page tree, serialized
+  // JSON). Validated by @sparx/builder-schemas, never by the DB.
+  tree        Json
+  // Optional declarative behavior config (data-sx-* parameters, validated at
+  // the service layer). Null = no runtime behavior (pure composition).
+  behaviors   Json?
+  // Optional richer preview image URL (beyond the lucide icon; URL-first, cf.
+  // BuilderPage.ogImage).
+  thumbnail   String?  @db.VarChar(2048)
+  // Free-form search tags (e.g. ["hero","fullscreen","cta"]).
+  tags        String[]
+  // Draft → submitted → in_review → approved → published → archived | rejected
+  status      PlatformComponentStatus @default(draft)
+  // The platform user (Better Auth user id) who authored this entry.
+  authorId    String   @map("author_id") @db.VarChar(255)
+  // The platform reviewer who last changed the status (null until first review).
+  reviewerId  String?  @map("reviewer_id") @db.VarChar(255)
+  // Monotonically bumped on every identity/tree update (NOT a version history;
+  // the static catalog controls published history outside the DB).
+  version     Int      @default(1)
+  // public: any tenant can stamp it; private: reserved for internal use.
+  visibility  PlatformComponentVisibility @default(public)
+
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@index([status])
+  @@index([kind])
+  @@index([category])
+  @@map("platform_components")
+}
+
+enum PlatformComponentKind {
+  common
+  comprehensive
+
+  @@map("platform_component_kind")
+}
+
+enum PlatformComponentStatus {
+  draft
+  submitted
+  in_review
+  approved
+  published
+  archived
+  rejected
+
+  @@map("platform_component_status")
+}
+
+enum PlatformComponentVisibility {
+  public
+  private
+
+  @@map("platform_component_visibility")
+}
