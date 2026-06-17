@@ -71,8 +71,14 @@ function installNavStart(onStart: () => void): () => void {
         const before = window.location.pathname;
         original.apply(this, args);
         const url = args[2];
-        if (url == null || !activeStart) return;
-        if (new URL(String(url), window.location.href).pathname !== before) activeStart();
+        if (url == null) return;
+        if (new URL(String(url), window.location.href).pathname === before) return;
+        // Defer to a microtask: App Router calls `pushState` from inside a
+        // commit-phase (insertion) effect, and notifying the
+        // `useSyncExternalStore` bar synchronously there throws
+        // "useInsertionEffect must not schedule updates." A microtask runs
+        // after the commit unwinds, so the bar still starts immediately.
+        queueMicrotask(() => activeStart?.());
       };
     });
   }
