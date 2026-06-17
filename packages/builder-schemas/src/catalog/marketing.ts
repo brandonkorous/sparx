@@ -1290,7 +1290,10 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                     }),
                   ],
                 }),
-                atom('Map', 'mt-3 w-full rounded-box', { ratio: 'wide', query: 'San Francisco, CA' }),
+                atom('Map', 'mt-3 w-full rounded-box', {
+                  ratio: 'wide',
+                  query: 'San Francisco, CA',
+                }),
               ],
             }),
             el('form', 'flex flex-col gap-4 rounded-box border border-base-200 bg-base-100 p-6', {
