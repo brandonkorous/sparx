@@ -17,20 +17,35 @@
 // registry.tsx so that file stays focused on the registry machinery.
 
 import {
+  ChevronDown,
+  ChevronRight,
+  Circle,
   CircleDashed,
   CircleDot,
-  ChevronDown,
+  CircleUser,
+  Ellipsis,
   FormInput,
+  Keyboard,
+  Link2,
+  List,
   Loader,
   LoaderCircle,
+  ListOrdered,
   Megaphone,
+  Menu,
+  MessageCircle,
+  PanelBottom,
   Pilcrow,
   ShieldCheck,
   SlidersHorizontal,
   SquareCheck,
   SquareDashed,
+  Star,
+  Table,
   Tag,
+  Tags,
   TextCursorInput,
+  Timer,
   ToggleRight,
   TriangleAlert,
   Upload,
@@ -307,5 +322,256 @@ const FEEDBACK_DEFS: ComponentDef[] = [
   }),
 ];
 
+// ── Data display ───────────────────────────────────────────────────────────────
+
+const DISPLAY_DEFS: ComponentDef[] = [
+  atom({
+    type: 'Avatar',
+    label: 'Avatar',
+    icon: CircleUser,
+    class: 'st-c-neutral st-avatar--sz-md',
+    props: [
+      { key: 'src', label: 'Image URL', control: 'text', placeholder: 'https://…/face.jpg' },
+      { key: 'name', label: 'Name (for initials)', control: 'text', placeholder: 'Jordan Avery' },
+      {
+        key: 'shape',
+        label: 'Shape',
+        control: 'buttongroup',
+        options: opts(['circle', 'Circle'], ['rounded', 'Rounded'], ['square', 'Square']),
+      },
+      {
+        key: 'status',
+        label: 'Presence',
+        control: 'select',
+        options: opts(['none', 'None'], ['online', 'Online'], ['offline', 'Offline']),
+      },
+    ],
+    defaultProps: { src: '', name: 'Jordan Avery', shape: 'circle', status: 'none' },
+  }),
+  atom({
+    type: 'Tag',
+    label: 'Tag',
+    icon: Tags,
+    class: 'st-c-neutral st-v-soft st-tag--sz-md',
+    bindable: true,
+    accepts: ['scalar'],
+    props: [
+      { key: 'text', label: 'Text', control: 'text', placeholder: 'New' },
+      { key: 'dot', label: 'Leading dot', control: 'switch' },
+    ],
+    defaultProps: { text: 'Tag', dot: false },
+  }),
+  atom({
+    type: 'Rating',
+    label: 'Rating',
+    icon: Star,
+    class: 'st-c-warning st-rating--sz-md',
+    bindable: true,
+    accepts: ['scalar'],
+    props: [
+      { key: 'value', label: 'Value', control: 'text', placeholder: '4' },
+      { key: 'count', label: 'Stars', control: 'select', options: opts(['5', '5'], ['10', '10']) },
+    ],
+    defaultProps: { value: '4', count: '5' },
+  }),
+  atom({
+    type: 'Kbd',
+    label: 'Keyboard key',
+    icon: Keyboard,
+    bindable: true,
+    accepts: ['scalar'],
+    props: [{ key: 'text', label: 'Key', control: 'text', placeholder: 'Ctrl' }],
+    defaultProps: { text: 'Ctrl' },
+  }),
+  atom({
+    type: 'Status',
+    label: 'Status dot',
+    icon: Circle,
+    class: 'st-c-success st-status--sz-md',
+    props: [
+      { key: 'label', label: 'Accessible label', control: 'text', placeholder: 'Online' },
+      { key: 'pulse', label: 'Pulse', control: 'switch' },
+    ],
+    defaultProps: { label: '', pulse: false },
+  }),
+  atom({
+    type: 'Table',
+    label: 'Table',
+    icon: Table,
+    props: [
+      {
+        key: 'columns',
+        label: 'Columns — comma separated',
+        control: 'text',
+        placeholder: 'Name, Role, Status',
+      },
+      {
+        key: 'rows',
+        label: 'Rows — one per line, cells separated by |',
+        control: 'textarea',
+        placeholder: 'Jordan | Owner | Active\nRiley | Editor | Invited',
+      },
+      { key: 'zebra', label: 'Striped rows', control: 'switch' },
+    ],
+    defaultProps: {
+      columns: 'Name, Role, Status',
+      rows: 'Jordan Avery | Owner | Active\nRiley Chen | Editor | Invited',
+      zebra: false,
+    },
+  }),
+  atom({
+    type: 'List',
+    label: 'List',
+    icon: List,
+    props: [
+      {
+        key: 'items',
+        label: 'Items — one per line',
+        control: 'textarea',
+        placeholder: 'First item\nSecond item',
+      },
+    ],
+    defaultProps: { items: 'First item\nSecond item\nThird item' },
+  }),
+  atom({
+    type: 'ChatBubble',
+    label: 'Chat bubble',
+    icon: MessageCircle,
+    class: 'st-c-primary',
+    props: [
+      { key: 'author', label: 'Author', control: 'text', placeholder: 'Support' },
+      { key: 'message', label: 'Message', control: 'textarea', placeholder: 'How can we help?' },
+      {
+        key: 'placement',
+        label: 'Side',
+        control: 'buttongroup',
+        options: opts(['start', 'Left'], ['end', 'Right']),
+      },
+    ],
+    defaultProps: { author: '', message: 'Hey — thanks for reaching out!', placement: 'start' },
+  }),
+  atom({
+    type: 'Countdown',
+    label: 'Countdown',
+    icon: Timer,
+    props: [
+      { key: 'days', label: 'Days', control: 'text', placeholder: '2' },
+      { key: 'hours', label: 'Hours', control: 'text', placeholder: '12' },
+      { key: 'minutes', label: 'Minutes', control: 'text', placeholder: '30' },
+      { key: 'seconds', label: 'Seconds', control: 'text', placeholder: '00' },
+      { key: 'showLabels', label: 'Show labels', control: 'switch' },
+    ],
+    defaultProps: { days: '', hours: '12', minutes: '30', seconds: '00', showLabels: true },
+  }),
+];
+
+// ── Navigation ─────────────────────────────────────────────────────────────────
+
+const NAV_DEFS: ComponentDef[] = [
+  atom({
+    type: 'Menu',
+    label: 'Menu',
+    icon: Menu,
+    props: [
+      {
+        key: 'orientation',
+        label: 'Orientation',
+        control: 'buttongroup',
+        options: opts(['vertical', 'Stack'], ['horizontal', 'Row']),
+      },
+      {
+        key: 'items',
+        label: 'Items — one per line, “Label | href”',
+        control: 'textarea',
+        placeholder: 'Dashboard | /\nOrders | /orders',
+      },
+    ],
+    defaultProps: { orientation: 'vertical', items: 'Dashboard | #\nOrders | #\nSettings | #' },
+  }),
+  atom({
+    type: 'Steps',
+    label: 'Steps',
+    icon: ListOrdered,
+    class: 'st-c-primary',
+    props: [
+      {
+        key: 'orientation',
+        label: 'Orientation',
+        control: 'buttongroup',
+        options: opts(['horizontal', 'Row'], ['vertical', 'Stack']),
+      },
+      {
+        key: 'items',
+        label: 'Steps — one per line; prefix “x ” = done, “* ” = active',
+        control: 'textarea',
+        placeholder: 'x Account\n* Profile\nConfirm',
+      },
+    ],
+    defaultProps: { orientation: 'horizontal', items: 'x Account\n* Profile\nConfirm' },
+  }),
+  atom({
+    type: 'Pagination',
+    label: 'Pagination',
+    icon: Ellipsis,
+    props: [
+      { key: 'page', label: 'Current page', control: 'text', placeholder: '2' },
+      { key: 'total', label: 'Total pages', control: 'text', placeholder: '10' },
+    ],
+    defaultProps: { page: '2', total: '10' },
+  }),
+  atom({
+    type: 'Breadcrumb',
+    label: 'Breadcrumb',
+    icon: ChevronRight,
+    props: [
+      {
+        key: 'items',
+        label: 'Trail — one per line, “Label | href”; last is current',
+        control: 'textarea',
+        placeholder: 'Home | /\nProducts | /products\nItem',
+      },
+    ],
+    defaultProps: { items: 'Home | /\nProducts | /products\nItem' },
+  }),
+  atom({
+    type: 'Link',
+    label: 'Link',
+    icon: Link2,
+    class: 'st-c-primary',
+    bindable: true,
+    accepts: ['scalar'],
+    props: [
+      { key: 'text', label: 'Text', control: 'text', placeholder: 'Learn more' },
+      { key: 'href', label: 'Goes to', control: 'text', placeholder: '/about or https://…' },
+      {
+        key: 'underline',
+        label: 'Underline',
+        control: 'select',
+        options: opts(['hover', 'On hover'], ['always', 'Always'], ['none', 'Never']),
+      },
+    ],
+    defaultProps: { text: 'Learn more', href: '#', underline: 'hover' },
+  }),
+  atom({
+    type: 'Dock',
+    label: 'Dock',
+    icon: PanelBottom,
+    props: [
+      {
+        key: 'items',
+        label: 'Items — one per line, “icon | label”',
+        control: 'textarea',
+        placeholder: 'house | Home\nsearch | Search',
+      },
+    ],
+    defaultProps: { items: 'house | Home\nsearch | Search\nuser | Profile' },
+  }),
+];
+
 /** The full site-ui atom set added in Track A, spread into the registry's DEFS. */
-export const SITE_UI_ATOM_DEFS: ComponentDef[] = [...FORM_DEFS, ...FEEDBACK_DEFS];
+export const SITE_UI_ATOM_DEFS: ComponentDef[] = [
+  ...FORM_DEFS,
+  ...FEEDBACK_DEFS,
+  ...DISPLAY_DEFS,
+  ...NAV_DEFS,
+];

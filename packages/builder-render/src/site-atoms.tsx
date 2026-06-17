@@ -24,28 +24,56 @@
 import * as React from 'react';
 import {
   Alert,
+  Avatar,
+  Breadcrumb,
+  BreadcrumbItem,
   Callout,
+  ChatBubble,
+  ChatHeader,
+  ChatMessage,
   Checkbox,
+  Countdown,
+  Dock,
+  DockItem,
   Field,
   FileInput,
   Input,
+  Kbd,
   Label,
+  Link,
+  List,
+  ListRow,
+  Menu,
+  MenuItem,
   NativeSelect,
+  Pagination,
   Progress,
   RadialProgress,
   Radio,
   Range,
+  Rating,
   Skeleton,
   Spinner,
+  Status,
+  Step,
+  Steps,
   Switch,
+  Table,
+  Tag,
   Textarea,
   Validator,
+  type AvatarShape,
+  type ChatPlacement,
   type ChipTreatmentKey,
   type ColorKey,
   type FieldTreatmentKey,
+  type LinkUnderline,
+  type MenuOrientation,
   type SizeKey,
   type SkeletonShape,
   type SpinnerKind,
+  type StepsOrientation,
+  type StepState,
 } from '@sparx/site-ui';
 import type { BuilderNode, Cardinality } from '@sparx/builder-schemas';
 
@@ -125,6 +153,22 @@ function boundOr(ctx: AtomRenderCtx, node: BuilderNode, key: string, placeholder
 function numOr(raw: string, fallback: number): number {
   const n = Number(raw);
   return Number.isFinite(n) && raw.trim() !== '' ? n : fallback;
+}
+
+/** Authored-inline list items — one per line, blank lines dropped. */
+function textLines(node: BuilderNode, key: string): string[] {
+  return str(node, key)
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean);
+}
+
+/** Authored-inline `Label | href` rows — one per line; href optional. */
+function pairLines(node: BuilderNode, key: string): { label: string; href?: string }[] {
+  return textLines(node, key)
+    .map((l) => l.split('|').map((s) => s.trim()))
+    .filter((p) => p[0])
+    .map((p) => ({ label: p[0] ?? '', href: p[1] || undefined }));
 }
 
 // Cast helpers — recipeFromClass yields free strings; the components type their axes,
@@ -335,6 +379,250 @@ export function renderSiteUiAtom(
           className={r.className}
         />
       );
+
+    // ── Data display ──────────────────────────────────────────────────────────
+    case 'Avatar': {
+      const statusV = str(node, 'status');
+      return (
+        <Avatar
+          src={str(node, 'src') || undefined}
+          name={str(node, 'name') || undefined}
+          shape={(str(node, 'shape') || 'circle') as AvatarShape}
+          status={statusV === 'online' || statusV === 'offline' ? statusV : undefined}
+          color={asColor(r.color)}
+          size={asSize(r.size)}
+          className={r.className}
+        />
+      );
+    }
+    case 'Tag':
+      return (
+        <Tag
+          color={asColor(r.color)}
+          variant={r.variant as ChipTreatmentKey | undefined}
+          size={asSize(r.size)}
+          dot={flag(node, 'dot')}
+          className={r.className}
+        >
+          {boundOr(ctx, node, 'text', 'Tag')}
+        </Tag>
+      );
+    case 'Rating':
+      return (
+        <Rating
+          name={node.id}
+          count={numOr(str(node, 'count'), 5)}
+          value={
+            ctx.bound && typeof ctx.value === 'number' ? ctx.value : numOr(str(node, 'value'), 0)
+          }
+          readOnly
+          color={asColor(r.color)}
+          size={asSize(r.size)}
+          className={r.className}
+        />
+      );
+    case 'Kbd':
+      return (
+        <Kbd size={asSize(r.size)} className={r.className}>
+          {boundOr(ctx, node, 'text', 'Ctrl')}
+        </Kbd>
+      );
+    case 'Status':
+      return (
+        <Status
+          color={asColor(r.color)}
+          size={asSize(r.size)}
+          pulse={flag(node, 'pulse')}
+          label={str(node, 'label') || undefined}
+          className={r.className}
+        />
+      );
+    case 'Table': {
+      const head = str(node, 'columns')
+        .split(',')
+        .map((c) => c.trim())
+        .filter(Boolean);
+      const body = textLines(node, 'rows').map((line) => line.split('|').map((c) => c.trim()));
+      const cols = head.length ? head : ['Name', 'Role', 'Status'];
+      const rows = body.length
+        ? body
+        : [
+            ['Jordan Avery', 'Owner', 'Active'],
+            ['Riley Chen', 'Editor', 'Invited'],
+          ];
+      return (
+        <Table zebra={flag(node, 'zebra')} size={asSize(r.size)} className={r.className}>
+          <thead>
+            <tr>
+              {cols.map((h, i) => (
+                <th key={i}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((cells, ri) => (
+              <tr key={ri}>
+                {cols.map((_, ci) => (
+                  <td key={ci}>{cells[ci] ?? ''}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      );
+    }
+    case 'List': {
+      const items = textLines(node, 'items');
+      const rows = items.length ? items : ['First item', 'Second item', 'Third item'];
+      return (
+        <List className={r.className}>
+          {rows.map((it, i) => (
+            <ListRow key={i}>{it}</ListRow>
+          ))}
+        </List>
+      );
+    }
+    case 'ChatBubble': {
+      const author = str(node, 'author');
+      const message = boundOr(ctx, node, 'message', 'Hey — thanks for reaching out!');
+      return (
+        <ChatBubble
+          placement={(str(node, 'placement') || 'start') as ChatPlacement}
+          className={r.className}
+        >
+          {author ? <ChatHeader>{author}</ChatHeader> : null}
+          <ChatMessage color={asColor(r.color)}>{message}</ChatMessage>
+        </ChatBubble>
+      );
+    }
+    case 'Countdown':
+      return (
+        <Countdown
+          days={str(node, 'days') ? numOr(str(node, 'days'), 0) : undefined}
+          hours={str(node, 'hours') ? numOr(str(node, 'hours'), 0) : undefined}
+          minutes={str(node, 'minutes') ? numOr(str(node, 'minutes'), 0) : undefined}
+          seconds={str(node, 'seconds') ? numOr(str(node, 'seconds'), 0) : undefined}
+          showLabels={flag(node, 'showLabels')}
+          className={r.className}
+        />
+      );
+
+    // ── Navigation ────────────────────────────────────────────────────────────
+    case 'Menu': {
+      const items = pairLines(node, 'items');
+      const list = items.length
+        ? items
+        : [
+            { label: 'Dashboard', href: '#' },
+            { label: 'Orders', href: '#' },
+            { label: 'Settings', href: '#' },
+          ];
+      return (
+        <Menu
+          orientation={(str(node, 'orientation') || 'vertical') as MenuOrientation}
+          size={asSize(r.size)}
+          className={r.className}
+        >
+          {list.map((it, i) => (
+            <MenuItem key={i} href={it.href} active={i === 0}>
+              {it.label}
+            </MenuItem>
+          ))}
+        </Menu>
+      );
+    }
+    case 'Steps': {
+      const items = textLines(node, 'items');
+      const list = items.length ? items : ['x Account', '* Profile', 'Confirm'];
+      return (
+        <Steps
+          orientation={(str(node, 'orientation') || 'horizontal') as StepsOrientation}
+          color={asColor(r.color)}
+          className={r.className}
+        >
+          {list.map((raw, i) => {
+            let state: StepState = 'upcoming';
+            let label = raw;
+            if (raw.startsWith('x ')) {
+              state = 'complete';
+              label = raw.slice(2);
+            } else if (raw.startsWith('* ')) {
+              state = 'active';
+              label = raw.slice(2);
+            }
+            return (
+              <Step key={i} state={state}>
+                {label}
+              </Step>
+            );
+          })}
+        </Steps>
+      );
+    }
+    case 'Pagination':
+      return (
+        <Pagination
+          page={numOr(str(node, 'page'), 1)}
+          total={numOr(str(node, 'total'), 10)}
+          className={r.className}
+        />
+      );
+    case 'Breadcrumb': {
+      const items = pairLines(node, 'items');
+      const list = items.length
+        ? items
+        : [
+            { label: 'Home', href: '/' },
+            { label: 'Products', href: '/products' },
+            { label: 'Item', href: undefined },
+          ];
+      return (
+        <Breadcrumb className={r.className}>
+          {list.map((it, i) => {
+            const last = i === list.length - 1;
+            return (
+              <BreadcrumbItem key={i} href={last ? undefined : it.href} current={last}>
+                {it.label}
+              </BreadcrumbItem>
+            );
+          })}
+        </Breadcrumb>
+      );
+    }
+    case 'Link':
+      return (
+        <Link
+          href={str(node, 'href') || '#'}
+          color={asColor(r.color)}
+          underline={(str(node, 'underline') || 'hover') as LinkUnderline}
+          className={r.className}
+        >
+          {boundOr(ctx, node, 'text', 'Learn more')}
+        </Link>
+      );
+    case 'Dock': {
+      // Each line is `icon | label` (lucide icon name, then its caption).
+      const rows = textLines(node, 'items').map((l) => {
+        const p = l.split('|').map((s) => s.trim());
+        return { icon: p[0] || 'circle', label: p[1] ?? '' };
+      });
+      const list = rows.length
+        ? rows
+        : [
+            { icon: 'house', label: 'Home' },
+            { icon: 'search', label: 'Search' },
+            { icon: 'user', label: 'Profile' },
+          ];
+      return (
+        <Dock size={asSize(r.size)} className={r.className}>
+          {list.map((it, i) => (
+            <DockItem key={i} active={i === 0} label={it.label || undefined}>
+              <BuilderIcon name={it.icon} />
+            </DockItem>
+          ))}
+        </Dock>
+      );
+    }
 
     default:
       return undefined;
