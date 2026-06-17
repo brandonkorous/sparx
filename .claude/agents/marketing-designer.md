@@ -108,10 +108,15 @@ is not.)
 
 **Color = identity, used with restraint.** The canvas is near-white
 (`#FAFAFA` page / `#FFFFFF` surface) on near-black ink (`#0A0A0A`); indigo is the
-one brand accent. Each **module owns a hue** and that hue appears as small
-signals (dots, the spark, a card's top stripe, a tint), not as flood fill — the
-exception is a single module's own page, which may take one saturated hero in
-its color (see `/ai`). The eight module colors:
+one brand accent. Each **module owns a hue** that appears as signals (dots, the
+spark, a card's top stripe) — not flood fill. **A module page's hero takes that
+module's TINTED background** — the hue's light tint (`getModuleColor(module).tint`,
+e.g. commerce `#FFF7ED`, cms `#F0FDFA`) with near-black ink, the colored spark,
+and a white product-surface card on top. It's colorful enough to give the page
+its own identity and light enough that ink stays effortlessly legible — this is
+the **default for every module page**. **Full-saturation flood-fill is the rare
+exception**, reserved for a single standout positioning page (`/ai`'s magenta
+hero); never make saturated heroes the norm. The eight module colors:
 
 | module   | hex       |     | module   | hex       |
 | -------- | --------- | --- | -------- | --------- |

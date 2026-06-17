@@ -401,6 +401,29 @@
   transform: rotate(45deg);
 }
 
+/* FAQ "index + spread" — a question rail drives one answer panel; stacks the
+   rail above the panel on tablet/mobile. (faq-spread.tsx) */
+.mkt-faq-spread {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+@media (max-width: 1024px) {
+  .mkt-faq-spread {
+    flex-direction: column;
+    gap: 24px;
+  }
+}
+.mkt-faq-rail {
+  width: 340px;
+  flex-shrink: 0;
+}
+@media (max-width: 1024px) {
+  .mkt-faq-rail {
+    width: 100%;
+  }
+}
+
 /* ── COMMERCE: order pipeline + annotated checkout frame ─────────
    Structural devices for the /commerce page. The pipeline is a 4-stage
    rail (catalog → cart → checkout → fulfilled) that collapses 4→2→1; the

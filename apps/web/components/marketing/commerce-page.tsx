@@ -47,6 +47,7 @@ export function CommercePage() {
       <Faq
         items={COMMERCE_FAQ}
         id="faq"
+        accent={C.color}
         heading={
           <>
             Commerce questions
@@ -124,7 +125,7 @@ function CommerceHero() {
         paddingBottom: 'var(--section-py-lg)',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-bg-page)',
+        backgroundColor: C.tint,
       }}
     >
       <Container>

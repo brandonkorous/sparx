@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>sparx — FAQ redesign directions</title>
+    <!--
+      EXPLORATION — FAQ redesign (Deliverable B). Replaces the current /commerce
+      FAQ, which breaks our own rules: `Q · 01` mono counters are EYEBROWS (banned)
+      and the two-column type-in-a-bordered-box is "type on a block, no device."
+      Real content: the live Commerce FAQ (cost / per-transaction fee / headless /
+      payments / tax & shipping / wholesale-B2B). Tier-free, grounded in docs/09 +
+      docs/17. No eyebrows, no counters, a real structural device per direction.
+      (FAQPage JSON-LD stays in the React port regardless of visual collapse, so an
+      accordion never hurts AI extraction.)
+
+      A — Editorial accordion: hairline-divided list of questions, click to reveal a
+          well-set answer. The OPEN row grows a 2px commerce rule down its left edge
+          and a soft tint; a thin +/− affordance, no boxes, no counters. Dense, scannable.
+      B — Refined editorial Q&A (open two-column): commerce dot + question left in a
+          fixed measure, answer right with real rhythm; hairline rule between rows. The
+          old layout, fixed — eyebrows + bordered box gone, structure added.
+      C — Index + spread (bespoke): a left rail of question titles acts as a table of
+          contents driving one large answer "spread" on the right; the active title
+          carries the commerce spark. Editorial, docs-like, unmistakably sparx.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --commerce: #f97316;
+        --commerce-ink: #9a3d04; /* AA dark commerce ink on white */
+        --commerce-tint: #fff7ed;
+        --sparx-primary: #6366f1;
+        --bg-page: #fafafa;
+        --bg-surface: #ffffff;
+        --bg-subtle: #f4f4f5;
+        --border: #e5e5e5;
+        --border-strong: #d4d4d8;
+        --ink: #0a0a0a;
+        --text-secondary: #52525b;
+        --text-tertiary: #a1a1aa;
+        --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
+        --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+        --gutter: clamp(20px, 5vw, 80px);
+        --container: 1080px;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body {
+        font-family: var(--font-sans);
+        color: var(--ink);
+        background: var(--bg-page);
+        -webkit-font-smoothing: antialiased;
+      }
+      a { color: inherit; }
+
+      .section { padding: clamp(64px, 10vw, 120px) var(--gutter); }
+      .section.surface { background: var(--bg-surface); border-top: 1px solid var(--border); }
+      .inner { max-width: var(--container); margin: 0 auto; }
+
+      .label {
+        font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em;
+        text-transform: uppercase; color: var(--text-tertiary);
+        max-width: var(--container); margin: 0 auto; padding: 28px var(--gutter) 0;
+      }
+      .label b { color: var(--ink); font-weight: 500; }
+
+      .head { max-width: 680px; margin: 0 0 56px; }
+      .head h2 {
+        font-family: var(--font-sans); font-weight: 500;
+        font-size: clamp(30px, 5vw, 50px); letter-spacing: -0.03em; line-height: 1.04;
+        margin: 0;
+      }
+      .head h2 .spark { color: var(--commerce); }
+      .head p {
+        font-family: var(--font-sans); font-size: clamp(15px, 1.5vw, 18px);
+        line-height: 1.6; color: var(--text-secondary); margin: 20px 0 0; max-width: 600px;
+      }
+
+      /* ════════════ DIRECTION A — EDITORIAL ACCORDION ════════════ */
+      .acc { border-top: 1px solid var(--border); }
+      .acc-item { border-bottom: 1px solid var(--border); }
+      .acc-q {
+        width: 100%; background: none; border: none; cursor: pointer;
+        display: flex; align-items: center; gap: 20px;
+        padding: 26px 8px 26px 0; text-align: left;
+        font-family: var(--font-sans); font-weight: 500;
+        font-size: clamp(18px, 2vw, 22px); letter-spacing: -0.015em;
+        color: var(--ink); line-height: 1.3;
+        transition: color 0.15s ease;
+      }
+      .acc-q:hover { color: var(--commerce-ink); }
+      .acc-q .qtext { flex: 1; }
+      .acc-sign {
+        flex-shrink: 0; width: 26px; height: 26px; position: relative;
+        border-radius: 9999px; transition: background 0.2s ease;
+      }
+      .acc-sign::before, .acc-sign::after {
+        content: ''; position: absolute; left: 50%; top: 50%;
+        width: 12px; height: 2px; border-radius: 2px;
+        background: var(--text-tertiary); transform: translate(-50%, -50%);
+        transition: transform 0.25s ease, background 0.2s ease;
+      }
+      .acc-sign::after { transform: translate(-50%, -50%) rotate(90deg); }
+      .acc-item.open .acc-sign { background: var(--commerce-tint); }
+      .acc-item.open .acc-sign::before { background: var(--commerce); }
+      .acc-item.open .acc-sign::after { transform: translate(-50%, -50%) rotate(0deg); background: var(--commerce); }
+      .acc-a {
+        overflow: hidden; max-height: 0;
+        transition: max-height 0.3s ease;
+      }
+      .acc-item.open .acc-a { max-height: 320px; }
+      .acc-a-inner {
+        position: relative;
+        margin: 0 0 30px;
+        padding-left: 22px;
+        max-width: 660px;
+      }
+      .acc-a-inner::before {
+        content: ''; position: absolute; left: 0; top: 2px; bottom: 2px;
+        width: 2px; border-radius: 2px; background: var(--commerce);
+      }
+      .acc-a-inner p {
+        font-family: var(--font-sans); font-size: 15.5px; line-height: 26px;
+        color: var(--text-secondary); margin: 0;
+      }
+
+      /* ════════════ DIRECTION B — REFINED EDITORIAL Q&A ════════════ */
+      .qa { border-top: 1px solid var(--border); }
+      .qa-row {
+        display: grid; grid-template-columns: 340px 1fr; gap: 48px;
+        padding: 34px 0; border-bottom: 1px solid var(--border);
+        align-items: start;
+      }
+      .qa-q {
+        display: flex; gap: 14px; align-items: flex-start;
+        font-family: var(--font-sans); font-weight: 500;
+        font-size: 19px; letter-spacing: -0.015em; line-height: 1.35; color: var(--ink);
+      }
+      .qa-q .dot {
+        flex-shrink: 0; width: 8px; height: 8px; border-radius: 9999px;
+        background: var(--commerce); margin-top: 9px;
+      }
+      .qa-a {
+        font-family: var(--font-sans); font-size: 15.5px; line-height: 27px;
+        color: var(--text-secondary); margin: 0; max-width: 580px;
+      }
+      .qa-a b { color: var(--ink); font-weight: 500; }
+
+      /* ════════════ DIRECTION C — INDEX + SPREAD ════════════ */
+      .spread {
+        display: grid; grid-template-columns: 320px 1fr; gap: 56px;
+        align-items: start;
+      }
+      .index { display: flex; flex-direction: column; border-top: 1px solid var(--border); }
+      .index-item {
+        text-align: left; background: none; border: none; cursor: pointer;
+        display: flex; align-items: baseline; gap: 12px;
+        padding: 18px 4px; border-bottom: 1px solid var(--border);
+        font-family: var(--font-sans); font-weight: 500; font-size: 16px;
+        letter-spacing: -0.01em; line-height: 1.35; color: var(--text-tertiary);
+        transition: color 0.15s ease;
+      }
+      .index-item:hover { color: var(--ink); }
+      .index-item .num {
+        font-family: var(--font-mono); font-size: 12px; color: var(--text-tertiary);
+        flex-shrink: 0;
+      }
+      .index-item.active { color: var(--ink); }
+      .index-item.active .num { color: var(--commerce); }
+      .index-item .spk { color: var(--commerce); display: none; }
+      .index-item.active .spk { display: inline; }
+
+      .spread-panel {
+        background: var(--bg-surface); border: 1px solid var(--border);
+        border-top: 3px solid var(--commerce);
+        border-radius: 14px; padding: clamp(32px, 4vw, 44px);
+        min-height: 320px;
+      }
+      .spread-panel .pq {
+        font-family: var(--font-sans); font-weight: 500;
+        font-size: clamp(22px, 2.6vw, 30px); letter-spacing: -0.02em; line-height: 1.15;
+        margin: 0 0 22px; color: var(--ink); max-width: 560px;
+      }
+      .spread-panel .pq .spark { color: var(--commerce); }
+      .spread-panel .pa {
+        font-family: var(--font-sans); font-size: 16.5px; line-height: 29px;
+        color: var(--text-secondary); margin: 0; max-width: 600px;
+      }
+      .spread-panel .pa b { color: var(--ink); font-weight: 500; }
+      .spread-foot {
+        margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--border);
+        display: flex; align-items: center; gap: 9px;
+        font-family: var(--font-mono); font-size: 12px; color: var(--text-tertiary);
+      }
+      .spread-foot .dot { width: 6px; height: 6px; border-radius: 9999px; background: var(--commerce); }
+
+      /* responsive */
+      @media (max-width: 860px) {
+        .qa-row { grid-template-columns: 1fr; gap: 14px; }
+        .qa-a { max-width: 100%; }
+        .spread { grid-template-columns: 1fr; gap: 28px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .acc-a, .acc-sign::before, .acc-sign::after, .acc-q, .index-item { transition: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ════════════ DIRECTION A — EDITORIAL ACCORDION ════════════ -->
+    <p class="label"><b>Direction A</b> &mdash; editorial accordion (hairline list, click to reveal, no boxes, no counters)</p>
+    <section class="section">
+      <div class="inner">
+        <div class="head">
+          <h2>Commerce questions<span class="spark">.</span></h2>
+          <p>Pricing, fees, payments, and how it fits your stack &mdash; answered straight. Still deciding? Read the commerce docs or start the 14-day trial.</p>
+        </div>
+        <div class="acc" id="acc"></div>
+      </div>
+    </section>
+
+    <!-- ════════════ DIRECTION B — REFINED EDITORIAL Q&A ════════════ -->
+    <p class="label"><b>Direction B</b> &mdash; refined editorial Q&amp;A (open two-column, real rhythm, eyebrows removed)</p>
+    <section class="section surface">
+      <div class="inner">
+        <div class="head">
+          <h2>Commerce questions<span class="spark">.</span></h2>
+          <p>Pricing, fees, payments, and how it fits your stack &mdash; answered straight. Still deciding? Read the commerce docs or start the 14-day trial.</p>
+        </div>
+        <div class="qa" id="qa"></div>
+      </div>
+    </section>
+
+    <!-- ════════════ DIRECTION C — INDEX + SPREAD ════════════ -->
+    <p class="label"><b>Direction C</b> &mdash; index + spread (a table of contents drives one answer panel; bespoke)</p>
+    <section class="section">
+      <div class="inner">
+        <div class="head">
+          <h2>Commerce questions<span class="spark">.</span></h2>
+          <p>Pricing, fees, payments, and how it fits your stack &mdash; answered straight. Pick a question; the answer opens beside it.</p>
+        </div>
+        <div class="spread">
+          <div class="index" id="index"></div>
+          <div class="spread-panel" id="panel"></div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      // Real Commerce FAQ — grounded in docs/09 + docs/17, tier-free. The exact copy
+      // shipped on /commerce (COMMERCE_FAQ). Some <b> emphasis added for the spread.
+      const FAQ = [
+        {
+          q: 'How much does sparx Commerce cost?',
+          a: 'A flat $49/mo, with Invoicing included free. No tiers and no setup fee — turn Commerce on, add any other modules à la carte, and it all lands on one bill. Start on a 14-day free trial; no card required to begin.',
+        },
+        {
+          q: 'Is there a per-transaction fee?',
+          a: 'A small one that steps down as you grow: 0.5% per transaction on Commerce alone, 0.3% once CRM is active, and 0% once your active modules total $299/mo or more. It is collected through Stripe Connect and is separate from Stripe’s own processing rate — you keep your Stripe account and your processor relationship.',
+        },
+        {
+          q: 'Do I need a storefront, or can I run Commerce headless?',
+          a: 'Either. Run Commerce entirely through the REST API and the MCP server against your own frontend, or switch on Builder for a hosted storefront on your own domain. It is the same order data and the same checkout either way.',
+        },
+        {
+          q: 'Which payment methods are supported?',
+          a: 'Stripe is the primary processor: credit and debit cards, Apple Pay, Google Pay, and Link (Stripe’s one-click checkout). Everything runs through Stripe Connect, so funds settle into your own account.',
+        },
+        {
+          q: 'How are tax and shipping handled?',
+          a: 'Sales tax is calculated by TaxJar or Avalara; live carrier rates (FedEx, UPS, USPS) come from EasyPost, alongside flat-rate rules and local pickup. Connect your accounts and totals calculate at checkout before the customer pays.',
+        },
+        {
+          q: 'Can the same store sell wholesale and B2B?',
+          a: 'Yes — D2C and B2B run on one engine. Add the B2B module for account-specific pricing, net terms, and RFQs; those orders move through the same checkout, inventory, and fulfillment as your retail orders, all on one customer record.',
+        },
+      ];
+
+      // ── A · accordion (first item open) ──
+      const acc = document.getElementById('acc');
+      acc.innerHTML = FAQ.map(
+        (f, i) => `
+        <div class="acc-item ${i === 0 ? 'open' : ''}">
+          <button class="acc-q" aria-expanded="${i === 0}">
+            <span class="qtext">${f.q}</span>
+            <span class="acc-sign" aria-hidden="true"></span>
+          </button>
+          <div class="acc-a"><div class="acc-a-inner"><p>${f.a}</p></div></div>
+        </div>`
+      ).join('');
+      acc.querySelectorAll('.acc-q').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const item = btn.closest('.acc-item');
+          const open = item.classList.toggle('open');
+          btn.setAttribute('aria-expanded', String(open));
+        });
+      });
+
+      // ── B · refined two-column ──
+      const qa = document.getElementById('qa');
+      qa.innerHTML = FAQ.map(
+        (f) => `
+        <div class="qa-row">
+          <div class="qa-q"><span class="dot"></span><span>${f.q}</span></div>
+          <p class="qa-a">${f.a}</p>
+        </div>`
+      ).join('');
+
+      // ── C · index + spread (first active) ──
+      const index = document.getElementById('index');
+      const panel = document.getElementById('panel');
+      index.innerHTML = FAQ.map(
+        (f, i) => `
+        <button class="index-item ${i === 0 ? 'active' : ''}" data-i="${i}">
+          <span class="num">${String(i + 1).padStart(2, '0')}</span>
+          <span>${f.q}<span class="spk"> .</span></span>
+        </button>`
+      ).join('');
+      function renderPanel(i) {
+        const f = FAQ[i];
+        panel.innerHTML = `
+          <h3 class="pq">${f.q.replace(/\?$/, '')}<span class="spark">?</span></h3>
+          <p class="pa">${f.a}</p>
+          <div class="spread-foot"><span class="dot"></span>sparx Commerce · grounded answer</div>`;
+      }
+      renderPanel(0);
+      index.querySelectorAll('.index-item').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          index.querySelectorAll('.index-item').forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          renderPanel(Number(btn.dataset.i));
+        });
+      });
+    </script>
+  </body>
+</html>

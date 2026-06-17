@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>sparx — Module-color hero treatments</title>
+    <!--
+      EXPLORATION — Module-color hero treatments (Deliverable A).
+      Question under test: should a module page take its hero background in the
+      module color? Same hero layout, four treatments across two hues:
+        1. Commerce SATURATED — full #F97316, near-black ink (7.06:1), white spark,
+           white receipt card sitting on the orange (like /ai's chat window on pink).
+        2. Commerce TINTED — bg = #FFF7ED, dark ink, color as a soft wash; card white.
+        3. CMS SATURATED — full #14B8A6 teal (legibility stress test: near-black ink
+           = 7.95:1), an article/SEO surface card instead of a receipt.
+        4. CMS TINTED — bg = #F0FDFA, dark ink.
+      Only the background + ink is varied. The rest of the hero (headline + indigo/
+      white spark, product-surface card right, mono chip row) is held constant so the
+      comparison is apples-to-apples and portable to the real React hero.
+      Saturated hues take NEAR-BLACK ink (white fails AA on both orange and teal);
+      the spark flips to white so the brand accent still reads on its own color.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* canonical sparx tokens (copied from packages/ui/src/tokens.css) */
+        --sparx-primary: #6366f1;
+        --module-commerce: #f97316;
+        --module-cms: #14b8a6;
+        --commerce-tint: #fff7ed;
+        --cms-tint: #f0fdfa;
+        --bg-page: #fafafa;
+        --bg-surface: #ffffff;
+        --bg-subtle: #f4f4f5;
+        --border: #e5e5e5;
+        --ink: #0a0a0a;
+        --text-secondary: #52525b;
+        --text-tertiary: #a1a1aa;
+        --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
+        --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+        --gutter: clamp(20px, 5vw, 80px);
+        --container: 1280px;
+        --shadow-card: 0 14px 40px rgba(15, 15, 20, 0.06);
+        --shadow-card-on-color: 0 24px 60px rgba(20, 10, 0, 0.18);
+        --shadow-card-on-teal: 0 24px 60px rgba(0, 25, 22, 0.2);
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body {
+        font-family: var(--font-sans);
+        color: var(--ink);
+        background: var(--bg-page);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ── variant label strip (mockup-only, not part of the design) ── */
+      .label {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--text-tertiary);
+        padding: 18px var(--gutter) 0;
+        max-width: var(--container);
+        margin: 0 auto;
+      }
+      .label b { color: var(--ink); font-weight: 500; }
+
+      /* ── hero shell ── */
+      .hero {
+        padding: clamp(48px, 8vw, 88px) var(--gutter) clamp(56px, 9vw, 104px);
+      }
+      .hero-inner {
+        max-width: var(--container);
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: clamp(40px, 6vw, 72px);
+        align-items: center;
+      }
+      .hero-copy { min-width: 0; }
+
+      .display {
+        font-family: var(--font-sans);
+        font-weight: 500;
+        font-size: clamp(46px, 6.6vw, 84px);
+        line-height: 0.96;
+        letter-spacing: -0.035em;
+        margin: 0;
+      }
+      .spark { display: inline-block; }
+
+      .lede {
+        font-family: var(--font-sans);
+        font-weight: 400;
+        font-size: clamp(16px, 1.6vw, 20px);
+        line-height: 1.55;
+        max-width: 520px;
+        margin: 28px 0 0;
+      }
+
+      .cluster { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+      .actions { margin-top: 34px; }
+
+      .btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-family: var(--font-sans); font-weight: 500; font-size: 16px;
+        border-radius: 8px; cursor: pointer; border: 1px solid transparent;
+        padding: 14px 24px; line-height: 1; text-decoration: none;
+        transition: transform 0.15s ease, background 0.15s ease;
+      }
+      .btn:hover { transform: translateY(-2px); }
+      .btn-outline { background: transparent; }
+
+      .chips {
+        display: flex; flex-wrap: wrap; gap: 10px;
+        margin: 26px 0 0; padding: 0; list-style: none;
+      }
+      .chip {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 7px 13px; border-radius: 9999px;
+        font-family: var(--font-mono); font-size: 12px;
+      }
+      .dot { width: 6px; height: 6px; border-radius: 9999px; flex-shrink: 0; }
+
+      /* ── product-surface card (right) — generic shell, themed per variant ── */
+      .card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+      .card-row {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 16px 20px; border-bottom: 1px solid var(--border);
+      }
+      .card-id { display: flex; align-items: center; gap: 10px; }
+      .card-id .ttl { font-family: var(--font-sans); font-weight: 500; font-size: 14px; }
+      .card-id .sub { font-family: var(--font-sans); font-size: 12px; color: var(--text-tertiary); }
+      .badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 5px 11px; border-radius: 9999px;
+        font-family: var(--font-sans); font-size: 12px; font-weight: 500;
+      }
+      .line {
+        display: flex; align-items: center; gap: 13px;
+        padding: 13px 20px; border-bottom: 1px solid var(--bg-subtle);
+      }
+      .thumb {
+        width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0;
+        background: var(--bg-subtle); box-shadow: inset 0 0 0 1px rgba(9, 9, 11, 0.05);
+      }
+      .line .nm { font-family: var(--font-sans); font-size: 14px; font-weight: 500; }
+      .line .meta { font-family: var(--font-sans); font-size: 12px; color: var(--text-tertiary); }
+      .line .amt { margin-left: auto; font-family: var(--font-sans); font-size: 14px; color: var(--text-secondary); }
+      .totals { padding: 14px 20px; }
+      .totrow {
+        display: flex; justify-content: space-between;
+        font-family: var(--font-sans); font-size: 13px; color: var(--text-secondary); padding: 4px 0;
+      }
+      .grand {
+        display: flex; justify-content: space-between; align-items: baseline;
+        margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--border);
+      }
+      .grand .l { font-family: var(--font-sans); font-size: 14px; font-weight: 500; }
+      .grand .v { font-family: var(--font-sans); font-weight: 500; font-size: 22px; letter-spacing: -0.02em; }
+      .card-foot {
+        display: flex; align-items: center; gap: 9px;
+        padding: 13px 20px; border-top: 1px solid var(--border); background: var(--bg-page);
+      }
+      .card-foot span { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-tertiary); }
+
+      /* ── CMS / editorial surface card ── */
+      .editor-bar {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 20px; border-bottom: 1px solid var(--border);
+      }
+      .editor-bar .doc { display: flex; align-items: center; gap: 10px; }
+      .editor-bar .doc .ttl { font-family: var(--font-sans); font-weight: 500; font-size: 14px; }
+      .editor-body { padding: 20px; }
+      .kicker {
+        font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em;
+        text-transform: uppercase; color: var(--text-tertiary); margin: 0 0 10px;
+      }
+      .art-h { font-family: var(--font-sans); font-weight: 500; font-size: 22px; letter-spacing: -0.02em; margin: 0 0 12px; line-height: 1.2; }
+      .art-p {
+        font-family: var(--font-sans); font-size: 13.5px; line-height: 22px;
+        color: var(--text-secondary); margin: 0 0 8px;
+      }
+      .art-p.dim { color: var(--text-tertiary); }
+      .seo {
+        margin: 18px 0 0; padding: 16px 18px; border-radius: 12px;
+        background: var(--bg-page); border: 1px solid var(--border);
+        display: flex; align-items: center; gap: 16px;
+      }
+      .score {
+        flex-shrink: 0; width: 52px; height: 52px; border-radius: 9999px;
+        display: flex; align-items: center; justify-content: center;
+        font-family: var(--font-sans); font-weight: 500; font-size: 18px; color: #fff;
+      }
+      .seo-meta { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+      .seo-meta .t { font-family: var(--font-sans); font-weight: 500; font-size: 14px; }
+      .seo-checks { display: flex; flex-wrap: wrap; gap: 6px; }
+      .seo-checks span {
+        font-family: var(--font-mono); font-size: 11px;
+        padding: 3px 9px; border-radius: 9999px;
+        background: var(--bg-subtle); color: var(--text-secondary);
+        display: inline-flex; align-items: center; gap: 5px;
+      }
+
+      /* ════════════ VARIANT 1 — COMMERCE SATURATED ════════════ */
+      .v-commerce-sat {
+        background: var(--module-commerce);
+        --hero-ink: #0a0a0a;
+        --hero-secondary: rgba(10, 10, 10, 0.78);
+        --hero-mono: rgba(10, 10, 10, 0.66);
+      }
+      .v-commerce-sat .display { color: var(--hero-ink); }
+      .v-commerce-sat .spark { color: #ffffff; }
+      .v-commerce-sat .lede { color: var(--hero-secondary); }
+      .v-commerce-sat .btn-primary { background: #0a0a0a; color: #fff; }
+      .v-commerce-sat .btn-outline { border-color: rgba(10, 10, 10, 0.3); color: #0a0a0a; }
+      .v-commerce-sat .chip {
+        background: rgba(255, 255, 255, 0.92); color: rgba(10, 10, 10, 0.78);
+      }
+      .v-commerce-sat .chip .dot { background: var(--module-commerce); }
+      .v-commerce-sat .card { box-shadow: var(--shadow-card-on-color); }
+
+      /* ════════════ VARIANT 2 — COMMERCE TINTED ════════════ */
+      .v-commerce-tint {
+        background: var(--commerce-tint);
+        --hero-ink: #0a0a0a;
+        --hero-secondary: #52525b;
+        --hero-mono: #a1a1aa;
+      }
+      .v-commerce-tint .display { color: var(--hero-ink); }
+      .v-commerce-tint .spark { color: var(--module-commerce); }
+      .v-commerce-tint .lede { color: var(--hero-secondary); }
+      .v-commerce-tint .btn-primary { background: #0a0a0a; color: #fff; }
+      .v-commerce-tint .btn-outline { border-color: var(--border); color: #0a0a0a; background: #fff; }
+      .v-commerce-tint .chip {
+        background: var(--bg-surface); border: 1px solid var(--border); color: var(--text-secondary);
+      }
+      .v-commerce-tint .chip .dot { background: var(--module-commerce); }
+      .v-commerce-tint .card { box-shadow: var(--shadow-card); }
+
+      /* ════════════ VARIANT 3 — CMS SATURATED ════════════ */
+      .v-cms-sat {
+        background: var(--module-cms);
+        --hero-ink: #0a0a0a;
+        --hero-secondary: rgba(10, 10, 10, 0.78);
+        --hero-mono: rgba(10, 10, 10, 0.66);
+      }
+      .v-cms-sat .display { color: var(--hero-ink); }
+      .v-cms-sat .spark { color: #ffffff; }
+      .v-cms-sat .lede { color: var(--hero-secondary); }
+      .v-cms-sat .btn-primary { background: #0a0a0a; color: #fff; }
+      .v-cms-sat .btn-outline { border-color: rgba(10, 10, 10, 0.3); color: #0a0a0a; }
+      .v-cms-sat .chip {
+        background: rgba(255, 255, 255, 0.92); color: rgba(10, 10, 10, 0.78);
+      }
+      .v-cms-sat .chip .dot { background: var(--module-cms); }
+      .v-cms-sat .card { box-shadow: var(--shadow-card-on-teal); }
+      .v-cms-sat .score { background: var(--module-cms); }
+      .v-cms-sat .seo-checks span svg { color: var(--module-cms); }
+
+      /* ════════════ VARIANT 4 — CMS TINTED ════════════ */
+      .v-cms-tint {
+        background: var(--cms-tint);
+        --hero-ink: #0a0a0a;
+        --hero-secondary: #52525b;
+        --hero-mono: #a1a1aa;
+      }
+      .v-cms-tint .display { color: var(--hero-ink); }
+      .v-cms-tint .spark { color: var(--module-cms); }
+      .v-cms-tint .lede { color: var(--hero-secondary); }
+      .v-cms-tint .btn-primary { background: #0a0a0a; color: #fff; }
+      .v-cms-tint .btn-outline { border-color: var(--border); color: #0a0a0a; background: #fff; }
+      .v-cms-tint .chip {
+        background: var(--bg-surface); border: 1px solid var(--border); color: var(--text-secondary);
+      }
+      .v-cms-tint .chip .dot { background: var(--module-cms); }
+      .v-cms-tint .card { box-shadow: var(--shadow-card); }
+      .v-cms-tint .score { background: var(--module-cms); }
+
+      /* commerce card accents (both commerce variants) */
+      .card.commerce .card-id .dot-id { background: var(--module-commerce); }
+      .card.commerce .badge { background: rgba(249, 115, 22, 0.14); color: #9a3d04; }
+      .card.commerce .card-foot .dot { background: var(--module-commerce); }
+
+      .dot-id { width: 9px; height: 9px; border-radius: 9999px; flex-shrink: 0; }
+      .dot-8 { width: 8px; height: 8px; border-radius: 9999px; flex-shrink: 0; }
+      .dot-6 { width: 6px; height: 6px; border-radius: 9999px; flex-shrink: 0; }
+
+      /* ── responsive: stack the hero on tablet/mobile ── */
+      @media (max-width: 980px) {
+        .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+        .display { font-size: clamp(40px, 11vw, 64px); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .btn { transition: none; }
+        .btn:hover { transform: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ───────────── 1 · COMMERCE SATURATED ───────────── -->
+    <p class="label"><b>Commerce</b> · saturated &mdash; full #F97316, near-black ink (7.06:1), white spark</p>
+    <section class="hero v-commerce-sat">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <h1 class="display">Sell, ship,<br />get paid<span class="spark">.</span></h1>
+          <p class="lede">
+            Commerce is the transactional core of sparx &mdash; products and inventory,
+            a checkout that converts, Stripe payments, and order operations that hold up
+            at real volume. One order object, cart to fulfilled.
+          </p>
+          <div class="cluster actions">
+            <a class="btn btn-primary" href="#">Start selling &rarr;</a>
+            <a class="btn btn-outline" href="#">See how an order flows</a>
+          </div>
+          <ul class="chips">
+            <li class="chip"><span class="dot"></span>stripe payments</li>
+            <li class="chip"><span class="dot"></span>headless or hosted</li>
+            <li class="chip"><span class="dot"></span>D2C + B2B, one engine</li>
+            <li class="chip"><span class="dot"></span>invoicing included</li>
+          </ul>
+        </div>
+        <div class="hero-card"></div>
+      </div>
+    </section>
+
+    <!-- ───────────── 2 · COMMERCE TINTED ───────────── -->
+    <p class="label"><b>Commerce</b> · tinted &mdash; bg #FFF7ED, dark ink, color as a soft wash</p>
+    <section class="hero v-commerce-tint">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <h1 class="display">Sell, ship,<br />get paid<span class="spark">.</span></h1>
+          <p class="lede">
+            Commerce is the transactional core of sparx &mdash; products and inventory,
+            a checkout that converts, Stripe payments, and order operations that hold up
+            at real volume. One order object, cart to fulfilled.
+          </p>
+          <div class="cluster actions">
+            <a class="btn btn-primary" href="#">Start selling &rarr;</a>
+            <a class="btn btn-outline" href="#">See how an order flows</a>
+          </div>
+          <ul class="chips">
+            <li class="chip"><span class="dot"></span>stripe payments</li>
+            <li class="chip"><span class="dot"></span>headless or hosted</li>
+            <li class="chip"><span class="dot"></span>D2C + B2B, one engine</li>
+            <li class="chip"><span class="dot"></span>invoicing included</li>
+          </ul>
+        </div>
+        <div class="hero-card"></div>
+      </div>
+    </section>
+
+    <!-- ───────────── 3 · CMS SATURATED ───────────── -->
+    <p class="label"><b>CMS</b> · saturated &mdash; full #14B8A6 teal (stress test), near-black ink (7.95:1)</p>
+    <section class="hero v-cms-sat">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <h1 class="display">Words, media,<br />SEO<span class="spark">.</span></h1>
+          <p class="lede">
+            The CMS is where the writing happens &mdash; a structured editor, media that
+            optimizes itself, and SEO baked into every page. Publish to your site, your
+            store, and your feeds from one place.
+          </p>
+          <div class="cluster actions">
+            <a class="btn btn-primary" href="#">Start writing &rarr;</a>
+            <a class="btn btn-outline" href="#">See the editor</a>
+          </div>
+          <ul class="chips">
+            <li class="chip"><span class="dot"></span>structured editor</li>
+            <li class="chip"><span class="dot"></span>SEO built in</li>
+            <li class="chip"><span class="dot"></span>media library</li>
+            <li class="chip"><span class="dot"></span>publish anywhere</li>
+          </ul>
+        </div>
+        <div class="hero-card-cms"></div>
+      </div>
+    </section>
+
+    <!-- ───────────── 4 · CMS TINTED ───────────── -->
+    <p class="label"><b>CMS</b> · tinted &mdash; bg #F0FDFA, dark ink</p>
+    <section class="hero v-cms-tint">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <h1 class="display">Words, media,<br />SEO<span class="spark">.</span></h1>
+          <p class="lede">
+            The CMS is where the writing happens &mdash; a structured editor, media that
+            optimizes itself, and SEO baked into every page. Publish to your site, your
+            store, and your feeds from one place.
+          </p>
+          <div class="cluster actions">
+            <a class="btn btn-primary" href="#">Start writing &rarr;</a>
+            <a class="btn btn-outline" href="#">See the editor</a>
+          </div>
+          <ul class="chips">
+            <li class="chip"><span class="dot"></span>structured editor</li>
+            <li class="chip"><span class="dot"></span>SEO built in</li>
+            <li class="chip"><span class="dot"></span>media library</li>
+            <li class="chip"><span class="dot"></span>publish anywhere</li>
+          </ul>
+        </div>
+        <div class="hero-card-cms"></div>
+      </div>
+    </section>
+
+    <script>
+      // Inject the two product-surface cards into each hero so the markup above
+      // stays readable. Commerce → a real order receipt; CMS → an editor + SEO score.
+      const receipt = `
+        <div class="card commerce">
+          <div class="card-row">
+            <span class="card-id">
+              <span class="dot-id"></span>
+              <span>
+                <span class="ttl">Order #1045</span><br />
+                <span class="sub">Sam Carter · just now</span>
+              </span>
+            </span>
+            <span class="badge">&#10003; Paid</span>
+          </div>
+          <div class="line">
+            <span class="thumb"></span>
+            <span><span class="nm">Whole-Bean Sampler</span><br /><span class="meta">SKU WBS-3 · qty 3</span></span>
+            <span class="amt">$54.00</span>
+          </div>
+          <div class="line">
+            <span class="thumb"></span>
+            <span><span class="nm">Pour-Over Kit</span><br /><span class="meta">SKU POK-1 · qty 1</span></span>
+            <span class="amt">$42.00</span>
+          </div>
+          <div class="totals">
+            <div class="totrow"><span>Subtotal</span><span>$96.00</span></div>
+            <div class="totrow"><span>Shipping · USPS Priority</span><span>$8.75</span></div>
+            <div class="totrow"><span>Tax · auto-calculated</span><span>$7.68</span></div>
+            <div class="grand"><span class="l">Total</span><span class="v">$112.43</span></div>
+          </div>
+          <div class="card-foot">
+            <span class="dot dot-6"></span>
+            <span>paid with Google Pay · Stripe · inventory decremented</span>
+          </div>
+        </div>`;
+
+      const editor = `
+        <div class="card cms">
+          <div class="editor-bar">
+            <span class="doc">
+              <span class="dot-8" style="background: var(--module-cms);"></span>
+              <span class="ttl">Now Open Saturdays</span>
+            </span>
+            <span class="badge" style="background: rgba(20,184,166,0.14); color:#0f766e;">Draft</span>
+          </div>
+          <div class="editor-body">
+            <p class="kicker">Article · /blog</p>
+            <h3 class="art-h">Five reasons we added a Saturday shift</h3>
+            <p class="art-p">Demand kept climbing through the week, so we opened the doors one more day &mdash; here&rsquo;s what changed for our regulars and our team.</p>
+            <p class="art-p dim">Image · storefront-saturday.jpg &mdash; alt text generated, 1600&times;900, WebP</p>
+            <div class="seo">
+              <span class="score" style="background: var(--module-cms);">92</span>
+              <span class="seo-meta">
+                <span class="t">SEO score · strong</span>
+                <span class="seo-checks">
+                  <span>&#10003; title 54 chars</span>
+                  <span>&#10003; meta set</span>
+                  <span>&#10003; alt text</span>
+                  <span>&#10003; readable</span>
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>`;
+
+      document.querySelectorAll('.hero-card').forEach((el) => (el.outerHTML = receipt));
+      document.querySelectorAll('.hero-card-cms').forEach((el) => (el.outerHTML = editor));
+    </script>
+  </body>
+</html>

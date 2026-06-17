@@ -1,11 +1,13 @@
+import type { ReactNode } from 'react';
 import { Section, SectionHeader, Spark } from './primitives';
+import { FaqSpread } from './faq-spread';
 
 // The marketing FAQ — authored here as the source of truth. These are page
 // content, not CMS "content items": the old `faq_item` content type was
 // reclassified into a builder FAQ component (docs/51 §7).
-interface FaqItem {
+export interface FaqItem {
   id: string;
-  order: number;
+  order?: number;
   question: string;
   answer: string;
 }
@@ -16,7 +18,7 @@ const FAQ_ITEMS: FaqItem[] = [
     order: 10,
     question: 'Can I really get a live site in five minutes?',
     answer:
-      'Yes — that’s the design target the entire platform is built around. Sign up, pick a theme, activate the modules you need, add a product, take an order. We measure new-merchant time-to-first-order and that number is the north star metric. If it takes longer for you, something is broken and we want to know.',
+      'Yes — that’s the design target the entire platform is built around. Sign up, pick a theme, activate the modules you need, add a product, take an order. We measure new-tenant time-to-first-order and that number is the north star metric. If it takes longer for you, something is broken and we want to know.',
   },
   {
     id: 'static-2',
@@ -44,30 +46,55 @@ const FAQ_ITEMS: FaqItem[] = [
     order: 50,
     question: 'Do you offer custom domains and SSL?',
     answer:
-      'Yes, on every plan. Add a domain, point your DNS, and we provision a Let’s Encrypt certificate automatically. Custom email-sending domains use Postal on sparx.email with auto-configured SPF, DKIM, and DMARC. No additional cost, no third-party DNS service required.',
+      'Yes, on every site. Add a domain, point your DNS, and we provision a Let’s Encrypt certificate automatically. Custom email-sending domains use Postal on sparx.email with auto-configured SPF, DKIM, and DMARC. No additional cost, no third-party DNS service required.',
   },
   {
     id: 'static-6',
     order: 60,
-    question: 'Can I migrate from Shopify or HubSpot?',
+    question: 'Can I migrate from another platform?',
     answer:
-      'Yes. We ship native importers for Shopify (products, customers, orders, themes), HubSpot (contacts, deals, lists), Mailchimp (audiences, automations), and WordPress (posts, media, redirects). The Gillett Diesel migration from Shopify + HubSpot took 14 days end-to-end including custom checkout work — most SMB migrations take under a week.',
+      'Yes. We ship native importers for the common stacks — products, customers, and orders from store platforms; contacts, deals, and lists from CRMs; audiences and automations from email tools; posts, media, and redirects from CMSs. Most SMB migrations take under a week; a complex B2B move with custom checkout work runs about two.',
   },
   {
     id: 'static-7',
     order: 70,
-    question: 'What about uptime, SLAs, and support?',
+    question: 'What about uptime and support?',
     answer:
-      '99.95% uptime target on all plans. Status page at status.sparx.works. Pro and above get 24-hour email response; Business gets 4-hour; Enterprise gets phone, dedicated Slack, and a 99.99% SLA with credits. Managed hosting clients ($750/mo) get on-call infrastructure support included.',
+      'A 99.95% uptime target, with a public status page at status.sparx.works. Every tenant gets email support; higher-touch support (faster response, a dedicated channel, a stronger SLA) is available, and managed-hosting clients get on-call infrastructure support included.',
   },
 ];
 
-export function Faq() {
-  const items = FAQ_ITEMS;
-
+/**
+ * The marketing FAQ section — an "index + spread": a rail of questions drives a
+ * single answer panel (FaqSpread). The visible UI is interactive (client), but
+ * the FAQPage JSON-LD is emitted HERE, server-side, from the same items — so the
+ * questions and answers stay crawlable / answer-engine-extractable regardless of
+ * what's on screen (the text an assistant quotes when a user asks about sparx in
+ * their own AI chat). Reusable per page: pass page-specific `items` (never clone
+ * one boilerplate FAQ across pages — duplicate Q&A is an anti-signal) and the
+ * page's `accent` (the active rail dot + the "?" punctuation). Defaults: the
+ * homepage set, indigo accent.
+ */
+export function Faq({
+  items = FAQ_ITEMS,
+  heading,
+  lede,
+  id,
+  accent = 'var(--sparx-primary)',
+}: {
+  /** Page-specific Q&A. Defaults to the homepage set. */
+  items?: FaqItem[];
+  heading?: ReactNode;
+  lede?: ReactNode;
+  /** Anchor id for in-page nav (e.g. "faq"). */
+  id?: string;
+  /** Section accent — the active rail dot + the "?" punctuation. Defaults to indigo. */
+  accent?: string;
+} = {}) {
   // FAQPage structured data (docs/50) — lets Google render rich FAQ results and
-  // gives answer engines clean question/answer pairs to cite. Built from the same
-  // items the section renders, so the markup and the visible prose never diverge.
+  // gives answer engines clean question/answer pairs to cite. Emitted server-side
+  // from the same items FaqSpread renders, so the markup and the visible prose
+  // never diverge and every answer stays extractable even when collapsed.
   const faqJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -79,98 +106,31 @@ export function Faq() {
   };
 
   return (
-    <Section padding="xl">
+    <Section id={id} padding="xl">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '56px' }}>
         <SectionHeader
           headline={
-            <>
-              Frequently asked
-              <Spark />
-            </>
+            heading ?? (
+              <>
+                Frequently asked
+                <Spark />
+              </>
+            )
           }
           lede={
-            <>
-              Still curious? Read the platform docs, browse the API spec, or book a 20-min
-              architecture call. We don&apos;t do high-pressure demos.
-            </>
+            lede ?? (
+              <>
+                Still curious? Read the platform docs, browse the API spec, or book a 20-min
+                architecture call. We don&apos;t do high-pressure demos.
+              </>
+            )
           }
         />
-
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            backgroundColor: 'var(--color-bg-surface)',
-            border: '1px solid var(--color-border-default)',
-            borderRadius: '8px',
-            overflow: 'hidden',
-          }}
-        >
-          {items.map((item, i) => (
-            <div
-              key={item.id}
-              className="mkt-stack-on-tablet"
-              style={{
-                alignItems: 'flex-start',
-                padding: '28px 32px',
-                gap: '32px',
-                borderBottom:
-                  i === items.length - 1 ? undefined : '1px solid var(--color-border-default)',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '8px',
-                  width: '380px',
-                  maxWidth: '100%',
-                  flexShrink: 0,
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '12px',
-                    color: 'var(--color-text-tertiary)',
-                  }}
-                >
-                  Q · {String(i + 1).padStart(2, '0')}
-                </span>
-                <h3
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontWeight: 500,
-                    fontSize: '20px',
-                    letterSpacing: '-0.015em',
-                    lineHeight: '28px',
-                    color: 'var(--color-text-primary)',
-                    margin: 0,
-                  }}
-                >
-                  {item.question}
-                </h3>
-              </div>
-              <p
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '14px',
-                  lineHeight: '24px',
-                  color: 'var(--color-text-secondary)',
-                  flex: 1,
-                  margin: 0,
-                  whiteSpace: 'pre-line',
-                }}
-              >
-                {item.answer}
-              </p>
-            </div>
-          ))}
-        </div>
+        <FaqSpread items={items} accent={accent} />
       </div>
     </Section>
   );
