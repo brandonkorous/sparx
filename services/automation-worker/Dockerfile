@@ -31,6 +31,7 @@ COPY packages/email-sends ./packages/email-sends
 COPY packages/crm ./packages/crm
 COPY packages/crm-schemas ./packages/crm-schemas
 COPY packages/commerce-schemas ./packages/commerce-schemas
+COPY packages/inventory ./packages/inventory
 COPY packages/modules ./packages/modules
 COPY packages/db ./packages/db
 COPY packages/events ./packages/events

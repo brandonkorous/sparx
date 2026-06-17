@@ -372,4 +372,52 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
       }
     ),
   }),
+
+  // ── Cookie consent — a sticky bottom notice with accept / essential ───────────
+  // Sits at the bottom of the page with `sticky bottom-0` (a true full-viewport
+  // `fixed` overlay is denied by the compile allowlist; sticky is the sanctioned
+  // placement for a catalog block). The accept/decline wiring is the tenant's to add.
+  entry({
+    key: 'cookie_consent',
+    name: 'Cookie consent',
+    category: 'feedback',
+    kind: 'comprehensive',
+    icon: 'cookie',
+    description:
+      'A sticky bottom banner explaining cookie use, with “Accept all” and “Essential only” actions. Place it at the end of the page so it pins above the fold as visitors scroll.',
+    surfaces: ['page', 'site'],
+    tags: ['cookie', 'consent', 'gdpr', 'privacy', 'banner', 'notice', 'feedback'],
+    tree: el(
+      'div',
+      'sticky bottom-0 z-40 w-full border-t border-base-200 bg-base-100/95 px-4 py-4 shadow-lg backdrop-blur',
+      {
+        name: 'Cookie consent',
+        attrs: { role: 'region', ariaLabel: 'Cookie notice' },
+        children: [
+          el(
+            'div',
+            'mx-auto flex max-w-5xl flex-col items-center gap-4 @2xl:flex-row @2xl:justify-between',
+            {
+              children: [
+                atom('Text', 'text-sm text-base-content/80', {
+                  variant: 'body',
+                  text: 'We use cookies to keep the site running smoothly and to understand how it is used. Accept all, or keep only what is essential.',
+                }),
+                el('div', 'flex shrink-0 gap-3', {
+                  children: [
+                    atom('Button', 'st-btn st-c-neutral st-v-outline st-btn--sz-sm', {
+                      label: 'Essential only',
+                    }),
+                    atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-sm', {
+                      label: 'Accept all',
+                    }),
+                  ],
+                }),
+              ],
+            }
+          ),
+        ],
+      }
+    ),
+  }),
 ];

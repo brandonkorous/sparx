@@ -26,6 +26,7 @@
     "@sparx/crm": "workspace:*",
     "@sparx/email-sends": "workspace:*",
     "@sparx/events": "workspace:*",
+    "@sparx/inventory": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {

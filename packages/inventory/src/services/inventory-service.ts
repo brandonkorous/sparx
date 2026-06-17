@@ -118,6 +118,28 @@ export type {
 export { listGoodsReceipts, getGoodsReceipt, createGoodsReceipt } from './goods-receipts';
 export type { GoodsReceiptRow, GoodsReceiptLineRow, GoodsReceiptDetail } from './goods-receipts';
 
+// ─── Reorder engine (P3d supply path) ─────────────────────────────────
+// Low stock → reorder suggestions → draft PO to the preferred supplier. Manual
+// (buyer-selected) + auto (the inventory.low automation action calls
+// `autoDraftReorder` on the engine's transaction).
+export {
+  listReorderSuggestions,
+  draftReorderPurchaseOrders,
+  autoDraftReorder,
+  suggestedReorderQty,
+} from './reorder';
+export type {
+  ReorderFilter,
+  ReorderSuggestions,
+  ReorderGroup,
+  ReorderSuggestionLine,
+  UnsuppliedSuggestion,
+  DraftReorderResult,
+  DraftedPurchaseOrder,
+  AutoDraftResult,
+  AutoDraftOutcome,
+} from './reorder';
+
 // ─── Movement ledger primitive ────────────────────────────────────────
 // Exposed for callers composing a movement inside their OWN tenant transaction
 // (e.g. an order service decrementing stock atomically with the order insert).

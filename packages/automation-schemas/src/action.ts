@@ -30,6 +30,10 @@ export const ActionType = z.enum([
   'commerce.apply_discount',
   'commerce.update_inventory',
   'commerce.create_order',
+  // Inventory — draft a reorder PO to the preferred supplier when a variant goes
+  // low (the inventory.low trigger). Find-or-appends into one open draft per
+  // (supplier, warehouse) so repeated low events converge, never spam.
+  'inventory.draft_reorder_po',
   // B2B
   'b2b.create_quote',
   'b2b.convert_quote',

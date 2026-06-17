@@ -53,7 +53,13 @@ export function Cycle({
   }, [items.length, interval]);
 
   return (
-    <div className={className} style={{ display: 'grid', ...style }}>
+    <div
+      className={className}
+      // minmax(0, 1fr) lets the single stacked column shrink below its
+      // content's intrinsic width, so a wide focal surface (e.g. a product
+      // frame with a long URL) never forces page overflow on narrow viewports.
+      style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', ...style }}
+    >
       {items.map((item, i) => (
         <div
           // Static list rendered once; index is positional and stable.
@@ -62,6 +68,7 @@ export function Cycle({
           aria-hidden={i === index ? undefined : true}
           style={{
             gridArea: '1 / 1',
+            minWidth: 0,
             opacity: i === index ? 1 : 0,
             transition: `opacity ${fadeMs}ms ease`,
             pointerEvents: i === index ? undefined : 'none',

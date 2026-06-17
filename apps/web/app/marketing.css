@@ -468,16 +468,19 @@
   }
 }
 
-/* Checkout browser frame (flex 1) beside the annotation-pin column. */
+/* Checkout browser frame (flex 1) beside the annotation-pin column.
+   minmax(0, …) lets the frame track shrink below its content's intrinsic
+   width so a long URL / wide product surface never forces page overflow on
+   narrow viewports. */
 .mkt-frame-grid {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: minmax(0, 1fr) 320px;
   gap: 40px;
   align-items: start;
 }
 @media (max-width: 1024px) {
   .mkt-frame-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -489,6 +492,92 @@
 @media (max-width: 768px) {
   .mkt-checkout {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ── CMS: SEO audit (score panel + checklist) ────────────────────
+   Structural device for the /cms page — a fixed-width score panel beside
+   the flexible audit checklist, stacking to one column on tablet down.
+   Surface/colors come from inline CSS-var styles in cms-sections.tsx;
+   this class only does layout. */
+.mkt-seo-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .mkt-seo-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* ── CRM: segment grid, pipeline rail, automation rows ───────────
+   Structural devices for the /crm page. The segment grid puts the rule
+   definition beside the matching-customer panel (stacks on tablet); the
+   pipeline is a 5-stage deal rail that collapses 5→2→1; the automation row
+   is a when → arrow → then triptych whose arrow rotates and panels stack on
+   mobile. Surface/colors come from inline CSS-var styles in the CRM section
+   components; these classes only do layout. */
+
+.mkt-seg-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 24px;
+  align-items: stretch;
+}
+@media (max-width: 1024px) {
+  .mkt-seg-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mkt-pipeline-5 {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background-color: var(--color-border-default);
+  border: 1px solid var(--color-border-default);
+  border-radius: 14px;
+  overflow: hidden;
+}
+@media (max-width: 1024px) {
+  .mkt-pipeline-5 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .mkt-pipeline-5 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mkt-auto-row {
+  display: grid;
+  grid-template-columns: 1fr 56px 1fr;
+  align-items: stretch;
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.mkt-auto-then {
+  border-left: 1px solid var(--color-border-default);
+}
+.mkt-auto-arrow svg {
+  display: block;
+}
+@media (max-width: 768px) {
+  .mkt-auto-row {
+    grid-template-columns: 1fr;
+  }
+  .mkt-auto-then {
+    border-left: none;
+    border-top: 1px solid var(--color-border-default);
+  }
+  .mkt-auto-arrow {
+    transform: rotate(90deg);
   }
 }
 

@@ -42,4 +42,13 @@ export type {
   GoodsReceiptRow,
   GoodsReceiptLineRow,
   GoodsReceiptDetail,
+  ReorderFilter,
+  ReorderSuggestions,
+  ReorderGroup,
+  ReorderSuggestionLine,
+  UnsuppliedSuggestion,
+  DraftReorderResult,
+  DraftedPurchaseOrder,
+  AutoDraftResult,
+  AutoDraftOutcome,
 } from './services/inventory-service';

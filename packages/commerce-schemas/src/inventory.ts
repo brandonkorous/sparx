@@ -318,3 +318,24 @@ export const CreateGoodsReceiptInput = z.object({
   lines: z.array(ReceiveLineInput).min(1).max(500),
 });
 export type CreateGoodsReceiptInput = z.infer<typeof CreateGoodsReceiptInput>;
+
+// ─── Reorder engine (P3d) ─────────────────────────────────────────────────────
+//
+// Items at/below their reorder point become reorder suggestions; the buyer picks
+// the lines to act on and the engine drafts one purchase order per (supplier,
+// warehouse) group — line cost defaults from the (supplier, variant) link. Each
+// line carries the explicit supplier the suggestion resolved to (the preferred
+// link) so the draft is deterministic; `quantity` is the buyer-confirmed order qty.
+
+export const DraftReorderLineInput = z.object({
+  variantId: Uuid,
+  warehouseId: Uuid,
+  supplierId: Uuid,
+  quantity: z.number().int().positive(),
+});
+export type DraftReorderLineInput = z.infer<typeof DraftReorderLineInput>;
+
+export const DraftReorderInput = z.object({
+  lines: z.array(DraftReorderLineInput).min(1).max(500),
+});
+export type DraftReorderInput = z.infer<typeof DraftReorderInput>;

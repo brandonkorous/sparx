@@ -290,12 +290,19 @@ async function hydrateInventory(
       : typeof payload.quantity === 'number'
         ? payload.quantity
         : null;
+  // `warehouseId` + available/reorderPoint feed the reorder action (which warehouse
+  // to draft against) and let a tenant gate the reorder rule by location/threshold.
+  const warehouseId = typeof payload.warehouseId === 'string' ? payload.warehouseId : null;
   return {
     'product.id': v.product.id,
     'product.title': v.product.title,
     'variant.id': v.id,
     'variant.sku': v.sku,
+    'warehouse.id': warehouseId,
     'inventory.quantity': onHand,
+    'inventory.available': typeof payload.available === 'number' ? payload.available : null,
+    'inventory.reorderPoint':
+      typeof payload.reorderPoint === 'number' ? payload.reorderPoint : null,
   };
 }
 

@@ -8,6 +8,7 @@ import {
   Truck,
   ClipboardList,
   PackageCheck,
+  RefreshCw,
 } from 'lucide-react';
 
 export const inventoryManifest: ModuleManifest = {
@@ -26,6 +27,7 @@ export const inventoryManifest: ModuleManifest = {
       href: '/inventory/purchase-orders',
     },
     { id: 'receiving', label: 'Receiving', icon: PackageCheck, href: '/inventory/receiving' },
+    { id: 'reorder', label: 'Reorder', icon: RefreshCw, href: '/inventory/reorder' },
     { id: 'lots', label: 'Lots & serials', icon: Layers, href: '/inventory/lots' },
     { id: 'sources', label: 'Sources', icon: Link2, href: '/inventory/sources' },
   ],

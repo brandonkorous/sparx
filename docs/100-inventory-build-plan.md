@@ -1,6 +1,6 @@
 # sparx Platform — Inventory Product Build Plan
 
-**Version:** 1.8
+**Version:** 1.9
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-17
 
@@ -388,9 +388,14 @@ expected arrival, line cost), `GoodsReceipt` + `GoodsReceiptLine` (receive again
    PO detail; `Receiving` manifest section. Seed: a partial demo receipt (PO-000002 → `partial`, Σ-invariant
    verified 0 mismatches). DB-backed tests in `test/integration/goods-receipts.test.ts` (3 cases; inventory
    suite 25/25).
-4. **Reorder engine** — items at/below `reorderPoint` produce reorder suggestions (the "Reorder watch"
-   already lists them); one click drafts a PO to the preferred supplier; lead-time → expected arrival.
-   Wire to the existing `inventory.low` event + automation so suggestions can auto-draft.
+4. **Reorder engine** — items at/below `reorderPoint` produce reorder suggestions grouped by (supplier,
+   warehouse) with a suggested quantity (the configured reorder qty, else top-up to the point, floored at
+   the supplier minimum) + an `onOrder` figure so nothing already inbound is re-ordered; one click drafts a
+   PO per group to the preferred supplier (`suppliersForVariant`), lead-time → expected arrival. Manual via
+   `/inventory/reorder` (`POST /v1/inventory/reorder/draft`); **auto** via the `inventory.draft_reorder_po`
+   automation action on the `inventory.low` event — find-or-appends into one open draft per (supplier,
+   warehouse) so repeated lows converge, never spam. The auto seed `INVENTORY_AUTO_REORDER` ships **paused**
+   (opt-in). Items with no supplier link surface separately (link a supplier first).
 5. Dashboard: `/inventory/suppliers`, `/inventory/purchase-orders` (+ detail), `/inventory/receiving`.
    The mockup's "Incoming POs" + "Receive stock" become real.
 6. API: `/v1/inventory/suppliers`, `/purchase-orders`, `/receipts` (CRUD + lifecycle actions).
@@ -398,13 +403,14 @@ expected arrival, line cost), `GoodsReceipt` + `GoodsReceiptLine` (receive again
 **Deploy gate:** create supplier → draft PO → receive (partial then full) → `onHand` rises via `receive`
 movements; reorder suggestion drafts a PO. All with commerce off.
 
-> **P3 in progress.** P3a (suppliers + per-variant purchasing links), **P3b (PurchaseOrder lifecycle +
-> lines + document)**, and **P3c (Receiving — goods receipts → `receive` movements → moving-average,
-> partials, lot-on-receipt, PO advancing to partial/received)** are ✅ DONE — a standalone tenant can record
-> vendors, draft/submit/print purchase orders, and receive goods into stock today. Last sub-increment:
-> **P3d** reorder engine (items at/below `reorderPoint` → one-click draft PO to the preferred supplier via
-> `suppliersForVariant`, lead-time → expected arrival, wired to the existing `inventory.low` event +
-> automation). It builds on the supplier + PO models and is independently deployable.
+> **Phase 3 COMPLETE ✅.** P3a (suppliers + per-variant purchasing links), **P3b (PurchaseOrder lifecycle +
+> lines + document)**, **P3c (Receiving — goods receipts → `receive` movements → moving-average, partials,
+> lot-on-receipt, PO advancing to partial/received)**, and **P3d (Reorder engine — low → grouped
+> suggestions → draft PO to the preferred supplier, manual + the opt-in `inventory.low` auto-draft action)**
+> are all ✅ DONE. A standalone tenant can now run the whole inbound + replenishment workflow: record
+> vendors, see what's low, draft/submit/print purchase orders, receive goods into stock, and let auto-reorder
+> draft replenishment POs — all with commerce off. Next: **P4** (counts/transfers/audit UI), independent of
+> P3.
 
 **Risks:** PO↔receipt partial-quantity accounting; receipts update the moving-average `avgCostCents`
 (§2.3) — guard divide-by-zero when `onHand` is 0 (seed the average from the receipt cost).

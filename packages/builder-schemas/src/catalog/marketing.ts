@@ -1246,4 +1246,127 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
       ],
     }),
   }),
+
+  // ── Contact section — details + map beside a working form ─────────────────────
+  entry({
+    key: 'contact_section',
+    name: 'Contact section',
+    category: 'marketing',
+    kind: 'comprehensive',
+    icon: 'mail',
+    description:
+      'A two-column contact section — your details and a map beside a contact form with name, email, and message fields.',
+    surfaces: ['page', 'site'],
+    tags: ['contact', 'form', 'map', 'get in touch', 'support', 'marketing'],
+    tree: el('section', 'w-full px-4 py-16', {
+      name: 'Contact section',
+      children: [
+        el('div', 'mx-auto grid max-w-6xl grid-cols-1 gap-10 @3xl:grid-cols-2', {
+          children: [
+            el('div', 'flex flex-col gap-4', {
+              name: 'Details',
+              children: [
+                atom('Heading', 'text-3xl font-bold tracking-tight text-base-content', {
+                  level: 'h2',
+                  text: 'Get in touch',
+                }),
+                atom('Text', 'text-base text-base-content/70', {
+                  variant: 'body',
+                  text: 'Questions, partnerships, or press — send a note and we will get back to you within a day.',
+                }),
+                el('div', 'mt-1 flex flex-col gap-1 text-sm text-base-content/80', {
+                  children: [
+                    el('p', '', {
+                      children: [
+                        el('span', 'font-medium text-base-content', { text: 'Email — ' }),
+                        el('span', '', { text: 'hello@example.com' }),
+                      ],
+                    }),
+                    el('p', '', {
+                      children: [
+                        el('span', 'font-medium text-base-content', { text: 'Phone — ' }),
+                        el('span', '', { text: '(555) 010-0142' }),
+                      ],
+                    }),
+                  ],
+                }),
+                atom('Map', 'mt-3 w-full rounded-box', { ratio: 'wide', query: 'San Francisco, CA' }),
+              ],
+            }),
+            el('form', 'flex flex-col gap-4 rounded-box border border-base-200 bg-base-100 p-6', {
+              name: 'Contact form',
+              children: [
+                atom('Field', 'w-full', { label: 'Name' }, [
+                  atom('Input', 'st-c-primary st-fv-outline', {
+                    type: 'text',
+                    name: 'name',
+                    placeholder: 'Jordan Avery',
+                  }),
+                ]),
+                atom('Field', 'w-full', { label: 'Email' }, [
+                  atom('Input', 'st-c-primary st-fv-outline', {
+                    type: 'email',
+                    name: 'email',
+                    placeholder: 'you@example.com',
+                  }),
+                ]),
+                atom('Field', 'w-full', { label: 'Message' }, [
+                  atom('Textarea', 'st-c-primary st-fv-outline', {
+                    name: 'message',
+                    placeholder: 'How can we help?',
+                  }),
+                ]),
+                atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md', {
+                  label: 'Send message',
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    }),
+  }),
+
+  // ── Sale countdown bar — a promo strip with a countdown + shop link ───────────
+  entry({
+    key: 'sale_countdown_bar',
+    name: 'Sale countdown',
+    category: 'marketing',
+    kind: 'comprehensive',
+    icon: 'timer',
+    description:
+      'A slim promo strip pairing a sale message with a countdown and a shop button. Set the remaining time on the countdown.',
+    surfaces: ['page', 'site'],
+    tags: ['sale', 'countdown', 'promo', 'timer', 'urgency', 'banner', 'marketing'],
+    tree: el('section', 'w-full bg-primary px-4 py-3 text-primary-content', {
+      name: 'Sale countdown',
+      children: [
+        el(
+          'div',
+          'mx-auto flex max-w-5xl flex-col items-center justify-center gap-3 text-center @2xl:flex-row @2xl:justify-between @2xl:text-left',
+          {
+            children: [
+              el('span', 'text-sm font-semibold', {
+                text: 'Summer sale — up to 40% off everything',
+              }),
+              el('div', 'flex items-center gap-4', {
+                children: [
+                  atom('Countdown', 'text-primary-content', {
+                    days: 2,
+                    hours: 14,
+                    minutes: 30,
+                    seconds: 0,
+                  }),
+                  el('a', 'st-btn st-c-neutral st-v-solid st-btn--sz-sm', {
+                    text: 'Shop the sale',
+                    attrs: { href: '/products' },
+                  }),
+                ],
+              }),
+            ],
+          }
+        ),
+      ],
+    }),
+  }),
 ];
