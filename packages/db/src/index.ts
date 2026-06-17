@@ -89,6 +89,8 @@ export type {
   SupplierVariant,
   PurchaseOrder,
   PurchaseOrderLine,
+  GoodsReceipt,
+  GoodsReceiptLine,
   // Commerce — pricing + promotions
   PriceList,
   PriceListEntry,

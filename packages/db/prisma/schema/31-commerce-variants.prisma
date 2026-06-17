@@ -96,6 +96,7 @@ model ProductVariant {
   serialUnits           SerialUnit[]
   supplierLinks         SupplierVariant[]
   purchaseOrderLines    PurchaseOrderLine[]
+  goodsReceiptLines     GoodsReceiptLine[]
   priceListEntries      PriceListEntry[]
   bulkPriceTiers        BulkPriceTier[]
   contractPrices        ContractPrice[]

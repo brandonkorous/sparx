@@ -177,6 +177,8 @@ model Tenant {
   supplierVariants      SupplierVariant[]
   purchaseOrders        PurchaseOrder[]
   purchaseOrderLines    PurchaseOrderLine[]
+  goodsReceipts         GoodsReceipt[]
+  goodsReceiptLines     GoodsReceiptLine[]
 
   // Commerce module — pricing + discounts
   priceLists             PriceList[]

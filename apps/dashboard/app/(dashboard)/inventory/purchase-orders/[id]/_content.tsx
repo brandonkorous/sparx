@@ -17,6 +17,7 @@ import {
 import { PurchaseOrderActionsBar } from './_components/purchase-order-actions-bar';
 import { PurchaseOrderEditForm } from './_components/purchase-order-edit-form';
 import { PurchaseOrderLinesPanel } from './_components/purchase-order-lines-panel';
+import type { GoodsReceiptRow } from '../../receiving/_components/types';
 
 interface PartyOption {
   id: string;
@@ -34,9 +35,16 @@ export async function PurchaseOrderDetailContent({ id }: { id: string }) {
   }
 
   const draft = isDraft(po.status);
-  const warehouses = draft
-    ? (await api.getPaged<PartyOption[]>('/v1/inventory/locations?take=250')).data
-    : [];
+  const [warehouses, receipts] = await Promise.all([
+    draft
+      ? api.getPaged<PartyOption[]>('/v1/inventory/locations?take=250').then((r) => r.data)
+      : Promise.resolve([] as PartyOption[]),
+    draft
+      ? Promise.resolve([] as GoodsReceiptRow[])
+      : api
+          .getPaged<GoodsReceiptRow[]>(`/v1/inventory/receipts?purchase_order_id=${po.id}&take=50`)
+          .then((r) => r.data),
+  ]);
   const status = purchaseOrderStatus(po.status);
 
   return (
@@ -83,17 +91,54 @@ export async function PurchaseOrderDetailContent({ id }: { id: string }) {
         }}
       />
 
-      <Text size="xs" variant="muted">
-        Receiving against this order (booking goods into stock) lands in{' '}
-        <Link
-          href="/inventory/purchase-orders"
-          className="underline hover:text-[var(--module-active)]"
-        >
-          a later step
-        </Link>{' '}
-        (docs/100 P3c).
-      </Text>
+      {!draft && <ReceiptsPanel receipts={receipts} />}
     </Stack>
+  );
+}
+
+function ReceiptsPanel({ receipts }: { receipts: GoodsReceiptRow[] }) {
+  return (
+    <Card>
+      <CardContent>
+        <Stack gap={3} className="py-2">
+          <Heading level={3}>Receipts</Heading>
+          {receipts.length === 0 ? (
+            <Text size="sm" variant="muted">
+              No goods received yet. Use <span className="font-medium">Receive</span> to book stock
+              against this order.
+            </Text>
+          ) : (
+            <Stack gap={2}>
+              {receipts.map((r) => (
+                <Stack
+                  key={r.id}
+                  direction="row"
+                  align="center"
+                  gap={3}
+                  wrap
+                  className="rounded border border-[var(--color-border-default)] px-3 py-2"
+                >
+                  <Link
+                    href={`/inventory/receiving/${r.id}`}
+                    className="font-mono text-xs hover:text-[var(--module-active)]"
+                  >
+                    {r.number}
+                  </Link>
+                  <Text size="sm" variant="muted" className="flex-1">
+                    {formatDate(r.receivedAt)}
+                    {r.reference ? ` · ${r.reference}` : ''}
+                  </Text>
+                  <Text size="sm">
+                    {r.quantityReceived} unit{r.quantityReceived === 1 ? '' : 's'} · {r.lineCount}{' '}
+                    line{r.lineCount === 1 ? '' : 's'}
+                  </Text>
+                </Stack>
+              ))}
+            </Stack>
+          )}
+        </Stack>
+      </CardContent>
+    </Card>
   );
 }
 

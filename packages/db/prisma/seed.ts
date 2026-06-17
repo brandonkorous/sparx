@@ -1336,6 +1336,8 @@ async function seedDemoInventory(tenantId: string): Promise<void> {
       where: { supplierId: { in: [...supplierByCode.values()] } },
     });
     const poBase = await tx.purchaseOrder.count({ where: { tenantId } });
+    const grBase = await tx.goodsReceipt.count({ where: { tenantId } });
+    let receiptSeq = 0;
     const poDefs = [
       { code: 'SUP-BOSCH', status: 'draft', skus: linkSkus.slice(0, 2), shipping: 0 },
       { code: 'SUP-STAN', status: 'submitted', skus: linkSkus.slice(2, 4), shipping: 2500 },
@@ -1364,8 +1366,10 @@ async function seedDemoInventory(tenantId: string): Promise<void> {
           ...(submitted ? { orderedAt: daysAgoDate(3), expectedArrivalAt: daysAgoDate(-11) } : {}),
         },
       });
+      const poLineRows: { id: string; variantId: string; unitCostCents: number; qty: number }[] =
+        [];
       for (const l of lines) {
-        await tx.purchaseOrderLine.create({
+        const row = await tx.purchaseOrderLine.create({
           data: {
             tenantId,
             purchaseOrderId: po.id,
@@ -1376,6 +1380,85 @@ async function seedDemoInventory(tenantId: string): Promise<void> {
             description: l.sku,
           },
         });
+        poLineRows.push({
+          id: row.id,
+          variantId: l.meta.id,
+          unitCostCents: l.unitCostCents,
+          qty: l.qty,
+        });
+      }
+
+      // The submitted PO gets a partial goods receipt (half of its first line) so
+      // /inventory/receiving shows real history + received progress, and the PO
+      // becomes `partial`. The receive movement raises the level on-hand + moving
+      // average, keeping Σ(delta) == on_hand.
+      if (submitted && poLineRows[0]) {
+        receiptSeq += 1;
+        const first = poLineRows[0];
+        const recvQty = Math.floor(first.qty / 2);
+        const gr = await tx.goodsReceipt.create({
+          data: {
+            tenantId,
+            number: `GR-${String(grBase + receiptSeq).padStart(6, '0')}`,
+            purchaseOrderId: po.id,
+            warehouseId: mainId,
+            reference: 'PACKING-7741',
+            receivedAt: daysAgoDate(1),
+          },
+        });
+        const level = await tx.inventoryLevel.findUnique({
+          where: { variantId_warehouseId: { variantId: first.variantId, warehouseId: mainId } },
+        });
+        const prevOnHand = level?.onHand ?? 0;
+        const newOnHand = prevOnHand + recvQty;
+        const oldAvg = level?.avgCostCents ?? first.unitCostCents;
+        const newAvg = Math.round(
+          (prevOnHand * oldAvg + recvQty * first.unitCostCents) / newOnHand
+        );
+        const mv = await tx.inventoryMovement.create({
+          data: {
+            tenantId,
+            variantId: first.variantId,
+            warehouseId: mainId,
+            delta: recvQty,
+            balanceAfter: newOnHand,
+            reason: 'receive',
+            actorType: 'system',
+            source: 'seed',
+            unitCostCents: first.unitCostCents,
+            referenceType: 'GoodsReceipt',
+            referenceId: gr.id,
+            createdAt: daysAgoDate(1),
+          },
+        });
+        await tx.inventoryLevel.upsert({
+          where: { variantId_warehouseId: { variantId: first.variantId, warehouseId: mainId } },
+          update: { onHand: newOnHand, avgCostCents: newAvg },
+          create: {
+            tenantId,
+            variantId: first.variantId,
+            warehouseId: mainId,
+            onHand: newOnHand,
+            avgCostCents: newAvg,
+            unitCostCents: first.unitCostCents,
+          },
+        });
+        await tx.goodsReceiptLine.create({
+          data: {
+            tenantId,
+            goodsReceiptId: gr.id,
+            purchaseOrderLineId: first.id,
+            variantId: first.variantId,
+            quantityReceived: recvQty,
+            unitCostCents: first.unitCostCents,
+            movementId: mv.id,
+          },
+        });
+        await tx.purchaseOrderLine.update({
+          where: { id: first.id },
+          data: { quantityReceived: recvQty },
+        });
+        await tx.purchaseOrder.update({ where: { id: po.id }, data: { status: 'partial' } });
       }
     }
 
@@ -1383,7 +1466,7 @@ async function seedDemoInventory(tenantId: string): Promise<void> {
     console.log(
       `Seeded demo inventory: ${DEMO_PRODUCTS.length} products / ${variantCount} variants across ` +
         `${DEMO_WAREHOUSES.length} warehouses, with ledger movements + ${DEMO_LOTS.length} lots, ` +
-        `${DEMO_SUPPLIERS.length} suppliers + ${poDefs.length} purchase orders.`
+        `${DEMO_SUPPLIERS.length} suppliers + ${poDefs.length} purchase orders + ${receiptSeq} receipt.`
     );
   });
 }

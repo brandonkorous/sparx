@@ -1,0 +1,1539 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>sparx Commerce — Sell, ship, get paid.</title>
+    <!--
+      /commerce module page — the transactional core.
+      Hook: Commerce is one object told end to end — the ORDER. The page traces
+      a single order from catalog → cart → checkout → fulfilled → the ledger, so
+      it reads as momentum (the energy of conversion) without becoming a loud
+      "BUY NOW" billboard. Orange is a signal (the order line, the paid badge,
+      the spark, the fee bars), never flood fill — the one saturated beat is the
+      hero receipt and the dark proof band.
+
+      Sections + the structural device each one carries:
+        1. HERO            — editorial headline + a real "order received" receipt
+                             card (line items, paid badge, Stripe wallet). Proof
+                             in the hero, not two centered buttons.
+        2. ORDER JOURNEY   — connected horizontal pipeline: catalog → cart →
+                             checkout → fulfilled, the order moving through.
+        3. CHECKOUT FRAME  — an annotated real single-page sparx checkout with
+                             callout pins (autocomplete, saved cards, wallets,
+                             live tax + shipping).
+        4. PAYMENTS RAIL   — Stripe + the wallets your customers already use,
+                             a hairline-divided rail (card · Apple Pay · Google
+                             Pay · Link).
+        5. FEE LADDER      — the honest money story as a DESCENDING bar:
+                             0.5% → 0.3% (with CRM) → 0% (at $299+/mo).
+        6. OPERATIONS GRID — inventory, discounts, refunds, timeline, analytics,
+                             bulk ops — capability grid with mono labels + dots.
+        7. HEADLESS / HOSTED — two-column comparison: run headless on the API/MCP
+                             OR pair with Builder for a hosted storefront.
+        8. PROOF ROW (dark)— conversion-funnel report stats on hairline dividers.
+        9. PRICING STRIP   — flat $49/mo, Invoicing free, 14-day trial. No tiers,
+                             no "+", no "Pro+".
+       10. FINAL CTA (dark)— the close.
+
+      All facts grounded in docs/09 (e-commerce PRD) + docs/17 (billing). No
+      invented processors: Stripe is primary; wallets are Apple Pay / Google Pay
+      / Link. Tax = TaxJar / Avalara; carrier rates = EasyPost. Fees per §2.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* sparx tokens (canonical values, hardcoded for the standalone mockup) */
+        --page: #fafafa;
+        --surface: #ffffff;
+        --subtle: #f4f4f5;
+        --ink: #0a0a0a;
+        --muted: #52525b;
+        --faint: #a1a1aa;
+        --border: #e5e5e5;
+        --border-strong: #d4d4d8;
+        --indigo: #6366f1;
+        --indigo-hover: #4f46e5;
+        /* commerce module color */
+        --commerce: #f97316;
+        --commerce-tint: #fff7ed;
+        --commerce-text: #c2410c;
+        --module-builder: #6366f1;
+        --module-crm: #06b6d4;
+        --module-email: #0ea5e9;
+        --module-b2b: #475569;
+        --module-ai: #ec4899;
+        --module-cms: #14b8a6;
+        --shadow: 0 14px 40px rgba(15, 15, 20, 0.06);
+        --shadow-lift: 0 22px 60px rgba(15, 15, 20, 0.1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+      }
+      body {
+        font-family: 'Geist', system-ui, -apple-system, sans-serif;
+        color: var(--ink);
+        background: var(--page);
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.5;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      .mono {
+        font-family: 'Geist Mono', monospace;
+      }
+      .wrap {
+        max-width: 1280px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      section {
+        padding-left: clamp(22px, 5vw, 64px);
+        padding-right: clamp(22px, 5vw, 64px);
+      }
+      .pad-lg {
+        padding-top: clamp(72px, 9vw, 120px);
+        padding-bottom: clamp(72px, 9vw, 120px);
+      }
+      .pad-xl {
+        padding-top: clamp(88px, 11vw, 152px);
+        padding-bottom: clamp(88px, 11vw, 152px);
+      }
+      .surf {
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+      }
+      .dark {
+        background: var(--ink);
+        border-top: 1px solid #1a1a1a;
+      }
+      .spark {
+        color: var(--commerce);
+      }
+      .spark-w {
+        color: #fff;
+      }
+
+      /* ── NAV ──────────────────────────────────────────────────── */
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(250, 250, 250, 0.85);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border);
+      }
+      .topbar .row {
+        max-width: 1280px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 64px;
+        padding: 0 clamp(22px, 5vw, 64px);
+      }
+      .wordmark {
+        font-family: 'Inter', system-ui, sans-serif;
+        font-weight: 700;
+        font-size: 20px;
+        letter-spacing: -0.03em;
+      }
+      .wordmark .x {
+        color: var(--indigo);
+      }
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+      .nav a {
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .nav a:hover {
+        color: var(--ink);
+      }
+
+      /* ── BUTTONS ──────────────────────────────────────────────── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: inherit;
+        font-weight: 500;
+        font-size: 14px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        cursor: pointer;
+        padding: 10px 16px;
+        transition:
+          transform 0.15s ease,
+          background-color 0.15s ease;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+      }
+      .btn-dark {
+        background: var(--ink);
+        color: #fff;
+      }
+      .btn-outline {
+        background: transparent;
+        color: var(--ink);
+        border-color: var(--border-strong);
+      }
+      .btn-lg {
+        font-size: 16px;
+        padding: 14px 22px;
+        border-radius: 10px;
+      }
+      .btn-xl {
+        font-size: 17px;
+        padding: 16px 26px;
+        border-radius: 11px;
+      }
+      .btn-onlight-outline {
+        background: #fff;
+        color: var(--ink);
+        border-color: var(--border-strong);
+      }
+
+      /* ── TYPE ─────────────────────────────────────────────────── */
+      .display {
+        font-weight: 500;
+        letter-spacing: -0.025em;
+        margin: 0;
+        color: var(--ink);
+      }
+      h1.display {
+        letter-spacing: -0.035em;
+      }
+      .lede {
+        font-size: 18px;
+        line-height: 30px;
+        color: var(--muted);
+        margin: 0;
+        max-width: 640px;
+      }
+      .sec-head {
+        max-width: 760px;
+      }
+      .sec-head h2 {
+        font-size: clamp(30px, 4.4vw, 46px);
+        line-height: 1.05;
+      }
+      .sec-head .lede {
+        margin-top: 22px;
+      }
+
+      /* ── HERO ─────────────────────────────────────────────────── */
+      .hero {
+        padding-top: clamp(56px, 9vw, 96px);
+      }
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: clamp(40px, 6vw, 72px);
+        align-items: center;
+      }
+      .hero h1 {
+        font-size: clamp(46px, 7.4vw, 88px);
+        line-height: 0.95;
+      }
+      .hero .lede {
+        margin-top: 28px;
+        font-size: clamp(16px, 1.6vw, 20px);
+      }
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 34px;
+      }
+      .hero-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 26px;
+        list-style: none;
+        padding: 0;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 13px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 9999px;
+      }
+      .chip .mono {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 9999px;
+        flex-shrink: 0;
+        display: inline-block;
+      }
+
+      /* receipt card */
+      .receipt {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .receipt-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+      }
+      .receipt-top .who {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .receipt-top .nm {
+        font-weight: 500;
+        font-size: 14px;
+      }
+      .receipt-top .mt {
+        font-size: 12px;
+        color: var(--faint);
+      }
+      .badge-paid {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 5px 11px;
+        border-radius: 9999px;
+        background: var(--commerce-tint);
+        color: var(--commerce-text);
+        font-size: 12px;
+        font-weight: 500;
+      }
+      .li {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 13px 20px;
+        border-bottom: 1px solid var(--subtle);
+      }
+      .li .thumb {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        background: var(--subtle);
+        flex-shrink: 0;
+        box-shadow: inset 0 0 0 1px rgba(9, 9, 11, 0.05);
+      }
+      .li .t {
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .li .s {
+        font-size: 12px;
+        color: var(--faint);
+      }
+      .li .p {
+        margin-left: auto;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .totals {
+        padding: 14px 20px;
+      }
+      .totals .tr {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        color: var(--muted);
+        padding: 4px 0;
+      }
+      .totals .grand {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-top: 8px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+      }
+      .totals .grand .l {
+        font-size: 14px;
+        color: var(--ink);
+        font-weight: 500;
+      }
+      .totals .grand .v {
+        font-weight: 500;
+        font-size: 22px;
+        letter-spacing: -0.02em;
+      }
+      .receipt-foot {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 13px 20px;
+        border-top: 1px solid var(--border);
+        background: var(--page);
+      }
+      .receipt-foot .mono {
+        font-size: 11.5px;
+        color: var(--faint);
+      }
+
+      /* ── ORDER JOURNEY (pipeline) ─────────────────────────────── */
+      .pipeline {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0;
+        margin-top: 52px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        overflow: hidden;
+        background: var(--surface);
+      }
+      .stage {
+        padding: 26px 24px 28px;
+        border-left: 1px solid var(--border);
+        position: relative;
+        min-height: 184px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .stage:first-child {
+        border-left: none;
+      }
+      .stage .stage-n {
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--faint);
+      }
+      .stage h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+      .stage p {
+        margin: 0;
+        font-size: 13.5px;
+        line-height: 21px;
+        color: var(--muted);
+      }
+      .stage .arrow-x {
+        position: absolute;
+        right: -11px;
+        top: 38px;
+        z-index: 2;
+        width: 22px;
+        height: 22px;
+        border-radius: 9999px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--commerce);
+      }
+      .stage:last-child .arrow-x {
+        display: none;
+      }
+
+      /* ── CHECKOUT FRAME (annotated) ───────────────────────────── */
+      .frame-grid {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 40px;
+        margin-top: 52px;
+        align-items: start;
+      }
+      .browser {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        overflow: hidden;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+      }
+      .browser-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        background: var(--page);
+      }
+      .browser-bar .tl {
+        display: flex;
+        gap: 6px;
+      }
+      .browser-bar .tl span {
+        width: 10px;
+        height: 10px;
+        border-radius: 9999px;
+        background: #e0e0e4;
+      }
+      .browser-bar .url {
+        margin-left: 8px;
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        color: var(--faint);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        padding: 5px 12px;
+        flex: 1;
+      }
+      .checkout {
+        display: grid;
+        grid-template-columns: 1.3fr 1fr;
+      }
+      .co-form {
+        padding: 26px 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .co-step {
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--commerce-text);
+      }
+      .co-field {
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        padding: 11px 13px;
+        font-size: 13.5px;
+        color: var(--ink);
+        background: var(--surface);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .co-field .ph {
+        color: var(--faint);
+      }
+      .co-field--filled {
+        color: var(--ink);
+      }
+      .co-row2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .co-wallets {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .wallet {
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        padding: 11px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--muted);
+        background: var(--surface);
+      }
+      .co-pay {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 14px;
+        border-radius: 10px;
+        background: var(--commerce);
+        color: #fff;
+        font-weight: 500;
+        font-size: 15px;
+      }
+      .co-summary {
+        background: var(--page);
+        border-left: 1px solid var(--border);
+        padding: 26px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .co-summary .cap {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--muted);
+      }
+      .co-sum-li {
+        display: flex;
+        gap: 11px;
+        align-items: center;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .co-sum-li .thumb {
+        width: 32px;
+        height: 32px;
+        border-radius: 7px;
+        background: var(--subtle);
+        flex-shrink: 0;
+      }
+      .co-sum-li .amt {
+        margin-left: auto;
+        color: var(--ink);
+      }
+      .co-sum-line {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        color: var(--muted);
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+      }
+      .co-sum-grand {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        font-weight: 500;
+      }
+      .co-sum-grand .v {
+        font-size: 20px;
+        letter-spacing: -0.02em;
+      }
+      /* annotation pins column */
+      .pins {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .pin {
+        display: flex;
+        gap: 13px;
+        padding: 18px 20px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--commerce);
+        border-radius: 12px;
+      }
+      .pin .n {
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        color: var(--commerce-text);
+        flex-shrink: 0;
+        padding-top: 1px;
+      }
+      .pin h4 {
+        margin: 0 0 4px;
+        font-size: 14.5px;
+        font-weight: 500;
+      }
+      .pin p {
+        margin: 0;
+        font-size: 13px;
+        line-height: 20px;
+        color: var(--muted);
+      }
+
+      /* ── PAYMENTS RAIL ────────────────────────────────────────── */
+      .rail {
+        margin-top: 48px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        overflow: hidden;
+        background: var(--surface);
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .rail-cell {
+        padding: 28px 26px;
+        border-left: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .rail-cell:first-child {
+        border-left: none;
+      }
+      .rail-cell .nm {
+        font-size: 16px;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+      }
+      .rail-cell .ds {
+        font-size: 13px;
+        line-height: 20px;
+        color: var(--muted);
+      }
+      .rail-glyph {
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        background: var(--commerce-tint);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 4px;
+      }
+      .rail-foot {
+        margin-top: 18px;
+        font-size: 14px;
+        line-height: 22px;
+        color: var(--faint);
+        max-width: 720px;
+      }
+      .rail-foot a {
+        color: var(--commerce-text);
+        font-weight: 500;
+      }
+
+      /* ── FEE LADDER ───────────────────────────────────────────── */
+      .ladder {
+        margin-top: 52px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        align-items: end;
+      }
+      .rung {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 26px 26px 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .rung .pct {
+        font-weight: 500;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        color: var(--commerce);
+      }
+      .rung-1 .pct {
+        font-size: 52px;
+      }
+      .rung-2 .pct {
+        font-size: 64px;
+      }
+      .rung-3 .pct {
+        font-size: 76px;
+        color: var(--ink);
+      }
+      .rung .when {
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--faint);
+      }
+      .rung p {
+        margin: 0;
+        font-size: 13.5px;
+        line-height: 21px;
+        color: var(--muted);
+      }
+      .rung .bar {
+        height: 6px;
+        border-radius: 9999px;
+        background: var(--commerce);
+        opacity: 0.85;
+      }
+      .rung-1 .bar {
+        width: 100%;
+      }
+      .rung-2 .bar {
+        width: 60%;
+      }
+      .rung-3 .bar {
+        width: 12%;
+        background: var(--ink);
+      }
+      .ladder-note {
+        margin-top: 20px;
+        font-size: 14px;
+        line-height: 22px;
+        color: var(--faint);
+        max-width: 680px;
+      }
+
+      /* ── OPERATIONS GRID ──────────────────────────────────────── */
+      .ops {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-top: 52px;
+      }
+      .op {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 26px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-height: 178px;
+      }
+      .op .glyph {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: var(--commerce-tint);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .op h3 {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+      }
+      .op p {
+        margin: 0;
+        font-size: 13.5px;
+        line-height: 21px;
+        color: var(--muted);
+      }
+
+      /* ── HEADLESS / HOSTED ────────────────────────────────────── */
+      .two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-top: 52px;
+      }
+      .way {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 32px;
+        background: var(--surface);
+        border-top: 3px solid var(--commerce);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .way .tag {
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--commerce-text);
+      }
+      .way h3 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+      }
+      .way > p {
+        margin: 0;
+        font-size: 15px;
+        line-height: 24px;
+        color: var(--muted);
+      }
+      .way ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 12px;
+      }
+      .way li {
+        display: flex;
+        gap: 11px;
+        align-items: flex-start;
+        font-size: 14.5px;
+        line-height: 23px;
+        color: var(--muted);
+      }
+      .way li .dot {
+        margin-top: 8px;
+      }
+      .way .runs {
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        color: var(--faint);
+        margin-top: auto;
+        padding-top: 4px;
+      }
+
+      /* ── PROOF ROW (dark) ─────────────────────────────────────── */
+      .dark .display,
+      .dark h2 {
+        color: #fff;
+      }
+      .dark .lede {
+        color: #a1a1aa;
+      }
+      .proof-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        margin-top: 56px;
+      }
+      .proof-row .stat {
+        padding: 0 32px;
+        border-left: 1px solid #262626;
+      }
+      .proof-row .stat:first-child {
+        padding-left: 0;
+        border-left: none;
+      }
+      .proof-row .stat .n {
+        font-weight: 500;
+        font-size: clamp(40px, 5vw, 56px);
+        letter-spacing: -0.03em;
+        color: #fff;
+        line-height: 1;
+      }
+      .proof-row .stat .n .spark-w {
+        color: var(--commerce);
+      }
+      .proof-row .stat .l {
+        margin-top: 12px;
+        font-size: 14.5px;
+        line-height: 22px;
+        color: #a1a1aa;
+      }
+
+      /* ── PRICING STRIP ────────────────────────────────────────── */
+      .price-strip {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 32px;
+        padding: 40px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-top: 3px solid var(--commerce);
+        border-radius: 14px;
+      }
+      .price-strip .money {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+      }
+      .price-strip .big {
+        font-weight: 500;
+        font-size: 56px;
+        letter-spacing: -0.025em;
+        line-height: 1;
+      }
+      .price-strip .per {
+        font-size: 16px;
+        color: var(--faint);
+      }
+      .price-strip p {
+        margin: 12px 0 0;
+        font-size: 14px;
+        line-height: 22px;
+        color: var(--muted);
+        max-width: 640px;
+      }
+      .price-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        flex-shrink: 0;
+      }
+
+      /* ── FINAL CTA ────────────────────────────────────────────── */
+      .cta-final {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 36px;
+      }
+      .cta-final h2 {
+        font-size: clamp(40px, 7vw, 88px);
+        line-height: 0.95;
+        max-width: 980px;
+      }
+      .cta-final .lede {
+        color: #a1a1aa;
+      }
+      .cta-final .acts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .btn-ondark-outline {
+        background: transparent;
+        color: #fff;
+        border-color: #2a2a2a;
+      }
+
+      /* ── FOOTER ───────────────────────────────────────────────── */
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 32px clamp(22px, 5vw, 64px);
+      }
+      footer .row {
+        max-width: 1280px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      footer .dots {
+        display: flex;
+        gap: 7px;
+      }
+      footer .dots span {
+        width: 8px;
+        height: 8px;
+        border-radius: 9999px;
+      }
+      footer .legal {
+        font-size: 13px;
+        color: var(--faint);
+      }
+
+      /* ── RESPONSIVE ───────────────────────────────────────────── */
+      @media (max-width: 1024px) {
+        .hero-grid {
+          grid-template-columns: 1fr;
+        }
+        .pipeline {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .stage {
+          border-top: 1px solid var(--border);
+        }
+        .stage:nth-child(-n + 2) {
+          border-top: none;
+        }
+        .stage .arrow-x {
+          display: none;
+        }
+        .frame-grid {
+          grid-template-columns: 1fr;
+        }
+        .rail {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .rail-cell:nth-child(3) {
+          border-left: none;
+        }
+        .ops {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .proof-row {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 36px 0;
+        }
+        .proof-row .stat:nth-child(3) {
+          padding-left: 0;
+          border-left: none;
+        }
+      }
+      @media (max-width: 768px) {
+        .ladder {
+          grid-template-columns: 1fr;
+          align-items: stretch;
+        }
+        .rung-1 .pct,
+        .rung-2 .pct,
+        .rung-3 .pct {
+          font-size: 56px;
+        }
+        .two {
+          grid-template-columns: 1fr;
+        }
+        .checkout {
+          grid-template-columns: 1fr;
+        }
+        .co-summary {
+          border-left: none;
+          border-top: 1px solid var(--border);
+        }
+        .price-strip {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+      @media (max-width: 640px) {
+        .nav a:not(:last-child) {
+          display: none;
+        }
+        .pipeline,
+        .ops,
+        .rail {
+          grid-template-columns: 1fr;
+        }
+        .stage,
+        .rail-cell {
+          border-left: none;
+          border-top: 1px solid var(--border);
+        }
+        .stage:first-child,
+        .rail-cell:first-child {
+          border-top: none;
+        }
+        .proof-row {
+          grid-template-columns: 1fr;
+          gap: 32px;
+        }
+        .proof-row .stat {
+          padding: 0;
+          border-left: none;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .btn {
+          transition: none;
+        }
+        .btn:hover {
+          transform: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ── NAV ── -->
+    <header class="topbar">
+      <div class="row">
+        <span class="wordmark">spar<span class="x">x</span></span>
+        <nav class="nav">
+          <a href="#">Platform</a>
+          <a href="#">Modules</a>
+          <a href="#">Pricing</a>
+          <a class="btn btn-dark" href="#">Start free</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ── 1. HERO ── -->
+    <section class="hero pad-lg">
+      <div class="wrap hero-grid">
+        <div>
+          <h1 class="display">Sell, ship,<br />get paid<span class="spark">.</span></h1>
+          <p class="lede">
+            Commerce is the transactional core of sparx — products and inventory, a checkout that
+            converts, Stripe payments, and order operations that hold up at real volume. Run it
+            headless on the API, or pair it with Builder for a hosted storefront. One order object,
+            cart to fulfilled.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-dark btn-lg" href="#">
+              Start selling
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+            </a>
+            <a class="btn btn-onlight-outline btn-lg" href="#journey">See how an order flows</a>
+          </div>
+          <ul class="hero-chips">
+            <li class="chip"><span class="dot" style="background: var(--commerce)"></span><span class="mono">stripe payments</span></li>
+            <li class="chip"><span class="dot" style="background: var(--commerce)"></span><span class="mono">headless or hosted</span></li>
+            <li class="chip"><span class="dot" style="background: var(--commerce)"></span><span class="mono">D2C + B2B, one engine</span></li>
+            <li class="chip"><span class="dot" style="background: var(--commerce)"></span><span class="mono">invoicing included</span></li>
+          </ul>
+        </div>
+
+        <!-- receipt: a real order object -->
+        <div class="receipt" aria-label="Order received">
+          <div class="receipt-top">
+            <span class="who">
+              <span class="dot" style="background: var(--commerce); width: 9px; height: 9px"></span>
+              <span>
+                <span class="nm">Order #1042</span><br />
+                <span class="mt">Dana Ruiz · just now</span>
+              </span>
+            </span>
+            <span class="badge-paid">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              Paid
+            </span>
+          </div>
+          <div class="li">
+            <span class="thumb"></span>
+            <span><span class="t">Linen Bedding Set</span><br /><span class="s">SKU LBS-2 · qty 2</span></span>
+            <span class="p">$432.00</span>
+          </div>
+          <div class="li">
+            <span class="thumb"></span>
+            <span><span class="t">Down Pillow</span><br /><span class="s">SKU DP-1 · qty 1</span></span>
+            <span class="p">$54.00</span>
+          </div>
+          <div class="totals">
+            <div class="tr"><span>Subtotal</span><span>$486.00</span></div>
+            <div class="tr"><span>Shipping · UPS Ground</span><span>$14.50</span></div>
+            <div class="tr"><span>Tax · auto-calculated</span><span>$38.88</span></div>
+            <div class="grand"><span class="l">Total</span><span class="v">$539.38</span></div>
+          </div>
+          <div class="receipt-foot">
+            <span class="dot" style="background: var(--commerce)"></span>
+            <span class="mono">paid with Apple Pay · Stripe · inventory decremented</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 2. ORDER JOURNEY ── -->
+    <section id="journey" class="surf pad-lg">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2 class="display">One order, catalog to fulfilled<span class="spark">.</span></h2>
+          <p class="lede">
+            Every order travels the same path on one database — no webhooks trading state at 3am, no
+            sync to drift. Stock, pricing, and customer history are all re-checked as it moves.
+          </p>
+        </div>
+
+        <div class="pipeline">
+          <div class="stage">
+            <span class="stage-n">01 · catalog</span>
+            <h3><span class="dot" style="background: var(--commerce)"></span>Added to cart</h3>
+            <p>Products, variants, and collections — the matrix of color, size, and SKU. Price and stock are read live, never cached stale.</p>
+            <div class="arrow-x"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg></div>
+          </div>
+          <div class="stage">
+            <span class="stage-n">02 · cart</span>
+            <h3><span class="dot" style="background: var(--commerce)"></span>Validated</h3>
+            <p>Inventory re-checked, discounts re-validated, B2B account pricing applied. Abandoned carts fire an email automation.</p>
+            <div class="arrow-x"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg></div>
+          </div>
+          <div class="stage">
+            <span class="stage-n">03 · checkout</span>
+            <h3><span class="dot" style="background: var(--commerce)"></span>Paid</h3>
+            <p>Single-page checkout, live tax and shipping, a Stripe payment intent confirmed on submit. Inventory decrements atomically.</p>
+            <div class="arrow-x"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg></div>
+          </div>
+          <div class="stage">
+            <span class="stage-n">04 · fulfillment</span>
+            <h3><span class="dot" style="background: var(--commerce)"></span>Shipped</h3>
+            <p>Pick, pack, add tracking — partial shipments allowed. Tracking triggers the shipping email; refunds restock and return via Stripe.</p>
+            <div class="arrow-x"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 3. CHECKOUT FRAME (annotated) ── -->
+    <section class="pad-lg">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2 class="display">A checkout built to convert<span class="spark">.</span></h2>
+          <p class="lede">
+            One page, not a five-screen funnel. Address autocomplete, saved payment methods, and the
+            wallets your customers already use — all wired in, all conversion-tuned out of the box.
+          </p>
+        </div>
+
+        <div class="frame-grid">
+          <div class="browser">
+            <div class="browser-bar">
+              <span class="tl"><span></span><span></span><span></span></span>
+              <span class="url">flaxandfern.com/checkout</span>
+            </div>
+            <div class="checkout">
+              <div class="co-form">
+                <span class="co-step">Contact &amp; shipping</span>
+                <div class="co-field co-field--filled"><span>dana.ruiz@gmail.com</span></div>
+                <div class="co-field"><span>412 Maple Ave<span class="ph"> · suggested</span></span><span class="dot" style="background: var(--commerce)"></span></div>
+                <div class="co-row2">
+                  <div class="co-field"><span class="ph">City</span></div>
+                  <div class="co-field"><span class="ph">ZIP</span></div>
+                </div>
+                <span class="co-step">Payment</span>
+                <div class="co-wallets">
+                  <span class="wallet">Apple&nbsp;Pay</span>
+                  <span class="wallet">Link</span>
+                </div>
+                <div class="co-field"><span class="ph">Card ending 4242</span><span class="mono" style="color: var(--faint); font-size: 11px">saved</span></div>
+                <div class="co-pay">
+                  Pay $539.38
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                </div>
+              </div>
+              <div class="co-summary">
+                <span class="cap">Order summary</span>
+                <div class="co-sum-li"><span class="thumb"></span><span>Linen Bedding Set ×2</span><span class="amt">$432.00</span></div>
+                <div class="co-sum-li"><span class="thumb"></span><span>Down Pillow ×1</span><span class="amt">$54.00</span></div>
+                <div class="co-sum-line"><span>Shipping</span><span>$14.50</span></div>
+                <div class="co-sum-line" style="border-top: none; padding-top: 0"><span>Tax</span><span>$38.88</span></div>
+                <div class="co-sum-grand" style="border-top: 1px solid var(--border); padding-top: 12px"><span>Total</span><span class="v">$539.38</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pins">
+            <div class="pin"><span class="n">A</span><div><h4>Address autocomplete</h4><p>Suggestions as they type — fewer failed deliveries, fewer typos, faster fills.</p></div></div>
+            <div class="pin"><span class="n">B</span><div><h4>Wallets &amp; one-click</h4><p>Apple Pay, Google Pay, and Link — Stripe&rsquo;s one-click checkout — for buyers in a hurry.</p></div></div>
+            <div class="pin"><span class="n">C</span><div><h4>Saved payment methods</h4><p>Returning customers skip the card form entirely. 3D Secure and SCA handled automatically.</p></div></div>
+            <div class="pin"><span class="n">D</span><div><h4>Live tax &amp; shipping</h4><p>TaxJar or Avalara for tax; carrier rates via EasyPost. Totals update before they pay.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4. PAYMENTS RAIL ── -->
+    <section class="surf pad-lg">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2 class="display">Stripe, plus the wallets they already use<span class="spark">.</span></h2>
+          <p class="lede">
+            Payments run on Stripe as the primary processor — you keep your own Stripe account and
+            relationship. sparx connects it through Stripe Connect; the methods below are on by
+            default.
+          </p>
+        </div>
+
+        <div class="rail">
+          <div class="rail-cell">
+            <span class="rail-glyph"><span class="dot" style="background: var(--commerce); width: 9px; height: 9px"></span></span>
+            <span class="nm">Cards</span>
+            <span class="ds">Every major card, 3D Secure and SCA handled automatically.</span>
+          </div>
+          <div class="rail-cell">
+            <span class="rail-glyph"><span class="dot" style="background: var(--commerce); width: 9px; height: 9px"></span></span>
+            <span class="nm">Apple Pay</span>
+            <span class="ds">One-tap on iPhone and Safari — no card entry, higher conversion.</span>
+          </div>
+          <div class="rail-cell">
+            <span class="rail-glyph"><span class="dot" style="background: var(--commerce); width: 9px; height: 9px"></span></span>
+            <span class="nm">Google Pay</span>
+            <span class="ds">The same one-tap path for Android and Chrome shoppers.</span>
+          </div>
+          <div class="rail-cell">
+            <span class="rail-glyph"><span class="dot" style="background: var(--commerce); width: 9px; height: 9px"></span></span>
+            <span class="nm">Link</span>
+            <span class="ds">Stripe&rsquo;s one-click checkout — saved details across every Stripe store.</span>
+          </div>
+        </div>
+        <p class="rail-foot">
+          Test mode runs against staging, payment intents confirm on submit, and refunds return to
+          the original method. Need net terms or a PO at checkout instead?
+          <a href="/b2b">That&rsquo;s B2B</a>, layered on the same engine.
+        </p>
+      </div>
+    </section>
+
+    <!-- ── 5. FEE LADDER ── -->
+    <section class="pad-lg">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2 class="display">A transaction fee that shrinks as you grow<span class="spark">.</span></h2>
+          <p class="lede">
+            One honest line, no asterisks. sparx takes a small per-transaction fee on Commerce — and
+            it steps down the more of the platform you run, all the way to nothing.
+          </p>
+        </div>
+
+        <div class="ladder">
+          <div class="rung rung-1">
+            <span class="when">Commerce only</span>
+            <span class="pct">0.5%</span>
+            <div class="bar"></div>
+            <p>The base rate, per transaction, on top of your own Stripe processing. That&rsquo;s the whole sparx fee.</p>
+          </div>
+          <div class="rung rung-2">
+            <span class="when">With CRM</span>
+            <span class="pct">0.3%</span>
+            <div class="bar"></div>
+            <p>Add CRM and the per-transaction fee drops — the more of the spine you use, the less each order costs you.</p>
+          </div>
+          <div class="rung rung-3">
+            <span class="when">At $299+ / mo of modules</span>
+            <span class="pct">0%</span>
+            <div class="bar"></div>
+            <p>Once your active modules total $299 a month or more, the per-transaction fee disappears entirely.</p>
+          </div>
+        </div>
+        <p class="ladder-note">
+          The fee is taken through Stripe Connect and is separate from Stripe&rsquo;s own processing
+          rate. No per-seat charges, no per-product metering — see
+          <a href="/pricing" style="color: var(--commerce-text); font-weight: 500">full pricing</a>.
+        </p>
+      </div>
+    </section>
+
+    <!-- ── 6. OPERATIONS GRID ── -->
+    <section class="surf pad-lg">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2 class="display">Everything after &ldquo;paid&rdquo;<span class="spark">.</span></h2>
+          <p class="lede">
+            The order is only the start. Commerce ships the operations that make selling sustainable
+            at real volume — inventory, promotions, refunds, reporting, and bulk tooling.
+          </p>
+        </div>
+
+        <div class="ops">
+          <div class="op">
+            <span class="glyph"><span class="dot" style="background: var(--commerce); width: 9px; height: 9px"></span></span>
+            <h3>Inventory that tracks</h3>
+            <p>Per-variant counts, deny or backorder policy, low-stock thresholds that publish alerts. Bulk-adjust by CSV or API.</p>
+          </div>
+          <div class="op">
+            <span class="glyph"><span class="dot" style="background: var(--commerce); width: 9px; height: 9px"></span></span>
+            <h3>Discounts &amp; promotions</h3>
+            <p>Percentage, fixed amount, free shipping, buy-X-get-Y. Code or automatic, with minimums, date windows, and usage limits.</p>
+          </div>
+          <div class="op">
+            <span class="glyph"><span class="dot" style="background: var(--commerce); width: 9px; height: 9px"></span></span>
+            <h3>Refunds &amp; returns</h3>
+            <p>Full or partial, back to the original method via Stripe. Inventory restocks on refund, with the reason recorded for reporting.</p>
+          </div>
+          <div class="op">
+            <span class="glyph"><span class="dot" style="background: var(--commerce); width: 9px; height: 9px"></span></span>
+            <h3>Order timeline</h3>
+            <p>Placed, paid, noted, fulfilled, tracked, refunded — every event in order, with staff notes and customer-visible notes.</p>
+          </div>
+          <div class="op">
+            <span class="glyph"><span class="dot" style="background: var(--commerce); width: 9px; height: 9px"></span></span>
+            <h3>Reports that matter</h3>
+            <p>Revenue by period, top products and customers, AOV trend, inventory valuation, and the sessions-to-purchase funnel.</p>
+          </div>
+          <div class="op">
+            <span class="glyph"><span class="dot" style="background: var(--commerce); width: 9px; height: 9px"></span></span>
+            <h3>Built for real volume</h3>
+            <p>Multi-fulfillment partial shipments, bulk order operations, and full CSV exports — order ops that scale with shipping.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 7. HEADLESS / HOSTED ── -->
+    <section class="pad-lg">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2 class="display">Headless, hosted, or both<span class="spark">.</span></h2>
+          <p class="lede">
+            Commerce is the engine, not the front end. Drive it entirely through the API and MCP, or
+            switch on Builder and get a hosted storefront on your own domain — same data either way.
+          </p>
+        </div>
+
+        <div class="two">
+          <div class="way">
+            <span class="tag">commerce + your stack</span>
+            <h3>Run it headless</h3>
+            <p>Every capability is an API endpoint first; the dashboard is one consumer among many. Build your own front end, or let an AI assistant work the catalog and orders over MCP.</p>
+            <ul>
+              <li><span class="dot" style="background: var(--commerce)"></span>Full REST + GraphQL surface — catalog, cart, checkout, orders.</li>
+              <li><span class="dot" style="background: var(--commerce)"></span>SSR-ready with CDN caching for sub-200ms TTFB.</li>
+              <li><span class="dot" style="background: var(--commerce)"></span>Read and write live commerce data from Claude, ChatGPT, or Copilot.</li>
+            </ul>
+            <span class="runs">Commerce + API · MCP</span>
+          </div>
+          <div class="way">
+            <span class="tag">commerce + builder</span>
+            <h3>Get a hosted storefront</h3>
+            <p>Pair Commerce with Builder and the storefront renders for you — product pages, collections, cart, and the converting checkout — on your custom domain, SSL and CDN handled.</p>
+            <ul>
+              <li><span class="dot" style="background: var(--module-builder)"></span>Product, collection, cart, and account pages out of the box.</li>
+              <li><span class="dot" style="background: var(--module-builder)"></span>Full-text product search with filters and sort.</li>
+              <li><span class="dot" style="background: var(--module-builder)"></span>Your theme and brand — selling shares one design system with the rest of the site.</li>
+            </ul>
+            <span class="runs">Commerce + Builder</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 8. PROOF ROW (dark) ── -->
+    <section class="dark pad-lg">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2 class="display">See the whole funnel, on the same data<span class="spark-w">.</span></h2>
+          <p class="lede">
+            Because orders, customers, and content share one database, the numbers reconcile by
+            default — no exports, no two systems disagreeing about what happened.
+          </p>
+        </div>
+        <div class="proof-row">
+          <div class="stat">
+            <div class="n">1<span class="spark-w">.</span></div>
+            <div class="l">database under products, orders, and customers — nothing to sync</div>
+          </div>
+          <div class="stat">
+            <div class="n">D2C + B2B</div>
+            <div class="l">from the same commerce engine — wholesale toggles on per account</div>
+          </div>
+          <div class="stat">
+            <div class="n">$0</div>
+            <div class="l">extra for Invoicing — estimates, work orders, and AR ride along with Commerce</div>
+          </div>
+          <div class="stat">
+            <div class="n">&lt;200ms</div>
+            <div class="l">storefront TTFB target via SSR and CDN caching</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 9. PRICING STRIP ── -->
+    <section class="pad-lg">
+      <div class="wrap">
+        <div class="price-strip">
+          <div>
+            <div class="money">
+              <span class="big">$49</span>
+              <span class="per">/mo</span>
+            </div>
+            <p>
+              A flat $49/mo — the transactional core, with Invoicing bundled in free. No tiers, no
+              per-seat charge, no per-product metering. Pair it with Builder for a hosted storefront
+              or run it headless against the API. Start free for 14 days; no card to begin.
+            </p>
+          </div>
+          <div class="price-actions">
+            <a class="btn btn-outline btn-lg" href="/pricing">See all plans →</a>
+            <a class="btn btn-dark btn-lg" href="#">Activate Commerce</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 10. FINAL CTA (dark) ── -->
+    <section class="dark pad-xl">
+      <div class="wrap cta-final">
+        <h2 class="display">Start selling this afternoon<span class="spark-w">.</span></h2>
+        <p class="lede">
+          Add products, connect Stripe, and take your first order — no contract, no migration
+          weekend. Turn Commerce off the day you stop selling; your data stays, and you keep your
+          processor relationships.
+        </p>
+        <div class="acts">
+          <a class="btn btn-dark btn-xl" style="background: var(--commerce)" href="#">
+            Start selling
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+          </a>
+          <a class="btn btn-ondark-outline btn-xl" href="#journey">See how an order flows</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="row">
+        <span class="wordmark">spar<span class="x">x</span></span>
+        <div class="dots">
+          <span style="background: #6366f1"></span><span style="background: #f97316"></span><span style="background: #14b8a6"></span><span style="background: #06b6d4"></span><span style="background: #0ea5e9"></span><span style="background: #475569"></span><span style="background: #ec4899"></span><span style="background: #10b981"></span>
+        </div>
+        <span class="legal">© 2026 WizeWorks · sparx.works</span>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -401,6 +401,74 @@
   transform: rotate(45deg);
 }
 
+/* ── COMMERCE: order pipeline + annotated checkout frame ─────────
+   Structural devices for the /commerce page. The pipeline is a 4-stage
+   rail (catalog → cart → checkout → fulfilled) that collapses 4→2→1; the
+   frame grid puts the checkout browser frame beside its annotation pins,
+   stacking the pins below on tablet down. Surface/colors come from inline
+   CSS-var styles in commerce-sections.tsx; these classes only do layout. */
+
+.mkt-pipeline {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--color-border-default);
+  border-radius: 14px;
+  overflow: hidden;
+}
+/* Stage dividers: left border by default, first in each row has none. */
+.mkt-pipeline > .mkt-stage {
+  border-left: 1px solid var(--color-border-default);
+}
+.mkt-pipeline > .mkt-stage:nth-child(1) {
+  border-left: none;
+}
+@media (max-width: 1024px) {
+  .mkt-pipeline {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .mkt-pipeline > .mkt-stage:nth-child(odd) {
+    border-left: none;
+  }
+  .mkt-pipeline > .mkt-stage:nth-child(n + 3) {
+    border-top: 1px solid var(--color-border-default);
+  }
+}
+@media (max-width: 640px) {
+  .mkt-pipeline {
+    grid-template-columns: 1fr;
+  }
+  .mkt-pipeline > .mkt-stage {
+    border-left: none;
+  }
+  .mkt-pipeline > .mkt-stage:nth-child(n + 2) {
+    border-top: 1px solid var(--color-border-default);
+  }
+}
+
+/* Checkout browser frame (flex 1) beside the annotation-pin column. */
+.mkt-frame-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 40px;
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .mkt-frame-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* The checkout itself: form column + order-summary column → stacks. */
+.mkt-checkout {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+}
+@media (max-width: 768px) {
+  .mkt-checkout {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── COOKIE CONSENT: banner + preference center (docs/42) ────────
    Client-only GDPR opt-in chrome. Bottom-left card on desktop, a
    full-width bottom sheet on mobile; the preference center is a

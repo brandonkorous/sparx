@@ -1,6 +1,6 @@
 # sparx Platform — Inventory Product Build Plan
 
-**Version:** 1.7
+**Version:** 1.8
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-17
 
@@ -373,6 +373,21 @@ expected arrival, line cost), `GoodsReceipt` + `GoodsReceiptLine` (receive again
    suite 22/22).
 3. **Receiving** writes `receive` movements into the master, optionally minting `LotBatch` rows;
    partial receipts; over/under-receipt handling.
+   ✅ **DONE (P3c).** `inventory_goods_receipts` + `inventory_goods_receipt_lines` tables (migration
+   `20260906000000_inventory_goods_receipts`, FORCE RLS); a receipt is **posted atomically** (no editable
+   draft — corrections are a later adjustment/count). `@sparx/inventory` `goods-receipts.ts`
+   `createGoodsReceipt` routes every line through `applyMovement` (`receive`, +qty, `referenceType:
+'GoodsReceipt'`, `idempotencyKey: goods-receipt:<lineId>`), so the moving-average `avgCostCents` updates
+   (the onHand=0 case seeds the average from the receipt cost — the div-by-zero guard already lives in the
+   ledger), bumps `PurchaseOrderLine.quantityReceived`, optionally mints/extends a `LotBatch`, then advances
+   the PO to `partial` (any line received) or `received` (all lines, + `receivedAt`); over-receipt is allowed.
+   API `/v1/inventory/receipts` (POST + list/`:id`, `requireInventoryModule`, immutable so no PATCH/DELETE).
+   Dashboard `/inventory/receiving` (awaiting-receipt POs + recent-receipts feed), a receive form at
+   `/inventory/purchase-orders/[id]/receive` (qty defaults to outstanding, cost override, lot), a read-only
+   receipt detail, a **Receive** button on the PO actions bar (submitted/partial) + a receipts panel on the
+   PO detail; `Receiving` manifest section. Seed: a partial demo receipt (PO-000002 → `partial`, Σ-invariant
+   verified 0 mismatches). DB-backed tests in `test/integration/goods-receipts.test.ts` (3 cases; inventory
+   suite 25/25).
 4. **Reorder engine** — items at/below `reorderPoint` produce reorder suggestions (the "Reorder watch"
    already lists them); one click drafts a PO to the preferred supplier; lead-time → expected arrival.
    Wire to the existing `inventory.low` event + automation so suggestions can auto-draft.
@@ -383,12 +398,13 @@ expected arrival, line cost), `GoodsReceipt` + `GoodsReceiptLine` (receive again
 **Deploy gate:** create supplier → draft PO → receive (partial then full) → `onHand` rises via `receive`
 movements; reorder suggestion drafts a PO. All with commerce off.
 
-> **P3 in progress.** P3a (suppliers + per-variant purchasing links) and **P3b (PurchaseOrder lifecycle +
-> lines + document)** are ✅ DONE — a standalone tenant can record vendors, draft/submit purchase orders,
-> and print them today. Next sub-increments: **P3c** Receiving (book goods against a submitted PO → `receive`
-> movements → moving-average `avgCostCents`, partials, the PO advancing to partial/received, lot-on-receipt),
-> **P3d** reorder engine (items at/below `reorderPoint` → one-click draft PO to the preferred supplier,
-> wired to `inventory.low`). Both build on the supplier + PO models and are independently deployable.
+> **P3 in progress.** P3a (suppliers + per-variant purchasing links), **P3b (PurchaseOrder lifecycle +
+> lines + document)**, and **P3c (Receiving — goods receipts → `receive` movements → moving-average,
+> partials, lot-on-receipt, PO advancing to partial/received)** are ✅ DONE — a standalone tenant can record
+> vendors, draft/submit/print purchase orders, and receive goods into stock today. Last sub-increment:
+> **P3d** reorder engine (items at/below `reorderPoint` → one-click draft PO to the preferred supplier via
+> `suppliersForVariant`, lead-time → expected arrival, wired to the existing `inventory.low` event +
+> automation). It builds on the supplier + PO models and is independently deployable.
 
 **Risks:** PO↔receipt partial-quantity accounting; receipts update the moving-average `avgCostCents`
 (§2.3) — guard divide-by-zero when `onHand` is 0 (seed the average from the receipt cost).

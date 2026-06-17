@@ -39,4 +39,7 @@ export type {
   PurchaseOrderLineRow,
   PurchaseOrderDetail,
   PurchaseOrderDocumentBrand,
+  GoodsReceiptRow,
+  GoodsReceiptLineRow,
+  GoodsReceiptDetail,
 } from './services/inventory-service';

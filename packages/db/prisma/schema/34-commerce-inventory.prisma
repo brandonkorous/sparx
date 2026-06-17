@@ -49,6 +49,7 @@ model Warehouse {
   serialUnits        SerialUnit[]
   sourceLinks        InventorySourceLink[]
   purchaseOrders     PurchaseOrder[]
+  goodsReceipts      GoodsReceipt[]
   defaultForProducts Product[]              @relation("ProductDefaultWarehouse")
 
   @@unique([tenantId, code], map: "inventory_warehouses_tenant_code_unique")

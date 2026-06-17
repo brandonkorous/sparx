@@ -1,5 +1,14 @@
 import type { ModuleManifest } from '@sparx/ui/shell';
-import { Warehouse, Boxes, Layers, Link2, Plus, Truck, ClipboardList } from 'lucide-react';
+import {
+  Warehouse,
+  Boxes,
+  Layers,
+  Link2,
+  Plus,
+  Truck,
+  ClipboardList,
+  PackageCheck,
+} from 'lucide-react';
 
 export const inventoryManifest: ModuleManifest = {
   id: 'inventory',
@@ -16,6 +25,7 @@ export const inventoryManifest: ModuleManifest = {
       icon: ClipboardList,
       href: '/inventory/purchase-orders',
     },
+    { id: 'receiving', label: 'Receiving', icon: PackageCheck, href: '/inventory/receiving' },
     { id: 'lots', label: 'Lots & serials', icon: Layers, href: '/inventory/lots' },
     { id: 'sources', label: 'Sources', icon: Link2, href: '/inventory/sources' },
   ],

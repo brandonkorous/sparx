@@ -114,6 +114,10 @@ export type {
   PurchaseOrderDetail,
 } from './purchase-order-shared';
 
+// ─── Goods receipts (P3c supply path) ─────────────────────────────────
+export { listGoodsReceipts, getGoodsReceipt, createGoodsReceipt } from './goods-receipts';
+export type { GoodsReceiptRow, GoodsReceiptLineRow, GoodsReceiptDetail } from './goods-receipts';
+
 // ─── Movement ledger primitive ────────────────────────────────────────
 // Exposed for callers composing a movement inside their OWN tenant transaction
 // (e.g. an order service decrementing stock atomically with the order insert).

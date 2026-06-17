@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { Button, Stack, Text } from '@sparx/ui';
@@ -42,6 +43,7 @@ export function PurchaseOrderActionsBar({ id, status }: { id: string; status: st
   }
 
   const canSubmit = status === 'draft';
+  const canReceive = status === 'submitted' || status === 'partial';
   const canCancel = status === 'draft' || status === 'submitted';
   const canClose = status === 'submitted' || status === 'partial' || status === 'received';
   const canDelete = status === 'draft';
@@ -54,6 +56,12 @@ export function PurchaseOrderActionsBar({ id, status }: { id: string; status: st
             Print / PDF
           </a>
         </Button>
+
+        {canReceive && (
+          <Button color="module" size="sm" asChild>
+            <Link href={`/inventory/purchase-orders/${id}/receive`}>Receive</Link>
+          </Button>
+        )}
 
         {canSubmit && (
           <Button

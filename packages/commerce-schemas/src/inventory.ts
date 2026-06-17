@@ -293,3 +293,28 @@ export const SubmitPurchaseOrderInput = z.object({
   expectedArrivalAt: z.string().datetime().optional(),
 });
 export type SubmitPurchaseOrderInput = z.infer<typeof SubmitPurchaseOrderInput>;
+
+// ─── Goods receipts (P3c) ─────────────────────────────────────────────────────
+//
+// Booking goods against a submitted PO. A receipt is posted atomically — each
+// line writes a `receive` movement (the moving-average basis = the landed unit
+// cost, defaulted from the PO line) and bumps that PO line's received count,
+// advancing the PO to partial/received. A `lotNumber` mints/extends a LotBatch.
+
+export const ReceiveLineInput = z.object({
+  purchaseOrderLineId: Uuid,
+  quantity: z.number().int().positive(),
+  // Actual landed cost — defaults to the PO line's agreed cost when omitted.
+  unitCostCents: z.number().int().nonnegative().optional(),
+  lotNumber: z.string().min(1).max(63).optional(),
+});
+export type ReceiveLineInput = z.infer<typeof ReceiveLineInput>;
+
+export const CreateGoodsReceiptInput = z.object({
+  purchaseOrderId: Uuid,
+  receivedAt: z.string().datetime().optional(),
+  reference: z.string().max(120).optional(), // packing slip / carrier ref
+  note: z.string().max(2000).optional(),
+  lines: z.array(ReceiveLineInput).min(1).max(500),
+});
+export type CreateGoodsReceiptInput = z.infer<typeof CreateGoodsReceiptInput>;
