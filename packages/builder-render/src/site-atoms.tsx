@@ -27,26 +27,42 @@ import {
   Avatar,
   Breadcrumb,
   BreadcrumbItem,
+  Browser,
+  Calendar,
   Callout,
   ChatBubble,
   ChatHeader,
   ChatMessage,
   Checkbox,
+  Code,
+  CodeLine,
   Countdown,
+  Diff,
+  DiffItem1,
+  DiffItem2,
+  DiffResizer,
   Dock,
   DockItem,
   Field,
   FileInput,
+  Filter,
+  Hover3DCard,
+  HoverGallery,
+  Indicator,
+  IndicatorItem,
   Input,
+  Join,
   Kbd,
   Label,
   Link,
   List,
   ListRow,
+  Mask,
   Menu,
   MenuItem,
   NativeSelect,
   Pagination,
+  Phone,
   Progress,
   RadialProgress,
   Radio,
@@ -57,23 +73,30 @@ import {
   Status,
   Step,
   Steps,
+  Swap,
   Switch,
   Table,
   Tag,
   Textarea,
+  TextRotate,
   Validator,
+  Window,
   type AvatarShape,
   type ChatPlacement,
   type ChipTreatmentKey,
   type ColorKey,
   type FieldTreatmentKey,
+  type IndicatorPlacement,
+  type JoinOrientation,
   type LinkUnderline,
+  type MaskShape,
   type MenuOrientation,
   type SizeKey,
   type SkeletonShape,
   type SpinnerKind,
   type StepsOrientation,
   type StepState,
+  type SwapAnimation,
 } from '@sparx/site-ui';
 import type { BuilderNode, Cardinality } from '@sparx/builder-schemas';
 
@@ -132,7 +155,7 @@ export function recipeFromClass(leafClass: string | undefined): Recipe {
 }
 
 const str = (node: BuilderNode, k: string): string =>
-  typeof node.props[k] === 'string' ? (node.props[k] as string) : '';
+  typeof node.props[k] === 'string' ? node.props[k] : '';
 
 const flag = (node: BuilderNode, k: string): boolean => node.props[k] === true;
 
@@ -168,7 +191,10 @@ function pairLines(node: BuilderNode, key: string): { label: string; href?: stri
   return textLines(node, key)
     .map((l) => l.split('|').map((s) => s.trim()))
     .filter((p) => p[0])
-    .map((p) => ({ label: p[0] ?? '', href: p[1] || undefined }));
+    .map((p) => {
+      const href = p[1];
+      return { label: p[0] ?? '', href: href === undefined || href === '' ? undefined : href };
+    });
 }
 
 // Cast helpers — recipeFromClass yields free strings; the components type their axes,
@@ -604,7 +630,8 @@ export function renderSiteUiAtom(
       // Each line is `icon | label` (lucide icon name, then its caption).
       const rows = textLines(node, 'items').map((l) => {
         const p = l.split('|').map((s) => s.trim());
-        return { icon: p[0] || 'circle', label: p[1] ?? '' };
+        const icon = p[0];
+        return { icon: icon === undefined || icon === '' ? 'circle' : icon, label: p[1] ?? '' };
       });
       const list = rows.length
         ? rows
@@ -622,6 +649,150 @@ export function renderSiteUiAtom(
           ))}
         </Dock>
       );
+    }
+
+    // ── Layout / containment ──────────────────────────────────────────────────
+    case 'Indicator': {
+      const label = str(node, 'label') || (ctx.edit ? '3' : '');
+      return (
+        <Indicator className={r.className}>
+          {ctx.children}
+          {label ? (
+            <IndicatorItem placement={(str(node, 'placement') || 'top-end') as IndicatorPlacement}>
+              <span className="st-badge st-c-primary st-v-solid st-badge--sz-sm">{label}</span>
+            </IndicatorItem>
+          ) : null}
+        </Indicator>
+      );
+    }
+    case 'Join':
+      return (
+        <Join
+          orientation={(str(node, 'orientation') || 'horizontal') as JoinOrientation}
+          className={r.className}
+        >
+          {ctx.children}
+        </Join>
+      );
+    case 'Mask':
+      return (
+        <Mask shape={(str(node, 'shape') || 'squircle') as MaskShape} className={r.className}>
+          {ctx.children ?? (ctx.edit ? <div className="bx-ph bx-ratio-square" /> : null)}
+        </Mask>
+      );
+
+    // ── Mockup frames ─────────────────────────────────────────────────────────
+    case 'Browser':
+      return (
+        <Browser url={str(node, 'url') || undefined} className={r.className}>
+          {ctx.children}
+        </Browser>
+      );
+    case 'Window':
+      return (
+        <Window title={str(node, 'title') || undefined} className={r.className}>
+          {ctx.children}
+        </Window>
+      );
+    case 'Phone':
+      return <Phone className={r.className}>{ctx.children}</Phone>;
+    case 'Code': {
+      const lines = textLines(node, 'lines');
+      const list = lines.length ? lines : ['$ | npm install @sparx/site-ui', '$ | pnpm dev'];
+      return (
+        <Code className={r.className}>
+          {list.map((raw, i) => {
+            const idx = raw.indexOf('|');
+            const prefix = idx >= 0 ? raw.slice(0, idx).trim() || undefined : undefined;
+            const code = idx >= 0 ? raw.slice(idx + 1).trim() : raw;
+            return (
+              <CodeLine key={i} prefix={prefix}>
+                {code}
+              </CodeLine>
+            );
+          })}
+        </Code>
+      );
+    }
+
+    // ── Effects / display ─────────────────────────────────────────────────────
+    case 'Swap':
+      return (
+        <Swap
+          animation={(str(node, 'animation') || 'none') as SwapAnimation}
+          on={str(node, 'on') || '🌙'}
+          off={str(node, 'off') || '☀️'}
+          className={r.className}
+        />
+      );
+    case 'Filter': {
+      const options = textLines(node, 'options').map((label) => ({
+        label,
+        value: label.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      }));
+      const list = options.length
+        ? options
+        : [
+            { label: 'Active', value: 'active' },
+            { label: 'Archived', value: 'archived' },
+            { label: 'Drafts', value: 'drafts' },
+          ];
+      return (
+        <Filter
+          name={str(node, 'name') || node.id}
+          options={list}
+          color={asColor(r.color)}
+          className={r.className}
+        />
+      );
+    }
+    case 'Calendar':
+      return (
+        <Calendar
+          year={numOr(str(node, 'year'), 2026)}
+          month={numOr(str(node, 'month'), 6)}
+          selected={str(node, 'selected') ? numOr(str(node, 'selected'), 0) : undefined}
+          className={r.className}
+        />
+      );
+    case 'Diff': {
+      const before = str(node, 'before');
+      const after = str(node, 'after');
+      return (
+        <Diff className={r.className}>
+          <DiffItem1>
+            {before ? (
+              <img src={before} alt="" className="block h-full w-full object-cover" />
+            ) : (
+              <div className="bx-ph bx-ratio-wide" />
+            )}
+          </DiffItem1>
+          <DiffItem2>
+            {after ? (
+              <img src={after} alt="" className="block h-full w-full object-cover" />
+            ) : (
+              <div className="bx-ph bx-ratio-wide" />
+            )}
+          </DiffItem2>
+          <DiffResizer />
+        </Diff>
+      );
+    }
+    case 'TextRotate': {
+      const items = textLines(node, 'items');
+      return (
+        <TextRotate
+          items={items.length ? items : ['faster', 'simpler', 'yours']}
+          className={r.className}
+        />
+      );
+    }
+    case 'Hover3DCard':
+      return <Hover3DCard className={r.className}>{ctx.children}</Hover3DCard>;
+    case 'HoverGallery': {
+      const images = textLines(node, 'images').map((src) => ({ src }));
+      if (images.length < 2) return ctx.edit ? <div className="bx-ph bx-ratio-wide" /> : null;
+      return <HoverGallery images={images} className={r.className} />;
     }
 
     default:

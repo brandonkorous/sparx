@@ -176,6 +176,20 @@ const CLASS_ON_LEAF: ReadonlySet<string> = new Set([
   'Breadcrumb',
   'Link',
   'Dock',
+  'Indicator',
+  'Join',
+  'Mask',
+  'Browser',
+  'Window',
+  'Phone',
+  'Code',
+  'Swap',
+  'Filter',
+  'Calendar',
+  'Diff',
+  'TextRotate',
+  'Hover3DCard',
+  'HoverGallery',
 ]);
 
 /** Does this leaf type style its own element with node.class (so the host should

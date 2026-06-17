@@ -17,14 +17,23 @@
 // registry.tsx so that file stays focused on the registry machinery.
 
 import {
+  AppWindow,
+  BellDot,
+  Box,
+  CalendarDays,
   ChevronDown,
   ChevronRight,
   Circle,
   CircleDashed,
   CircleDot,
   CircleUser,
+  Columns2,
   Ellipsis,
+  Filter,
   FormInput,
+  GalleryHorizontalEnd,
+  Group,
+  Hexagon,
   Keyboard,
   Link2,
   List,
@@ -34,9 +43,13 @@ import {
   Megaphone,
   Menu,
   MessageCircle,
+  Monitor,
   PanelBottom,
   Pilcrow,
+  Repeat,
+  RefreshCw,
   ShieldCheck,
+  Smartphone,
   SlidersHorizontal,
   SquareCheck,
   SquareDashed,
@@ -44,6 +57,7 @@ import {
   Table,
   Tag,
   Tags,
+  Terminal,
   TextCursorInput,
   Timer,
   ToggleRight,
@@ -568,10 +582,214 @@ const NAV_DEFS: ComponentDef[] = [
   }),
 ];
 
+// ── Layout / containment ─────────────────────────────────────────────────────
+
+const LAYOUT_DEFS: ComponentDef[] = [
+  atom({
+    type: 'Indicator',
+    label: 'Indicator',
+    icon: BellDot,
+    acceptsChildren: true,
+    props: [
+      { key: 'label', label: 'Badge text', control: 'text', placeholder: '3' },
+      {
+        key: 'placement',
+        label: 'Placement',
+        control: 'select',
+        options: opts(
+          ['top-end', 'Top right'],
+          ['top-start', 'Top left'],
+          ['bottom-end', 'Bottom right'],
+          ['bottom-start', 'Bottom left']
+        ),
+      },
+    ],
+    defaultProps: { label: '3', placement: 'top-end' },
+  }),
+  atom({
+    type: 'Join',
+    label: 'Join (group)',
+    icon: Group,
+    acceptsChildren: true,
+    props: [
+      {
+        key: 'orientation',
+        label: 'Orientation',
+        control: 'buttongroup',
+        options: opts(['horizontal', 'Row'], ['vertical', 'Stack']),
+      },
+    ],
+    defaultProps: { orientation: 'horizontal' },
+  }),
+  atom({
+    type: 'Mask',
+    label: 'Mask',
+    icon: Hexagon,
+    acceptsChildren: true,
+    props: [
+      {
+        key: 'shape',
+        label: 'Shape',
+        control: 'select',
+        options: opts(
+          ['squircle', 'Squircle'],
+          ['circle', 'Circle'],
+          ['hexagon', 'Hexagon'],
+          ['triangle', 'Triangle'],
+          ['diamond', 'Diamond'],
+          ['star', 'Star'],
+          ['heart', 'Heart']
+        ),
+      },
+    ],
+    defaultProps: { shape: 'squircle' },
+  }),
+];
+
+// ── Mockup frames ─────────────────────────────────────────────────────────────
+
+const MOCKUP_DEFS: ComponentDef[] = [
+  atom({
+    type: 'Browser',
+    label: 'Browser frame',
+    icon: AppWindow,
+    acceptsChildren: true,
+    props: [{ key: 'url', label: 'URL bar', control: 'text', placeholder: 'https://example.com' }],
+    defaultProps: { url: 'https://example.com' },
+  }),
+  atom({
+    type: 'Window',
+    label: 'Window frame',
+    icon: Monitor,
+    acceptsChildren: true,
+    props: [{ key: 'title', label: 'Title', control: 'text', placeholder: 'untitled' }],
+    defaultProps: { title: 'untitled' },
+  }),
+  atom({
+    type: 'Phone',
+    label: 'Phone frame',
+    icon: Smartphone,
+    acceptsChildren: true,
+    props: [],
+    defaultProps: {},
+  }),
+  atom({
+    type: 'Code',
+    label: 'Code block',
+    icon: Terminal,
+    props: [
+      {
+        key: 'lines',
+        label: 'Lines — one per line; “prefix | code” for a gutter mark',
+        control: 'textarea',
+        placeholder: '$ | npm install\n$ | pnpm dev',
+      },
+    ],
+    defaultProps: { lines: '$ | npm install @sparx/site-ui\n$ | pnpm dev' },
+  }),
+];
+
+// ── Effects / extras ──────────────────────────────────────────────────────────
+
+const EFFECT_DEFS: ComponentDef[] = [
+  atom({
+    type: 'Swap',
+    label: 'Swap',
+    icon: Repeat,
+    props: [
+      { key: 'on', label: 'On (checked)', control: 'text', placeholder: '🌙' },
+      { key: 'off', label: 'Off (unchecked)', control: 'text', placeholder: '☀️' },
+      {
+        key: 'animation',
+        label: 'Animation',
+        control: 'select',
+        options: opts(['none', 'None'], ['rotate', 'Rotate'], ['flip', 'Flip']),
+      },
+    ],
+    defaultProps: { on: '🌙', off: '☀️', animation: 'rotate' },
+  }),
+  atom({
+    type: 'Filter',
+    label: 'Filter chips',
+    icon: Filter,
+    class: 'st-c-primary',
+    props: [
+      { key: 'name', label: 'Group name', control: 'text', placeholder: 'status' },
+      {
+        key: 'options',
+        label: 'Options — one per line',
+        control: 'textarea',
+        placeholder: 'Active\nArchived',
+      },
+    ],
+    defaultProps: { name: '', options: 'Active\nArchived\nDrafts' },
+  }),
+  atom({
+    type: 'Calendar',
+    label: 'Calendar',
+    icon: CalendarDays,
+    props: [
+      { key: 'year', label: 'Year', control: 'text', placeholder: '2026' },
+      { key: 'month', label: 'Month (1–12)', control: 'text', placeholder: '6' },
+      { key: 'selected', label: 'Selected day', control: 'text', placeholder: '15' },
+    ],
+    defaultProps: { year: '2026', month: '6', selected: '15' },
+  }),
+  atom({
+    type: 'Diff',
+    label: 'Before / after',
+    icon: Columns2,
+    props: [
+      { key: 'before', label: 'Before image URL', control: 'text', placeholder: 'https://…' },
+      { key: 'after', label: 'After image URL', control: 'text', placeholder: 'https://…' },
+    ],
+    defaultProps: { before: '', after: '' },
+  }),
+  atom({
+    type: 'TextRotate',
+    label: 'Rotating text',
+    icon: RefreshCw,
+    props: [
+      {
+        key: 'items',
+        label: 'Words — one per line',
+        control: 'textarea',
+        placeholder: 'faster\nsimpler',
+      },
+    ],
+    defaultProps: { items: 'faster\nsimpler\nyours' },
+  }),
+  atom({
+    type: 'Hover3DCard',
+    label: '3D tilt card',
+    icon: Box,
+    acceptsChildren: true,
+    props: [],
+    defaultProps: {},
+  }),
+  atom({
+    type: 'HoverGallery',
+    label: 'Hover gallery',
+    icon: GalleryHorizontalEnd,
+    props: [
+      {
+        key: 'images',
+        label: 'Image URLs — one per line',
+        control: 'textarea',
+        placeholder: 'https://…/a.jpg\nhttps://…/b.jpg',
+      },
+    ],
+    defaultProps: { images: '' },
+  }),
+];
+
 /** The full site-ui atom set added in Track A, spread into the registry's DEFS. */
 export const SITE_UI_ATOM_DEFS: ComponentDef[] = [
   ...FORM_DEFS,
   ...FEEDBACK_DEFS,
   ...DISPLAY_DEFS,
   ...NAV_DEFS,
+  ...LAYOUT_DEFS,
+  ...MOCKUP_DEFS,
+  ...EFFECT_DEFS,
 ];
