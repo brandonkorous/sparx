@@ -14,11 +14,18 @@
 // state. The `inert` prop renders the button WITHOUT those side effects — for the
 // dashboard editor canvas, where it's a preview and must not flip the admin
 // shell's own theme.
+//
+// The painted theme lives on <html data-theme> + the cookie, not in React, so we
+// read it via `useSyncExternalStore` (the React-recommended way to adopt external
+// state) rather than syncing it with a setState-in-effect.
 
 import * as React from 'react';
 import { cx } from '../utils/cx';
 
 const COOKIE = 'sparx_theme';
+// Dispatched after the toggle writes the theme, so every mounted control re-reads
+// the painted theme (the external store) and stays in sync.
+const THEME_EVENT = 'sparx:theme';
 
 export interface ThemeToggleProps {
   /** Mode to paint before the persisted choice is read on mount. Defaults to
@@ -36,33 +43,43 @@ function readCookie(): 'light' | 'dark' | null {
   return m ? (m[1] as 'light' | 'dark') : null;
 }
 
+function subscribeTheme(onChange: () => void): () => void {
+  window.addEventListener(THEME_EVENT, onChange);
+  return () => window.removeEventListener(THEME_EVENT, onChange);
+}
+
+function readPaintedTheme(fallback: 'light' | 'dark'): 'light' | 'dark' {
+  return (
+    (document.documentElement.getAttribute('data-theme') as 'light' | 'dark' | null) ??
+    readCookie() ??
+    fallback
+  );
+}
+
 export function ThemeToggle({
   initial = 'light',
   inert = false,
   className,
   ...aria
 }: ThemeToggleProps): React.ReactElement {
-  const [mode, setMode] = React.useState<'light' | 'dark'>(initial);
-
-  // Adopt whatever the no-flash script already resolved (cookie / data-theme
-  // wins) so the icon matches the painted theme. Skipped when inert.
-  React.useEffect(() => {
-    if (inert) return;
-    const current =
-      (document.documentElement.getAttribute('data-theme') as 'light' | 'dark' | null) ??
-      readCookie();
-    if (current && current !== mode) setMode(current);
-    // run once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Server + hydration render `initial` (matching the painted markup); after
+  // hydration the client snapshot adopts the cookie / data-theme the no-flash
+  // script resolved. No setState-in-effect, no flash.
+  const painted = React.useSyncExternalStore(
+    subscribeTheme,
+    () => readPaintedTheme(initial),
+    () => initial
+  );
+  const mode = inert ? initial : painted;
 
   function toggle(): void {
     if (inert) return;
     const next = mode === 'dark' ? 'light' : 'dark';
-    setMode(next);
     document.documentElement.setAttribute('data-theme', next);
     // 1-year cookie; Lax so it rides top-level navigations.
     document.cookie = `${COOKIE}=${next}; path=/; max-age=31536000; samesite=lax`;
+    // Notify every mounted control to re-read the painted theme.
+    window.dispatchEvent(new Event(THEME_EVENT));
   }
 
   const next = mode === 'dark' ? 'light' : 'dark';
