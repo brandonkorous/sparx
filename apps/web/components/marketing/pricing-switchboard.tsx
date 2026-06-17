@@ -36,7 +36,7 @@ const MODULES: Mod[] = [
     price: 10,
     elsewhere: 39,
     color: 'var(--module-builder)',
-    long: 'The foundation every Sparx site starts on. Pick a polished theme, edit blocks, point your domain — automatic SSL, edge-cached pages, instant TTFB worldwide. Power users go fully headless against the same API.',
+    long: 'The foundation every sparx site starts on. Pick a polished theme, edit blocks, point your domain — automatic SSL, edge-cached pages, instant TTFB worldwide. Power users go fully headless against the same API.',
     feats: [
       'Theme-first, customize what matters',
       'Custom domain + automatic SSL',

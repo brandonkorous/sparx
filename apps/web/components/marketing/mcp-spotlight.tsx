@@ -74,7 +74,7 @@ export function McpSpotlight() {
           }
           lede={
             <>
-              Sparx is the first content and commerce platform built around the Model Context
+              sparx is the first content and commerce platform built around the Model Context
               Protocol. Connect Claude, ChatGPT, or Copilot once, then read live business data with
               plain English. No exports. No CSVs. No Zapier.
             </>

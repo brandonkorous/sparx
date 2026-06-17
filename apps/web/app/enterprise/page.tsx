@@ -4,7 +4,7 @@ import { Footer } from '@/components/marketing/footer';
 import { ComingSoon } from '@/components/marketing/coming-soon';
 
 export const metadata: Metadata = {
-  title: 'Enterprise — Sparx',
+  title: 'Enterprise — sparx',
   description:
     'Custom storefronts, dedicated support, SOC 2 audit assistance, contract terms tailored to your security and procurement requirements.',
   alternates: { canonical: '/enterprise' },

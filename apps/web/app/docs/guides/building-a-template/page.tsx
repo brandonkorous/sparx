@@ -16,7 +16,7 @@ import { CodeBlock } from '@/components/docs/code-block';
 export const metadata: Metadata = {
   title: 'Building a template',
   description:
-    'How to build a Sparx template (blueprint) end-to-end — a one-click, fully themed site you design in the Builder, capture as a declarative manifest, register, and test.',
+    'How to build a sparx template (blueprint) end-to-end — a one-click, fully themed site you design in the Builder, capture as a declarative manifest, register, and test.',
   alternates: { canonical: '/docs/guides/building-a-template' },
 };
 
@@ -335,7 +335,7 @@ export default function BuildingATemplatePage() {
       <DocSection id="what" title="What a template is">
         <p>
           A <strong>template</strong> is a one-click starting point for a whole site. When someone
-          installs one, Sparx provisions a complete, themed property for them in seconds:
+          installs one, sparx provisions a complete, themed property for them in seconds:
         </p>
         <ul>
           <li>

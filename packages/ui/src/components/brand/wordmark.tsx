@@ -11,7 +11,8 @@ import { SparxMark } from './sparx-mark';
 //     wordmark.
 //   - Set in Inter bold (700), tracking -0.03em, to match the weight and
 //     proportions of the monogram mark.
-//   - Lowercase, no period, no caps.
+//   - Lowercase wordmark ("sparx"), no period, no caps. The first letter is NOT
+//     capitalized — the lockup reads all-lowercase by design.
 //
 // Font: rendered with `--font-wordmark` (Inter, loaded per-app via next/font),
 // falling back to the Inter family / system stack. Apps that show the wordmark
@@ -53,7 +54,7 @@ export function Wordmark({ size = 22, icon = false, className, style, ...rest }:
         <SparxMark size={Math.round(size * 1.5)} />
       ) : (
         <span>
-          Spar<span style={{ color: 'var(--sparx-primary)' }}>x</span>
+          spar<span style={{ color: 'var(--sparx-primary)' }}>x</span>
         </span>
       )}
     </span>

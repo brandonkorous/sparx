@@ -4,7 +4,7 @@ import { Footer } from '@/components/marketing/footer';
 import { ComingSoon } from '@/components/marketing/coming-soon';
 
 export const metadata: Metadata = {
-  title: 'Press — Sparx',
+  title: 'Press — sparx',
   description: 'Press inquiries, founder bio, brand assets, hi-res screenshots.',
   alternates: { canonical: '/press' },
   robots: { index: false },
@@ -17,7 +17,7 @@ export default function PressPage() {
       <ComingSoon
         eyebrow="Company"
         title="Press"
-        description="Press inquiries, founder bio, brand assets, hi-res screenshots, and the latest Sparx announcements. We respond within one business day."
+        description="Press inquiries, founder bio, brand assets, hi-res screenshots, and the latest sparx announcements. We respond within one business day."
         contact="press@sparx.works"
       />
       <Footer />

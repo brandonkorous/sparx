@@ -29,7 +29,7 @@ export function getModuleColor(module: MarketingModule) {
 }
 
 /**
- * The Sparx wordmark. The "x" is always indigo. Brand guide §2.
+ * The sparx wordmark. The "x" is always indigo. Brand guide §2.
  */
 export function Wordmark({ size = 22, icon = false }: { size?: number; icon?: boolean }) {
   return (
@@ -48,7 +48,7 @@ export function Wordmark({ size = 22, icon = false }: { size?: number; icon?: bo
     >
       {icon ? <SparxMark size={Math.round(size * 1.18)} /> : null}
       <span>
-        Spar<span style={{ color: 'var(--sparx-primary)' }}>x</span>
+        spar<span style={{ color: 'var(--sparx-primary)' }}>x</span>
       </span>
     </span>
   );

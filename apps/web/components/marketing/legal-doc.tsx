@@ -1,5 +1,5 @@
 /**
- * Marketing-side layout for Sparx's OWN platform legal documents (docs/42 §6)
+ * Marketing-side layout for sparx's OWN platform legal documents (docs/42 §6)
  * — Terms, Privacy, DPA, Acceptable Use. Replaces the per-page ComingSoon
  * stub with a real, versioned, indexable page: Nav + an editorial header
  * (eyebrow, title, version + effective date) + a readable prose column +

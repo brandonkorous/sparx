@@ -2,7 +2,7 @@ import { Button } from '@sparx/ui';
 import { Section, SectionHeader, Display, Spark } from './primitives';
 
 /**
- * The /customers page. Leads with *who* Sparx is for — organized by user-type,
+ * The /customers page. Leads with *who* sparx is for — organized by user-type,
  * not by a single "we sell stores" assumption — then the flagship enterprise
  * story (Gillett Diesel) and an invitation. Intentionally not a megamenu: one
  * page, segmented by operator type; it can graduate to a menu once individual
@@ -66,7 +66,7 @@ export function CustomersPage() {
       <Section surface="page" padding="lg">
         <div style={{ maxWidth: '820px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <Display as="h1" size={64}>
-            Who builds on Sparx
+            Who builds on sparx
             <Spark />
           </Display>
           <p
@@ -79,7 +79,7 @@ export function CustomersPage() {
               color: 'var(--color-text-secondary)',
             }}
           >
-            Publishers, retailers, wholesale distributors, agencies. Sparx isn&apos;t a store with
+            Publishers, retailers, wholesale distributors, agencies. sparx isn&apos;t a store with
             extras bolted on — each operator turns on the modules they need, and nothing they
             don&apos;t.
           </p>
@@ -217,11 +217,11 @@ export function CustomersPage() {
               color: 'var(--color-text-secondary)',
             }}
           >
-            A diesel service and parts operation running the full industrial playbook on Sparx:
+            A diesel service and parts operation running the full industrial playbook on sparx:
             wholesale accounts with net terms and PO checkout, a fleet module tracking vehicles by
             VIN and cost center, bookable service bays, and a native MCP server so their team can
             query parts and orders in plain language. It runs on a custom frontend with managed
-            hosting on the Enterprise plan — the requirements that shaped Sparx&apos;s first B2B and
+            hosting on the Enterprise plan — the requirements that shaped sparx&apos;s first B2B and
             fleet features.
           </p>
 
@@ -252,7 +252,7 @@ export function CustomersPage() {
           <SectionHeader
             headline="Your story goes here"
             accent="var(--sparx-primary)"
-            lede="Building something that doesn't fit a template? That's the point. Tell us what you're running and we'll help you map it onto Sparx."
+            lede="Building something that doesn't fit a template? That's the point. Tell us what you're running and we'll help you map it onto sparx."
           />
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <a href="/contact">

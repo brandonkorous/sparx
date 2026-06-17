@@ -29,9 +29,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { category } = await params;
   const cat = getCategory(category);
-  if (!cat) return { title: 'Marketplace — Sparx' };
+  if (!cat) return { title: 'Marketplace — sparx' };
   return {
-    title: `${cat.label} — Sparx Marketplace`,
+    title: `${cat.label} — sparx Marketplace`,
     description: cat.tagline,
     alternates: { canonical: `/market/${cat.id}` },
   };

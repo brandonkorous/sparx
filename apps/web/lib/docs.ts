@@ -50,7 +50,7 @@ export const DOC_NAV: DocGroup[] = [
         badge: 'new',
         soon: true,
       },
-      { title: 'Migrating to Sparx', href: '/docs/guides/migrating', soon: true },
+      { title: 'Migrating to sparx', href: '/docs/guides/migrating', soon: true },
     ],
   },
   {

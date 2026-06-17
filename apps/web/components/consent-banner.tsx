@@ -38,7 +38,7 @@ const NON_ESSENTIAL: { key: NonEssential; label: string; copy: string }[] = [
   {
     key: 'marketing',
     label: 'Marketing',
-    copy: 'Lets us measure which campaigns bring people to Sparx.',
+    copy: 'Lets us measure which campaigns bring people to sparx.',
   },
 ];
 

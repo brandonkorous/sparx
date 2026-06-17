@@ -127,7 +127,7 @@ export function CompareTable() {
             <>
               Shopify, HubSpot, and WordPress each solve part of the problem. Stitching them costs
               an admin, a Zapier seat, and a quarter of &ldquo;we&apos;ll fix the data later.&rdquo;
-              Sparx ships the whole stack.
+              sparx ships the whole stack.
             </>
           }
         />

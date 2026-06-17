@@ -17,7 +17,7 @@ const OG_TITLE = `One platform. Nearly ${totalRound} capabilities.`;
 const OG_DESCRIPTION = `${liveFloor}+ live today across ${counts.modules} modules, ${upcoming} more on the way — all on one data layer, one dashboard, one bill. The whole platform, in one place.`;
 
 export const metadata: Metadata = {
-  title: 'Features — everything inside Sparx',
+  title: 'Features — everything inside sparx',
   description: `The pricing page lists ${counts.modules} modules. This is what's inside them: ${counts.live} shipped capabilities, ${counts.building} more in build, all on one data layer and one bill. Activate only what you need.`,
   alternates: { canonical: '/features' },
   // The marketing site historically headlines modules; this page (and its share
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     title: OG_TITLE,
     description: OG_DESCRIPTION,
     url: 'https://sparx.works/features',
-    siteName: 'Sparx',
+    siteName: 'sparx',
     type: 'article',
     publishedTime: '2026-06-11T00:00:00.000Z',
     modifiedTime: '2026-06-11T00:00:00.000Z',
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: OG_TITLE,
-    description: `${liveFloor}+ capabilities live across ${counts.modules} modules — one data layer, one bill. See everything Sparx does.`,
+    description: `${liveFloor}+ capabilities live across ${counts.modules} modules — one data layer, one bill. See everything sparx does.`,
   },
 };
 

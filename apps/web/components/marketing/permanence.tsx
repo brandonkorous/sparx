@@ -11,7 +11,7 @@ import { Container, Display, Spark } from './primitives';
 // Message rules (brand guide §7.1): AI + permanence, never anti-AI; "coding
 // optional" = the docs/47 escape ladder, never a flat no-code-only claim.
 
-// The day-2 proof — the capabilities that make a Sparx site outlast a generated
+// The day-2 proof — the capabilities that make a sparx site outlast a generated
 // snapshot. Rendered as labeled columns (matching final-cta's metric row), not
 // pills, to stay consistent with the flat marketing register.
 const PROOF = [
@@ -52,7 +52,7 @@ export function Permanence() {
                 margin: 0,
               }}
             >
-              <span style={{ color: '#818CF8' }}>AI builds it. Sparx keeps it.</span> Generate it
+              <span style={{ color: '#818CF8' }}>AI builds it. sparx keeps it.</span> Generate it
               with AI if you want. Then maintain and enhance it yourself — no-code by default, full
               code when you want it — for years. You own the data. You own the site.
             </p>

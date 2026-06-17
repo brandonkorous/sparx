@@ -31,7 +31,7 @@ export function LogoStrip() {
               color: 'var(--color-text-secondary)',
             }}
           >
-            Operating live on Sparx
+            Operating live on sparx
           </span>
           <span
             style={{

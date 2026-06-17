@@ -9,7 +9,7 @@ import { useBrand } from './brand';
 //   • 'lockup' (default) — the logo AND the store name side by side: the brand
 //     lockup, parity with the site header's <Wordmark> (packages/site-ui),
 //   • 'logo'             — the logo alone (for logos that already bake in the name),
-//   • 'name'             — the store/site name alone (the "Spar<x>" mark when the
+//   • 'name'             — the store/site name alone (the "spar<x>" mark when the
 //                          brand is the Sparx fallback).
 // Each treatment DEGRADES gracefully when its part is missing (logo with no logo →
 // name; lockup with only one part → that part; neither → the Sparx default).
@@ -59,7 +59,7 @@ export function EmailWordmark({
     <span style={nameStyle}>{brand.siteName}</span>
   ) : (
     <span style={nameStyle}>
-      Spar<span style={{ color: brand.primary }}>x</span>
+      spar<span style={{ color: brand.primary }}>x</span>
     </span>
   );
 

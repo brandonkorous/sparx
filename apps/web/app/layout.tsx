@@ -8,7 +8,7 @@ import { TopProgressBar } from '../components/top-progress-bar';
 import { AttributionCapture } from '../components/attribution-capture';
 import { ConsentBanner } from '../components/consent-banner';
 
-// Inter powers the Sparx wordmark (bold, to match the monogram mark). Exposed
+// Inter powers the sparx wordmark (bold, to match the monogram mark). Exposed
 // as --font-wordmark, which @sparx/ui's <Wordmark> consumes.
 const interWordmark = Inter({
   subsets: ['latin'],
@@ -33,7 +33,7 @@ const ORGANIZATION_SCHEMA = {
   },
   brand: {
     '@type': 'Brand',
-    name: 'Sparx',
+    name: 'sparx',
     url: 'https://sparx.works',
   },
   sameAs: ['https://wize.works', 'https://sparx.works'],
@@ -42,7 +42,7 @@ const ORGANIZATION_SCHEMA = {
 const PRODUCT_SCHEMA = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
-  name: 'Sparx',
+  name: 'sparx',
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Web',
   description:
@@ -67,7 +67,7 @@ const PRODUCT_SCHEMA = {
 const WEBSITE_SCHEMA = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: 'Sparx',
+  name: 'sparx',
   url: 'https://sparx.works',
   publisher: {
     '@type': 'Organization',
@@ -77,7 +77,7 @@ const WEBSITE_SCHEMA = {
 };
 
 export const metadata: Metadata = {
-  title: 'Sparx — Everything, ignited.',
+  title: 'sparx — Everything, ignited.',
   description:
     'A modular content and commerce operating system. Builder, CRM, CMS, email, B2B, and AI — one platform, one bill, one data layer. Pay only for what you use. Live in five minutes.',
   metadataBase: new URL('https://sparx.works'),
@@ -87,17 +87,17 @@ export const metadata: Metadata = {
   // OG + Twitter images are generated dynamically from app/opengraph-image.tsx
   // and app/twitter-image.tsx — Next auto-discovers them.
   openGraph: {
-    title: 'Sparx — Everything, ignited.',
+    title: 'sparx — Everything, ignited.',
     description:
       'Modular content and commerce OS by WizeWorks. Eight pieces, one platform, MCP-native AI. Live in five minutes.',
     url: 'https://sparx.works',
-    siteName: 'Sparx',
+    siteName: 'sparx',
     type: 'website',
     locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sparx — Everything, ignited.',
+    title: 'sparx — Everything, ignited.',
     description: 'Modular content and commerce OS by WizeWorks.',
   },
   robots: {
@@ -110,7 +110,7 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  applicationName: 'Sparx',
+  applicationName: 'sparx',
   authors: [{ name: 'WizeWorks, Inc.', url: 'https://wize.works' }],
   creator: 'WizeWorks, Inc.',
   publisher: 'WizeWorks, Inc.',
@@ -125,7 +125,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${GeistSans.variable} ${GeistMono.variable} ${interWordmark.variable}`}
     >
       <body>
-        {/* Page-top navigation/loading bar — full module spectrum on Sparx's
+        {/* Page-top navigation/loading bar — full module spectrum on sparx's
             own brand surface. */}
         <TopProgressBar />
         <PostHogProvider>

@@ -13,7 +13,7 @@ import { CodeBlock } from '@/components/docs/code-block';
 export const metadata: Metadata = {
   title: 'Core concepts',
   description:
-    'The handful of ideas that shape every Sparx API: multi-tenancy with Row-Level Security, feature-flagged modules, an API-first surface, event-driven side effects, and a single shared data layer.',
+    'The handful of ideas that shape every sparx API: multi-tenancy with Row-Level Security, feature-flagged modules, an API-first surface, event-driven side effects, and a single shared data layer.',
   alternates: { canonical: '/docs/concepts' },
 };
 
@@ -35,7 +35,7 @@ export default function ConceptsPage() {
         { label: 'Core concepts' },
       ]}
       title="Core concepts"
-      lede="Sparx is a modular content and commerce operating system. Five ideas shape every endpoint in these docs — understand them once and the rest of the API follows."
+      lede="sparx is a modular content and commerce operating system. Five ideas shape every endpoint in these docs — understand them once and the rest of the API follows."
       meta={
         <>
           <span>Updated 2026-06-05</span>
@@ -57,11 +57,11 @@ export default function ConceptsPage() {
     >
       <DocSection id="tenancy" title="Tenants & isolation">
         <p>
-          Every account on Sparx is a <strong>tenant</strong>. A tenant owns all of its data —
+          Every account on sparx is a <strong>tenant</strong>. A tenant owns all of its data —
           sites, products, customers, content, emails — and is completely isolated from every other
           tenant. Authentication is handled by self-hosted{' '}
           <DocLink href="https://www.better-auth.com">Better Auth</DocLink>, whose organizations map
-          one-to-one to Sparx tenants.
+          one-to-one to sparx tenants.
         </p>
         <p>
           Isolation is not an application convenience you have to remember to apply — it’s enforced
@@ -78,7 +78,7 @@ export default function ConceptsPage() {
 
       <DocSection id="modules" title="Modules">
         <p>
-          Sparx is one platform made of independently-activated <strong>modules</strong>. A tenant
+          sparx is one platform made of independently-activated <strong>modules</strong>. A tenant
           turns on only what it uses and pays only for that — a CMS-only publisher, a CRM-only team,
           and a full B2B distributor are all equally first-class. Selling is one capability, never
           the assumption.
@@ -198,7 +198,7 @@ export default function ConceptsPage() {
 
       <DocSection id="events" title="Events">
         <p>
-          Sparx never inlines side effects in a request handler. When something happens — an order
+          sparx never inlines side effects in a request handler. When something happens — an order
           is paid, a content entry is published — the handler writes its data and{' '}
           <strong>publishes an event</strong>. Workers consume those events asynchronously:
           rendering and sending email, reindexing search, revalidating caches.
@@ -209,7 +209,7 @@ export default function ConceptsPage() {
           for the catalog, the signed delivery model, and how to receive events in your own app.
         </p>
         <Callout type="note">
-          Practically: don’t poll for changes. Subscribe to the event you care about and let Sparx
+          Practically: don’t poll for changes. Subscribe to the event you care about and let sparx
           push it to you with retries.
         </Callout>
       </DocSection>

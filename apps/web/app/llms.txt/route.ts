@@ -14,7 +14,7 @@ export const dynamic = 'force-static';
 const BASE = 'https://sparx.works';
 
 const PLATFORM_LINKS: { path: string; label: string; note: string }[] = [
-  { path: '/about', label: 'About WizeWorks', note: 'The team behind Sparx — Visalia, CA.' },
+  { path: '/about', label: 'About WizeWorks', note: 'The team behind sparx — Visalia, CA.' },
   { path: '/enterprise', label: 'Enterprise', note: 'B2B, fleet, and high-volume deployments.' },
   {
     path: '/hosting',
@@ -28,7 +28,7 @@ const PLATFORM_LINKS: { path: string; label: string; note: string }[] = [
   },
   {
     path: '/migrate',
-    label: 'Migrate to Sparx',
+    label: 'Migrate to sparx',
     note: 'Native importers for Shopify, HubSpot, Mailchimp, WordPress.',
   },
   {
@@ -37,14 +37,14 @@ const PLATFORM_LINKS: { path: string; label: string; note: string }[] = [
     note: 'Integrations and add-ons for the platform.',
   },
   { path: '/themes', label: 'Themes', note: 'Starter storefront themes for the Builder.' },
-  { path: '/open-source', label: 'Open source', note: "What's open about the Sparx stack." },
+  { path: '/open-source', label: 'Open source', note: "What's open about the sparx stack." },
   { path: '/contact', label: 'Contact', note: 'Talk to the team — no high-pressure demos.' },
 ];
 
 export function GET(): Response {
   const moduleLines = MODULE_ORDER.map((key) => {
     const m = MODULES[key];
-    return `- [Sparx ${m.label}](${BASE}/${m.slug}): ${m.description}`;
+    return `- [sparx ${m.label}](${BASE}/${m.slug}): ${m.description}`;
   }).join('\n');
 
   const platformLines = PLATFORM_LINKS.map(
@@ -53,11 +53,11 @@ export function GET(): Response {
 
   const docLines = DOC_PAGES.map((p) => `- [${p.title}](${BASE}${p.href})`).join('\n');
 
-  const body = `# Sparx
+  const body = `# sparx
 
-> Sparx (by WizeWorks) is a modular content and commerce operating system: storefront, commerce, CRM, CMS, email, B2B/wholesale, dropship, and a first-class AI/MCP integration in one platform. Tenants activate only the modules they need — a CMS-only publisher, a CRM-only team, and a B2B distributor are all equally first-class.
+> sparx (by WizeWorks) is a modular content and commerce operating system: storefront, commerce, CRM, CMS, email, B2B/wholesale, dropship, and a first-class AI/MCP integration in one platform. Tenants activate only the modules they need — a CMS-only publisher, a CRM-only team, and a B2B distributor are all equally first-class.
 
-Sparx is content AND/OR commerce — selling is one capability, never the assumption. It is API-first: every feature exists as an API endpoint, and a native Model Context Protocol (MCP) server lets AI agents read and write live business data directly (no exports, no CSVs). Modules are feature-flagged and billed independently. The platform runs on Google Kubernetes Engine with PostgreSQL row-level security enforcing tenant isolation.
+sparx is content AND/OR commerce — selling is one capability, never the assumption. It is API-first: every feature exists as an API endpoint, and a native Model Context Protocol (MCP) server lets AI agents read and write live business data directly (no exports, no CSVs). Modules are feature-flagged and billed independently. The platform runs on Google Kubernetes Engine with PostgreSQL row-level security enforcing tenant isolation.
 
 ## Modules
 
@@ -76,7 +76,7 @@ ${docLines}
 ## More
 
 - [Changelog](${BASE}/changelog): What shipped recently.
-- [Brand](${BASE}/brand): The Sparx brand and design language.
+- [Brand](${BASE}/brand): The sparx brand and design language.
 - [Terms](${BASE}/legal/terms): Platform terms of service.
 - [Privacy](${BASE}/legal/privacy): Platform privacy policy.
 - [Sitemap](${BASE}/sitemap.xml): Full machine-readable URL index.

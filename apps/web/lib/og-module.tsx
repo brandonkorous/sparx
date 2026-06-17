@@ -50,7 +50,7 @@ export function renderModuleOgImage(meta: ModuleMeta) {
             letterSpacing: '-0.03em',
           }}
         >
-          <span>Spar</span>
+          <span>spar</span>
           <span style={{ color: '#6366F1' }}>x</span>
         </div>
         <div
