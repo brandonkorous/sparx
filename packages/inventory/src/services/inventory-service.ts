@@ -140,6 +140,30 @@ export type {
   AutoDraftOutcome,
 } from './reorder';
 
+// ─── Inventory counts (P4 corrections) ────────────────────────────────
+// A counting session reconciles recorded stock against a physical count; on post
+// each line writes a `recount` movement (absolute setOnHand). Variance value over
+// the per-count threshold gates the post behind an admin approval.
+export {
+  listInventoryCounts,
+  getInventoryCount,
+  createInventoryCount,
+  addCountLine,
+  removeCountLine,
+  enterCounts,
+} from './inventory-counts';
+export {
+  submitInventoryCount,
+  approveInventoryCount,
+  postInventoryCount,
+  cancelInventoryCount,
+} from './inventory-count-lifecycle';
+export type {
+  InventoryCountRow,
+  InventoryCountLineRow,
+  InventoryCountDetail,
+} from './inventory-count-shared';
+
 // ─── Movement ledger primitive ────────────────────────────────────────
 // Exposed for callers composing a movement inside their OWN tenant transaction
 // (e.g. an order service decrementing stock atomically with the order insert).

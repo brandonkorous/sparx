@@ -249,38 +249,38 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
     headlineSecondary: 'and marketing',
     title: 'sparx Email — Transactional and marketing.',
     description:
-      'Self-hosted Postal on sparx.email. Your domain, your reputation. No SendGrid markup.',
-    lede: 'Self-hosted Postal on sparx.email. Your sending domain, your reputation, SPF/DKIM/DMARC auto-configured. No per-email markup, no $0.0008 nickel-and-dime.',
+      'Transactional + marketing email on your own domain. SPF, DKIM, and DMARC auto-configured; no per-email markup. $29/mo.',
+    lede: 'Transactional and marketing email, sent from your own domain and your reputation. Every message is triggered by a real platform event, rendered on-brand, and authenticated with SPF, DKIM, and DMARC the moment your domain verifies. No per-email markup.',
     features: [
       {
         number: '01',
         title: 'Transactional out of the box.',
-        body: 'Order confirmations, password resets, RFQ replies — wired into every module. Templates editable, brandable.',
+        body: 'Order confirmations, shipping updates, password resets, quote replies — triggered by platform events and wired into every module. Templates editable, brandable.',
       },
       {
         number: '02',
-        title: 'Marketing campaigns.',
-        body: 'Drag-drop or HTML. A/B test subject lines and content. Sync segments live from CRM — no list export ever again.',
+        title: 'Marketing broadcasts.',
+        body: 'Compose, preview against a real customer, send or schedule. Target live CRM segments — no list export, ever — and watch opens and clicks roll in.',
       },
       {
         number: '03',
         title: 'Your domain, your reputation.',
-        body: 'Sending from mail.yourstore.com, not noreply@sparx-email-broadcast.com. Deliverability is yours.',
+        body: 'Sends from orders@yourbrand.com once your domain verifies, not a shared blast domain. Until then, mail goes out on the shared sparx domain so you are never blocked.',
       },
       {
         number: '04',
         title: 'DKIM, SPF, DMARC.',
-        body: 'Auto-provisioned with your custom domain. We add the DNS records, monitor failures, alert on reputation drops.',
+        body: 'Auto-configured with your sending domain. sparx adds the DNS records, polls for verification, monitors failures, and alerts on reputation drops.',
       },
       {
         number: '05',
         title: 'No per-email pricing.',
-        body: 'Send 10K or 1M emails a month — same $29/mo. We host the SMTP infrastructure on Postal. No SendGrid bill.',
+        body: 'Send 10K or 1M emails a month — same $29/mo. One flat price, no per-email fees and no contact-tier surcharges.',
       },
       {
         number: '06',
         title: 'Open, click, bounce events.',
-        body: 'Tracked into CRM, available via webhook and MCP. Your AI can see who opened what.',
+        body: 'Tracked back onto the customer record in the CRM, available via webhook and MCP. Your AI can see who opened what.',
       },
     ],
     pricing: {

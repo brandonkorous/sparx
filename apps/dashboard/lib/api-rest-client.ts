@@ -111,6 +111,19 @@ export interface PagedEnvelope<T> {
     etag: string | null;
 }
 
+function describeFetchError(error: unknown): { message: string; rootCause?: string } {
+    if (error instanceof Error) {
+        const rootCause =
+            error.cause instanceof Error
+                ? error.cause.message
+                : typeof error.cause === 'string'
+                    ? error.cause
+                    : undefined;
+        return { message: error.message, rootCause };
+    }
+    return { message: String(error) };
+}
+
 async function fetchWithRetry(
     target: string,
     init: RequestInit,
@@ -161,13 +174,15 @@ async function call<T>(
             method === 'GET' ? 2 : 1
         );
     } catch (error) {
+        const cause = describeFetchError(error);
         throw makeError(
             503,
             'UPSTREAM_FETCH_FAILED',
             `api-rest request failed: ${method} ${path}`,
             {
                 target,
-                cause: error instanceof Error ? error.message : String(error),
+                cause: cause.message,
+                rootCause: cause.rootCause,
             }
         );
     }
@@ -218,13 +233,15 @@ async function callRaw(session: SparxSession, method: string, path: string): Pro
             method === 'GET' ? 2 : 1
         );
     } catch (error) {
+        const cause = describeFetchError(error);
         throw makeError(
             503,
             'UPSTREAM_FETCH_FAILED',
             `api-rest request failed: ${method} ${path}`,
             {
                 target,
-                cause: error instanceof Error ? error.message : String(error),
+                cause: cause.message,
+                rootCause: cause.rootCause,
             }
         );
     }

@@ -63,6 +63,7 @@ export type EventType =
   | 'inventory.adjusted'
   | 'inventory.low'
   | 'inventory.depleted'
+  | 'inventory.count.completed'
   // Cart + checkout
   | 'cart.created'
   | 'cart.updated'

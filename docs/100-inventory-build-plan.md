@@ -1,6 +1,6 @@
 # sparx Platform — Inventory Product Build Plan
 
-**Version:** 1.9
+**Version:** 1.10
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-17
 
@@ -425,7 +425,24 @@ movements; reorder suggestion drafts a PO. All with commerce off.
 
 1. **Counts** — `InventoryCount` + `InventoryCountLine` (cycle subset or full physical); capture
    expected vs counted, compute variance, **approval over a threshold**, post `recount` movements.
-   Dashboard `/inventory/counts`.
+   Dashboard `/inventory/counts`. ✅ **DONE (P4a).** New `39-inventory-counts.prisma`
+   (`inventory_counts` + `inventory_count_lines`, migration `20260907000000_inventory_counts`, canonical
+   FORCE RLS + `type`/`status` CHECKs); a count is scoped to one warehouse and snapshots `expectedQuantity`
+   = on-hand at line creation. Lifecycle `counting → review → [approved] → posted` (+ `cancelled`): the
+   editable phase (`@sparx/inventory` `inventory-counts.ts`) creates the session (a `full` count snapshots
+   every level in the warehouse, a `cycle` count the chosen variants), adds/removes lines, and records
+   counted quantities; the lifecycle (`inventory-count-lifecycle.ts`) submits for review (freezing
+   `varianceValueCents` = Σ |Δ|·cost and `requiresApproval` when it clears the per-count
+   `approvalThresholdCents`, default $50), approves (admin sign-off, over-threshold only), posts, or
+   cancels. **Post applies one `recount` movement per line through the ledger as an absolute `setOnHand`** —
+   the corrective delta is computed against LIVE on-hand inside the row lock, so a sale that landed
+   mid-count is reconciled, not lost (the line records both the count-time `variance` and the actual
+   `appliedDelta`); idempotency-keyed `count:<lineId>`. API `/v1/inventory/counts` (CRUD + `/lines` +
+   `/entries` + `/submit` + `/approve` [admin] + `/post` + `/cancel`), `requireInventoryModule`
+   (standalone-usable). Dashboard `/inventory/counts` (status-filtered list / create [cycle by SKU or full]
+   / detail with lifecycle bar + live-variance line entry + Match-expected + add/remove + Post-recounts
+   armed-confirm); `Counts` manifest section + action. Emits `inventory.count.completed` on post. DB-backed
+   tests in `test/integration/counts.test.ts` (4 cases; inventory suite 32/32).
 2. **Transfers UI** — surface the existing `transfer()` API with `/inventory/transfers`; model an
    **in-transit** location so a transfer is `transfer_out` at source now + `transfer_in` on arrival.
 3. **Movement / audit-log viewer** — `/inventory/movements`: the `InventoryAdjustment` ledger, filter by
@@ -435,8 +452,15 @@ movements; reorder suggestion drafts a PO. All with commerce off.
 **Deploy gate:** run a cycle count with a variance → approval → `recount` movement; transfer between two
 warehouses through in-transit; movement viewer shows the full history; create a lot + serials in UI.
 
-**Risks:** count-vs-live race (snapshot expected at count start, reconcile deltas at post); approval
-gating ties into the roles model (`editor`/`admin`).
+> **P4a (Counts) ✅ DONE** — a standalone tenant can run a cycle or full count, enter quantities, review the
+> variance, and post (with an admin approval over the value threshold), correcting stock via auditable
+> `recount` movements that reconcile any mid-count drift. The count-vs-live race is handled by the ledger's
+> absolute `setOnHand`. **Next within P4:** **P4b** transfers UI + in-transit, **P4c** movement/audit-log
+> viewer (docs/99 D5), **P4d** lots/serials UI — each independent of P4a.
+
+**Risks:** count-vs-live race (snapshot expected at count start, reconcile deltas at post) — **resolved**
+by the absolute `setOnHand` recount (delta computed against live on-hand under the row lock); approval
+gating ties into the roles model (`editor`/`admin`) — the `/approve` route requires `admin`.
 
 ---
 

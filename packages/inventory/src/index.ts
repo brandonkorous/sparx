@@ -51,4 +51,7 @@ export type {
   DraftedPurchaseOrder,
   AutoDraftResult,
   AutoDraftOutcome,
+  InventoryCountRow,
+  InventoryCountLineRow,
+  InventoryCountDetail,
 } from './services/inventory-service';

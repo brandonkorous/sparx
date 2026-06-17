@@ -53,6 +53,38 @@ export interface ExampleArticle {
 }
 
 /**
+ * A representative Email facet per business — the messaging counterpart to
+ * `order`/`article`/`crm`, for the /email surfaces (the branded email preview,
+ * a broadcast with open/click stats, a transactional send, the sender address
+ * on the tenant's own domain). Keep every field present on every entry so
+ * rotating email surfaces never reflow as they crossfade. Numbers are coherent
+ * with the real dashboard email overview vocabulary (open ÷ delivered, click ÷
+ * delivered): `clickRate` < `openRate`, recipients is a believable list size.
+ * `sender` sends from the business's OWN `domain` — the page's core claim. The
+ * `transactional` event references the SAME business's `order`. None of this
+ * fakes math; every send is a believable scene. See docs/13 (Email PRD).
+ */
+export interface ExampleEmail {
+  /** the from-address on the tenant's OWN domain, e.g. 'hello@flaxandfern.com'. */
+  sender: string;
+  /** a marketing broadcast subject line — the campaign the team just sent. */
+  broadcastSubject: string;
+  /** the CRM segment this broadcast targeted (mirrors a real saved segment). */
+  segment: string;
+  /** recipients the broadcast reached — a believable mailable-list size. */
+  recipients: string;
+  /** open rate as the overview reports it (opened ÷ delivered), e.g. '51.2%'. */
+  openRate: string;
+  /** click rate (clicked ÷ delivered) — always lower than openRate. */
+  clickRate: string;
+  /** a transactional email this business sends, triggered by a platform event.
+   *  `event` is the real Pub/Sub trigger; `subject` is what the customer sees. */
+  transactional: { event: string; subject: string };
+  /** a preview line of the email body — what renders from atomic components. */
+  previewLine: string;
+}
+
+/**
  * A representative CRM facet per business — the customer-spine counterpart to
  * `order`/`article`, for the /crm surfaces (the unified record card, the
  * activity timeline, a segment match, a pipeline deal). Keep every field
@@ -110,6 +142,8 @@ export interface ExampleBusiness {
   article: ExampleArticle;
   /** customer-spine fixture for CRM surfaces — see ExampleCrm. */
   crm: ExampleCrm;
+  /** messaging fixture for Email surfaces — see ExampleEmail. */
+  email: ExampleEmail;
 }
 
 export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
@@ -156,6 +190,16 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
         { module: 'builder', label: 'Logged in to the storefront' },
       ],
     },
+    email: {
+      sender: 'hello@flaxandfern.com',
+      broadcastSubject: 'Spring linen restock — your shade is back',
+      segment: 'high-value, loyal',
+      recipients: '6,420',
+      openRate: '52.4%',
+      clickRate: '7.1%',
+      transactional: { event: 'order.created', subject: 'Your Flax & Fern order is confirmed' },
+      previewLine: 'Hi Dana — your order is confirmed and heading out the door.',
+    },
   },
   {
     vertical: 'grocery',
@@ -199,6 +243,16 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
         { module: 'ai', label: 'Asked the AI when strawberries return' },
         { module: 'builder', label: 'Browsed the CSA sign-up page' },
       ],
+    },
+    email: {
+      sender: 'orders@hudsonfarmstand.com',
+      broadcastSubject: 'This week at the stand: peak strawberries',
+      segment: 'win-back at-risk',
+      recipients: '3,180',
+      openRate: '48.9%',
+      clickRate: '6.3%',
+      transactional: { event: 'order.created', subject: 'Pickup confirmed — see you Saturday' },
+      previewLine: 'Hi Marcus — your pickup is set. Here is what is ready this week.',
     },
   },
   {
@@ -249,6 +303,16 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
         { module: 'builder', label: 'Created a storefront account' },
       ],
     },
+    email: {
+      sender: 'hello@wagglepetco.com',
+      broadcastSubject: 'New collars just dropped — fit guide inside',
+      segment: 'new, growing',
+      recipients: '2,260',
+      openRate: '54.7%',
+      clickRate: '8.2%',
+      transactional: { event: 'fulfillment.created', subject: 'Your Waggle order has shipped' },
+      previewLine: 'Hi Priya — good news, your collar and tag are on the way.',
+    },
   },
   {
     vertical: 'coffee',
@@ -297,6 +361,16 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
         { module: 'ai', label: 'Asked the AI to pause a subscription' },
         { module: 'builder', label: 'Visited the wholesale inquiry page' },
       ],
+    },
+    email: {
+      sender: 'roast@northlooproasters.com',
+      broadcastSubject: 'This month’s roast: a washed Colombia',
+      segment: 'subscriber, monthly',
+      recipients: '4,910',
+      openRate: '57.1%',
+      clickRate: '9.0%',
+      transactional: { event: 'subscription.renewed', subject: 'Your monthly roast is on its way' },
+      previewLine: 'Hi Sam — your subscription renewed and this month’s bag is brewing.',
     },
   },
   {
@@ -350,6 +424,16 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
         { module: 'crm', label: 'In segment: B2B fleet, net-30' },
         { module: 'ai', label: 'Asked the AI for a bulk reorder quote' },
       ],
+    },
+    email: {
+      sender: 'orders@atlassupply.co',
+      broadcastSubject: 'Q3 contract pricing — your account renewal',
+      segment: 'B2B fleet, net-30',
+      recipients: '1,140',
+      openRate: '61.3%',
+      clickRate: '11.4%',
+      transactional: { event: 'quote.created', subject: 'Your quote from Atlas Supply is ready' },
+      previewLine: 'Hi Reyes — your requested quote is attached, valid for 30 days.',
     },
   },
 ];

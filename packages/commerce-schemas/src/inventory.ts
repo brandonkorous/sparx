@@ -339,3 +339,57 @@ export const DraftReorderInput = z.object({
   lines: z.array(DraftReorderLineInput).min(1).max(500),
 });
 export type DraftReorderInput = z.infer<typeof DraftReorderInput>;
+
+// ─── Inventory counts (P4) ──────────────────────────────────────────────────────
+//
+// A counting session reconciles recorded stock against a physical count, scoped to
+// one warehouse: a `cycle` count covers a chosen subset of variants, a `full` count
+// every level in the warehouse. Each line snapshots the expected on-hand at count
+// start; the counter enters the counted quantity; on post a `recount` movement
+// reconciles the level to the counted value (an absolute set, immune to a mid-count
+// sale). Variance VALUE over the per-count threshold gates the post behind an admin
+// approval (the roles model — docs/100 P4).
+
+export const InventoryCountType = z.enum(['cycle', 'full']);
+export type InventoryCountType = z.infer<typeof InventoryCountType>;
+
+export const InventoryCountStatus = z.enum([
+  'counting',
+  'review',
+  'approved',
+  'posted',
+  'cancelled',
+]);
+export type InventoryCountStatus = z.infer<typeof InventoryCountStatus>;
+
+// Create a count. For `full`, `variantIds` is ignored — every level in the
+// warehouse is snapshotted. For `cycle`, the listed variants seed the lines (more
+// can be added while counting). `approvalThresholdCents` overrides the default
+// ($50) above which the post needs an admin sign-off.
+export const CreateInventoryCountInput = z.object({
+  warehouseId: Uuid,
+  type: InventoryCountType,
+  variantIds: z.array(Uuid).max(5000).optional(),
+  approvalThresholdCents: z.number().int().nonnegative().optional(),
+  note: z.string().max(2000).optional(),
+});
+export type CreateInventoryCountInput = z.infer<typeof CreateInventoryCountInput>;
+
+// Add one more variant to a counting session (snapshots its expected on-hand).
+export const AddCountLineInput = z.object({
+  variantId: Uuid,
+});
+export type AddCountLineInput = z.infer<typeof AddCountLineInput>;
+
+// Record counted quantities for one or more lines (editable while `counting`).
+export const CountEntryInput = z.object({
+  lineId: Uuid,
+  countedQuantity: z.number().int().nonnegative(),
+  note: z.string().max(2000).optional(),
+});
+export type CountEntryInput = z.infer<typeof CountEntryInput>;
+
+export const EnterCountsInput = z.object({
+  entries: z.array(CountEntryInput).min(1).max(5000),
+});
+export type EnterCountsInput = z.infer<typeof EnterCountsInput>;

@@ -9,6 +9,7 @@ import inventorySupplierRoutes from './suppliers.js';
 import inventoryPurchaseOrderRoutes from './purchase-orders.js';
 import inventoryReceiptRoutes from './receipts.js';
 import inventoryReorderRoutes from './reorder.js';
+import inventoryCountRoutes from './counts.js';
 
 const inventoryRoutes: FastifyPluginAsync = async (app) => {
   await app.register(inventorySourceRoutes);
@@ -21,6 +22,7 @@ const inventoryRoutes: FastifyPluginAsync = async (app) => {
   await app.register(inventoryPurchaseOrderRoutes);
   await app.register(inventoryReceiptRoutes);
   await app.register(inventoryReorderRoutes);
+  await app.register(inventoryCountRoutes);
 };
 
 export default inventoryRoutes;

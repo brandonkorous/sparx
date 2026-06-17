@@ -1,0 +1,1337 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>sparx Email — mockup</title>
+    <!--
+      /email marketing page — Email is the platform's VOICE: every message the
+      business sends, on its OWN domain, triggered by its OWN data.
+
+      Thesis: trace one email through the system — a real platform event fires,
+      sparx renders it from React-Email atomic components, and it lands in the
+      inbox: authenticated, on-brand, on the tenant's own domain. Sky #0EA5E9 is
+      a deliverability SIGNAL (verified ticks, the open/click pulse, the spark),
+      never flood fill. Register: reliable, deliverable, on-brand.
+
+      Sections / structural device (each earns one):
+        1 HERO (tint) ......... split copy + a rendered BRANDED EMAIL PREVIEW
+                                 card (sender on own domain + body + open/click
+                                 pulse), crossfades through verticals.
+        2 PIPELINE RAIL ....... event → email.send → render → your domain →
+                                 inbox (the real event-driven architecture).
+        3 TXN vs MARKETING .... two-panel split: event-triggered vs
+                                 segment-targeted, same engine.
+        4 DELIVERABILITY ...... sender-health panel (SPF·DKIM·DMARC verified) +
+                                 auto-configured DNS records (real screen).
+        5 BROADCAST + STATS ... a campaign card: segment → recipients →
+                                 open/click, crossfading subject lines.
+        6 AUTOMATIONS ......... the live default automations as a stacked flow.
+        7 CAPABILITIES ........ grid of the rest (templates, analytics, etc).
+        8 PROOF (dark) ........ one-database / own-domain / flat-price stats.
+        9 PRICING ............. flat $29/mo, 14-day trial.
+       10 FAQ ................. 6 grounded email questions.
+       11 CTA (dark).
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-page: #fafafa;
+        --bg-surface: #ffffff;
+        --bg-subtle: #f4f4f5;
+        --text-primary: #0a0a0a;
+        --text-secondary: #52525b;
+        --text-tertiary: #a1a1aa;
+        --border: #e5e5e5;
+        --border-strong: #d4d4d8;
+        --sparx: #6366f1;
+        --email: #0ea5e9;
+        --email-tint: #f0f9ff;
+        --email-text: #0369a1;
+        --commerce: #f97316;
+        --crm: #06b6d4;
+        --b2b: #475569;
+        --font-sans: 'Geist', system-ui, sans-serif;
+        --font-mono: 'Geist Mono', monospace;
+        --container: 1280px;
+        --gutter: clamp(20px, 5vw, 64px);
+        --py-md: clamp(56px, 8vw, 88px);
+        --py-lg: clamp(72px, 10vw, 128px);
+        --py-xl: clamp(88px, 12vw, 160px);
+        --shadow: 0 14px 40px rgba(15, 15, 20, 0.06);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--bg-page);
+        color: var(--text-primary);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+      }
+      .container {
+        max-width: var(--container);
+        margin: 0 auto;
+        width: 100%;
+      }
+      section {
+        padding-left: var(--gutter);
+        padding-right: var(--gutter);
+      }
+      .band-page {
+        background: var(--bg-page);
+        padding-top: var(--py-lg);
+        padding-bottom: var(--py-lg);
+      }
+      .band-surface {
+        background: var(--bg-surface);
+        border-top: 1px solid var(--border);
+        padding-top: var(--py-lg);
+        padding-bottom: var(--py-lg);
+      }
+      .band-dark {
+        background: #0a0a0a;
+        border-top: 1px solid #1a1a1a;
+        padding-top: var(--py-lg);
+        padding-bottom: var(--py-lg);
+      }
+      .display {
+        font-weight: 500;
+        letter-spacing: -0.035em;
+        line-height: 1;
+        margin: 0;
+      }
+      .h-lede {
+        font-size: 18px;
+        line-height: 30px;
+        color: var(--text-secondary);
+        max-width: 640px;
+        margin: 24px 0 0;
+      }
+      .spark {
+        color: var(--email);
+      }
+      .mono {
+        font-family: var(--font-mono);
+      }
+      a {
+        color: inherit;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--font-sans);
+        font-weight: 500;
+        font-size: 15px;
+        padding: 13px 22px;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .btn-dark {
+        background: #0a0a0a;
+        color: #fff;
+      }
+      .btn-out {
+        background: transparent;
+        border-color: var(--border-strong);
+        color: var(--text-primary);
+      }
+      .btn-sky {
+        background: var(--email);
+        color: #fff;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 13px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: 9999px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--text-secondary);
+      }
+      .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 9999px;
+        background: var(--email);
+        flex-shrink: 0;
+      }
+      .cluster {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+
+      /* ── NAV ── */
+      nav.bar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(250, 250, 250, 0.85);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border);
+      }
+      nav.bar .inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 64px;
+        padding: 0 var(--gutter);
+        max-width: var(--container);
+        margin: 0 auto;
+      }
+      .wm {
+        font-weight: 700;
+        font-size: 22px;
+        letter-spacing: -0.03em;
+      }
+      .wm .x {
+        color: var(--sparx);
+      }
+
+      /* ── HERO ── */
+      .hero {
+        background: var(--email-tint);
+        padding-top: clamp(56px, 9vw, 96px);
+        padding-bottom: var(--py-lg);
+      }
+      .hero-grid {
+        display: flex;
+        gap: clamp(40px, 6vw, 72px);
+        align-items: center;
+      }
+      .hero-col {
+        flex: 1;
+        min-width: 0;
+      }
+
+      /* ── EMAIL PREVIEW CARD ── */
+      .mailcard {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .mailcard .topbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 18px;
+        background: var(--bg-page);
+        border-bottom: 1px solid var(--border);
+      }
+      .mailcard .tl {
+        width: 11px;
+        height: 11px;
+        border-radius: 9999px;
+        background: #e4e4e7;
+      }
+      .mailcard .hdr {
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--border);
+      }
+      .mailcard .from {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+      }
+      .mailcard .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 9999px;
+        background: var(--email-tint);
+        border: 1.5px solid var(--email);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+        font-size: 14px;
+        color: var(--email-text);
+        flex-shrink: 0;
+      }
+      .mailcard .body {
+        padding: 22px;
+      }
+      .mailcard .brandrow {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--bg-subtle);
+      }
+      .mailcard .swatch {
+        width: 26px;
+        height: 26px;
+        border-radius: 7px;
+      }
+      .mailcard .emailbtn {
+        display: inline-block;
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 13px;
+        color: #fff;
+        margin-top: 16px;
+      }
+      .mailcard .pulse {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        border-top: 1px solid var(--border);
+      }
+      .mailcard .pulse > div {
+        padding: 13px 18px;
+        border-left: 1px solid var(--bg-subtle);
+      }
+      .mailcard .pulse > div:first-child {
+        border-left: none;
+      }
+      .mailcard .pnum {
+        font-weight: 500;
+        font-size: 17px;
+        letter-spacing: -0.01em;
+      }
+      .mailcard .plbl {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        color: var(--text-tertiary);
+        margin-top: 2px;
+      }
+
+      /* ── PIPELINE RAIL ── */
+      .pipe {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        overflow: hidden;
+        margin-top: 52px;
+      }
+      .pipe > .stg {
+        padding: 28px 24px;
+        border-left: 1px solid var(--border);
+        position: relative;
+        background: var(--bg-surface);
+      }
+      .pipe > .stg:first-child {
+        border-left: none;
+      }
+      .stg .idx {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--email-text);
+        letter-spacing: 0.04em;
+      }
+      .stg h3 {
+        margin: 14px 0 8px;
+        font-size: 17px;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+      }
+      .stg p {
+        margin: 0;
+        font-size: 13px;
+        line-height: 20px;
+        color: var(--text-secondary);
+      }
+      .stg .arrow {
+        position: absolute;
+        right: -9px;
+        top: 32px;
+        z-index: 2;
+        width: 18px;
+        height: 18px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: 9999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--email);
+        font-size: 11px;
+      }
+
+      /* ── SPLIT (txn vs mktg) ── */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-top: 52px;
+      }
+      .panel {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-top: 3px solid var(--email);
+        border-radius: 14px;
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .panel .tag {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--email-text);
+      }
+      .panel h3 {
+        margin: 0;
+        font-size: 23px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+      }
+      .panel p {
+        margin: 0;
+        font-size: 14.5px;
+        line-height: 23px;
+        color: var(--text-secondary);
+      }
+      .flowline {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--text-secondary);
+        background: var(--bg-page);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 13px 15px;
+      }
+      .flowline .node {
+        padding: 4px 9px;
+        border-radius: 6px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        white-space: nowrap;
+      }
+      .flowline .sky {
+        color: var(--email-text);
+        border-color: var(--email);
+        background: var(--email-tint);
+      }
+
+      /* ── DELIVERABILITY ── */
+      .deliv {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-top: 52px;
+        align-items: start;
+      }
+      .health {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .health .hh {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        background: var(--bg-page);
+      }
+      .health .row {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 15px 20px;
+        border-top: 1px solid var(--bg-subtle);
+        font-size: 14px;
+      }
+      .health .row:first-of-type {
+        border-top: none;
+      }
+      .tick {
+        width: 20px;
+        height: 20px;
+        border-radius: 9999px;
+        background: var(--email-tint);
+        color: var(--email-text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 12px;
+      }
+      .pass {
+        margin-left: auto;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--email-text);
+        background: var(--email-tint);
+        padding: 3px 9px;
+        border-radius: 9999px;
+      }
+      .dns {
+        background: #0a0a0a;
+        border-radius: 14px;
+        padding: 26px;
+        color: #fff;
+      }
+      .dns .dnsh {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: #71717a;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      .dns .rec {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #1f1f1f;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        line-height: 1.7;
+      }
+      .dns .rec:first-of-type {
+        border-top: none;
+        margin-top: 14px;
+      }
+      .dns .rt {
+        color: var(--email);
+      }
+      .dns .rv {
+        color: #a1a1aa;
+        word-break: break-all;
+      }
+
+      /* ── BROADCAST CARD ── */
+      .bcard {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .bcard .bh {
+        padding: 20px 22px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 11px;
+      }
+      .bcard .seg {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 22px;
+        background: var(--bg-page);
+        border-bottom: 1px solid var(--border);
+        font-size: 13px;
+        color: var(--text-secondary);
+      }
+      .bcard .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .bcard .stats > div {
+        padding: 20px;
+        border-left: 1px solid var(--bg-subtle);
+      }
+      .bcard .stats > div:first-child {
+        border-left: none;
+      }
+      .bcard .snum {
+        font-weight: 500;
+        font-size: 24px;
+        letter-spacing: -0.02em;
+      }
+      .bcard .slbl {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        color: var(--text-tertiary);
+        margin-top: 3px;
+      }
+
+      /* ── AUTOMATIONS ── */
+      .autos {
+        margin-top: 52px;
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .auto {
+        display: grid;
+        grid-template-columns: 200px 24px 1fr 130px;
+        align-items: center;
+        gap: 18px;
+        padding: 18px 24px;
+        background: var(--bg-surface);
+      }
+      .auto .when {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--email-text);
+      }
+      .auto .ar {
+        color: var(--text-tertiary);
+      }
+      .auto .then {
+        font-size: 14.5px;
+        color: var(--text-primary);
+      }
+      .auto .then small {
+        display: block;
+        font-size: 12.5px;
+        color: var(--text-secondary);
+        margin-top: 3px;
+      }
+      .auto .badge {
+        justify-self: end;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--email-text);
+        background: var(--email-tint);
+        padding: 4px 11px;
+        border-radius: 9999px;
+      }
+      .auto .badge.off {
+        color: var(--text-tertiary);
+        background: var(--bg-subtle);
+      }
+
+      /* ── CAPABILITY GRID ── */
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-top: 52px;
+      }
+      .cap {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 26px;
+        background: var(--bg-page);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        min-height: 172px;
+      }
+      .cap .ic {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: var(--email-tint);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .cap h3 {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+      }
+      .cap p {
+        margin: 0;
+        font-size: 13.5px;
+        line-height: 21px;
+        color: var(--text-secondary);
+      }
+
+      /* ── DARK PROOF ── */
+      .proof {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        margin-top: 56px;
+      }
+      .proof > div {
+        padding-left: 32px;
+        border-left: 1px solid #262626;
+      }
+      .proof > div:first-child {
+        padding-left: 0;
+        border-left: none;
+      }
+      .proof .pn {
+        font-weight: 500;
+        font-size: clamp(40px, 5vw, 56px);
+        letter-spacing: -0.03em;
+        color: #fff;
+        line-height: 1;
+      }
+      .proof .pl {
+        margin-top: 12px;
+        font-size: 14.5px;
+        line-height: 22px;
+        color: #a1a1aa;
+      }
+
+      /* ── PRICING STRIP ── */
+      .pricing {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 32px;
+        padding: 40px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-top: 3px solid var(--email);
+        border-radius: 14px;
+      }
+      .pricing .price {
+        font-weight: 500;
+        font-size: 56px;
+        letter-spacing: -0.025em;
+      }
+
+      /* ── FAQ ── */
+      .faq {
+        display: flex;
+        gap: 40px;
+        align-items: flex-start;
+        margin-top: 56px;
+      }
+      .faq .rail {
+        width: 340px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .faq .qbtn {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        width: 100%;
+        text-align: left;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        padding: 12px 14px;
+        border-radius: 8px;
+        font-family: var(--font-sans);
+        font-size: 15px;
+        line-height: 22px;
+        color: var(--text-secondary);
+      }
+      .faq .qbtn.on {
+        background: var(--bg-surface);
+        color: var(--text-primary);
+        font-weight: 500;
+      }
+      .faq .qdot {
+        width: 8px;
+        height: 8px;
+        border-radius: 9999px;
+        margin-top: 6px;
+        flex-shrink: 0;
+        background: var(--border-strong);
+      }
+      .faq .qbtn.on .qdot {
+        background: var(--email);
+      }
+      .faq .ans {
+        flex: 1;
+        min-width: 0;
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-top: 2px solid var(--email);
+        border-radius: 12px;
+        padding: clamp(24px, 3vw, 40px);
+      }
+      .faq .ans h3 {
+        margin: 0;
+        font-weight: 500;
+        font-size: clamp(20px, 2.4vw, 26px);
+        letter-spacing: -0.02em;
+        line-height: 1.25;
+      }
+      .faq .ans p {
+        margin: 18px 0 0;
+        font-size: 15px;
+        line-height: 26px;
+        color: var(--text-secondary);
+      }
+
+      /* ── RESPONSIVE ── */
+      @media (max-width: 1024px) {
+        .hero-grid {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .pipe {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .pipe > .stg:nth-child(odd) {
+          border-left: none;
+        }
+        .pipe > .stg:nth-child(n + 3) {
+          border-top: 1px solid var(--border);
+        }
+        .pipe .arrow {
+          display: none;
+        }
+        .deliv {
+          grid-template-columns: 1fr;
+        }
+        .auto {
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+        .auto .ar {
+          display: none;
+        }
+        .auto .badge {
+          justify-self: start;
+        }
+        .proof {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 32px 0;
+        }
+        .proof > div:nth-child(odd) {
+          padding-left: 0;
+          border-left: none;
+        }
+        .faq {
+          flex-direction: column;
+        }
+        .faq .rail {
+          width: 100%;
+        }
+      }
+      @media (max-width: 768px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+        .pricing {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+      @media (max-width: 640px) {
+        .pipe {
+          grid-template-columns: 1fr;
+        }
+        .pipe > .stg {
+          border-left: none;
+        }
+        .pipe > .stg:nth-child(n + 2) {
+          border-top: 1px solid var(--border);
+        }
+        .bcard .stats {
+          grid-template-columns: 1fr 1fr;
+        }
+        .bcard .stats > div:nth-child(odd) {
+          border-left: none;
+        }
+        .bcard .stats > div:nth-child(n + 3) {
+          border-top: 1px solid var(--bg-subtle);
+        }
+        .proof {
+          grid-template-columns: 1fr;
+        }
+        .proof > div {
+          padding-left: 0;
+          border-left: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="bar">
+      <div class="inner">
+        <span class="wm">spar<span class="x">x</span></span>
+        <span class="cluster" style="gap: 24px">
+          <span class="mono" style="font-size: 13px; color: var(--text-secondary)">Modules</span>
+          <span class="mono" style="font-size: 13px; color: var(--text-secondary)">Pricing</span>
+          <a class="btn btn-sky" style="padding: 9px 16px; font-size: 14px">Start free</a>
+        </span>
+      </div>
+    </nav>
+
+    <!-- 1 HERO -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-col">
+            <h1 class="display" style="font-size: clamp(40px, 7vw, 80px)">
+              Email on your own domain<span class="spark">.</span>
+            </h1>
+            <p class="h-lede">
+              Transactional and marketing email, sent from your domain and your reputation. Every
+              message is triggered by a real platform event, rendered on-brand, and authenticated
+              with SPF, DKIM, and DMARC the moment your domain verifies. No per-email markup — one
+              flat price.
+            </p>
+            <div class="cluster" style="margin-top: 34px">
+              <a class="btn btn-dark">Activate Email →</a>
+              <a class="btn btn-out" href="#pipeline">See how a send flows</a>
+            </div>
+            <div class="cluster" style="margin-top: 26px; gap: 10px">
+              <span class="chip"><span class="dot"></span>your own domain</span>
+              <span class="chip"><span class="dot"></span>SPF · DKIM · DMARC</span>
+              <span class="chip"><span class="dot"></span>transactional + marketing</span>
+              <span class="chip"><span class="dot"></span>no per-email fees</span>
+            </div>
+          </div>
+          <div class="hero-col" id="mailmount"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 PIPELINE -->
+    <section class="band-surface" id="pipeline">
+      <div class="container">
+        <h2 class="display" style="font-size: clamp(32px, 4.5vw, 52px); max-width: 760px">
+          Every email is an event, not a blast<span class="spark">.</span>
+        </h2>
+        <p class="h-lede">
+          Outbound mail is event-driven. A platform event publishes <code>email.send</code>; a
+          worker renders your template from React-Email components and delivers it from your verified
+          domain. Same path for an order receipt or a 6,000-person broadcast.
+        </p>
+        <div class="pipe">
+          <div class="stg">
+            <span class="idx">01 — trigger</span>
+            <h3>A platform event fires</h3>
+            <p>An order is paid, a cart is abandoned, a quote is sent — or you hit send on a broadcast.</p>
+            <span class="arrow">→</span>
+          </div>
+          <div class="stg">
+            <span class="idx">02 — queue</span>
+            <h3><code>email.send</code> is published</h3>
+            <p>The event lands on a durable queue with retries — nothing is sent inline, nothing is lost.</p>
+            <span class="arrow">→</span>
+          </div>
+          <div class="stg">
+            <span class="idx">03 — render</span>
+            <h3>Your template renders</h3>
+            <p>A worker composes the message from atomic React-Email components — HTML and plain text together.</p>
+            <span class="arrow">→</span>
+          </div>
+          <div class="stg">
+            <span class="idx">04 — deliver</span>
+            <h3>Sent from your domain</h3>
+            <p>Signed with your DKIM key and delivered to the inbox, with open, click, and bounce tracked back.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 TXN vs MARKETING -->
+    <section class="band-page">
+      <div class="container">
+        <h2 class="display" style="font-size: clamp(32px, 4.5vw, 52px); max-width: 760px">
+          One engine for both kinds of email<span class="spark">.</span>
+        </h2>
+        <p class="h-lede">
+          Transactional messages your customers expect and marketing your team chooses to send — same
+          domain, same reputation, same analytics. No second tool, no separate sender.
+        </p>
+        <div class="grid-2">
+          <div class="panel">
+            <span class="tag">transactional · triggered</span>
+            <h3>Sent the instant something happens</h3>
+            <p>
+              Order confirmations, shipping updates, password resets, quote replies — wired into every
+              module and live from the moment Email is on. Editable, brandable, never missed.
+            </p>
+            <div class="flowline">
+              <span class="node">order.created</span>
+              <span>→</span>
+              <span class="node sky">email.send</span>
+              <span>→</span>
+              <span class="node">delivered</span>
+            </div>
+          </div>
+          <div class="panel">
+            <span class="tag">marketing · segment-targeted</span>
+            <h3>Sent to exactly who should get it</h3>
+            <p>
+              Broadcasts target a live CRM segment — there is never a list to export. Compose, preview
+              against a real customer, send or schedule, and watch opens and clicks roll in.
+            </p>
+            <div class="flowline">
+              <span class="node">CRM segment</span>
+              <span>→</span>
+              <span class="node sky">broadcast</span>
+              <span>→</span>
+              <span class="node">open · click</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 DELIVERABILITY -->
+    <section class="band-surface">
+      <div class="container">
+        <h2 class="display" style="font-size: clamp(32px, 4.5vw, 52px); max-width: 760px">
+          Authenticated the moment you verify<span class="spark">.</span>
+        </h2>
+        <p class="h-lede">
+          Add your domain and sparx configures the records that get you to the inbox — SPF, DKIM, and
+          DMARC — then watches them. Until a domain verifies, mail sends from the shared sparx domain,
+          so you are never blocked.
+        </p>
+        <div class="deliv">
+          <div class="health">
+            <div class="hh">
+              <span style="display: flex; align-items: center; gap: 10px; font-weight: 500; font-size: 15px">
+                <span class="dot" style="width: 9px; height: 9px"></span> Sender health
+              </span>
+              <span class="pass">Verified</span>
+            </div>
+            <div class="row"><span class="tick">✓</span> SPF authenticated <span class="pass">Pass</span></div>
+            <div class="row"><span class="tick">✓</span> DKIM signed <span class="pass">Pass</span></div>
+            <div class="row"><span class="tick">✓</span> DMARC enforced <span class="pass">Pass</span></div>
+            <div class="row">
+              <span class="tick">✓</span> Bounce rate
+              <span class="pass" style="background: var(--bg-subtle); color: var(--text-secondary)">0.4% · under 2%</span>
+            </div>
+            <div class="row">
+              <span class="tick">✓</span> Spam complaints
+              <span class="pass" style="background: var(--bg-subtle); color: var(--text-secondary)">0.02% · under 0.1%</span>
+            </div>
+          </div>
+          <div class="dns">
+            <span class="dnsh">Auto-configured DNS · added for you</span>
+            <div class="rec">
+              <span class="rt">TXT</span> &nbsp;@<br />
+              <span class="rv">v=spf1 include:sparx.email ~all</span>
+            </div>
+            <div class="rec">
+              <span class="rt">TXT</span> &nbsp;sparx._domainkey<br />
+              <span class="rv">k=rsa; p=MIIBIjANBgkq…</span>
+            </div>
+            <div class="rec">
+              <span class="rt">TXT</span> &nbsp;_dmarc<br />
+              <span class="rv">v=DMARC1; p=quarantine; rua=mailto:dmarc@…</span>
+            </div>
+            <div class="rec">
+              <span class="rt">CNAME</span> &nbsp;email <span class="rv">(open/click tracking)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 BROADCAST + STATS -->
+    <section class="band-page">
+      <div class="container">
+        <div class="hero-grid" style="align-items: center; gap: clamp(40px, 6vw, 72px)">
+          <div class="hero-col">
+            <h2 class="display" style="font-size: clamp(32px, 4.5vw, 52px)">
+              Send to a segment, watch it land<span class="spark">.</span>
+            </h2>
+            <p class="h-lede">
+              Pick a saved CRM segment, compose, and send — or schedule it. Opens, clicks, bounces,
+              and unsubscribes report back per send, and revenue is attributed to orders placed within
+              24 hours of a click. The list never leaves sparx.
+            </p>
+            <div class="cluster" style="margin-top: 30px; gap: 10px">
+              <span class="chip"><span class="dot"></span>live segments</span>
+              <span class="chip"><span class="dot"></span>schedule or send now</span>
+              <span class="chip"><span class="dot"></span>revenue attributed</span>
+            </div>
+          </div>
+          <div class="hero-col" id="bcastmount"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 AUTOMATIONS -->
+    <section class="band-surface">
+      <div class="container">
+        <h2 class="display" style="font-size: clamp(32px, 4.5vw, 52px); max-width: 760px">
+          The automations are already on<span class="spark">.</span>
+        </h2>
+        <p class="h-lede">
+          Activate Email and the default flows run from minute one — zero configuration. Each is a
+          when → then rule on a real platform event, and you can tune, pause, or disable the optional
+          ones whenever you like.
+        </p>
+        <div class="autos">
+          <div class="auto">
+            <span class="when">customer.created</span>
+            <span class="ar">→</span>
+            <span class="then">Welcome series <small>greets every new customer, immediately</small></span>
+            <span class="badge">Active</span>
+          </div>
+          <div class="auto">
+            <span class="when">cart.abandoned</span>
+            <span class="ar">→</span>
+            <span class="then">Abandoned cart <small>waits 2 hours, then nudges if no order</small></span>
+            <span class="badge">Active</span>
+          </div>
+          <div class="auto">
+            <span class="when">fulfillment.created</span>
+            <span class="ar">→</span>
+            <span class="then">Order shipped <small>sends tracking the moment it ships</small></span>
+            <span class="badge">Active</span>
+          </div>
+          <div class="auto">
+            <span class="when">no order · 90 days</span>
+            <span class="ar">→</span>
+            <span class="then">Win-back <small>re-engages lapsed customers on a daily check</small></span>
+            <span class="badge off">Optional</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 CAPABILITIES -->
+    <section class="band-page">
+      <div class="container">
+        <h2 class="display" style="font-size: clamp(32px, 4.5vw, 52px); max-width: 760px">
+          Everything a sender needs<span class="spark">.</span>
+        </h2>
+        <p class="h-lede">
+          The parts that make email actually work — building, measuring, and keeping a clean list —
+          are all in the box, not add-ons.
+        </p>
+        <div class="grid-3">
+          <div class="cap">
+            <span class="ic"><span class="dot"></span></span>
+            <h3>Template editor</h3>
+            <p>Edit on-brand templates with a variable picker, mobile and dark-mode preview, a spam-score check, and a test send to any address.</p>
+          </div>
+          <div class="cap">
+            <span class="ic"><span class="dot"></span></span>
+            <h3>Engagement analytics</h3>
+            <p>Sent, delivered, opened, clicked, bounced, and unsubscribed per send — plus attributed revenue and your best send time.</p>
+          </div>
+          <div class="cap">
+            <span class="ic"><span class="dot"></span></span>
+            <h3>Suppressions, handled</h3>
+            <p>Hard bounces and complaints suppress automatically, one-click unsubscribe is in every email, and the list stays CAN-SPAM and GDPR clean.</p>
+          </div>
+          <div class="cap">
+            <span class="ic"><span class="dot"></span></span>
+            <h3>Segments from CRM</h3>
+            <p>Target any live segment — spend, recency, tags, B2B tier — straight from the CRM. The audience recomputes itself; no export, ever.</p>
+          </div>
+          <div class="cap">
+            <span class="ic"><span class="dot"></span></span>
+            <h3>Inbox placement</h3>
+            <p>Per-provider delivery to Gmail, Apple Mail, Outlook, and Yahoo, with bounce and complaint rates watched against the thresholds that matter.</p>
+          </div>
+          <div class="cap">
+            <span class="ic"><span class="dot"></span></span>
+            <h3>Drive it over MCP</h3>
+            <p>Your AI assistant can pull email stats and send a broadcast in plain English — with a confirmation step before anything goes out.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 DARK PROOF -->
+    <section class="band-dark">
+      <div class="container">
+        <div style="max-width: 760px">
+          <h2 class="display" style="font-size: clamp(30px, 4vw, 46px); color: #fff">
+            Your domain, your list, your data<span class="spark" style="color: #fff">.</span>
+          </h2>
+          <p style="font-size: 18px; line-height: 30px; color: #a1a1aa; max-width: 640px; margin: 22px 0 0">
+            Email runs on the same database as your customers and orders, so every open feeds the CRM
+            and every segment is current. Send from your own domain, keep your own reputation, and pay
+            one flat price no matter the volume.
+          </p>
+        </div>
+        <div class="proof">
+          <div><div class="pn">1<span class="spark">.</span></div><div class="pl">database under email, customers, and orders — nothing to sync</div></div>
+          <div><div class="pn">$0</div><div class="pl">per email — flat monthly, send 10K or 1M for the same price</div></div>
+          <div><div class="pn">3</div><div class="pl">records auto-configured — SPF, DKIM, DMARC, then monitored</div></div>
+          <div><div class="pn">&lt;2%</div><div class="pl">bounce-rate guardrail watched per domain, complaints under 0.1%</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 PRICING -->
+    <section class="band-page">
+      <div class="container">
+        <div class="pricing">
+          <div style="flex: 1">
+            <div style="display: flex; align-items: baseline; gap: 6px">
+              <span class="price">$29</span>
+              <span style="font-size: 16px; color: var(--text-tertiary)">/mo</span>
+            </div>
+            <p style="font-size: 14px; line-height: 22px; color: var(--text-secondary); margin: 12px 0 0; max-width: 640px">
+              A flat $29/mo — transactional and marketing email, automations, templates, and
+              broadcasts. No per-email fees and no contact-tier surcharges; send 10K or 1M a month for
+              the same price. Switch it on alongside whatever modules you run. Start free for 14 days;
+              no card to begin.
+            </p>
+          </div>
+          <div class="cluster">
+            <a class="btn btn-out">See all plans →</a>
+            <a class="btn btn-dark">Activate Email</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 FAQ -->
+    <section class="band-page" id="faq">
+      <div class="container">
+        <h2 class="display" style="font-size: clamp(32px, 4.5vw, 52px)">
+          Email questions<span class="spark">.</span>
+        </h2>
+        <p class="h-lede">
+          Deliverability, your own domain, what it costs, and how it fits — answered straight. Still
+          deciding? Read the email docs or start the 14-day trial.
+        </p>
+        <div class="faq" id="faqmount"></div>
+      </div>
+    </section>
+
+    <!-- 11 CTA -->
+    <section class="band-dark">
+      <div class="container" style="display: flex; flex-direction: column; gap: 36px; align-items: flex-start">
+        <h2 class="display" style="font-size: clamp(40px, 7vw, 80px); color: #fff">
+          Send your first email today<span class="spark" style="color: #fff">.</span>
+        </h2>
+        <p style="font-size: 18px; line-height: 30px; color: #a1a1aa; max-width: 640px; margin: 0">
+          Turn Email on, add your domain, and transactional mail starts flowing immediately — the
+          marketing tools are there when you want them. No migration weekend, no contract; turn it off
+          the day you stop, and your data stays yours.
+        </p>
+        <div class="cluster">
+          <a class="btn btn-sky">Activate Email →</a>
+          <a class="btn btn-out" style="border-color: #2a2a2a; color: #fff" href="#pipeline">See how a send flows</a>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      const BUSINESSES = [
+        {
+          name: 'Flax & Fern', initials: 'FF', sender: 'hello@flaxandfern.com',
+          subject: 'Your Flax & Fern order is confirmed', preview: 'Hi Dana — your order is confirmed and heading out the door.',
+          broadcastSubject: 'Spring linen restock — your shade is back', segment: 'high-value, loyal',
+          recipients: '6,420', openRate: '52.4%', clickRate: '7.1%', brand: '#9a7b4f',
+        },
+        {
+          name: 'Hudson Farm Stand', initials: 'HF', sender: 'orders@hudsonfarmstand.com',
+          subject: 'Pickup confirmed — see you Saturday', preview: 'Hi Marcus — your pickup is set. Here is what is ready this week.',
+          broadcastSubject: 'This week at the stand: peak strawberries', segment: 'win-back at-risk',
+          recipients: '3,180', openRate: '48.9%', clickRate: '6.3%', brand: '#3f7d4f',
+        },
+        {
+          name: 'Waggle Pet Co', initials: 'WP', sender: 'hello@wagglepetco.com',
+          subject: 'Your Waggle order has shipped', preview: 'Hi Priya — good news, your collar and tag are on the way.',
+          broadcastSubject: 'New collars just dropped — fit guide inside', segment: 'new, growing',
+          recipients: '2,260', openRate: '54.7%', clickRate: '8.2%', brand: '#b4632e',
+        },
+        {
+          name: 'North Loop Roasters', initials: 'NL', sender: 'roast@northlooproasters.com',
+          subject: 'Your monthly roast is on its way', preview: 'Hi Sam — your subscription renewed and this month’s bag is brewing.',
+          broadcastSubject: 'This month’s roast: a washed Colombia', segment: 'subscriber, monthly',
+          recipients: '4,910', openRate: '57.1%', clickRate: '9.0%', brand: '#6b4226',
+        },
+        {
+          name: 'Atlas Supply Co', initials: 'AS', sender: 'orders@atlassupply.co',
+          subject: 'Your quote from Atlas Supply is ready', preview: 'Hi Reyes — your requested quote is attached, valid for 30 days.',
+          broadcastSubject: 'Q3 contract pricing — your account renewal', segment: 'B2B fleet, net-30',
+          recipients: '1,140', openRate: '61.3%', clickRate: '11.4%', brand: '#475569',
+        },
+      ];
+
+      function mailCard(b) {
+        return `<div class="mailcard">
+          <div class="topbar"><span class="tl"></span><span class="tl"></span><span class="tl"></span>
+            <span class="mono" style="margin-left:8px;font-size:11.5px;color:var(--text-tertiary)">inbox · ${b.name}</span></div>
+          <div class="hdr"><div class="from">
+            <span class="avatar">${b.initials}</span>
+            <span style="min-width:0">
+              <span style="display:block;font-weight:500;font-size:14.5px">${b.subject}</span>
+              <span class="mono" style="font-size:12px;color:var(--text-tertiary)">${b.sender} · to you · just now</span>
+            </span></div></div>
+          <div class="body">
+            <div class="brandrow"><span class="swatch" style="background:${b.brand}"></span>
+              <span style="font-weight:500;font-size:14px">${b.name}</span></div>
+            <p style="font-size:14px;line-height:23px;color:var(--text-secondary);margin:16px 0 0">${b.preview}</p>
+            <p style="font-size:14px;line-height:23px;color:var(--text-secondary);margin:10px 0 0">Everything looks good — we will send tracking as soon as it ships.</p>
+            <span class="emailbtn" style="background:${b.brand}">View your order</span>
+          </div>
+          <div class="pulse">
+            <div><div class="pnum">${b.openRate}</div><div class="plbl">open rate</div></div>
+            <div><div class="pnum">${b.clickRate}</div><div class="plbl">click rate</div></div>
+            <div><div class="pnum" style="color:var(--email-text)">✓</div><div class="plbl">DKIM signed</div></div>
+          </div>
+        </div>`;
+      }
+
+      function bcastCard(b) {
+        return `<div class="bcard">
+          <div class="bh"><span class="dot" style="width:9px;height:9px"></span>
+            <span style="min-width:0">
+              <span style="display:block;font-weight:500;font-size:15px">${b.broadcastSubject}</span>
+              <span class="mono" style="font-size:11.5px;color:var(--text-tertiary)">from ${b.sender} · sent · just now</span>
+            </span>
+            <span class="pass" style="margin-left:auto">Sent</span></div>
+          <div class="seg"><span class="dot" style="background:var(--crm)"></span>
+            Segment: <strong style="color:var(--text-primary);font-weight:500">${b.segment}</strong> · ${b.recipients} recipients</div>
+          <div class="stats">
+            <div><div class="snum">${b.recipients}</div><div class="slbl">delivered</div></div>
+            <div><div class="snum">${b.openRate}</div><div class="slbl">opened</div></div>
+            <div><div class="snum">${b.clickRate}</div><div class="slbl">clicked</div></div>
+            <div><div class="snum">0.0%</div><div class="slbl">complaints</div></div>
+          </div>
+        </div>`;
+      }
+
+      let idx = 0;
+      const mm = document.getElementById('mailmount');
+      const bm = document.getElementById('bcastmount');
+      function paint() {
+        mm.innerHTML = mailCard(BUSINESSES[idx]);
+        bm.innerHTML = bcastCard(BUSINESSES[(idx + 2) % BUSINESSES.length]);
+      }
+      paint();
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        setInterval(() => { idx = (idx + 1) % BUSINESSES.length; paint(); }, 3400);
+      }
+
+      // FAQ
+      const FAQ = [
+        ['Will my email actually reach the inbox?', 'Deliverability is the whole point. The moment your domain verifies, sparx authenticates it with SPF, DKIM, and DMARC and signs every message with your DKIM key. Bounce rate is watched against a 2% threshold and spam complaints against 0.1% per domain, with hard bounces and complaints suppressed automatically — the practices that keep a sender out of the spam folder.'],
+        ['Do I send from my own domain?', 'Yes. Add your domain, drop in the DNS records sparx generates for you, and once they verify your mail sends from your own address — orders@yourbrand.com, not a shared blast domain. Until a domain is verified, email sends from the shared sparx domain so you are never blocked while DNS propagates.'],
+        ['What is the difference between transactional and marketing email?', 'Transactional emails are triggered by platform events — an order confirmation, a shipping update, a password reset, a quote reply — and go out the instant the event fires. Marketing broadcasts are ones you choose to send to a CRM segment. Both run on the same engine, the same domain, and the same reputation, with one set of analytics.'],
+        ['How much does sparx Email cost?', 'A flat $29/mo. No per-email fees and no contact-tier surcharges — send 10,000 or 1,000,000 emails a month for the same price. Add any other modules à la carte and it all lands on one bill. Start on a 14-day free trial; no card required to begin.'],
+        ['Do my email events feed the rest of sparx?', 'Yes. Opens, clicks, bounces, and unsubscribes write straight onto the customer record in the CRM, so a segment like “opened the last email but did not buy” is always current — there is no list to export and nothing to sync. Your AI assistant can read the same stats over MCP.'],
+        ['Can I use my own templates and branding?', 'Every email is composed from on-brand, mobile-ready components and carries your logo, colors, and sender name. Edit templates with a variable picker and live preview, check the spam score, and send a test to yourself before anything goes to a customer.'],
+      ];
+      let fa = 0;
+      const fm = document.getElementById('faqmount');
+      function paintFaq() {
+        const rail = FAQ.map((q, i) => `<button class="qbtn ${i === fa ? 'on' : ''}" data-i="${i}"><span class="qdot"></span>${q[0]}</button>`).join('');
+        const cur = FAQ[fa];
+        const q = cur[0];
+        const ans = `<div class="ans"><h3>${q.slice(0, -1)}<span style="color:var(--email)">?</span></h3><p>${cur[1]}</p></div>`;
+        fm.innerHTML = `<div class="rail">${rail}</div>${ans}`;
+        fm.querySelectorAll('.qbtn').forEach((btn) => btn.addEventListener('click', () => { fa = +btn.dataset.i; paintFaq(); }));
+      }
+      paintFaq();
+    </script>
+  </body>
+</html>
