@@ -81,12 +81,8 @@ const marqueeLogo = (label: string) =>
     { text: label }
   );
 
-// A five-star rating row rendered as glyphs (presentational).
-const starRow = () =>
-  el('div', 'flex items-center gap-0.5 text-warning', {
-    attrs: { ariaLabel: 'Rated 5 out of 5' },
-    children: ['★', '★', '★', '★', '★'].map((s) => el('span', '', { text: s })),
-  });
+// A five-star rating row — the real Rating atom (st-rating), read-only display.
+const starRow = () => atom('Rating', 'st-c-warning', { value: '5', count: '5' });
 
 // One testimonial slide — quote + attribution. `part(_, 'slide')`.
 const testimonialSlide = (quote: string, name: string, role: string) =>

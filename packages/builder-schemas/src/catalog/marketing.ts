@@ -302,7 +302,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               'flex flex-col gap-5 rounded-box border border-base-200 bg-base-100 p-6 shadow-sm',
               {
                 children: [
-                  el('div', 'flex gap-0.5 text-warning', { text: '★★★★★' }),
+                  atom('Rating', 'st-c-warning', { value: '5', count: '5' }),
                   el('blockquote', 'text-base leading-relaxed text-base-content/80', {
                     text: '“Setup took an afternoon and the storefront looks like we hired an agency. The brand controls are unreal.”',
                   }),
@@ -332,7 +332,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               'flex flex-col gap-5 rounded-box border border-base-200 bg-base-100 p-6 shadow-sm',
               {
                 children: [
-                  el('div', 'flex gap-0.5 text-warning', { text: '★★★★★' }),
+                  atom('Rating', 'st-c-warning', { value: '5', count: '5' }),
                   el('blockquote', 'text-base leading-relaxed text-base-content/80', {
                     text: '“We run wholesale and retail from one dashboard now. Net-terms invoicing alone paid for the year.”',
                   }),
@@ -362,7 +362,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               'flex flex-col gap-5 rounded-box border border-base-200 bg-base-100 p-6 shadow-sm',
               {
                 children: [
-                  el('div', 'flex gap-0.5 text-warning', { text: '★★★★★' }),
+                  atom('Rating', 'st-c-warning', { value: '5', count: '5' }),
                   el('blockquote', 'text-base leading-relaxed text-base-content/80', {
                     text: '“Support actually answers, the platform is fast, and our checkout conversion jumped after the move.”',
                   }),
@@ -529,19 +529,13 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
             }),
             el('form', 'flex w-full flex-col gap-3 @sm:flex-row', {
               children: [
-                el(
-                  'input',
-                  'flex-1 rounded-field border border-base-300 bg-base-100 px-4 py-3 text-sm text-base-content placeholder:text-base-content/40 focus:border-primary focus:outline-none',
-                  {
-                    attrs: {
-                      type: 'email',
-                      name: 'email',
-                      placeholder: 'you@example.com',
-                      ariaLabel: 'Email address',
-                      required: true,
-                    },
-                  }
-                ),
+                // The real Input atom (st-input) — the field recipe drives its focus
+                // color. (Was a hand-rolled <input> with bespoke border/focus classes.)
+                atom('Input', 'st-c-primary st-fv-outline flex-1', {
+                  type: 'email',
+                  name: 'email',
+                  placeholder: 'you@example.com',
+                }),
                 atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md shrink-0', {
                   label: 'Subscribe',
                 }),
