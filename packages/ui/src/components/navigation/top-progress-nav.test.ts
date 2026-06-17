@@ -55,10 +55,14 @@ describe('installNavigationListeners', () => {
     cleanup();
   });
 
-  it('catches programmatic pushState navigations', () => {
+  it('catches programmatic pushState navigations (deferred to a microtask)', async () => {
     const onStart = vi.fn();
     const cleanup = installNavigationListeners(onStart);
     history.pushState({}, '', '/cms/content');
+    // The start signal is deferred to a microtask so it never fires while React
+    // is mid-commit (App Router pushes from an insertion effect).
+    expect(onStart).not.toHaveBeenCalled();
+    await Promise.resolve();
     expect(onStart).toHaveBeenCalledWith('cms');
     cleanup();
     history.pushState({}, '', '/'); // restore for other tests

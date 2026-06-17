@@ -45,9 +45,9 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
     label: 'Builder',
     headlinePrimary: 'Your site,',
     headlineSecondary: 'live',
-    title: 'sparx Builder — Your site, live in five minutes.',
+    title: 'sparx Builder — your site, live in 5 minutes',
     description:
-      'The website module. Pick a theme, edit blocks, point your domain — SSL and CDN handled. Content site or store, live in five minutes. No code required.',
+      'The website module. Pick a theme, edit in the browser, point your domain — SSL and CDN handled. Content site or store, live in 5 minutes. $10/mo.',
     lede: 'The website module. Pick a theme, edit blocks in the browser, point your domain. SSL and the global CDN are handled for you. The same builder serves a one-page portfolio, a 40-post blog, or a 50,000-SKU catalog.',
     features: [
       {

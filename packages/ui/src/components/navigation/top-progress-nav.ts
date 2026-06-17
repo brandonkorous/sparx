@@ -77,11 +77,20 @@ function patchHistory(): void {
       const before = window.location.pathname;
       original.apply(this, args);
       const url = args[2];
-      if (url == null || !activeStart) return;
+      if (url == null) return;
       const after = new URL(String(url), window.location.href).pathname;
-      // Path changed → a real navigation (ignore search/hash-only updates, e.g.
-      // a `?drawer=` sync, so the bar doesn't flash for in-page state).
-      if (after !== before) activeStart(resolveRouteModule(after));
+      // Path unchanged → not a real navigation (ignore search/hash-only
+      // updates, e.g. a `?drawer=` sync, so the bar doesn't flash for in-page
+      // state).
+      if (after === before) return;
+      // Defer the start signal to a microtask. App Router calls `pushState`
+      // from inside a commit-phase (insertion) effect; notifying the
+      // `useSyncExternalStore` bar synchronously there schedules a React update
+      // mid-commit and throws "useInsertionEffect must not schedule updates."
+      // A microtask runs once the commit unwinds, so the bar still starts
+      // effectively immediately, just outside React's forbidden window.
+      const module = resolveRouteModule(after);
+      queueMicrotask(() => activeStart?.(module));
     };
   });
 }
