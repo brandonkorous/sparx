@@ -13,7 +13,7 @@ import { loadAuthorOptions } from '../cms/content/new/author-options';
 import { CategoryCreateForm } from '../commerce/categories/_components/category-create-form';
 import { loadCategoryParents } from '../commerce/categories/_components/category-parent-options';
 import { CollectionCreateForm } from '../commerce/collections/_components/collection-create-form';
-import { WarehouseCreateForm } from '../commerce/warehouses/_components/warehouse-create-form';
+import { WarehouseCreateForm } from '../inventory/warehouses/_components/warehouse-create-form';
 import { PriceListCreateForm } from '../commerce/pricing/_components/price-list-create-form';
 import { SegmentCreateForm } from '../crm/segments/_components/segment-create-form';
 import { PageCreateForm } from '../cms/_components/page-create-form';
@@ -53,7 +53,7 @@ import { ShippingProfileDetailContent } from '../commerce/shipping/profiles/[id]
 import { ShippingZoneDetailContent } from '../commerce/shipping/zones/[id]/_content';
 import { SubscriptionDetailContent } from '../commerce/subscriptions/[id]/_content';
 import { TaxZoneDetailContent } from '../commerce/tax/zones/[id]/_content';
-import { WarehouseDetailContent } from '../commerce/warehouses/[id]/_content';
+import { WarehouseDetailContent } from '../inventory/warehouses/[id]/_content';
 import { ComponentDetailContent } from '../builder/components/[type]/_content';
 
 // Server-only registry mapping a manifest entity type id → its detail content
@@ -135,7 +135,9 @@ const detailModules: Record<string, SparxModule> = {
   product: 'commerce',
   category: 'commerce',
   collection: 'commerce',
-  warehouse: 'commerce',
+  // Warehouse is an inventory-module entity now (docs/100 P1e) — its overlay
+  // chrome wears the inventory accent even though it's reachable from commerce.
+  warehouse: 'inventory',
   review: 'commerce',
   'qa-question': 'commerce',
   subscription: 'commerce',

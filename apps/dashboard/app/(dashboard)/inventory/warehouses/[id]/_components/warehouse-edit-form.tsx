@@ -17,7 +17,7 @@ import {
   Text,
 } from '@sparx/ui';
 
-import { updateWarehouseAction } from '../../../inventory-actions';
+import { updateWarehouseAction } from '../../../_lib/inventory-actions';
 
 const CHANNELS = ['storefront', 'b2b_portal', 'admin', 'subscription'] as const;
 

@@ -225,7 +225,9 @@ export async function ProductDetailContent({ id }: Props) {
     api.get<VariantRow[]>(`/v1/commerce/products/${id}/variants?include_archived=true`),
     api.get<ProductFitmentRow[]>(`/v1/commerce/products/${id}/fitment`),
     api.get<FitmentDomainRow[]>('/v1/commerce/fitment/domains'),
-    api.get<WarehouseRow[]>('/v1/commerce/warehouses'),
+    // Inventory is its own module (rides free with Commerce, so the gate passes);
+    // the product Inventory tab reads warehouses + levels from /v1/inventory/*.
+    api.get<WarehouseRow[]>('/v1/inventory/locations'),
     // Multi-site (docs/49 §3): the "Visible on sites" control. Defensive — a
     // failed read just hides the control (single-site behavior).
     listProperties().catch(() => [] as Property[]),
@@ -260,9 +262,7 @@ export async function ProductDetailContent({ id }: Props) {
       variantId: variant.id,
       sku: variant.sku,
       variantTitle: variant.title,
-      levels: await api.get<InventoryLevelRow[]>(
-        `/v1/commerce/inventory/levels/variant/${variant.id}`
-      ),
+      levels: await api.get<InventoryLevelRow[]>(`/v1/inventory/levels/variant/${variant.id}`),
     }))
   );
 

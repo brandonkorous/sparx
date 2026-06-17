@@ -258,8 +258,8 @@ export default async function InventoryPage() {
           description="Stock & locations — across every location."
           actions={
             <>
-              <Button asChild variant="outline" leftIcon={<MapPin className="h-4 w-4" />}>
-                <Link href="/inventory/locations">Locations</Link>
+              <Button asChild variant="outline" leftIcon={<Warehouse className="h-4 w-4" />}>
+                <Link href="/inventory/warehouses">Warehouses</Link>
               </Button>
               <Button
                 asChild
@@ -390,7 +390,7 @@ export default async function InventoryPage() {
             icon={<MapPin className="h-4 w-4" />}
             right={
               hasLocations ? (
-                <CardLink href="/inventory/locations">All</CardLink>
+                <CardLink href="/inventory/warehouses">All</CardLink>
               ) : (
                 <SampleBadge reason="no-data" />
               )
@@ -477,7 +477,7 @@ export default async function InventoryPage() {
             icon={<Warehouse className="h-4 w-4" />}
             right={
               hasLocations ? (
-                <CardLink href="/inventory/locations">Manage</CardLink>
+                <CardLink href="/inventory/warehouses">Manage</CardLink>
               ) : (
                 <SampleBadge reason="no-data" />
               )

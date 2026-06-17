@@ -27,7 +27,7 @@ export default async function WarehousesPage({ searchParams }: PageProps) {
   const [prefs, { data: warehouses, meta }] = await Promise.all([
     getUserPreferences(),
     api.getPaged<WarehouseRow[]>(
-      `/v1/commerce/warehouses?${new URLSearchParams({
+      `/v1/inventory/locations?${new URLSearchParams({
         include_archived: 'true',
         take: String(take),
         skip: String(skip),
@@ -58,7 +58,7 @@ export default async function WarehousesPage({ searchParams }: PageProps) {
           actions={
             <EntityCreateButton
               entityType="warehouse"
-              newHref="/commerce/warehouses/new"
+              newHref="/inventory/warehouses/new"
               color="module"
               leftIcon={<Plus className="h-4 w-4" />}
             >
@@ -78,7 +78,7 @@ export default async function WarehousesPage({ searchParams }: PageProps) {
               action={
                 <EntityCreateButton
                   entityType="warehouse"
-                  newHref="/commerce/warehouses/new"
+                  newHref="/inventory/warehouses/new"
                   color="module"
                   leftIcon={<Plus className="h-4 w-4" />}
                 >

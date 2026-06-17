@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { Button, Text } from '@sparx/ui';
 
-import { archiveWarehouseAction } from '../../../inventory-actions';
+import { archiveWarehouseAction } from '../../../_lib/inventory-actions';
 
 export function WarehouseArchiveButton({
   warehouseId,
@@ -31,7 +31,7 @@ export function WarehouseArchiveButton({
         setArmed(false);
         return;
       }
-      router.push('/commerce/warehouses');
+      router.push('/inventory/warehouses');
     });
   }
 

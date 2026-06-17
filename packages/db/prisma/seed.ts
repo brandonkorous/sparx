@@ -758,6 +758,506 @@ async function backfillLegalPages(): Promise<void> {
   );
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Demo inventory (docs/100 P1e) — a focused diesel-parts catalog (the Gillett
+// anchor vertical) + multi-warehouse stock so the Inventory module renders real
+// numbers locally: non-zero valuation, a low/out-of-stock watch list, and a
+// populated movement-ledger activity feed. Stock is written the way
+// `applyMovement()` does — every level gets opening movements whose Σ(delta)
+// equals on_hand, with a running `balance_after` — so the ledger invariant
+// (`onHand == Σ(movements)`) holds and the feed reads like real activity. The
+// products double as a small commerce catalog for the seeded tenant.
+//
+// Idempotent: demo products (handle `inv-demo-*`) are dropped + recreated each
+// run, cascading their variants/levels/movements/lots; warehouses upsert by code.
+// FORCE-RLS tables, so the whole thing runs inside one tx with app.tenant_id SET
+// LOCAL (packages/db/CLAUDE.md).
+
+type DemoWh = 'MAIN' | 'WEST-3PL';
+
+interface DemoMovement {
+  delta: number;
+  reason: string; // receive | sale | recount | transfer_in | loss | damage
+  daysAgo: number;
+}
+interface DemoLevel {
+  warehouse: DemoWh;
+  reorderPoint?: number;
+  reorderQuantity?: number;
+  leadTimeDays?: number;
+  movements: DemoMovement[]; // Σ(delta) == on_hand for this level
+}
+interface DemoVariant {
+  sku: string;
+  title: string | null;
+  priceCents: number;
+  costCents: number;
+  levels: DemoLevel[];
+}
+interface DemoProduct {
+  handle: string;
+  title: string;
+  productType: string;
+  vendor: string;
+  hazmatClass?: string;
+  variants: DemoVariant[];
+}
+interface DemoLot {
+  sku: string;
+  warehouse: DemoWh;
+  lotNumber: string;
+  quantity: number;
+  expiresInDays: number | null;
+  hazmatClass?: string;
+  recall?: string; // reason → an active recall
+}
+
+const DEMO_WAREHOUSES: {
+  code: string;
+  name: string;
+  type: string;
+  city: string;
+  region: string;
+}[] = [
+  { code: 'MAIN', name: 'Main Warehouse', type: 'owned', city: 'West Valley City', region: 'UT' },
+  { code: 'WEST-3PL', name: 'West Coast 3PL', type: '3pl', city: 'Reno', region: 'NV' },
+];
+
+// `r(n, d)` = receive n then sell d (chronologically), so on_hand = n − d but the
+// level carries real ledger history. Single receives are the common case.
+const recv = (delta: number, daysAgo: number): DemoMovement => ({
+  delta,
+  reason: 'receive',
+  daysAgo,
+});
+const sale = (delta: number, daysAgo: number): DemoMovement => ({
+  delta: -delta,
+  reason: 'sale',
+  daysAgo,
+});
+
+const DEMO_PRODUCTS: DemoProduct[] = [
+  {
+    handle: 'inv-demo-fuel-filter-67',
+    title: 'Fuel Filter — 6.7L Power Stroke',
+    productType: 'Filters',
+    vendor: 'Motorcraft',
+    variants: [
+      {
+        sku: 'FF-67-STD',
+        title: 'Standard',
+        priceCents: 4299,
+        costCents: 2150,
+        levels: [
+          {
+            warehouse: 'MAIN',
+            reorderPoint: 24,
+            reorderQuantity: 96,
+            leadTimeDays: 7,
+            movements: [
+              recv(120, 21),
+              sale(15, 9),
+              sale(9, 3),
+              { delta: -1, reason: 'recount', daysAgo: 1 },
+            ],
+          },
+          {
+            warehouse: 'WEST-3PL',
+            reorderPoint: 12,
+            reorderQuantity: 48,
+            movements: [recv(40, 18), sale(6, 5)],
+          },
+        ],
+      },
+      {
+        sku: 'FF-67-OEM',
+        title: 'OEM',
+        priceCents: 5899,
+        costCents: 3100,
+        levels: [
+          {
+            warehouse: 'MAIN',
+            reorderPoint: 16,
+            reorderQuantity: 64,
+            leadTimeDays: 10,
+            movements: [recv(58, 30), sale(22, 6)],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    handle: 'inv-demo-glow-plug-60',
+    title: 'Glow Plug Set (8) — 6.0L Power Stroke',
+    productType: 'Ignition',
+    vendor: 'Motorcraft',
+    variants: [
+      {
+        sku: 'GP-60-SET8',
+        title: null,
+        priceCents: 18999,
+        costCents: 9800,
+        // Low: 7 on hand, reorder point 10.
+        levels: [
+          {
+            warehouse: 'MAIN',
+            reorderPoint: 10,
+            reorderQuantity: 40,
+            leadTimeDays: 14,
+            movements: [recv(28, 24), sale(13, 8), sale(8, 2)],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    handle: 'inv-demo-injector-67-cummins',
+    title: 'Fuel Injector — 6.7L Cummins',
+    productType: 'Fuel System',
+    vendor: 'Bosch',
+    variants: [
+      {
+        sku: 'INJ-67C-REMAN',
+        title: 'Remanufactured',
+        priceCents: 32900,
+        costCents: 18500,
+        levels: [
+          {
+            warehouse: 'MAIN',
+            reorderPoint: 8,
+            reorderQuantity: 24,
+            leadTimeDays: 21,
+            movements: [recv(36, 40), sale(11, 12), sale(7, 4)],
+          },
+        ],
+      },
+      {
+        sku: 'INJ-67C-NEW',
+        title: 'New OEM',
+        priceCents: 58900,
+        costCents: 41000,
+        // Out of stock with history: received then fully sold through.
+        levels: [
+          {
+            warehouse: 'MAIN',
+            reorderPoint: 4,
+            reorderQuantity: 12,
+            leadTimeDays: 28,
+            movements: [recv(9, 35), sale(9, 6)],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    handle: 'inv-demo-turbo-lml',
+    title: 'Turbocharger — Duramax LML',
+    productType: 'Forced Induction',
+    vendor: 'Garrett',
+    variants: [
+      {
+        sku: 'TURBO-LML',
+        title: null,
+        priceCents: 129900,
+        costCents: 82000,
+        levels: [
+          {
+            warehouse: 'MAIN',
+            reorderPoint: 3,
+            reorderQuantity: 6,
+            leadTimeDays: 35,
+            movements: [recv(8, 50), sale(2, 14)],
+          },
+          { warehouse: 'WEST-3PL', movements: [recv(3, 22)] },
+        ],
+      },
+    ],
+  },
+  {
+    handle: 'inv-demo-oil-15w40',
+    title: 'Diesel Engine Oil 15W-40 (1 gal)',
+    productType: 'Fluids',
+    vendor: 'Shell Rotella',
+    hazmatClass: 'class9',
+    variants: [
+      {
+        sku: 'OIL-15W40-1G',
+        title: null,
+        priceCents: 2999,
+        costCents: 1450,
+        levels: [
+          {
+            warehouse: 'MAIN',
+            reorderPoint: 60,
+            reorderQuantity: 240,
+            leadTimeDays: 5,
+            movements: [recv(480, 28), sale(96, 10), sale(72, 3)],
+          },
+          {
+            warehouse: 'WEST-3PL',
+            reorderPoint: 40,
+            reorderQuantity: 160,
+            movements: [recv(240, 26), sale(48, 7)],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    handle: 'inv-demo-coolant-hd',
+    title: 'Heavy-Duty Coolant — Nitrite-Free (1 gal)',
+    productType: 'Fluids',
+    vendor: 'Fleetguard',
+    hazmatClass: 'class9',
+    variants: [
+      {
+        sku: 'COOL-HD-1G',
+        title: null,
+        priceCents: 1999,
+        costCents: 950,
+        // Low: 18 on hand, reorder point 30.
+        levels: [
+          {
+            warehouse: 'MAIN',
+            reorderPoint: 30,
+            reorderQuantity: 120,
+            leadTimeDays: 6,
+            movements: [recv(120, 20), sale(60, 9), sale(42, 2)],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    handle: 'inv-demo-serpentine-belt-73',
+    title: 'Serpentine Belt — 7.3L Power Stroke',
+    productType: 'Belts',
+    vendor: 'Gates',
+    variants: [
+      {
+        sku: 'BELT-73',
+        title: null,
+        priceCents: 4599,
+        costCents: 2200,
+        levels: [
+          {
+            warehouse: 'MAIN',
+            reorderPoint: 20,
+            reorderQuantity: 80,
+            leadTimeDays: 9,
+            movements: [recv(64, 33), sale(19, 11), sale(8, 4)],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    handle: 'inv-demo-water-pump-66',
+    title: 'Water Pump — 6.6L Duramax',
+    productType: 'Cooling',
+    vendor: 'ACDelco',
+    variants: [
+      {
+        sku: 'WP-66',
+        title: null,
+        priceCents: 17999,
+        costCents: 9500,
+        levels: [
+          {
+            warehouse: 'MAIN',
+            reorderPoint: 6,
+            reorderQuantity: 18,
+            leadTimeDays: 16,
+            movements: [recv(22, 44), sale(7, 13), sale(3, 5)],
+          },
+        ],
+      },
+    ],
+  },
+];
+
+const DEMO_LOTS: DemoLot[] = [
+  {
+    sku: 'OIL-15W40-1G',
+    warehouse: 'MAIN',
+    lotNumber: 'ROT-2026-0418',
+    quantity: 480,
+    expiresInDays: 540,
+    hazmatClass: 'class9',
+  },
+  {
+    sku: 'OIL-15W40-1G',
+    warehouse: 'WEST-3PL',
+    lotNumber: 'ROT-2026-0392',
+    quantity: 240,
+    expiresInDays: 300,
+    hazmatClass: 'class9',
+  },
+  // An expiring-soon lot (inside the 1-year window the Lots page surfaces).
+  {
+    sku: 'COOL-HD-1G',
+    warehouse: 'MAIN',
+    lotNumber: 'FG-COOL-2025-7731',
+    quantity: 120,
+    expiresInDays: 120,
+    hazmatClass: 'class9',
+  },
+  // An active recall — drives the Lots page's recall watch list.
+  {
+    sku: 'GP-60-SET8',
+    warehouse: 'MAIN',
+    lotNumber: 'MC-GP60-2025-1188',
+    quantity: 28,
+    expiresInDays: null,
+    recall: 'Supplier notice: ceramic tip may crack on cold-start cycling.',
+  },
+];
+
+function daysAgoDate(days: number): Date {
+  return new Date(Date.now() - days * 86_400_000);
+}
+
+async function seedDemoInventory(tenantId: string): Promise<void> {
+  await prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+
+    // Warehouses — upsert by (tenant, code); persist across re-runs.
+    const whByCode = new Map<DemoWh, string>();
+    for (const w of DEMO_WAREHOUSES) {
+      const row = await tx.warehouse.upsert({
+        where: { tenantId_code: { tenantId, code: w.code } },
+        update: { name: w.name, type: w.type, city: w.city, region: w.region, country: 'US' },
+        create: {
+          tenantId,
+          code: w.code,
+          name: w.name,
+          type: w.type,
+          city: w.city,
+          region: w.region,
+          country: 'US',
+        },
+      });
+      whByCode.set(w.code as DemoWh, row.id);
+    }
+    const mainId = whByCode.get('MAIN')!;
+
+    // Drop prior demo products → cascades variants/levels/movements/lots.
+    await tx.product.deleteMany({ where: { tenantId, handle: { startsWith: 'inv-demo-' } } });
+
+    const variantIdBySku = new Map<string, string>();
+
+    for (const p of DEMO_PRODUCTS) {
+      const prices = p.variants.map((v) => v.priceCents);
+      const anyStock = p.variants.some((v) =>
+        v.levels.some((l) => l.movements.reduce((s, m) => s + m.delta, 0) > 0)
+      );
+      const product = await tx.product.create({
+        data: {
+          tenantId,
+          title: p.title,
+          handle: p.handle,
+          status: 'active',
+          productType: p.productType,
+          vendor: p.vendor,
+          hazmatClass: p.hazmatClass ?? 'none',
+          defaultWarehouseId: mainId,
+          priceMinCents: Math.min(...prices),
+          priceMaxCents: Math.max(...prices),
+          inStock: anyStock,
+          publishedAt: new Date(),
+          metadata: { demo: 'inventory' },
+        },
+      });
+
+      for (const [i, v] of p.variants.entries()) {
+        const variant = await tx.productVariant.create({
+          data: {
+            tenantId,
+            productId: product.id,
+            sku: v.sku,
+            title: v.title,
+            priceCents: v.priceCents,
+            costCents: v.costCents,
+            currency: 'USD',
+            isDefault: i === 0,
+          },
+        });
+        variantIdBySku.set(v.sku, variant.id);
+
+        for (const lvl of v.levels) {
+          const warehouseId = whByCode.get(lvl.warehouse)!;
+          const onHand = lvl.movements.reduce((s, m) => s + m.delta, 0);
+          await tx.inventoryLevel.create({
+            data: {
+              tenantId,
+              variantId: variant.id,
+              warehouseId,
+              onHand,
+              ...(lvl.reorderPoint !== undefined ? { reorderPoint: lvl.reorderPoint } : {}),
+              ...(lvl.reorderQuantity !== undefined
+                ? { reorderQuantity: lvl.reorderQuantity }
+                : {}),
+              ...(lvl.leadTimeDays !== undefined ? { leadTimeDays: lvl.leadTimeDays } : {}),
+              unitCostCents: v.costCents,
+              avgCostCents: v.costCents,
+            },
+          });
+
+          // Replay the movements oldest→newest so balance_after is the running
+          // on-hand and Σ(delta) lands exactly on the level's on_hand.
+          let balance = 0;
+          const chrono = [...lvl.movements].sort((a, b) => b.daysAgo - a.daysAgo);
+          for (const m of chrono) {
+            balance += m.delta;
+            await tx.inventoryMovement.create({
+              data: {
+                tenantId,
+                variantId: variant.id,
+                warehouseId,
+                delta: m.delta,
+                balanceAfter: balance,
+                reason: m.reason,
+                actorType: 'system',
+                source: 'seed',
+                ...(m.reason === 'receive' ? { unitCostCents: v.costCents } : {}),
+                createdAt: daysAgoDate(m.daysAgo),
+              },
+            });
+          }
+        }
+      }
+    }
+
+    // Lot batches (fluids + a recalled glow-plug set).
+    for (const lot of DEMO_LOTS) {
+      const variantId = variantIdBySku.get(lot.sku);
+      if (!variantId) continue;
+      const warehouseId = whByCode.get(lot.warehouse)!;
+      await tx.lotBatch.create({
+        data: {
+          tenantId,
+          variantId,
+          warehouseId,
+          lotNumber: lot.lotNumber,
+          quantity: lot.quantity,
+          hazmatClass: lot.hazmatClass ?? 'none',
+          ...(lot.expiresInDays !== null ? { expiresAt: daysAgoDate(-lot.expiresInDays) } : {}),
+          manufacturedAt: daysAgoDate(90),
+          ...(lot.recall
+            ? { recallStatus: 'active', recallReason: lot.recall, recalledAt: daysAgoDate(4) }
+            : {}),
+        },
+      });
+    }
+
+    const variantCount = variantIdBySku.size;
+    console.log(
+      `Seeded demo inventory: ${DEMO_PRODUCTS.length} products / ${variantCount} variants across ` +
+        `${DEMO_WAREHOUSES.length} warehouses, with ledger movements + ${DEMO_LOTS.length} lots.`
+    );
+  });
+}
+
 async function main(): Promise<void> {
   // tenants has no RLS — safe to upsert outside a tenant context. Default
   // settings (incl. the module activation registry read by
@@ -871,6 +1371,17 @@ async function main(): Promise<void> {
   } catch (err) {
     console.warn(
       `[seed] e2e-store staff user upsert skipped: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
+
+  // Demo inventory + a small commerce catalog for the e2e tenant (docs/100 P1e)
+  // so the Inventory module shows real data locally. Wrapped so a hiccup never
+  // blocks the rest of the seed; idempotent on re-run.
+  try {
+    await seedDemoInventory(tenant.id);
+  } catch (err) {
+    console.warn(
+      `[seed] demo inventory seed skipped: ${err instanceof Error ? err.message : String(err)}`
     );
   }
 

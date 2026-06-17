@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { Button, Input, Stack, Text } from '@sparx/ui';
 
-import { adjustInventoryAction, setReorderPolicyAction } from '../../inventory-actions';
+import { adjustInventoryAction, setReorderPolicyAction } from '../../_lib/inventory-actions';
 
 const REASONS = [
   'recount',

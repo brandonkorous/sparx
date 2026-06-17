@@ -11,10 +11,12 @@ import type { ModuleSlug } from '@sparx/modules';
 export type BillingInterval = 'monthly' | 'annual';
 
 // Monthly list price (cents) per billable module. A module with NO entry is not
-// separately billed (e.g. `inventory` rides with Commerce; `builder` is the only
-// always-cheap base). Invoicing is $19 standalone but BUNDLED_FREE with
+// separately billed (`builder` is the only always-cheap base). Invoicing ($19)
+// and Inventory ($29) carry a standalone list price but are BUNDLED_FREE with
 // Commerce/B2B — the bundling is handled by the module graph, not here: a bundled
-// tenant simply never has an explicit `invoicing` flag, so no item is created.
+// tenant simply never has an explicit flag for the capability, so no Stripe item
+// is created. A WMS-only tenant that turns Inventory on without Commerce/B2B is
+// billed the $29 standalone price.
 export const MODULE_MONTHLY_CENTS: Partial<Record<ModuleSlug, number>> = {
   builder: 1000,
   commerce: 4900,
@@ -24,6 +26,7 @@ export const MODULE_MONTHLY_CENTS: Partial<Record<ModuleSlug, number>> = {
   b2b: 9900,
   ai: 4900,
   dropship: 2900,
+  inventory: 2900,
   invoicing: 1900,
   chat: 1900,
 };

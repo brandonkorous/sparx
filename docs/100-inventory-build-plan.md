@@ -1,6 +1,6 @@
 # Sparx Platform — Inventory Product Build Plan
 
-**Version:** 1.2
+**Version:** 1.3
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-16
 
@@ -211,7 +211,14 @@ and commerce off.
    balance, moving-average `avgCostCents`); `adjust`/`transfer`/`commit` all route through it. The 1085-line
    service was split by concern (warehouses · levels · ledger · movements · reservations · lots). The
    `onHand == Σ(movements)` reconcile invariant is guaranteed structurally (single writer + `balanceAfter`);
-   a standalone reconcile/audit report is P4.
+   a standalone reconcile/audit report is P4. ✅ **Hardened + proven (P1e)** — the deferred DB-backed
+   integration test (`packages/inventory/test/integration/ledger.test.ts`, real Postgres) pins the
+   Σ-invariant + running `balanceAfter`, idempotency-key dedupe, the absolute `setOnHand` reconcile, AND a
+   concurrent-writer test. That last one surfaced a real hole: the "ensure the level row exists" step used a
+   Prisma `upsert` (SELECT-then-INSERT), so a concurrent burst of the **first** movement on a brand-new
+   (variant, warehouse) collided on the PK instead of serializing. Fixed to an atomic
+   `INSERT … ON CONFLICT (variant_id, warehouse_id) DO NOTHING`, so the FOR UPDATE lock's concurrency
+   guarantee now holds even for first-touch.
 4. **Re-point reads at the master:** ✅ **DONE (P1c)** — verified against the dev DB (155 on-hand units +
    3 ledger movements that the old `stock_levels`-backed reports showed as zeros).
    - `inventory-valuation.ts` `computeValuation()` → `inventory_levels`, costed at the moving-average basis
@@ -221,17 +228,42 @@ and commerce off.
      `updatedAt` diffs. ✅
    - `/inventory` overview page → the re-pointed reports; the recent-changes card renders the movement feed,
      and `/inventory/locations` now lists `Warehouse`s (one stock model). ✅
-5. **Move the operational pages under `/inventory`:** `/commerce/inventory` → `/inventory` (stock grid),
-   `/commerce/warehouses` → `/inventory/warehouses`, `/commerce/lots` → `/inventory/lots`. Rebuild the
-   `/inventory` overview off the master. Update the `inventoryManifest` sections.
+5. **Move the operational pages under `/inventory`:** `/commerce/inventory` → `/inventory/stock`,
+   `/commerce/warehouses` → `/inventory/warehouses`, `/commerce/lots` → `/inventory/lots`; the
+   `/inventory` route itself stays the master-backed **overview** (the stock grid moved to
+   `/inventory/stock` so the landing isn't displaced). Update the `inventoryManifest` sections.
+   ✅ **DONE (P1e)** — pages moved (history-preserving `git mv`); the inventory module owns its own API
+   namespace `/v1/inventory/*` (`stock.ts` levels/adjust/transfer/reorder/low-stock/enriched + `lots.ts`
+   lots/serials/recalls), gated by `requireInventoryModule` so a standalone WMS tenant manages stock with
+   no commerce. The orphaned `/v1/commerce/inventory*` + `/v1/commerce/warehouses` routes were removed and
+   their commerce-side consumers (product editor Inventory tab, settings, detail-slot, universal-search
+   warehouse projector) repointed to `/v1/inventory/*` (inventory rides free with Commerce, so the gate
+   passes). The bare `/inventory/locations` page was retired in favour of `/inventory/warehouses`.
 6. **Finish module wiring** — add `'inventory'` to the lists in §1 (price `2900`, `BUNDLED_FREE` with
    commerce/b2b) and build the commerce/b2b **degrade-without-inventory** path (untracked = always available).
+   ✅ **DONE (P1e)** — `MODULE_MONTHLY_CENTS.inventory = 2900`; `BUNDLED_FREE: inventory → [commerce, b2b]`
+   in `@sparx/modules` + the dashboard/web switchboard mirrors; `properties.ts` `MODULE_SLUGS` +
+   `BlueprintModuleSlug` extended (dashboard.ts + activation slugs already had it). The degrade path is the
+   shared `computeAvailability(levels, policy, { inventoryActive })` in `@sparx/inventory` — the single home
+   for "untracked = always available" — wired into the storefront PDP read (`mapFullProduct` passes
+   `isModuleEnabled(tenantId, 'inventory')`); module off → unbounded, always in stock, seam no-ops.
 7. **Seed** real inventory data (warehouses + levels + movements + lots) so a fresh tenant shows a
    populated module (per the "seed rich local data" rule).
+   ✅ **DONE (P1e)** — `seedDemoInventory()` builds a focused diesel-parts catalog (8 products / 10 variants,
+   the Gillett vertical) across 2 warehouses, writing opening movements the `applyMovement` way (Σ(delta) ==
+   on_hand, running `balance_after`). Verified against docker pg: **0 invariant mismatches**, valuation
+   $24,718.50 cost / $50,138.57 retail over 925 units, OUT=1/LOW=3/HEALTHY=11, 36 movements, 1 active recall,
+   4 lots — the module renders real numbers. Idempotent (handle `inv-demo-*` drop+recreate); the products
+   double as a small commerce catalog for the seeded tenant.
 
 **Deploy gate:** `/inventory` overview + valuation render real numbers for the seeded tenant; manual
 adjust/transfer/reorder work; MCP `get_low_inventory`/`update_inventory` still green; existing commerce
 flows unaffected (they didn't touch inventory yet anyway).
+
+> **✅ Phase 1 (Foundation) is COMPLETE** as of P1e (P1a package extract → P1b ledger + rename → P1c unify +
+> repoint reads → P1e pages + module wiring + degrade seam + seed + DB-backed ledger test). `/inventory`
+> renders real numbers, the module is activatable + standalone-usable, and commerce/B2B degrade without it.
+> Next: **P2 — wire reserve/commit/release into cart → checkout → order**.
 
 **Risks:** data move `StockLevel`→`InventoryLevel` (idempotent migration + reconcile); RLS on any new/
 renamed table (hand-edit, FORCE-RLS backfill footgun per packages/db/CLAUDE.md); the package extraction

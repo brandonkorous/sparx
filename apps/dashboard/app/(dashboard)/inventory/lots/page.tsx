@@ -50,10 +50,8 @@ interface LotBatchRow {
 export default async function LotsPage() {
   const horizon = new Date(2027, 5, 1).toISOString();
   const [expiringSoon, activeRecalls] = await Promise.all([
-    api.get<LotBatchRow[]>(
-      `/v1/commerce/inventory/lots/expiring?before=${encodeURIComponent(horizon)}`
-    ),
-    api.get<ActiveRecall[]>('/v1/commerce/inventory/recalls/active'),
+    api.get<LotBatchRow[]>(`/v1/inventory/lots/expiring?before=${encodeURIComponent(horizon)}`),
+    api.get<ActiveRecall[]>('/v1/inventory/recalls/active'),
   ]);
 
   return (

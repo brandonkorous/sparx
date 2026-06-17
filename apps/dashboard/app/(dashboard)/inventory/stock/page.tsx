@@ -110,8 +110,8 @@ export default async function InventoryPage({ searchParams }: PageProps) {
 
   const [prefs, warehouses, lowStock] = await Promise.all([
     getUserPreferences(),
-    api.get<WarehouseRow[]>('/v1/commerce/warehouses?take=250'),
-    api.get<LowStockRow[]>(`/v1/commerce/inventory/low-stock?${lowStockQuery.toString()}`),
+    api.get<WarehouseRow[]>('/v1/inventory/locations?take=250'),
+    api.get<LowStockRow[]>(`/v1/inventory/low-stock?${lowStockQuery.toString()}`),
   ]);
 
   const activeWarehouse = warehouseFilter ? warehouses.find((w) => w.id === warehouseFilter) : null;
@@ -125,7 +125,7 @@ export default async function InventoryPage({ searchParams }: PageProps) {
     const enrichedQuery = new URLSearchParams({ take: String(take), skip: String(skip) });
     if (lowStockOnly) enrichedQuery.set('low_stock_only', 'true');
     const { data, meta } = await api.getPaged<EnrichedLevelRow[]>(
-      `/v1/commerce/inventory/levels/warehouse/${fallbackWarehouse.id}/enriched?${enrichedQuery.toString()}`
+      `/v1/inventory/levels/warehouse/${fallbackWarehouse.id}/enriched?${enrichedQuery.toString()}`
     );
     gridItems = data;
     gridTotal = (meta?.total as number | undefined) ?? data.length;
@@ -164,7 +164,7 @@ export default async function InventoryPage({ searchParams }: PageProps) {
           description="On-hand is the authoritative count; allocated is the active reservation total across carts, orders, and subscriptions; available = on-hand − allocated."
           actions={
             <Button asChild variant="outline">
-              <Link href="/commerce/warehouses">Manage warehouses</Link>
+              <Link href="/inventory/warehouses">Manage warehouses</Link>
             </Button>
           }
         />
@@ -176,7 +176,7 @@ export default async function InventoryPage({ searchParams }: PageProps) {
             description="Create a warehouse before tracking inventory."
             action={
               <Button color="module" asChild>
-                <Link href="/commerce/warehouses/new">Add warehouse</Link>
+                <Link href="/inventory/warehouses/new">Add warehouse</Link>
               </Button>
             }
           />

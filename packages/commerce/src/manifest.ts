@@ -7,7 +7,6 @@
 import type { ModuleManifest } from '@sparx/ui/shell';
 import {
   BarChart3,
-  Boxes,
   CreditCard,
   FolderTree,
   Gift,
@@ -29,7 +28,6 @@ import {
   TicketPercent,
   Truck,
   Wallet,
-  Warehouse,
 } from 'lucide-react';
 
 export const commerceManifest: ModuleManifest = {
@@ -43,8 +41,7 @@ export const commerceManifest: ModuleManifest = {
     { id: 'collections', label: 'Collections', icon: LayoutGrid, href: '/commerce/collections' },
     { id: 'pricing', label: 'Pricing', icon: Tag, href: '/commerce/pricing' },
     { id: 'discounts', label: 'Discounts', icon: Percent, href: '/commerce/discounts' },
-    { id: 'inventory', label: 'Inventory', icon: Boxes, href: '/commerce/inventory' },
-    { id: 'warehouses', label: 'Warehouses', icon: Warehouse, href: '/commerce/warehouses' },
+    // Inventory + warehouses moved to the Inventory module (docs/100 P1e).
     { id: 'bundles', label: 'Bundles', icon: Package2, href: '/commerce/bundles' },
     { id: 'configurator', label: 'Configurator', icon: Settings2, href: '/commerce/configurator' },
     { id: 'gift-cards', label: 'Gift cards', icon: Gift, href: '/commerce/gift-cards' },
@@ -109,12 +106,6 @@ export const commerceManifest: ModuleManifest = {
     { id: 'discount', label: 'Discount', routePrefix: '/commerce/discounts' },
     { id: 'gift-card', label: 'Gift card', routePrefix: '/commerce/gift-cards' },
     { id: 'account-credit', label: 'Account credit', routePrefix: '/commerce/account-credit' },
-    {
-      id: 'warehouse',
-      label: 'Warehouse',
-      routePrefix: '/commerce/warehouses',
-      hasDetailView: true,
-    },
     { id: 'review', label: 'Review', routePrefix: '/commerce/reviews', hasDetailView: true },
     { id: 'qa-question', label: 'Question', routePrefix: '/commerce/qa', hasDetailView: true },
     {

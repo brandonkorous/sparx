@@ -1,5 +1,5 @@
 import type { ModuleManifest } from '@sparx/ui/shell';
-import { Warehouse, MapPin, Link2 } from 'lucide-react';
+import { Warehouse, Boxes, Layers, Link2, Plus } from 'lucide-react';
 
 export const inventoryManifest: ModuleManifest = {
   id: 'inventory',
@@ -7,9 +7,25 @@ export const inventoryManifest: ModuleManifest = {
   icon: Warehouse,
   routePrefix: '/inventory',
   sections: [
+    { id: 'stock', label: 'Stock', icon: Boxes, href: '/inventory/stock' },
+    { id: 'warehouses', label: 'Warehouses', icon: Warehouse, href: '/inventory/warehouses' },
+    { id: 'lots', label: 'Lots & serials', icon: Layers, href: '/inventory/lots' },
     { id: 'sources', label: 'Sources', icon: Link2, href: '/inventory/sources' },
-    { id: 'locations', label: 'Locations', icon: MapPin, href: '/inventory/locations' },
   ],
-  actions: [],
-  entityTypes: [],
+  actions: [
+    {
+      id: 'inventory.warehouse.create',
+      label: 'Add warehouse',
+      icon: Plus,
+      href: '/inventory/warehouses/new',
+    },
+  ],
+  entityTypes: [
+    {
+      id: 'warehouse',
+      label: 'Warehouse',
+      routePrefix: '/inventory/warehouses',
+      hasDetailView: true,
+    },
+  ],
 };

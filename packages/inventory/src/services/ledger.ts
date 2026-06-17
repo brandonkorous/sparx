@@ -114,21 +114,18 @@ export function nextAvgCost(
 export async function applyMovement(tx: TxClient, input: MovementInput): Promise<MovementResult> {
   const allocatedDelta = input.allocatedDelta ?? 0;
 
-  // 1. Ensure the level row exists so there is something to lock. Concurrent
-  //    upserts race harmlessly (one inserts, the rest no-op).
-  await tx.inventoryLevel.upsert({
-    where: {
-      variantId_warehouseId: { variantId: input.variantId, warehouseId: input.warehouseId },
-    },
-    create: {
-      tenantId: input.tenantId,
-      variantId: input.variantId,
-      warehouseId: input.warehouseId,
-      onHand: 0,
-      allocated: 0,
-    },
-    update: {},
-  });
+  // 1. Ensure the level row exists so there is something to lock. This must be
+  //    ATOMIC: Prisma's upsert is SELECT-then-INSERT, so a concurrent burst of
+  //    FIRST movements on a brand-new (variant, warehouse) all see "no row" and
+  //    collide on the PK. `INSERT … ON CONFLICT DO NOTHING` lets exactly one
+  //    writer insert and the rest no-op, after which they all serialize on the
+  //    FOR UPDATE lock below — keeping the concurrency guarantee true even for
+  //    the very first movement.
+  await tx.$executeRaw`
+    INSERT INTO inventory_levels (tenant_id, variant_id, warehouse_id, on_hand, allocated, as_of, updated_at)
+    VALUES (${input.tenantId}::uuid, ${input.variantId}::uuid, ${input.warehouseId}::uuid, 0, 0, now(), now())
+    ON CONFLICT (variant_id, warehouse_id) DO NOTHING
+  `;
 
   // 2. Lock the row FOR UPDATE — serializes concurrent writers on this level.
   const locked = await tx.$queryRaw<LockedLevel[]>`

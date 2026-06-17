@@ -45,7 +45,7 @@ interface WarehousesListProps {
 export function WarehousesList({ rows, view }: WarehousesListProps) {
   const codeLink = (w: WarehouseRow) => (
     <EntityRowLink
-      href={`/commerce/warehouses/${w.id}`}
+      href={`/inventory/warehouses/${w.id}`}
       entityType="warehouse"
       entityId={w.id}
       className="font-mono text-xs hover:text-[var(--module-active)]"

@@ -18,7 +18,7 @@ import {
   Text,
 } from '@sparx/ui';
 
-import { createWarehouseAction } from '../../inventory-actions';
+import { createWarehouseAction } from '../../_lib/inventory-actions';
 
 // New-warehouse form, surface-aware (§13.1). The SAME component renders:
 //   - `surface="page"`   inside the /new route's Container + PageHeader
@@ -57,7 +57,7 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
       router.refresh();
       return;
     }
-    router.push(`/commerce/warehouses/${id}`);
+    router.push(`/inventory/warehouses/${id}`);
     router.refresh();
   }
 
@@ -229,7 +229,7 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
                   </Button>
                 ) : (
                   <Button type="button" variant="ghost" asChild>
-                    <Link href="/commerce/warehouses">Cancel</Link>
+                    <Link href="/inventory/warehouses">Cancel</Link>
                   </Button>
                 )}
                 <Button color="module" type="submit" disabled={pending}>

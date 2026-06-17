@@ -184,6 +184,23 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     addon: true,
   },
   {
+    key: 'inventory',
+    name: 'Inventory',
+    desc: 'Stock, warehouses, ledger',
+    price: 29,
+    elsewhere: 99,
+    colorVar: 'var(--module-inventory)',
+    long: 'A real inventory system under your catalog — multi-warehouse stock with an append-only movement ledger that makes every count auditable, reservations, lots and serials, and reorder alerts. Included free with Commerce or B2B; runs standalone as WMS-lite.',
+    feats: [
+      'Multi-warehouse on-hand / allocated / available',
+      'Audited movement ledger — every change attributable',
+      'Lots, serials, expiry & recalls',
+      'Reorder points + low-stock alerts',
+    ],
+    replaces: 'a WMS/IMS add-on like inFlow or Katana',
+    addon: true,
+  },
+  {
     key: 'chat',
     name: 'Live Chat',
     desc: 'Widget, AI replies, inbox',
@@ -221,6 +238,7 @@ const REQUIRES: Record<string, string[]> = {
 };
 const BUNDLED_FREE: Record<string, string[]> = {
   invoicing: ['b2b', 'commerce'],
+  inventory: ['commerce', 'b2b'],
 };
 
 /** Providers that bundle `key` free and are currently on. */

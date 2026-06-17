@@ -477,7 +477,7 @@ export default async function CommercePage() {
             label="Low / out of stock"
             tone="warning"
           >
-            <Link href="/commerce/inventory" />
+            <Link href="/inventory/stock" />
           </ActionTile>
           <ActionTile
             asChild
@@ -671,7 +671,7 @@ export default async function CommercePage() {
           <OverviewCard
             title="Inventory"
             icon={<Box className="h-4 w-4" />}
-            right={<CardLink href="/commerce/inventory">Manage</CardLink>}
+            right={<CardLink href="/inventory/stock">Manage</CardLink>}
           >
             <div className="mb-3 grid grid-cols-2 gap-3 text-center">
               <MetricTile value={fmtNumber(valuation?.totalUnits)} label="Units in stock" />

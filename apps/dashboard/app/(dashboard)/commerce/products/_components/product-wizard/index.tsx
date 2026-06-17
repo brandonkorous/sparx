@@ -49,7 +49,7 @@ import {
   adjustInventoryAction,
   listWarehousesAction,
   setReorderPolicyAction,
-} from '../../../inventory-actions';
+} from '../../../../inventory/_lib/inventory-actions';
 import { listFitmentDomainsAction } from '../../../fitment-actions';
 import { OrganizationStep } from './organization-step';
 import { VariantsStep } from './variants-step';

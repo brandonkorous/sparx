@@ -67,14 +67,14 @@ interface LevelsForWarehouseResponse {
 export async function WarehouseDetailContent({ id }: Props) {
   let warehouse: WarehouseRow;
   try {
-    warehouse = await api.get<WarehouseRow>(`/v1/commerce/warehouses/${id}`);
+    warehouse = await api.get<WarehouseRow>(`/v1/inventory/locations/${id}`);
   } catch (err) {
     if ((err as ApiRestError).code === 'NOT_FOUND') notFound();
     throw err;
   }
 
   const { items: levels, total: levelCount } = await api.get<LevelsForWarehouseResponse>(
-    `/v1/commerce/inventory/levels/warehouse/${id}?take=500`
+    `/v1/inventory/levels/warehouse/${id}?take=500`
   );
   const onHandTotal = levels.reduce((acc, l) => acc + l.onHand, 0);
   const lowCount = levels.filter(
@@ -124,7 +124,7 @@ export async function WarehouseDetailContent({ id }: Props) {
             <CardDescription>
               Full per-variant levels live on the{' '}
               <Link
-                href={`/commerce/inventory?warehouse=${warehouse.id}`}
+                href={`/inventory/stock?warehouse=${warehouse.id}`}
                 className="underline hover:text-[var(--module-active)]"
               >
                 inventory page
@@ -135,7 +135,7 @@ export async function WarehouseDetailContent({ id }: Props) {
         </CardHeader>
         <CardContent>
           <Button asChild variant="outline">
-            <Link href={`/commerce/inventory?warehouse=${warehouse.id}`}>Manage stock</Link>
+            <Link href={`/inventory/stock?warehouse=${warehouse.id}`}>Manage stock</Link>
           </Button>
         </CardContent>
       </Card>

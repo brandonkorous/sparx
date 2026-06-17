@@ -25,7 +25,10 @@ import {
   Text,
 } from '@sparx/ui';
 
-import { adjustInventoryAction, setReorderPolicyAction } from '../../../inventory-actions';
+import {
+  adjustInventoryAction,
+  setReorderPolicyAction,
+} from '../../../../inventory/_lib/inventory-actions';
 
 interface LevelRow {
   variantId: string;
@@ -67,7 +70,7 @@ export function InventoryPanel({ variantsWithLevels, warehouses }: InventoryPane
             description="Add a warehouse before tracking inventory."
             action={
               <Button color="module" asChild>
-                <Link href="/commerce/warehouses/new">Add warehouse</Link>
+                <Link href="/inventory/warehouses/new">Add warehouse</Link>
               </Button>
             }
           />
