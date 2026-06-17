@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { Layers } from 'lucide-react';
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic';
-import { cn } from '@sparx/ui';
+import { cn, Input } from '@sparx/ui';
 import {
   catalogGroupsForSurface,
   CATALOG_CATEGORY_LABELS,
@@ -136,6 +136,43 @@ function CatalogTile({
   );
 }
 
+/** Build a search predicate from the query — every whitespace-separated term must
+ *  appear in the combined searchable text (name/label, tags, description). */
+function matcher(query: string): {
+  searching: boolean;
+  hit: (...parts: (string | string[] | null | undefined)[]) => boolean;
+} {
+  const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const hit = (...parts: (string | string[] | null | undefined)[]): boolean => {
+    if (terms.length === 0) return true;
+    const hay = parts
+      .flat()
+      .filter((s): s is string => typeof s === 'string')
+      .join(' ')
+      .toLowerCase();
+    return terms.every((t) => hay.includes(t));
+  };
+  return { searching: terms.length > 0, hit };
+}
+
+// The "+ enable" teaser tiles for modules the tenant hasn't turned on (page editor
+// only), shown under the modules group when not searching.
+function OffModulesTeaser({ modules }: { modules: { key: string; label: string }[] }) {
+  if (modules.length === 0) return null;
+  return (
+    <div className="bx-tiles">
+      {modules.map((m) => (
+        <span key={m.key} className={cn('bx-tile', 'bx-tile--off')}>
+          <span className="bx-tile__mod" style={{ background: 'var(--color-text-muted)' }}>
+            {m.label.toUpperCase()}
+          </span>
+          <span className="bx-tile__name">+ enable</span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export function AddPalette({
   targetName,
   onAdd,
@@ -156,19 +193,63 @@ export function AddPalette({
   /** Brand-section archetypes (docs/61 §6), filtered to this surface. */
   archetypes?: ArchetypeDto[];
 }) {
+  // The palette is long (the catalog alone is ~100 entries) — a search makes it
+  // usable. One query filters EVERY section by name/label, tags, and description so a
+  // user types "product" or "pricing" and sees only what matches, across the catalog,
+  // primitives, brand sections, and their own components.
+  const [query, setQuery] = React.useState('');
+  const { searching, hit } = matcher(query);
+
   const offModules = MODULES.filter((m) => !m.on);
   const palette = paletteForSurface(surface);
-  const mine = (customComponents ?? []).filter((c) => c.surfaces.includes(surface));
-  const sections = (archetypes ?? []).filter((a) => a.surfaces.includes(surface));
+  const mine = (customComponents ?? []).filter(
+    (c) => c.surfaces.includes(surface) && hit(c.name, c.description)
+  );
+  const sections = (archetypes ?? []).filter(
+    (a) => a.surfaces.includes(surface) && hit(a.name, a.description)
+  );
   // The platform component catalog (docs/98 §5) — the daisyUI-grade library, in our
   // tokens, grouped by category. Stamped (forked) like an archetype, so it needs
   // onStamp; surface-filtered so email/site see only what applies.
-  const catalogGroups = onStamp ? catalogGroupsForSurface(surface) : [];
+  const catalogGroups = (onStamp ? catalogGroupsForSurface(surface) : [])
+    .map((g) => ({
+      category: g.category,
+      entries: g.entries.filter((e) => hit(e.name, e.description, e.tags)),
+    }))
+    .filter((g) => g.entries.length > 0);
+  // The in-code primitives (containers / content / data / raw elements), filtered.
+  const primitiveGroups = GROUPS.map(({ group, label }) => ({
+    group,
+    label,
+    defs: palette.filter((d) => d.group === group && hit(d.label, d.type)),
+  })).filter((g) => g.defs.length > 0);
+
+  const hasResults =
+    catalogGroups.length > 0 ||
+    primitiveGroups.length > 0 ||
+    sections.length > 0 ||
+    mine.length > 0;
+
   return (
     <div className="bx-palette">
       <p className="bx-pal-target">
         Adds inside <strong>{targetName}</strong>
       </p>
+
+      <div className="bx-pal-search">
+        <Input
+          size="sm"
+          type="search"
+          value={query}
+          placeholder="Search components…"
+          aria-label="Search components"
+          onChange={(e) => setQuery(e.target.value)}
+        />
+      </div>
+
+      {searching && !hasResults ? (
+        <p className="bx-pal-empty">No components match “{query.trim()}”.</p>
+      ) : null}
 
       {/* Components — the platform catalog (docs/98 §5). The primary library: a
           composed, editable block per tile, grouped by category. Rendered above the
@@ -185,35 +266,19 @@ export function AddPalette({
             </section>
           ))
         : null}
-      {GROUPS.map(({ group, label }) => {
-        const defs = palette.filter((d) => d.group === group);
-        if (defs.length === 0) return null;
-        return (
-          <section key={group} className="bx-pal-group">
-            <h4 className="bx-pal-label">{label}</h4>
-            <div className="bx-tiles">
-              {defs.map((def) => (
-                <Tile key={def.type} def={def} onAdd={onAdd} />
-              ))}
-            </div>
-            {group === 'data' && surface === 'page' && offModules.length > 0 ? (
-              <div className="bx-tiles">
-                {offModules.map((m) => (
-                  <span key={m.key} className={cn('bx-tile', 'bx-tile--off')}>
-                    <span
-                      className="bx-tile__mod"
-                      style={{ background: 'var(--color-text-muted)' }}
-                    >
-                      {m.label.toUpperCase()}
-                    </span>
-                    <span className="bx-tile__name">+ enable</span>
-                  </span>
-                ))}
-              </div>
-            ) : null}
-          </section>
-        );
-      })}
+      {primitiveGroups.map(({ group, label, defs }) => (
+        <section key={group} className="bx-pal-group">
+          <h4 className="bx-pal-label">{label}</h4>
+          <div className="bx-tiles">
+            {defs.map((def) => (
+              <Tile key={def.type} def={def} onAdd={onAdd} />
+            ))}
+          </div>
+          {group === 'data' && surface === 'page' && !searching ? (
+            <OffModulesTeaser modules={offModules} />
+          ) : null}
+        </section>
+      ))}
 
       {/* Brand sections (docs/61 §6) — curated, on-brand starting points. Clicking
           STAMPS a forked copy (not a reference), so the dropped section is yours to
