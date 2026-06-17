@@ -1,12 +1,12 @@
 # Builder v2 — Commerce & Content composites (the binding-spine payoff)
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous / WizeWorks
 **Last Updated:** 2026-06-17
 
 > **Purpose.** The binding spine (docs/98 Pillar 7) is finished end-to-end — a node can pin to a product / collection / category / CMS entry, repeat a collection, and carry an add-to-cart action — but **nothing in the component catalog uses it.** A designer who wants to sell or publish has to hand-assemble the buy-box, the repeater, and the article layout from raw atoms every single time. This doc scopes the **comprehensive composites that turn the spine into drop-in building blocks**, plus the modern marketing patterns and page scaffolds a working web designer expects to find in the palette and currently doesn't. It is the catalog-content half of docs/98 §8 acceptance, and it closes the "engine built, no car" gap.
 >
-> **Status (v1.0 — scoped, not yet built):** the inventory below is the build target. Foundation (kit helpers + two catalog categories + one runtime behavior) lands first; then four content batches; then the live-browser acceptance pass that also discharges the open docs/98 §8 / docs/102 §8 items.
+> **Status (v1.1 — built; live acceptance pending):** Phases 0–4 are shipped and gate-green (builder-schemas + builder-render tests/typecheck; dashboard + site typecheck) across five commits. All **17 composites** across the three tiers are in the catalog (`commerce` + `content` are new palette categories), plus the `repeat`/`act` authoring helpers and the `counter` runtime behavior. The one remaining item is **Phase 5 — the live-browser acceptance pass** (§5), which also discharges the long-open docs/98 §8 / docs/102 §8 items; it boots three dev servers against the shared dev DB, so it is held for a deliberate run.
 
 ---
 
