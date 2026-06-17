@@ -1,8 +1,8 @@
 # sparx Platform — Inventory Product Build Plan
 
-**Version:** 1.4
+**Version:** 1.7
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-16
+**Last Updated:** 2026-06-17
 
 ---
 
@@ -165,7 +165,7 @@ and commerce off.
 | P2    | Sell path: wire reserve/commit/release into commerce                     | n/a (integration) | real-time accurate stock, oversell protection     |
 | P3    | Supply path: suppliers, POs, receiving, reorder engine                   | ✅                | inbound + replenishment workflow                  |
 | P4    | Counts, transfers, audit UI                                              | ✅                | auditable corrections + cross-location moves      |
-| P5    | External sync: Tier C/B/A adapters (Fishbowl)                            | ✅                | ERP/WMS-backed merchants live                     |
+| P5    | External sync: Tier C/B/A adapters (Fishbowl)                            | ✅                | ERP/WMS-backed tenants live                       |
 | P6    | API contract + reporting + MCP + B2B                                     | ✅                | headless + AI + wholesale complete                |
 
 ---
@@ -345,8 +345,32 @@ expected arrival, line cost), `GoodsReceipt` + `GoodsReceiptLine` (receive again
 
 **Work:**
 
-1. `Supplier` CRUD + per-variant supplier links (cost feeds valuation/margin).
+1. `Supplier` CRUD + per-variant supplier links (cost feeds valuation/margin). ✅ **DONE (P3a).**
+   `inventory_suppliers` + `inventory_supplier_variants` tables (migration `20260904000000_inventory_suppliers`,
+   FORCE RLS); `@sparx/inventory` services (`suppliers.ts` CRUD + soft archive; `supplier-variants.ts` upsert/
+   remove/list + **one-preferred-supplier-per-variant** invariant + `suppliersForVariant` reverse lookup +
+   SKU→variant resolver); API `/v1/inventory/suppliers` (+ `/:id/variants` + `variant-lookup`),
+   `requireInventoryModule` (standalone-usable); dashboard `/inventory/suppliers` (list/create/detail with
+   inline edit, archive, and the per-variant **purchasing catalog** — add by SKU / set cost·MOQ·preferred /
+   remove); `Suppliers` manifest section. DB-backed tests in `test/integration/suppliers.test.ts`.
 2. `PurchaseOrder` lifecycle + lines; PO document/print (reuse the billing-document/canvas pattern).
+   ✅ **DONE (P3b).** `inventory_purchase_orders` + `inventory_purchase_order_lines` tables (migration
+   `20260905000000_inventory_purchase_orders`, FORCE RLS + a `status` CHECK pinning the six-state
+   vocabulary); `@sparx/inventory` services split by concern (`purchase-order-shared.ts` serializers +
+   helpers, `purchase-orders.ts` CRUD with per-tenant `PO-000001` numbering + retry-on-collision,
+   `purchase-order-lines.ts` draft-only line add/update/remove, `purchase-order-lifecycle.ts`
+   submit/cancel/close, `purchase-order-document.ts` a pure self-contained print-HTML renderer + loader).
+   Lifecycle: `draft` (editable) → `submitted` (orderedAt + expected arrival from supplier lead time) →
+   `partial/received` (driven by receiving, P3c) → `closed/cancelled` (terminal). Line cost defaults from
+   the supplier link → variant cost → 0; totals (subtotal + shipping) recompute on every line/shipping
+   mutation. API `/v1/inventory/purchase-orders` (CRUD + `/submit` `/cancel` `/close` + `/lines` +
+   `/:id/document` branded print HTML), `requireInventoryModule` (standalone-usable). Dashboard
+   `/inventory/purchase-orders` (status-filtered list / create with in-memory line builder / detail with
+   draft header edit + lifecycle bar + add/edit/remove lines + received progress + Print→PDF via a server
+   route proxy); `Purchase orders` manifest section. Supplier archive now blocked while an open
+   (draft/submitted/partial) PO references it. Seed: 2 suppliers + 6 purchasing links + a draft & a
+   submitted demo PO. DB-backed tests in `test/integration/purchase-orders.test.ts` (3 cases; inventory
+   suite 22/22).
 3. **Receiving** writes `receive` movements into the master, optionally minting `LotBatch` rows;
    partial receipts; over/under-receipt handling.
 4. **Reorder engine** — items at/below `reorderPoint` produce reorder suggestions (the "Reorder watch"
@@ -358,6 +382,13 @@ expected arrival, line cost), `GoodsReceipt` + `GoodsReceiptLine` (receive again
 
 **Deploy gate:** create supplier → draft PO → receive (partial then full) → `onHand` rises via `receive`
 movements; reorder suggestion drafts a PO. All with commerce off.
+
+> **P3 in progress.** P3a (suppliers + per-variant purchasing links) and **P3b (PurchaseOrder lifecycle +
+> lines + document)** are ✅ DONE — a standalone tenant can record vendors, draft/submit purchase orders,
+> and print them today. Next sub-increments: **P3c** Receiving (book goods against a submitted PO → `receive`
+> movements → moving-average `avgCostCents`, partials, the PO advancing to partial/received, lot-on-receipt),
+> **P3d** reorder engine (items at/below `reorderPoint` → one-click draft PO to the preferred supplier,
+> wired to `inventory.low`). Both build on the supplier + PO models and are independently deployable.
 
 **Risks:** PO↔receipt partial-quantity accounting; receipts update the moving-average `avgCostCents`
 (§2.3) — guard divide-by-zero when `onHand` is 0 (seed the average from the receipt cost).

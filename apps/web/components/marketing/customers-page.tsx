@@ -17,42 +17,42 @@ const SEGMENTS: { name: string; color: string; blurb: string; runs: string }[] =
     name: 'Publishers & creators',
     color: 'var(--module-cms)',
     blurb:
-      'Words, media, and SEO with no shopping cart in sight. Publish on your own domain, send the newsletter, own the audience — selling is optional, never assumed.',
+      'Words, media, and SEO with no cart in sight. Publish on your own domain, send the newsletter, own the audience — selling stays optional.',
     runs: 'Builder · CMS · Email',
   },
   {
     name: 'Online retailers',
     color: 'var(--module-commerce)',
     blurb:
-      'Products, one-tap checkout, and a single customer record that ties every order to email and support. One system, one bill, no Zapier in the middle.',
+      'Products, fast checkout, and one customer record that ties every order to email and support. One system, one bill, nothing taped together in the middle.',
     runs: 'Builder · Commerce · CRM · Email',
   },
   {
     name: 'B2B & wholesale',
     color: 'var(--module-b2b)',
     blurb:
-      'Account pricing, net terms, purchase orders, and RFQ — wholesale the way it actually works, native to the platform instead of a four-figure bolt-on.',
+      'Account pricing, net terms, purchase orders, and RFQ — wholesale the way it actually works. Native to the platform, not a four-figure bolt-on.',
     runs: 'Builder · Commerce · B2B · CRM',
   },
   {
     name: 'Service & fleet',
     color: 'var(--module-crm)',
     blurb:
-      'Fleet vehicles tracked by VIN and cost center, bookable service bays, and net-30 invoicing for the accounts you serve — built for how industrial really runs.',
+      'Fleet vehicles tracked by VIN and cost center, bookable service bays, and net-30 invoicing for the accounts you serve. Built for how industrial actually runs.',
     runs: 'Commerce · B2B · CRM',
   },
   {
     name: 'Agencies & multi-brand',
     color: 'var(--module-builder)',
     blurb:
-      'Spin up many themed properties under one tenant, hand each client a polished site, and manage the whole portfolio from one dashboard.',
-    runs: 'Builder · CMS · multi-property',
+      'Run many themed sites under one tenant. Hand each client a finished site, and manage the whole portfolio from one dashboard.',
+    runs: 'Builder · CMS · multi-site',
   },
   {
     name: 'AI-first & headless',
     color: 'var(--module-ai)',
     blurb:
-      'Drive everything from the API or a native MCP server — build your own frontend, and let agents read and write live data with scoped, audited keys.',
+      'Drive everything from the API or a native MCP server. Build your own frontend, and let agents read and write live data with scoped, audited keys.',
     runs: 'AI · MCP · Builder (headless)',
   },
 ];
@@ -66,7 +66,7 @@ export function CustomersPage() {
       <Section surface="page" padding="lg">
         <div style={{ maxWidth: '820px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <Display as="h1" size={64}>
-            Who builds on sparx
+            Who runs on sparx
             <Spark />
           </Display>
           <p
@@ -79,9 +79,9 @@ export function CustomersPage() {
               color: 'var(--color-text-secondary)',
             }}
           >
-            Publishers, retailers, wholesale distributors, agencies. sparx isn&apos;t a store with
-            extras bolted on — each operator turns on the modules they need, and nothing they
-            don&apos;t.
+            Publishers, retailers, distributors, agencies, AI-first teams. sparx isn&apos;t a store
+            with extras bolted on. Each one turns on the modules they need, and pays for nothing
+            they don&apos;t.
           </p>
         </div>
       </Section>
@@ -92,7 +92,7 @@ export function CustomersPage() {
           <SectionHeader
             headline="However you operate"
             accent="var(--sparx-primary)"
-            lede="A CMS-only publisher, a CRM-only team, and a B2B distributor are all first-class. Here's the shape it tends to take."
+            lede="A CMS-only publisher, a CRM-only team, a B2B distributor — all first-class. Here's the shape it usually takes."
           />
           <div className="mkt-grid-3-2-1">
             {SEGMENTS.map((s) => (
@@ -219,8 +219,8 @@ export function CustomersPage() {
           >
             A diesel service and parts operation running the full industrial playbook on sparx:
             wholesale accounts with net terms and PO checkout, a fleet module tracking vehicles by
-            VIN and cost center, bookable service bays, and a native MCP server so their team can
-            query parts and orders in plain language. It runs on a custom frontend with managed
+            VIN and cost center, bookable service bays, and a native MCP server so the team can ask
+            about parts and orders in plain language. It runs on a custom frontend with managed
             hosting on the Enterprise plan — the requirements that shaped sparx&apos;s first B2B and
             fleet features.
           </p>
@@ -252,7 +252,7 @@ export function CustomersPage() {
           <SectionHeader
             headline="Your story goes here"
             accent="var(--sparx-primary)"
-            lede="Building something that doesn't fit a template? That's the point. Tell us what you're running and we'll help you map it onto sparx."
+            lede="Running something that doesn't fit a template? That's the point. Tell us what you operate and we'll map it onto sparx."
           />
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <a href="/contact">

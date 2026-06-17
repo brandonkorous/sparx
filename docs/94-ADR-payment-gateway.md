@@ -502,7 +502,7 @@ Merchant controls which path by whether they include a payment link.
 
 ## 9. sparx Pay Onboarding (Connect Onboarding)
 
-During merchant onboarding, after module activation:
+During tenant onboarding, after module activation:
 
 ```
 Step: Connect sparx Pay

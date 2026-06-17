@@ -1,26 +1,26 @@
 # sparx Platform — Consultant & Partner Program Spec
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-06-17
 
 ---
 
 ## 1. Overview
 
-The sparx Consultant role allows non-WizeWorks individuals — web designers, digital agencies, ecommerce consultants, marketing firms — to access and manage multiple merchant accounts from a single login. A consultant is not a WizeWorks employee and not the merchant. They are a trusted third party granted access by the merchant.
+The sparx Consultant role allows non-WizeWorks individuals — web designers, digital agencies, ecommerce consultants, marketing firms — to access and manage multiple tenant accounts from a single login. A consultant is not a WizeWorks employee and not the tenant. They are a trusted third party granted access by the tenant.
 
 This is distinct from:
 
-- **Staff members** — employed by the merchant, access to one tenant
+- **Staff members** — employed by the tenant, access to one tenant
 - **WizeWorks support staff** — internal, access via admin.wize.works
-- **Merchant owners** — the account holder and billing owner
+- **Tenant owners** — the account holder and billing owner
 
 ---
 
 ## 2. How It Works
 
-A consultant is a sparx user who belongs to multiple tenant organizations simultaneously, with different roles in each. The merchant invites them. The merchant controls their permissions. The merchant can revoke access at any time.
+A consultant is a sparx user who belongs to multiple tenant organizations simultaneously, with different roles in each. The tenant invites them. The tenant controls their permissions. The tenant can revoke access at any time.
 
 ### Consultant Login Experience
 
@@ -37,11 +37,11 @@ Consultant logs into app.sparx.works
 
   → Clicks into any account
   → Operates entirely within that tenant's context
-  → Has only the permissions that merchant granted
+  → Has only the permissions that tenant granted
   → Top bar shows: "Gillett Diesel  ▾" (tenant switcher)
 ```
 
-### Merchant Inviting a Consultant
+### Tenant Inviting a Consultant
 
 ```
 Dashboard → Settings → Team → [Invite member]
@@ -50,14 +50,14 @@ Dashboard → Settings → Team → [Invite member]
 
   → Consultant receives email invitation
   → Accepts → immediately appears in their client accounts list
-  → Merchant can change role or revoke at any time
+  → Tenant can change role or revoke at any time
 ```
 
 ---
 
 ## 3. Consultant Permission Roles
 
-The same roles available to staff members are assignable to consultants. Merchants choose the right level of access per consultant.
+The same roles available to staff members are assignable to consultants. Tenants choose the right level of access per consultant.
 
 | Role          | What they can do                                                                         |
 | ------------- | ---------------------------------------------------------------------------------------- |
@@ -66,9 +66,9 @@ The same roles available to staff members are assignable to consultants. Merchan
 | **Builder**   | Site builder only. Theme, pages, sections. No commerce or CRM access.                    |
 | **Marketing** | Email module, CMS, analytics. No orders or customer PII.                                 |
 | **Support**   | Orders and customers only. Can process refunds if enabled. Read-only on everything else. |
-| **Viewer**    | Read-only across all sections the merchant has active.                                   |
+| **Viewer**    | Read-only across all sections the tenant has active.                                     |
 
-**Owner** is never assignable — only the merchant who created the account holds owner status. Billing, account deletion, and ownership transfer are owner-only actions.
+**Owner** is never assignable — only the tenant who created the account holds owner status. Billing, account deletion, and ownership transfer are owner-only actions.
 
 ---
 
@@ -100,7 +100,7 @@ The free tier exists to let consultants get started without commitment. The $49/
 -- A consultant user has memberships in multiple tenant organizations
 
 -- Existing table (Better Auth organizations)
--- Each merchant tenant = one organization
+-- Each tenant = one organization
 -- Consultant = user with memberships in multiple organizations
 
 -- No schema changes required for the core model
@@ -149,8 +149,8 @@ if (organizations.length > 1) {
   // Consultant or multi-org user — show tenant picker
   return <ConsultantShell organizations={organizations} />
 } else {
-  // Standard merchant — single tenant dashboard
-  return <MerchantShell organization={organizations[0]} />
+  // Standard tenant — single tenant dashboard
+  return <TenantShell organization={organizations[0]} />
 }
 ```
 
@@ -191,7 +191,7 @@ CRM
 [Download PDF]   [Email to client]
 ```
 
-Reports are generated on-demand. The consultant's branding (logo, colors) replaces sparx branding on the report. The merchant never sees who generated it unless the consultant chooses to include their contact info.
+Reports are generated on-demand. The consultant's branding (logo, colors) replaces sparx branding on the report. The tenant never sees who generated it unless the consultant chooses to include their contact info.
 
 ---
 
@@ -209,30 +209,30 @@ Specialty: [All ▾]   Location: [All ▾]   [Search]
 ┌─────────────────────────────────────────────────────┐
 │ Apex Digital Agency                                  │
 │ Fresno, CA · ecommerce, B2B, email                  │
-│ ★★★★★ 12 sparx merchants                           │
+│ ★★★★★ 12 sparx tenants                             │
 │ [View profile]  [Contact]                            │
 ├─────────────────────────────────────────────────────┤
 │ Maria Chen Consulting                                │
 │ Remote · design, site builder, CMS                  │
-│ ★★★★½ 8 sparx merchants                            │
+│ ★★★★½ 8 sparx tenants                              │
 │ [View profile]  [Contact]                            │
 └─────────────────────────────────────────────────────┘
 ```
 
-Directory listing is opt-in only. Listed consultants must be on the Consultant plan. Merchants can leave reviews for consultants who have worked on their account.
+Directory listing is opt-in only. Listed consultants must be on the Consultant plan. Tenants can leave reviews for consultants who have worked on their account.
 
 ---
 
 ## 9. Audit Logging for Consultant Actions
 
-Every consultant action is logged with their identity, not hidden behind the merchant's account:
+Every consultant action is logged with their identity, not hidden behind the tenant's account:
 
 ```sql
 -- Existing audit_log table gains consultant context
 INSERT INTO audit_log (
   tenant_id,
   actor_id,         -- consultant's user ID
-  actor_type,       -- 'consultant' (vs 'merchant' | 'staff' | 'system')
+  actor_type,       -- 'consultant' (vs 'tenant' | 'staff' | 'system')
   actor_name,       -- "Maria Chen Consulting"
   action,           -- 'product.updated'
   resource_id,      -- product ID
@@ -242,22 +242,22 @@ INSERT INTO audit_log (
 );
 ```
 
-Merchant can view a complete log of all consultant actions in Settings → Team → Activity log. This is essential for trust — the merchant always knows exactly what a consultant did and when.
+Tenant can view a complete log of all consultant actions in Settings → Team → Activity log. This is essential for trust — the tenant always knows exactly what a consultant did and when.
 
 ---
 
 ## 10. Revenue Share (Future — Month 6+)
 
-Optional program for certified consultants who actively refer and onboard merchants:
+Optional program for certified consultants who actively refer and onboard tenants:
 
 ```
 Referral commission:
-  20% of referred merchant's plan for first 3 months
+  20% of referred tenant's plan for first 3 months
   Paid monthly via ACH or Stripe payout
   Tracked via unique referral link: sparx.works/signup?ref=[code]
 
 Managed account bonus (future):
-  Certified consultants managing 10+ merchants on Business plan
+  Certified consultants managing 10+ tenants on Business plan
   get additional 5% recurring commission
   Requires formal certification completion
 ```
@@ -296,7 +296,7 @@ Certified consultants:
 - [ ] `consultant_profiles` table
 - [ ] Multi-tenant dashboard shell (tenant picker on login)
 - [ ] "Client accounts" overview page
-- [ ] Consultant shown distinctly in merchant's team list
+- [ ] Consultant shown distinctly in tenant's team list
 - [ ] Audit log: consultant actions attributed by name
 - [ ] Free tier: up to 3 client accounts enforced
 
@@ -312,7 +312,7 @@ Certified consultants:
 
 - [ ] Partner directory at sparx.works/partners
 - [ ] Consultant profile page (opt-in)
-- [ ] Merchant reviews of consultants
+- [ ] Tenant reviews of consultants
 - [ ] Specialty and location filtering
 
 ### Phase 4 — Certification + revenue share (Year 2)

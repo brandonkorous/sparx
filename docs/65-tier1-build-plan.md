@@ -1,8 +1,8 @@
 # sparx Platform — Tier 1 Build Plan
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-09
+**Last Updated:** 2026-06-17
 
 ---
 
@@ -128,7 +128,7 @@ Extend checkout session: `POST /v1/checkout/sessions/:id/discount` → validate 
 
 ---
 
-## Feature 2 — Merchant Onboarding Completion (docs/15)
+## Feature 2 — Tenant Onboarding Completion (docs/15)
 
 **Spec:** [docs/15-merchant-onboarding-prd.md](15-merchant-onboarding-prd.md)
 **Existing foundation:** 6-step onboarding flow in `apps/app/src/app/(onboarding)/onboarding/` with steps for business, domain, product/dropship, theme, payments, done. Steps 1–3 functional. Step 4 (domain): only shows subdomain — no GoDaddy search/purchase UI (that lands with Tier 2 Domain Purchase). Step 5 (Stripe): OAuth structure present but not wired. Done screen exists.

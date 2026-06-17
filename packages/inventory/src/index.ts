@@ -33,4 +33,10 @@ export type {
   LowStockRow,
   SellLine,
   CommittedSale,
+  SupplierRow,
+  SupplierVariantRow,
+  PurchaseOrderRow,
+  PurchaseOrderLineRow,
+  PurchaseOrderDetail,
+  PurchaseOrderDocumentBrand,
 } from './services/inventory-service';

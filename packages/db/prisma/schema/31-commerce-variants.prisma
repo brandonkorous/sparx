@@ -94,6 +94,8 @@ model ProductVariant {
   inventoryReservations InventoryReservation[]
   lotBatches            LotBatch[]
   serialUnits           SerialUnit[]
+  supplierLinks         SupplierVariant[]
+  purchaseOrderLines    PurchaseOrderLine[]
   priceListEntries      PriceListEntry[]
   bulkPriceTiers        BulkPriceTier[]
   contractPrices        ContractPrice[]

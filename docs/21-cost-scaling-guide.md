@@ -1,8 +1,8 @@
 # sparx Platform — Cost & Scaling Guide
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-17
 
 ---
 
@@ -61,7 +61,7 @@ Changes from Phase 1 and their triggers:
 \*Typesense runs as a GKE pod — compute cost absorbed by cluster headroom.
 
 **Phase 2 total: ~$250–500/mo**
-At 50 tenants on Starter ($79/mo avg): $3,950/mo revenue vs $500/mo infra = 87% gross margin before labor.
+At 50 tenants averaging $79/mo: $3,950/mo revenue vs $500/mo infra = 87% gross margin before labor.
 
 ---
 
@@ -89,7 +89,7 @@ We plan against two scenarios because product mix at this scale is uncertain:
 
 | Scenario     | Avg ARPU | Implied mix                                 | MRR at 500 tenants |
 | ------------ | -------- | ------------------------------------------- | ------------------ |
-| Conservative | $149/mo  | Predominantly Growth-tier single-module     | $74,500            |
+| Conservative | $149/mo  | Predominantly single-module tenants         | $74,500            |
 | Optimistic   | $300/mo  | Multi-module + Enterprise upsell saturation | $150,000           |
 
 Phase 3 infrastructure cost remains ~$1,200–$1,500/mo in both scenarios, so gross margin stays ≥ 98% (Conservative: $74,500 MRR vs $1,500 infra; Optimistic: $150,000 MRR vs $1,500 infra). Conservative is the planning baseline; Optimistic is the upper bound for capital allocation decisions.
@@ -135,14 +135,14 @@ At each stage, what does the math look like?
 
 ### Break-Even Analysis
 
-| Tenants | Avg plan      | MRR      | Infra cost | Infra % of MRR |
-| ------- | ------------- | -------- | ---------- | -------------- |
-| 5       | $149 (Growth) | $745     | $80        | 11%            |
-| 10      | $149          | $1,490   | $80        | 5%             |
-| 25      | $149          | $3,725   | $80        | 2%             |
-| 50      | $200 (mixed)  | $10,000  | $300       | 3%             |
-| 100     | $250 (mixed)  | $25,000  | $500       | 2%             |
-| 500     | $300 (mixed)  | $150,000 | $1,500     | 1%             |
+| Tenants | Avg plan     | MRR      | Infra cost | Infra % of MRR |
+| ------- | ------------ | -------- | ---------- | -------------- |
+| 5       | $149         | $745     | $80        | 11%            |
+| 10      | $149         | $1,490   | $80        | 5%             |
+| 25      | $149         | $3,725   | $80        | 2%             |
+| 50      | $200 (mixed) | $10,000  | $300       | 3%             |
+| 100     | $250 (mixed) | $25,000  | $500       | 2%             |
+| 500     | $300 (mixed) | $150,000 | $1,500     | 1%             |
 
 Infrastructure cost as a percentage of MRR shrinks as you scale. This is a fundamentally good business — the marginal cost of adding a new tenant is nearly zero.
 

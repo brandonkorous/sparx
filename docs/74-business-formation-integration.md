@@ -1,14 +1,14 @@
 # sparx Platform — Business Formation Integration Spec
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-06-17
 
 ---
 
 ## 1. Overview
 
-sparx integrates with business formation APIs to allow merchants to form an LLC or corporation during onboarding — without leaving the platform. The formation service handles state filing, EIN acquisition, registered agent, and ongoing compliance. sparx provides the UX, collects payment, and surfaces formation status in the merchant dashboard.
+sparx integrates with business formation APIs to allow tenants to form an LLC or corporation during onboarding — without leaving the platform. The formation service handles state filing, EIN acquisition, registered agent, and ongoing compliance. sparx provides the UX, collects payment, and surfaces formation status in the tenant dashboard.
 
 **Primary integration:** FileForms (API-first, no volume minimum, white-label, all 50 states)  
 **Secondary:** doola MCP (agentic onboarding flow, not white-label)  
@@ -18,7 +18,7 @@ sparx integrates with business formation APIs to allow merchants to form an LLC 
 
 ## 2. Why It Belongs in sparx
 
-A merchant launching a store on sparx may not yet have a legal business entity. Formation during onboarding:
+A tenant launching a store on sparx may not yet have a legal business entity. Formation during onboarding:
 
 - Removes a barrier to launching ("I need to set up my LLC first")
 - Captures the EIN which pre-fills Stripe Connect onboarding
@@ -35,7 +35,7 @@ The compliance overhead is zero for sparx — the formation service handles all 
 
 - REST API, Bearer auth — trivial to wrap in a typed Fastify service
 - No volume minimum — works from day one, zero commitment
-- Full white-label — merchant never sees FileForms
+- Full white-label — tenant never sees FileForms
 - All 50 states: LLC, C-Corp, S-Corp
 - Full lifecycle: formation + EIN + registered agent + annual reports + foreign qualification
 - Status webhooks (Pending → Filed → Completed)
@@ -80,7 +80,7 @@ Onboarding Step 1: Business info
   [LLC]  [S-Corp]  [C-Corp]  [Not sure — recommend for me]
 
   Which state?
-  [dropdown — defaults to merchant's state from IP]
+  [dropdown — defaults to tenant's state from IP]
 
   Business owner name, address, email, phone
 
@@ -200,7 +200,7 @@ fastify.post('/webhooks/fileforms', async (req) => {
 
 Pub/Sub consumer for formation.completed:
 
-- Notifies merchant via email ("Your LLC is formed!")
+- Notifies tenant via email ("Your LLC is formed!")
 - If EIN available, pre-fills Stripe Connect business info
 - Updates onboarding checklist status
 
@@ -235,7 +235,7 @@ CREATE TABLE business_formations (
 
 ## 9. Dashboard — Formation Status
 
-Merchant dashboard shows formation status in their onboarding checklist and in Settings → Business:
+Tenant dashboard shows formation status in their onboarding checklist and in Settings → Business:
 
 ```
 Business Entity
@@ -259,7 +259,7 @@ Business Entity
 
 ```
 FileForms wholesale rate: ~$75–$100/filing
-sparx merchant price:     $249 (LLC) / $349 (C-Corp)
+sparx tenant price:       $249 (LLC) / $349 (C-Corp)
 sparx gross margin:       ~$150–$250 per formation
 
 Recurring:
@@ -267,7 +267,7 @@ Recurring:
   Annual report filing: $149/state retail → ~$60/state wholesale → ~$90/state margin
 ```
 
-Annual reports and registered agent renewals are auto-charged with merchant consent. Dashboard shows upcoming renewal dates 60 days in advance.
+Annual reports and registered agent renewals are auto-charged with tenant consent. Dashboard shows upcoming renewal dates 60 days in advance.
 
 ---
 
@@ -289,7 +289,7 @@ Claude: "I can help with that. A few questions:
 Once I have those, I'll walk you through the filing.
 It typically takes 5–7 business days and runs $249 through sparx."
 
-[After merchant confirms]
+[After tenant confirms]
 → sparx.business.form_entity({ state, name, members, ... })
 → Stripe charge
 → FileForms API call
@@ -315,7 +315,7 @@ It typically takes 5–7 business days and runs $249 through sparx."
 - [ ] EIN → Stripe Connect pre-fill
 - [ ] Dashboard Settings → Business — formation status + documents
 - [ ] Annual report renewal reminders (60/30/7 days before due)
-- [ ] Auto-renewal with merchant consent
+- [ ] Auto-renewal with tenant consent
 - [ ] MCP tool: sparx.business.form_entity
 - [ ] Fallback: EntityMachine provider implementation (if FileForms fails diligence)
       EOF

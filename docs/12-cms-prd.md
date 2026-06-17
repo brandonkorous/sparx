@@ -1,8 +1,8 @@
 # sparx Platform — CMS PRD
 
-**Version:** 2.0.1
+**Version:** 2.0.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-17
 
 ---
 
@@ -20,20 +20,20 @@ This deliberate separation is a core sparx differentiator — tenants pay for wh
 
 **Content publishers:**
 
-- Blog or editorial site (activate Site + CMS = $98/mo)
+- Blog or editorial site (activate Builder + CMS = $59/mo)
 - Documentation site for a SaaS product
 - Portfolio or agency site
 - Resource library
 
-**Headless CMS (API-only, no Site):**
+**Headless CMS (API-only, no website):**
 
 - Development teams querying sparx CMS API to render content in their own frontend
-- CMS module only ($49/mo) — no Site required
+- CMS module only ($49/mo) — no Builder required
 - Full REST + GraphQL access to all content
 
 **Commerce + Content:**
 
-- Product catalog + blog + landing pages (Site + Commerce + CMS)
+- Product catalog + blog + landing pages (Builder + Commerce + CMS)
 - Standard e-commerce site with content marketing strategy
 
 ---
@@ -52,7 +52,7 @@ Long-form content: SEO articles, product education, how-to guides, company news,
 
 When Commerce module is active: rich text editor for product description field. Full formatting, embedded images, spec tables, embedded video.
 
-### Custom Content Types (Pro+)
+### Custom Content Types
 
 Teams can define custom content schemas — e.g. "Case Studies" with fields: client name, industry, challenge, solution, result. Content rendered via API.
 
@@ -107,7 +107,7 @@ Grid view, search by filename/alt text, filter by type, sort by date/name/size, 
 
 ### Storage Limits
 
-Starter 5GB | Growth 25GB | Pro 100GB | Business 250GB | Enterprise custom.
+Storage is a metered physical resource with generous fair-use allowances, not plan tiers — see [17-billing-subscriptions.md](17-billing-subscriptions.md) §3. Sustained, abnormal usage is handled case-by-case; Enterprise can set explicit custom limits.
 
 ---
 
@@ -194,6 +194,6 @@ The `@sparx/site-sdk` NPM package includes typed helpers for all content types.
 
 ---
 
-## 10. Content Localization (Pro+)
+## 10. Content Localization
 
 Multiple languages with language variants per page/post. Language switcher on site. hreflang tags auto-generated. URL structure: subdirectory (`/fr/about`) or subdomain (`fr.theirdomain.com`). Separate SEO fields per language variant.

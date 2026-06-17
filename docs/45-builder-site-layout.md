@@ -1,8 +1,8 @@
 # 45 — Builder: The Site Layout Editor
 
-Version: 1.2
+Version: 1.3
 Author: Brandon Korous
-Last Updated: 2026-06-03
+Last Updated: 2026-06-17
 
 > The Builder ([40](40-sitebuilder-composition-model.md)) models a website as a
 > **tree of nested layouts**: a layout owns **zones**, one of which — the content
@@ -102,7 +102,7 @@ at preview/render time via the readers that already exist
 lives today; the site editor only composes how they're **presented**.
 
 **2.5 Chrome is Tier-2 components, not hand-wired primitives.** Four new
-`site`-module leaves (docs/40 §4 — "merchants never hand-wire `<a>`; they say
+`site`-module leaves (docs/40 §4 — "tenants never hand-wire `<a>`; they say
 'show me the nav, nicely'"):
 
 - **`Outlet`** — the content outlet (non-bindable; one per layout).

@@ -1,8 +1,8 @@
 # sparx Platform — WizeWorks Admin Portal Spec
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-06-17
 
 ---
 
@@ -11,7 +11,7 @@
 `admin.wize.works` is the unified WizeWorks operations portal. It provides internal staff with oversight, management, and support tooling across all WizeWorks products — sparx, kanNINJA, HelpNinja, and future products.
 
 **Domain:** admin.wize.works  
-**Auth:** Better Auth, WizeWorks staff only. Completely separate from sparx merchant auth.  
+**Auth:** Better Auth, WizeWorks staff only. Completely separate from sparx tenant auth.  
 **GCP project:** WizeWorks project (NOT SparxWorks project — keep internal ops separate from product infrastructure)
 
 ---
@@ -40,7 +40,7 @@ Staff never share accounts. Every action is audit-logged with staff member ID, t
 
 - List all tenants (search by name, domain, email, plan)
 - Tenant detail: modules active, MRR, storage used, last login
-- Impersonate merchant (staff sees their dashboard, audit-logged)
+- Impersonate tenant (staff sees their dashboard, audit-logged)
 - Suspend/unsuspend tenant
 - Manually activate/deactivate modules
 - View tenant's full billing history
@@ -79,7 +79,7 @@ Staff never share accounts. Every action is audit-logged with staff member ID, t
 
 - Search any order across all tenants by order number
 - Search any customer across all tenants by email
-- View any merchant's Typesense index stats
+- View any tenant's Typesense index stats
 - Trigger email re-send for any order confirmation
 - View Postal delivery logs for any email
 
@@ -108,13 +108,13 @@ Staff never share accounts. Every action is audit-logged with staff member ID, t
 
 ## 4. The Impersonation Tool
 
-Most important support feature. Staff can view any merchant's dashboard as if they were that merchant:
+Most important support feature. Staff can view any tenant's dashboard as if they were that tenant:
 
 ```
 Tenant: Gillett Diesel Service
 [Impersonate →]
 
-→ Opens merchant dashboard in new tab
+→ Opens tenant dashboard in new tab
 → Banner at top: "⚠ Viewing as Gillett Diesel (support session)"
 → All actions taken are audit-logged to [staff name]
 → [Exit impersonation] button always visible

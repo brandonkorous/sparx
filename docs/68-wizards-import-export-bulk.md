@@ -1,8 +1,8 @@
 # sparx Platform — Wizards, Import/Export & Bulk Operations
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-09
+**Last Updated:** 2026-06-17
 
 ---
 
@@ -12,9 +12,9 @@ Three related problems with a single throughline: the platform must handle compl
 
 **Wizards** address complexity: some objects have enough conditional structure (product options → variant matrix, B2B account → contacts + pricing tier + terms) that a flat form is the wrong shape. A wizard surfaces the right fields at the right moment, with enough context to make good decisions.
 
-**Import/Export** addresses volume: a merchant migrating from another platform brings their catalog, customers, and inventory in a file. They should not hand-enter 400 SKUs.
+**Import/Export** addresses volume: a tenant migrating from another platform brings their catalog, customers, and inventory in a file. They should not hand-enter 400 SKUs.
 
-**Bulk operations** address fleet management: once records exist, a merchant needs to change status, reprice, tag, or delete dozens at once without opening each one individually.
+**Bulk operations** address fleet management: once records exist, a tenant needs to change status, reprice, tag, or delete dozens at once without opening each one individually.
 
 These three features complement the existing creation surface (drawer/overlay single-form) — they don't replace it. The decision tree for which path to use:
 
@@ -100,7 +100,7 @@ The `Product type` choice gates subsequent steps. **Physical** shows the invento
 
 ### Step 2 — Pricing & SKU
 
-One default variant is always created. If the merchant wants to add options (color, size, etc.) they do that in the product detail view after creation — the wizard doesn't attempt to build a variant matrix. This is intentional: the variant matrix builder requires seeing the product already created.
+One default variant is always created. If the tenant wants to add options (color, size, etc.) they do that in the product detail view after creation — the wizard doesn't attempt to build a variant matrix. This is intentional: the variant matrix builder requires seeing the product already created.
 
 | Field            | Type     | Required | Notes                                         |
 | ---------------- | -------- | -------- | --------------------------------------------- |

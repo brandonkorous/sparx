@@ -1,8 +1,8 @@
 # Integrations — taxonomy, shapes & build catalog
 
-**Version:** 0.1.0
+**Version:** 0.1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-11
+**Last Updated:** 2026-06-17
 
 ---
 
@@ -167,7 +167,7 @@ framework:
 - **Secrets** never touch the row: config secrets resolve through the `SecretReader` (`env:` in dev,
   Google Secret Manager `projects/…` in prod).
 - **Webhooks** route through the framework's `webhook-router`; the install's `webhookPathTemplate`
-  tells the merchant what URL to register if the provider can't self-register via OAuth.
+  tells the tenant what URL to register if the provider can't self-register via OAuth.
 - **Install state** (`ProviderInstallation`) is the per-tenant overlay ([docs/60](60-marketplace.md)
   §6.4) — tenant-isolated, distinct from the cross-tenant catalog row.
 

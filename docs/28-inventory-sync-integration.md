@@ -1,10 +1,10 @@
 # sparx Platform — Third-Party Inventory Sync
 
-**Version:** 0.1 (design notes — not yet scheduled)
+**Version:** 0.2 (design notes — not yet scheduled)
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-30
+**Last Updated:** 2026-06-17
 
-> **Status: backlog / thinking doc.** This captures the problem and a proposed shape so it isn't forgotten. Nothing here is built. This is a **generic** inventory-sync framework: an external system of record (ERP / WMS / inventory app) owns stock, and sparx mirrors it. The first concrete driver is **Gillett Diesel Service**, whose parts inventory lives in **Fishbowl** on-premise — but Fishbowl is one _adapter_ among many (NetSuite, QuickBooks Commerce, Cin7/DEAR, Katana, Finale, SOS, Acumatica, plain CSV…). Design for the abstraction; validate it against a real instance of whichever system the first merchant runs before committing to an adapter's details.
+> **Status: backlog / thinking doc.** This captures the problem and a proposed shape so it isn't forgotten. Nothing here is built. This is a **generic** inventory-sync framework: an external system of record (ERP / WMS / inventory app) owns stock, and sparx mirrors it. The first concrete driver is **Gillett Diesel Service**, whose parts inventory lives in **Fishbowl** on-premise — but Fishbowl is one _adapter_ among many (NetSuite, QuickBooks Commerce, Cin7/DEAR, Katana, Finale, SOS, Acumatica, plain CSV…). Design for the abstraction; validate it against a real instance of whichever system the first tenant runs before committing to an adapter's details.
 
 ---
 
@@ -12,21 +12,21 @@
 
 Today sparx treats inventory as a number we own. [`product_variants.inventory_quantity`](05-data-model.md) is a single `INTEGER` that the Commerce engine decrements atomically on checkout ([09-ecommerce-engine-prd.md](09-ecommerce-engine-prd.md) §Inventory). The platform is the source of truth.
 
-For any merchant who already runs an ERP or dedicated inventory system, that assumption is wrong. **Their system is the source of truth**, not us. That's where receiving, purchase orders, physical counts, manufacturing/work orders, and often their own POS sales happen. The sparx site is downstream — it needs to _reflect_ the external on-hand quantities and _report_ sales back so the external system depletes stock and triggers reorders. If the two drift, the merchant either oversells what they don't have or hides what they could sell.
+For any tenant who already runs an ERP or dedicated inventory system, that assumption is wrong. **Their system is the source of truth**, not us. That's where receiving, purchase orders, physical counts, manufacturing/work orders, and often their own POS sales happen. The sparx site is downstream — it needs to _reflect_ the external on-hand quantities and _report_ sales back so the external system depletes stock and triggers reorders. If the two drift, the tenant either oversells what they don't have or hides what they could sell.
 
-This is not "import a CSV once." It is **continuous, bidirectional reconciliation** between an external system of record and our catalog, per tenant — and the external system is frequently one we can't reach directly (it lives behind the merchant's firewall).
+This is not "import a CSV once." It is **continuous, bidirectional reconciliation** between an external system of record and our catalog, per tenant — and the external system is frequently one we can't reach directly (it lives behind the tenant's firewall).
 
 It forces three changes to how we currently think about inventory:
 
 1. **A variant can have an external owner.** Some SKUs are sparx-managed (we own the count); some are externally-managed (the ERP owns the count, we mirror it). They coexist in one catalog.
-2. **Inventory needs a location dimension.** Real inventory systems are multi-location (warehouses, bins, stores). Even a merchant who only sells from one location online needs the model to say "on-hand at location X" rather than a single global integer, because the next merchant will have several.
+2. **Inventory needs a location dimension.** Real inventory systems are multi-location (warehouses, bins, stores). Even a tenant who only sells from one location online needs the model to say "on-hand at location X" rather than a single global integer, because the next tenant will have several.
 3. **Writes become asynchronous and authoritative-elsewhere.** When we sell, decrementing our mirror is optimistic; the real depletion is an event we push to the external system, which may reject or adjust it.
 
 ---
 
 ## 2. Where this fits in the architecture
 
-This is a **connector framework**, conceptually the sibling of the dropship supplier connectors ([14-dropship-integration-prd.md](14-dropship-integration-prd.md) §3) and the channel integrations ([27-tiktok-shop-integration.md](27-tiktok-shop-integration.md)). The difference: dropship/channel connectors are about _catalog + orders_ against public SaaS APIs; this is primarily about _stock levels_, and the external system is often **inside the merchant's network** rather than on the internet.
+This is a **connector framework**, conceptually the sibling of the dropship supplier connectors ([14-dropship-integration-prd.md](14-dropship-integration-prd.md) §3) and the channel integrations ([27-tiktok-shop-integration.md](27-tiktok-shop-integration.md)). The difference: dropship/channel connectors are about _catalog + orders_ against public SaaS APIs; this is primarily about _stock levels_, and the external system is often **inside the tenant's network** rather than on the internet.
 
 It belongs to the **Commerce module** — no separate module fee. It is event-driven like everything else (the platform-wide rule: side effects flow through Pub/Sub, never inline in request handlers — see [CLAUDE.md](../CLAUDE.md)). Inbound stock changes and outbound sales are both events.
 
@@ -64,15 +64,15 @@ The worker is a Pub/Sub consumer — defaults to the **cloud-run-worker** module
 
 ## 3. The hard part: connectivity tiers
 
-External inventory systems fall into a spectrum of reachability, and the adapter's transport is chosen per system (and sometimes per merchant). This is the constraint that shapes the most work, so it gets its own taxonomy:
+External inventory systems fall into a spectrum of reachability, and the adapter's transport is chosen per system (and sometimes per tenant). This is the constraint that shapes the most work, so it gets its own taxonomy:
 
-**Tier A — On-prem, LAN-only (hardest).** Classic desktop/server ERPs whose API is only spoken on the merchant's local network, with no public endpoint and no inbound access from our cloud. **Fishbowl Inventory** (Windows app, local SQL Server/Firebird backend, LAN API) is the archetype. The integration must be **outbound from their side**: a small **sparx Inventory Bridge** agent the merchant installs on a machine on their network. It talks to the ERP locally and to sparx over **outbound HTTPS only** — long-poll/pull a command queue, push stock snapshots and deltas. We control it end-to-end but must build, sign, ship, support a (usually Windows) agent plus a pairing/enrollment flow that mints a tenant-scoped API key. This is the most robust path and the one to assume for serious on-prem ERPs.
+**Tier A — On-prem, LAN-only (hardest).** Classic desktop/server ERPs whose API is only spoken on the tenant's local network, with no public endpoint and no inbound access from our cloud. **Fishbowl Inventory** (Windows app, local SQL Server/Firebird backend, LAN API) is the archetype. The integration must be **outbound from their side**: a small **sparx Inventory Bridge** agent the tenant installs on a machine on their network. It talks to the ERP locally and to sparx over **outbound HTTPS only** — long-poll/pull a command queue, push stock snapshots and deltas. We control it end-to-end but must build, sign, ship, support a (usually Windows) agent plus a pairing/enrollment flow that mints a tenant-scoped API key. This is the most robust path and the one to assume for serious on-prem ERPs.
 
-**Tier B — Hosted / cloud API (easiest).** SaaS inventory systems (NetSuite, QuickBooks Commerce, Cin7/DEAR, Katana, Finale, Fishbowl Drive/Advanced's hosted REST tier…) expose a public REST API. The adapter connects like any other SaaS connector — OAuth or API key, outbound from us, no agent. Far less to build. Only promise the no-agent path once the merchant is confirmed to be on a reachable tier.
+**Tier B — Hosted / cloud API (easiest).** SaaS inventory systems (NetSuite, QuickBooks Commerce, Cin7/DEAR, Katana, Finale, Fishbowl Drive/Advanced's hosted REST tier…) expose a public REST API. The adapter connects like any other SaaS connector — OAuth or API key, outbound from us, no agent. Far less to build. Only promise the no-agent path once the tenant is confirmed to be on a reachable tier.
 
-**Tier C — File drop / iPaaS / CSV (fallback).** Systems with no usable API, or merchants who won't install an agent and aren't hosted. They export flat files (or route through middleware they already own); we ingest via the bulk path. Lower fidelity — batch, not near-real-time — but it's the universal escape hatch, mirroring the dropship CSV tier.
+**Tier C — File drop / iPaaS / CSV (fallback).** Systems with no usable API, or tenants who won't install an agent and aren't hosted. They export flat files (or route through middleware they already own); we ingest via the bulk path. Lower fidelity — batch, not near-real-time — but it's the universal escape hatch, mirroring the dropship CSV tier.
 
-**The data model in §4 is identical across all three tiers** — only the adapter's transport differs. When we pick a merchant up, the first question is which tier their system supports; don't design an adapter in detail until we've put hands on the actual instance and know its version, API surface, and whether their IT will allow an on-prem agent.
+**The data model in §4 is identical across all three tiers** — only the adapter's transport differs. When we pick a tenant up, the first question is which tier their system supports; don't design an adapter in detail until we've put hands on the actual instance and know its version, API surface, and whether their IT will allow an on-prem agent.
 
 ---
 
@@ -162,7 +162,7 @@ This write is **advisory from sparx's perspective** — the external system is a
 
 ### 5.3 Overselling and reservations
 
-The site sells against `available` (`on_hand − committed`). Risk is the window between a physical change at the merchant and the next delta reaching us. Mitigations, configurable per tenant/source:
+The site sells against `available` (`on_hand − committed`). Risk is the window between a physical change at the tenant and the next delta reaching us. Mitigations, configurable per tenant/source:
 
 - A **safety buffer** per location/variant (don't expose the last N units online).
 - `inventory_policy = deny` for externally-linked variants by default (no backorders on stock we can't guarantee).
@@ -177,14 +177,14 @@ The site sells against `available` (`on_hand − committed`). Risk is the window
 | Inbound on-hand disagrees with mirror                       | **External system wins.** Overwrite, log the delta.                                          |
 | We sold a unit; external snapshot hasn't caught up          | Keep our `committed`; reconcile `on_hand` to the source, recompute `available`.              |
 | SKU exists in external system, not in sparx catalog         | Don't auto-create products. Surface in an "unmapped external SKUs" review queue.             |
-| SKU exists in sparx, link points to a missing external part | Mark variant stale, stop selling it (or fall back to manual), alert the merchant.            |
+| SKU exists in sparx, link points to a missing external part | Mark variant stale, stop selling it (or fall back to manual), alert the tenant.              |
 | UoM mismatch (external "case of 12" vs site "each")         | Conversion factor on `inventory_source_links.external_uom` + a multiplier; never assume 1:1. |
 | Two delta events out of order                               | Last-writer-by-`source_synced_at`, not by arrival time. Stamp events at the source.          |
 | Two sources both claim the same variant                     | Disallow — `inventory_source_links` is one source per variant; enforce in mapping UI.        |
 
 ---
 
-## 7. Merchant-facing surface (dashboard)
+## 7. Tenant-facing surface (dashboard)
 
 - A **Connections → Inventory Source** screen: pick the system, connect it (download/pair the bridge agent for Tier A, enter API credentials for Tier B, configure file ingest for Tier C), choose which external location(s) feed the online store, set the safety buffer.
 - A **SKU mapping** view: auto-match by SKU/part number, manual-map the rest, flag unmapped on both sides.
@@ -194,19 +194,19 @@ The site sells against `available` (`on_hand − committed`). Risk is the window
 
 ## 8. Open questions
 
-- For the first merchant (Gillett / Fishbowl): exact version/edition, connectivity tier, and whether their IT will allow an on-prem agent (§3). **Everything downstream depends on this — answer it per merchant before building their adapter.**
+- For the first tenant (Gillett / Fishbowl): exact version/edition, connectivity tier, and whether their IT will allow an on-prem agent (§3). **Everything downstream depends on this — answer it per tenant before building their adapter.**
 - **Kits / assemblies** sold online whose components deplete separately in the external system → needs BOM-aware depletion, materially more work. Common in shops that manufacture or bundle.
 - **Manufacturing / work orders:** does online availability need to subtract stock committed to open work orders inside the external system? (Likely yes for shops like Gillett.)
-- Is one-directional **mirror** enough for v1 (we show their stock; they keep depleting via their own processes) so we can defer the outbound sale-write? That would dramatically cut scope for a first cut — worth proposing per merchant.
+- Is one-directional **mirror** enough for v1 (we show their stock; they keep depleting via their own processes) so we can defer the outbound sale-write? That would dramatically cut scope for a first cut — worth proposing per tenant.
 - Adapter SDK shape: define the normalized interface (`pullSnapshot()`, `streamDeltas()`, `pushSale()`, `health()`) once so a new system is a self-contained adapter package, never a core change.
 
 ---
 
 ## 9. Rough phasing (when scheduled)
 
-1. **Core + read-only mirror.** Add the tables, build the source-agnostic worker, and ingest a full snapshot via the simplest transport available for the first merchant (even a manual export), showing real on-hand on the site. No writes back. Proves the data model, the adapter interface, and the SKU-mapping UX with the least risk.
+1. **Core + read-only mirror.** Add the tables, build the source-agnostic worker, and ingest a full snapshot via the simplest transport available for the first tenant (even a manual export), showing real on-hand on the site. No writes back. Proves the data model, the adapter interface, and the SKU-mapping UX with the least risk.
 2. **Live inbound deltas + reconciliation.** Stand up the first adapter (bridge agent or cloud API), near-real-time updates, nightly reconcile, sync-health UI.
 3. **Outbound sales write (`two_way`).** Close the loop so sparx sales deplete the external system.
 4. **Second adapter.** Onboard a different inventory system to prove the abstraction holds; refactor anything that leaked system-specifics into the core.
 
-Ship phase 1 to the first merchant the moment it's useful — read-only accurate stock is already a win — rather than waiting for the full bidirectional loop.
+Ship phase 1 to the first tenant the moment it's useful — read-only accurate stock is already a win — rather than waiting for the full bidirectional loop.

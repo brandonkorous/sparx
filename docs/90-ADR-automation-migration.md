@@ -12,7 +12,7 @@
 Do the full automation migration in one slice. Do not do it incrementally.
 Do not leave the legacy system partially in place. There are no users to
 protect. The cost of doing this later is migration complexity plus risk to
-real merchants. The cost of doing it now is only engineering time.
+real tenants. The cost of doing it now is only engineering time.
 
 ---
 
@@ -48,7 +48,7 @@ separate page. Merge it into the main automations list as a tab or filter.
 Build this first. Everything else that sends email depends on it.
 
 On `email` module activation, provision a set of editable Builder email
-node-trees for the tenant. These are starting-point templates the merchant
+node-trees for the tenant. These are starting-point templates the tenant
 can customize. They are not locked — they are owned by the tenant the
 moment they are provisioned.
 
@@ -73,7 +73,7 @@ chat-no-response          (internal staff notification — not customer-facing)
 
 These are node-trees using the existing Builder email renderer. They do not
 need to be pixel-perfect at launch — they need to be functional and
-editable. Merchants will customize them. Ship working, not beautiful.
+editable. Tenants will customize them. Ship working, not beautiful.
 
 Provisioning logic:
 
@@ -297,7 +297,7 @@ invoicing-estimate-approved-task
 
 ```
 chat-no-response-staff-alert
-  trigger:  chat.conversation.unresponded  (10 min with no merchant reply)
+  trigger:  chat.conversation.unresponded  (10 min with no tenant reply)
   actions:  send_internal(
               to: conversation.assignedStaff ?? tenant.alertEmail,
               subject: 'Unresponded chat — {{customer.name ?? "Anonymous"}}'
@@ -321,7 +321,7 @@ Seed on the purpose module. Gate sends at runtime via the gated dispatcher.
 ```
 When Commerce activates:
   → abandoned-cart-nudge seeds immediately
-  → Merchant sees it in their automations list
+  → Tenant sees it in their automations list
   → Toggle is ON
   → If email module is NOT active:
       send action records as gated (gate_log entry)
@@ -331,11 +331,11 @@ When Commerce activates:
       automation starts firing on next trigger
 
 Do NOT wait for both modules before seeding.
-Do NOT hide automations from merchants until all requires are met.
+Do NOT hide automations from tenants until all requires are met.
 The gated dispatcher already handles this — trust it.
 ```
 
-The gated run step in the audit log is a feature, not a bug. Merchants
+The gated run step in the audit log is a feature, not a bug. Tenants
 seeing "2 sends gated — Email module required" is a conversion nudge
 built into the product. Do not suppress it.
 
@@ -348,16 +348,16 @@ Locked (tenant cannot disable or edit):
   → b2b-overdue-escalation (already built, already locked)
   → Any future compliance or legal invariant
   → Rule: only lock if "tenant disabled this" creates legal
-    or financial liability for sparx or the merchant
+    or financial liability for sparx or the tenant
 
 Managed (seeded on, fully editable by tenant):
   → Everything else in this catalog
-  → Merchants own their automations even when sparx seeded them
+  → Tenants own their automations even when sparx seeded them
   → They can edit, disable, clone, or delete managed automations
 ```
 
 Do not make things Locked out of caution. Locked automations make
-merchants feel the platform is controlling their business. Only lock
+tenants feel the platform is controlling their business. Only lock
 what genuinely cannot be delegated.
 
 ---
@@ -429,7 +429,7 @@ Do not build these as part of this slice. They are separate work:
 ```
 → Visual automation builder UI improvements (canvas is already built)
 → Additional action executors beyond what exists
-→ The merchant-facing automation template library / gallery
+→ The tenant-facing automation template library / gallery
 → MCP automation authoring improvements
 → Analytics / automation performance reporting
 → Pricing / packaging for the automation capability

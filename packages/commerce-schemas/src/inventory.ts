@@ -173,3 +173,123 @@ export const InitiateRecallInput = z.object({
   notifyCustomers: z.boolean().default(true),
 });
 export type InitiateRecallInput = z.infer<typeof InitiateRecallInput>;
+
+// ─── Suppliers + per-variant purchasing detail (P3a) ──────────────────
+//
+// The inbound side: who stock is purchased FROM. A supplier carries contact +
+// default purchasing terms; per-variant detail (the supplier's SKU, cost, MOQ)
+// is upserted via `SupplierVariant` links. Purchase orders / receiving (P3b/P3c)
+// build on these.
+
+export const CreateSupplierInput = z.object({
+  name: z.string().min(1).max(160),
+  code: z
+    .string()
+    .min(1)
+    .max(32)
+    .regex(/^[A-Za-z0-9_-]+$/, 'Code may contain letters, numbers, hyphen, underscore'),
+  contactName: z.string().max(160).optional(),
+  email: z.string().email().max(255).optional(),
+  phone: z.string().max(50).optional(),
+  website: z.string().max(255).optional(),
+  line1: z.string().max(255).optional(),
+  line2: z.string().max(255).optional(),
+  city: z.string().max(120).optional(),
+  region: z.string().max(120).optional(),
+  postalCode: z.string().max(32).optional(),
+  country: z.string().length(2).optional(),
+  // net-N / cod / prepaid — free-form within the column width, mirrors billing.
+  paymentTerms: z.string().max(20).optional(),
+  leadTimeDays: z.number().int().nonnegative().max(3650).optional(),
+  currency: z.string().length(3).default('USD'),
+  notes: z.string().max(5000).optional(),
+  isActive: z.boolean().default(true),
+});
+export type CreateSupplierInput = z.infer<typeof CreateSupplierInput>;
+
+export const UpdateSupplierInput = CreateSupplierInput.partial();
+export type UpdateSupplierInput = z.infer<typeof UpdateSupplierInput>;
+
+// Upsert a (supplier, variant) purchasing link. One row per pair; re-upserting
+// updates the detail. `unitCostCents` is the purchase cost (PO line default +
+// the moving-average basis on receipt).
+export const UpsertSupplierVariantInput = z.object({
+  variantId: Uuid,
+  supplierSku: z.string().max(127).optional(),
+  unitCostCents: z.number().int().nonnegative().optional(),
+  minOrderQty: z.number().int().positive().optional(),
+  leadTimeDays: z.number().int().nonnegative().max(3650).optional(),
+  isPreferred: z.boolean().optional(),
+});
+export type UpsertSupplierVariantInput = z.infer<typeof UpsertSupplierVariantInput>;
+
+// ─── Purchase orders (P3b) ────────────────────────────────────────────────────
+//
+// The inbound order: a commitment to buy stock from a supplier, received into a
+// warehouse (receiving is P3c). Lifecycle: draft (editable) → submitted (ordered)
+// → partial/received (driven by receiving) → closed/cancelled (terminal). Lines
+// carry the ordered qty + agreed unit cost (defaulted from the supplier link or
+// the variant cost when omitted).
+
+export const PurchaseOrderStatus = z.enum([
+  'draft',
+  'submitted',
+  'partial',
+  'received',
+  'closed',
+  'cancelled',
+]);
+export type PurchaseOrderStatus = z.infer<typeof PurchaseOrderStatus>;
+
+// A line on a create/add request. `unitCostCents` is optional — the service
+// defaults it from the (supplier, variant) link, then the variant cost, then 0.
+export const PurchaseOrderLineInput = z.object({
+  variantId: Uuid,
+  quantity: z.number().int().positive(),
+  unitCostCents: z.number().int().nonnegative().optional(),
+  supplierSku: z.string().max(127).optional(),
+  description: z.string().max(255).optional(),
+});
+export type PurchaseOrderLineInput = z.infer<typeof PurchaseOrderLineInput>;
+
+export const CreatePurchaseOrderInput = z.object({
+  supplierId: Uuid,
+  warehouseId: Uuid,
+  currency: z.string().length(3).default('USD'),
+  paymentTerms: z.string().max(20).optional(),
+  reference: z.string().max(120).optional(),
+  expectedArrivalAt: z.string().datetime().optional(),
+  shippingCents: z.number().int().nonnegative().default(0),
+  notes: z.string().max(5000).optional(),
+  lines: z.array(PurchaseOrderLineInput).max(500).default([]),
+});
+export type CreatePurchaseOrderInput = z.infer<typeof CreatePurchaseOrderInput>;
+
+// Header-only edits, draft POs only. Nullable fields clear when explicitly null;
+// omitted fields are left untouched. Supplier is fixed at creation (the line
+// cost/SKU snapshots are taken against it).
+export const UpdatePurchaseOrderInput = z.object({
+  warehouseId: Uuid.optional(),
+  currency: z.string().length(3).optional(),
+  paymentTerms: z.string().max(20).nullable().optional(),
+  reference: z.string().max(120).nullable().optional(),
+  expectedArrivalAt: z.string().datetime().nullable().optional(),
+  shippingCents: z.number().int().nonnegative().optional(),
+  notes: z.string().max(5000).nullable().optional(),
+});
+export type UpdatePurchaseOrderInput = z.infer<typeof UpdatePurchaseOrderInput>;
+
+export const UpdatePurchaseOrderLineInput = z.object({
+  quantity: z.number().int().positive().optional(),
+  unitCostCents: z.number().int().nonnegative().optional(),
+  supplierSku: z.string().max(127).nullable().optional(),
+  description: z.string().max(255).nullable().optional(),
+});
+export type UpdatePurchaseOrderLineInput = z.infer<typeof UpdatePurchaseOrderLineInput>;
+
+// Submit transitions a draft to `submitted`; the optional expected-arrival
+// override wins over the lead-time-derived default.
+export const SubmitPurchaseOrderInput = z.object({
+  expectedArrivalAt: z.string().datetime().optional(),
+});
+export type SubmitPurchaseOrderInput = z.infer<typeof SubmitPurchaseOrderInput>;

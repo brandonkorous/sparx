@@ -1,8 +1,8 @@
 # sparx Platform — Inventory Implementation Audit (docs vs. code)
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-16
+**Last Updated:** 2026-06-17
 
 ---
 
@@ -343,7 +343,7 @@ front-door as every other sparx product.
 | **P2 Sell path**              | reserve/commit/release wired into cart→checkout→order; policy enforcement; allocator; returns→restock                                    | Inventory is real-time accurate; oversell protected          |
 | **P3 Supply path**            | Supplier + PO + Receiving models/lifecycle/UI; reorder suggestions; lot capture                                                          | Inbound stock + replenishment workflow                       |
 | **P4 Counts/transfers/audit** | Cycle+physical counts w/ variance approval; transfers UI + in-transit; movement viewer                                                   | Auditable corrections + stock moves between locations        |
-| **P5 External sync**          | Tier C hardening, Tier B adapter, **Tier A Fishbowl agent (Gillett)**; SKU-mapping + sync-health; conflict rules/buffers/UoM             | ERP-backed merchants live                                    |
+| **P5 External sync**          | Tier C hardening, Tier B adapter, **Tier A Fishbowl agent (Gillett)**; SKU-mapping + sync-health; conflict rules/buffers/UoM             | ERP-backed tenants live                                      |
 | **P6 API/reporting/MCP/B2B**  | Documented `/v1/inventory*` API; turnover/DIO/aging/dead-stock + exports; MCP supply tools; B2B visibility + fleet holds                 | Headless + AI + wholesale complete                           |
 
 Correct [docs/89 §9](89-feature-catalog.md) status flags as each phase lands, and fold the relevant

@@ -1,8 +1,8 @@
 # sparx Platform — Domain Network & SEO Strategy
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-06-17
 
 ---
 
@@ -14,19 +14,19 @@ sparx operates a purposeful network of domains. Each domain has one job and link
 
 | Domain             | Purpose                                                | Points to       |
 | ------------------ | ------------------------------------------------------ | --------------- |
-| sparx.works        | Primary brand, marketing site, merchant signup         | —               |
-| app.sparx.works    | Merchant dashboard                                     | GKE LB          |
+| sparx.works        | Primary brand, marketing site, tenant signup           | —               |
+| app.sparx.works    | Tenant dashboard                                       | GKE LB          |
 | api.sparx.works    | REST + GraphQL API                                     | GKE LB          |
 | mcp.sparx.works    | MCP server                                             | GKE LB          |
 | status.sparx.works | Status page                                            | GKE LB          |
 | sparx.email        | Postal sending infrastructure + Email module marketing | GKE LB / Postal |
 
-### Merchant Site Domains
+### Tenant Site Domains
 
-| Domain         | Purpose                                                |
-| -------------- | ------------------------------------------------------ |
-| \*.sparx.zone  | All merchant sites (wildcard, one DNS record)          |
-| [merchant].com | Custom merchant domains (CNAME → customers.sparx.zone) |
+| Domain        | Purpose                                              |
+| ------------- | ---------------------------------------------------- |
+| \*.sparx.zone | All tenant sites (wildcard, one DNS record)          |
+| [tenant].com  | Custom tenant domains (CNAME → customers.sparx.zone) |
 
 ### Marketplace Domains
 
@@ -75,7 +75,7 @@ sparx.works          ←→  sparx.host          (mutual links)
 
 sparx.market/auto    →   sparx.works         (merchant signup CTA)
 sparx.market/[cat]   →   sparxcms.com        (content-relevant)
-[merchant].sparx.zone →  sparx.works         (powered by sparx footer)
+[tenant].sparx.zone  →   sparx.works         (powered by sparx footer)
 ```
 
 **Key rule:** Every domain must have a real landing page, not a redirect. A real landing page:
@@ -182,7 +182,7 @@ Benefits: DDoS protection, WAF, CDN caching for static content, performance.
 **Site zones (grey cloud — DNS only, not proxied):**
 
 - sparx.zone (wildcard), customers.sparx.zone
-- NOT proxied because Caddy handles SSL via Let's Encrypt on-demand TLS. Cloudflare proxying interferes with ACME challenges on custom merchant domains.
+- NOT proxied because Caddy handles SSL via Let's Encrypt on-demand TLS. Cloudflare proxying interferes with ACME challenges on custom tenant domains.
 
 **Key Cloudflare records:**
 
@@ -198,12 +198,12 @@ sparx.market         A     → GKE LB IP
 
 ---
 
-## 7. Merchant Custom Domain Flow
+## 7. Tenant Custom Domain Flow
 
-When a merchant adds a custom domain:
+When a tenant adds a custom domain:
 
 ```
-1. Merchant enters "shop.acme.com" in Settings → Domains
+1. Tenant enters "shop.acme.com" in Settings → Domains
 2. Platform shows instructions:
    Add this DNS record to your domain registrar:
    Type: CNAME
@@ -215,7 +215,7 @@ When a merchant adds a custom domain:
    → domain.verified Pub/Sub event
    → Caddy on-demand TLS issues Let's Encrypt cert
    → shop.acme.com is live with HTTPS
-   → merchant.sparx.zone redirects 301 to custom domain
+   → tenant.sparx.zone redirects 301 to custom domain
 
 5. All subsequent visits: cert cached, sub-200ms response
 ```
@@ -224,13 +224,13 @@ When a merchant adds a custom domain:
 
 ## 8. "Powered by sparx" Footer Link
 
-Every merchant site on sparx.zone displays a subtle footer link:
+Every tenant site on sparx.zone displays a subtle footer link:
 
 ```
 Powered by sparx ↗  (links to sparx.works)
 ```
 
-This is opt-out on Pro+ plans (merchant can remove it). Default on all plans. This link appears on potentially thousands of merchant sites, building sparx.works domain authority passively at scale.
+This is opt-out on Pro+ plans (tenant can remove it). Default on all plans. This link appears on potentially thousands of tenant sites, building sparx.works domain authority passively at scale.
 
 ---
 

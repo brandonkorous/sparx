@@ -1,8 +1,8 @@
 # sparx Platform — Tier 4 Build Plan
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-09
+**Last Updated:** 2026-06-17
 
 ---
 
@@ -10,7 +10,7 @@
 
 Tier 4 covers two parallel tracks that ship together to close the gap between "working platform" and "polished product":
 
-**Track A — Live Chat module** ([docs/56](56-live-chat-module.md)): a new first-party customer communication module — site widget, AI-first responses, merchant inbox. New module, new package, new WebSocket surface.
+**Track A — Live Chat module** ([docs/56](56-live-chat-module.md)): a new first-party customer communication module — site widget, AI-first responses, tenant inbox. New module, new package, new WebSocket surface.
 
 **Track B — Wizards, Import/Export & Bulk Ops** ([docs/68](68-wizards-import-export-bulk.md)): UX-layer improvements across all existing list views — multi-step creation wizards for complex entities, CSV import/export, and a fleet-level bulk action bar.
 

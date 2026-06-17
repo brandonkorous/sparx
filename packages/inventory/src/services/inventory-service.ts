@@ -66,6 +66,54 @@ export {
 } from './lots';
 export type { LotBatchRow } from './lots';
 
+// ─── Suppliers + per-variant purchasing detail (P3a supply path) ──────
+export {
+  listSuppliers,
+  getSupplier,
+  createSupplier,
+  updateSupplier,
+  archiveSupplier,
+} from './suppliers';
+export type { SupplierRow } from './suppliers';
+export {
+  listSupplierVariants,
+  suppliersForVariant,
+  upsertSupplierVariant,
+  removeSupplierVariant,
+  lookupVariantBySku,
+} from './supplier-variants';
+export type { SupplierVariantRow, VariantLookupRow } from './supplier-variants';
+
+// ─── Purchase orders (P3b supply path) ────────────────────────────────
+export {
+  listPurchaseOrders,
+  getPurchaseOrder,
+  createPurchaseOrder,
+  updatePurchaseOrder,
+  deletePurchaseOrder,
+} from './purchase-orders';
+export type { ListPurchaseOrderFilter } from './purchase-orders';
+export {
+  addPurchaseOrderLine,
+  updatePurchaseOrderLine,
+  removePurchaseOrderLine,
+} from './purchase-order-lines';
+export {
+  submitPurchaseOrder,
+  cancelPurchaseOrder,
+  closePurchaseOrder,
+} from './purchase-order-lifecycle';
+export { buildPurchaseOrderDocumentHtml, renderPurchaseOrderHtml } from './purchase-order-document';
+export type {
+  PurchaseOrderDocumentData,
+  PurchaseOrderDocumentBrand,
+} from './purchase-order-document';
+export type {
+  PurchaseOrderRow,
+  PurchaseOrderLineRow,
+  PurchaseOrderDetail,
+} from './purchase-order-shared';
+
 // ─── Movement ledger primitive ────────────────────────────────────────
 // Exposed for callers composing a movement inside their OWN tenant transaction
 // (e.g. an order service decrementing stock atomically with the order insert).

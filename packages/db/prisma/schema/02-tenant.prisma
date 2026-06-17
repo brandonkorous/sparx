@@ -166,13 +166,17 @@ model Tenant {
   fitmentVariants   FitmentVariant[]
   productFitments   ProductFitment[]
 
-  // Inventory module — warehouses, levels, movement ledger, lots
+  // Inventory module — warehouses, levels, movement ledger, lots, suppliers
   warehouses            Warehouse[]
   inventoryLevels       InventoryLevel[]
   inventoryMovements    InventoryMovement[]
   inventoryReservations InventoryReservation[]
   lotBatches            LotBatch[]
   serialUnits           SerialUnit[]
+  suppliers             Supplier[]
+  supplierVariants      SupplierVariant[]
+  purchaseOrders        PurchaseOrder[]
+  purchaseOrderLines    PurchaseOrderLine[]
 
   // Commerce module — pricing + discounts
   priceLists             PriceList[]
