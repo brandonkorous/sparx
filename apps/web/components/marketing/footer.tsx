@@ -25,6 +25,7 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
       { label: 'Features', href: '/features' },
       { label: 'Early access', href: '/early' },
       { label: 'Pricing', href: '/pricing' },
+      { label: 'Free tools', href: '/tools' },
       { label: 'Themes', href: '/market/themes' },
       { label: 'Marketplace', href: '/market' },
       { label: 'Managed hosting', href: '/hosting' },

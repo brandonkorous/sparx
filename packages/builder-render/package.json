@@ -8,6 +8,10 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./serialize": {
+      "types": "./src/serialize-html.tsx",
+      "default": "./src/serialize-html.tsx"
     }
   },
   "files": [
@@ -27,7 +31,8 @@
     "lucide-react": "^0.577.0"
   },
   "peerDependencies": {
-    "react": "^19.0.0"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",

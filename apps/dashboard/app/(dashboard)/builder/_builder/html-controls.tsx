@@ -29,7 +29,7 @@ import {
   Textarea,
   toast,
 } from '@sparx/ui';
-import { serializeNodeToHtml, serializeTreeToHtml } from '@sparx/builder-render';
+import { serializeNodeToHtml, serializeTreeToHtml } from '@sparx/builder-render/serialize';
 import { reportHasChanges, summarizeReport, type ImportReport } from '@sparx/builder-schemas';
 
 import type { BuilderNode } from './model';
@@ -124,10 +124,19 @@ function ViewHtmlDialog({
   }, [open, hasSelection]);
 
   // Serialize lazily (only while open) — the clean publish HTML, not canvas chrome.
-  const html = React.useMemo(() => {
-    if (!open) return '';
-    if (scope === 'selection' && selectedNode) return serializeNodeToHtml(selectedNode);
-    return serializeTreeToHtml(tree);
+  // The serializer renders the live islands via react-dom/client + flushSync, which
+  // must run AFTER commit (a browser-only effect), never during the render pass.
+  const [html, setHtml] = React.useState('');
+  React.useEffect(() => {
+    if (!open) {
+      setHtml('');
+      return;
+    }
+    setHtml(
+      scope === 'selection' && selectedNode
+        ? serializeNodeToHtml(selectedNode)
+        : serializeTreeToHtml(tree)
+    );
   }, [open, scope, selectedNode, tree]);
 
   const copy = () => {
