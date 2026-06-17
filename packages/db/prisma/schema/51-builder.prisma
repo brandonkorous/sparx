@@ -366,3 +366,78 @@ model BuilderArchetype {
   @@index([tenantId, family, position])
   @@map("builder_archetypes")
 }
+
+// Platform-level COMPONENT CATALOG (docs/98 §5) — the DB-backed home for the
+// platform's component library. Unlike all other builder_* tables, this is GLOBAL
+// (no tenant_id): every tenant reads the published set; only platform admins write.
+// The API layer enforces the owner-role gate for writes / non-published reads.
+// RLS: sparx_app can SELECT published rows only; sparx_owner is unrestricted.
+// See packages/db/CLAUDE.md §Global tables.
+model PlatformComponent {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  // URL-safe, unique catalog identifier (e.g. "navbar_brand", "hero_split").
+  key         String   @unique @db.VarChar(64)
+  name        String   @db.VarChar(120)
+  // Layout family — same vocabulary as BuilderArchetype.family (a plain string,
+  // never an enum, so new families need no migration).
+  family      String   @default("content") @db.VarChar(32)
+  // section | common | comprehensive | email  (docs/98 §5 kind taxonomy)
+  kind        PlatformComponentKind
+  // The BuilderNode root tree (same shape as any archetype/page tree, serialized
+  // JSON). Validated by @sparx/builder-schemas, never by the DB.
+  tree        Json
+  // Optional declarative behavior config (data-sx-* parameters, validated at
+  // the service layer). Null = no runtime behavior (pure composition).
+  behaviors   Json?
+  // Optional preview image URL (URL-first, cf. BuilderPage.ogImage).
+  thumbnail   String?  @db.VarChar(2048)
+  // Free-form search tags (e.g. ["hero","fullscreen","cta"]).
+  tags        String[]
+  // Draft → submitted → in_review → approved → published → archived | rejected
+  status      PlatformComponentStatus @default(draft)
+  // The platform user (Better Auth user id) who authored this entry.
+  authorId    String   @map("author_id") @db.VarChar(255)
+  // The platform reviewer who last changed the status (null until first review).
+  reviewerId  String?  @map("reviewer_id") @db.VarChar(255)
+  // Monotonically bumped on every identity/tree update (NOT a version history;
+  // the static catalog controls published history outside the DB).
+  version     Int      @default(1)
+  // public: any tenant can stamp it; private: reserved for internal use.
+  visibility  PlatformComponentVisibility @default(public)
+
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@index([status])
+  @@index([kind])
+  @@index([key])
+  @@map("platform_components")
+}
+
+enum PlatformComponentKind {
+  section
+  common
+  comprehensive
+  email
+
+  @@map("platform_component_kind")
+}
+
+enum PlatformComponentStatus {
+  draft
+  submitted
+  in_review
+  approved
+  published
+  archived
+  rejected
+
+  @@map("platform_component_status")
+}
+
+enum PlatformComponentVisibility {
+  public
+  private
+
+  @@map("platform_component_visibility")
+}
