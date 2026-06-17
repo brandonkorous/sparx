@@ -55,6 +55,11 @@ COPY packages/builder-schemas/package.json packages/builder-schemas/
 # @sparx/builder-render — the shared canvas↔live render path (docs/builder/02), a
 # dashboard dep. Its workspace deps (builder-schemas, cms-editor, site-ui) are above.
 COPY packages/builder-render/package.json packages/builder-render/
+# @sparx/surface-compile — the dashboard imports its client-safe `/allowlist`
+# predicate (the builder's Import-HTML class validation in html-actions.ts). Only
+# workspace dep is @sparx/builder-schemas (above); the heavy tailwind/lightningcss
+# deps belong to its server-only compile path, which the dashboard never imports.
+COPY packages/surface-compile/package.json packages/surface-compile/
 COPY packages/attribution/package.json packages/attribution/
 # Automation authoring UI (docs/84 Slice G-UI) — pure zod schemas + the
 # triggerToColumns/FromColumns round-trip helpers; only dep is zod (already present).
@@ -102,6 +107,7 @@ COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
 COPY packages/section-template-react packages/section-template-react
 COPY packages/builder-schemas packages/builder-schemas
 COPY packages/builder-render packages/builder-render
+COPY packages/surface-compile packages/surface-compile
 COPY packages/attribution packages/attribution
 COPY packages/automation-schemas packages/automation-schemas
 COPY apps/dashboard apps/dashboard

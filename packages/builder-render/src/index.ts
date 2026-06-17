@@ -71,4 +71,10 @@ export {
 } from './behaviors';
 
 // View HTML — serialize a node/subtree to clean publish HTML (docs/98 §3.8/§4.2).
-export { serializeNodeToHtml, serializeTreeToHtml, type SerializeOptions } from './serialize-html';
+// Deliberately NOT re-exported from this barrel: serialize-html.tsx imports
+// `react-dom/server`, and this barrel is consumed by the live storefront renderer
+// (apps/site, both its server-component render path AND the 'use client' runtime
+// bridge). Pulling react-dom/server into those graphs is a hard Turbopack build
+// error ("importing a component that imports react-dom/server"). The serializer is
+// a dashboard-only "View HTML" affordance, so it lives behind the dedicated
+// `@sparx/builder-render/serialize` subpath that only that consumer imports.

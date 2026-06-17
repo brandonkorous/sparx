@@ -18,11 +18,23 @@
 // rules (the shared `leafWearsClass` + raw-container-as-tag predicates), minus the
 // data/binding/outlet/carousel-island specifics: View HTML serializes the AUTHORED
 // structure (no tenant record data is resolved here), which is what a "view/copy
-// source" affordance wants. It is server-safe (react-dom/server, no DOM, no
-// next/headers) so it runs in a server action or the client alike.
+// source" affordance wants.
+//
+// RENDER PATH — BROWSER-ONLY (react-dom/client, NOT react-dom/server). The output
+// includes the REAL interactive islands (BuyBox/Carousel/Signup/…), whose actual
+// component implementations exist only in the browser client bundle — so the only
+// place that can render the authored tree faithfully is the browser. We therefore
+// render into a DETACHED node with `createRoot` + `flushSync` and read its
+// `innerHTML`, rather than `react-dom/server`'s `renderToStaticMarkup`: Next.js
+// BANS `react-dom/server` in its app bundle (a hard Turbopack build error AND a
+// runtime alias that throws `E1021: do not use legacy react-dom/server APIs`), so
+// importing it here would break every consumer. This module is consumed solely by
+// the dashboard's "View HTML" dialog (a `'use client'` modal), so browser-only is
+// the right contract; the functions throw if called without a `document`.
 
 import * as React from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
+import { createRoot } from 'react-dom/client';
+import { flushSync } from 'react-dom';
 import {
   isRawContainerType,
   isRawElementType,
@@ -99,12 +111,42 @@ function SerializeNode({ node }: { node: BuilderNode }): React.ReactNode {
   return <div className={cls(node.class)}>{body}</div>;
 }
 
+// ── Browser render → static HTML ──────────────────────────────────────────────
+//
+// Render the element into a DETACHED container with a throwaway client root, flush
+// it synchronously, and read the committed `innerHTML`. `flushSync` guarantees the
+// mount completes before we read; the `finally` tears the root down. Browser-only:
+// the live islands have real implementations only in the client bundle, and Next
+// forbids `react-dom/server` (see the file header).
+function renderElementToHtml(element: React.ReactElement): string {
+  if (typeof document === 'undefined') {
+    throw new Error(
+      'serializeNodeToHtml / serializeTreeToHtml render the live Builder islands via ' +
+        'react-dom/client and must run in the browser (the dashboard "View HTML" dialog), ' +
+        'not on the server.'
+    );
+  }
+  const container = document.createElement('div');
+  const root = createRoot(container);
+  try {
+    flushSync(() => {
+      root.render(element);
+    });
+    return container.innerHTML;
+  } finally {
+    flushSync(() => {
+      root.unmount();
+    });
+  }
+}
+
 // ── Pretty-print ──────────────────────────────────────────────────────────────
 //
-// renderToStaticMarkup emits a single line. For a "view source" panel we want
-// readable, indented HTML. A tiny, dependency-free reindenter: split on tag
-// boundaries and indent by depth. It only reformats whitespace BETWEEN tags, never
-// inside text content or attributes, so the markup stays faithful.
+// The render above emits a single line (no whitespace between tags). For a "view
+// source" panel we want readable, indented HTML. A tiny, dependency-free
+// reindenter: split on tag boundaries and indent by depth. It only reformats
+// whitespace BETWEEN tags, never inside text content or attributes, so the markup
+// stays faithful.
 
 const VOID_TAGS = new Set([
   'area',
@@ -157,7 +199,7 @@ export interface SerializeOptions {
 /** Serialize one node (and its subtree) to clean publish HTML. Used for the
  *  per-node "View HTML" affordance (the selected subtree). */
 export function serializeNodeToHtml(node: BuilderNode, options?: SerializeOptions): string {
-  const html = renderToStaticMarkup(<SerializeNode node={node} />);
+  const html = renderElementToHtml(<SerializeNode node={node} />);
   return options?.pretty === false ? html : prettyHtml(html);
 }
 
@@ -177,6 +219,6 @@ export function serializeTreeToHtml(tree: BuilderNode, options?: SerializeOption
     ) : (
       <SerializeNode node={tree} />
     );
-  const html = renderToStaticMarkup(<>{node}</>);
+  const html = renderElementToHtml(<>{node}</>);
   return options?.pretty === false ? html : prettyHtml(html);
 }

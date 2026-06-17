@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { LEGAL_DOC_VERSIONS } from '@/lib/legal-versions';
 import { MODULE_ORDER, MODULES } from '@/lib/modules';
 import { DOC_PAGES } from '@/lib/docs';
+import { TOOL_SLUGS } from '@/components/marketing/tools/registry';
 
 const BASE = 'https://sparx.works';
 
@@ -33,6 +34,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: page.href === '/docs' ? 0.7 : 0.6,
+    })),
+    // Free tools hub + each tool — high-intent, evergreen landing pages.
+    {
+      url: `${BASE}/tools`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    },
+    ...TOOL_SLUGS.map((slug) => ({
+      url: `${BASE}/tools/${slug}`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
     })),
     ...staticPages(now),
   ];

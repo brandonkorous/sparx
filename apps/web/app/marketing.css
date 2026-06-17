@@ -596,3 +596,168 @@
     animation: none;
   }
 }
+
+/* ── FREE TOOLS (/tools) ─────────────────────────────────────────
+   Structural layout for the client-side tools — the two-pane
+   workbench, the hub/related cards, code-snippet blocks, and a
+   transparency checkerboard for icon previews. Controls themselves
+   are @sparx/ui components; these classes only do layout + surface. */
+
+/* Two-pane workbench: controls left, live output right → stacks. */
+.tool-workbench {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 28px;
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .tool-workbench {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Output pane sticks while the (taller) controls column scrolls. */
+.tool-sticky {
+  position: sticky;
+  top: 88px;
+}
+@media (max-width: 1024px) {
+  .tool-sticky {
+    position: static;
+  }
+}
+
+/* Paired fields that collapse to a single column on narrow screens. */
+.tool-fieldgrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 560px) {
+  .tool-fieldgrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Generated code/markup snippet — scrollable, monospace, bounded height. */
+.tool-code {
+  margin: 0;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-bg-subtle);
+  border: 1px solid var(--color-border-default);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  overflow: auto;
+  max-height: 340px;
+  white-space: pre;
+  tab-size: 2;
+}
+
+/* Transparency backdrop for icon/QR previews with an alpha channel. */
+.tool-checkerboard {
+  background-color: #ffffff;
+  background-image:
+    linear-gradient(45deg, #e8e8ec 25%, transparent 25%),
+    linear-gradient(-45deg, #e8e8ec 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #e8e8ec 75%),
+    linear-gradient(-45deg, transparent 75%, #e8e8ec 75%);
+  background-size: 16px 16px;
+  background-position:
+    0 0,
+    0 8px,
+    8px -8px,
+    -8px 0;
+}
+
+/* Hub + related tool cards. */
+.tool-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px;
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-xl);
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+.tool-card:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.tool-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.tool-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
+  box-shadow: inset 0 0 0 1px rgba(9, 9, 11, 0.06);
+}
+.tool-card__arrow {
+  color: var(--color-text-tertiary);
+  transition:
+    transform 0.15s ease,
+    color 0.15s ease;
+}
+.tool-card:hover .tool-card__arrow {
+  color: var(--color-text-primary);
+  transform: translate(2px, -2px);
+}
+.tool-card__name {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+}
+.tool-card__desc {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  line-height: 20px;
+  color: var(--color-text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tool-card__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 2px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.tool-card__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tool-card,
+  .tool-card__arrow {
+    transition: none;
+  }
+  .tool-card:hover {
+    transform: none;
+  }
+}
