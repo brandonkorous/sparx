@@ -47,7 +47,7 @@
     "@sparx/builder-schemas": "workspace:*",
     "@sparx/legal-templates": "workspace:*",
     "@sparx/marketplace-schemas": "workspace:*",
-    "@types/node": "^25.9.1",
+    "@types/node": "^25.9.3",
     "@types/pg": "^8.11.10",
     "prisma": "^6.2.0",
     "tsx": "^4.19.2",

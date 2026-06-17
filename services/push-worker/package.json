@@ -22,7 +22,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@types/node": "^25.9.1",
+    "@types/node": "^25.9.3",
     "@types/web-push": "^3.6.4",
     "dotenv": "^16.4.7",
     "tsx": "^4.19.2",
