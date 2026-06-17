@@ -52,7 +52,12 @@ const catalogRoutes: FastifyPluginAsync = (app) => {
     const components = await platformCatalogService.listPublished({
       kind,
       family,
-      tags: tags ? tags.split(',').map((t) => t.trim()).filter(Boolean) : undefined,
+      tags: tags
+        ? tags
+            .split(',')
+            .map((t) => t.trim())
+            .filter(Boolean)
+        : undefined,
     });
     return ok({ components });
   });

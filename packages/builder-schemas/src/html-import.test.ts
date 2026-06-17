@@ -1,11 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  importHtmlNodes,
-  reportHasChanges,
-  summarizeReport,
-  type DomNode,
-} from './html-import';
+import { importHtmlNodes, reportHasChanges, summarizeReport, type DomNode } from './html-import';
 import { rawTagOf, safeElementAttrs } from './element';
 import type { BuilderNode } from './node';
 
@@ -201,7 +196,9 @@ describe('importHtmlNodes — text handling', () => {
 
 describe('importHtmlNodes — ids + report', () => {
   it('mints a fresh id for every emitted node', () => {
-    const { nodes } = run([el('div', {}, [el('span', {}, [text('a')]), el('span', {}, [text('b')])])]);
+    const { nodes } = run([
+      el('div', {}, [el('span', {}, [text('a')]), el('span', {}, [text('b')])]),
+    ]);
     const ids: string[] = [];
     const collect = (n: BuilderNode) => {
       ids.push(n.id);
@@ -235,9 +232,7 @@ describe('importHtmlNodes — ids + report', () => {
   });
 
   it('summarizeReport lists the headline drops', () => {
-    const { report } = run([
-      el('div', { onclick: 'x', class: 'fixed' }, [el('iframe', {})]),
-    ], {
+    const { report } = run([el('div', { onclick: 'x', class: 'fixed' }, [el('iframe', {})])], {
       isClassAllowed: (t) => t !== 'fixed',
     });
     const s = summarizeReport(report);

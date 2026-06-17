@@ -30,8 +30,8 @@ Prisma does not generate RLS or `current_tenant_id()` — hand-edit the migratio
 
 Most tables are per-tenant and use the standard FORCE RLS + `tenant_isolation` pattern (`current_tenant_id()`). A small number of tables are **global** — shared across all tenants:
 
-| Table | Purpose | RLS approach |
-|---|---|---|
+| Table                 | Purpose                    | RLS approach                                                                                                      |
+| --------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | `platform_components` | Platform component catalog | SELECT published → `sparx_app`; ALL → `sparx_owner`; API layer gates non-published reads + writes to `owner` role |
 
 For a global table: ENABLE + FORCE RLS, two policies — one for the app role (restrictive, e.g. `status = 'published'`), one for the owner/migration role (unrestricted). The platform-admin JWT tier (docs/16 §2.4, deferred) will extend this pattern when it ships.

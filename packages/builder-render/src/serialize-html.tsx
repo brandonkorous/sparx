@@ -90,7 +90,11 @@ function SerializeNode({ node }: { node: BuilderNode }): React.ReactNode {
 
   if (leafStylesByClass) return <>{body}</>;
   if (rawTag) {
-    return React.createElement(rawTag, { className: cls(node.class), ...safeElementAttrs(node) }, body);
+    return React.createElement(
+      rawTag,
+      { className: cls(node.class), ...safeElementAttrs(node) },
+      body
+    );
   }
   return <div className={cls(node.class)}>{body}</div>;
 }
@@ -128,11 +132,11 @@ function prettyHtml(html: string): string {
   for (const raw of lines) {
     const line = raw.trim();
     if (!line) continue;
-    const isClose = /^<\//.test(line);
+    const isClose = line.startsWith('</');
     const openMatch = /^<([a-zA-Z][\w-]*)/.exec(line);
     const tag = openMatch?.[1]?.toLowerCase();
     const isSelfContained =
-      /\/>$/.test(line) ||
+      line.endsWith('/>') ||
       (tag !== undefined && VOID_TAGS.has(tag)) ||
       // An open+close on the same line (e.g. `<span>text</span>`).
       (/^<[^/]/.test(line) && /<\/[a-zA-Z][\w-]*>$/.test(line));

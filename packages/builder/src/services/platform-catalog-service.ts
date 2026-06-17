@@ -20,10 +20,10 @@ import {
   type PlatformComponentSummaryDto,
   type PlatformComponentStatus,
   type PlatformComponentKind,
-  type PlatformComponentVisibility,
 } from '@sparx/builder-schemas';
-import type { PlatformComponent, Prisma } from '@sparx/db';
-import { prisma } from '@sparx/db';
+import type { PlatformComponent } from '@sparx/db';
+// `Prisma` is a value import (used as both the type namespace and `Prisma.DbNull`).
+import { Prisma, prisma } from '@sparx/db';
 
 import { BuilderNotFoundError, BuilderValidationError } from '../errors';
 
@@ -35,14 +35,14 @@ function toSummary(row: PlatformComponent): PlatformComponentSummaryDto {
     key: row.key,
     name: row.name,
     family: row.family,
-    kind: row.kind as PlatformComponentKind,
+    kind: row.kind,
     thumbnail: row.thumbnail,
     tags: row.tags,
-    status: row.status as PlatformComponentStatus,
+    status: row.status,
     authorId: row.authorId,
     reviewerId: row.reviewerId,
     version: row.version,
-    visibility: row.visibility as PlatformComponentVisibility,
+    visibility: row.visibility,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };
@@ -102,16 +102,13 @@ export async function getById(id: string): Promise<PlatformComponentDto> {
 /** Get one published entry by key (public). */
 export async function getPublishedByKey(key: string): Promise<PlatformComponentDto> {
   const row = await prisma.platformComponent.findUnique({ where: { key } });
-  if (!row || row.status !== 'published') throw new BuilderNotFoundError('platform_component', key);
+  if (row?.status !== 'published') throw new BuilderNotFoundError('platform_component', key);
   return toDto(row);
 }
 
 // ── Writes ────────────────────────────────────────────────────────────────────
 
-export async function create(
-  authorId: string,
-  raw: unknown,
-): Promise<PlatformComponentDto> {
+export async function create(authorId: string, raw: unknown): Promise<PlatformComponentDto> {
   const input = CreatePlatformComponentInput.parse(raw);
   const existing = await prisma.platformComponent.findUnique({ where: { key: input.key } });
   if (existing) {
@@ -138,10 +135,7 @@ export async function create(
   return toDto(row);
 }
 
-export async function update(
-  id: string,
-  raw: unknown,
-): Promise<PlatformComponentDto> {
+export async function update(id: string, raw: unknown): Promise<PlatformComponentDto> {
   const input = UpdatePlatformComponentInput.parse(raw);
   const existing = await prisma.platformComponent.findUnique({ where: { id } });
   if (!existing) throw new BuilderNotFoundError('platform_component', id);
@@ -155,7 +149,8 @@ export async function update(
   if (input.kind !== undefined) data.kind = input.kind;
   if (input.tree !== undefined) data.tree = asJson(input.tree);
   if (input.behaviors !== undefined)
-    data.behaviors = input.behaviors != null ? asJson(input.behaviors) : null;
+    // Clearing a nullable Json column needs Prisma.DbNull (SQL NULL), not a raw null.
+    data.behaviors = input.behaviors != null ? asJson(input.behaviors) : Prisma.DbNull;
   if (input.thumbnail !== undefined) data.thumbnail = input.thumbnail ?? null;
   if (input.tags !== undefined) data.tags = input.tags;
   if (input.visibility !== undefined) data.visibility = input.visibility;
@@ -174,11 +169,11 @@ export async function remove(id: string): Promise<void> {
 async function transition(
   id: string,
   actorId: string,
-  to: PlatformComponentStatus,
+  to: PlatformComponentStatus
 ): Promise<PlatformComponentDto> {
   const existing = await prisma.platformComponent.findUnique({ where: { id } });
   if (!existing) throw new BuilderNotFoundError('platform_component', id);
-  const from = existing.status as PlatformComponentStatus;
+  const from = existing.status;
   if (!isLegalTransition(from, to)) {
     throw new BuilderValidationError(`Cannot transition from "${from}" to "${to}".`, [
       { field: 'status', message: `Illegal transition: ${from} → ${to}` },

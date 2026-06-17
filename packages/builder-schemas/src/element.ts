@@ -649,7 +649,7 @@ const HTML_ATTR_TO_KEY: Record<string, AttrKey> = (() => {
     map[reactName.toLowerCase()] = key;
   }
   // Native HTML spelling that differs from the React attribute name.
-  map['for'] = 'for';
+  map.for = 'for';
   return map;
 })();
 

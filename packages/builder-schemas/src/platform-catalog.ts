@@ -28,10 +28,7 @@ export type PlatformComponentVisibility = z.infer<typeof PlatformComponentVisibi
 // ── Legal lifecycle transitions ───────────────────────────────────────────────
 
 /** All valid status → status transitions. Anything not in this map is rejected. */
-export const LEGAL_TRANSITIONS: Record<
-  PlatformComponentStatus,
-  PlatformComponentStatus[]
-> = {
+export const LEGAL_TRANSITIONS: Record<PlatformComponentStatus, PlatformComponentStatus[]> = {
   draft: ['submitted', 'archived'],
   submitted: ['in_review', 'rejected', 'draft'],
   in_review: ['approved', 'rejected', 'submitted'],
@@ -43,7 +40,7 @@ export const LEGAL_TRANSITIONS: Record<
 
 export function isLegalTransition(
   from: PlatformComponentStatus,
-  to: PlatformComponentStatus,
+  to: PlatformComponentStatus
 ): boolean {
   return (LEGAL_TRANSITIONS[from] ?? []).includes(to);
 }
@@ -71,7 +68,9 @@ export interface PlatformComponentSummaryDto {
 /** Full DTO — includes tree + behaviors. */
 export interface PlatformComponentDto extends PlatformComponentSummaryDto {
   tree: BuilderNode;
-  behaviors: unknown | null;
+  /** The behavior spec JSON, or null when the component carries no behaviors
+   *  (`unknown` already subsumes null). */
+  behaviors: unknown;
 }
 
 // ── Service inputs ─────────────────────────────────────────────────────────────

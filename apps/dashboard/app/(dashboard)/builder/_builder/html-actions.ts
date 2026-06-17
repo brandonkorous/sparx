@@ -15,11 +15,7 @@
 //     gives (docs/98 §4.2 "fresh ids, via the existing stamp / cloneWithFreshIds").
 
 import { isClassAllowed } from '@sparx/surface-compile/allowlist';
-import {
-  importHtmlNodes,
-  type DomNode,
-  type ImportResult,
-} from '@sparx/builder-schemas';
+import { importHtmlNodes, type DomNode, type ImportResult } from '@sparx/builder-schemas';
 
 import { makeId, type BuilderNode } from './model';
 

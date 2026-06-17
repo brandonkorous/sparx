@@ -119,7 +119,10 @@ export function EmailPreviewModal({ emailId, open, onOpenChange }: EmailPreviewM
             </Button>
             {view === 'render' ? (
               <>
-                <span className="mx-1 w-px self-stretch bg-[var(--color-border-default)]" aria-hidden />
+                <span
+                  className="mx-1 w-px self-stretch bg-[var(--color-border-default)]"
+                  aria-hidden
+                />
                 <Button
                   variant={width === 'desktop' ? 'soft' : 'ghost'}
                   size="sm"
@@ -190,7 +193,7 @@ export function EmailPreviewModal({ emailId, open, onOpenChange }: EmailPreviewM
           ) : view === 'source' ? (
             <Code
               variant="block"
-              className="h-[600px] w-full overflow-auto whitespace-pre text-left"
+              className="h-[600px] w-full overflow-auto text-left whitespace-pre"
               aria-label="Email HTML source"
             >
               {html ?? ''}

@@ -20,7 +20,7 @@ vi.mock('@sparx/db', () => {
 import { prisma } from '@sparx/db';
 import * as svc from './platform-catalog-service';
 
-const mockPlatformComponent = prisma.platformComponent as {
+const mockPlatformComponent = prisma.platformComponent as unknown as {
   findUnique: Mock;
   findMany: Mock;
   create: Mock;
@@ -46,7 +46,7 @@ function makeRow(
     visibility: string;
     createdAt: Date;
     updatedAt: Date;
-  }> = {},
+  }> = {}
 ) {
   return {
     id: 'pc_123',
@@ -85,7 +85,7 @@ describe('platformCatalogService — lifecycle transitions', () => {
     const result = await svc.submit('pc_123', 'rev_1');
     expect(result.status).toBe('submitted');
     expect(mockPlatformComponent.update).toHaveBeenCalledWith(
-      expect.objectContaining({ data: expect.objectContaining({ status: 'submitted' }) }),
+      expect.objectContaining({ data: expect.objectContaining({ status: 'submitted' }) })
     );
   });
 
@@ -142,7 +142,7 @@ describe('platformCatalogService — lifecycle transitions', () => {
     const row = makeRow({ status: 'draft' });
     mockPlatformComponent.findUnique.mockResolvedValue(row);
     await expect(svc.publish('pc_123', 'rev_1')).rejects.toThrow(
-      /Cannot transition from "draft" to "published"/,
+      /Cannot transition from "draft" to "published"/
     );
     expect(mockPlatformComponent.update).not.toHaveBeenCalled();
   });
@@ -151,7 +151,7 @@ describe('platformCatalogService — lifecycle transitions', () => {
     const row = makeRow({ status: 'published' });
     mockPlatformComponent.findUnique.mockResolvedValue(row);
     await expect(svc.submit('pc_123', 'actor_1')).rejects.toThrow(
-      /Cannot transition from "published" to "submitted"/,
+      /Cannot transition from "published" to "submitted"/
     );
   });
 
@@ -168,14 +168,14 @@ describe('platformCatalogService — published-only visibility', () => {
     expect(mockPlatformComponent.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({ status: 'published', visibility: 'public' }),
-      }),
+      })
     );
   });
 
   it('getPublishedByKey rejects a non-published row', async () => {
     mockPlatformComponent.findUnique.mockResolvedValue(makeRow({ status: 'draft' }));
     await expect(svc.getPublishedByKey('hero_split')).rejects.toThrow(
-      /platform_component.*hero_split.*not found/i,
+      /platform_component.*hero_split.*not found/i
     );
   });
 

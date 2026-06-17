@@ -245,9 +245,7 @@ function ImportHtmlDialog({
   const insert = () => {
     if (!pending) return;
     onInsert(pending);
-    toast.success(
-      report ? summarizeReport(report) : 'Imported — review the canvas, then Publish.'
-    );
+    toast.success(report ? summarizeReport(report) : 'Imported — review the canvas, then Publish.');
     onOpenChange(false);
   };
 
@@ -273,7 +271,9 @@ function ImportHtmlDialog({
           }}
           rows={10}
           spellCheck={false}
-          placeholder={'<section class="py-16">\n  <h1 class="text-4xl font-bold">Hello</h1>\n</section>'}
+          placeholder={
+            '<section class="py-16">\n  <h1 class="text-4xl font-bold">Hello</h1>\n</section>'
+          }
           className="font-mono text-xs"
           aria-label="HTML to import"
         />
@@ -286,7 +286,8 @@ function ImportHtmlDialog({
           </Button>
           {pending ? (
             <Button variant="solid" onClick={insert}>
-              Insert {report ? `${report.emitted} block${report.emitted === 1 ? '' : 's'}` : 'blocks'}
+              Insert{' '}
+              {report ? `${report.emitted} block${report.emitted === 1 ? '' : 's'}` : 'blocks'}
             </Button>
           ) : (
             <Button variant="solid" onClick={analyze}>
@@ -329,7 +330,8 @@ function ImportReportPanel({ report }: { report: ImportReport }) {
           ))}
           {report.forcedRel > 0 ? (
             <li>
-              Secured {report.forcedRel}× new-tab link with <code>rel=&quot;noopener noreferrer&quot;</code>
+              Secured {report.forcedRel}× new-tab link with{' '}
+              <code>rel=&quot;noopener noreferrer&quot;</code>
             </li>
           ) : null}
         </ul>
