@@ -83,6 +83,7 @@ import {
   type LayoutStyle,
 } from './model';
 import { COLOR_CONTROL, VARIANT_CONTROL } from './class-controls';
+import { SITE_UI_ATOM_DEFS } from './registry-atoms';
 
 export type NodeKind = 'container' | 'leaf';
 /** Composition axis (docs/23 §17) — orthogonal to `kind`/`group`/bindable.
@@ -1010,6 +1011,12 @@ const DEFS: ComponentDef[] = [
     props: [],
     defaults: {},
   },
+
+  // ---- Site-UI library atoms (docs/102 Track A) ----
+  // The rest of @sparx/site-ui exposed as droppable atoms (form controls, feedback,
+  // data display, navigation, …). Metadata-only here; rendered by the shared
+  // renderSiteUiAtom map. Kept in registry-atoms.ts so this file stays focused.
+  ...SITE_UI_ATOM_DEFS,
 ];
 
 // ── Composition taxonomy (docs/23 §17) ───────────────────────────────────────
