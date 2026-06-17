@@ -69,3 +69,10 @@ export {
   type BehaviorDescriptor,
   type BehaviorParam,
 } from './behaviors';
+
+// View HTML — serialize a node/subtree to clean publish HTML (docs/98 §3.8/§4.2).
+export {
+  serializeNodeToHtml,
+  serializeTreeToHtml,
+  type SerializeOptions,
+} from './serialize-html';

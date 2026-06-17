@@ -10,9 +10,10 @@
 // opening so the preview reflects the latest edits.
 
 import * as React from 'react';
-import { Monitor, Send, Smartphone } from 'lucide-react';
+import { Check, ClipboardCopy, Code2, Eye, Monitor, Send, Smartphone } from 'lucide-react';
 import {
   Button,
+  Code,
   Input,
   Modal,
   ModalContent,
@@ -35,6 +36,10 @@ export function EmailPreviewModal({ emailId, open, onOpenChange }: EmailPreviewM
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [width, setWidth] = React.useState<'desktop' | 'mobile'>('desktop');
+  // View mode: the rendered iframe, or the raw inline-styled HTML source (docs/98
+  // §3.8 — for email, View HTML IS this self-contained, table-based publish HTML).
+  const [view, setView] = React.useState<'render' | 'source'>('render');
+  const [copied, setCopied] = React.useState(false);
   const [to, setTo] = React.useState('');
   const [sending, setSending] = React.useState(false);
 
@@ -44,6 +49,7 @@ export function EmailPreviewModal({ emailId, open, onOpenChange }: EmailPreviewM
     let cancelled = false;
     setHtml(null);
     setError(null);
+    setView('render');
     setLoading(true);
     void previewEmail(emailId).then((res) => {
       if (cancelled) return;
@@ -55,6 +61,18 @@ export function EmailPreviewModal({ emailId, open, onOpenChange }: EmailPreviewM
       cancelled = true;
     };
   }, [open, emailId]);
+
+  const copySource = () => {
+    if (!html) return;
+    void navigator.clipboard.writeText(html).then(
+      () => {
+        setCopied(true);
+        toast.success('Email HTML copied to clipboard.');
+        window.setTimeout(() => setCopied(false), 1500);
+      },
+      () => toast.error('Could not copy — select the source and copy manually.')
+    );
+  };
 
   const sendTest = () => {
     const addr = to.trim();
@@ -76,29 +94,66 @@ export function EmailPreviewModal({ emailId, open, onOpenChange }: EmailPreviewM
         <ModalHeader>
           <ModalTitle>Email preview</ModalTitle>
           <ModalDescription>
-            The real, table-based HTML this email ships as — preview it desktop or mobile, and send
-            a test copy to any address.
+            The real, table-based HTML this email ships as — preview it desktop or mobile, view and
+            copy the inline-styled source, and send a test copy to any address.
           </ModalDescription>
         </ModalHeader>
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex gap-1">
             <Button
-              variant={width === 'desktop' ? 'soft' : 'ghost'}
+              variant={view === 'render' ? 'soft' : 'ghost'}
               size="sm"
-              leftIcon={<Monitor className="h-4 w-4" />}
-              onClick={() => setWidth('desktop')}
+              leftIcon={<Eye className="h-4 w-4" />}
+              onClick={() => setView('render')}
             >
-              Desktop
+              Preview
             </Button>
             <Button
-              variant={width === 'mobile' ? 'soft' : 'ghost'}
+              variant={view === 'source' ? 'soft' : 'ghost'}
               size="sm"
-              leftIcon={<Smartphone className="h-4 w-4" />}
-              onClick={() => setWidth('mobile')}
+              leftIcon={<Code2 className="h-4 w-4" />}
+              onClick={() => setView('source')}
             >
-              Mobile
+              HTML source
             </Button>
+            {view === 'render' ? (
+              <>
+                <span className="mx-1 w-px self-stretch bg-[var(--color-border-default)]" aria-hidden />
+                <Button
+                  variant={width === 'desktop' ? 'soft' : 'ghost'}
+                  size="sm"
+                  leftIcon={<Monitor className="h-4 w-4" />}
+                  onClick={() => setWidth('desktop')}
+                >
+                  Desktop
+                </Button>
+                <Button
+                  variant={width === 'mobile' ? 'soft' : 'ghost'}
+                  size="sm"
+                  leftIcon={<Smartphone className="h-4 w-4" />}
+                  onClick={() => setWidth('mobile')}
+                >
+                  Mobile
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                leftIcon={
+                  copied ? (
+                    <Check className="h-3.5 w-3.5" />
+                  ) : (
+                    <ClipboardCopy className="h-3.5 w-3.5" />
+                  )
+                }
+                disabled={!html}
+                onClick={copySource}
+              >
+                {copied ? 'Copied' : 'Copy'}
+              </Button>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <Input
@@ -132,6 +187,14 @@ export function EmailPreviewModal({ emailId, open, onOpenChange }: EmailPreviewM
             <div className="flex h-[600px] items-center justify-center text-sm text-[var(--color-text-muted)]">
               {error}
             </div>
+          ) : view === 'source' ? (
+            <Code
+              variant="block"
+              className="h-[600px] w-full overflow-auto whitespace-pre text-left"
+              aria-label="Email HTML source"
+            >
+              {html ?? ''}
+            </Code>
           ) : (
             <iframe
               title="Email preview"
