@@ -2,7 +2,7 @@
   "name": "@sparx/builder-schemas",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx Builder — the canonical node-tree + page Zod schemas and curated starter pages, shared by the service, REST, and the /builder editor. The serializable contract the backend matches (docs/41-builder-page-model.md).",
+  "description": "sparx Builder — the canonical node-tree + page Zod schemas and curated starter pages, shared by the service, REST, and the /builder editor. The serializable contract the backend matches (docs/41-builder-page-model.md).",
   "type": "module",
   "exports": {
     ".": {

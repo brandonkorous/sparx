@@ -45,12 +45,12 @@ const OLD_STACK = [
 ] as const;
 
 const NEW_STACK = [
-  { initial: 'B', name: 'Sparx Builder', color: '#6366F1' },
-  { initial: 'C', name: 'Sparx Commerce', color: '#F97316' },
-  { initial: 'C', name: 'Sparx CRM', color: '#06B6D4' },
-  { initial: 'E', name: 'Sparx Email', color: '#0EA5E9' },
-  { initial: 'C', name: 'Sparx CMS', color: '#14B8A6' },
-  { initial: 'A', name: 'Sparx AI / MCP', color: '#EC4899' },
+  { initial: 'B', name: 'sparx Builder', color: '#6366F1' },
+  { initial: 'C', name: 'sparx Commerce', color: '#F97316' },
+  { initial: 'C', name: 'sparx CRM', color: '#06B6D4' },
+  { initial: 'E', name: 'sparx Email', color: '#0EA5E9' },
+  { initial: 'C', name: 'sparx CMS', color: '#14B8A6' },
+  { initial: 'A', name: 'sparx AI / MCP', color: '#EC4899' },
 ] as const;
 
 export function StackReplacement() {
@@ -69,7 +69,7 @@ export function StackReplacement() {
           lede={
             <>
               The average growing SMB pays $2,000–$3,000/mo across Shopify, HubSpot, Mailchimp,
-              Zapier, and a dropship app — and still can&apos;t get a unified report. Sparx is one
+              Zapier, and a dropship app — and still can&apos;t get a unified report. sparx is one
               system with one data layer.
             </>
           }
@@ -131,7 +131,7 @@ export function StackReplacement() {
           <Arrow />
 
           <Panel
-            label="After · Sparx"
+            label="After · sparx"
             labelColor="#A1A1AA"
             priceLabel="$449/mo"
             priceColor="#818CF8"

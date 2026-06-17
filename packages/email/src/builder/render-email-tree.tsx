@@ -6,6 +6,7 @@ import { Column, Img, Row, Section } from '@react-email/components';
 import { renderDocToHtml } from '@sparx/cms-editor/serialize';
 import {
   cardinalityOf,
+  emailStyleFor,
   interpolateEmailTokens,
   normalizeEmailTree,
   resolvePath,
@@ -44,7 +45,7 @@ import type { SendableEmail } from '../types';
 // back out of the node's Tailwind-native `class` string (docs/61), since the
 // renderer emits inline styles rather than the classes themselves.
 
-const FALLBACK_FROM = 'Sparx <noreply@sparx.email>';
+const FALLBACK_FROM = 'sparx <noreply@sparx.email>';
 
 // Header wordmark size token → px (logo height + name font scale from this). Mirrors
 // the canvas leaf's mapping so the editor preview and the send agree.
@@ -156,6 +157,22 @@ const str = (props: Record<string, unknown>, key: string): string => {
   return typeof v === 'string' ? v : '';
 };
 
+/** The email-safe inline style compiled from a node's class (docs/98 §3.6c). The
+ *  brand supplies the color palette; the result is merged LAST onto the element so an
+ *  author's class wins over the brand/scale defaults. Empty for a class with no
+ *  email-relevant tokens, so a node that styles nothing stays on the defaults. */
+function classStyleFor(cls: string | undefined, brand: BrandTokens): React.CSSProperties {
+  return emailStyleFor(cls, {
+    primary: brand.primary,
+    primaryForeground: brand.primaryForeground,
+    accent: brand.accent,
+    background: brand.background,
+    foreground: brand.foreground,
+    muted: brand.muted,
+    border: brand.border,
+  });
+}
+
 /** A bound value as display text (mirrors the storefront renderer's `asText`). */
 function asText(value: unknown): string {
   if (typeof value === 'string') return value;
@@ -256,6 +273,10 @@ function Leaf({
   const p = node.props;
   const brand = useBrand();
   const compliance = React.useContext(ComplianceContext);
+  // The author's class compiled to email-safe inline style (Email v2) — color, size,
+  // weight, alignment, spacing. Merged onto the leaf so the editor's class controls
+  // actually reach the send, where they were ignored before.
+  const cs = classStyleFor(node.class, brand);
   // Interpolate `{{source.field}}` merge tokens in a static string prop against
   // the current scope (docs/91 §3). A bound value is real data and never re-
   // interpolated; only author-written copy/links carry tokens.
@@ -266,7 +287,11 @@ function Leaf({
       const level = str(p, 'level') || 'h2';
       const text = (bound ? asText(value) : '') || interp(str(p, 'text'));
       if (!text) return null;
-      return <EmailHeading level={level === 'h1' ? 1 : 2}>{text}</EmailHeading>;
+      return (
+        <EmailHeading level={level === 'h1' ? 1 : 2} style={cs}>
+          {text}
+        </EmailHeading>
+      );
     }
     case 'Text': {
       const variant = str(p, 'variant') || 'body';
@@ -274,9 +299,9 @@ function Leaf({
       if (!text) return null;
       // Eyebrow / meta read as the muted, smaller chrome; body is a paragraph.
       return variant === 'body' ? (
-        <EmailParagraph>{text}</EmailParagraph>
+        <EmailParagraph style={cs}>{text}</EmailParagraph>
       ) : (
-        <EmailMuted>{text}</EmailMuted>
+        <EmailMuted style={cs}>{text}</EmailMuted>
       );
     }
     case 'Prose': {
@@ -294,7 +319,7 @@ function Leaf({
       if (!html) return null;
       return (
         <div
-          style={{ ...typography.body, color: brand.foreground, fontFamily: brand.fontBody }}
+          style={{ ...typography.body, color: brand.foreground, fontFamily: brand.fontBody, ...cs }}
           dangerouslySetInnerHTML={{ __html: html }}
         />
       );
@@ -302,7 +327,11 @@ function Leaf({
     case 'Button': {
       const label = ((bound ? asText(value) : '') || interp(str(p, 'label')) || 'Button').trim();
       const href = interp(str(p, 'href')) || '#';
-      return <EmailButton href={href}>{label}</EmailButton>;
+      return (
+        <EmailButton href={href} style={cs}>
+          {label}
+        </EmailButton>
+      );
     }
     case 'Divider':
       return <EmailDivider />;
@@ -319,7 +348,7 @@ function Leaf({
           src={src}
           alt={interp(str(p, 'alt'))}
           width="100%"
-          style={{ borderRadius: 8, margin: '0 auto' }}
+          style={{ borderRadius: 8, margin: '0 auto', ...cs }}
         />
       );
     }
@@ -473,13 +502,16 @@ function EmailNode({
   }
 
   // Card is a bordered surface; other containers are plain. The Section carries
-  // the surface bg/fg, padding, text-align, and (Card) a hairline border.
+  // the surface bg/fg, padding, text-align, and (Card) a hairline border — then the
+  // author's class-compiled style (Email v2) is merged LAST, so a class can recolor,
+  // border, round, or repad the section beyond the recognized layout tokens.
   const isCard = node.type === 'Card';
   const sectionStyle: React.CSSProperties = {
     ...surfaceStyle(box.surface, brand),
     padding: padding || (isCard ? spacing.md : 0),
     textAlign: box.textAlign,
     ...(isCard ? { border: `1px solid ${brand.border}`, borderRadius: 8 } : {}),
+    ...classStyleFor(node.class, brand),
   };
 
   return <Section style={sectionStyle}>{body}</Section>;

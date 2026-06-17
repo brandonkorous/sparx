@@ -19,12 +19,12 @@ const EnvSchema = z
       .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
       .default('info'),
     DATABASE_URL: z.string().min(1),
-    // Shared with the dashboard (and any other internal Sparx service) — used
+    // Shared with the dashboard (and any other internal sparx service) — used
     // to sign + verify short-lived internal-trust JWTs that carry the staff
     // session's {tenantId, userId, role} from the dashboard to api-rest.
     SPARX_INTERNAL_JWT_SECRET: z.string().min(32),
     // Shared secret for the CRM scheduled-job CronJobs. k8s CronJobs POST
-    // to /internal/crm/* with this in the X-Sparx-Internal-Cron-Token
+    // to /internal/crm/* with this in the X-sparx-Internal-Cron-Token
     // header. Optional in dev so a fresh checkout boots; missing-in-prod
     // is the operator's responsibility to provision via Secret Manager.
     SPARX_INTERNAL_CRON_TOKEN: z.string().min(16).optional(),
@@ -34,10 +34,10 @@ const EnvSchema = z
     // different blast radius than triggering a scheduler — so it rotates
     // independently. Optional in dev; unset → the endpoint returns 401.
     SPARX_INTERNAL_ACQUISITION_TOKEN: z.string().min(16).optional(),
-    // The platform's OWN tenant (docs/80 §2 dogfooding) — Sparx/WizeWorks running
+    // The platform's OWN tenant (docs/80 §2 dogfooding) — sparx/WizeWorks running
     // as a tenant-of-record. Its tenant ID is the ONE allowed to claim a reserved
     // BRAND slug (e.g. `wizeworks`) via PATCH /v1/tenant/slug — the reservation
-    // stops OUTSIDE tenants from squatting Sparx/WizeWorks subdomains, not the
+    // stops OUTSIDE tenants from squatting sparx/WizeWorks subdomains, not the
     // platform itself. Keyed on the immutable ID (not the slug) so the value stays
     // valid across the very rename it authorizes. Ops-controlled, never
     // user-settable. Unset → no carve-out (reserved slugs blocked for everyone).
@@ -83,7 +83,7 @@ const EnvSchema = z
     GODADDY_ENV: z.enum(['prod', 'production', 'ote', 'test']).optional(),
     // Domain-checkout kill-switch. A domain registration is a HARD pass-through
     // cost — the instant we call GoDaddy `purchaseDomain`, ICANN/GoDaddy bills the
-    // Sparx reseller account for real (no trial, no reversal). So buying a NEW
+    // sparx reseller account for real (no trial, no reversal). So buying a NEW
     // domain (and renewing one) is gated OFF until tenant billing (Stripe
     // card-on-file) is wired and we can charge the tenant BEFORE registering. Off
     // → POST /v1/domains/purchase and /:id/renew return 403, and the dashboard

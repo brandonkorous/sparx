@@ -21,6 +21,8 @@ import { z } from 'zod';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { notFound } from '@sparx/api-core/errors';
 import { prisma, withTenant } from '@sparx/db';
+import { isModuleEnabled } from '@sparx/auth';
+import { computeAvailability } from '@sparx/inventory';
 import { searchProducts } from '@sparx/search';
 import { resolvePublicPropertyId, productSiteVisibilityWhere } from '../../../lib/property.js';
 
@@ -433,16 +435,19 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
       ...(q.collection ? { collectionLinks: { some: { collectionId: q.collection } } } : {}),
       ...(q.category ? { categoryLinks: { some: { categoryId: q.category } } } : {}),
     };
-    const rows = await withTenant({ tenantId }, (tx) =>
-      tx.product.findMany({
-        where,
-        orderBy: [{ inStock: 'desc' }, { updatedAt: 'desc' }],
-        // An id pin returns every requested product; a source is capped.
-        take: ids ? undefined : q.limit,
-        select: FULL_PRODUCT_SELECT,
-      })
-    );
-    let list = rows.map(mapFullProduct);
+    const [rows, inventoryActive] = await Promise.all([
+      withTenant({ tenantId }, (tx) =>
+        tx.product.findMany({
+          where,
+          orderBy: [{ inStock: 'desc' }, { updatedAt: 'desc' }],
+          // An id pin returns every requested product; a source is capped.
+          take: ids ? undefined : q.limit,
+          select: FULL_PRODUCT_SELECT,
+        })
+      ),
+      isModuleEnabled(tenantId, 'inventory'),
+    ]);
+    let list = rows.map((r) => mapFullProduct(r, inventoryActive));
     // Preserve the requested id order (Prisma's `in` does not guarantee it).
     if (ids) {
       const byId = new Map(list.map((p) => [p.id, p]));
@@ -459,20 +464,23 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
-    const result = await withTenant({ tenantId }, (tx) =>
-      tx.product.findFirst({
-        // Model B: a product not visible on the active site 404s by URL too.
-        where: {
-          handle,
-          status: 'active',
-          deletedAt: null,
-          ...productSiteVisibilityWhere(propertyId),
-        },
-        select: FULL_PRODUCT_SELECT,
-      })
-    );
+    const [result, inventoryActive] = await Promise.all([
+      withTenant({ tenantId }, (tx) =>
+        tx.product.findFirst({
+          // Model B: a product not visible on the active site 404s by URL too.
+          where: {
+            handle,
+            status: 'active',
+            deletedAt: null,
+            ...productSiteVisibilityWhere(propertyId),
+          },
+          select: FULL_PRODUCT_SELECT,
+        })
+      ),
+      isModuleEnabled(tenantId, 'inventory'),
+    ]);
     if (!result) throw notFound('Product', handle);
-    return ok(mapFullProduct(result));
+    return ok(mapFullProduct(result, inventoryActive));
   });
 
   // ─── Categories ────────────────────────────────────────────────────
@@ -721,8 +729,10 @@ const FULL_PRODUCT_SELECT = {
 
 type FullProductRow = Prisma.ProductGetPayload<{ select: typeof FULL_PRODUCT_SELECT }>;
 
-/** Map a full product row to the PUBLIC PDP shape (the storefront's PublicProduct). */
-function mapFullProduct(result: FullProductRow) {
+/** Map a full product row to the PUBLIC PDP shape (the storefront's PublicProduct).
+ *  `inventoryActive` flows through to the availability rule: when the inventory
+ *  module is off the variant degrades to untracked (always in stock) — docs/100 §2.4. */
+function mapFullProduct(result: FullProductRow, inventoryActive: boolean) {
   return {
     ...publicProduct(result),
     fulfillmentType: result.fulfillmentType,
@@ -733,12 +743,12 @@ function mapFullProduct(result: FullProductRow) {
         : null,
     options: result.options,
     variants: result.variants.map((v) => {
-      // Sum available across every warehouse; the cart engine picks the real one at
-      // reserve time — here we just want one number the buy-box can render.
-      const available = v.inventoryLevels.reduce(
-        (acc, l) => acc + Math.max(0, l.onHand - l.allocated),
-        0
-      );
+      // Sum available across every warehouse via the shared availability rule; the
+      // cart engine picks the real one at reserve time — here we just want one
+      // number the buy-box can render. Untracked (module off) → always available.
+      const { available, inStock } = computeAvailability(v.inventoryLevels, v.inventoryPolicy, {
+        inventoryActive,
+      });
       return {
         id: v.id,
         sku: v.sku,
@@ -748,8 +758,8 @@ function mapFullProduct(result: FullProductRow) {
         isDefault: v.isDefault,
         inventoryPolicy: v.inventoryPolicy,
         optionValueIds: v.optionAssignments.map((ov) => ov.optionValueId),
-        available,
-        inStock: available > 0 || v.inventoryPolicy !== 'deny',
+        available: available ?? 0,
+        inStock,
       };
     }),
     images: result.images.map((img) => ({

@@ -29,7 +29,7 @@ const FEATURES = [
     icon: <CalendarIcon />,
     number: '05',
     title: 'Service scheduling',
-    body: 'Bookable bays, technicians, parts. Customer-portal scheduling. Reminders via Sparx Email.',
+    body: 'Bookable bays, technicians, parts. Customer-portal scheduling. Reminders via sparx Email.',
   },
   {
     icon: <ShieldIcon />,
@@ -56,7 +56,7 @@ export function B2bSpotlight() {
           }
           lede={
             <>
-              Shopify charges $2,400/mo for B2B and still doesn&apos;t do net terms properly. Sparx
+              Shopify charges $2,400/mo for B2B and still doesn&apos;t do net terms properly. sparx
               ships wholesale pricing, RFQ, purchase orders, fleet accounts, and service scheduling
               natively. $99/mo. Built for the way industrial actually works.
             </>

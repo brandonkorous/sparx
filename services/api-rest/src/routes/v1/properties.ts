@@ -113,6 +113,7 @@ const MODULE_SLUGS = [
   'email',
   'b2b',
   'dropship',
+  'inventory',
   'ai',
 ] as const;
 

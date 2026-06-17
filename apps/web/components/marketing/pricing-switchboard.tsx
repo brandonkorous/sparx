@@ -36,7 +36,7 @@ const MODULES: Mod[] = [
     price: 10,
     elsewhere: 39,
     color: 'var(--module-builder)',
-    long: 'The foundation every Sparx site starts on. Pick a polished theme, edit blocks, point your domain — automatic SSL, edge-cached pages, instant TTFB worldwide. Power users go fully headless against the same API.',
+    long: 'The foundation every sparx site starts on. Pick a polished theme, edit blocks, point your domain — automatic SSL, edge-cached pages, instant TTFB worldwide. Power users go fully headless against the same API.',
     feats: [
       'Theme-first, customize what matters',
       'Custom domain + automatic SSL',
@@ -175,6 +175,23 @@ const MODULES: Mod[] = [
     addon: true,
   },
   {
+    key: 'inventory',
+    name: 'Inventory',
+    desc: 'Stock, warehouses, ledger',
+    price: 29,
+    elsewhere: 99,
+    color: 'var(--module-inventory)',
+    long: 'A real inventory system under your catalog — multi-warehouse stock with an append-only movement ledger that makes every count auditable, reservations, lots and serials, and reorder alerts. Included free with Commerce or B2B; runs standalone as WMS-lite.',
+    feats: [
+      'Multi-warehouse on-hand / allocated / available',
+      'Audited movement ledger — every change attributable',
+      'Lots, serials, expiry & recalls',
+      'Reorder points + low-stock alerts',
+    ],
+    replaces: 'a WMS/IMS add-on like inFlow or Katana',
+    addon: true,
+  },
+  {
     key: 'chat',
     name: 'Live Chat',
     desc: 'Widget, AI replies, inbox',
@@ -207,6 +224,7 @@ const REQUIRES: Record<string, string[]> = {
 };
 const BUNDLED_FREE: Record<string, string[]> = {
   invoicing: ['b2b', 'commerce'],
+  inventory: ['commerce', 'b2b'],
 };
 const moduleName = (key: string): string => MODULES.find((x) => x.key === key)?.name ?? key;
 const activeBundlers = (on: Record<string, boolean>, key: string): string[] =>

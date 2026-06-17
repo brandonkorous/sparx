@@ -5,9 +5,9 @@ import { Container, Eyebrow, Display, Spark } from '@/components/marketing/primi
 import { LegalSection, LegalP, LegalList } from '@/components/marketing/legal-doc';
 
 export const metadata: Metadata = {
-  title: 'Security — Sparx',
+  title: 'Security — sparx',
   description:
-    'How Sparx protects your data: database-level tenant isolation, encryption everywhere, and an active SOC 2 program.',
+    'How sparx protects your data: database-level tenant isolation, encryption everywhere, and an active SOC 2 program.',
   alternates: { canonical: '/security' },
 };
 
@@ -41,7 +41,7 @@ export default function SecurityPage() {
               paddingTop: '8px',
             }}
           >
-            Security is built into Sparx&rsquo;s architecture, not bolted on. Here is how we protect
+            Security is built into sparx&rsquo;s architecture, not bolted on. Here is how we protect
             your data and your customers&rsquo;.
           </p>
         </Container>
@@ -59,7 +59,7 @@ export default function SecurityPage() {
           <div style={{ maxWidth: '760px', display: 'flex', flexDirection: 'column', gap: '40px' }}>
             <LegalSection heading="Tenant isolation">
               <LegalP>
-                Sparx is multi-tenant, and isolation is enforced at the database layer with
+                sparx is multi-tenant, and isolation is enforced at the database layer with
                 PostgreSQL row-level security — not just in application code. Every tenant-scoped
                 table carries a tenant id and a policy that makes cross-tenant reads impossible even
                 if application logic has a bug. It is the backstop the rest of the platform is built
@@ -87,7 +87,7 @@ export default function SecurityPage() {
 
             <LegalSection heading="Compliance">
               <LegalP>
-                Sparx is undergoing a SOC 2 Type II examination. We offer a GDPR/CCPA-aligned{' '}
+                sparx is undergoing a SOC 2 Type II examination. We offer a GDPR/CCPA-aligned{' '}
                 <a href="/legal/dpa">Data Processing Addendum</a>, and our{' '}
                 <a href="/legal/privacy">Privacy Policy</a> describes how we handle personal data as
                 both a controller and a processor.

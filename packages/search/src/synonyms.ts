@@ -2,7 +2,7 @@
 // "turbo" also matches "turbocharger" / "turbine" / "tc". Per docs/22 §6.
 //
 // IMPORTANT — why GLOBAL only, not per-tenant: Typesense synonyms are a
-// collection-level resource, and Sparx uses ONE shared `products` collection
+// collection-level resource, and sparx uses ONE shared `products` collection
 // partitioned by a `tenant_id` filter (not a collection per tenant). A synonym
 // added for one tenant would therefore apply to every tenant's queries — a
 // cross-tenant leak of tenant-configured vocabulary. So we ship a curated
@@ -22,7 +22,7 @@ export interface SynonymGroup {
 }
 
 // Multi-way synonym groups — any term in a group matches the others. Curated
-// for the diesel/auto/industrial catalogs Sparx serves first (Gillett Diesel
+// for the diesel/auto/industrial catalogs sparx serves first (Gillett Diesel
 // et al.); safe and useful across every tenant's product search.
 export const GLOBAL_PRODUCT_SYNONYMS: SynonymGroup[] = [
   { id: 'turbo', synonyms: ['turbo', 'turbocharger', 'turbine', 'tc'] },

@@ -1,4 +1,4 @@
-// Stripe → gateway-interface mapping, shared by the Sparx Pay + Stripe Direct
+// Stripe → gateway-interface mapping, shared by the sparx Pay + Stripe Direct
 // gateways. Collapses Stripe's wider vocabulary into the interface's enums and
 // normalizes raw Stripe events into the platform's payment vocabulary (ADR §10).
 

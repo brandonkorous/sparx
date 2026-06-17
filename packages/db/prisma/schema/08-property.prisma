@@ -76,10 +76,10 @@ model Property {
   siteConfig           SiteConfig?
   siteVersions         SiteVersion[]
   sitePublishSchedules SitePublishSchedule[]
-  commerceSiteTheme      CommerceSiteTheme?
+  commerceSiteTheme    CommerceSiteTheme?
   // Per-site commerce defaults + checkout policy (docs/49 Phase 6b); a site with
   // no row inherits the primary's at read time.
-  commerceSiteSettings   CommerceSiteSettings?
+  commerceSiteSettings CommerceSiteSettings?
   // Per-site legal/footer doc placements (docs/49 Phase 6c); null-property
   // placements are tenant-wide and show on every site.
   docPlacements        SiteDocPlacement[]

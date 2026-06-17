@@ -22,7 +22,7 @@ export interface AuthFrameProps {
 // setup) and the form on the right. No top header — the rail carries the brand.
 //
 // Below 820px the rail drops away and the form takes the full width, with a
-// compact dark wordmark above it so small screens still read as Sparx.
+// compact dark wordmark above it so small screens still read as sparx.
 export function AuthFrame({ lede, aside, asideFooter, children, className }: AuthFrameProps) {
   return (
     <div

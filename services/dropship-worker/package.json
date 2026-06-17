@@ -2,7 +2,7 @@
   "name": "@sparx/dropship-worker",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx dropship worker. Handles catalog sync and order routing via Pub/Sub push (Cloud Run). docs/14, docs/64 Ph3.",
+  "description": "sparx dropship worker. Handles catalog sync and order routing via Pub/Sub push (Cloud Run). docs/14, docs/64 Ph3.",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {

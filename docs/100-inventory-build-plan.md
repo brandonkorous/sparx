@@ -1,6 +1,6 @@
-# Sparx Platform — Inventory Product Build Plan
+# sparx Platform — Inventory Product Build Plan
 
-**Version:** 1.0
+**Version:** 1.3
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-16
 
@@ -8,7 +8,7 @@
 
 ## 0. What this is
 
-The build plan for **Inventory as a first-class, standalone Sparx product** — the scope decided in
+The build plan for **Inventory as a first-class, standalone sparx product** — the scope decided in
 [docs/99 §4](99-inventory-implementation-audit.md). docs/99 is the audit + target architecture; this
 doc is the _how_: package topology, data model, the six phases, and the exact integration points.
 
@@ -62,13 +62,22 @@ on with the module.
 
 ```
 @sparx/inventory          NEW — owns the supply domain (service + events + errors + MCP tools)
-   ├─ depends on: @sparx/db, @sparx/inventory-schemas, shared low-level publisher
+   ├─ depends on: @sparx/db, @sparx/commerce-schemas¹, shared low-level publisher
    └─ depends on NO other module package  ← keeps the dependency graph acyclic
-@sparx/inventory-schemas  NEW — Zod inputs + row types (moved from @sparx/commerce-schemas)
+@sparx/inventory-schemas  DEFERRED¹ — Zod inputs stay in @sparx/commerce-schemas for now
 @sparx/commerce           consumes @sparx/inventory (checkout reserve/commit, return restock)
 @sparx/crm                emits order.* events; an inventory consumer reacts (no direct dep)
 services/inventory-worker EXISTING — repurposed to write the master ledger, + sync adapters
 ```
+
+> **¹ Deferral (as built in P1a, 2026-06-16).** The standalone `@sparx/inventory-schemas` split was
+> **deferred**. The inventory Zod inputs continue to live in `@sparx/commerce-schemas`, which is a
+> dependency-free **shared leaf** — `@sparx/inventory` importing it keeps the graph acyclic, so the split
+> buys ownership tidiness, not correctness. The blocker: inventory's Zod inputs share primitives
+> (`AddressSnapshot`, `HazmatClass`, money/units helpers) with the commerce schemas, so a clean split
+> means first extracting those primitives to a third shared leaf — a knot not worth untying mid-foundation.
+> Revisit once the supply-side schema surface (PO/receiving/count inputs) is large enough to justify its
+> own home. Tracked here so the topology above reads as intent, not current state.
 
 **Dependency rule:** consumers point _at_ inventory; inventory points at no module. This is why the
 extraction must also lift the shared primitives inventory currently borrows from commerce.
@@ -77,13 +86,13 @@ extraction must also lift the shared primitives inventory currently borrows from
 
 `inventory-service.ts` today imports from `@sparx/commerce`'s internals:
 
-| Borrowed today                                              | Resolution                                                                                                                     |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `@sparx/commerce-schemas` (inputs/types)                    | move inventory Zod schemas → new `@sparx/inventory-schemas`                                                                    |
-| `../audit` (`writeAuditLog`)                                | `writeAuditLog` writes the shared `AuditLog` table → lift to a shared util (or `@sparx/db`) both modules import                |
-| `../events` (`publishCommerceEvent`, `indexCommerceEntity`) | publish `inventory.*` via the **shared low-level publisher** (`createPublisher`) directly; inventory owns its own event helper |
-| `../errors` (`CommerceOutOfStockError`, …)                  | define `@sparx/inventory` error classes (or a shared `@sparx/errors`)                                                          |
-| `@sparx/db` (Prisma)                                        | unchanged — single shared client                                                                                               |
+| Borrowed today                                              | Resolution                                                                                                                                  |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@sparx/commerce-schemas` (inputs/types)                    | **DEFERRED** — Zod inputs stay in `@sparx/commerce-schemas` (shared leaf, acyclic); `@sparx/inventory-schemas` split postponed (see §2.1 ¹) |
+| `../audit` (`writeAuditLog`)                                | `writeAuditLog` writes the shared `AuditLog` table → lift to a shared util (or `@sparx/db`) both modules import                             |
+| `../events` (`publishCommerceEvent`, `indexCommerceEntity`) | publish `inventory.*` via the **shared low-level publisher** (`createPublisher`) directly; inventory owns its own event helper              |
+| `../errors` (`CommerceOutOfStockError`, …)                  | define `@sparx/inventory` error classes (or a shared `@sparx/errors`)                                                                       |
+| `@sparx/db` (Prisma)                                        | unchanged — single shared client                                                                                                            |
 
 > Prisma is **one shared client over one schema folder** — "extracting a package" is **code
 > organization + ownership**, not a separate database. **Tables are renamed `commerce_* → inventory_*`
@@ -168,40 +177,93 @@ and commerce off.
 
 **Work:**
 
-1. **Create `@sparx/inventory` + `@sparx/inventory-schemas`** (use the `new-workspace-package` skill).
-   Move `inventory-service.ts` + inventory Zod schemas; resolve the §2.2 untangle (own events/errors,
-   shared audit). Re-export so existing importers (MCP read/write tools, reservation-reaper) switch to
-   `@sparx/inventory`. `@sparx/commerce` keeps a thin re-export shim only if needed for an interim.
+1. **Create `@sparx/inventory`** (use the `new-workspace-package` skill). _(`@sparx/inventory-schemas`
+   split **deferred** — Zod inputs stay in `@sparx/commerce-schemas`; see §2.1 ¹.)_
+   Move `inventory-service.ts`; resolve the §2.2 untangle (own events/errors, shared audit). Re-export so
+   existing importers (MCP read/write tools, reservation-reaper) switch to `@sparx/inventory`.
+   `@sparx/commerce` keeps a thin re-export shim only if needed for an interim. ✅ **DONE (P1a, PR #64).**
 2. **Unify the stock model.** Make `InventoryLevel`/`Warehouse` the single master:
    - Migrate any `StockLevel`/`StockLocation` data into `InventoryLevel`/`Warehouse`; map location
-     types; add `transit`/`bin`/`virtual` to `Warehouse.type`.
+     types; add `transit`/`bin`/`virtual` to `Warehouse.type`. ✅ **DONE (P1c)** — the migration lifts
+     `stock_locations` → `inventory_warehouses` (preserving ids, synthesized `LOC-…` codes) and
+     `stock_levels` → `inventory_levels` + an opening `sync` movement per lifted level (so `Σ(movements)`
+     holds), looped per-tenant with `app.tenant_id` set (FORCE-RLS footgun). Sync locations fold onto the
+     existing `Warehouse.type` vocabulary (`owned`/`3pl`/`virtual`), so no new enum values were needed.
    - Repoint the **sync worker** (`services/inventory-worker/src/handlers/sync.ts`) and the
      `POST /v1/inventory/sources/:id/push` + `/sync` endpoints to upsert `InventoryLevel` via the
-     ledger (`sync_reconcile` movement), not `stock_levels`.
+     ledger (`sync` reconcile movement), not `stock_levels`. ✅ **DONE (P1c)** — both call
+     `inventoryService.reconcileStockLevel()`, which derives a corrective delta inside the level's row
+     lock (`applyMovement` `setOnHand`) → `sync` movement, `actorType: 'integration'`. `InventorySourceLink`
+     repointed from `stock_locations` to `inventory_warehouses` (`location_id` → `warehouse_id`).
    - **Rename now:** `commerce_* → inventory_*` tables and `InventoryAdjustment → InventoryMovement`
-     (`inventory_movements`); re-apply RLS (§2.2, §7).
+     (`inventory_movements`); re-apply RLS (§2.2, §7). ✅ **DONE (P1b)** — migration
+     `20260901000000_inventory_module_ledger` (data-preserving ALTER RENAME of all six tables + their
+     PKs/FKs/indexes/RLS policies).
    - Retire `stock_levels`/`StockLocation` (drop after data move; RLS-aware migration via the pipeline).
+     ✅ **DONE (P1c)** — migration `20260902000000_inventory_unify_stock` (per-tenant data lift → FK
+     repoint → `DROP TABLE stock_levels, stock_locations`).
 3. **Movement ledger as the sole write path** (§2.5). Route every `onHand` mutation through one internal
    `applyMovement()` that appends an `InventoryMovement` with `actorType`/`actorId`/`source` + an optional
    unique `idempotencyKey`, taking a row lock on the level for concurrency safety. Add a reconcile check
    (`onHand == Σ(movements)`) and a stored `avgCostCents` updated on costed inbound movements
-   (moving-average, §2.3).
-4. **Re-point reads at the master:**
-   - `inventory-valuation.ts` `computeValuation()` → `InventoryLevel` (valuation now non-zero).
-   - `routes/v1/inventory/reports.ts` (summary/by-location/activity/valuation) → master + the ledger
-     (activity feed reads `InventoryAdjustment`, not `stock_levels` diffs).
-   - `/inventory` overview page → the re-pointed reports.
-5. **Move the operational pages under `/inventory`:** `/commerce/inventory` → `/inventory` (stock grid),
-   `/commerce/warehouses` → `/inventory/warehouses`, `/commerce/lots` → `/inventory/lots`. Rebuild the
-   `/inventory` overview off the master. Update the `inventoryManifest` sections.
+   (moving-average, §2.3). ✅ **DONE (P1b)** — `applyMovement` (services/ledger.ts) is the sole onHand
+   writer (`SELECT … FOR UPDATE` lock, idempotency dedupe, actor attribution, `balanceAfter` running
+   balance, moving-average `avgCostCents`); `adjust`/`transfer`/`commit` all route through it. The 1085-line
+   service was split by concern (warehouses · levels · ledger · movements · reservations · lots). The
+   `onHand == Σ(movements)` reconcile invariant is guaranteed structurally (single writer + `balanceAfter`);
+   a standalone reconcile/audit report is P4. ✅ **Hardened + proven (P1e)** — the deferred DB-backed
+   integration test (`packages/inventory/test/integration/ledger.test.ts`, real Postgres) pins the
+   Σ-invariant + running `balanceAfter`, idempotency-key dedupe, the absolute `setOnHand` reconcile, AND a
+   concurrent-writer test. That last one surfaced a real hole: the "ensure the level row exists" step used a
+   Prisma `upsert` (SELECT-then-INSERT), so a concurrent burst of the **first** movement on a brand-new
+   (variant, warehouse) collided on the PK instead of serializing. Fixed to an atomic
+   `INSERT … ON CONFLICT (variant_id, warehouse_id) DO NOTHING`, so the FOR UPDATE lock's concurrency
+   guarantee now holds even for first-touch.
+4. **Re-point reads at the master:** ✅ **DONE (P1c)** — verified against the dev DB (155 on-hand units +
+   3 ledger movements that the old `stock_levels`-backed reports showed as zeros).
+   - `inventory-valuation.ts` `computeValuation()` → `inventory_levels`, costed at the moving-average basis
+     (avg → unit → variant cost). Valuation now non-zero. ✅
+   - `routes/v1/inventory/reports.ts` (summary/by-warehouse/activity) → master + the ledger. The activity
+     feed is the real `inventory_movements` ledger (delta · reason · running balance), not `stock_levels`
+     `updatedAt` diffs. ✅
+   - `/inventory` overview page → the re-pointed reports; the recent-changes card renders the movement feed,
+     and `/inventory/locations` now lists `Warehouse`s (one stock model). ✅
+5. **Move the operational pages under `/inventory`:** `/commerce/inventory` → `/inventory/stock`,
+   `/commerce/warehouses` → `/inventory/warehouses`, `/commerce/lots` → `/inventory/lots`; the
+   `/inventory` route itself stays the master-backed **overview** (the stock grid moved to
+   `/inventory/stock` so the landing isn't displaced). Update the `inventoryManifest` sections.
+   ✅ **DONE (P1e)** — pages moved (history-preserving `git mv`); the inventory module owns its own API
+   namespace `/v1/inventory/*` (`stock.ts` levels/adjust/transfer/reorder/low-stock/enriched + `lots.ts`
+   lots/serials/recalls), gated by `requireInventoryModule` so a standalone WMS tenant manages stock with
+   no commerce. The orphaned `/v1/commerce/inventory*` + `/v1/commerce/warehouses` routes were removed and
+   their commerce-side consumers (product editor Inventory tab, settings, detail-slot, universal-search
+   warehouse projector) repointed to `/v1/inventory/*` (inventory rides free with Commerce, so the gate
+   passes). The bare `/inventory/locations` page was retired in favour of `/inventory/warehouses`.
 6. **Finish module wiring** — add `'inventory'` to the lists in §1 (price `2900`, `BUNDLED_FREE` with
    commerce/b2b) and build the commerce/b2b **degrade-without-inventory** path (untracked = always available).
+   ✅ **DONE (P1e)** — `MODULE_MONTHLY_CENTS.inventory = 2900`; `BUNDLED_FREE: inventory → [commerce, b2b]`
+   in `@sparx/modules` + the dashboard/web switchboard mirrors; `properties.ts` `MODULE_SLUGS` +
+   `BlueprintModuleSlug` extended (dashboard.ts + activation slugs already had it). The degrade path is the
+   shared `computeAvailability(levels, policy, { inventoryActive })` in `@sparx/inventory` — the single home
+   for "untracked = always available" — wired into the storefront PDP read (`mapFullProduct` passes
+   `isModuleEnabled(tenantId, 'inventory')`); module off → unbounded, always in stock, seam no-ops.
 7. **Seed** real inventory data (warehouses + levels + movements + lots) so a fresh tenant shows a
    populated module (per the "seed rich local data" rule).
+   ✅ **DONE (P1e)** — `seedDemoInventory()` builds a focused diesel-parts catalog (8 products / 10 variants,
+   the Gillett vertical) across 2 warehouses, writing opening movements the `applyMovement` way (Σ(delta) ==
+   on_hand, running `balance_after`). Verified against docker pg: **0 invariant mismatches**, valuation
+   $24,718.50 cost / $50,138.57 retail over 925 units, OUT=1/LOW=3/HEALTHY=11, 36 movements, 1 active recall,
+   4 lots — the module renders real numbers. Idempotent (handle `inv-demo-*` drop+recreate); the products
+   double as a small commerce catalog for the seeded tenant.
 
 **Deploy gate:** `/inventory` overview + valuation render real numbers for the seeded tenant; manual
 adjust/transfer/reorder work; MCP `get_low_inventory`/`update_inventory` still green; existing commerce
 flows unaffected (they didn't touch inventory yet anyway).
+
+> **✅ Phase 1 (Foundation) is COMPLETE** as of P1e (P1a package extract → P1b ledger + rename → P1c unify +
+> repoint reads → P1e pages + module wiring + degrade seam + seed + DB-backed ledger test). `/inventory`
+> renders real numbers, the module is activatable + standalone-usable, and commerce/B2B degrade without it.
+> Next: **P2 — wire reserve/commit/release into cart → checkout → order**.
 
 **Risks:** data move `StockLevel`→`InventoryLevel` (idempotent migration + reconcile); RLS on any new/
 renamed table (hand-edit, FORCE-RLS backfill footgun per packages/db/CLAUDE.md); the package extraction

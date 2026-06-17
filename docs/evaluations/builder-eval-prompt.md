@@ -1,10 +1,10 @@
-# Sparx `/builder` — Comprehensive Evaluation Brief
+# sparx `/builder` — Comprehensive Evaluation Brief
 
 > Hand this entire document to the evaluating agent as its task prompt. It is self-contained.
 
 ## Your mission
 
-You are evaluating the Sparx **site builder** (`/builder` and its sub-surfaces) on two axes at once:
+You are evaluating the sparx **site builder** (`/builder` and its sub-surfaces) on two axes at once:
 
 1. **Does it work?** — functional correctness. Every action a user can take should do what it claims, persist, and survive a reload / publish.
 2. **Is it a good user experience?** — discoverability, friction, clarity, responsiveness, polish, and whether a real person could actually build a site without getting stuck.
@@ -17,7 +17,7 @@ This is a production-quality product (no MVP/stub tolerance — see the house ru
 
 ## What the builder is (so your findings use the right vocabulary)
 
-Sparx is a modular content + commerce platform. The builder lets a tenant compose their **site, pages, email, brand/theme, and reusable components** out of a recursive node tree. Core model:
+sparx is a modular content + commerce platform. The builder lets a tenant compose their **site, pages, email, brand/theme, and reusable components** out of a recursive node tree. Core model:
 
 - A document is a tree of nodes: `{ id, type, name?, class?, props, binding?, children? }`.
 - **`class` is the only styling surface** — Tailwind-native utility strings, compiled per-tenant and scoped to `.bx-canvas` in the editor (class-first authoring, docs/47, docs/61). There is no separate box/layout object persisted.

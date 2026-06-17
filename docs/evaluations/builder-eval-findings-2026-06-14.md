@@ -1,4 +1,4 @@
-# Sparx `/builder` — Evaluation Findings
+# sparx `/builder` — Evaluation Findings
 
 > **Version:** 1.1 · **Author:** Brandon Korous · **Last Updated:** 2026-06-15
 > Evaluation brief: [builder-eval-prompt.md](builder-eval-prompt.md). Driven against the locally-running stack (dashboard `:3001`, api-rest `:3100`, site `:3004`) as the seeded `e2e-staff@sparx.test` user, tenant **E2E Store**, with the active site set to the non-primary **Ironleaf Tattoo Co.** property for most of the pass. Screenshots under [assets/builder-eval/](assets/builder-eval/).

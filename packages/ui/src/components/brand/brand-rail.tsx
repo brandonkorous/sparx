@@ -14,11 +14,12 @@ import { cn } from '../../utils/cn';
 
 // Strong, flat shade of the active module color. Darkening the 500 shade lands
 // on the module's "strong" shade (indigo → ~#4f46e5) and lifts white-on-rail
-// contrast above AA. A single flat color — no gradient (Sparx is flat).
+// contrast above AA. A single flat color — no gradient (sparx is flat).
 export const RAIL_BG = 'color-mix(in oklab, var(--module-active) 86%, #000)';
 
-// The inverted Sparx wordmark for a colored rail: white "Spar" + a light tint of
-// the module color "x". The "x" keeps its brand role even on the rail.
+// The inverted sparx wordmark for a colored rail: white "spar" + a light tint of
+// the module color "x". The "x" keeps its brand role even on the rail. The
+// wordmark is all-lowercase by design.
 export function RailWordmark() {
   return (
     <span
@@ -31,7 +32,7 @@ export function RailWordmark() {
         color: '#fff',
       }}
     >
-      Spar
+      spar
       <span style={{ color: 'color-mix(in oklab, #fff 55%, var(--module-active))' }}>x</span>
     </span>
   );

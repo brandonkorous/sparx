@@ -155,7 +155,7 @@ function DomainRow({
         </Badge>
         {isZone && (
           <Badge color="neutral" variant="outline">
-            Sparx zone
+            sparx zone
           </Badge>
         )}
         {isPurchased && (
@@ -574,7 +574,7 @@ export function DomainsManager({ properties, domains, purchaseEnabled }: Domains
       const ok = await confirm({
         title: `Transfer out ${domain.host}?`,
         description:
-          'This will generate an auth code to transfer your domain to another registrar. The domain will be locked during transfer. This removes it from Sparx hosting.',
+          'This will generate an auth code to transfer your domain to another registrar. The domain will be locked during transfer. This removes it from sparx hosting.',
         confirmLabel: 'Generate auth code',
         tone: 'warning',
       });
@@ -692,11 +692,11 @@ export function DomainsManager({ properties, domains, purchaseEnabled }: Domains
         </Card>
       )}
 
-      {/* ── Sparx zone subdomains ──────────────────────────────────────────── */}
+      {/* ── sparx zone subdomains ──────────────────────────────────────────── */}
       {zone.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Sparx zone addresses</CardTitle>
+            <CardTitle>sparx zone addresses</CardTitle>
           </CardHeader>
           <CardContent>
             <Stack gap={2}>

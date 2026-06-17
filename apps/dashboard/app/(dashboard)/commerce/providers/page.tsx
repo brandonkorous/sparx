@@ -84,7 +84,7 @@ export default async function ProvidersPage({ searchParams }: PageProps) {
               {installed.length} installed · {available.length} available
             </Badge>
           }
-          description="Pick a payment / tax / shipping / subscription provider per environment. Sparx-branded options wrap a real provider underneath (Stripe for Sparx Pay, Shippo for Sparx Shipping) so a merchant who doesn't want to manage carrier accounts can still transact. Sandbox installs run real provider calls against the provider's test environment."
+          description="Pick a payment / tax / shipping / subscription provider per environment. sparx-branded options wrap a real provider underneath (Stripe for sparx Pay, Shippo for sparx Shipping) so a merchant who doesn't want to manage carrier accounts can still transact. Sandbox installs run real provider calls against the provider's test environment."
         />
 
         <ListToolbar enableViewToggle searchable={false} />

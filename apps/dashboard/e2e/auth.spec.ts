@@ -38,7 +38,7 @@ test.describe('Sign-in page', () => {
 test.describe('Sign-up page', () => {
   test('renders the form with link to sign-in', async ({ page }) => {
     await page.goto('/sign-up');
-    await expect(page.getByRole('heading', { name: 'Create your Sparx account' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Create your sparx account' })).toBeVisible();
     await expect(page.getByLabel('Your name')).toBeVisible();
     await expect(page.getByLabel('Site name')).toBeVisible();
     await expect(page.getByLabel('Work email')).toBeVisible();

@@ -9,7 +9,7 @@ import {
 } from './provision-tenant';
 
 // Tenant self-service signup. Better Auth's stock `signUpEmail` assumes one
-// user = one account. Sparx needs each new tenant to also get a Tenant row (+
+// user = one account. sparx needs each new tenant to also get a Tenant row (+
 // primary property + `<slug>.sparx.zone` subdomain), so we do those writes
 // ourselves via provisionTenant() and let Better Auth handle session creation
 // via signIn afterwards. The same provisionTenant() backs the Google OAuth path,
@@ -108,7 +108,7 @@ export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUp
         },
       });
 
-      // Record acceptance of Sparx's platform legal docs (docs/42 §6) atomically
+      // Record acceptance of sparx's platform legal docs (docs/42 §6) atomically
       // with account creation — the sign-up form gates on the agreement
       // checkbox, so reaching here means the owner accepted. DPA is EU-only and
       // handled post-onboarding, so it's not in ONBOARDING_LEGAL_DOCS.

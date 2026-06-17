@@ -56,7 +56,7 @@ export default async function InventorySourcesPage({ searchParams }: PageProps) 
               {total} source{total !== 1 ? 's' : ''}
             </Badge>
           }
-          description="Inventory feeds that push stock counts into Sparx."
+          description="Inventory feeds that push stock counts into sparx."
           actions={<NewSourceButton />}
         />
 

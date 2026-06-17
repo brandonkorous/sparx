@@ -18,7 +18,7 @@ export default function NewAuthorPage() {
           description="Add a byline for blog posts and editorial entries. Slug auto-derives from the display name when omitted; it must be unique within the tenant."
         />
 
-        <AuthorCreateForm />
+        <AuthorCreateForm surface="page" />
       </Stack>
     </Container>
   );

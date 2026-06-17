@@ -57,8 +57,10 @@ function tileIconClass(active: boolean) {
 // resolves per-module here. Favorites/Recents items reuse this too — each is a
 // module-owned section/action, so it rides under its module's ModuleProvider and
 // the glyph adopts that module's color (a CRM favorite reads cyan, a Commerce
-// one orange). Only the true platform shortcuts (Home/Search/Settings/Marketplace/
-// SEO) keep the neutral tileIconClass since they have no module color.
+// one orange). Automations and SEO are platform surfaces (not in moduleManifests)
+// but each owns a brand color, so they're wrapped in a ModuleProvider and use this
+// too (fuchsia / yellow). Only the true neutral shortcuts (Home/Search/Settings/
+// Marketplace) keep the neutral tileIconClass since they have no module color.
 const MODULE_TILE_ICON =
   'inline-flex h-4 w-4 shrink-0 items-center justify-center text-[var(--module-active)]';
 
@@ -182,40 +184,46 @@ export function RailNav({ pathname, enabledModules, favorites, recents }: RailNa
         {/* Automations — a platform CAPABILITY, not an activatable module
             (docs/81 §1, §3): a cross-module rule engine reachable whenever the
             tenant has ≥1 trigger-capable module active. Like SEO it rides at the
-            end of the module list, stays neutral-colored (no module hue), and is
-            not in `moduleManifests`. See docs/84 Slice G-UI. */}
+            end of the module list and is not in `moduleManifests`, but it owns a
+            brand color (fuchsia) — so, like the module tiles, it's wrapped in its
+            ModuleProvider and the glyph carries its module hue. See docs/84 Slice G-UI. */}
         {enabledModules.length > 0 && (
-          <Link
-            href="/automations"
-            title="Automations"
-            aria-label="Automations"
-            aria-current={isActivePath(pathname, '/automations') ? 'page' : undefined}
-            className={tileClass(isActivePath(pathname, '/automations'), expanded)}
-          >
-            <span className={tileIconClass(isActivePath(pathname, '/automations'))}>
-              <Workflow className="h-4 w-4" />
-            </span>
-            {expanded && <span className="flex-1 truncate text-left">Automations</span>}
-          </Link>
+          <ModuleProvider module="automations">
+            <Link
+              href="/automations"
+              title="Automations"
+              aria-label="Automations"
+              aria-current={isActivePath(pathname, '/automations') ? 'page' : undefined}
+              className={tileClass(isActivePath(pathname, '/automations'), expanded)}
+            >
+              <span className={MODULE_TILE_ICON}>
+                <Workflow className="h-4 w-4" />
+              </span>
+              {expanded && <span className="flex-1 truncate text-left">Automations</span>}
+            </Link>
+          </ModuleProvider>
         )}
 
         {/* SEO — a cross-cutting platform tool (audits every module's pages:
             products, collections, CMS + Builder pages), not an activatable
             module. It rides at the END of the module list rather than in a
-            module manifest, and stays neutral-colored (no module hue) so it
-            reads as platform-level. New modules append above it. See docs/50 §7. */}
-        <Link
-          href="/seo"
-          title="SEO"
-          aria-label="SEO"
-          aria-current={isActivePath(pathname, '/seo') ? 'page' : undefined}
-          className={tileClass(isActivePath(pathname, '/seo'), expanded)}
-        >
-          <span className={tileIconClass(isActivePath(pathname, '/seo'))}>
-            <Gauge className="h-4 w-4" />
-          </span>
-          {expanded && <span className="flex-1 truncate text-left">SEO</span>}
-        </Link>
+            module manifest, but it owns a brand color (yellow) — so, like the
+            module tiles, it's wrapped in its ModuleProvider and the glyph carries
+            its module hue. New modules append above it. See docs/50 §7. */}
+        <ModuleProvider module="seo">
+          <Link
+            href="/seo"
+            title="SEO"
+            aria-label="SEO"
+            aria-current={isActivePath(pathname, '/seo') ? 'page' : undefined}
+            className={tileClass(isActivePath(pathname, '/seo'), expanded)}
+          >
+            <span className={MODULE_TILE_ICON}>
+              <Gauge className="h-4 w-4" />
+            </span>
+            {expanded && <span className="flex-1 truncate text-left">SEO</span>}
+          </Link>
+        </ModuleProvider>
 
         <RailGroup
           label="Favorites"

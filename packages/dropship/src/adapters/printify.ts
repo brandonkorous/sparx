@@ -16,7 +16,7 @@
 //
 // POD seam (docs/14 §10 — authoring deferred): print files live on the Printify
 // product, attached when the merchant designs it in Printify. We import the
-// finished product; nothing about this path blocks a future "design in Sparx →
+// finished product; nothing about this path blocks a future "design in sparx →
 // publish to Printify" flow, which would add print areas to the order line.
 
 import type {
@@ -117,7 +117,7 @@ export class PrintifyAdapter implements SupplierAdapter {
       Authorization: `Bearer ${this.creds.apiToken}`,
       'Content-Type': 'application/json',
       // Printify rejects requests without a User-Agent.
-      'User-Agent': 'Sparx/1.0 (+https://sparx.works)',
+      'User-Agent': 'sparx/1.0 (+https://sparx.works)',
     };
   }
 

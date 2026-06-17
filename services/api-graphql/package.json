@@ -2,7 +2,7 @@
   "name": "@sparx/api-graphql",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx public GraphQL API — Fastify + Mercurius service hosting /v1/graphql. Mirrors the content/media slice of api-rest with a single SDL endpoint for flexible client queries; deep integrations and CRUD live on the REST surface (docs/06-api-specification.md §10).",
+  "description": "sparx public GraphQL API — Fastify + Mercurius service hosting /v1/graphql. Mirrors the content/media slice of api-rest with a single SDL endpoint for flexible client queries; deep integrations and CRUD live on the REST surface (docs/06-api-specification.md §10).",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {

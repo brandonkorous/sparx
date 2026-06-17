@@ -91,13 +91,15 @@ const warehouseProjector: EntityProjector = {
         id: universalId(ctx.tenantId, 'warehouse', w.id),
         tenant_id: ctx.tenantId,
         entity_type: 'warehouse',
-        module: 'commerce',
+        // Warehouses belong to the Inventory module now (docs/100 P1e); the deep
+        // link + facet follow the move even though the projector still lives here.
+        module: 'inventory',
         record_id: w.id,
         title: w.name,
         subtitle: w.code,
         keywords: keywords([w.code, w.city, w.region, w.country, w.phone, w.type]),
         status: w.isActive ? 'active' : 'inactive',
-        url: `/commerce/warehouses/${w.id}`,
+        url: `/inventory/warehouses/${w.id}`,
         created_at: epoch(w.createdAt),
         updated_at: epoch(w.updatedAt),
       };

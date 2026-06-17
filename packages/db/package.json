@@ -2,7 +2,7 @@
   "name": "@sparx/db",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx data layer — Prisma client, schema, migrations, and tenant-context helpers for Cloud SQL Postgres 18.",
+  "description": "sparx data layer — Prisma client, schema, migrations, and tenant-context helpers for Cloud SQL Postgres 18.",
   "type": "module",
   "exports": {
     ".": {

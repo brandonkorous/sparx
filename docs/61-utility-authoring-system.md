@@ -95,7 +95,7 @@ coexisting). Instead:
 | **Styling**   | component modifiers (color × variant × size) + the **arrangement families on containers** (§5.2) + layout-archetype props (§5.1) | the **full vocabulary** (§6) incl. all **skin** families + breakpoints + states + motion |
 | **Utilities** | **arrangement family only** (layout / flex / grid / spacing / sizing / visibility); **no skin utilities** (§5.2)                 | yes, allowlist-gated                                                                     |
 | **Safety**    | safe by construction; responsive by default                                                                                      | allowlist + author-time validation                                                       |
-| **Audience**  | general users, light AI                                                                                                          | power users, AI, Sparx                                                                   |
+| **Audience**  | general users, light AI                                                                                                          | power users, AI, sparx                                                                   |
 | **Escape**    | "Edit as component" → opens the component builder                                                                                | —                                                                                        |
 
 The shell already gates panels by `surface` (`BuilderWorkspace`), so this is "add the full panel for

@@ -30,7 +30,7 @@ import {
 import { applyEntitySnapshot, resolveEmailData, type EmailRecipientRef } from './email-data.js';
 import { unsubscribeUrl } from './email-unsubscribe.js';
 
-const FALLBACK_FROM = 'Sparx <noreply@sparx.email>';
+const FALLBACK_FROM = 'sparx <noreply@sparx.email>';
 
 /** `From` header from the tenant's EmailSettings, falling back to the platform
  *  default. Shared with the dispatch tick. */

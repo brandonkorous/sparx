@@ -67,7 +67,7 @@ export function createMailgunProvider(config: MailgunConfig): EmailProvider {
       if (email.templateId) form.append('o:tag', email.templateId);
       if (email.tags) {
         for (const [k, v] of Object.entries(email.tags)) {
-          form.append(`h:X-Sparx-${k}`, v);
+          form.append(`h:X-sparx-${k}`, v);
         }
       }
       // User variables — Mailgun echoes these in delivery/engagement webhooks

@@ -1,4 +1,4 @@
-# Sparx Platform — Email Platform PRD
+# sparx Platform — Email Platform PRD
 
 **Version:** 3.1
 **Author:** Brandon Korous
@@ -8,9 +8,9 @@
 
 ## 1. Overview
 
-The Sparx Email Platform is a fully integrated transactional and marketing email system. Outbound delivery runs through **Mailgun**'s HTTP API, called directly from the `email-worker` Cloud Run service. Sparx owns templates, events, queue, and analytics surface; Mailgun owns the egress, reputation, and bounce/complaint handling.
+The sparx Email Platform is a fully integrated transactional and marketing email system. Outbound delivery runs through **Mailgun**'s HTTP API, called directly from the `email-worker` Cloud Run service. sparx owns templates, events, queue, and analytics surface; Mailgun owns the egress, reputation, and bounce/complaint handling.
 
-Every email sent through Sparx originates from the tenant's own domain (once verified), is triggered by real platform events, and feeds results back into the CRM. The email module is independently activatable at $29/month.
+Every email sent through sparx originates from the tenant's own domain (once verified), is triggered by real platform events, and feeds results back into the CRM. The email module is independently activatable at $29/month.
 
 ### Why Mailgun (and not self-hosted Postal)
 
@@ -109,7 +109,7 @@ The transition is invisible to tenants — the platform handles it automatically
 
 ### Domain Authentication (DKIM/SPF/DMARC)
 
-When a tenant adds a custom domain, Sparx automatically:
+When a tenant adds a custom domain, sparx automatically:
 
 1. Calls `POST /v4/domains` with the tenant's domain (Mailgun generates the DKIM keypair on their side; we never see the private key)
 2. Reads `sending_dns_records[]` from the response and displays them in the tenant dashboard:
@@ -222,7 +222,7 @@ Visual flow: Linear steps (not complex diagram). Tenants build flows in plain la
 ### Unsubscribe Handling
 
 - One-click unsubscribe in every email (CAN-SPAM / GDPR required)
-- Suppression list maintained in Mailgun + mirrored in Sparx DB via webhook events
+- Suppression list maintained in Mailgun + mirrored in sparx DB via webhook events
 - Hard bounce → suppress immediately, log reason
 - Soft bounce → retry 3x over 72 hours, then suppress
 - Spam complaint → suppress immediately, reduce sending score for that domain

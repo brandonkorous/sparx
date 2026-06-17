@@ -50,7 +50,7 @@ export async function startSparxPayOnboarding(
     return { ok: true, url };
   } catch (err) {
     const e = err as ApiRestError;
-    return { ok: false, error: e.message ?? 'Could not start Sparx Pay onboarding.' };
+    return { ok: false, error: e.message ?? 'Could not start sparx Pay onboarding.' };
   }
 }
 
@@ -64,6 +64,6 @@ export async function openSparxPayDashboard(): Promise<RedirectResult> {
     return { ok: true, url };
   } catch (err) {
     const e = err as ApiRestError;
-    return { ok: false, error: e.message ?? 'Could not open the Sparx Pay dashboard.' };
+    return { ok: false, error: e.message ?? 'Could not open the sparx Pay dashboard.' };
   }
 }

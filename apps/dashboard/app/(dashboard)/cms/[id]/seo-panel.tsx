@@ -314,10 +314,10 @@ function GooglePreview({
   const displayUrl = url.replace(/^https?:\/\//, '').replace('/', ' › ');
   // Brand-fidelity exception: this block deliberately mimics Google's SERP
   // typography (the blue title link `#1a0dab`, the gray description `#4d5156`,
-  // the dark URL chip `#202124`). Those colors are not in the Sparx design
+  // the dark URL chip `#202124`). Those colors are not in the sparx design
   // system — they're Google's, and editors expect to see what their result
   // will look like there. Keep the inline Tailwind here; do not migrate to
-  // Sparx tokens. The surrounding chrome (border / background) does use
+  // sparx tokens. The surrounding chrome (border / background) does use
   // tokens.
   return (
     <Stack

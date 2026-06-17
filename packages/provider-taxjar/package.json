@@ -2,7 +2,7 @@
   "name": "@sparx/provider-taxjar",
   "version": "0.0.0",
   "private": true,
-  "description": "TaxJar provider for Sparx Commerce — implements TaxProvider. Strong B2B exemption-certificate workflow for wholesale merchants.",
+  "description": "TaxJar provider for sparx Commerce — implements TaxProvider. Strong B2B exemption-certificate workflow for wholesale merchants.",
   "type": "module",
   "exports": {
     ".": {

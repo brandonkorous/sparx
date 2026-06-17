@@ -689,9 +689,9 @@
         "children": [
           {
             "type": "Text",
-            "props": { "variant": "meta", "text": "Tesla Model 3 — recreated in Sparx Builder" }
+            "props": { "variant": "meta", "text": "Tesla Model 3 — recreated in sparx Builder" }
           },
-          { "type": "Text", "props": { "variant": "meta", "text": "Built with Sparx" } }
+          { "type": "Text", "props": { "variant": "meta", "text": "Built with sparx" } }
         ]
       }
     ]

@@ -74,7 +74,7 @@ export default function Error({
             Try again
           </button>
           <a href="/" style={{ color: '#6366F1', fontSize: '14px', textDecoration: 'underline' }}>
-            Back to Sparx
+            Back to sparx
           </a>
         </div>
         {error.digest ? (

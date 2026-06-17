@@ -2,7 +2,7 @@
   "name": "@sparx/automation",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx Automation engine — the cross-module rule engine: entity-resolver registry, condition evaluator, gated dispatcher (the only path to an effect), action executors, durable resumable run state machine, and the automation service layer (docs/81-automation-module.md, docs/84-automation-build-log.md).",
+  "description": "sparx Automation engine — the cross-module rule engine: entity-resolver registry, condition evaluator, gated dispatcher (the only path to an effect), action executors, durable resumable run state machine, and the automation service layer (docs/81-automation-module.md, docs/84-automation-build-log.md).",
   "type": "module",
   "exports": {
     ".": {

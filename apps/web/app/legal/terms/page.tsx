@@ -3,8 +3,8 @@ import { LEGAL_DOC_VERSIONS } from '@/lib/legal-versions';
 import { LegalDoc, LegalSection, LegalP, LegalList } from '@/components/marketing/legal-doc';
 
 export const metadata: Metadata = {
-  title: 'Terms of service — Sparx',
-  description: 'The legal terms governing your use of the Sparx platform.',
+  title: 'Terms of service — sparx',
+  description: 'The legal terms governing your use of the sparx platform.',
   alternates: { canonical: '/legal/terms' },
 };
 
@@ -18,7 +18,7 @@ export default function TermsPage() {
       effectiveDate={v.effectiveDate}
       intro={
         <>
-          These terms govern your access to and use of Sparx, the modular content and commerce
+          These terms govern your access to and use of sparx, the modular content and commerce
           platform operated by WizeWorks. By creating an account you agree to them.
         </>
       }
@@ -26,8 +26,8 @@ export default function TermsPage() {
       <LegalSection heading="1. Agreement">
         <LegalP>
           These Terms of Service (&ldquo;Terms&rdquo;) are a binding agreement between you (the
-          &ldquo;Customer,&rdquo; &ldquo;you&rdquo;) and WizeWorks (&ldquo;Sparx,&rdquo;
-          &ldquo;we,&rdquo; &ldquo;us&rdquo;) governing your use of the Sparx platform, dashboards,
+          &ldquo;Customer,&rdquo; &ldquo;you&rdquo;) and WizeWorks (&ldquo;sparx,&rdquo;
+          &ldquo;we,&rdquo; &ldquo;us&rdquo;) governing your use of the sparx platform, dashboards,
           APIs, and related services (the &ldquo;Service&rdquo;). By signing up for, accessing, or
           using the Service you accept these Terms. If you are agreeing on behalf of an
           organization, you represent that you have authority to bind that organization.
@@ -37,7 +37,7 @@ export default function TermsPage() {
       <LegalSection heading="2. Your account">
         <LegalP>
           You are responsible for the activity that occurs under your account and for keeping your
-          credentials secure. Each Sparx tenant maps to a single organization; you may invite
+          credentials secure. Each sparx tenant maps to a single organization; you may invite
           additional staff users and assign them roles. You must provide accurate registration
           information and keep it current.
         </LegalP>
@@ -45,7 +45,7 @@ export default function TermsPage() {
 
       <LegalSection heading="3. The Service & modules">
         <LegalP>
-          Sparx is modular. You activate only the modules you use — builder, commerce, CRM, CMS,
+          sparx is modular. You activate only the modules you use — builder, commerce, CRM, CMS,
           email, B2B/wholesale, dropship, and AI/MCP integration — and your subscription reflects
           that selection. We may add, change, or deprecate features over time; we will give
           reasonable notice of material changes that reduce core functionality you rely on.

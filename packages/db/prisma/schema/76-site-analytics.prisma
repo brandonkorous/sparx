@@ -77,8 +77,8 @@ model SiteAnalyticsEvent {
 // `/internal/site/analytics-rollup` reconcile (also the backfill); the read
 // live-overlays the most recent open day(s) so "today" stays fresh.
 model RollupSiteDaily {
-  tenantId   String  @map("tenant_id") @db.Uuid
-  propertyId String  @map("property_id") @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  propertyId String   @map("property_id") @db.Uuid
   bucket     DateTime @db.Date
 
   pageviews Int @default(0)

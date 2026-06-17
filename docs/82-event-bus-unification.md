@@ -1,4 +1,4 @@
-# Sparx Platform — Event Bus Unification & Automation Fan-In
+# sparx Platform — Event Bus Unification & Automation Fan-In
 
 **Version:** 1.0
 **Author:** Brandon Korous
@@ -8,7 +8,7 @@
 
 ## 1. Why this doc exists
 
-The automation engine ([docs/81](81-automation-module.md)) cannot be built until the event substrate is coherent. Today Sparx publishes events through **three separate paths** with **two divergent `EventType` definitions**, and there is no single topic an engine can subscribe to in order to see "every event." This is the Phase-0 blocker for docs/81.
+The automation engine ([docs/81](81-automation-module.md)) cannot be built until the event substrate is coherent. Today sparx publishes events through **three separate paths** with **two divergent `EventType` definitions**, and there is no single topic an engine can subscribe to in order to see "every event." This is the Phase-0 blocker for docs/81.
 
 It is also worth doing on its own merits: a unified registry + a single fan-in hardens the bus for _every_ consumer (the search indexer, outbound webhooks, the email/push workers), and removes a class of "publisher in path A can't name an event path B knows" bugs.
 

@@ -13,7 +13,7 @@
 // the tree. `ProductFitment` rows reference whichever depth applies +
 // an optional numeric range with units declared on the domain.
 //
-// Sparx seeds the `vehicle` domain as a global so the Gillett Diesel
+// sparx seeds the `vehicle` domain as a global so the Gillett Diesel
 // case works out-of-the-box; merchants register their own domains for
 // other catalog shapes.
 

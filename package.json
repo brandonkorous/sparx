@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Sparx — WizeWorks' modular content and commerce operating system.",
+  "description": "sparx — WizeWorks' modular content and commerce operating system.",
   "packageManager": "pnpm@9.15.0",
   "engines": {
     "node": ">=24.0.0",

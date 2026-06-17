@@ -1,4 +1,4 @@
-# Sparx Platform — TikTok Shop Integration Spec
+# sparx Platform — TikTok Shop Integration Spec
 
 **Version:** 1.1
 **Author:** Brandon Korous
@@ -10,7 +10,7 @@
 
 TikTok Shop is a mandatory channel integration for a modern commerce platform. The platform generated over $33 billion in gross merchandise value in 2024 with over 1.6 billion active users — users who discover, evaluate, and purchase products entirely within the app, often in a single session.
 
-Sparx integrates with TikTok Shop via the TikTok Shop Open Platform API as an ISV (Independent Software Vendor) partner. Merchants connect their TikTok Shop account via OAuth from the Sparx dashboard. Product catalogs sync bidirectionally, TikTok Shop orders appear in Sparx order management, inventory stays in sync in real time, and revenue data flows into Sparx analytics alongside site and B2B channels.
+sparx integrates with TikTok Shop via the TikTok Shop Open Platform API as an ISV (Independent Software Vendor) partner. Merchants connect their TikTok Shop account via OAuth from the sparx dashboard. Product catalogs sync bidirectionally, TikTok Shop orders appear in sparx order management, inventory stays in sync in real time, and revenue data flows into sparx analytics alongside site and B2B channels.
 
 This is a Channel integration — part of the Commerce module, no additional module fee. Merchants who sell on TikTok Shop have higher GMV and stronger platform retention.
 
@@ -38,7 +38,7 @@ This is a Channel integration — part of the Commerce module, no additional mod
 
 What to prepare:
 
-- Sparx platform description and merchant value proposition
+- sparx platform description and merchant value proposition
 - Tech stack overview (Next.js, Fastify, TypeScript)
 - Estimated merchant volume (honest — early stage)
 - Use case: content and commerce platform enabling merchants to sell on TikTok Shop
@@ -49,7 +49,7 @@ TikTok reviews ISV applications and provides API credentials, higher rate limits
 
 ## 4. Authentication
 
-TikTok Shop uses OAuth 2.0. Merchants authorize the Sparx app in TikTok, and Sparx stores the access/refresh tokens per tenant.
+TikTok Shop uses OAuth 2.0. Merchants authorize the sparx app in TikTok, and sparx stores the access/refresh tokens per tenant.
 
 ```typescript
 // src/services/channels/tiktok/auth.ts
@@ -104,7 +104,7 @@ Automatic refresh before expiry via the tiktok channel worker.
 
 ## 5. Product Catalog Sync
 
-### Sparx → TikTok Shop (push)
+### sparx → TikTok Shop (push)
 
 Triggered by Pub/Sub events:
 
@@ -141,18 +141,18 @@ async function pushProductToTikTok(event: ProductEvent) {
 }
 ```
 
-### TikTok Shop → Sparx (pull / import)
+### TikTok Shop → sparx (pull / import)
 
 Merchant initiates from dashboard:
 
 1. Dashboard fetches existing TikTok Shop listings
 2. Merchant selects listings to import
-3. Sparx creates products, matched by SKU where possible
+3. sparx creates products, matched by SKU where possible
 4. Products linked: `product.tiktokProductId` stored for future sync
 
 ### Field Mapping
 
-| Sparx                           | TikTok Shop                            |
+| sparx                           | TikTok Shop                            |
 | ------------------------------- | -------------------------------------- |
 | `title`                         | `product_name`                         |
 | `description`                   | `description`                          |
@@ -167,7 +167,7 @@ Merchant initiates from dashboard:
 
 ## 6. Order Sync
 
-### TikTok Shop → Sparx (ingest)
+### TikTok Shop → sparx (ingest)
 
 TikTok pushes order webhooks to:
 `POST /api/channels/tiktok/webhooks/orders`
@@ -183,7 +183,7 @@ fastify.post('/api/channels/tiktok/webhooks/orders', async (req) => {
   // Find tenant from TikTok shop ID
   const tenantId = await getTenantByTikTokShopId(req.body.shop_id);
 
-  // Create or update order in Sparx
+  // Create or update order in sparx
   await orderService.upsertFromChannel({
     tenantId,
     source: 'tiktok_shop',
@@ -205,9 +205,9 @@ fastify.post('/api/channels/tiktok/webhooks/orders', async (req) => {
 });
 ```
 
-### Sparx → TikTok Shop (fulfillment push)
+### sparx → TikTok Shop (fulfillment push)
 
-When merchant marks order as fulfilled in Sparx:
+When merchant marks order as fulfilled in sparx:
 
 ```typescript
 pubsub.subscribe('order.fulfilled', async (event) => {
@@ -229,7 +229,7 @@ pubsub.subscribe('order.fulfilled', async (event) => {
 
 ## 7. Real-Time Inventory Sync
 
-Sparx DB is the single source of truth for inventory across all channels.
+sparx DB is the single source of truth for inventory across all channels.
 
 ```typescript
 // Subscribe to inventory changes
@@ -254,13 +254,13 @@ pubsub.subscribe('inventory.updated', async (event) => {
 });
 ```
 
-**Critical invariant:** inventory is decremented in Sparx first, then pushed to TikTok. This prevents overselling even if the TikTok push fails (dead letter queue retries the push, never re-increments Sparx inventory on failure).
+**Critical invariant:** inventory is decremented in sparx first, then pushed to TikTok. This prevents overselling even if the TikTok push fails (dead letter queue retries the push, never re-increments sparx inventory on failure).
 
 ---
 
 ## 8. Analytics Consolidation
 
-TikTok Shop revenue surfaces in the Sparx analytics dashboard as a channel alongside site and B2B.
+TikTok Shop revenue surfaces in the sparx analytics dashboard as a channel alongside site and B2B.
 
 ```typescript
 // GET /v1/analytics/revenue?breakdown=channel
@@ -277,7 +277,7 @@ TikTok Shop revenue surfaces in the Sparx analytics dashboard as a channel along
 
 ### GMV Max Advertising (July 2026 Requirement)
 
-Starting July 2026, TikTok requires sellers to allocate 1.5–5% of TikTok Shop sales revenue to GMV Max advertising campaigns. Sparx surfaces this in analytics:
+Starting July 2026, TikTok requires sellers to allocate 1.5–5% of TikTok Shop sales revenue to GMV Max advertising campaigns. sparx surfaces this in analytics:
 
 - "TikTok Ad Budget" line in analytics showing required allocation
 - Link to TikTok Marketing API for campaign management

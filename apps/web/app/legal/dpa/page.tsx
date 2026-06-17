@@ -3,9 +3,9 @@ import { LEGAL_DOC_VERSIONS } from '@/lib/legal-versions';
 import { LegalDoc, LegalSection, LegalP, LegalList } from '@/components/marketing/legal-doc';
 
 export const metadata: Metadata = {
-  title: 'Data processing addendum — Sparx',
+  title: 'Data processing addendum — sparx',
   description:
-    'The GDPR/CCPA data processing addendum governing how Sparx processes personal data on your behalf.',
+    'The GDPR/CCPA data processing addendum governing how sparx processes personal data on your behalf.',
   alternates: { canonical: '/legal/dpa' },
 };
 
@@ -20,7 +20,7 @@ export default function DpaPage() {
       intro={
         <>
           This addendum forms part of the Terms of Service and governs our processing of personal
-          data on your behalf. It applies whenever you use Sparx to handle the personal data of your
+          data on your behalf. It applies whenever you use sparx to handle the personal data of your
           own customers or contacts.
         </>
       }

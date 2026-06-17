@@ -1,4 +1,4 @@
-// Hero Split — a Sparx first-party marketplace component (docs/85). The payload is
+// Hero Split — a sparx first-party marketplace component (docs/85). The payload is
 // a composed builder node-tree + propSpec; the ingest validates it and writes it
 // to storage as the artifact "Add" clones into a tenant's component library.
 export default {

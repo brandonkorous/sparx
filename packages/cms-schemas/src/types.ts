@@ -1,4 +1,4 @@
-// Sparx CMS — content type schema format.
+// sparx CMS — content type schema format.
 //
 // A `ContentTypeSchema` describes the shape of a `content_entries.body` JSONB
 // for one content type. The same definition drives three consumers:

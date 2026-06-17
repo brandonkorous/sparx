@@ -182,7 +182,7 @@ export interface SupplierAdapter {
    */
   syncCatalog(since?: Date): AsyncGenerator<NormalizedProduct>;
 
-  /** Submit a Sparx order to the supplier and return the result. */
+  /** Submit a sparx order to the supplier and return the result. */
   submitOrder(order: Order): Promise<SupplierOrderResult>;
 
   /** Poll or parse tracking status for a supplier order. */

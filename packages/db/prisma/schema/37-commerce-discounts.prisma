@@ -132,8 +132,8 @@ model AccountCredit {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant       Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  customer     Customer                 @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  tenant       Tenant                     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer     Customer                   @relation(fields: [customerId], references: [id], onDelete: Cascade)
   transactions AccountCreditTransaction[]
 
   @@unique([tenantId, customerId, currency], map: "account_credit_unique")
@@ -141,20 +141,20 @@ model AccountCredit {
 }
 
 model AccountCreditTransaction {
-  id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId      String  @map("tenant_id") @db.Uuid
+  id              String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String  @map("tenant_id") @db.Uuid
   accountCreditId String  @map("account_credit_id") @db.Uuid
-  deltaCents    Int     @map("delta_cents")
-  reason        String  @db.VarChar(20)
+  deltaCents      Int     @map("delta_cents")
+  reason          String  @db.VarChar(20)
   // ^ grant | refund | spend | adjust | expire | loyalty_conversion
-  referenceType String? @map("reference_type") @db.VarChar(63)
-  referenceId   String? @map("reference_id") @db.Uuid
-  actorUserId   String? @map("actor_user_id") @db.Uuid
-  note          String? @db.Text
+  referenceType   String? @map("reference_type") @db.VarChar(63)
+  referenceId     String? @map("reference_id") @db.Uuid
+  actorUserId     String? @map("actor_user_id") @db.Uuid
+  note            String? @db.Text
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
 
-  tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   accountCredit AccountCredit @relation(fields: [accountCreditId], references: [id], onDelete: Cascade)
 
   @@index([tenantId, accountCreditId, createdAt(sort: Desc)])

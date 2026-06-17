@@ -27,7 +27,7 @@ tree**, closest to `/builder/page`'s catalog model:
 - A tenant keeps a **catalog** of email documents (`BuilderEmail`), each with the
   same draft → publish lifecycle as a page.
 - There is **no `Outlet`, no "active" selection, no layout tier**. The **legal
-  footer** (the "Sent with Sparx" line + the marketing compliance nodes) is fixed
+  footer** (the "Sent with sparx" line + the marketing compliance nodes) is fixed
   chrome supplied by the renderer (`EmailLayout`). The **wordmark header**, however,
   is now an **author-editable, pinned node** (`email_wordmark`, v0.5.0) — the first
   child of every email's body tree, seeded by `body()` and self-healed onto legacy
@@ -288,7 +288,7 @@ Transactional code builtins are untouched throughout.
   api-mcp, email-worker, api-graphql, dashboard) per the workspace-wiring rule. The
   index re-exports the Builder renderer, which loads `@sparx/cms-editor/serialize` at
   import time, so a missing COPY crashes the service at boot — not at build.
-- **The legal footer stays fixed chrome** — the "Sent with Sparx" line + the
+- **The legal footer stays fixed chrome** — the "Sent with sparx" line + the
   marketing compliance nodes (physical address + unsubscribe) are not author-
   removable. The **wordmark header** graduated to an author-editable pinned node in
   v0.5.0 (§1); only the footer remains renderer-owned.

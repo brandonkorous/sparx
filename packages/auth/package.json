@@ -2,7 +2,7 @@
   "name": "@sparx/auth",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx authentication — Better Auth server + client configured with the Sparx Prisma adapter and tenant/organization plugin (docs/16-auth-security.md).",
+  "description": "sparx authentication — Better Auth server + client configured with the sparx Prisma adapter and tenant/organization plugin (docs/16-auth-security.md).",
   "type": "module",
   "exports": {
     ".": {

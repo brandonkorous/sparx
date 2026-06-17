@@ -5,9 +5,9 @@ import type { MetadataRoute } from 'next';
 // in apps/dashboard/public/.
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Sparx Dashboard',
-    short_name: 'Sparx',
-    description: 'Admin for the Sparx content and commerce platform.',
+    name: 'sparx Dashboard',
+    short_name: 'sparx',
+    description: 'Admin for the sparx content and commerce platform.',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',

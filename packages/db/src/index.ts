@@ -78,10 +78,10 @@ export type {
   FitmentItem,
   FitmentVariant,
   ProductFitment,
-  // Commerce — inventory
+  // Inventory module
   Warehouse,
   InventoryLevel,
-  InventoryAdjustment,
+  InventoryMovement,
   InventoryReservation,
   LotBatch,
   SerialUnit,
@@ -156,6 +156,8 @@ export type {
   BuilderComponentVersion,
   BuilderGovernance,
   BuilderArchetype,
+  // Platform component catalog (global, docs/98 §5)
+  PlatformComponent,
   // Email platform
   EmailSettings,
   SendingDomain,

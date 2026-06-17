@@ -97,7 +97,7 @@ const RAIL: Record<OnboardingStepKey, RailCopy> = {
     title: 'Get paid.',
     blurb: 'Connect Stripe to accept customer payments.',
     context:
-      'This connects the account that RECEIVES money from your customers — separate from your Sparx subscription. Skippable.',
+      'This connects the account that RECEIVES money from your customers — separate from your sparx subscription. Skippable.',
   },
   launch: {
     title: 'Ready to launch.',

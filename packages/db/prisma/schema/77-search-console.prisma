@@ -48,9 +48,9 @@ model SearchConsoleConnection {
 // impression-weighted avg position = sum_position / impressions (sum_position is
 // Σ position × impressions for the day, so it aggregates correctly across days).
 model RollupSearchConsoleDaily {
-  tenantId    String   @map("tenant_id") @db.Uuid
-  propertyId  String   @map("property_id") @db.Uuid
-  bucket      DateTime @db.Date
+  tenantId   String   @map("tenant_id") @db.Uuid
+  propertyId String   @map("property_id") @db.Uuid
+  bucket     DateTime @db.Date
 
   clicks      Int    @default(0)
   impressions Int    @default(0)

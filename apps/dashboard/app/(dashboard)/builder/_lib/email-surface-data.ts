@@ -85,7 +85,7 @@ async function loadCatalog() {
 
 // The tenant's sending identity for the canvas inbox-envelope `From` row (docs/49,
 // docs/52). The name is the SITE name (Property.name); the address is the default
-// Sparx sending subdomain; the per-site override's logo wins (same merge as send).
+// sparx sending subdomain; the per-site override's logo wins (same merge as send).
 async function loadSender(
   override: BrandOverride | null,
   siteName: string

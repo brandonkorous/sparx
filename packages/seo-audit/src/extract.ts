@@ -1,5 +1,5 @@
 // Content-signal extraction (docs/50 §7) — pure structural walkers over the two
-// authored structures Sparx stores: a Builder node tree and a CMS rich-text doc.
+// authored structures sparx stores: a Builder node tree and a CMS rich-text doc.
 // Both operate on `unknown` JSON (no dependency on the builder/CMS schemas) and
 // return the same `ContentSignals` the audit engine consumes, so the H1/alt/
 // word/link logic is unit-tested here rather than buried in the API route.

@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'Sparx — Everything, ignited.';
+export const alt = 'sparx — Everything, ignited.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -48,7 +48,7 @@ export default function Image() {
             letterSpacing: '-0.03em',
           }}
         >
-          <span>Spar</span>
+          <span>spar</span>
           <span style={{ color: '#6366F1' }}>x</span>
         </div>
         <div

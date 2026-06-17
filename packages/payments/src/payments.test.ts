@@ -23,7 +23,7 @@ describe('fee rule (docs/94 §8)', () => {
 describe('gateway registry', () => {
   it('registers and resolves the built-in gateways by id', () => {
     registerBuiltInGateways([new SparxPayGateway(), new StripeDirectGateway()]);
-    expect(gatewayRegistry.get(SPARX_PAY_ID).name).toBe('Sparx Pay');
+    expect(gatewayRegistry.get(SPARX_PAY_ID).name).toBe('sparx Pay');
     expect(gatewayRegistry.get(STRIPE_DIRECT_ID).id).toBe('stripe_direct');
     expect(gatewayRegistry.has(SPARX_PAY_ID)).toBe(true);
   });

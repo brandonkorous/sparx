@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Toaster as SonnerToaster, toast as sonnerToast } from 'sonner';
 
-// Wraps sonner with Sparx tokens. Apps mount <Toaster /> once at the root and
+// Wraps sonner with sparx tokens. Apps mount <Toaster /> once at the root and
 // fire toasts via `toast.success(...)`, `toast.error(...)`, etc.
 
 export const Toaster = (

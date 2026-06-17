@@ -1,4 +1,4 @@
-# Sparx Platform — Business Formation Integration Spec
+# sparx Platform — Business Formation Integration Spec
 
 **Version:** 1.0
 **Author:** Brandon Korous
@@ -8,7 +8,7 @@
 
 ## 1. Overview
 
-Sparx integrates with business formation APIs to allow merchants to form an LLC or corporation during onboarding — without leaving the platform. The formation service handles state filing, EIN acquisition, registered agent, and ongoing compliance. Sparx provides the UX, collects payment, and surfaces formation status in the merchant dashboard.
+sparx integrates with business formation APIs to allow merchants to form an LLC or corporation during onboarding — without leaving the platform. The formation service handles state filing, EIN acquisition, registered agent, and ongoing compliance. sparx provides the UX, collects payment, and surfaces formation status in the merchant dashboard.
 
 **Primary integration:** FileForms (API-first, no volume minimum, white-label, all 50 states)  
 **Secondary:** doola MCP (agentic onboarding flow, not white-label)  
@@ -16,16 +16,16 @@ Sparx integrates with business formation APIs to allow merchants to form an LLC 
 
 ---
 
-## 2. Why It Belongs in Sparx
+## 2. Why It Belongs in sparx
 
-A merchant launching a store on Sparx may not yet have a legal business entity. Formation during onboarding:
+A merchant launching a store on sparx may not yet have a legal business entity. Formation during onboarding:
 
 - Removes a barrier to launching ("I need to set up my LLC first")
 - Captures the EIN which pre-fills Stripe Connect onboarding
 - Creates a natural upsell: Form LLC → connect payments → go live
-- Differentiates Sparx from every other commerce platform
+- Differentiates sparx from every other commerce platform
 
-The compliance overhead is zero for Sparx — the formation service handles all state filings, registered agent, and compliance. Sparx provides the UI and earns a margin.
+The compliance overhead is zero for sparx — the formation service handles all state filings, registered agent, and compliance. sparx provides the UI and earns a margin.
 
 ---
 
@@ -86,7 +86,7 @@ Onboarding Step 1: Business info
 
   [Optional: WHOIS privacy +$7.99/yr]
 
-  Total: $[wholesale + Sparx markup]
+  Total: $[wholesale + sparx markup]
   [Form my LLC — $[price]]
 
   → Stripe charge
@@ -242,7 +242,7 @@ Business Entity
   ✅ Acme Parts LLC
      Wyoming · Filed 2026-05-28
      EIN: 87-XXXXXXX
-     Registered Agent: FileForms (via Sparx)
+     Registered Agent: FileForms (via sparx)
 
      Annual Report Due: Jan 1, 2027
      [Set up auto-renewal →]
@@ -259,8 +259,8 @@ Business Entity
 
 ```
 FileForms wholesale rate: ~$75–$100/filing
-Sparx merchant price:     $249 (LLC) / $349 (C-Corp)
-Sparx gross margin:       ~$150–$250 per formation
+sparx merchant price:     $249 (LLC) / $349 (C-Corp)
+sparx gross margin:       ~$150–$250 per formation
 
 Recurring:
   Registered agent renewal: $149/yr retail → ~$80/yr wholesale → ~$70/yr margin
@@ -287,7 +287,7 @@ Claude: "I can help with that. A few questions:
   3. Will you be the sole member, or are there other owners?
 
 Once I have those, I'll walk you through the filing.
-It typically takes 5–7 business days and runs $249 through Sparx."
+It typically takes 5–7 business days and runs $249 through sparx."
 
 [After merchant confirms]
 → sparx.business.form_entity({ state, name, members, ... })

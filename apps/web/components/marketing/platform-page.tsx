@@ -12,7 +12,7 @@ import {
 } from './primitives';
 
 /**
- * The /platform marketing page — the "what is Sparx as a system" page reached
+ * The /platform marketing page — the "what is sparx as a system" page reached
  * from the header's first nav item. Deliberately DISTINCT from the home page:
  * the home page sells the marketing beats (cost comparison, the MCP chat demo,
  * the permanence promise); this page explains how the system actually works.
@@ -102,7 +102,7 @@ function PlatformHero() {
               margin: 0,
             }}
           >
-            Sparx is a modular operating system for the web. Builder, Commerce, CMS, CRM, Email,
+            sparx is a modular operating system for the web. Builder, Commerce, CMS, CRM, Email,
             B2B, Dropship, and AI — running on one shared data layer, behind one dashboard, on one
             bill. A publisher, a shop, a wholesale distributor, and a CRM-only team are all equally
             first-class. Selling is one capability, never the assumption.
@@ -203,7 +203,7 @@ function OneSystem() {
           lede={
             <>
               Every other &ldquo;all-in-one&rdquo; is a bundle of separate products stitched
-              together with syncs that drift and break. Sparx modules read and write the same
+              together with syncs that drift and break. sparx modules read and write the same
               records. Your CRM is built <em>on</em> your commerce data — not connected to a copy of
               it.
             </>
@@ -639,7 +639,7 @@ function FourCommitments() {
       n: '04',
       accent: 'var(--color-success)',
       title: 'Permanent',
-      body: 'You own the data and the site. Export anytime, edit anything no-code, drop to full code when you want. AI can build it — Sparx is what keeps it.',
+      body: 'You own the data and the site. Export anytime, edit anything no-code, drop to full code when you want. AI can build it — sparx is what keeps it.',
     },
   ];
 
@@ -749,7 +749,7 @@ function GrowsWithYou() {
         headline={<>Start with one. Add the rest, no replatform</>}
         lede={
           <>
-            Most platforms make you migrate to grow. Sparx doesn&apos;t. Switch on a module and it
+            Most platforms make you migrate to grow. sparx doesn&apos;t. Switch on a module and it
             reads the catalog, customers, and content already there. Switch it off and it goes quiet
             — the data stays exactly where it was.
           </>

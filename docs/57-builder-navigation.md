@@ -1,4 +1,4 @@
-# Sparx Platform — Navigation in the Builder
+# sparx Platform — Navigation in the Builder
 
 **Version:** 0.3 (P1 + migration + fallback removal BUILT; CMS-surface teardown deferred)
 **Author:** Brandon Korous

@@ -1,6 +1,6 @@
-# Sparx Platform — Inventory Implementation Audit (docs vs. code)
+# sparx Platform — Inventory Implementation Audit (docs vs. code)
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-16
 
@@ -17,10 +17,13 @@ architectural, not cosmetic.
 service layer are largely built and well-designed, but three structural defects make the feature
 far less than the docs claim:
 
-1. **Two parallel, disconnected inventory models exist.** The `/inventory` overview, valuation,
-   and reports read the **sync-module** table (`stock_levels`), which is empty for every tenant that
-   has not wired an external feed — i.e. all of them. The real operational stock lives in a
-   **different** table (`commerce_inventory_levels`). Nothing bridges them. → the page renders zeros.
+1. **Two parallel, disconnected inventory models exist.** ✅ **RESOLVED (P1c).** The `/inventory`
+   overview, valuation, and reports read the **sync-module** table (`stock_levels`), which is empty for
+   every tenant that has not wired an external feed — i.e. all of them. The real operational stock lives in
+   a **different** table (`commerce_inventory_levels`). Nothing bridges them. → the page renders zeros.
+   _Fix:_ the two models were unified onto the master (`inventory_levels`/`inventory_warehouses`); the
+   reports + valuation now read it + the movement ledger, sync feeds reconcile into it via `applyMovement`,
+   and `stock_levels`/`stock_locations` were dropped (migration `20260902000000_inventory_unify_stock`).
 2. **Orders never move inventory.** `reserve()` / `commit()` / `release()` exist but have **zero
    callers**. Carts don't soft-hold, orders don't decrement, no worker consumes `order.*`. Stock only
    changes via manual adjustment or MCP. The reservation engine is dead code.
@@ -183,20 +186,20 @@ This is the one area that is genuinely **complete and correct** against the docs
 
 ## 3. Defects ranked by severity
 
-| #   | Severity | Defect                                                          | Why it matters                                                                             |
-| --- | -------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| D1  | **P0**   | Two disconnected stock models; `/inventory` reads the empty one | The entire `/inventory` module shows zeros → “almost useless”; valuation reads $0          |
-| D2  | **P0**   | Orders never reserve/decrement inventory                        | Stock is fiction during selling; oversell is guaranteed; `inventory_policy` never enforced |
-| D3  | **P1**   | API contract (docs/06 §7) unimplemented as written              | Headless/MCP/API consumers can’t use inventory per spec; “API-first” violated              |
-| D4  | **P1**   | No PO / receiving / supplier model                              | “Incoming POs” + “Receive stock” are mockup-only; no inbound stock workflow                |
-| D5  | **P2**   | No audit-log viewer; no transfer UI; no cycle counts            | Adjustment data captured but not actionable; transfers API-only                            |
-| D6  | **P2**   | Catalog (docs/89 §9) overstates status (Reservations “✅ Live”) | Source-of-truth doc is misleading; needs correction regardless of build decision           |
+| #      | Severity              | Defect                                                              | Why it matters                                                                                                                                                                                                             |
+| ------ | --------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ~~D1~~ | ✅ **RESOLVED (P1c)** | ~~Two disconnected stock models; `/inventory` reads the empty one~~ | Unified onto the master `inventory_levels`/`inventory_warehouses`; reports + valuation read the master + the movement ledger; `stock_levels`/`stock_locations` dropped (migration `20260902000000_inventory_unify_stock`). |
+| D2     | **P0**                | Orders never reserve/decrement inventory                            | Stock is fiction during selling; oversell is guaranteed; `inventory_policy` never enforced                                                                                                                                 |
+| D3     | **P1**                | API contract (docs/06 §7) unimplemented as written                  | Headless/MCP/API consumers can’t use inventory per spec; “API-first” violated                                                                                                                                              |
+| D4     | **P1**                | No PO / receiving / supplier model                                  | “Incoming POs” + “Receive stock” are mockup-only; no inbound stock workflow                                                                                                                                                |
+| D5     | **P2**                | No audit-log viewer; no transfer UI; no cycle counts                | Adjustment data captured but not actionable; transfers API-only                                                                                                                                                            |
+| D6     | **P2**                | Catalog (docs/89 §9) overstates status (Reservations “✅ Live”)     | Source-of-truth doc is misleading; needs correction regardless of build decision                                                                                                                                           |
 
 ---
 
 ## 4. The correct, feature-complete path
 
-This is the full scope of a production-grade inventory system for Sparx — not a patch to make the
+This is the full scope of a production-grade inventory system for sparx — not a patch to make the
 page non-empty. Unification is the **foundation** of it, not a substitute for it. Everything below is
 in scope; the phases are a **deploy order** (ship the moment each layer works — docs/03 deploy-early),
 **not** a scope cut. Nothing here is deferred to "someday."
@@ -207,7 +210,7 @@ Inventory is a **first-class, full-featured product in its own right** (`invento
 docs/89 §9) — not an appendage of commerce. It owns the **supply** side; Commerce owns the **demand/sale**
 side; they meet at checkout via a thin contract. This mirrors how **Dropship** is its own supply space
 that "comes together" in Commerce/B2B, and how the platform treats CMS-only / CRM-only as equally
-first-class (Sparx is content **and/or** commerce — selling is one capability, never the assumption).
+first-class (sparx is content **and/or** commerce — selling is one capability, never the assumption).
 
 **Standalone-usable is a hard requirement.** A tenant can activate **Inventory alone** — warehouse /
 stock / supplier / PO / receiving / count / valuation / ERP-sync management as a standalone WMS-lite
@@ -330,7 +333,7 @@ audit-log viewer**, **transfers** UI, **purchase orders + receiving**, **supplie
 **lots/serials**, and the **sync connections + SKU-mapping + health** screens. Commerce/B2B integrations
 add on top when active: per-account stock visibility, fitment-filtered availability, min/max order qty,
 and fleet/work-order holds (docs/10). A dedicated marketing page + module overview give it the same
-front-door as every other Sparx product.
+front-door as every other sparx product.
 
 ### 4.8 Build order (deployable slices, full surface committed)
 

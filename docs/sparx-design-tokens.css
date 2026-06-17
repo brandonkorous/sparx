@@ -4,16 +4,16 @@
    Author: Brandon Korous / WizeWorks
    Updated: 2026-06-14
    
-   The official Sparx color system, typography scale, and
+   The official sparx color system, typography scale, and
    spacing tokens. Import this file as the foundation of
-   every Sparx surface — dashboard, storefront, and all
+   every sparx surface — dashboard, storefront, and all
    module marketing sites.
    ============================================================ */
 
 /* ── BRAND PRIMARY ─────────────────────────────────────────── */
 
 :root {
-  --sparx-primary: #6366f1; /* Sparx Indigo — the brand */
+  --sparx-primary: #6366f1; /* sparx Indigo — the brand */
   --sparx-primary-hover: #4f46e5; /* Darker on hover */
   --sparx-primary-light: #818cf8; /* Lighter variant */
   --sparx-primary-tint: #eef2ff; /* Background tint (light mode) */
@@ -245,7 +245,7 @@
 }
 
 /* ── SHADOWS ───────────────────────────────────────────────── */
-/* Used sparingly — Sparx is flat by default */
+/* Used sparingly — sparx is flat by default */
 
 :root {
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);

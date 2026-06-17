@@ -1,4 +1,4 @@
-// Sparx legal-page starter templates (docs/42 §3).
+// sparx legal-page starter templates (docs/42 §3).
 //
 // Platform-authored, read-only starting points. When a tenant is created (or
 // from the dashboard "Create from template" action), each instantiates into an
@@ -65,7 +65,7 @@ const disclaimer = (): DocNode => ({
   attrs: { variant: 'warning' },
   content: [
     p(
-      'This is a starter template provided by Sparx — not legal advice. Review it with your own counsel and tailor it to your business, jurisdiction, and how you handle data before publishing.'
+      'This is a starter template provided by sparx — not legal advice. Review it with your own counsel and tailor it to your business, jurisdiction, and how you handle data before publishing.'
     ),
   ],
 });

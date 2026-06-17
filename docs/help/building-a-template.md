@@ -2,13 +2,13 @@
 
 > **Version** 0.1.0 (draft) · **Author** Brandon Korous · **Last Updated** 2026-06-05
 >
-> This is a working help doc. It will be cleaned up and promoted to an official guide later. The goal here is to capture, in plain language, how someone actually builds a Sparx **template** end-to-end — with real code and screenshots.
+> This is a working help doc. It will be cleaned up and promoted to an official guide later. The goal here is to capture, in plain language, how someone actually builds a sparx **template** end-to-end — with real code and screenshots.
 
 ---
 
 ## What a template is
 
-A **template** is a one-click starting point for a whole site. When someone installs one, Sparx provisions a complete, themed property for them in seconds:
+A **template** is a one-click starting point for a whole site. When someone installs one, sparx provisions a complete, themed property for them in seconds:
 
 - a **brand** (name, colors, fonts, logo) and a matching **theme**,
 - a **site layout** (header, footer, navigation),

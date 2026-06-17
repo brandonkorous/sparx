@@ -26,7 +26,7 @@ import {
 import { resolveEmailBrand } from './brand-service';
 import { get as getSettings } from './settings-service';
 
-const FALLBACK_FROM = 'Sparx <noreply@sparx.email>';
+const FALLBACK_FROM = 'sparx <noreply@sparx.email>';
 
 function buildFrom(fromName: string | null, fromAddress: string | null): string {
   if (!fromAddress) return process.env.SPARX_EMAIL_FROM ?? FALLBACK_FROM;

@@ -2,7 +2,7 @@
   "name": "@sparx/integration-framework",
   "version": "0.0.0",
   "private": true,
-  "description": "Provider plug-in SDK for Sparx Commerce. Defines the PaymentProvider, TaxProvider, ShippingProvider, SubscriptionBilling, and DropshipProvider interfaces that concrete provider packages implement, plus the registry, tenant-config loader, webhook router, OAuth helper, and credential-vault accessor that the platform wires them through.",
+  "description": "Provider plug-in SDK for sparx Commerce. Defines the PaymentProvider, TaxProvider, ShippingProvider, SubscriptionBilling, and DropshipProvider interfaces that concrete provider packages implement, plus the registry, tenant-config loader, webhook router, OAuth helper, and credential-vault accessor that the platform wires them through.",
   "type": "module",
   "exports": {
     ".": {

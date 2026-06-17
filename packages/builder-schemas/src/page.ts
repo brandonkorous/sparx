@@ -1,5 +1,5 @@
 // The Builder page — the persisted unit (docs/41 §2). One row per page a tenant
-// has. A page *template* and a page *instance* are the same row: Sparx ships a
+// has. A page *template* and a page *instance* are the same row: sparx ships a
 // curated starter set, the tenant edits them and creates more. No separate
 // "template" entity.
 //

@@ -12,6 +12,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import type { Prisma } from '@prisma/client';
 import { withTenant } from '@sparx/db';
+import { inventoryService } from '@sparx/inventory';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { notFound } from '@sparx/api-core/errors';
@@ -208,13 +209,15 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
   //
   // Allows any external system (warehouse, ERP, bridge agent) authenticated with
   // a tenant API key (sk_live_*) to POST stock levels directly. Rows are resolved
-  // against inventory_source_links and upserted into stock_levels immediately —
-  // no worker round-trip. Identical SKU-resolution logic to the CSV worker.
+  // against inventory_source_links and reconciled into the master inventory_levels
+  // through `reconcileStockLevel` (a corrective `sync` movement) — no worker
+  // round-trip. Identical SKU-resolution logic to the CSV worker.
 
   app.post('/v1/inventory/sources/:id/push', async (request, reply) => {
     await requireInventoryModule(request);
     requireRole(request, 'editor');
-    const { tenantId, userId } = toInventoryContext(request);
+    const ctx = toInventoryContext(request);
+    const { tenantId, userId } = ctx;
     const { id } = request.params as { id: string };
     const { rows } = PushBody.parse(request.body);
 
@@ -233,7 +236,7 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
     interface LinkRecord {
       id: string;
       variantId: string;
-      locationId: string;
+      warehouseId: string;
       externalSku: string;
       externalLocation: string | null;
     }
@@ -244,7 +247,7 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
         select: {
           id: true,
           variantId: true,
-          locationId: true,
+          warehouseId: true,
           externalSku: true,
           externalLocation: true,
         },
@@ -262,6 +265,7 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
 
     let processed = 0;
     let unmatched = 0;
+    let skipped = 0;
 
     for (const row of rows) {
       const exactKey = row.location !== undefined ? `${row.sku}|${row.location}` : row.sku;
@@ -272,37 +276,20 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
         continue;
       }
 
-      await withTenant({ tenantId }, async (tx) => {
-        const existing = await tx.stockLevel.findFirst({
-          where: { tenantId, variantId: link.variantId, locationId: link.locationId },
-          select: { id: true, allocated: true },
+      try {
+        await inventoryService.reconcileStockLevel(ctx, {
+          variantId: link.variantId,
+          warehouseId: link.warehouseId,
+          onHand: row.quantity,
+          source: source.name,
         });
-
-        if (existing) {
-          const alloc = Number(existing.allocated ?? 0);
-          await tx.stockLevel.update({
-            where: { id: existing.id },
-            data: {
-              onHand: row.quantity,
-              available: Math.max(0, row.quantity - alloc),
-              updatedAt: new Date(),
-            },
-          });
-        } else {
-          await tx.stockLevel.create({
-            data: {
-              tenantId,
-              variantId: link.variantId,
-              locationId: link.locationId,
-              onHand: row.quantity,
-              allocated: 0,
-              available: Math.max(0, row.quantity),
-            },
-          });
-        }
-      });
-
-      processed++;
+        processed++;
+      } catch (err) {
+        // A single bad row (e.g. its warehouse was archived) must not fail the
+        // whole push — count it and keep going.
+        request.log.warn({ sourceId: id, sku: row.sku, err }, 'inventory push: row skipped');
+        skipped++;
+      }
     }
 
     await withTenant({ tenantId }, async (tx) => {
@@ -321,7 +308,7 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
       pubLogger
     );
 
-    return reply.send(ok({ processed, unmatched }));
+    return reply.send(ok({ processed, unmatched, skipped }));
   });
 };
 

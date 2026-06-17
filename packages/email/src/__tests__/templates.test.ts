@@ -40,11 +40,11 @@ describe('templates', () => {
         dashboardUrl: 'https://app.sparx.works/welcome',
       },
     });
-    expect(rendered.subject).toBe('Welcome to Sparx');
+    expect(rendered.subject).toBe('Welcome to sparx');
     expect(rendered.html).toContain('Brandon');
     // The welcome email never carries a site/tenant name (docs/49) — it refers to
     // "Your site" generically.
-    expect(rendered.text).toContain('Your site is live on Sparx');
+    expect(rendered.text).toContain('Your site is live on sparx');
     expect(rendered.text).toContain('https://app.sparx.works/welcome');
     expect(rendered.templateId).toBe('welcome-merchant');
   });
@@ -64,7 +64,7 @@ describe('sendTemplate', () => {
 
     const send = lastConsoleSend();
     expect(send?.to).toBe('owner@example.test');
-    expect(send?.subject).toBe('Welcome to Sparx');
+    expect(send?.subject).toBe('Welcome to sparx');
     expect(send?.templateId).toBe('welcome-merchant');
   });
 

@@ -44,7 +44,7 @@ export default function SignInPage() {
       <Stack gap={6}>
         <div>
           <Heading level={2}>Sign in</Heading>
-          <Text variant="muted">Sign in to your Sparx workspace.</Text>
+          <Text variant="muted">Sign in to your sparx workspace.</Text>
         </div>
 
         <SocialAuthSection />

@@ -8,7 +8,7 @@
 // `brandingOverride` is removed. The brand's identity palette/typography overlay
 // the default theme preset; unset tokens fall back to the preset, and a tenant
 // with no brand identity at all yields null (caller renders @sparx/email's
-// Sparx defaultBrand).
+// sparx defaultBrand).
 //
 // Light palette only (email-client dark mode is unreliable). We read concrete
 // token values — never CSS custom properties — because React Email inlines
@@ -90,7 +90,7 @@ function parseBrandOverride(value: unknown): BrandOverride | null {
 
 /**
  * Resolve the email brand for a send, or `null` when there's no brand identity
- * (the caller then renders with @sparx/email's Sparx defaults). When `propertyId`
+ * (the caller then renders with @sparx/email's sparx defaults). When `propertyId`
  * is given (docs/49 Phase 7), the site's `brand_override` is merged field-by-field
  * OVER the tenant brand, so an email sent on behalf of a site renders that site's
  * name / colours / fonts / logo — exactly the merge the storefront payload does.
@@ -119,7 +119,7 @@ export async function resolveEmailBrand(
 
     const override = parseBrandOverride(propertyRow?.brandOverride);
 
-    // A tenant with no brand record AND no per-site override → Sparx defaults
+    // A tenant with no brand record AND no per-site override → sparx defaults
     // (null signals "use @sparx/email's defaultBrand").
     if (brandRow === null && !override) return null;
 

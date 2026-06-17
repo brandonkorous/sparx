@@ -1,8 +1,8 @@
 // PaymentService (docs/94 ADR §5) — the single entry point every payment flow uses.
 // Resolves the tenant's gateway from its config, delegates the operation, and keeps
-// our own `payment_intents` ledger. The platform fee is recorded here (0 unless Sparx
-// Pay; for Sparx Pay it's actually collected in Stripe via application_fee_amount —
-// this row is informational, the source of truth for "what Sparx earned").
+// our own `payment_intents` ledger. The platform fee is recorded here (0 unless sparx
+// Pay; for sparx Pay it's actually collected in Stripe via application_fee_amount —
+// this row is informational, the source of truth for "what sparx earned").
 
 import { withTenant } from '@sparx/db';
 

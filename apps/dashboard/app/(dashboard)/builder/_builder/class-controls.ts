@@ -181,9 +181,12 @@ export const BOX_DISPLAY_CONTROL: ClassControl = {
   ],
 };
 
-// `fixed` is intentionally absent — the surface compiler's allowlist blocks it
-// (a tenant element can't pin itself over the app chrome), so offering it would
-// silently no-op. Static is the empty/default; the others reveal offsets + z.
+// Raw `fixed` stays blocked (a tenant element can't pin itself over the app chrome
+// as a full-viewport clickjacking overlay). The sanctioned alternative is the
+// guarded `st-fixed-*` family (Pillar 4): each pins to ONE edge/corner with a capped
+// cross-axis, so it can never cover the whole viewport. They're position MODES, so
+// they live in this control — mutually exclusive with relative/absolute/sticky.
+// Static is the empty/default; any non-static reveals offsets + layer.
 export const POSITION_CONTROL: ClassControl = {
   id: 'position',
   label: 'Position',
@@ -191,11 +194,20 @@ export const POSITION_CONTROL: ClassControl = {
     { value: 'relative', label: 'Relative', token: 'relative' },
     { value: 'absolute', label: 'Absolute', token: 'absolute' },
     { value: 'sticky', label: 'Sticky', token: 'sticky' },
+    { value: 'fixed-top', label: 'Fixed — top bar', token: 'st-fixed-top' },
+    { value: 'fixed-bottom', label: 'Fixed — bottom bar', token: 'st-fixed-bottom' },
+    { value: 'fixed-left', label: 'Fixed — left rail', token: 'st-fixed-left' },
+    { value: 'fixed-right', label: 'Fixed — right rail', token: 'st-fixed-right' },
+    { value: 'fixed-tl', label: 'Fixed — top-left', token: 'st-fixed-tl' },
+    { value: 'fixed-tr', label: 'Fixed — top-right', token: 'st-fixed-tr' },
+    { value: 'fixed-bl', label: 'Fixed — bottom-left', token: 'st-fixed-bl' },
+    { value: 'fixed-br', label: 'Fixed — bottom-right', token: 'st-fixed-br' },
   ],
 };
 
 // Layer / z-index — SCALE ONLY (the allowlist blocks arbitrary `z-[9999]`); empty
-// inherits auto. Capped at 50 so tenant content stays below the app chrome.
+// inherits auto. The bounded named scale runs to 80 (Pillar 4 raised it past 50 for
+// sticky/fixed chrome that must sit above page content); arbitrary z stays blocked.
 export const Z_INDEX_CONTROL: ClassControl = {
   id: 'z',
   label: 'Layer (front ↔ back)',
@@ -205,7 +217,10 @@ export const Z_INDEX_CONTROL: ClassControl = {
     { value: '20', label: '20', token: 'z-20' },
     { value: '30', label: '30', token: 'z-30' },
     { value: '40', label: '40', token: 'z-40' },
-    { value: '50', label: '50 (top)', token: 'z-50' },
+    { value: '50', label: '50', token: 'z-50' },
+    { value: '60', label: '60', token: 'z-60' },
+    { value: '70', label: '70', token: 'z-70' },
+    { value: '80', label: '80 (top)', token: 'z-80' },
   ],
 };
 
@@ -1284,15 +1299,29 @@ export const EASE_CONTROL: ClassControl = {
   ],
 };
 
+// Continuous (looping) animation. The Tailwind built-ins (spin/ping/pulse/bounce)
+// plus the platform's self-contained loop library (Pillar 4: float/bob/ken-burns/
+// spin-slow/pulse-soft/wiggle/shimmer — `--animate-*` in surface-compile theme.ts).
+// The marquee loops are deliberately NOT here: they translate -50% and only read
+// right with the content-doubling the `marquee` BEHAVIOR adds, so they ship via the
+// marquee composite, not as a standalone class. These run forever (decorative), in
+// contrast to the Motion card's one-shot entrances.
 export const ANIMATE_CONTROL: ClassControl = {
   id: 'animate',
-  label: 'Animation',
+  label: 'Looping animation',
   options: [
     { value: 'none', label: 'None', token: 'animate-none' },
     { value: 'spin', label: 'Spin', token: 'animate-spin' },
+    { value: 'spin-slow', label: 'Spin (slow)', token: 'animate-spin-slow' },
     { value: 'ping', label: 'Ping', token: 'animate-ping' },
     { value: 'pulse', label: 'Pulse', token: 'animate-pulse' },
+    { value: 'pulse-soft', label: 'Pulse (soft)', token: 'animate-pulse-soft' },
     { value: 'bounce', label: 'Bounce', token: 'animate-bounce' },
+    { value: 'float', label: 'Float', token: 'animate-float' },
+    { value: 'bob', label: 'Bob', token: 'animate-bob' },
+    { value: 'ken-burns', label: 'Ken Burns (slow zoom)', token: 'animate-ken-burns' },
+    { value: 'wiggle', label: 'Wiggle', token: 'animate-wiggle' },
+    { value: 'shimmer', label: 'Shimmer', token: 'animate-shimmer' },
   ],
 };
 

@@ -1,5 +1,5 @@
 /* ──────────────────────────────────────────────────────────────
-   Sparx Storefront — default theme design layer.
+   sparx Storefront — default theme design layer.
 
    Semantic `st-*` classes only (no Tailwind utilities — ESLint-clean,
    matches apps/web's marketing.css approach). Every visual value reads a
@@ -2231,7 +2231,7 @@
    Only present when the storefront is embedded in the editor iframe (the
    preview bridge sets data-sparx-preview on <html>). Editor-only affordances:
    sections become clickable and show a hover / selection ring. The ring color
-   is fixed (Sparx Indigo) so it stays legible on any tenant theme, and uses
+   is fixed (sparx Indigo) so it stays legible on any tenant theme, and uses
    `outline` (not border) so selecting never shifts layout. */
 [data-sparx-preview] {
   --st-preview-ring: #6366f1;

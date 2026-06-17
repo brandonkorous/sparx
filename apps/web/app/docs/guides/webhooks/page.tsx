@@ -15,7 +15,7 @@ import { CodeBlock } from '@/components/docs/code-block';
 export const metadata: Metadata = {
   title: 'Webhooks & events',
   description:
-    'Subscribe to Sparx events over HTTP. Create a signed webhook subscription, verify the HMAC-SHA256 signature, and handle retries — with the full event catalog.',
+    'Subscribe to sparx events over HTTP. Create a signed webhook subscription, verify the HMAC-SHA256 signature, and handle retries — with the full event catalog.',
   alternates: { canonical: '/docs/guides/webhooks' },
 };
 
@@ -44,9 +44,9 @@ const CREATE_RESPONSE = `{
 const DELIVERY = `POST /hooks/sparx HTTP/1.1
 Host: example.com
 Content-Type: application/json
-X-Sparx-Event: content.entry.published
-X-Sparx-Delivery: 2b9f0c14-7e6a-4d33-9b2f-5a1c8e0d44a1
-X-Sparx-Signature: sha256=9d1e7c…f04b
+X-sparx-Event: content.entry.published
+X-sparx-Delivery: 2b9f0c14-7e6a-4d33-9b2f-5a1c8e0d44a1
+X-sparx-Signature: sha256=9d1e7c…f04b
 
 {
   "id": "2b9f0c14-7e6a-4d33-9b2f-5a1c8e0d44a1",   // the delivery id
@@ -88,7 +88,7 @@ export default function WebhooksPage() {
         { label: 'Webhooks & events' },
       ]}
       title="Webhooks & events"
-      lede="Sparx publishes a business event for everything that happens — an order is paid, a content entry is published, a customer is created. Subscribe a URL to the events you care about and Sparx delivers each one as a signed HTTP POST, with retries."
+      lede="sparx publishes a business event for everything that happens — an order is paid, a content entry is published, a customer is created. Subscribe a URL to the events you care about and sparx delivers each one as a signed HTTP POST, with retries."
       meta={
         <>
           <span>Updated 2026-06-05</span>
@@ -112,15 +112,15 @@ export default function WebhooksPage() {
     >
       <DocSection id="overview" title="Overview">
         <p>
-          Internally, every Sparx event is published to a per-topic Google Pub/Sub stream and
+          Internally, every sparx event is published to a per-topic Google Pub/Sub stream and
           consumed by platform workers (the email worker, the search indexer, cache revalidation,
           and more). Webhooks expose that same stream to <strong>you</strong>: register an HTTPS
-          endpoint, list the events you want, and Sparx POSTs each matching event to your URL.
+          endpoint, list the events you want, and sparx POSTs each matching event to your URL.
         </p>
         <ul>
           <li>
             <strong>Signed.</strong> Every delivery carries an{' '}
-            <InlineCode>X-Sparx-Signature</InlineCode> HMAC so you can prove it came from Sparx.
+            <InlineCode>X-sparx-Signature</InlineCode> HMAC so you can prove it came from sparx.
           </li>
           <li>
             <strong>At-least-once.</strong> A non-2xx response is retried with exponential backoff
@@ -250,7 +250,7 @@ export default function WebhooksPage() {
       <DocSection id="payload" title="The delivery payload">
         <p>
           Each delivery is an HTTP <InlineCode>POST</InlineCode> to your URL with a JSON body and
-          three Sparx headers:
+          three sparx headers:
         </p>
         <DocTable>
           <thead>
@@ -262,7 +262,7 @@ export default function WebhooksPage() {
           <tbody>
             <tr>
               <td>
-                <code>X-Sparx-Event</code>
+                <code>X-sparx-Event</code>
               </td>
               <td>
                 The event type, e.g. <code>content.entry.published</code>.
@@ -270,13 +270,13 @@ export default function WebhooksPage() {
             </tr>
             <tr>
               <td>
-                <code>X-Sparx-Delivery</code>
+                <code>X-sparx-Delivery</code>
               </td>
               <td>A unique id for this delivery attempt — use it to dedupe.</td>
             </tr>
             <tr>
               <td>
-                <code>X-Sparx-Signature</code>
+                <code>X-sparx-Signature</code>
               </td>
               <td>
                 <code>sha256=&lt;hex&gt;</code> — the HMAC of the raw body (see below).
@@ -297,7 +297,7 @@ export default function WebhooksPage() {
         <p>
           Every request is signed with HMAC-SHA256 using your subscription’s signing secret. Compute
           the same HMAC over the raw request body and compare it to the{' '}
-          <InlineCode>X-Sparx-Signature</InlineCode> header. Reject anything that doesn’t match.
+          <InlineCode>X-sparx-Signature</InlineCode> header. Reject anything that doesn’t match.
         </p>
         <CodeBlock tabs={[{ label: 'verify.ts', code: VERIFY }]} />
         <Callout type="danger" title="Always sign the raw body">
@@ -356,7 +356,7 @@ export default function WebhooksPage() {
           After <strong>8 attempts</strong> (≈ 7.5 hours total) a delivery is marked{' '}
           <InlineCode>failed</InlineCode> and no longer retried. Because deliveries are retried, the
           same event may arrive more than once — <strong>make your handler idempotent</strong> by
-          deduping on <InlineCode>X-Sparx-Delivery</InlineCode>.
+          deduping on <InlineCode>X-sparx-Delivery</InlineCode>.
         </p>
       </DocSection>
 

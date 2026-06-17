@@ -8,7 +8,7 @@
 // The signing secret is generated server-side and returned exactly once in
 // the POST response (Stripe-style). Subsequent reads return a redacted
 // preview only. The delivery worker (Phase 4) reads the full secret from
-// the DB to sign each `X-Sparx-Signature` header.
+// the DB to sign each `X-sparx-Signature` header.
 
 import { randomBytes } from 'node:crypto';
 import type { FastifyPluginAsync } from 'fastify';

@@ -14,7 +14,7 @@ import { cn } from '../../utils/cn';
 import { Label } from '../primitives/label';
 
 // This is the standard shadcn-shaped composition over react-hook-form, with
-// Sparx tokens. Consumers wire it up like:
+// sparx tokens. Consumers wire it up like:
 //
 //   const form = useForm({ resolver: zodResolver(schema), defaultValues });
 //   <Form {...form}>

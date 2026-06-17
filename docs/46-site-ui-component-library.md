@@ -42,10 +42,10 @@ Two component libraries, cleanly split by **whose brand they wear**:
 
 | Library                     | Theme tokens                                          | Wears the brand of    | Consumers                                                   |
 | --------------------------- | ----------------------------------------------------- | --------------------- | ----------------------------------------------------------- |
-| `@sparx/ui` (`packages/ui`) | `--color-*`, `--module-active`, `--sparx-*`           | **Sparx** (the admin) | `apps/dashboard`, marketing `apps/web`                      |
+| `@sparx/ui` (`packages/ui`) | `--color-*`, `--module-active`, `--sparx-*`           | **sparx** (the admin) | `apps/dashboard`, marketing `apps/web`                      |
 | `@sparx/site-ui` (this doc) | `--st-*` (Token Model v2, [33](33-token-model-v2.md)) | **the tenant**        | `apps/site` chrome, the Builder renderer, the editor canvas |
 
-They never overlap. `@sparx/ui` is the operator's tools, in Sparx Indigo. `@sparx/site-ui` is
+They never overlap. `@sparx/ui` is the operator's tools, in sparx Indigo. `@sparx/site-ui` is
 the tenant's published site, in the tenant's brand. The dashboard chrome around the Builder
 (toolbar, rail, inspector) stays `@sparx/ui`; only the **canvas content** — the tenant's site
 preview — is `@sparx/site-ui`.

@@ -380,6 +380,6 @@ export async function setSubscriptionStatus(
 }
 
 // The platform transaction fee is no longer a metered subscription line. The only
-// platform-collected payment fee is Sparx Pay's flat 0.5%, taken at charge time via
+// platform-collected payment fee is sparx Pay's flat 0.5%, taken at charge time via
 // Stripe `application_fee_amount` and recorded on payment_intents.platform_fee — see
 // @sparx/payments (docs/94 ADR §8). Everything else is $0 (modules, not tiers).

@@ -1,4 +1,4 @@
-// The curated starter pages Sparx ships (docs/40, docs/41 §5). On a tenant's
+// The curated starter pages sparx ships (docs/40, docs/41 §5). On a tenant's
 // first `list`, the service seeds these into BuilderPage rows; from then on
 // they're ordinary editable pages. This is the "breadth" set — a small studio
 // that publishes essays (CMS), sells a few goods (Commerce), and runs a
@@ -157,7 +157,7 @@ function homeTree(): BuilderNode {
         layout: { direction: 'row', justify: 'between', alignItems: 'center' },
         children: [
           node('Text', { props: { variant: 'meta', text: '© Field & Form' } }),
-          node('Text', { props: { variant: 'meta', text: 'Built with Sparx' } }),
+          node('Text', { props: { variant: 'meta', text: 'Built with sparx' } }),
         ],
       }),
     ],
@@ -427,7 +427,7 @@ export interface StarterEmail {
   tree: BuilderNode;
 }
 
-/** The curated starter emails Sparx ships. Seeded on the tenant's first email
+/** The curated starter emails sparx ships. Seeded on the tenant's first email
  *  list; from then on they're ordinary editable emails (cf. STARTER_PAGES). */
 export const STARTER_EMAILS: StarterEmail[] = [
   {

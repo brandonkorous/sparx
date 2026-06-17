@@ -2,7 +2,7 @@
   "name": "@sparx/provider-avalara",
   "version": "0.0.0",
   "private": true,
-  "description": "Avalara provider for Sparx Commerce — implements TaxProvider. Enterprise-grade tax compliance with global jurisdiction coverage.",
+  "description": "Avalara provider for sparx Commerce — implements TaxProvider. Enterprise-grade tax compliance with global jurisdiction coverage.",
   "type": "module",
   "exports": {
     ".": {

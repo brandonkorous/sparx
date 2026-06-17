@@ -29,7 +29,7 @@ export function makeMetadata(slug: ModuleKey) {
         title: meta.title,
         description: meta.description,
         url: `https://sparx.works/${meta.slug}`,
-        siteName: 'Sparx',
+        siteName: 'sparx',
         type: 'website',
       },
       twitter: {

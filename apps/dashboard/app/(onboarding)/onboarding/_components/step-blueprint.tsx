@@ -227,7 +227,7 @@ export function StepBlueprint({
         <div className="flex items-center gap-3">
           <PencilRuler className="h-[18px] w-[18px] shrink-0 text-[var(--color-text-tertiary)]" />
           <Text size="sm" variant="muted">
-            Prefer a blank canvas? Use Sparx headless or design it yourself.
+            Prefer a blank canvas? Use sparx headless or design it yourself.
           </Text>
         </div>
         <Button

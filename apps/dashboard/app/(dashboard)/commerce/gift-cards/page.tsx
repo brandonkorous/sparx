@@ -1,23 +1,12 @@
-import { Gift } from 'lucide-react';
+import { Gift, Plus } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  EmptyState,
-  Heading,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
+import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
+import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { getUserPreferences } from '../../_shell/preferences';
-import { IssueGiftCardForm } from './_components/issue-gift-card-form';
 import { GiftCardsList, type GiftCardSummary } from './_components/gift-cards-list';
 
 export const dynamic = 'force-dynamic';
@@ -54,22 +43,17 @@ export default async function GiftCardsPage({ searchParams }: PageProps) {
             <Badge color="module">{moneyFmt.format(outstandingCents / 100)} outstanding</Badge>
           }
           description="Issue, look up, and adjust gift cards. Cards sold as a product (a future Phase 4 sellable product type) link back to the order item so a refund revokes the unspent balance."
+          actions={
+            <EntityCreateButton
+              entityType="gift-card"
+              newHref="/commerce/gift-cards/new"
+              color="module"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New
+            </EntityCreateButton>
+          }
         />
-
-        <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>Issue a new card</Heading>
-              <CardDescription>
-                Codes are auto-generated (16 alphanumeric, hyphen-grouped). Use a custom code only
-                when migrating from a legacy system.
-              </CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
-            <IssueGiftCardForm />
-          </CardContent>
-        </Card>
 
         <ListToolbar searchPlaceholder="Search code, recipient name or email…" enableViewToggle />
 
@@ -78,7 +62,19 @@ export default async function GiftCardsPage({ searchParams }: PageProps) {
             <EmptyState
               icon={<Gift className="h-5 w-5" />}
               title="No gift cards yet"
-              description="Issue one above. Cards stay active until spent, expired, or cancelled."
+              description="Issue one with the New button. Cards stay active until spent, expired, or cancelled."
+              action={
+                <EntityCreateButton
+                  entityType="gift-card"
+                  newHref="/commerce/gift-cards/new"
+                  color="module"
+                  variant="outline"
+                  size="sm"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New
+                </EntityCreateButton>
+              }
             />
           </Card>
         ) : (

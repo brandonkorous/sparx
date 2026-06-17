@@ -39,7 +39,7 @@ export const ProviderMetadata = z.object({
   slug: z.string().min(1).max(63),
   displayName: z.string().min(1).max(127),
   description: z.string().max(2000),
-  vendor: z.string().min(1).max(127), // "Stripe, Inc." | "Sparx"
+  vendor: z.string().min(1).max(127), // "Stripe, Inc." | "sparx"
   logoMediaUrl: z.string().url().optional(),
   kinds: z.array(ProviderKind).min(1),
   supportedCurrencies: z.array(Currency).default([]),

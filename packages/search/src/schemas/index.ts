@@ -13,7 +13,7 @@ import { ENTITIES_COLLECTION, entitiesSchema } from './entities';
 import { ORDERS_COLLECTION, ordersSchema } from './orders';
 import { PRODUCTS_COLLECTION, productsSchema } from './products';
 
-/** All schemas Sparx manages. The indexer worker creates these on boot
+/** All schemas sparx manages. The indexer worker creates these on boot
  *  (idempotent — checks for existence first) and recreates them with
  *  `_v2`-style suffixes when a breaking change lands.
  *

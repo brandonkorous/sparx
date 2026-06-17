@@ -1695,7 +1695,7 @@
 /* ── Canvas (the SITE preview) ─────────────────────────────────────────── */
 
 /* The previewed site reads from a THEME — a small set of variables seeded from
- * the Sparx design tokens (neutral surfaces + the active module color for
+ * the sparx design tokens (neutral surfaces + the active module color for
  * primary), so it's on-brand by default and theme-aware (light/dark). A merchant
  * theme later overrides just these `--bxc-*` vars; nothing else changes. */
 .bx-canvas-scroll {
@@ -1709,7 +1709,7 @@
 }
 .bx-canvas {
   /* ── TENANT brand ──────────────────────────────────────────────────────
-   * The canvas renders in the MERCHANT's brand, not the Sparx admin palette.
+   * The canvas renders in the MERCHANT's brand, not the sparx admin palette.
    * The /builder/page route compiles the tenant's saved brand + theme into a
    * `--st-*` block scoped to `.bx-canvas` (the SAME compileThemeForTenant →
    * buildThemeCssV2 pipeline the /builder/brand showcase and the live

@@ -1,4 +1,4 @@
-// Provider-agnostic types for the Sparx email pipeline.
+// Provider-agnostic types for the sparx email pipeline.
 //
 // Every transactional or broadcast send goes through a single sendEmail()
 // entrypoint; providers receive a rendered SendableEmail (HTML + text + subject)

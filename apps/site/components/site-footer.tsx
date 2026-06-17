@@ -95,7 +95,7 @@ export function SiteFooter({
             <div className="st-footer__minimal-legal">
               <span>{legal}</span>
               <span>
-                Powered by <strong>Sparx</strong>
+                Powered by <strong>sparx</strong>
               </span>
             </div>
           </div>
@@ -130,7 +130,7 @@ export function SiteFooter({
         <div className="st-footer__bottom">
           <span>{legal}</span>
           <span>
-            Powered by <strong>Sparx</strong>
+            Powered by <strong>sparx</strong>
           </span>
         </div>
       </div>

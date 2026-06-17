@@ -1,6 +1,6 @@
 import { QueryClient, type QueryClientConfig } from '@tanstack/react-query';
 
-// Default cache behaviour for every Sparx QueryClient.
+// Default cache behaviour for every sparx QueryClient.
 //
 // A non-zero `staleTime` matters under App Router SSR: data prefetched on the
 // server and dehydrated into the client must NOT refetch the instant it mounts,

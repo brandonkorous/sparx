@@ -2,7 +2,7 @@
   "name": "@sparx/chat-widget",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx Live Chat storefront widget (docs/56, docs/69 A-4) — a self-contained floating chat bubble + panel that talks to api-rest's public chat surface over REST + the /ws/chat socket. Embeddable on any tenant storefront and on sparx.market.",
+  "description": "sparx Live Chat storefront widget (docs/56, docs/69 A-4) — a self-contained floating chat bubble + panel that talks to api-rest's public chat surface over REST + the /ws/chat socket. Embeddable on any tenant storefront and on sparx.market.",
   "type": "module",
   "exports": {
     ".": {

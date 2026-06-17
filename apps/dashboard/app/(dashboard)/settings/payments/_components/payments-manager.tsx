@@ -2,7 +2,7 @@
 
 // Settings → Payments (docs/94 ADR §13). Pick a gateway and drive Stripe's hosted
 // Connect flows. We render no onboarding or account UI — "Set up" and "Manage payouts"
-// redirect to Stripe-hosted pages (Stripe-hosted-first). Sparx Pay status is pulled
+// redirect to Stripe-hosted pages (Stripe-hosted-first). sparx Pay status is pulled
 // live (and re-synced when the merchant returns from onboarding).
 
 import * as React from 'react';
@@ -27,18 +27,18 @@ const GATEWAYS: {
 }[] = [
   {
     id: 'sparx_pay',
-    name: 'Sparx Pay',
+    name: 'sparx Pay',
     icon: Wallet,
     tagline: 'Recommended',
     blurb:
-      'Accept cards in minutes. Sparx handles disputes, settlement, and PCI. Flat 0.5% per transaction — no monthly fee.',
+      'Accept cards in minutes. sparx handles disputes, settlement, and PCI. Flat 0.5% per transaction — no monthly fee.',
   },
   {
     id: 'stripe_direct',
     name: 'Your own Stripe',
     icon: CreditCard,
     blurb:
-      'Route checkout to your own Stripe account. No Sparx fee — you own disputes, PCI, and payouts.',
+      'Route checkout to your own Stripe account. No sparx fee — you own disputes, PCI, and payouts.',
   },
   {
     id: 'manual',
@@ -154,7 +154,7 @@ export function PaymentsManager({
                 <code className="rounded bg-[var(--color-surface-sunken)] px-1 py-0.5 text-xs">
                   /v1/public/webhooks/stripe-direct/&lt;your-tenant-id&gt;
                 </code>
-                . Sparx takes no fee on this path.
+                . sparx takes no fee on this path.
               </Text>
             </Stack>
           </CardContent>
@@ -231,7 +231,7 @@ function SparxPayPanel({
         <CardContent>
           <Stack gap={4} className="py-1">
             <Stack gap={1}>
-              <Text weight="medium">Set up Sparx Pay</Text>
+              <Text weight="medium">Set up sparx Pay</Text>
               <Text size="sm" variant="muted">
                 Stripe hosts a short onboarding — business details, bank account, and identity.
                 Takes about five minutes. You’ll come right back here when it’s done.
@@ -245,7 +245,7 @@ function SparxPayPanel({
                 onClick={onboard}
                 loading={pending}
               >
-                Set up Sparx Pay
+                Set up sparx Pay
               </Button>
             </div>
           </Stack>
@@ -261,7 +261,7 @@ function SparxPayPanel({
         <CardContent>
           <Stack gap={4} className="py-1">
             <Stack direction="row" align="center" gap={2} className="justify-between">
-              <Text weight="medium">Sparx Pay is active</Text>
+              <Text weight="medium">sparx Pay is active</Text>
               <Badge color="success" variant="soft">
                 Accepting payments
               </Badge>
@@ -304,7 +304,7 @@ function SparxPayPanel({
       <CardContent>
         <Stack gap={4} className="py-1">
           <Stack direction="row" align="center" gap={2} className="justify-between">
-            <Text weight="medium">Finish setting up Sparx Pay</Text>
+            <Text weight="medium">Finish setting up sparx Pay</Text>
             <Badge color="warning" variant="soft">
               In progress
             </Badge>

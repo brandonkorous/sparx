@@ -8,7 +8,7 @@
 
 ## 1. Purpose & relationship to other docs
 
-The **Marketplace** is the one categorized surface for everything that can be _added_ to a Sparx
+The **Marketplace** is the one categorized surface for everything that can be _added_ to a sparx
 workspace — **Blueprints, Themes, Components, and Integrations** today, with room for Apps/Workflows
 later. It exists on **two surfaces** (§3):
 
@@ -23,7 +23,7 @@ the whole architecture: the catalog cannot live as an in-code registry inside ei
 **data, served from `api-rest`**, that both apps read (§6).
 
 The catalog is **data-driven and publisher-owned** (§6, §11). Listings are rows authored by a
-**publisher** — Sparx (first-party), a tenant, or a third-party partner. Code is reserved for the
+**publisher** — sparx (first-party), a tenant, or a third-party partner. Code is reserved for the
 parts that genuinely _are_ code (a component's render function, a payment provider's adapter); the
 catalog _metadata_ is always data. Adding a theme, blueprint, or component is inserting a row, not
 shipping a release.
@@ -179,7 +179,7 @@ The **catalog is data**; the **runtime that makes a thing _work_ is code**, link
 | Integration **adapter** (provider impl)       | **Code** (provider package)    | It executes logic                             |
 
 The in-code registries (`@sparx/blueprints`, `@sparx/site-themes`, the `@sparx/components` primitives,
-the provider registry) become **seeders** for the catalog tables — not the catalog itself. Sparx-core
+the provider registry) become **seeders** for the catalog tables — not the catalog itself. sparx-core
 listings are seeded (idempotently) through the migration pipeline; everything else is authored as data.
 
 ### 6.3 Publisher ownership + RLS (the deliberate deviation)
@@ -193,7 +193,7 @@ these tables do **not** use the canonical tenant-isolation policy. Instead:
 CREATE POLICY marketplace_read ON "<catalog_table>"
   USING (status = 'published' OR publisher_tenant_id = current_tenant_id());
 
--- Writes: a publisher may only write its own rows. Sparx-core rows are seeded out-of-band
+-- Writes: a publisher may only write its own rows. sparx-core rows are seeded out-of-band
 -- (migration / system publisher) and carry a NULL publisher_tenant_id.
 CREATE POLICY marketplace_write ON "<catalog_table>"
   USING (publisher_tenant_id = current_tenant_id())
@@ -325,19 +325,19 @@ into a tenant `BuilderComponent`; integration "Connect" drives the provider inst
 
 ## 11. Publishing & the ecosystem
 
-The catalog is **publisher-owned from row one** — Sparx, tenants, and third-party partners all publish
+The catalog is **publisher-owned from row one** — sparx, tenants, and third-party partners all publish
 (D5). This section establishes the model; the full authoring/review/payout workflow is **later-phase**
 (§13), but the schema (§6) supports it now.
 
 - **Publishers.** A publisher is modeled as its own **`MarketplacePublisher`** row (id, `type`:
-  `sparx` | `tenant` | `partner`, display name, slug, `owner_tenant_id?`). Sparx is the seeded
+  `sparx` | `tenant` | `partner`, display name, slug, `owner_tenant_id?`). sparx is the seeded
   first-party publisher; a `tenant` publisher links its tenant (e.g. it turns a polished saved theme
   or component into a public listing); a `partner` is a third-party developer org that **may not be a
   tenant** (`owner_tenant_id` null). Every listing references a `publisher_id`; the catalog tables
   also carry `publisher_tenant_id` (denormalized from the publisher for the §6.3 RLS check, null for
-  Sparx/partner-without-tenant).
+  sparx/partner-without-tenant).
 - **Submission & review.** Tenant/partner listings move `draft → in_review → published`, gated by a
-  curated review step (Sparx-core skips review as trusted first-party). `suspended` / `rejected` are
+  curated review step (sparx-core skips review as trusted first-party). `suspended` / `rejected` are
   terminal-ish states a reviewer can set. Visibility (`public` | `unlisted`) is orthogonal to status.
 - **Monetization (deferred).** `price_cents` + `pricing_model` live on the spine now; paid listings →
   revenue share → payouts ties into billing ([docs/17](17-billing-subscriptions.md)). The payout
@@ -345,7 +345,7 @@ The catalog is **publisher-owned from row one** — Sparx, tenants, and third-pa
   for the initial build, but the columns leave room so we don't migrate later.
 - **Trust & safety.** Component/blueprint trees are declarative (no RCE — docs/53); integrations are
   the sharp edge (a partner adapter executes), so partner-published _integrations_ stay gated behind
-  Sparx review + a vetted provider SDK well beyond the first publishing phase.
+  sparx review + a vetted provider SDK well beyond the first publishing phase.
 
 ---
 
@@ -381,7 +381,7 @@ on either surface.
 | M6  | Catalog vs. tenant state       | **Shared catalog + per-tenant overlay**               | The catalog is tenant-agnostic + cacheable; install/applied/connected overlaid per request.     |
 | M7  | Coming-soon categories         | **First-class registry entries**                      | Show as real categories (teaser) before data lands.                                             |
 | D4  | Catalog storage                | **Per-category tables, uniform adapter contract**     | Clean typing + fast SQL + independent growth; consistency lives at the contract, not the table. |
-| D5  | Authorship                     | **Publisher-owned: Sparx + tenant + partner**         | A third-party ecosystem is a core long-term goal; catalog is data, not curation-only.           |
+| D5  | Authorship                     | **Publisher-owned: sparx + tenant + partner**         | A third-party ecosystem is a core long-term goal; catalog is data, not curation-only.           |
 | D6  | Catalog RLS                    | **`status='published' OR own-draft`, not tenant-iso** | Published listings are cross-tenant; drafts are publisher-private. Deliberate deviation.        |
 | D7  | Surfaces                       | **Dashboard (authed) + apps/web (public)**            | Same catalog/API; public surface is the acquisition funnel.                                     |
 | D8  | Component registry home        | **`@sparx/components` + server-safe `/catalog`**      | Both apps + api-rest need it; keep React out of the backend path.                               |
@@ -408,7 +408,7 @@ on either surface.
 
 1. **Catalog spine.** ✅ SHIPPED. Per-category tables + publisher columns + the §6.3 RLS; a catalog
    service + adapter interface; `GET /v1/marketplace/:category` (authed) + `GET /v1/public/marketplace/:category`;
-   idempotent Sparx-core seed via the migration pipeline.
+   idempotent sparx-core seed via the migration pipeline.
 2. **Generic `[category]` shell.** ✅ SHIPPED. The three shared pages (home, browse with facet rail +
    sort + load-more, detail) in the dashboard; blueprints folded onto it as the first adapter with a
    per-tenant install overlay; the bespoke handlers retired.

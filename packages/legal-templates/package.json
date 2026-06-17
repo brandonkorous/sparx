@@ -2,7 +2,7 @@
   "name": "@sparx/legal-templates",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx legal-page starter templates (docs/42 §3) — the platform-authored privacy/terms/cookie/returns/shipping/refund pages seeded into a new tenant's CMS as editable drafts. Dependency-free (no @sparx/db, no React) so the seed worker and api-rest can both import it.",
+  "description": "sparx legal-page starter templates (docs/42 §3) — the platform-authored privacy/terms/cookie/returns/shipping/refund pages seeded into a new tenant's CMS as editable drafts. Dependency-free (no @sparx/db, no React) so the seed worker and api-rest can both import it.",
   "type": "module",
   "exports": {
     ".": {

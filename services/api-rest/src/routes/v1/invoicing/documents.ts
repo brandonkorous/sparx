@@ -181,7 +181,7 @@ const documentRoutes: FastifyPluginAsync = (app) => {
   });
 
   // Hosted pay-link for the outstanding balance (docs/94 ADR §8). Routes through
-  // PaymentService → the tenant's gateway (Sparx Pay = 0.5% fee; others = $0). The
+  // PaymentService → the tenant's gateway (sparx Pay = 0.5% fee; others = $0). The
   // resulting payment_intent carries metadata.invoiceId, so the payment webhook records
   // the payment against this document on success. Manual / unconfigured tenants get a
   // clean validation error (they collect by hand instead).

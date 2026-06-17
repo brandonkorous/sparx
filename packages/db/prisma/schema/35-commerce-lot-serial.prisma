@@ -5,8 +5,8 @@
 // ready batch identification. One model serves all three.
 //
 // `LotBatch.quantity` is the as-shipped batch count; runtime stock at
-// the variant+warehouse level lives in commerce_inventory_levels and is
-// the authoritative source for availability checks.
+// the variant+warehouse level lives in inventory_levels and is
+// the authoritative source for availability checks. Owned by @sparx/inventory.
 
 model LotBatch {
   id          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -35,10 +35,10 @@ model LotBatch {
   warehouse   Warehouse      @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
   serialUnits SerialUnit[]
 
-  @@unique([variantId, lotNumber], map: "lot_batches_variant_lot_unique")
+  @@unique([variantId, lotNumber], map: "inventory_lot_batches_variant_lot_unique")
   @@index([tenantId, expiresAt])
   @@index([tenantId, recallStatus])
-  @@map("commerce_lot_batches")
+  @@map("inventory_lot_batches")
 }
 
 // One row per physical unit. For variants tracked at the unit level
@@ -68,9 +68,9 @@ model SerialUnit {
   warehouse Warehouse      @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
   lotBatch  LotBatch?      @relation(fields: [lotBatchId], references: [id], onDelete: SetNull)
 
-  @@unique([variantId, serial], map: "serial_units_variant_serial_unique")
+  @@unique([variantId, serial], map: "inventory_serial_units_variant_serial_unique")
   @@index([tenantId, status])
   @@index([tenantId, lotBatchId])
   @@index([soldOnOrderItemId])
-  @@map("commerce_serial_units")
+  @@map("inventory_serial_units")
 }

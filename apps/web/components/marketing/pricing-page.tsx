@@ -197,7 +197,7 @@ const STATS: { value: string; suffix?: string; label: string }[] = [
     value: '$38,000',
     suffix: '+/yr',
     label:
-      'Kept by running all eight capabilities as Sparx instead of eight separate subscriptions.',
+      'Kept by running all eight capabilities as sparx instead of eight separate subscriptions.',
   },
   {
     value: '8 → 1',
@@ -343,7 +343,7 @@ function CostSavings() {
               borderBottom: '1px solid var(--color-border-default)',
             }}
           >
-            <LedgerLabel>Sparx module</LedgerLabel>
+            <LedgerLabel>sparx module</LedgerLabel>
             <span />
             <LedgerLabel>What you&apos;d buy instead</LedgerLabel>
             <LedgerLabel align="right">Their price</LedgerLabel>
@@ -470,7 +470,7 @@ function CostSavings() {
                 </span>
               </span>
               <ScenarioLine k="Bought separately" v={sc.separate} strike />
-              <ScenarioLine k="On Sparx" v={sc.sparx} sparx />
+              <ScenarioLine k="On sparx" v={sc.sparx} sparx />
               <div
                 style={{
                   display: 'flex',
@@ -507,7 +507,7 @@ function CostSavings() {
           of the tools each module replaces — Webflow Premium, Shopify Advanced and Plus, a headless
           CMS, HubSpot Sales Professional, Klaviyo, a dropshipping app, and Zapier for the glue
           between them. Those prices scale up with seats, contacts, and usage, so a real-world stack
-          usually costs more. Sparx is flat — the module price is the price.
+          usually costs more. sparx is flat — the module price is the price.
         </p>
       </div>
     </Section>
@@ -976,7 +976,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: 'Do I have to start with Builder?',
-    a: 'No. Builder hosts and serves a website, so any hosted Sparx site turns it on — but it is optional, not a base. A content-only publisher, a CRM-only team, or anyone driving their own frontend off the API can start from the module they actually use.',
+    a: 'No. Builder hosts and serves a website, so any hosted sparx site turns it on — but it is optional, not a base. A content-only publisher, a CRM-only team, or anyone driving their own frontend off the API can start from the module they actually use.',
   },
   {
     q: 'Can I switch a module off later?',

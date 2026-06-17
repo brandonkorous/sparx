@@ -4,7 +4,7 @@ import { DocArticle, DocSection, NextSteps, NextCard, DocLink } from '@/componen
 export const metadata: Metadata = {
   title: 'Documentation',
   description:
-    'Start here. Guides, REST & GraphQL API reference, SDKs, and the MCP server for building on Sparx — the modular content and commerce OS.',
+    'Start here. Guides, REST & GraphQL API reference, SDKs, and the MCP server for building on sparx — the modular content and commerce OS.',
   alternates: { canonical: '/docs' },
 };
 
@@ -20,11 +20,11 @@ export default function DocsIndexPage() {
   return (
     <DocArticle
       title="Documentation"
-      lede="Everything you need to build on Sparx — the modular content and commerce OS. Sparx is API-first: every feature is an endpoint before it's a screen, and a native MCP server lets AI agents read and write live business data."
+      lede="Everything you need to build on sparx — the modular content and commerce OS. sparx is API-first: every feature is an endpoint before it's a screen, and a native MCP server lets AI agents read and write live business data."
     >
       <DocSection id="start" title="Start here">
         <p>
-          New to Sparx? The <DocLink href="/docs/quickstart">Quickstart</DocLink> takes you from
+          New to sparx? The <DocLink href="/docs/quickstart">Quickstart</DocLink> takes you from
           zero to a live API call in about ten minutes. Then explore by area:
         </p>
         <NextSteps>
@@ -59,7 +59,7 @@ export default function DocsIndexPage() {
         </NextSteps>
       </DocSection>
 
-      <DocSection id="principles" title="How Sparx is built">
+      <DocSection id="principles" title="How sparx is built">
         <p>A few platform commitments shape every page in these docs:</p>
         <ul>
           <li>

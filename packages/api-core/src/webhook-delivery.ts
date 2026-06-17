@@ -13,7 +13,7 @@
 //      Background loop singleton across pods (advisory lock). Selects
 //      pending deliveries through the SECURITY DEFINER function
 //      `find_pending_webhook_deliveries` (migration 20260601100100),
-//      POSTs each with an HMAC-SHA256 `X-Sparx-Signature: sha256=<hex>`
+//      POSTs each with an HMAC-SHA256 `X-sparx-Signature: sha256=<hex>`
 //      header derived from the subscription's signing secret. On 2xx
 //      flips status='delivered'; on any other outcome bumps attempt_count
 //      and schedules next_attempt_at with exponential backoff up to 8

@@ -2,7 +2,7 @@
   "name": "@sparx/email",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx email infrastructure — React Email templates, provider abstraction (Postal HTTP API in prod, console in dev), and the high-level sendEmail() called by Better Auth, signup flows, and api-rest event consumers.",
+  "description": "sparx email infrastructure — React Email templates, provider abstraction (Postal HTTP API in prod, console in dev), and the high-level sendEmail() called by Better Auth, signup flows, and api-rest event consumers.",
   "type": "module",
   "exports": {
     ".": {

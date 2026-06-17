@@ -213,7 +213,7 @@ export function Footer() {
           borderTop: '1px solid var(--color-border-default)',
         }}
       >
-        <Eyebrow>The Sparx domain network</Eyebrow>
+        <Eyebrow>The sparx domain network</Eyebrow>
         <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
           {DOMAINS.map((d) => (
             <span key={d.name} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -251,7 +251,7 @@ export function Footer() {
             color: 'var(--color-text-tertiary)',
           }}
         >
-          © 2026 WizeWorks, Inc. · Visalia, California · Sparx is a registered trademark of
+          © 2026 WizeWorks, Inc. · Visalia, California · sparx is a registered trademark of
           WizeWorks.
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>

@@ -10,10 +10,11 @@ import {
 } from '@sparx/ui';
 import { QueryProvider } from '@sparx/query/provider';
 import { PostHogProvider } from '../components/posthog-provider';
+import { TopProgressBar } from '../components/top-progress-bar';
 import { UpdateNotifier } from '../components/update-notifier';
 import './globals.css';
 
-// Inter powers the Sparx wordmark (bold, to match the monogram mark). Exposed
+// Inter powers the sparx wordmark (bold, to match the monogram mark). Exposed
 // as --font-wordmark, which @sparx/ui's <Wordmark> consumes.
 const interWordmark = Inter({
   subsets: ['latin'],
@@ -23,8 +24,8 @@ const interWordmark = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Sparx Dashboard',
-  description: 'Admin for the Sparx content and commerce platform.',
+  title: 'sparx Dashboard',
+  description: 'Admin for the sparx content and commerce platform.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -38,6 +39,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Script id="sparx-theme-init" strategy="beforeInteractive">
           {THEME_INIT_SCRIPT}
         </Script>
+        {/* Page-top navigation/loading bar — overlays everything at the top edge. */}
+        <TopProgressBar />
         <PostHogProvider>
           <QueryProvider>
             <TooltipProvider delayDuration={150}>

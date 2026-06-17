@@ -53,7 +53,7 @@ export interface RefundResult {
 }
 
 export interface CustomerAttachInput {
-  customerId: string; // Sparx CRM Customer.id
+  customerId: string; // sparx CRM Customer.id
   email: string;
   name?: string;
   phone?: string;

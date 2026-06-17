@@ -62,7 +62,7 @@ export function EmailLayout({ preview, children, footerNote, header = true }: Em
 
           <EmailDivider />
 
-          <EmailMuted>{footerNote ?? `${brand.siteName ?? 'Sparx'} · Sent with Sparx`}</EmailMuted>
+          <EmailMuted>{footerNote ?? `${brand.siteName ?? 'sparx'} · Sent with sparx`}</EmailMuted>
         </Container>
       </Body>
     </Html>

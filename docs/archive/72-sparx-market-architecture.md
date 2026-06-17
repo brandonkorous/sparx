@@ -1,4 +1,4 @@
-# Sparx Platform — sparx.market Marketplace Architecture
+# sparx Platform — sparx.market Marketplace Architecture
 
 **Version:** 1.0
 **Author:** Brandon Korous
@@ -8,18 +8,18 @@
 
 ## 1. Overview
 
-sparx.market is the universal public marketplace for all Sparx merchants. Merchants opt individual products into the public graph. Shoppers browse and purchase from any Sparx merchant in one place. Sparx processes all payments and settles with merchants via ACH — merchants never need Stripe Connect to participate.
+sparx.market is the universal public marketplace for all sparx merchants. Merchants opt individual products into the public graph. Shoppers browse and purchase from any sparx merchant in one place. sparx processes all payments and settles with merchants via ACH — merchants never need Stripe Connect to participate.
 
 **Domain:** sparx.market  
 **Category subpaths:** sparx.market/auto, /beauty, /home, /fashion, /food, /tech  
-**Sparx commission:** 1–2% tiered by plan  
-**Merchant of record:** Sparx (for marketplace transactions)
+**sparx commission:** 1–2% tiered by plan  
+**Merchant of record:** sparx (for marketplace transactions)
 
 ---
 
 ## 2. The Product Graph
 
-Every Sparx merchant can mark individual products as public. Public products enter the Sparx product graph — the single data layer that powers sparx.market, all category subpaths, and future discovery surfaces.
+Every sparx merchant can mark individual products as public. Public products enter the sparx product graph — the single data layer that powers sparx.market, all category subpaths, and future discovery surfaces.
 
 ```sql
 ALTER TABLE products ADD COLUMN public_listing  BOOLEAN DEFAULT false;
@@ -27,7 +27,7 @@ ALTER TABLE products ADD COLUMN market_category VARCHAR(50);
 -- auto | beauty | home | fashion | food | tech | general
 ALTER TABLE products ADD COLUMN market_featured  BOOLEAN DEFAULT false;
 ALTER TABLE products ADD COLUMN market_approved  BOOLEAN DEFAULT true;
--- Sparx can delist products that violate policies
+-- sparx can delist products that violate policies
 ```
 
 Merchant workflow:
@@ -49,7 +49,7 @@ sparx.market
   /[category]           → /auto /beauty /home /fashion /food /tech
   /products             → All public products, search + filter
   /products/[slug]      → Product detail page
-  /merchants            → Directory of all Sparx merchants
+  /merchants            → Directory of all sparx merchants
   /merchants/[slug]     → Merchant profile → links to their sparx.zone site
   /cart                 → Unified cart (Phase 1: single merchant per cart)
   /checkout             → Stripe-powered checkout
@@ -67,9 +67,9 @@ sparx.market/auto
                           Featured auto products
                           "Browse 4,200 auto parts from 180 merchants"
                           Top merchants in this category
-                          "Are you an auto parts merchant? Join Sparx →"
+                          "Are you an auto parts merchant? Join sparx →"
   /products             → All auto products, faceted search
-  /merchants            → Auto merchants on Sparx
+  /merchants            → Auto merchants on sparx
   /[subcategory]        → sparx.market/auto/diesel, /auto/parts, etc.
 ```
 
@@ -77,28 +77,28 @@ Category pages build SEO authority independently. Even with zero products, a cat
 
 ---
 
-## 4. Payment Model — Sparx as Merchant of Record
+## 4. Payment Model — sparx as Merchant of Record
 
-Sparx processes ALL sparx.market payments through Sparx's own Stripe account. Merchants receive ACH settlements — they never need Stripe Connect to sell on sparx.market.
+sparx processes ALL sparx.market payments through sparx's own Stripe account. Merchants receive ACH settlements — they never need Stripe Connect to sell on sparx.market.
 
 ```
 Shopper checks out on sparx.market
-  → Sparx's Stripe account charges full amount
-  → Order created in Sparx DB
+  → sparx's Stripe account charges full amount
+  → Order created in sparx DB
   → Pub/Sub: market.order.created
 
-Sparx settles with merchant weekly (every Monday):
-  → Calculate: product sales - Sparx commission - any chargebacks
+sparx settles with merchant weekly (every Monday):
+  → Calculate: product sales - sparx commission - any chargebacks
   → ACH transfer to merchant's bank account
   → Settlement report emailed to merchant
-  → Settlement record in merchant's Sparx dashboard
+  → Settlement record in merchant's sparx dashboard
 ```
 
 This model:
 
 - Works for any merchant regardless of payment processor
 - Gillett Diesel gets an ACH transfer, doesn't need Stripe
-- Sparx handles all payment complexity
+- sparx handles all payment complexity
 - Merchant just sells and gets paid
 
 ### Commission Structure (tiered by plan)
@@ -168,7 +168,7 @@ More from Gillett Diesel          More diesel injectors
 
 ## 7. Merchant Profile on sparx.market
 
-Every Sparx merchant gets a public profile page:
+Every sparx merchant gets a public profile page:
 
 ```
 sparx.market/merchants/gillett-diesel
@@ -187,7 +187,7 @@ Specializing in 6.7L Power Stroke components.
 Products (47)          [product grid]
 ```
 
-Merchant profile is auto-generated from their Sparx account data. They can customize banner, bio, and featured products from their dashboard.
+Merchant profile is auto-generated from their sparx account data. They can customize banner, bio, and featured products from their dashboard.
 
 ---
 
@@ -212,7 +212,7 @@ Product pages target long-tail product keywords that individual merchant sites c
 
 ## 9. Analytics — Market Revenue
 
-Market revenue surfaces alongside other channels in the Sparx analytics dashboard:
+Market revenue surfaces alongside other channels in the sparx analytics dashboard:
 
 ```
 Revenue by channel · Last 30 days
@@ -244,9 +244,9 @@ Merchant dashboard shows:
 - [ ] Product listing page with Typesense search + faceted filters
 - [ ] Product detail page with merchant attribution
 - [ ] Merchant profile pages
-- [ ] Single-merchant cart + checkout (Sparx Stripe account)
+- [ ] Single-merchant cart + checkout (sparx Stripe account)
 - [ ] Order confirmation page + email
-- [ ] Sparx → merchant settlement worker (weekly ACH)
+- [ ] sparx → merchant settlement worker (weekly ACH)
 - [ ] Settlement report email via Postal
 - [ ] Settlement dashboard in merchant analytics
 - [ ] Commission calculation by plan tier

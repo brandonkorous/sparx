@@ -1,7 +1,7 @@
-// Payments configuration + Sparx Pay onboarding (docs/94 ADR §5, §9, §13). Powers the
+// Payments configuration + sparx Pay onboarding (docs/94 ADR §5, §9, §13). Powers the
 // dashboard's Settings → Payments surface and the onboarding redirect.
 //
-// Sparx Pay is Stripe Connect EXPRESS: the platform mints a connected account, Stripe
+// sparx Pay is Stripe Connect EXPRESS: the platform mints a connected account, Stripe
 // HOSTS the onboarding (KYC, bank, ToS) behind an Account Link, and the merchant
 // manages payouts in the Stripe-hosted Express dashboard. No onboarding or account UI
 // is built here — Stripe-hosted-first.
@@ -28,7 +28,7 @@ export interface SparxPayStatus {
 
 export interface PaymentConfigState {
   gatewayId: string;
-  /** True once the selected gateway can take payments (Sparx Pay: charges enabled;
+  /** True once the selected gateway can take payments (sparx Pay: charges enabled;
    *  manual: immediately; stripe_direct: once keys are present). */
   isActive: boolean;
   onboardedAt: string | null;
@@ -37,7 +37,7 @@ export interface PaymentConfigState {
 
 export class PaymentsUnconfiguredError extends Error {
   constructor() {
-    super('Sparx Pay is unavailable — the platform Stripe key is not configured.');
+    super('sparx Pay is unavailable — the platform Stripe key is not configured.');
     this.name = 'PaymentsUnconfiguredError';
   }
 }
@@ -51,7 +51,7 @@ async function tenantAccountId(tenantId: string): Promise<string | null> {
   return tenant?.stripeAccountId ?? null;
 }
 
-/** Ensure a config row exists (default Sparx Pay, not yet active). */
+/** Ensure a config row exists (default sparx Pay, not yet active). */
 async function ensureConfig(
   tenantId: string
 ): Promise<{ gatewayId: string; isActive: boolean; onboardedAt: Date | null }> {
@@ -82,7 +82,7 @@ async function fetchAccountStatus(
   };
 }
 
-/** The full payment configuration + (for Sparx Pay) live onboarding status. */
+/** The full payment configuration + (for sparx Pay) live onboarding status. */
 export async function getPaymentConfig(tenantId: string): Promise<PaymentConfigState> {
   const config = await ensureConfig(tenantId);
   const accountId = await tenantAccountId(tenantId);
@@ -106,7 +106,7 @@ export async function getPaymentConfig(tenantId: string): Promise<PaymentConfigS
   };
 }
 
-/** Choose the active gateway. Sparx Pay / Stripe Direct stay inactive until they can
+/** Choose the active gateway. sparx Pay / Stripe Direct stay inactive until they can
  *  actually charge (onboarding / keys); manual has no gateway, so it activates at once
  *  (the merchant marks invoices/orders paid by hand — no PaymentIntent, no fee). */
 export async function selectGateway(

@@ -10,7 +10,7 @@ import type { Auth } from './server';
 // works with no baseURL config.
 //
 // `inferAdditionalFields<Auth>` lifts the server-side `tenantId` / `role`
-// shape onto the client so `useSession()` returns the Sparx extensions
+// shape onto the client so `useSession()` returns the sparx extensions
 // fully typed.
 
 export const authClient = createAuthClient({

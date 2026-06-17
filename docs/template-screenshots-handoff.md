@@ -2,7 +2,7 @@
 
 ## Your job
 
-On the **live deployed** Sparx dashboard (more stable than the slow local dev server), do an end‑to‑end **install → go‑live → screenshot** pass for the four new marketplace templates, then wire each screenshot in as the template's `preview` image and re‑run the gate. Also fix the flagship's logo to match. **Do not push** — the user pushes manually.
+On the **live deployed** sparx dashboard (more stable than the slow local dev server), do an end‑to‑end **install → go‑live → screenshot** pass for the four new marketplace templates, then wire each screenshot in as the template's `preview` image and re‑run the gate. Also fix the flagship's logo to match. **Do not push** — the user pushes manually.
 
 ## Background (what already exists, all UNPUSHED, gate‑green)
 

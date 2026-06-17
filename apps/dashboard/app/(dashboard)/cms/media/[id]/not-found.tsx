@@ -1,5 +1,5 @@
 // Friendly not-found for media assets. Without this, Next.js falls through
-// to the framework default 404 chrome with no Sparx nav (audit F-34). Keeping
+// to the framework default 404 chrome with no sparx nav (audit F-34). Keeping
 // the user inside the CMS subtree so they can back out to the media library
 // with one click.
 

@@ -78,7 +78,7 @@ async function gd<T>(method: string, path: string, body?: unknown): Promise<T> {
 }
 
 /** GoDaddy returns prices in micro-units (USD * 1,000,000). Convert to integer
- *  cents — the unit the rest of Sparx (markup, Stripe, UI) speaks. */
+ *  cents — the unit the rest of sparx (markup, Stripe, UI) speaks. */
 function microToCents(micro: number | undefined | null): number {
   return micro != null ? Math.round(micro / 10000) : 0;
 }
@@ -385,7 +385,7 @@ export async function configureDNS(domain: string, records: DnsRecord[]): Promis
   await gd<void>('PUT', `/v1/domains/${encodeURIComponent(domain)}/records`, records);
 }
 
-/** The canonical Sparx DNS record set for a purchased domain (docs/24 §3). */
+/** The canonical sparx DNS record set for a purchased domain (docs/24 §3). */
 export function buildSparxDnsRecords(dkimPublicKey: string): DnsRecord[] {
   return [
     { type: 'CNAME', name: '@', data: 'customers.sparx.zone', ttl: 600 },

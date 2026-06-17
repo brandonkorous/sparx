@@ -78,7 +78,7 @@ The single most important reframing in this doc.
 
 | Tier                               | What it is                                                                  | Who authors it                                             | Example                                                |
 | ---------------------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------ |
-| **Tier 1 — primitives**            | The raw node tree: containers + leaf elements, bind-a-leaf-to-a-path        | Sparx (and advanced users) build _components_ out of these | `Stack` / `Box` / `Image` / `Text` nodes               |
+| **Tier 1 — primitives**            | The raw node tree: containers + leaf elements, bind-a-leaf-to-a-path        | sparx (and advanced users) build _components_ out of these | `Stack` / `Box` / `Image` / `Text` nodes               |
 | **Tier 2 — data-aware components** | Opinionated, data-aware building blocks tenants point at data and configure | **Tenants**                                                | `ImageDisplay`, `BuyBox`, `PriceTag`, `CollectionList` |
 
 **Tenants compose Tier 2.** They never hand-wire `<img src="product.image">`; they say _"show me
@@ -311,7 +311,7 @@ of truth, different surface.
 - **One polymorphic template** whose middle switches on bound type is _possible_ but threads two
   editing/rendering paths through one template — more power, more complexity, rarely worth it.
 
-**Sparx's stance on the freeform ↔ curated spectrum:** lean **curated, with escape hatches.** A bounded
+**sparx's stance on the freeform ↔ curated spectrum:** lean **curated, with escape hatches.** A bounded
 catalog of data-aware components and limited, deliberate nesting — so a non-designer can't easily make
 a broken, off-brand, non-responsive mess — with Tier-1 decomposition available to power users. Smart
 defaults; explicit overrides.

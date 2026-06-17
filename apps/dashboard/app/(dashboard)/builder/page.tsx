@@ -245,9 +245,9 @@ const SURFACES = [
 ] as const;
 
 // A faux browser-framed site preview built from divs. The browser CHROME (frame,
-// dots, URL bar) rides Sparx neutral tokens so it stays theme-consistent; the
+// dots, URL bar) rides sparx neutral tokens so it stays theme-consistent; the
 // PAGE CONTENT inside the frame is intentionally an off-palette warm "coffee"
-// scheme — it represents the *tenant's own storefront brand*, not Sparx UI, so it
+// scheme — it represents the *tenant's own storefront brand*, not sparx UI, so it
 // reads as "your live site" rather than more dashboard chrome (same category as
 // the product-thumbnail gradients on the commerce page). Decorative + aria-hidden.
 function SitePreview() {
@@ -264,7 +264,7 @@ function SitePreview() {
           <span className="text-[var(--color-text-tertiary)]">switchback.coffee</span>
         </span>
       </div>
-      {/* ── tenant storefront brand (intentional warm palette, not Sparx tokens) ── */}
+      {/* ── tenant storefront brand (intentional warm palette, not sparx tokens) ── */}
       <div className="bg-[#fbf7f0] pb-2.5">
         <div className="flex items-center gap-1.5 border-b border-[#efe6d8] px-3 py-2">
           <span className="text-[10px] font-medium text-[#7c2d12]">SWITCHBACK</span>
@@ -644,7 +644,7 @@ export default async function BuilderOverviewPage() {
                 )}
                 <p className="mt-3 text-sm text-[var(--color-text-secondary)]">
                   {siteDomain
-                    ? `${siteDomain.type === 'custom' ? 'Custom domain' : 'Sparx domain'} · ${
+                    ? `${siteDomain.type === 'custom' ? 'Custom domain' : 'sparx domain'} · ${
                         sslActive ? 'SSL active' : 'SSL pending'
                       } · `
                     : ''}

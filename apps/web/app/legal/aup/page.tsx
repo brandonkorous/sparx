@@ -3,8 +3,8 @@ import { LEGAL_DOC_VERSIONS } from '@/lib/legal-versions';
 import { LegalDoc, LegalSection, LegalP, LegalList } from '@/components/marketing/legal-doc';
 
 export const metadata: Metadata = {
-  title: 'Acceptable use policy — Sparx',
-  description: 'The conduct and content rules that apply to everyone who uses Sparx.',
+  title: 'Acceptable use policy — sparx',
+  description: 'The conduct and content rules that apply to everyone who uses sparx.',
   alternates: { canonical: '/legal/aup' },
 };
 
@@ -18,21 +18,21 @@ export default function AupPage() {
       effectiveDate={v.effectiveDate}
       intro={
         <>
-          The conduct and content rules that apply to everyone who uses Sparx. This policy is part
+          The conduct and content rules that apply to everyone who uses sparx. This policy is part
           of the Terms of Service; violating it can lead to suspension or termination.
         </>
       }
     >
       <LegalSection heading="1. Purpose">
         <LegalP>
-          Sparx is a platform for content and commerce of every kind. This policy keeps it safe,
+          sparx is a platform for content and commerce of every kind. This policy keeps it safe,
           lawful, and reliable for everyone. It applies to your tenant, your staff users, and the
-          stores, sites, and communications you operate on Sparx.
+          stores, sites, and communications you operate on sparx.
         </LegalP>
       </LegalSection>
 
       <LegalSection heading="2. Prohibited content & conduct">
-        <LegalP>You may not use Sparx to create, store, sell, or distribute:</LegalP>
+        <LegalP>You may not use sparx to create, store, sell, or distribute:</LegalP>
         <LegalList
           items={[
             'Anything illegal under applicable law, or content that infringes others’ intellectual-property or privacy rights.',
@@ -58,7 +58,7 @@ export default function AupPage() {
 
       <LegalSection heading="4. Email & messaging">
         <LegalP>
-          Outbound email and messaging you send through Sparx must comply with anti-spam laws (such
+          Outbound email and messaging you send through sparx must comply with anti-spam laws (such
           as CAN-SPAM and GDPR). You must have a lawful basis to contact recipients, honor
           unsubscribe requests promptly, and not send unsolicited bulk messages. We include
           one-click unsubscribe in marketing email and may suspend sending that generates abuse

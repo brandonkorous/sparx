@@ -2,7 +2,7 @@
   "name": "@sparx/crm",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx CRM — service layer (the single source of truth shared by REST, GraphQL, MCP, and Server Actions), event consumers, and MCP tool registry (docs/11-crm-prd.md, memory/feedback_crm_architecture.md decision #7).",
+  "description": "sparx CRM — service layer (the single source of truth shared by REST, GraphQL, MCP, and Server Actions), event consumers, and MCP tool registry (docs/11-crm-prd.md, memory/feedback_crm_architecture.md decision #7).",
   "type": "module",
   "exports": {
     ".": {

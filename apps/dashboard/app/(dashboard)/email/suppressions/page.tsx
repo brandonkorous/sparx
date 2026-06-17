@@ -1,21 +1,13 @@
-import { ShieldOff } from 'lucide-react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  EmptyState,
-  Text,
-} from '@sparx/ui';
+import { Plus, ShieldOff } from 'lucide-react';
+import { Card, EmptyState, Text } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
 import { EmailShell } from '../_components/email-shell';
+import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
-import { AddSuppressionForm } from './_components/add-suppression-form';
 import { SuppressionsList } from './_components/suppressions-list';
 import type { SuppressionRow } from '../_lib/types';
 
@@ -47,20 +39,17 @@ export default async function SuppressionsPage({ searchParams }: PageProps) {
       icon={<ShieldOff className="h-5 w-5" />}
       title="Suppressions"
       description="Addresses that are never emailed. Bounces, complaints, and unsubscribes are added automatically; you can also suppress addresses manually."
+      actions={
+        <EntityCreateButton
+          entityType="suppression"
+          newHref="/email/suppressions/new"
+          color="module"
+          leftIcon={<Plus className="h-4 w-4" />}
+        >
+          New
+        </EntityCreateButton>
+      }
     >
-      <Card>
-        <CardHeader>
-          <CardTitle>Suppress an address</CardTitle>
-          <CardDescription>
-            Add one or many addresses to the do-not-send list. Choose whether to block all email or
-            just marketing.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <AddSuppressionForm />
-        </CardContent>
-      </Card>
-
       <Text size="sm" variant="muted">
         {total} suppressed address{total === 1 ? '' : 'es'}
       </Text>
@@ -72,7 +61,18 @@ export default async function SuppressionsPage({ searchParams }: PageProps) {
           <EmptyState
             icon={<ShieldOff className="h-5 w-5" />}
             title="No suppressed addresses"
-            description="Bounces, complaints, and unsubscribes will appear here automatically, and you can add addresses manually above."
+            description="Bounces, complaints, and unsubscribes will appear here automatically, and you can add addresses manually with the New button."
+            action={
+              <EntityCreateButton
+                entityType="suppression"
+                newHref="/email/suppressions/new"
+                variant="outline"
+                size="sm"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New
+              </EntityCreateButton>
+            }
           />
         </Card>
       ) : (

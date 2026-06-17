@@ -10,8 +10,14 @@ describe('activeTotalCents', () => {
     expect(activeTotalCents(['builder', 'commerce', 'cms'])).toBe(10_800);
   });
 
-  it('ignores modules with no list price (not separately billed)', () => {
-    expect(activeTotalCents(['builder', 'inventory'])).toBe(MODULE_MONTHLY_CENTS.builder);
+  it('sums raw list prices — bundling discounts are applied by the module graph, not here', () => {
+    // `inventory` carries a $29 standalone list price; its BUNDLED_FREE discount
+    // (when Commerce/B2B is active) is resolved upstream — the bundled tenant
+    // simply never has an explicit `inventory` flag — so this pure price sum still
+    // counts it when it's listed as active.
+    expect(activeTotalCents(['builder', 'inventory'])).toBe(
+      (MODULE_MONTHLY_CENTS.builder ?? 0) + (MODULE_MONTHLY_CENTS.inventory ?? 0)
+    );
   });
 
   it('is zero for an empty plan', () => {
@@ -20,9 +26,11 @@ describe('activeTotalCents', () => {
 });
 
 describe('isBillableModule', () => {
-  it('marks priced modules billable and unpriced ones not', () => {
+  it('marks priced modules billable', () => {
     expect(isBillableModule('commerce')).toBe(true);
     expect(isBillableModule('invoicing')).toBe(true);
-    expect(isBillableModule('inventory')).toBe(false);
+    // Inventory is billable at $29 standalone (BUNDLED_FREE with Commerce/B2B is a
+    // module-graph concern, not a price-catalog one).
+    expect(isBillableModule('inventory')).toBe(true);
   });
 });

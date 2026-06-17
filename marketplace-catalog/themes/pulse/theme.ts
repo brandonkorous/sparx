@@ -1,4 +1,4 @@
-// Pulse — a Sparx first-party marketplace theme (docs/85). The payload is a
+// Pulse — a sparx first-party marketplace theme (docs/85). The payload is a
 // complete DataThemePreset (v1 storefront tokens + v2 preset); the ingest
 // validates it and writes it to storage as the applied-at-runtime artifact.
 export default {

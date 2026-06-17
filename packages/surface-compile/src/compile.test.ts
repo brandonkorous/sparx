@@ -51,6 +51,47 @@ describe('compileClasses', () => {
     expect(css).not.toMatch(/\.fixed\b/);
   });
 
+  it('emits the Pillar 4 motion library, bounded z-scale, and guarded fixed', async () => {
+    const css = await compileClasses(['animate-marquee', 'z-60', 'z-80', 'st-fixed-top']);
+    // The CONTINUOUS animation library (not just the entrance set) + its keyframes.
+    expect(css).toMatch(/\.animate-marquee\b/);
+    expect(css).toContain('@keyframes marquee');
+    // Extended bounded z-scale — named rungs above Tailwind's z-50.
+    expect(css).toMatch(/\.z-60\s*\{[^}]*z-index:\s*60/);
+    expect(css).toMatch(/\.z-80\s*\{[^}]*z-index:\s*80/);
+    // The ONLY sanctioned position:fixed emitter — pinned + cross-axis capped so it
+    // can never become a full-viewport clickjacking overlay (docs/98 §3.1).
+    expect(css).toMatch(/\.st-fixed-top\s*\{[^}]*position:\s*fixed/);
+    expect(css).toMatch(/\.st-fixed-top\s*\{[^}]*max-height:\s*50vh/);
+  });
+
+  it('keeps raw fixed + arbitrary z-index denied while the named z-scale passes', async () => {
+    const css = await compileClasses(['z-60', 'z-[9999]', 'fixed']);
+    expect(css).toMatch(/\.z-60\b/);
+    expect(css).not.toContain('9999');
+    expect(css).not.toMatch(/\.fixed\b/);
+  });
+
+  it('compiles the Pillar 6 behavior-composite class patterns', async () => {
+    // The data-attribute variants the behavior runtime drives at runtime: the
+    // carousel sets data-active on the current dot, the scrollspy sets data-scrolled
+    // on the nav, the disclosure sets data-open on the open item (read via group-).
+    const css = await compileClasses([
+      'data-[active=true]:w-6',
+      'data-[scrolled=true]:bg-base-100/90',
+      'group-data-[open=true]:rotate-180',
+      'animate-marquee',
+      'w-max',
+      'backdrop-blur',
+    ]);
+    expect(css).toContain('[data-active="true"]');
+    expect(css).toContain('[data-scrolled="true"]');
+    expect(css).toContain('[data-open="true"]');
+    expect(css).toMatch(/width:\s*max-content/);
+    expect(css).toMatch(/\.animate-marquee\b/);
+    expect(css).toContain('backdrop-filter');
+  });
+
   it('ships the navbar component + start/center/end zones (daisyUI-faithful)', async () => {
     const css = await compileClasses(['navbar', 'navbar-start', 'navbar-center', 'navbar-end']);
     expect(css).toMatch(/\.navbar\b/);

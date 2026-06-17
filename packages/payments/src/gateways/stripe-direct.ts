@@ -1,4 +1,4 @@
-// Stripe Direct — the merchant's OWN Stripe account (docs/94 ADR §7). Sparx is not
+// Stripe Direct — the merchant's OWN Stripe account (docs/94 ADR §7). sparx is not
 // in the payment flow: no on_behalf_of, no application_fee, NO platform fee. The
 // client is built from the merchant's secret key (Secret Manager, per tenant).
 

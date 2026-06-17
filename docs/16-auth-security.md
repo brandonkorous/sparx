@@ -1,4 +1,4 @@
-# Sparx Platform — Authentication, Multi-Tenancy & Security
+# sparx Platform — Authentication, Multi-Tenancy & Security
 
 **Version:** 2.2
 **Author:** Brandon Korous
@@ -8,7 +8,7 @@
 
 ## 1. Authentication Strategy — Better Auth
 
-Sparx uses **Better Auth** (betterauth.dev) as the authentication foundation. Better Auth is open source, self-hosted, TypeScript-native, and handles all core auth primitives without a SaaS dependency.
+sparx uses **Better Auth** (betterauth.dev) as the authentication foundation. Better Auth is open source, self-hosted, TypeScript-native, and handles all core auth primitives without a SaaS dependency.
 
 ### Why Better Auth Over Rolling Our Own
 
@@ -39,25 +39,25 @@ Rolling auth primitives from scratch — password hashing, token rotation, MFA, 
 
 ## 2. Auth Layers — the identity tier model
 
-Sparx authenticates **five distinct kinds of principal**, each with its own identity store, isolation boundary, and session mechanism. Conflating any two of them is a security bug — a tenant customer is not a tenant staff member, and neither is a WizeWorks operator. The tiers:
+sparx authenticates **five distinct kinds of principal**, each with its own identity store, isolation boundary, and session mechanism. Conflating any two of them is a security bug — a tenant customer is not a tenant staff member, and neither is a WizeWorks operator. The tiers:
 
 | #   | Tier                       | Who                                           | Identity store                    | Isolation                         | Session / credential                          | Status          |
 | --- | -------------------------- | --------------------------------------------- | --------------------------------- | --------------------------------- | --------------------------------------------- | --------------- |
-| 1   | **Tenant Staff**           | People running a Sparx tenant account         | Better Auth (organization member) | One tenant (`tid` in every token) | JWT 15 min + rotating refresh (HTTP-only)     | ✅ Built        |
+| 1   | **Tenant Staff**           | People running a sparx tenant account         | Better Auth (organization member) | One tenant (`tid` in every token) | JWT 15 min + rotating refresh (HTTP-only)     | ✅ Built        |
 | 2   | **Tenant Customer**        | Shoppers/members of a tenant's site           | `@sparx/customer-auth` (docs/27)  | One tenant, RLS-isolated          | `sparx_customer_session` cookie, separate JWT | ✅ Built        |
 | 3   | **Programmatic (API key)** | Headless frontends, MCP, integrations         | `api_keys` table (SHA-256 hash)   | One tenant, scope-limited         | `sparx_live_…` bearer key                     | ✅ Built        |
 | 4   | **Platform Operator**      | WizeWorks staff operating the platform itself | _none yet_ — see §2.4             | **Cross-tenant** (all tenants)    | Interim: internal shared-secret header        | ⚠️ **Deferred** |
-| 5   | **System / Internal**      | Machine-to-machine service calls (cron, push) | Shared secret in Secret Manager   | Cross-tenant, ClusterIP-only      | `X-Sparx-Internal-*-Token` header             | ✅ Built (§2.5) |
+| 5   | **System / Internal**      | Machine-to-machine service calls (cron, push) | Shared secret in Secret Manager   | Cross-tenant, ClusterIP-only      | `X-sparx-Internal-*-Token` header             | ✅ Built (§2.5) |
 
 The rule that ties them together: **a session is scoped to the narrowest tier that satisfies the request.** A site shopper never receives a staff token; a staff member never receives a cross-tenant operator capability; an internal service call never rides on a human's session. Crossing a tier boundary is always an explicit, audited hop (e.g. a staff member impersonating a customer for support, once §2.4 ships), never an implicit widening of an existing token.
 
 ### Layer 1 — Tenant Staff (Tenant Users)
 
-Staff members managing a Sparx tenant account.
+Staff members managing a sparx tenant account.
 
 ```
 Tenant Owner (Brandon's contact at GDS)
-├── Creates Sparx account → becomes tenant owner
+├── Creates sparx account → becomes tenant owner
 ├── Invites staff → they receive email invite → set password
 ├── Staff auth: email/password OR magic link OR Google OAuth
 └── Session: JWT (15 min) + refresh token (30 day, HTTP-only cookie)
@@ -69,7 +69,7 @@ Better Auth's organization plugin maps directly: **Organization = Tenant**. Orga
 - Organization member = Staff user with role
 - Roles: owner | admin | editor | viewer
 
-Example: Tenant Owner (e.g., Brandon's contact at Gillett Diesel Service) creates a Sparx account → becomes tenant owner → invites staff via Better Auth's organization invitations.
+Example: Tenant Owner (e.g., Brandon's contact at Gillett Diesel Service) creates a sparx account → becomes tenant owner → invites staff via Better Auth's organization invitations.
 
 ### Layer 2 — Tenant's Customers (Site Users)
 
@@ -131,10 +131,10 @@ Until all of that exists, the honest answer to "where's the admin panel?" is: **
 
 ### Layer 5 — System / Internal Service Principals
 
-Machine-to-machine calls between Sparx's own components — k8s CronJobs poking a scheduler, Pub/Sub push subscriptions, Caddy's on-demand-TLS ask, the acquisition report — authenticate with a **shared secret in a request header**, not a JWT and not a human session.
+Machine-to-machine calls between sparx's own components — k8s CronJobs poking a scheduler, Pub/Sub push subscriptions, Caddy's on-demand-TLS ask, the acquisition report — authenticate with a **shared secret in a request header**, not a JWT and not a human session.
 
 ```
-Header:   X-Sparx-Internal-<Purpose>-Token
+Header:   X-sparx-Internal-<Purpose>-Token
 Compare:  constant-time (node:crypto timingSafeEqual) against an env secret
 Exposure: ClusterIP-only — never routed through Caddy/the public internet
 Secret:   GCP Secret Manager → synced into the `sparx-app-secrets` k8s Secret
@@ -146,9 +146,9 @@ Live internal principals (`services/api-rest/src/routes/internal/`):
 
 | Endpoint                          | Header                               | Secret env                         |
 | --------------------------------- | ------------------------------------ | ---------------------------------- |
-| `/internal/crm/*` (CronJobs)      | `X-Sparx-Internal-Cron-Token`        | `SPARX_INTERNAL_CRON_TOKEN`        |
-| `/internal/commerce/*` (CronJobs) | `X-Sparx-Internal-Cron-Token`        | `SPARX_INTERNAL_CRON_TOKEN`        |
-| `/internal/acquisition/summary`   | `X-Sparx-Internal-Acquisition-Token` | `SPARX_INTERNAL_ACQUISITION_TOKEN` |
+| `/internal/crm/*` (CronJobs)      | `X-sparx-Internal-Cron-Token`        | `SPARX_INTERNAL_CRON_TOKEN`        |
+| `/internal/commerce/*` (CronJobs) | `X-sparx-Internal-Cron-Token`        | `SPARX_INTERNAL_CRON_TOKEN`        |
+| `/internal/acquisition/summary`   | `X-sparx-Internal-Acquisition-Token` | `SPARX_INTERNAL_ACQUISITION_TOKEN` |
 
 **Rules for adding an internal principal:**
 
@@ -368,7 +368,7 @@ Content-Security-Policy: [per-page policy]
 
 Tenant tools: data export, right to erasure, consent tracking (timestamp + IP), cookie consent banner, data retention configuration.
 
-Sparx is data processor; tenants are data controllers. DPA available for all tenants, required for EU tenants.
+sparx is data processor; tenants are data controllers. DPA available for all tenants, required for EU tenants.
 
 ---
 

@@ -109,7 +109,7 @@ export function SearchConsoleControl({
     const ok = await confirm({
       title: 'Disconnect Search Console?',
       description:
-        'Sparx will stop importing organic-search data for this site. Your historical figures are kept.',
+        'sparx will stop importing organic-search data for this site. Your historical figures are kept.',
       confirmLabel: 'Disconnect',
       tone: 'danger',
     });

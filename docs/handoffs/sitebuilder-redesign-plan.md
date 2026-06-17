@@ -58,7 +58,7 @@ corrected; brand becomes one source of truth. No new editor shell yet.
 - [ ] Decide storage shape (Open Q 13.4): dedicated `TenantBrand` table vs `tenants.settings.brand`.
 - [ ] Add the brand model/shape + RLS (hand-edited migration SQL); author locally against docker Postgres (`pnpm db:up`).
 - [ ] Migration: consolidate `SiteTheme.{logoMediaId, logoDarkMediaId, faviconMediaId}` + `EmailSettings.brandingOverride` into brand; backfill existing tenants.
-- [ ] Rewire `resolveEmailBrand` (`packages/email-platform/src/services/brand-service.ts`) to read the tenant brand directly; drop the SiteTheme + `brandingOverride` branches; keep the Sparx-default fallback.
+- [ ] Rewire `resolveEmailBrand` (`packages/email-platform/src/services/brand-service.ts`) to read the tenant brand directly; drop the SiteTheme + `brandingOverride` branches; keep the sparx-default fallback.
 - [ ] Remove `brandingOverride` end to end: `50-email.prisma`, `settings-service.ts`, `schemas/settings.ts`, the dashboard email settings form, `email/_lib/types.ts`.
 - [ ] Make the site theme + `SiteTheme` write-through **source** logo/palette from brand (read-only — no consumer override, the §6.2 rule).
 - [ ] Surface a **Brand** editing panel (SB rail entry) + onboarding tie-in; both write to the one tenant brand record.

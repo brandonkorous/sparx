@@ -22,6 +22,9 @@ export type {
 export { publishInventoryEvent, indexInventoryEntity } from './events';
 export type { InventoryTopic, InventoryEventInput } from './events';
 
+export { computeAvailability } from './services/availability';
+export type { AvailabilityLevel, VariantAvailability } from './services/availability';
+
 export type {
   WarehouseRow,
   InventoryLevelRow,

@@ -1,6 +1,6 @@
-# Task: full functional + UX audit of the Sparx CRM module
+# Task: full functional + UX audit of the sparx CRM module
 
-You are picking up the Sparx CRM at the moment its Phase 1–6 implementation finished. The job is to drive the CRM in a real browser end-to-end, exercise every page, every button, every form field, every modal, every state — AND apply an _impeccable_ UX audit at the same time. The user wants to be able to check "CRM" off the books with confidence.
+You are picking up the sparx CRM at the moment its Phase 1–6 implementation finished. The job is to drive the CRM in a real browser end-to-end, exercise every page, every button, every form field, every modal, every state — AND apply an _impeccable_ UX audit at the same time. The user wants to be able to check "CRM" off the books with confidence.
 
 Do NOT mark a page or component as passing if it has UX slop. "Renders without crashing" is not the bar. Read the UX standards section before you touch anything.
 

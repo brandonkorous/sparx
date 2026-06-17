@@ -1,4 +1,4 @@
-# Sparx Platform — Domain Network & SEO Strategy
+# sparx Platform — Domain Network & SEO Strategy
 
 **Version:** 1.0
 **Author:** Brandon Korous
@@ -8,7 +8,7 @@
 
 ## 1. The Domain Network
 
-Sparx operates a purposeful network of domains. Each domain has one job and links back to sparx.works. The interlinking network builds topical SEO authority across the entire portfolio.
+sparx operates a purposeful network of domains. Each domain has one job and links back to sparx.works. The interlinking network builds topical SEO authority across the entire portfolio.
 
 ### Platform Domains
 
@@ -75,7 +75,7 @@ sparx.works          ←→  sparx.host          (mutual links)
 
 sparx.market/auto    →   sparx.works         (merchant signup CTA)
 sparx.market/[cat]   →   sparxcms.com        (content-relevant)
-[merchant].sparx.zone →  sparx.works         (powered by Sparx footer)
+[merchant].sparx.zone →  sparx.works         (powered by sparx footer)
 ```
 
 **Key rule:** Every domain must have a real landing page, not a redirect. A real landing page:
@@ -99,7 +99,7 @@ sparxcms.com
                       "Content management built for commerce"
                       Feature highlights specific to CMS
                       Pricing ($49/mo standalone or with Builder)
-                      "Powered by Sparx · Part of sparx.works →"
+                      "Powered by sparx · Part of sparx.works →"
 
   /features         → Detailed feature breakdown
   /pricing          → Module pricing + bundle options
@@ -107,7 +107,7 @@ sparxcms.com
   /docs             → Links to sparx.software docs
 ```
 
-Each module site uses its module color as the primary accent (teal for CMS, cyan for CRM, etc.) on top of the shared Sparx neutral palette. The design language is identical — only the accent color and content differ.
+Each module site uses its module color as the primary accent (teal for CMS, cyan for CRM, etc.) on top of the shared sparx neutral palette. The design language is identical — only the accent color and content differ.
 
 All CTAs point to: `sparx.works/signup?module=cms` — the module query param pre-selects the relevant module during onboarding.
 
@@ -119,7 +119,7 @@ Category subpaths are SEO landing pages that exist independent of product count:
 
 ```
 sparx.market/auto
-  /                 → "The automotive marketplace on Sparx"
+  /                 → "The automotive marketplace on sparx"
                       Even with 0 products:
                         - Category description and value prop
                         - Featured merchants in this category
@@ -127,7 +127,7 @@ sparx.market/auto
                         - Links to sparx.works/signup?category=auto
 
   /products         → All public auto products from all merchants
-                      (empty state: "Be the first auto merchant on Sparx")
+                      (empty state: "Be the first auto merchant on sparx")
 
   /merchants        → Directory of merchants selling auto products
   /blog             → Optional: auto-specific content for long-tail SEO
@@ -160,7 +160,7 @@ sparxshops.com
                       Featured shops (merchant profiles)
                       New arrivals across all merchants
 
-  /shops            → Merchant directory (all public Sparx merchants)
+  /shops            → Merchant directory (all public sparx merchants)
   /shops/[slug]     → Individual merchant profile
   /[category]       → Category browse (mirrors sparx.market categories)
 ```
@@ -222,12 +222,12 @@ When a merchant adds a custom domain:
 
 ---
 
-## 8. "Powered by Sparx" Footer Link
+## 8. "Powered by sparx" Footer Link
 
 Every merchant site on sparx.zone displays a subtle footer link:
 
 ```
-Powered by Sparx ↗  (links to sparx.works)
+Powered by sparx ↗  (links to sparx.works)
 ```
 
 This is opt-out on Pro+ plans (merchant can remove it). Default on all plans. This link appears on potentially thousands of merchant sites, building sparx.works domain authority passively at scale.
@@ -244,7 +244,7 @@ This is opt-out on Pro+ plans (merchant can remove it). Default on all plans. Th
 - [ ] Category landing pages with content (even at 0 products)
 - [ ] Module marketing domains — landing pages
 - [ ] sparxshops.com — basic landing page + merchant directory
-- [ ] "Powered by Sparx" footer link (opt-out for Pro+)
+- [ ] "Powered by sparx" footer link (opt-out for Pro+)
 - [ ] Sitemap.xml for all domains
 - [ ] robots.txt for all domains
 - [ ] Canonical tags — prevent duplicate content across surfaces

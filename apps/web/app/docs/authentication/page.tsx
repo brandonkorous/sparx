@@ -14,7 +14,7 @@ import { CodeBlock } from '@/components/docs/code-block';
 export const metadata: Metadata = {
   title: 'Authentication',
   description:
-    'Authenticate to the Sparx API with a Bearer API key. How to create a key, the sk_live_ format, tenant scoping and RLS isolation, roles and scopes, revocation, and the 401/403 errors.',
+    'Authenticate to the sparx API with a Bearer API key. How to create a key, the sk_live_ format, tenant scoping and RLS isolation, roles and scopes, revocation, and the 401/403 errors.',
   alternates: { canonical: '/docs/authentication' },
 };
 
@@ -40,7 +40,7 @@ export default function AuthenticationPage() {
         { label: 'Authentication' },
       ]}
       title="Authentication"
-      lede="Every Sparx API request is authenticated with a Bearer token. For server-to-server integrations that token is an API key — a tenant-scoped secret you create once in the dashboard and send on every call."
+      lede="Every sparx API request is authenticated with a Bearer token. For server-to-server integrations that token is an API key — a tenant-scoped secret you create once in the dashboard and send on every call."
       meta={
         <>
           <span>Updated 2026-06-05</span>
@@ -63,7 +63,7 @@ export default function AuthenticationPage() {
     >
       <DocSection id="overview" title="Overview">
         <p>
-          Sparx authenticates every request from the <InlineCode>Authorization: Bearer</InlineCode>{' '}
+          sparx authenticates every request from the <InlineCode>Authorization: Bearer</InlineCode>{' '}
           header. There are two kinds of bearer token:
         </p>
         <ul>
@@ -86,7 +86,7 @@ export default function AuthenticationPage() {
         <p>
           In your dashboard, open <InlineCode>Settings → AI integrations</InlineCode> and create a
           key. The full secret is shown <strong>exactly once</strong> at creation — copy it then and
-          store it as <InlineCode>SPARX_KEY</InlineCode> in your environment. Sparx keeps only a
+          store it as <InlineCode>SPARX_KEY</InlineCode> in your environment. sparx keeps only a
           hash, so it can never show you the secret again.
         </p>
         <DocImage
@@ -126,11 +126,11 @@ export default function AuthenticationPage() {
             live API key.
           </li>
           <li>
-            <strong>key id</strong> — a short public identifier Sparx stores in the clear and uses
+            <strong>key id</strong> — a short public identifier sparx stores in the clear and uses
             to look the key up.
           </li>
           <li>
-            <strong>secret</strong> — the half that proves you hold the key. Sparx stores only its
+            <strong>secret</strong> — the half that proves you hold the key. sparx stores only its
             SHA-256 hash and compares in constant time, so a database leak never exposes a usable
             key.
           </li>
@@ -165,7 +165,7 @@ export default function AuthenticationPage() {
           <InlineCode>Settings → AI integrations</InlineCode> you can revoke a key immediately — the
           next request it makes fails with <InlineCode>401</InlineCode>. A key may also carry an
           expiry, after which it stops working automatically. To rotate, create a new key, deploy
-          it, then revoke the old one. Sparx tracks each key’s last-used time so you can spot stale
+          it, then revoke the old one. sparx tracks each key’s last-used time so you can spot stale
           keys before retiring them.
         </p>
       </DocSection>

@@ -39,7 +39,7 @@ function sampleListItem(i: number): PublicProductListItem {
     title: `Sample Product ${i}`,
     handle: `sample-product-${i}`,
     description: 'Sample product so you can see how cards lay out before real data exists.',
-    vendor: 'Sparx Sample Co.',
+    vendor: 'sparx Sample Co.',
     productType: 'Sample',
     tags: ['sample'],
     priceMinCents: base,
@@ -63,7 +63,7 @@ export const SAMPLE_PRODUCT: PublicProduct = {
     'This is sample product copy. Use it to design your product page layout — the sections, ' +
     'their order, and how everything looks — before you have real products. Every published ' +
     'product renders through this same layout.',
-  vendor: 'Sparx Sample Co.',
+  vendor: 'sparx Sample Co.',
   productType: 'Filters',
   tags: ['sample', 'featured'],
   priceMinCents: 2499,
