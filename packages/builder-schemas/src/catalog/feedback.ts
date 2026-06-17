@@ -10,7 +10,7 @@
 // compositions — bespoke arrangements with no single atom — still editable node by
 // node, with no JS runtime.
 
-import { el, atom, entry, type PlatformCatalogEntry } from './_kit';
+import { el, atom, behave, part, entry, type PlatformCatalogEntry } from './_kit';
 
 // A semantic alert — the real Alert atom (st-alert), not a hand-rolled box. `tone`
 // is one of our semantic roles (info/success/warning/danger) carried as the recipe
@@ -374,9 +374,12 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
   }),
 
   // ── Cookie consent — a sticky bottom notice with accept / essential ───────────
-  // Sits at the bottom of the page with `sticky bottom-0` (a true full-viewport
-  // `fixed` overlay is denied by the compile allowlist; sticky is the sanctioned
-  // placement for a catalog block). The accept/decline wiring is the tenant's to add.
+  // Pinned to the viewport bottom with the sanctioned `st-fixed-bottom` (the only
+  // allowed `position: fixed` emitter — capped at 50vh, never a clickjacking overlay;
+  // raw `fixed` stays denied). The `dismiss` behavior makes it real: either action
+  // hides the bar and remembers it (localStorage key) so it does not return. The
+  // buttons are RAW <button>s (only the raw-element path emits the data-sx-trigger the
+  // runtime reads) wearing the st-btn recipe. The canvas keeps it visible + editable.
   entry({
     key: 'cookie_consent',
     name: 'Cookie consent',
@@ -384,40 +387,51 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'cookie',
     description:
-      'A sticky bottom banner explaining cookie use, with “Accept all” and “Essential only” actions. Place it at the end of the page so it pins above the fold as visitors scroll.',
+      'A fixed bottom banner explaining cookie use, with “Accept all” and “Essential only” actions that dismiss it and remember the choice on return.',
     surfaces: ['page', 'site'],
-    tags: ['cookie', 'consent', 'gdpr', 'privacy', 'banner', 'notice', 'feedback'],
-    tree: el(
-      'div',
-      'sticky bottom-0 z-40 w-full border-t border-base-200 bg-base-100/95 px-4 py-4 shadow-lg backdrop-blur',
-      {
-        name: 'Cookie consent',
-        attrs: { role: 'region', ariaLabel: 'Cookie notice' },
-        children: [
-          el(
-            'div',
-            'mx-auto flex max-w-5xl flex-col items-center gap-4 @2xl:flex-row @2xl:justify-between',
-            {
-              children: [
-                atom('Text', 'text-sm text-base-content/80', {
-                  variant: 'body',
-                  text: 'We use cookies to keep the site running smoothly and to understand how it is used. Accept all, or keep only what is essential.',
-                }),
-                el('div', 'flex shrink-0 gap-3', {
-                  children: [
-                    atom('Button', 'st-btn st-c-neutral st-v-outline st-btn--sz-sm', {
-                      label: 'Essential only',
-                    }),
-                    atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-sm', {
-                      label: 'Accept all',
-                    }),
-                  ],
-                }),
-              ],
-            }
-          ),
-        ],
-      }
+    tags: ['cookie', 'consent', 'gdpr', 'privacy', 'banner', 'dismiss', 'feedback'],
+    tree: behave(
+      el(
+        'div',
+        'st-fixed-bottom z-40 w-full border-t border-base-200 bg-base-100/95 px-4 py-4 shadow-lg backdrop-blur',
+        {
+          name: 'Cookie consent',
+          attrs: { role: 'region', ariaLabel: 'Cookie notice' },
+          children: [
+            el(
+              'div',
+              'mx-auto flex max-w-5xl flex-col items-center gap-4 @2xl:flex-row @2xl:justify-between',
+              {
+                children: [
+                  atom('Text', 'text-sm text-base-content/80', {
+                    variant: 'body',
+                    text: 'We use cookies to keep the site running smoothly and to understand how it is used. Accept all, or keep only what is essential.',
+                  }),
+                  el('div', 'flex shrink-0 gap-3', {
+                    children: [
+                      part(
+                        el('button', 'st-btn st-c-neutral st-v-outline st-btn--sz-sm', {
+                          text: 'Essential only',
+                          attrs: { type: 'button' },
+                        }),
+                        'trigger'
+                      ),
+                      part(
+                        el('button', 'st-btn st-c-primary st-v-solid st-btn--sz-sm', {
+                          text: 'Accept all',
+                          attrs: { type: 'button' },
+                        }),
+                        'trigger'
+                      ),
+                    ],
+                  }),
+                ],
+              }
+            ),
+          ],
+        }
+      ),
+      { type: 'dismiss', key: 'cookie-consent' }
     ),
   }),
 ];

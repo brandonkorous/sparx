@@ -125,4 +125,10 @@ export const BEHAVIOR_DESCRIPTORS: BehaviorDescriptor[] = [
     help: 'Counts each [data-sx-item] up to its authored value when scrolled into view.',
     params: [{ key: 'duration', label: 'Duration (ms)', kind: 'number', default: 1400 }],
   },
+  {
+    name: 'dismiss',
+    label: 'Dismissible',
+    help: 'A [data-sx-trigger] hides this element; with a key it stays hidden on return.',
+    params: [],
+  },
 ];
