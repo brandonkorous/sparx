@@ -20,13 +20,13 @@ model Cart {
 
   // Cached totals; the deterministic pricing pipeline writes these on
   // every cart mutation so the storefront can render without recomputing.
-  subtotalCents           Int @default(0) @map("subtotal_cents")
-  discountTotalCents      Int @default(0) @map("discount_total_cents")
-  shippingTotalCents      Int @default(0) @map("shipping_total_cents")
-  taxTotalCents           Int @default(0) @map("tax_total_cents")
-  giftCardAppliedCents    Int @default(0) @map("gift_card_applied_cents")
+  subtotalCents             Int @default(0) @map("subtotal_cents")
+  discountTotalCents        Int @default(0) @map("discount_total_cents")
+  shippingTotalCents        Int @default(0) @map("shipping_total_cents")
+  taxTotalCents             Int @default(0) @map("tax_total_cents")
+  giftCardAppliedCents      Int @default(0) @map("gift_card_applied_cents")
   accountCreditAppliedCents Int @default(0) @map("account_credit_applied_cents")
-  totalCents              Int @default(0) @map("total_cents")
+  totalCents                Int @default(0) @map("total_cents")
 
   // Per-tenant pricing trace — every step of the resolution pipeline is
   // recorded here so the storefront can answer "why is this the price?"

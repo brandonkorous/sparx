@@ -1,16 +1,17 @@
-// Taxonomies index — a standard Collection/List surface (docs/34 §7): the create
-// form on top, then a ListToolbar with a Table/Cards toggle honoring the user's
+// Taxonomies index — a standard Collection/List surface (docs/34 §7): a
+// surface-aware "New" affordance in the header (drawer/modal/page/new-tab per
+// preference), then a ListToolbar with a Table/Cards toggle honoring the user's
 // defaultListView over the existing taxonomies. The card view is preserved as the
 // `card` slot; the table mirrors its key fields.
 
 import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
-import { Tag } from 'lucide-react';
+import { Plus, Tag } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
 import { getUserPreferences } from '../../_shell/preferences';
+import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { ListPager } from '../../_components/list-pager';
-import { TaxonomyCreateForm } from './taxonomy-create-form';
 import { TaxonomiesList, type TaxonomyListItem } from './_components/taxonomies-list';
 
 export const dynamic = 'force-dynamic';
@@ -41,9 +42,17 @@ export default async function TaxonomyIndexPage({ searchParams }: PageProps) {
           title="Taxonomies"
           badge={<Badge variant="outline">{total}</Badge>}
           description="Tenant-defined vocabularies. Mark hierarchical to allow parent/child term nesting (good for categories); leave flat for tag-style lists."
+          actions={
+            <EntityCreateButton
+              entityType="taxonomy"
+              newHref="/cms/taxonomy/new"
+              color="module"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New
+            </EntityCreateButton>
+          }
         />
-
-        <TaxonomyCreateForm />
 
         <ListToolbar searchable={false} enableViewToggle />
 
@@ -52,7 +61,18 @@ export default async function TaxonomyIndexPage({ searchParams }: PageProps) {
             <EmptyState
               icon={<Tag className="h-5 w-5" />}
               title="No taxonomies yet"
-              description="Add your first taxonomy above. Tags and categories group entries on storefront index pages and feeds."
+              description="Add your first taxonomy with the New button. Tags and categories group entries on storefront index pages and feeds."
+              action={
+                <EntityCreateButton
+                  entityType="taxonomy"
+                  newHref="/cms/taxonomy/new"
+                  variant="outline"
+                  size="sm"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New
+                </EntityCreateButton>
+              }
             />
           </Card>
         ) : (

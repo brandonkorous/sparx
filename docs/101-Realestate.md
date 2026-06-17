@@ -1,0 +1,3 @@
+we need to create a realtor and property listing system. To rival Zillow and Redfin, we need to create a system that allows realtors to list their properties, and for buyers to search for properties based on various criteria such as location, price, and property type, etc...
+
+this should be a complete and comprehensive system, not an mvp.

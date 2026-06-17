@@ -58,13 +58,13 @@ model ContentEntry {
   legalTemplateVersion Int?      @map("legal_template_version")
   legalDisclaimerAckAt DateTime? @map("legal_disclaimer_ack_at") @db.Timestamptz
 
-  tenant          Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  author          Author?                  @relation(fields: [authorId], references: [id], onDelete: SetNull)
-  parent          ContentEntry?            @relation("EntryLocalization", fields: [parentEntryId], references: [id], onDelete: SetNull)
-  localeVariants  ContentEntry[]           @relation("EntryLocalization")
+  tenant          Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  author          Author?                @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  parent          ContentEntry?          @relation("EntryLocalization", fields: [parentEntryId], references: [id], onDelete: SetNull)
+  localeVariants  ContentEntry[]         @relation("EntryLocalization")
   revisions       ContentRevision[]
-  refsFrom        ContentReference[]       @relation("ContentReferenceFrom")
-  refsTo          ContentReference[]       @relation("ContentReferenceTo")
+  refsFrom        ContentReference[]     @relation("ContentReferenceFrom")
+  refsTo          ContentReference[]     @relation("ContentReferenceTo")
   terms           EntryTaxonomyTerm[]
   previewTokens   PreviewToken[]
   navigationItems NavigationItem[]

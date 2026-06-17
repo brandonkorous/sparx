@@ -4,6 +4,7 @@ import { GeistMono } from 'geist/font/mono';
 import { Inter } from 'next/font/google';
 import { ChunkReloadGuard } from '@sparx/ui';
 import { PostHogProvider } from '../components/posthog-provider';
+import { TopProgressBar } from '../components/top-progress-bar';
 import { AttributionCapture } from '../components/attribution-capture';
 import { ConsentBanner } from '../components/consent-banner';
 
@@ -124,6 +125,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${GeistSans.variable} ${GeistMono.variable} ${interWordmark.variable}`}
     >
       <body>
+        {/* Page-top navigation/loading bar — full module spectrum on Sparx's
+            own brand surface. */}
+        <TopProgressBar />
         <PostHogProvider>
           {/* Silently recover a tab whose chunks were purged by a deploy. No
               visible "refresh" prompt on marketing pages — that's dashboard-only. */}

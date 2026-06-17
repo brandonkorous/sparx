@@ -39,5 +39,6 @@ export const emailManifest: ModuleManifest = {
   entityTypes: [
     { id: 'broadcast', label: 'Broadcast', routePrefix: '/email/broadcasts', hasDetailView: true },
     { id: 'sending-domain', label: 'Sending domain', routePrefix: '/email/domains' },
+    { id: 'suppression', label: 'Suppression', routePrefix: '/email/suppressions' },
   ],
 };

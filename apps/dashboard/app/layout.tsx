@@ -10,6 +10,7 @@ import {
 } from '@sparx/ui';
 import { QueryProvider } from '@sparx/query/provider';
 import { PostHogProvider } from '../components/posthog-provider';
+import { TopProgressBar } from '../components/top-progress-bar';
 import { UpdateNotifier } from '../components/update-notifier';
 import './globals.css';
 
@@ -38,6 +39,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Script id="sparx-theme-init" strategy="beforeInteractive">
           {THEME_INIT_SCRIPT}
         </Script>
+        {/* Page-top navigation/loading bar — overlays everything at the top edge. */}
+        <TopProgressBar />
         <PostHogProvider>
           <QueryProvider>
             <TooltipProvider delayDuration={150}>

@@ -45,6 +45,16 @@ const CREATE_VIEW_TYPES = new Set<string>([
   'page',
   'content-type',
   'content-entry',
+  // Single-column create overlays for list surfaces that previously rendered an
+  // inline form in the page body. author + taxonomy flow into their detail view
+  // on success; the rest have no detail view and stay open with an inline result.
+  'gift-card',
+  'account-credit',
+  'author',
+  'taxonomy',
+  'redirect',
+  'suppression',
+  'sending-domain',
 ]);
 
 export function hasCreateView(typeId: string): boolean {

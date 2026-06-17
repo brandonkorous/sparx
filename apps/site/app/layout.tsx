@@ -36,6 +36,7 @@ import { getPublishedBuilderLayout, getPublishedBuilderStyles } from '@/lib/buil
 import { loadSiteData } from '@/lib/builder-data';
 import { ConsentManager } from '@/components/consent/consent-manager';
 import { SiteAnalyticsBeacon } from '@/components/site-analytics-beacon';
+import { TopProgressBar } from '@/components/top-progress-bar';
 import { ChatWidget } from '@sparx/chat-widget';
 import { ChunkReloadGuard } from '@sparx/ui';
 import { mediaUrl } from '@/lib/media';
@@ -413,6 +414,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         ) : null}
       </head>
       <body className="st-body">
+        {/* Page-top loading bar in the tenant's own brand (--st-primary). */}
+        <TopProgressBar />
         {/* Silently recover a shopper's tab whose chunks were purged by a deploy.
             Deliberately no visible "refresh" toast on customer-facing pages. */}
         <ChunkReloadGuard />

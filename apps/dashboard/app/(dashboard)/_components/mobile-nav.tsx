@@ -13,7 +13,7 @@ import {
   Text,
   Wordmark,
 } from '@sparx/ui';
-import { Home, Plus, Search, Settings, Workflow } from 'lucide-react';
+import { Gauge, Home, Plus, Search, Settings, Store, Workflow } from 'lucide-react';
 import { getManifestForPath, moduleManifests } from '../_shell/registry';
 import type { FavoriteRow, RecentRow } from '../_shell/service';
 import { FavoritesSection } from './favorites-section';
@@ -95,27 +95,62 @@ export function MobileNav({ pathname, enabledModules, favorites, recents }: Mobi
             );
           })}
           {/* Automations — platform capability, reachable with ≥1 module active
-              (docs/81 §1; docs/84 Slice G-UI). Mirrors the desktop rail tile. */}
+              (docs/81 §1; docs/84 Slice G-UI). Mirrors the desktop rail tile: it
+              owns a brand color (fuchsia), so it's wrapped in its ModuleProvider
+              and `moduleIcon` carries the hue, just like the module tiles above. */}
           {enabledModules.length > 0 && (
-            <SidebarItem
-              asChild
-              active={
-                pathname === '/automations' || (pathname?.startsWith('/automations/') ?? false)
-              }
-              icon={<Workflow className="h-4 w-4" />}
-            >
-              <Link href="/automations">Automations</Link>
-            </SidebarItem>
+            <ModuleProvider module="automations">
+              <SidebarItem
+                moduleIcon
+                asChild
+                active={
+                  pathname === '/automations' || (pathname?.startsWith('/automations/') ?? false)
+                }
+                icon={<Workflow className="h-4 w-4" />}
+              >
+                <Link href="/automations">Automations</Link>
+              </SidebarItem>
+            </ModuleProvider>
           )}
+          {/* SEO — cross-cutting platform tool (audits every module's pages),
+              not an activatable module; rides at the end of the module list and
+              is always present (unlike Automations, it isn't module-gated). Owns a
+              brand color (yellow), so it's wrapped in its ModuleProvider and
+              `moduleIcon` carries the hue. Mirrors the desktop rail (docs/50 §7). */}
+          <ModuleProvider module="seo">
+            <SidebarItem
+              moduleIcon
+              asChild
+              active={pathname === '/seo' || (pathname?.startsWith('/seo/') ?? false)}
+              icon={<Gauge className="h-4 w-4" />}
+            >
+              <Link href="/seo">SEO</Link>
+            </SidebarItem>
+          </ModuleProvider>
+        </SidebarSection>
+
+        <FavoritesSection favorites={favorites} />
+        <RecentsSection recents={recents} favorites={favorites} />
+
+        {/* Bottom cluster — mirrors the desktop rail's pinned group below the
+            divider: Add a module → Marketplace → Settings (docs/24 §5, docs/54).
+            "Add a module" is the single ambient upgrade pointer, shown only when a
+            billable module is inactive. Both stay neutral-colored (platform-level,
+            no module hue). */}
+        <SidebarSection>
           {hasInactiveModules && (
             <SidebarItem asChild icon={<Plus className="h-4 w-4" />}>
               <Link href="/settings/modules">Add a module</Link>
             </SidebarItem>
           )}
+          <SidebarItem
+            asChild
+            active={pathname === '/marketplace' || (pathname?.startsWith('/marketplace/') ?? false)}
+            icon={<Store className="h-4 w-4" />}
+          >
+            <Link href="/marketplace">Marketplace</Link>
+          </SidebarItem>
         </SidebarSection>
-
-        <FavoritesSection favorites={favorites} />
-        <RecentsSection recents={recents} favorites={favorites} />
 
         {inSettings ? (
           <ModuleProvider module="platform">

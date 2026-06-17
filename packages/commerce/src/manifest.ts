@@ -108,6 +108,7 @@ export const commerceManifest: ModuleManifest = {
     },
     { id: 'discount', label: 'Discount', routePrefix: '/commerce/discounts' },
     { id: 'gift-card', label: 'Gift card', routePrefix: '/commerce/gift-cards' },
+    { id: 'account-credit', label: 'Account credit', routePrefix: '/commerce/account-credit' },
     {
       id: 'warehouse',
       label: 'Warehouse',
