@@ -33,6 +33,7 @@ export const BEHAVIOR_NAMES = [
   'menu',
   'counter',
   'dismiss',
+  'toc',
 ] as const;
 export type BehaviorName = (typeof BEHAVIOR_NAMES)[number];
 

@@ -200,6 +200,7 @@ export const SX_BEHAVIOR_NAMES = [
   'menu',
   'counter',
   'dismiss',
+  'toc',
 ] as const;
 export type SxBehaviorName = (typeof SX_BEHAVIOR_NAMES)[number];
 

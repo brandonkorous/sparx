@@ -131,4 +131,10 @@ export const BEHAVIOR_DESCRIPTORS: BehaviorDescriptor[] = [
     help: 'A [data-sx-trigger] hides this element; with a key it stays hidden on return.',
     params: [],
   },
+  {
+    name: 'toc',
+    label: 'Table of contents',
+    help: 'Builds links in [data-sx-panel] from the headings in [data-sx-spy] and tracks scroll.',
+    params: [],
+  },
 ];

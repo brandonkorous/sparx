@@ -15,7 +15,7 @@
 // body (rich_text → a Prose leaf) / featuredImage. There is no author/date schema
 // field, so bylines are authored static text, not bindings.
 
-import { el, atom, bound, entry, type PlatformCatalogEntry } from './_kit';
+import { el, atom, bound, behave, part, entry, type PlatformCatalogEntry } from './_kit';
 
 // ── Shared post card ────────────────────────────────────────────────────────────
 //
@@ -276,6 +276,75 @@ export const CONTENT_CATALOG: PlatformCatalogEntry[] = [
           }),
         ],
       }
+    ),
+  }),
+
+  // ── Article with contents — a two-column reading layout + auto TOC ────────────
+  // The TOC builds itself from the body's headings at render (the `toc` behavior),
+  // so the sidebar links are placeholders in the canvas and the real headings live.
+  entry({
+    key: 'article_with_toc',
+    name: 'Article with contents',
+    category: 'content',
+    kind: 'comprehensive',
+    icon: 'list-tree',
+    description:
+      'A long-read layout — a sticky “On this page” table of contents beside the article body. The TOC builds itself from the body’s headings and tracks scroll. Pin it to an entry.',
+    surfaces: ['page', 'site'],
+    tags: ['article', 'toc', 'contents', 'long read', 'documentation', 'cms', 'content'],
+    tree: behave(
+      el('div', 'mx-auto grid w-full max-w-5xl grid-cols-1 gap-10 px-4 py-16 @3xl:grid-cols-4', {
+        name: 'Article with contents',
+        children: [
+          el('nav', 'h-fit @3xl:col-span-1 @3xl:sticky @3xl:top-24', {
+            name: 'Contents',
+            attrs: { ariaLabel: 'On this page' },
+            children: [
+              el('p', 'mb-2 text-xs font-semibold text-base-content/50', { text: 'On this page' }),
+              part(
+                el('div', 'st-toc__list', {
+                  name: 'Links',
+                  children: [
+                    el('a', 'st-toc__link', { text: 'Introduction', attrs: { href: '#' } }),
+                    el('a', 'st-toc__link', { text: 'Getting started', attrs: { href: '#' } }),
+                    el('a', 'st-toc__link st-toc__link--sub', {
+                      text: 'A closer look',
+                      attrs: { href: '#' },
+                    }),
+                  ],
+                }),
+                'panel'
+              ),
+            ],
+          }),
+          el('article', 'min-w-0 @3xl:col-span-3', {
+            name: 'Article',
+            children: [
+              bound(
+                atom(
+                  'Heading',
+                  'mb-4 text-4xl font-bold leading-tight tracking-tight text-base-content',
+                  { level: 'h1', text: 'A field guide to slower, kinder software' }
+                ),
+                'item.title'
+              ),
+              el('div', 'mb-8 flex items-center gap-3 text-sm text-base-content/60', {
+                name: 'Byline',
+                children: [
+                  el('span', '', { text: 'By the editorial team' }),
+                  el('span', 'text-base-content/30', { text: '·' }),
+                  el('span', '', { text: '9 min read' }),
+                ],
+              }),
+              part(
+                el('div', 'min-w-0', { children: [bound(atom('Prose', ''), 'item.body')] }),
+                'spy'
+              ),
+            ],
+          }),
+        ],
+      }),
+      { type: 'toc' }
     ),
   }),
 ];

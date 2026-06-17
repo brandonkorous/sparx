@@ -16,6 +16,7 @@ import { marquee } from './marquee';
 import { menu } from './menu';
 import { counter } from './counter';
 import { dismiss } from './dismiss';
+import { toc } from './toc';
 
 const REGISTRY: Record<(typeof BEHAVIOR_NAMES)[number], Behavior> = {
   carousel,
@@ -26,6 +27,7 @@ const REGISTRY: Record<(typeof BEHAVIOR_NAMES)[number], Behavior> = {
   menu,
   counter,
   dismiss,
+  toc,
 };
 
 /** Wire every behavior under `root` (inclusive of `root` itself). Returns a single
