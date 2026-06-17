@@ -337,7 +337,12 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
       orders: 9,
       avgOrder: '$568',
       segment: 'B2B fleet, net-30',
-      deal: { title: 'Reyes fleet account', value: '$18,000', stage: 'Negotiation', probability: '75%' },
+      deal: {
+        title: 'Reyes fleet account',
+        value: '$18,000',
+        stage: 'Negotiation',
+        probability: '75%',
+      },
       signals: [
         { module: 'commerce', label: 'Order #1046 placed — $558.00' },
         { module: 'b2b', label: 'Net-30 invoice, due in 11 days' },

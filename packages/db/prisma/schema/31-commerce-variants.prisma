@@ -97,6 +97,7 @@ model ProductVariant {
   supplierLinks         SupplierVariant[]
   purchaseOrderLines    PurchaseOrderLine[]
   goodsReceiptLines     GoodsReceiptLine[]
+  countLines            InventoryCountLine[]
   priceListEntries      PriceListEntry[]
   bulkPriceTiers        BulkPriceTier[]
   contractPrices        ContractPrice[]

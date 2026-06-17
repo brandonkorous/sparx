@@ -179,6 +179,8 @@ model Tenant {
   purchaseOrderLines    PurchaseOrderLine[]
   goodsReceipts         GoodsReceipt[]
   goodsReceiptLines     GoodsReceiptLine[]
+  inventoryCounts       InventoryCount[]
+  inventoryCountLines   InventoryCountLine[]
 
   // Commerce module — pricing + discounts
   priceLists             PriceList[]

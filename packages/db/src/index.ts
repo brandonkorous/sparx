@@ -91,6 +91,8 @@ export type {
   PurchaseOrderLine,
   GoodsReceipt,
   GoodsReceiptLine,
+  InventoryCount,
+  InventoryCountLine,
   // Commerce — pricing + promotions
   PriceList,
   PriceListEntry,

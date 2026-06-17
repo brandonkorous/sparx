@@ -109,7 +109,13 @@ export function CrmSegments() {
                 }}
               >
                 <span style={{ fontWeight: 500 }}>{p.field}</span>{' '}
-                <span style={{ color: 'var(--color-text-tertiary)', fontFamily: MONO, fontSize: '12px' }}>
+                <span
+                  style={{
+                    color: 'var(--color-text-tertiary)',
+                    fontFamily: MONO,
+                    fontSize: '12px',
+                  }}
+                >
                   {p.op}
                 </span>{' '}
                 {p.value}
@@ -157,9 +163,16 @@ export function CrmSegments() {
             >
               218
             </div>
-            <p style={{ margin: '8px 0 0', fontFamily: SANS, fontSize: '13px', color: 'var(--color-text-secondary)' }}>
-              customers match right now — auto-added the moment they cross the line, removed when they
-              reorder.
+            <p
+              style={{
+                margin: '8px 0 0',
+                fontFamily: SANS,
+                fontSize: '13px',
+                color: 'var(--color-text-secondary)',
+              }}
+            >
+              customers match right now — auto-added the moment they cross the line, removed when
+              they reorder.
             </p>
           </div>
           {matches.map((c) => (
@@ -183,10 +196,23 @@ export function CrmSegments() {
                 }}
               />
               <span style={{ minWidth: 0 }}>
-                <span style={{ display: 'block', fontFamily: SANS, fontSize: '13.5px', fontWeight: 500 }}>
+                <span
+                  style={{
+                    display: 'block',
+                    fontFamily: SANS,
+                    fontSize: '13.5px',
+                    fontWeight: 500,
+                  }}
+                >
                   {c.name}
                 </span>
-                <span style={{ fontFamily: SANS, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}>
+                <span
+                  style={{
+                    fontFamily: SANS,
+                    fontSize: '11.5px',
+                    color: 'var(--color-text-tertiary)',
+                  }}
+                >
                   {c.meta}
                 </span>
               </span>
@@ -210,7 +236,13 @@ export function CrmSegments() {
 
 // ── PIPELINE ────────────────────────────────────────────────────────────────────
 export function CrmPipeline() {
-  const stages: { name: string; n: string; opacity: number; won?: boolean; deals: { t: string; v: string; p: string }[] }[] = [
+  const stages: {
+    name: string;
+    n: string;
+    opacity: number;
+    won?: boolean;
+    deals: { t: string; v: string; p: string }[];
+  }[] = [
     {
       name: 'Lead',
       n: '3',
@@ -220,10 +252,31 @@ export function CrmPipeline() {
         { t: 'Hudson farm CSA', v: '$1,800', p: '20%' },
       ],
     },
-    { name: 'Qualified', n: '2', opacity: 0.6, deals: [{ t: 'Atlas reorder contract', v: '$12,400', p: '40%' }] },
-    { name: 'Proposal', n: '2', opacity: 0.8, deals: [{ t: 'Waggle retail expansion', v: '$6,900', p: '60%' }] },
-    { name: 'Negotiation', n: '1', opacity: 1, deals: [{ t: 'Reyes fleet account', v: '$18,000', p: '75%' }] },
-    { name: 'Closed Won', n: '4', opacity: 1, won: true, deals: [{ t: 'Flax & Fern bulk', v: '$9,300', p: 'won' }] },
+    {
+      name: 'Qualified',
+      n: '2',
+      opacity: 0.6,
+      deals: [{ t: 'Atlas reorder contract', v: '$12,400', p: '40%' }],
+    },
+    {
+      name: 'Proposal',
+      n: '2',
+      opacity: 0.8,
+      deals: [{ t: 'Waggle retail expansion', v: '$6,900', p: '60%' }],
+    },
+    {
+      name: 'Negotiation',
+      n: '1',
+      opacity: 1,
+      deals: [{ t: 'Reyes fleet account', v: '$18,000', p: '75%' }],
+    },
+    {
+      name: 'Closed Won',
+      n: '4',
+      opacity: 1,
+      won: true,
+      deals: [{ t: 'Flax & Fern bulk', v: '$9,300', p: 'won' }],
+    },
   ];
   const forecast = [
     ['$24,180', 'weighted pipeline value'],
@@ -262,7 +315,17 @@ export function CrmPipeline() {
                 }}
               >
                 {s.won ? (
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={M.text} strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke={M.text}
+                    strokeWidth={2.4}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden
+                  >
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                 ) : (
@@ -272,7 +335,11 @@ export function CrmPipeline() {
                 )}
                 {s.name}
               </span>
-              <span style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}>{s.n}</span>
+              <span
+                style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}
+              >
+                {s.n}
+              </span>
             </div>
             {s.deals.map((d) => (
               <div
@@ -284,7 +351,11 @@ export function CrmPipeline() {
                   backgroundColor: 'var(--color-bg-page)',
                 }}
               >
-                <div style={{ fontFamily: SANS, fontSize: '12.5px', fontWeight: 500, lineHeight: 1.3 }}>{d.t}</div>
+                <div
+                  style={{ fontFamily: SANS, fontSize: '12.5px', fontWeight: 500, lineHeight: 1.3 }}
+                >
+                  {d.t}
+                </div>
                 <div
                   style={{
                     fontFamily: MONO,
@@ -316,8 +387,24 @@ export function CrmPipeline() {
       >
         {forecast.map(([n, l]) => (
           <div key={l}>
-            <div style={{ fontFamily: SANS, fontSize: '22px', fontWeight: 500, letterSpacing: '-0.02em' }}>{n}</div>
-            <div style={{ fontFamily: SANS, fontSize: '12px', color: 'var(--color-text-tertiary)', marginTop: '2px' }}>
+            <div
+              style={{
+                fontFamily: SANS,
+                fontSize: '22px',
+                fontWeight: 500,
+                letterSpacing: '-0.02em',
+              }}
+            >
+              {n}
+            </div>
+            <div
+              style={{
+                fontFamily: SANS,
+                fontSize: '12px',
+                color: 'var(--color-text-tertiary)',
+                marginTop: '2px',
+              }}
+            >
               {l}
             </div>
           </div>

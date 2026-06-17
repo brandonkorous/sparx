@@ -1,14 +1,5 @@
 import { Button } from '@sparx/ui';
-import {
-  Container,
-  Display,
-  Dot,
-  getModuleColor,
-  type MarketingModule,
-  Section,
-  SectionHeader,
-  Spark,
-} from './primitives';
+import { Container, Display, Dot, getModuleColor, type MarketingModule, Spark } from './primitives';
 import { Cycle } from './cycle';
 import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-businesses';
 
@@ -42,7 +33,12 @@ function sourceColor(module: MarketingModule): string {
 export function CrmHero() {
   const lede =
     'sparx CRM is the customer spine — profiles, activity, segments, pipeline, and automation, all on the same database as your orders, emails, and quotes. No sync, no Zapier, no “which system is right?” The record is the record.';
-  const chips = ['one record, every module', 'live segments', 'pipeline + forecast', 'no sync, ever'];
+  const chips = [
+    'one record, every module',
+    'live segments',
+    'pipeline + forecast',
+    'no sync, ever',
+  ];
   return (
     <section
       style={{
@@ -104,7 +100,13 @@ export function CrmHero() {
                   }}
                 >
                   <Dot color={M.color} size={6} />
-                  <span style={{ fontFamily: MONO, fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+                  <span
+                    style={{
+                      fontFamily: MONO,
+                      fontSize: '12px',
+                      color: 'var(--color-text-secondary)',
+                    }}
+                  >
                     {c}
                   </span>
                 </li>
@@ -196,10 +198,24 @@ function RecordCard({ business }: { business: ExampleBusiness }) {
               borderLeft: i === 0 ? 'none' : '1px solid var(--color-bg-subtle)',
             }}
           >
-            <div style={{ fontFamily: SANS, fontWeight: 500, fontSize: '18px', letterSpacing: '-0.01em' }}>
+            <div
+              style={{
+                fontFamily: SANS,
+                fontWeight: 500,
+                fontSize: '18px',
+                letterSpacing: '-0.01em',
+              }}
+            >
               {v}
             </div>
-            <div style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: '2px' }}>
+            <div
+              style={{
+                fontFamily: MONO,
+                fontSize: '11px',
+                color: 'var(--color-text-tertiary)',
+                marginTop: '2px',
+              }}
+            >
               {l}
             </div>
           </div>

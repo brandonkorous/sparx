@@ -159,7 +159,12 @@ export function CrmTimeline() {
                 {e.desc}
               </p>
               <div
-                style={{ marginTop: '4px', fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}
+                style={{
+                  marginTop: '4px',
+                  fontFamily: MONO,
+                  fontSize: '11px',
+                  color: 'var(--color-text-tertiary)',
+                }}
               >
                 {e.time}
               </div>
@@ -179,7 +184,9 @@ export function CrmTimeline() {
                 marginBottom: '14px',
               }}
             >
-              <h4 style={{ margin: '0 0 4px', fontFamily: SANS, fontSize: '14px', fontWeight: 500 }}>
+              <h4
+                style={{ margin: '0 0 4px', fontFamily: SANS, fontSize: '14px', fontWeight: 500 }}
+              >
                 {p.title}
               </h4>
               <p
