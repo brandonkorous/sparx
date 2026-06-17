@@ -15,6 +15,11 @@
 // same contract the site's no-flash `<head>` script reads (apps/site/app/layout.tsx),
 // making the control a drop-in for the hand-rolled `mode-toggle`. `localStorage` and
 // `none` are also available.
+//
+// The chosen mode is external state — read via `useSyncExternalStore` (the
+// React-recommended way to adopt external state) rather than a setState-in-effect.
+// A module store mirrors the choice per storage key so a `persist='none'` selection
+// still reflects, and multiple controllers for one key stay in sync.
 
 import * as React from 'react';
 import { cx } from '../utils/cx';
@@ -91,6 +96,29 @@ function writePersisted(
   else window.localStorage.setItem(key, mode);
 }
 
+// ── External store: the chosen mode per storage key ─────────────────────────────
+// Mirrors the choice in memory so a `persist='none'` selection reflects and multiple
+// controllers for one key stay in sync. `currentMode` prefers the persisted value so
+// a fresh page (or another tab) is honoured over a stale in-memory entry.
+const modeStore = new Map<string, ThemeMode>();
+const modeListeners = new Set<() => void>();
+
+function subscribeMode(onChange: () => void): () => void {
+  modeListeners.add(onChange);
+  return () => {
+    modeListeners.delete(onChange);
+  };
+}
+
+function currentMode(persist: ThemePersist, key: string, fallback: ThemeMode): ThemeMode {
+  return readPersisted(persist, key) ?? modeStore.get(key) ?? fallback;
+}
+
+function setCurrentMode(key: string, mode: ThemeMode): void {
+  modeStore.set(key, mode);
+  for (const listener of modeListeners) listener();
+}
+
 export function ThemeController({
   modes = ['light', 'dark', 'system'],
   defaultMode = 'system',
@@ -106,31 +134,35 @@ export function ThemeController({
   id,
   ...aria
 }: ThemeControllerProps): React.ReactElement {
-  const [mode, setMode] = React.useState<ThemeMode>(defaultMode);
-
   const resolveTarget = React.useCallback(
     (): HTMLElement | null =>
       target ?? (typeof document !== 'undefined' ? document.documentElement : null),
     [target]
   );
 
-  // On mount, adopt any persisted choice and apply it.
+  // Server + hydration use `defaultMode` (matching the painted markup); after
+  // hydration the client adopts the persisted/stored choice. No setState-in-effect.
+  const mode = React.useSyncExternalStore(
+    subscribeMode,
+    () => currentMode(persist, storageKey, defaultMode),
+    () => defaultMode
+  );
+
+  // Apply the chosen mode to the target on mount (a custom target may have no
+  // no-flash script of its own). Reads the resolved choice directly — not the
+  // hydration-phase `mode` — so it never clobbers an already-painted theme with the
+  // default. Updating an external system with React state is the sanctioned effect.
   React.useEffect(() => {
     const el = resolveTarget();
-    if (!el) return;
-    const persisted = readPersisted(persist, storageKey);
-    const initial = persisted ?? defaultMode;
-    setMode(initial);
-    applyTheme(initial, el);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (el) applyTheme(currentMode(persist, storageKey, defaultMode), el);
+  }, [resolveTarget, persist, storageKey, defaultMode]);
 
   const select = React.useCallback(
     (next: ThemeMode) => {
-      setMode(next);
+      writePersisted(persist, storageKey, next, cookieMaxAge);
+      setCurrentMode(storageKey, next);
       const el = resolveTarget();
       if (el) applyTheme(next, el);
-      writePersisted(persist, storageKey, next, cookieMaxAge);
       onModeChange?.(next);
     },
     [resolveTarget, persist, storageKey, cookieMaxAge, onModeChange]
