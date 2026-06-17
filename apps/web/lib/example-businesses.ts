@@ -10,11 +10,16 @@
  * represented, nothing hard-coded per page.
  *
  * Each entry is a COMPLETE, internally-coherent fixture: its own customer,
- * products, and a real order whose subtotal + shipping + tax === total, so any
- * surface renders a believable scene without faking math. Keep every entry the
- * same SHAPE (two products each) so rotating surfaces never reflow as they
- * crossfade. The spread is deliberate — home goods, grocery, pet, coffee, and a
- * B2B/wholesale account — so no single industry reads as "what sparx is for."
+ * products, a real order whose subtotal + shipping + tax === total, plus
+ * editorial (`article`), customer-spine (`crm`), messaging (`email`), and
+ * wholesale-account (`b2b`) facets — so any surface renders a believable scene
+ * without faking math. Keep every entry the same SHAPE (two products each, every
+ * facet present) so rotating surfaces never reflow as they crossfade. The spread
+ * is deliberate — home goods, grocery, pet, coffee, and a B2B/wholesale supplier
+ * — so no single industry reads as "what sparx is for." Each entry's `b2b` facet
+ * treats it as a wholesale ACCOUNT the tenant sells to, spanning hospitality,
+ * restaurant supply, salon, office, and industrial fleet, so /b2b is never
+ * anchored on one vertical (fleet/service is real but ONE of several).
  */
 
 import type { MarketingModule } from '@/components/marketing/primitives';
@@ -116,6 +121,47 @@ export interface ExampleCrm {
   signals: { module: MarketingModule; label: string }[];
 }
 
+/**
+ * A representative B2B/wholesale facet per business — the wholesale-account
+ * counterpart to `order`/`article`/`crm`/`email`, for the /b2b surfaces (the
+ * account card with its negotiated price tier + net terms, an account-specific
+ * price list on one SKU, an open RFQ → quote). Each business is treated as a
+ * wholesale ACCOUNT the tenant sells to. Keep every field present on every entry
+ * so rotating B2B surfaces never reflow as they crossfade. Numbers are
+ * internally coherent: `creditUsed` ≤ `creditLimit`; the price-list `account`
+ * price is the `list` price minus exactly `tierDiscount`; the open quote's
+ * `total` is a believable account-sized order. Vocabulary mirrors the real
+ * dashboard B2B surfaces (pricing tiers "% off list", payment terms "Net 30",
+ * credit limit/used, RFQ quote lifecycle, A/R) — see docs/10 (B2B PRD) and the
+ * apps/dashboard B2B module. B2B layers on Commerce: same catalog, same
+ * checkout, account-aware pricing and terms.
+ */
+export interface ExampleB2b {
+  /** the wholesale account / company name (the buyer), e.g. 'Cedar & Co. Hotels'. */
+  account: string;
+  /** the buyer contact who places orders for the account. */
+  buyer: string;
+  /** the assigned pricing tier name (mirrors a real tier), e.g. 'Wholesale'. */
+  tier: string;
+  /** the tier's headline discount off list, e.g. '22% off list'. */
+  tierDiscount: string;
+  /** payment terms — 'Net 15' | 'Net 30' | 'Net 45' | 'Net 60'. */
+  terms: string;
+  /** credit limit, formatted USD, e.g. '$50,000'. */
+  creditLimit: string;
+  /** credit used (outstanding A/R), formatted USD — always ≤ creditLimit. */
+  creditUsed: string;
+  /** credit utilization as the account page reports it, e.g. '34%'. */
+  creditUsedPct: string;
+  /** an example SKU priced for this account: list price vs. the account's
+   *  negotiated price (list − tier discount). Proves account-specific pricing. */
+  priceList: { item: string; sku: string; list: string; account: string };
+  /** an open RFQ → quote for this account, mid-flow. `number` is a quote no.,
+   *  `total` the quoted total, `status` a real lifecycle stage, `expires` its
+   *  validity window. */
+  quote: { number: string; lines: number; total: string; status: string; expires: string };
+}
+
 export interface ExampleBusiness {
   /** short vertical label — for clarity + aria, not usually shown. */
   vertical: string;
@@ -144,6 +190,8 @@ export interface ExampleBusiness {
   crm: ExampleCrm;
   /** messaging fixture for Email surfaces — see ExampleEmail. */
   email: ExampleEmail;
+  /** wholesale-account fixture for B2B surfaces — see ExampleB2b. */
+  b2b: ExampleB2b;
 }
 
 export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
@@ -200,6 +248,29 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
       transactional: { event: 'order.created', subject: 'Your Flax & Fern order is confirmed' },
       previewLine: 'Hi Dana — your order is confirmed and heading out the door.',
     },
+    b2b: {
+      account: 'Cedar & Co. Hotels',
+      buyer: 'procurement@cedarcohotels.com',
+      tier: 'Wholesale',
+      tierDiscount: '22% off list',
+      terms: 'Net 30',
+      creditLimit: '$50,000',
+      creditUsed: '$17,200',
+      creditUsedPct: '34%',
+      priceList: {
+        item: 'Linen Bedding Set',
+        sku: 'SKU LBS-2',
+        list: '$216.00',
+        account: '$168.48',
+      },
+      quote: {
+        number: 'Q-318',
+        lines: 6,
+        total: '$8,940.00',
+        status: 'Quoted',
+        expires: 'in 7 days',
+      },
+    },
   },
   {
     vertical: 'grocery',
@@ -253,6 +324,29 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
       clickRate: '6.3%',
       transactional: { event: 'order.created', subject: 'Pickup confirmed — see you Saturday' },
       previewLine: 'Hi Marcus — your pickup is set. Here is what is ready this week.',
+    },
+    b2b: {
+      account: 'Harvest Table Restaurants',
+      buyer: 'orders@harvesttablegroup.com',
+      tier: 'Restaurant Supply',
+      tierDiscount: '18% off list',
+      terms: 'Net 15',
+      creditLimit: '$20,000',
+      creditUsed: '$6,300',
+      creditUsedPct: '32%',
+      priceList: {
+        item: 'Raw Honey, 16oz',
+        sku: 'SKU HNY-16',
+        list: '$14.00',
+        account: '$11.48',
+      },
+      quote: {
+        number: 'Q-204',
+        lines: 9,
+        total: '$2,310.00',
+        status: 'Under review',
+        expires: 'in 5 days',
+      },
     },
   },
   {
@@ -313,6 +407,29 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
       transactional: { event: 'fulfillment.created', subject: 'Your Waggle order has shipped' },
       previewLine: 'Hi Priya — good news, your collar and tag are on the way.',
     },
+    b2b: {
+      account: 'Paws & Claws Grooming',
+      buyer: 'buyer@pawsandclawsco.com',
+      tier: 'Salon & Spa',
+      tierDiscount: '15% off list',
+      terms: 'Net 30',
+      creditLimit: '$12,000',
+      creditUsed: '$2,880',
+      creditUsedPct: '24%',
+      priceList: {
+        item: 'Leather Dog Collar',
+        sku: 'SKU DOG-CLR',
+        list: '$38.00',
+        account: '$32.30',
+      },
+      quote: {
+        number: 'Q-127',
+        lines: 4,
+        total: '$1,540.00',
+        status: 'Accepted',
+        expires: 'converting to order',
+      },
+    },
   },
   {
     vertical: 'coffee',
@@ -371,6 +488,29 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
       clickRate: '9.0%',
       transactional: { event: 'subscription.renewed', subject: 'Your monthly roast is on its way' },
       previewLine: 'Hi Sam — your subscription renewed and this month’s bag is brewing.',
+    },
+    b2b: {
+      account: 'Daybreak Office Group',
+      buyer: 'pantry@daybreakoffices.com',
+      tier: 'Distributor',
+      tierDiscount: '25% off list',
+      terms: 'Net 45',
+      creditLimit: '$30,000',
+      creditUsed: '$9,750',
+      creditUsedPct: '33%',
+      priceList: {
+        item: 'Whole-Bean Sampler',
+        sku: 'SKU WBS-3',
+        list: '$18.00',
+        account: '$13.50',
+      },
+      quote: {
+        number: 'Q-441',
+        lines: 7,
+        total: '$3,860.00',
+        status: 'Submitted',
+        expires: 'awaiting your reply',
+      },
     },
   },
   {
@@ -434,6 +574,29 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
       clickRate: '11.4%',
       transactional: { event: 'quote.created', subject: 'Your quote from Atlas Supply is ready' },
       previewLine: 'Hi Reyes — your requested quote is attached, valid for 30 days.',
+    },
+    b2b: {
+      account: 'Reyes Fabrication',
+      buyer: 'orders@reyesfab.com',
+      tier: 'Fleet Partner',
+      tierDiscount: '20% off list',
+      terms: 'Net 60',
+      creditLimit: '$75,000',
+      creditUsed: '$28,400',
+      creditUsedPct: '38%',
+      priceList: {
+        item: 'Hydraulic Hose Kit',
+        sku: 'SKU HHK-08',
+        list: '$65.00',
+        account: '$52.00',
+      },
+      quote: {
+        number: 'Q-512',
+        lines: 12,
+        total: '$14,280.00',
+        status: 'Quoted',
+        expires: 'in 14 days',
+      },
     },
   },
 ];

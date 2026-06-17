@@ -20,6 +20,12 @@ model Warehouse {
   code     String @db.VarChar(15)
   type     String @default("owned") @db.VarChar(20) // owned | 3pl | dropship | virtual
 
+  // A system warehouse is provisioned by the platform, not the tenant — currently
+  // the single per-tenant in-transit holding location that transfers route through
+  // (docs/100 P4). Excluded from the warehouse pickers/list by default so it isn't
+  // selectable or archivable as an ordinary location.
+  isSystem Boolean @default(false) @map("is_system")
+
   line1      String? @db.VarChar(255)
   line2      String? @db.VarChar(255)
   city       String? @db.VarChar(120)
@@ -51,6 +57,8 @@ model Warehouse {
   purchaseOrders     PurchaseOrder[]
   goodsReceipts      GoodsReceipt[]
   counts             InventoryCount[]
+  transfersOut       InventoryTransfer[]   @relation("TransferFrom")
+  transfersIn        InventoryTransfer[]   @relation("TransferTo")
   defaultForProducts Product[]              @relation("ProductDefaultWarehouse")
 
   @@unique([tenantId, code], map: "inventory_warehouses_tenant_code_unique")

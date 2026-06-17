@@ -296,12 +296,12 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
     slug: 'b2b',
     module: 'b2b',
     label: 'B2B · Wholesale · Fleet',
-    headlinePrimary: 'Industrial-grade,',
-    headlineSecondary: 'out of the box',
-    title: 'sparx B2B — Wholesale, fleet, net terms.',
+    headlinePrimary: 'Wholesale,',
+    headlineSecondary: 'done right',
+    title: 'sparx B2B — Account pricing, net terms, RFQ.',
     description:
-      'Account-tier pricing, RFQ, purchase orders, fleet accounts, service scheduling. Built for industrial.',
-    lede: 'Shopify charges $2,400/mo for B2B and still doesn’t do net terms properly. sparx ships wholesale pricing, RFQ, purchase orders, fleet accounts, and service scheduling natively. $99/mo. Built for how industrial actually works.',
+      'Account-specific price lists, RFQ to quote, net terms and credit limits, bulk PO ordering, and fleet & service scheduling — wholesale layered on the same catalog and checkout as D2C.',
+    lede: 'Account-specific price lists, RFQ to quote, net terms and credit limits, bulk PO ordering, and fleet and service scheduling — wholesale that runs on the same catalog and checkout as your retail orders. Each buyer logs in to their negotiated price and their terms. $99/mo, layered on Commerce.',
     features: [
       {
         number: '01',

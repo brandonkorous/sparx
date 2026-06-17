@@ -881,6 +881,15 @@ const OVERLAY_DEFS: ComponentDef[] = [
     ],
     defaultProps: { icon: 'plus', label: 'Open actions', href: '', placement: 'bottom-end' },
   }),
+  atom({
+    type: 'Lightbox',
+    label: 'Image lightbox',
+    icon: GalleryHorizontalEnd,
+    // The thumbnail grid layout; clicking a photo opens the full-screen viewer.
+    class: 'grid grid-cols-2 gap-3 @xl:grid-cols-3',
+    acceptsChildren: true,
+    props: [],
+  }),
 ];
 
 /** The full site-ui atom set added in Track A, spread into the registry's DEFS. */

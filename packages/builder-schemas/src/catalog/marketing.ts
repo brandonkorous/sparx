@@ -1334,4 +1334,38 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
       ],
     }),
   }),
+
+  // ── Lightbox gallery — a photo grid that opens a full-screen viewer ───────────
+  entry({
+    key: 'gallery_lightbox',
+    name: 'Lightbox gallery',
+    category: 'marketing',
+    kind: 'comprehensive',
+    icon: 'images',
+    description:
+      'A photo grid where clicking an image opens a full-screen viewer with next/previous and keyboard nav. The canvas shows the grid; the live site opens the overlay.',
+    surfaces: ['page', 'site'],
+    tags: ['gallery', 'lightbox', 'photos', 'portfolio', 'images', 'viewer', 'marketing'],
+    tree: el('section', 'w-full px-4 py-16', {
+      name: 'Lightbox gallery',
+      children: [
+        el('div', 'mx-auto max-w-5xl', {
+          children: [
+            atom('Heading', 'mb-8 text-3xl font-bold tracking-tight text-base-content', {
+              level: 'h2',
+              text: 'Gallery',
+            }),
+            atom('Lightbox', 'grid grid-cols-2 gap-3 @xl:grid-cols-3', {}, [
+              atom('Image', 'w-full rounded-box', { ratio: 'square', alt: 'Gallery image 1' }),
+              atom('Image', 'w-full rounded-box', { ratio: 'square', alt: 'Gallery image 2' }),
+              atom('Image', 'w-full rounded-box', { ratio: 'square', alt: 'Gallery image 3' }),
+              atom('Image', 'w-full rounded-box', { ratio: 'square', alt: 'Gallery image 4' }),
+              atom('Image', 'w-full rounded-box', { ratio: 'square', alt: 'Gallery image 5' }),
+              atom('Image', 'w-full rounded-box', { ratio: 'square', alt: 'Gallery image 6' }),
+            ]),
+          ],
+        }),
+      ],
+    }),
+  }),
 ];

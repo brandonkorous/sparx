@@ -581,7 +581,58 @@
   }
 }
 
-/* ── EMAIL: deliverability split, broadcast stats, automation rows ─
+/* ── B2B: account price list + RFQ→quote frame ───────────────────
+   Structural devices for the /b2b page. The price-list device puts the
+   account card beside the same-SKU "list vs account price" panel (stacks on
+   tablet); the price-list rows are a 4-column grid (item · list · account ·
+   you save) that collapses to a stacked card on mobile. Surface/colors come
+   from inline CSS-var styles in b2b-sections.tsx; these classes only do
+   layout. */
+
+.mkt-b2b-split {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .mkt-b2b-split {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+.mkt-pricerow {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 15px 22px;
+}
+.mkt-pricerow-head {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  gap: 16px;
+  padding: 13px 22px;
+}
+@media (max-width: 640px) {
+  .mkt-pricerow-head {
+    display: none;
+  }
+  .mkt-pricerow {
+    grid-template-columns: 1fr auto;
+    gap: 4px 12px;
+    padding: 16px 18px;
+  }
+  .mkt-pricerow-item {
+    grid-column: 1 / -1;
+  }
+  .mkt-pricerow-cell {
+    text-align: right;
+  }
+}
+
+/* EMAIL: deliverability split, broadcast stats, automation rows ─
    Structural devices for the /email page. The deliverability split puts the
    sender-health checklist beside the auto-configured DNS panel (stacks on
    tablet); the broadcast stat row is a 4-up that collapses 4→2→1; the
