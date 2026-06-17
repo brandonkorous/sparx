@@ -5,6 +5,7 @@ import { configurePubsub } from '@sparx/api-core/pubsub';
 import { startWebhookDeliveryLoop } from '@sparx/api-core/webhook-delivery';
 import { installCrmWebhookFanout, preconnectWebhookFanout, registerCrmConsumers } from '@sparx/crm';
 import { installCrmPubSubBridge } from '@sparx/crm/pubsub';
+import { registerCommerceConsumers } from '@sparx/commerce/consumers';
 import { createApp } from './app.js';
 import {
   registerEmailProvisioningConsumer,
@@ -35,6 +36,11 @@ async function main(): Promise<void> {
   // Subscriptions delegate to the in-memory bus the tee bridge wraps, so
   // ordering vs. installCrmPubSubBridge above doesn't matter.
   registerCrmConsumers();
+
+  // Commerce sell-path consumers on the same in-process bus: order.cancelled →
+  // inventory restock (docs/100 §2.4). Kept out of @sparx/crm so CRM stays
+  // inventory-agnostic; gated per-tenant on the inventory module.
+  registerCommerceConsumers();
 
   // The Email module's activation consumer (docs/91 §7): on `module.activated`
   // for `email`, materialize the tenant's 13 default Builder-email templates so

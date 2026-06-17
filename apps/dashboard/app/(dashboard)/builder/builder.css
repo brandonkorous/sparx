@@ -2942,6 +2942,20 @@
   align-items: center;
   gap: 6px;
 }
+/* In the inspector the theme chooser is its own full-width row; the rename
+   input and the dropdown trigger both carry `.bx-tplselect`. */
+.bx-theme-ins__switch .bx-tplselect {
+  width: 100%;
+  max-width: none;
+}
+/* The theme action buttons (rename · save · delete · import) sit on their own
+   row beneath the full-width chooser. */
+.bx-theme-ins__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
 .bx-theme-ins__modes {
   display: flex;
   flex-wrap: wrap;

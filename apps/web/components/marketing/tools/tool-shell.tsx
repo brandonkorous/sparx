@@ -6,6 +6,8 @@ import { Section, Display, Spark, getModuleColor } from '../primitives';
 import type { ToolMeta } from './registry';
 import { ToolLadder } from './tool-ladder';
 import { ToolUpsell } from './tool-upsell';
+import { ToolLearn } from './tool-learn';
+import { ToolJsonLd } from './tool-jsonld';
 import { RelatedTools } from './related-tools';
 import { TrustRow } from './trust-row';
 
@@ -21,6 +23,7 @@ export function ToolShell({ tool, children }: { tool: ToolMeta; children: React.
 
   return (
     <>
+      <ToolJsonLd tool={tool} />
       <Nav />
       <main>
         <Section surface="page" padding="md">
@@ -89,6 +92,7 @@ export function ToolShell({ tool, children }: { tool: ToolMeta; children: React.
           <ModuleProvider module={tool.module}>{children}</ModuleProvider>
         </Section>
 
+        <ToolLearn tool={tool} />
         <ToolLadder tool={tool} />
         <ToolUpsell tool={tool} />
         <RelatedTools currentSlug={tool.slug} />

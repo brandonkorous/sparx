@@ -2,33 +2,22 @@
 //
 // The "tell the user what's happening" family — status surfaces skinned in OUR
 // semantic tokens (info / success / warning / danger) rather than a fixed palette,
-// so every alert recolors automatically with the tenant theme. Each is a composed
-// node tree (raw elements + atoms + tokens), individually selectable and editable
-// — no bespoke <Alert> black box. Loaders use native CSS animation utilities
-// (animate-pulse / animate-spin) and inline <svg>, never a JS runtime.
+// so every surface recolors automatically with the tenant theme. Where a real
+// site-ui atom exists it is composed directly (Layer 1, docs/102): the Alert,
+// Progress, RadialProgress, Skeleton, and Spinner atoms carry the recipe on
+// node.class, so the inspector's Color control recolors the whole component. The
+// remaining entries (toast stack, tooltip, empty state, banner) stay utility
+// compositions — bespoke arrangements with no single atom — still editable node by
+// node, with no JS runtime.
 
 import { el, atom, entry, type PlatformCatalogEntry } from './_kit';
 
-// A semantic alert — icon + title + message in a colored, bordered surface. The
-// `tone` is one of our semantic roles (info/success/warning/danger), so the whole
-// component recolors with the tenant theme. Glyph is a lucide icon atom.
+// A semantic alert — the real Alert atom (st-alert), not a hand-rolled box. `tone`
+// is one of our semantic roles (info/success/warning/danger) carried as the recipe
+// token st-c-<tone>, so flipping the color in the inspector recolors the WHOLE
+// component (the Layer-1 win, docs/102). Icon + title + body are the atom's slots.
 const alert = (tone: string, icon: string, title: string, message: string) =>
-  el(
-    'div',
-    `flex w-full items-start gap-3 rounded-box border bg-${tone}/10 border-${tone}/30 p-4 text-${tone}`,
-    {
-      attrs: { role: 'alert' },
-      children: [
-        atom('Icon', 'mt-0.5 h-5 w-5 shrink-0', { name: icon }),
-        el('div', 'flex flex-1 flex-col gap-1', {
-          children: [
-            el('p', `text-sm font-semibold text-${tone}`, { text: title }),
-            el('p', 'text-sm text-base-content/70', { text: message }),
-          ],
-        }),
-      ],
-    }
-  );
+  atom('Alert', `st-c-${tone} st-v-soft w-full`, { icon, title, body: message });
 
 export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
   // ── Alert (info) — neutral, informational notice ─────────────────────────────
@@ -188,19 +177,20 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
             el('span', 'text-base-content/60', { text: '65%' }),
           ],
         }),
-        el('div', 'h-2.5 w-full overflow-hidden rounded-full bg-base-200', {
-          attrs: { role: 'progressbar' },
-          children: [el('div', 'h-full w-[65%] rounded-full bg-primary transition-all', {})],
+        // The real Progress atom (st-progress) — value/max drive the fill, st-c-*
+        // recolors it from the inspector. (Was a hand-rolled track + filled div.)
+        atom('Progress', 'st-c-primary w-full', {
+          value: '65',
+          max: '100',
+          label: 'Uploading assets',
         }),
       ],
     }),
   }),
 
-  // ── Radial progress — circular gauge via inline <svg> arc path ───────────────
-  // A faint full-circle track plus a foreground arc drawn as a <path> (the circle
-  // atom can't carry a dash array). The arc command `A` sweeps ~65% of the ring
-  // (≈234° from 12 o'clock); `largeArcFlag=1` because the sweep exceeds 180°. The
-  // round end-cap reads as a progress meter; the centered span shows the value.
+  // ── Radial progress — the RadialProgress atom (st-radial) ────────────────────
+  // The circular gauge is a real themed atom: value/max drive the arc, st-c-<color>
+  // recolors it from the inspector. (Was a hand-rolled inline <svg> arc path.)
   entry({
     key: 'radial_progress',
     name: 'Radial progress',
@@ -208,40 +198,10 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'circle-dashed',
     description:
-      'A circular progress gauge drawn with an inline SVG arc and a centered percentage.',
+      'A circular progress gauge with a centered percentage, themed by the recipe color.',
     surfaces: ['page', 'site'],
     tags: ['progress', 'radial', 'circular', 'gauge', 'ring', 'feedback'],
-    tree: el('div', 'relative inline-flex h-32 w-32 items-center justify-center', {
-      children: [
-        el('svg', 'h-32 w-32', {
-          attrs: { viewBox: '0 0 96 96', fill: 'none' },
-          children: [
-            // Track — full faint ring.
-            el('circle', 'text-base-200', {
-              attrs: {
-                cx: 48,
-                cy: 48,
-                r: 40,
-                fill: 'none',
-                stroke: 'currentColor',
-                strokeWidth: 8,
-              },
-            }),
-            // Arc — ~65% sweep starting at 12 o'clock, clockwise.
-            el('path', 'text-primary', {
-              attrs: {
-                d: 'M 48 8 A 40 40 0 1 1 15.64 71.51',
-                fill: 'none',
-                stroke: 'currentColor',
-                strokeWidth: 8,
-                strokeLinecap: 'round',
-              },
-            }),
-          ],
-        }),
-        el('span', 'absolute text-xl font-semibold text-base-content', { text: '65%' }),
-      ],
-    }),
+    tree: atom('RadialProgress', 'st-c-primary', { value: '65', max: '100' }),
   }),
 
   // ── Skeleton card — shimmering placeholder while content loads ───────────────
@@ -254,25 +214,27 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
     description: 'A pulsing placeholder card that stands in for content while it loads.',
     surfaces: ['page', 'site'],
     tags: ['skeleton', 'placeholder', 'loading', 'shimmer', 'ghost', 'feedback'],
+    // Each placeholder is the real Skeleton atom (st-skeleton owns the shimmer + fill);
+    // className sizes it. (Was hand-rolled animate-pulse / bg-base-200 divs.)
     tree: el('div', 'w-full max-w-sm rounded-box border border-base-200 bg-base-100 p-4', {
       attrs: { ariaLabel: 'Loading' },
       children: [
-        el('div', 'mb-4 h-40 w-full animate-pulse rounded-box bg-base-200', {}),
+        atom('Skeleton', 'mb-4 h-40 w-full', { shape: 'block' }),
         el('div', 'flex items-center gap-3', {
           children: [
-            el('div', 'h-10 w-10 shrink-0 animate-pulse rounded-full bg-base-200', {}),
+            atom('Skeleton', 'h-10 w-10 shrink-0', { shape: 'circle' }),
             el('div', 'flex flex-1 flex-col gap-2', {
               children: [
-                el('div', 'h-4 w-3/4 animate-pulse rounded-full bg-base-200', {}),
-                el('div', 'h-4 w-1/2 animate-pulse rounded-full bg-base-200', {}),
+                atom('Skeleton', 'h-4 w-3/4', { shape: 'block' }),
+                atom('Skeleton', 'h-4 w-1/2', { shape: 'block' }),
               ],
             }),
           ],
         }),
         el('div', 'mt-4 flex flex-col gap-2', {
           children: [
-            el('div', 'h-3 w-full animate-pulse rounded-full bg-base-200', {}),
-            el('div', 'h-3 w-5/6 animate-pulse rounded-full bg-base-200', {}),
+            atom('Skeleton', 'h-3 w-full', { shape: 'block' }),
+            atom('Skeleton', 'h-3 w-5/6', { shape: 'block' }),
           ],
         }),
       ],
@@ -289,15 +251,10 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
     description: 'A centered spinning ring that indicates an in-progress, indeterminate task.',
     surfaces: ['page', 'site'],
     tags: ['spinner', 'loader', 'loading', 'busy', 'progress', 'feedback'],
+    // The real Spinner atom (st-spinner) — announces role="status" itself. (Was a
+    // hand-rolled animate-spin ring.)
     tree: el('div', 'flex w-full items-center justify-center p-6', {
-      attrs: { role: 'status', ariaLabel: 'Loading' },
-      children: [
-        el(
-          'div',
-          'h-10 w-10 animate-spin rounded-full border-2 border-base-300 border-t-primary',
-          {}
-        ),
-      ],
+      children: [atom('Spinner', '', { kind: 'ring' })],
     }),
   }),
 

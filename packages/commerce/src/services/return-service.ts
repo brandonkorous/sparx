@@ -15,11 +15,21 @@ import {
 import { GatewayNotFoundError, PaymentConfigError, paymentService } from '@sparx/payments';
 import { withTenant } from '@sparx/db';
 import type { Prisma, ReturnLineItem, ReturnRequest, TxClient } from '@sparx/db';
+import { inventoryService } from '@sparx/inventory';
 
 import { writeAuditLog } from '../audit';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
+import { isInventoryActive } from '../inventory-gate';
+
+/** A restockable return line resolved to its variant + (optional) location. */
+interface RestockLine {
+  variantId: string;
+  warehouseId: string | null;
+  quantity: number;
+  inspectionId: string;
+}
 
 export interface ReturnSummary {
   id: string;
@@ -396,6 +406,7 @@ export async function issueRefund(
   rawInput: unknown
 ): Promise<{ refundId: string }> {
   const input = IssueReturnRefundInput.parse(rawInput);
+  const inventoryActive = await isInventoryActive(ctx.tenantId);
 
   // Resolve the original captured payment BEFORE committing — an original-payment
   // refund settles through the gateway first, so a gateway failure leaves the return in
@@ -443,6 +454,7 @@ export async function issueRefund(
   }
 
   let refundId = '';
+  let restockLines: RestockLine[] = [];
   await withTenant(ctx, async (tx) => {
     const ret = await assertReturnWritable(tx, input.returnId);
     const issuedAs = input.asAccountCredit ? 'account_credit' : 'original_payment';
@@ -457,6 +469,9 @@ export async function issueRefund(
       },
     });
     refundId = ret.id;
+    if (inventoryActive) {
+      restockLines = await collectRestockLines(tx, ret.id);
+    }
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,
@@ -474,6 +489,28 @@ export async function issueRefund(
     });
   });
 
+  // Restock the goods that inspection marked restockable — a `return` movement
+  // per line (docs/100 P2 item 4) through the audited adjust API, idempotency-
+  // keyed on the inspection so a retried refund restocks once. Runs post-commit:
+  // the refund is the authority, restock is a follow-on, so a stock hiccup can't
+  // unwind a settled refund. No-op when inventory is off.
+  if (restockLines.length > 0) {
+    const fallbackWarehouseId = await inventoryService.resolveDefaultWarehouseId(ctx);
+    for (const line of restockLines) {
+      const warehouseId = line.warehouseId ?? fallbackWarehouseId;
+      if (!warehouseId) continue; // no active warehouse to restock into
+      await inventoryService.adjust(ctx, {
+        variantId: line.variantId,
+        warehouseId,
+        delta: line.quantity,
+        reason: 'return',
+        referenceType: 'Return',
+        referenceId: input.returnId,
+        idempotencyKey: `return-restock:${input.returnId}:${line.inspectionId}`,
+      });
+    }
+  }
+
   await publishCommerceEvent({
     tenantId: ctx.tenantId,
     actorId: ctx.userId ?? null,
@@ -486,6 +523,44 @@ export async function issueRefund(
   });
 
   return { refundId };
+}
+
+/**
+ * Resolve a return's restockable inspections to {variant, warehouse, qty} lines.
+ * Restock quantity is the line's approved quantity (the accepted-back count),
+ * falling back to the requested quantity. Free-text order lines (no variant) and
+ * non-restockable / zero-qty inspections are skipped.
+ */
+async function collectRestockLines(tx: TxClient, returnId: string): Promise<RestockLine[]> {
+  const inspections = await tx.returnInspection.findMany({
+    where: { returnId, restockable: true },
+    select: { id: true, returnLineItemId: true, warehouseId: true },
+  });
+  if (inspections.length === 0) return [];
+
+  const lineRows = await tx.returnLineItem.findMany({
+    where: { id: { in: inspections.map((i) => i.returnLineItemId) } },
+    select: { id: true, orderItemId: true, approvedQuantity: true, quantity: true },
+  });
+  const lineById = new Map(lineRows.map((l) => [l.id, l]));
+
+  const orderItems = await tx.orderItem.findMany({
+    where: { id: { in: lineRows.map((l) => l.orderItemId) } },
+    select: { id: true, variantId: true },
+  });
+  const variantByOrderItem = new Map(orderItems.map((o) => [o.id, o.variantId]));
+
+  const lines: RestockLine[] = [];
+  for (const ins of inspections) {
+    const line = lineById.get(ins.returnLineItemId);
+    if (!line) continue;
+    const variantId = variantByOrderItem.get(line.orderItemId);
+    if (!variantId) continue; // free-text line — untracked
+    const quantity = line.approvedQuantity > 0 ? line.approvedQuantity : line.quantity;
+    if (quantity <= 0) continue;
+    lines.push({ variantId, warehouseId: ins.warehouseId, quantity, inspectionId: ins.id });
+  }
+  return lines;
 }
 
 // ─── helpers ─────────────────────────────────────────────────────────

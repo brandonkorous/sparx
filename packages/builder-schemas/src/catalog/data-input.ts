@@ -1,56 +1,59 @@
 // Catalog · Data input (docs/98 §5). Fields, choices, toggles, and real forms.
 //
-// Inputs are PRESENTATIONAL here — there is no behavior runtime, so nothing has an
-// onChange and nothing carries a bare `value` (the sanitizer drops it). A field is
-// a composed node tree: a <label> wrapping its control (the only reliable way to
-// associate them — `for`/`htmlFor` isn't whitelisted), plus help text. Focus state
-// rides `focus-within:` on the wrapper so the whole field lights up. Real forms
-// (`contact_form`, `login_form`) are honest <form>s that collapse to one column on
-// narrow containers via container queries — never viewport breakpoints.
+// Inputs compose the REAL site-ui form atoms now that the registry exposes them
+// (Layer 1, docs/102): the Field atom (st-field) wraps a label + control + hint, and
+// the Input / Textarea / Select / Checkbox / Radio / Switch / Range atoms carry the
+// recipe on node.class (st-c-*/st-fv-*), so focus color and emphasis are driven from
+// the inspector rather than baked into a hand-rolled shell. Inputs stay
+// presentational — no behavior runtime, nothing carries a bare `value`. The two
+// bespoke layouts with no single atom (the joined search bar, the dashed file
+// dropzone) stay utility compositions.
 
 import { el, atom, entry, type PlatformCatalogEntry } from './_kit';
 
-// The shared field shell: rounded, bordered, focus ring via focus-within on the
-// wrapper so the control's own focus outline can stay suppressed.
-const FIELD_SHELL =
-  'flex w-full items-center rounded-field border border-base-300 bg-base-100 px-3 py-2 transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30';
+type Node = ReturnType<typeof atom>;
 
-// The bare control inside a shell — strips the native chrome so the shell owns it.
-const CONTROL =
-  'w-full bg-transparent text-sm text-base-content outline-none placeholder:text-base-content/40';
+// A bare text-style input atom (st-input) carrying the field recipe.
+const input = (type: string, name: string, placeholder: string): Node =>
+  atom('Input', 'st-c-primary st-fv-outline', { type, name, placeholder });
 
-// A field shell wrapping one or more controls (the focus ring lives on this <div>).
-const shell = (children: ReturnType<typeof el>[]) => el('div', FIELD_SHELL, { children });
+// A labeled field: the Field atom (st-field) wraps the control with its label + hint.
+const field = (
+  label: string,
+  control: Node,
+  opts: { hint?: string; required?: boolean; cls?: string } = {}
+): Node =>
+  atom(
+    'Field',
+    opts.cls ?? 'w-full max-w-sm',
+    {
+      label,
+      ...(opts.hint ? { hint: opts.hint } : {}),
+      ...(opts.required ? { required: true } : {}),
+    },
+    [control]
+  );
 
-// A label caption sitting above its control.
-const fieldLabel = (text: string) => el('span', 'text-sm font-medium text-base-content', { text });
-
-// Small help / hint text under a field.
-const helpText = (text: string) => el('span', 'text-xs text-base-content/60', { text });
-
-// One checkbox or radio row: the input + its caption, wrapped in a <label> so the
-// caption is the hit target without a `for` attribute. (No `checked` — it isn't a
-// whitelisted input attr and these are presentational.)
-const choiceRow = (control: 'checkbox' | 'radio', caption: string, name: string) =>
+// One checkbox / radio row: the real atom + its caption, wrapped in a <label> so the
+// caption is the hit target without a `for` attribute.
+const choiceRow = (control: 'Checkbox' | 'Radio', caption: string, name: string): Node =>
   el(
     'label',
     'flex cursor-pointer items-center gap-3 rounded-field px-2 py-1.5 hover:bg-base-200',
     {
       children: [
-        el(
-          'input',
-          control === 'checkbox'
-            ? 'h-4 w-4 shrink-0 rounded-selector border-base-300 text-primary accent-primary'
-            : 'h-4 w-4 shrink-0 border-base-300 text-primary accent-primary',
-          { attrs: { type: control, name } }
-        ),
+        atom(control, 'st-c-primary', { name }),
         el('span', 'text-sm text-base-content', { text: caption }),
       ],
     }
   );
 
+// The bare control inside the bespoke search join — chromeless, blends into the join.
+const SEARCH_CONTROL =
+  'w-full bg-transparent text-sm text-base-content outline-none placeholder:text-base-content/40';
+
 export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
-  // ── Text field — label + text input + help ───────────────────────────────────
+  // ── Text field — Field + Input atom ──────────────────────────────────────────
   entry({
     key: 'text_field',
     name: 'Text field',
@@ -61,20 +64,12 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
       'A labeled single-line text input with help text and a focus ring on the whole field.',
     surfaces: ['page', 'site'],
     tags: ['input', 'text', 'field', 'form', 'label'],
-    tree: el('label', 'flex w-full max-w-sm flex-col gap-1.5', {
-      children: [
-        fieldLabel('Full name'),
-        shell([
-          el('input', CONTROL, {
-            attrs: { type: 'text', name: 'full_name', placeholder: 'Jordan Avery' },
-          }),
-        ]),
-        helpText('As it should appear on your account.'),
-      ],
+    tree: field('Full name', input('text', 'full_name', 'Jordan Avery'), {
+      hint: 'As it should appear on your account.',
     }),
   }),
 
-  // ── Email field — label + email input ────────────────────────────────────────
+  // ── Email field ──────────────────────────────────────────────────────────────
   entry({
     key: 'email_field',
     name: 'Email field',
@@ -84,20 +79,12 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
     description: 'A labeled email input with a placeholder, ready for sign-up and contact flows.',
     surfaces: ['page', 'site'],
     tags: ['input', 'email', 'field', 'form'],
-    tree: el('label', 'flex w-full max-w-sm flex-col gap-1.5', {
-      children: [
-        fieldLabel('Email address'),
-        shell([
-          el('input', CONTROL, {
-            attrs: { type: 'email', name: 'email', placeholder: 'you@example.com' },
-          }),
-        ]),
-        helpText("We'll only use this to reply — never shared."),
-      ],
+    tree: field('Email address', input('email', 'email', 'you@example.com'), {
+      hint: "We'll only use this to reply — never shared.",
     }),
   }),
 
-  // ── Textarea field — multi-line ──────────────────────────────────────────────
+  // ── Textarea field ───────────────────────────────────────────────────────────
   entry({
     key: 'textarea_field',
     name: 'Textarea',
@@ -107,26 +94,18 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
     description: 'A labeled multi-line text area for longer messages and notes.',
     surfaces: ['page', 'site'],
     tags: ['input', 'textarea', 'multiline', 'field', 'form', 'message'],
-    tree: el('label', 'flex w-full max-w-md flex-col gap-1.5', {
-      children: [
-        fieldLabel('Your message'),
-        el(
-          'div',
-          'rounded-field border border-base-300 bg-base-100 px-3 py-2 transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30',
-          {
-            children: [
-              el('textarea', `${CONTROL} min-h-28 resize-y leading-relaxed`, {
-                attrs: { name: 'message', placeholder: 'Tell us how we can help…' },
-              }),
-            ],
-          }
-        ),
-        helpText('A few sentences is plenty.'),
-      ],
-    }),
+    tree: field(
+      'Your message',
+      atom('Textarea', 'st-c-primary st-fv-outline', {
+        name: 'message',
+        placeholder: 'Tell us how we can help…',
+        rows: '4',
+      }),
+      { hint: 'A few sentences is plenty.', cls: 'w-full max-w-md' }
+    ),
   }),
 
-  // ── Select field — native select ─────────────────────────────────────────────
+  // ── Select field ─────────────────────────────────────────────────────────────
   entry({
     key: 'select_field',
     name: 'Select',
@@ -136,25 +115,16 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
     description: 'A labeled native dropdown for choosing one option from a list.',
     surfaces: ['page', 'site'],
     tags: ['input', 'select', 'dropdown', 'field', 'form', 'option'],
-    tree: el('label', 'flex w-full max-w-sm flex-col gap-1.5', {
-      children: [
-        fieldLabel('Department'),
-        shell([
-          el('select', `${CONTROL} cursor-pointer`, {
-            attrs: { name: 'department' },
-            children: [
-              el('option', '', { text: 'Sales' }),
-              el('option', '', { text: 'Support' }),
-              el('option', '', { text: 'Billing' }),
-              el('option', '', { text: 'Partnerships' }),
-            ],
-          }),
-        ]),
-      ],
-    }),
+    tree: field(
+      'Department',
+      atom('Select', 'st-c-primary st-fv-outline', {
+        name: 'department',
+        options: 'Sales\nSupport\nBilling\nPartnerships',
+      })
+    ),
   }),
 
-  // ── Checkbox list — fieldset + rows ──────────────────────────────────────────
+  // ── Checkbox list — fieldset + Checkbox atoms ────────────────────────────────
   entry({
     key: 'checkbox_list',
     name: 'Checkbox list',
@@ -172,15 +142,15 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
           el('legend', 'px-1 text-sm font-medium text-base-content', {
             text: 'Keep me posted about',
           }),
-          choiceRow('checkbox', 'Product updates', 'topics'),
-          choiceRow('checkbox', 'New guides and tips', 'topics'),
-          choiceRow('checkbox', 'Offers and promotions', 'topics'),
+          choiceRow('Checkbox', 'Product updates', 'topics'),
+          choiceRow('Checkbox', 'New guides and tips', 'topics'),
+          choiceRow('Checkbox', 'Offers and promotions', 'topics'),
         ],
       }
     ),
   }),
 
-  // ── Radio group — fieldset + rows ────────────────────────────────────────────
+  // ── Radio group — fieldset + Radio atoms ─────────────────────────────────────
   entry({
     key: 'radio_group',
     name: 'Radio group',
@@ -198,22 +168,22 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
           el('legend', 'px-1 text-sm font-medium text-base-content', {
             text: 'Preferred contact method',
           }),
-          choiceRow('radio', 'Email', 'contact_method'),
-          choiceRow('radio', 'Phone call', 'contact_method'),
-          choiceRow('radio', 'Text message', 'contact_method'),
+          choiceRow('Radio', 'Email', 'contact_method'),
+          choiceRow('Radio', 'Phone call', 'contact_method'),
+          choiceRow('Radio', 'Text message', 'contact_method'),
         ],
       }
     ),
   }),
 
-  // ── Toggle switch — peer checkbox styled as an iOS switch ─────────────────────
+  // ── Toggle switch — the Switch atom (st-switch) ──────────────────────────────
   entry({
     key: 'toggle_switch',
     name: 'Toggle switch',
     category: 'data-input',
     kind: 'common',
     icon: 'toggle-right',
-    description: 'A switch-style checkbox where the track and thumb animate with peer-checked.',
+    description: 'A switch-style control beside a label and description.',
     surfaces: ['page', 'site'],
     tags: ['input', 'toggle', 'switch', 'checkbox', 'boolean', 'form'],
     tree: el('label', 'flex w-full max-w-sm cursor-pointer items-center justify-between gap-4', {
@@ -226,34 +196,19 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
             }),
           ],
         }),
-        // The switch: a peer checkbox + a track whose thumb slides on peer-checked.
-        el('span', 'relative inline-flex shrink-0', {
-          children: [
-            el('input', 'peer sr-only', { attrs: { type: 'checkbox', name: 'notifications' } }),
-            el(
-              'span',
-              'block h-6 w-11 rounded-full bg-base-300 transition-colors peer-checked:bg-primary',
-              {}
-            ),
-            el(
-              'span',
-              'absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-base-100 shadow-sm transition-transform peer-checked:translate-x-5',
-              {}
-            ),
-          ],
-        }),
+        atom('Switch', 'st-c-primary', { name: 'notifications' }),
       ],
     }),
   }),
 
-  // ── Range slider — label + range + value hint ────────────────────────────────
+  // ── Range slider — the Range atom (st-range) ─────────────────────────────────
   entry({
     key: 'range_slider',
     name: 'Range slider',
     category: 'data-input',
     kind: 'common',
     icon: 'sliders-horizontal',
-    description: 'A labeled range input with a live value hint for picking a number on a scale.',
+    description: 'A labeled range input with a value hint for picking a number on a scale.',
     surfaces: ['page', 'site'],
     tags: ['input', 'range', 'slider', 'number', 'field', 'form'],
     tree: el('label', 'flex w-full max-w-sm flex-col gap-2', {
@@ -264,19 +219,11 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
             el(
               'span',
               'rounded-selector bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary',
-              {
-                text: '$2,500',
-              }
+              { text: '$2,500' }
             ),
           ],
         }),
-        el(
-          'input',
-          'h-2 w-full cursor-pointer appearance-none rounded-full bg-base-300 accent-primary',
-          {
-            attrs: { type: 'range', name: 'budget' },
-          }
-        ),
+        atom('Range', 'st-c-primary w-full', { name: 'budget', min: '0', max: '10000' }),
         el('span', 'flex items-center justify-between text-xs text-base-content/50', {
           children: [el('span', '', { text: '$0' }), el('span', '', { text: '$10,000' })],
         }),
@@ -284,7 +231,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
     }),
   }),
 
-  // ── Search bar — leading icon + input + submit, joined ───────────────────────
+  // ── Search bar — bespoke join (leading icon + input + submit) ────────────────
   entry({
     key: 'search_bar',
     name: 'Search bar',
@@ -303,7 +250,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
           {
             children: [
               atom('Icon', 'h-4 w-4 shrink-0 text-base-content/40', { name: 'search' }),
-              el('input', `${CONTROL} py-2.5`, {
+              el('input', `${SEARCH_CONTROL} py-2.5`, {
                 attrs: {
                   type: 'search',
                   name: 'q',
@@ -320,7 +267,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
     }),
   }),
 
-  // ── Contact form — real form, two-column on wide ─────────────────────────────
+  // ── Contact form — Field + Input atoms, two-column on wide ───────────────────
   entry({
     key: 'contact_form',
     name: 'Contact form',
@@ -350,54 +297,25 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
           // Name + email side by side on wide containers, stacked on narrow.
           el('div', 'grid grid-cols-1 gap-4 @3xl:grid-cols-2', {
             children: [
-              el('label', 'flex flex-col gap-1.5', {
-                children: [
-                  fieldLabel('Name'),
-                  shell([
-                    el('input', CONTROL, {
-                      attrs: {
-                        type: 'text',
-                        name: 'name',
-                        placeholder: 'Jordan Avery',
-                        required: true,
-                      },
-                    }),
-                  ]),
-                ],
+              field('Name', input('text', 'name', 'Jordan Avery'), {
+                required: true,
+                cls: 'w-full',
               }),
-              el('label', 'flex flex-col gap-1.5', {
-                children: [
-                  fieldLabel('Email'),
-                  shell([
-                    el('input', CONTROL, {
-                      attrs: {
-                        type: 'email',
-                        name: 'email',
-                        placeholder: 'you@example.com',
-                        required: true,
-                      },
-                    }),
-                  ]),
-                ],
+              field('Email', input('email', 'email', 'you@example.com'), {
+                required: true,
+                cls: 'w-full',
               }),
             ],
           }),
-          el('label', 'flex flex-col gap-1.5', {
-            children: [
-              fieldLabel('Message'),
-              el(
-                'div',
-                'rounded-field border border-base-300 bg-base-100 px-3 py-2 transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30',
-                {
-                  children: [
-                    el('textarea', `${CONTROL} min-h-28 resize-y leading-relaxed`, {
-                      attrs: { name: 'message', placeholder: 'How can we help?' },
-                    }),
-                  ],
-                }
-              ),
-            ],
-          }),
+          field(
+            'Message',
+            atom('Textarea', 'st-c-primary st-fv-outline', {
+              name: 'message',
+              placeholder: 'How can we help?',
+              rows: '4',
+            }),
+            { cls: 'w-full' }
+          ),
           el('div', 'flex items-center justify-end', {
             children: [
               atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md', {
@@ -410,7 +328,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
     ),
   }),
 
-  // ── Login form — card form ───────────────────────────────────────────────────
+  // ── Login form — Field + Input atoms in a card ───────────────────────────────
   entry({
     key: 'login_form',
     name: 'Login form',
@@ -435,22 +353,9 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
               el('p', 'text-sm text-base-content/60', { text: 'Sign in to manage your account.' }),
             ],
           }),
-          el('label', 'flex flex-col gap-1.5', {
-            children: [
-              fieldLabel('Email'),
-              shell([
-                el('input', CONTROL, {
-                  attrs: {
-                    type: 'email',
-                    name: 'email',
-                    placeholder: 'you@example.com',
-                    required: true,
-                  },
-                }),
-              ]),
-            ],
-          }),
-          el('label', 'flex flex-col gap-1.5', {
+          field('Email', input('email', 'email', 'you@example.com'), { cls: 'w-full' }),
+          // Password field with an inline "Forgot?" link above the control.
+          el('div', 'flex flex-col gap-1.5', {
             children: [
               el('span', 'flex items-center justify-between', {
                 children: [
@@ -461,16 +366,11 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
                   }),
                 ],
               }),
-              shell([
-                el('input', CONTROL, {
-                  attrs: {
-                    type: 'password',
-                    name: 'password',
-                    placeholder: '••••••••',
-                    required: true,
-                  },
-                }),
-              ]),
+              atom('Input', 'st-c-primary st-fv-outline', {
+                type: 'password',
+                name: 'password',
+                placeholder: '••••••••',
+              }),
             ],
           }),
           atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md w-full', {
@@ -490,7 +390,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
     ),
   }),
 
-  // ── File upload — dashed dropzone wrapping a file input ───────────────────────
+  // ── File upload — bespoke dashed dropzone wrapping a file input ───────────────
   entry({
     key: 'file_upload',
     name: 'File upload',

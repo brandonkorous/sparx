@@ -62,6 +62,7 @@ import type {
 import { computeBrandOverride } from '../lib/site-brand';
 import { cleanTokens, type BrandTokens } from '../lib/brand-feel';
 import { BrandThemeControls, type MediaState } from './brand-theme-controls';
+import { BrandPaletteImport, type AppliedRoles } from './brand-palette-import';
 import { ThemeShowcase } from './theme-showcase';
 import { SitePreviewFrame } from './site-preview-frame';
 
@@ -600,6 +601,24 @@ export function ThemeCenter({
     setColorSecondaryForeground(null);
   };
 
+  // Apply a pasted sparx palette (docs/33 brand colours) by driving the same
+  // setters the swatches use — the brand autosave then persists it to the right
+  // scope (base brand / per-site override). "Keep current" roles arrive as null.
+  const applyPalette = (roles: AppliedRoles) => {
+    if (roles.primary) {
+      setColorPrimary(roles.primary.fill);
+      setColorPrimaryForeground(roles.primary.content);
+    }
+    if (roles.secondary) {
+      setColorSecondary(roles.secondary.fill);
+      setColorSecondaryForeground(roles.secondary.content);
+    }
+    if (roles.accent) {
+      setColorAccent(roles.accent.fill);
+      setColorAccentForeground(roles.accent.content);
+    }
+  };
+
   const onSelectPreset = (key: string) => {
     setThemeKey(key);
     // Switching to a prebuilt base detaches from any saved theme being edited
@@ -919,75 +938,76 @@ export function ThemeCenter({
 
   // The theme switcher (saved + prebuilt dropdown) + new/rename/delete — shared by
   // the standalone toolbar and the unified-studio Theme inspector (docs/builder/03).
-  const switcherTemplates = (
+  const themeChooser = renaming ? (
+    <Input
+      ref={renameInputRef}
+      size="sm"
+      className="bx-tplselect"
+      value={nameDraft}
+      aria-label="Theme name"
+      onChange={(e) => setNameDraft(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          e.currentTarget.blur();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          skipRenameCommit.current = true;
+          e.currentTarget.blur();
+        }
+      }}
+      onBlur={commitRename}
+    />
+  ) : (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          aria-label="Theme"
+          disabled={pending}
+          className="bx-tplselect inline-flex h-8 items-center gap-2 rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] py-1.5 pr-2.5 pl-2.5 text-xs transition-colors hover:border-[var(--color-border-strong)] focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <ThemeDots colors={currentColors} />
+          <span className="min-w-0 flex-1 truncate text-left font-medium">{currentName}</span>
+          <ChevronDown aria-hidden className="h-4 w-4 shrink-0 opacity-50" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="max-h-[60vh] w-[260px] overflow-y-auto">
+        <DropdownMenuRadioGroup value={switcherValue} onValueChange={onSwitcherChange}>
+          <DropdownMenuLabel>My themes</DropdownMenuLabel>
+          {savedThemes.length === 0 ? (
+            <p className="px-2 py-1.5 text-xs text-[var(--color-text-muted)]">
+              No saved themes yet
+            </p>
+          ) : (
+            savedThemes.map((t) => (
+              <DropdownMenuRadioItem key={t.id} value={`saved:${t.id}`}>
+                <ThemeDots
+                  colors={swatchFor(t.basePresetKey, {
+                    primary: t.brand?.colorPrimary,
+                    accent: t.brand?.colorAccent,
+                    base100: t.presentation.light?.base100,
+                  })}
+                />
+                <span className="min-w-0 flex-1 truncate">{t.name}</span>
+              </DropdownMenuRadioItem>
+            ))
+          )}
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel>Prebuilt</DropdownMenuLabel>
+          {THEME_LIST.map((t) => (
+            <DropdownMenuRadioItem key={t.key} value={`preset:${t.key}`}>
+              <ThemeDots colors={swatchFor(t.key)} />
+              <span className="min-w-0 flex-1 truncate">{t.name}</span>
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
+  const themeActions = (
     <>
-      {renaming ? (
-        <Input
-          ref={renameInputRef}
-          size="sm"
-          className="bx-tplselect"
-          value={nameDraft}
-          aria-label="Theme name"
-          onChange={(e) => setNameDraft(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              e.currentTarget.blur();
-            } else if (e.key === 'Escape') {
-              e.preventDefault();
-              skipRenameCommit.current = true;
-              e.currentTarget.blur();
-            }
-          }}
-          onBlur={commitRename}
-        />
-      ) : (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              aria-label="Theme"
-              disabled={pending}
-              className="bx-tplselect inline-flex h-8 items-center gap-2 rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] py-1.5 pr-2.5 pl-2.5 text-xs transition-colors hover:border-[var(--color-border-strong)] focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <ThemeDots colors={currentColors} />
-              <span className="min-w-0 flex-1 truncate text-left font-medium">{currentName}</span>
-              <ChevronDown aria-hidden className="h-4 w-4 shrink-0 opacity-50" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="max-h-[60vh] w-[260px] overflow-y-auto">
-            <DropdownMenuRadioGroup value={switcherValue} onValueChange={onSwitcherChange}>
-              <DropdownMenuLabel>My themes</DropdownMenuLabel>
-              {savedThemes.length === 0 ? (
-                <p className="px-2 py-1.5 text-xs text-[var(--color-text-muted)]">
-                  No saved themes yet
-                </p>
-              ) : (
-                savedThemes.map((t) => (
-                  <DropdownMenuRadioItem key={t.id} value={`saved:${t.id}`}>
-                    <ThemeDots
-                      colors={swatchFor(t.basePresetKey, {
-                        primary: t.brand?.colorPrimary,
-                        accent: t.brand?.colorAccent,
-                        base100: t.presentation.light?.base100,
-                      })}
-                    />
-                    <span className="min-w-0 flex-1 truncate">{t.name}</span>
-                  </DropdownMenuRadioItem>
-                ))
-              )}
-              <DropdownMenuSeparator />
-              <DropdownMenuLabel>Prebuilt</DropdownMenuLabel>
-              {THEME_LIST.map((t) => (
-                <DropdownMenuRadioItem key={t.key} value={`preset:${t.key}`}>
-                  <ThemeDots colors={swatchFor(t.key)} />
-                  <span className="min-w-0 flex-1 truncate">{t.name}</span>
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
       <button
         type="button"
         className="bx-newtpl"
@@ -1015,6 +1035,15 @@ export function ThemeCenter({
       >
         <Trash2 aria-hidden />
       </button>
+    </>
+  );
+
+  const paletteImport = <BrandPaletteImport onApply={applyPalette} />;
+
+  const switcherTemplates = (
+    <>
+      {themeChooser}
+      {themeActions}
     </>
   );
 
@@ -1088,7 +1117,11 @@ export function ThemeCenter({
   if (variant === 'inspector') {
     return (
       <div className="bx-theme-ins">
-        <div className="bx-theme-ins__switch">{switcherTemplates}</div>
+        <div className="bx-theme-ins__switch">{themeChooser}</div>
+        <div className="bx-theme-ins__actions">
+          {themeActions}
+          {paletteImport}
+        </div>
         <div className="bx-theme-ins__modes">
           <div className="bx-toolbar__devices">{lightDarkToggle}</div>
           <Button
@@ -1114,7 +1147,10 @@ export function ThemeCenter({
           page/site `bx-toolbar` classes for true symmetry; /builder/brand loads
           builder.css so they resolve. */}
       <div className="bx-toolbar">
-        <div className="bx-toolbar__templates">{switcherTemplates}</div>
+        <div className="bx-toolbar__templates">
+          {switcherTemplates}
+          {paletteImport}
+        </div>
 
         <div className="bx-toolbar__devices">{lightDarkToggle}</div>
 

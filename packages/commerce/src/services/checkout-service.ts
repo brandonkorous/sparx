@@ -31,6 +31,7 @@ import {
 } from '@sparx/payments';
 import { withTenant } from '@sparx/db';
 import type { CheckoutSession, TxClient } from '@sparx/db';
+import { inventoryService, type CommittedSale } from '@sparx/inventory';
 // purchaseApprovalRule not in generated types until migration 20260716000000 runs.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyTx = TxClient & Record<string, any>;
@@ -39,6 +40,7 @@ import { writeAuditLog } from '../audit';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
+import { isInventoryActive } from '../inventory-gate';
 
 import * as discountService from './discount-service';
 import * as surchargeService from './surcharge-service';
@@ -401,6 +403,7 @@ export async function complete(
   pendingApproval: boolean;
 }> {
   const input = CompleteCheckoutInput.parse(rawInput);
+  const inventoryActive = await isInventoryActive(ctx.tenantId);
 
   // Idempotency: if a session has already been completed with this key,
   // return the prior result without recreating the order.
@@ -658,6 +661,26 @@ export async function complete(
       b2bInvoiceId = arDoc.id;
     }
 
+    // Decrement stock — the single sale authority (docs/100 §7.4). Each cart
+    // line commits its soft hold (or decrements directly when none exists),
+    // writing a `sale` movement referencing the order, atomic with this
+    // completion. Skipped when the order is held for B2B approval (placement —
+    // and the decrement — defers to the approval route) or when inventory is off
+    // (untracked = always available). Idempotency keys on the movements make a
+    // retried completion safe.
+    let committedSales: CommittedSale[] = [];
+    if (inventoryActive && !pendingApproval) {
+      committedSales = await inventoryService.commitSaleOnTx(tx, ctx, {
+        orderId: order.id,
+        lines: cart.items.map((it) => ({
+          variantId: it.variantId,
+          quantity: it.quantity,
+          reservationId: it.inventoryReservationId,
+          lineKey: it.id,
+        })),
+      });
+    }
+
     // Mark the session completed + record the resulting order so the
     // idempotency-key short-circuit above can find it on retry.
     await tx.checkoutSession.update({
@@ -710,8 +733,15 @@ export async function complete(
       b2bInvoiceId,
       b2bAccountId: session.b2bAccountId ?? null,
       pendingApproval,
+      committedSales,
     };
   });
+
+  // Inventory threshold events (inventory.adjusted / low / depleted) fire AFTER
+  // the completion transaction commits, never inside it.
+  if (result.committedSales.length > 0) {
+    await inventoryService.emitSaleEvents(ctx, result.committedSales);
+  }
 
   if (result.b2bInvoiceId) {
     await publishCommerceEvent({

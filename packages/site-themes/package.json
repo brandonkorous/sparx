@@ -8,6 +8,10 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./brand-palette": {
+      "types": "./src/brand-palette.ts",
+      "default": "./src/brand-palette.ts"
     }
   },
   "files": [

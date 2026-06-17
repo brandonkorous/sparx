@@ -22,6 +22,8 @@ import { requireRole } from '@sparx/api-core/auth';
 import { notFound } from '@sparx/api-core/errors';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
 import { b2bArService } from '@sparx/crm';
+import { isModuleEnabled } from '@sparx/auth';
+import { inventoryService, type CommittedSale } from '@sparx/inventory';
 import { requireB2bModule, toB2bContext } from '../../../lib/b2b-context.js';
 import { env } from '../../../env.js';
 
@@ -276,6 +278,7 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
     const ctx = toB2bContext(request);
     const { orderId } = PathOrderId.parse(request.params);
     const body = ApproveBody.parse(request.body);
+    const inventoryActive = await isModuleEnabled(ctx.tenantId, 'inventory');
 
     const result = await withTenant(ctx, async (tx) => {
       const existing = await tx.order.findFirst({
@@ -302,6 +305,27 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
         data: { status: 'placed' },
         select: { id: true, orderNumber: true, status: true },
       });
+
+      // Decrement stock now that the order is actually placed — checkout deferred
+      // the commit while the order was held for approval (docs/100 §7.4). Drives
+      // off the order's line items (no cart hold survives to here); idempotency
+      // keys keep it safe against a retried approval. No-op when inventory is off.
+      let committedSales: CommittedSale[] = [];
+      if (inventoryActive) {
+        const orderItems = await tx.orderItem.findMany({
+          where: { orderId, tenantId: ctx.tenantId },
+          select: { id: true, variantId: true, quantity: true },
+        });
+        committedSales = await inventoryService.commitSaleOnTx(tx, ctx, {
+          orderId,
+          lines: orderItems.map((it) => ({
+            variantId: it.variantId ?? '',
+            quantity: it.quantity,
+            reservationId: null,
+            lineKey: it.id,
+          })),
+        });
+      }
 
       // Audit trail via CRM activity.
       await tx.crmActivity.create({
@@ -347,8 +371,13 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
         b2bInvoiceId = arDoc.id;
       }
 
-      return { order: updated, b2bInvoiceId, accountId };
+      return { order: updated, b2bInvoiceId, accountId, committedSales };
     });
+
+    // Inventory threshold events fire after the approval transaction commits.
+    if (result.committedSales.length > 0) {
+      await inventoryService.emitSaleEvents(ctx, result.committedSales);
+    }
 
     await publishEvent(
       publisher,

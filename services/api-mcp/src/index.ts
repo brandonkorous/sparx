@@ -2,6 +2,7 @@
 
 import { installCrmWebhookFanout, preconnectWebhookFanout, registerCrmConsumers } from '@sparx/crm';
 import { installCrmPubSubBridge } from '@sparx/crm/pubsub';
+import { registerCommerceConsumers } from '@sparx/commerce/consumers';
 import { env } from './env.js';
 import { createApp } from './app.js';
 import { preconnectAudit } from './audit.js';
@@ -17,6 +18,9 @@ async function main(): Promise<void> {
   // tools maintain customer stats + activity in THIS process (the platform bus
   // is in-process). See the api-rest bootstrap for the full rationale.
   registerCrmConsumers();
+  // Commerce sell-path consumers (order.cancelled → inventory restock) on the
+  // same in-process bus, gated per-tenant on the inventory module.
+  registerCommerceConsumers();
   // Wrap CRM publisher so write tools (create_deal, move_deal_stage, ...)
   // enqueue webhook deliveries through the same fan-out as REST + GraphQL.
   installCrmWebhookFanout();

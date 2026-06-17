@@ -6,7 +6,15 @@ const ink = '#18181b';
 const muted = '#71717a';
 
 /** Live, on-paper preview that mirrors the generated PDF. */
-export function InvoicePreview({ data }: { data: InvoiceData }) {
+export function InvoicePreview({
+  data,
+  title = 'INVOICE',
+  dateLabel = 'Due',
+}: {
+  data: InvoiceData;
+  title?: string;
+  dateLabel?: string;
+}) {
   const totals = computeTotals(data);
   const money = (n: number) => formatMoney(n, data.currency);
   const fromLines = [data.businessAddress, data.businessEmail].filter(Boolean).join('\n');
@@ -51,7 +59,7 @@ export function InvoicePreview({ data }: { data: InvoiceData }) {
               letterSpacing: '0.02em',
             }}
           >
-            INVOICE
+            {title}
           </div>
           <div style={{ fontSize: '12px', color: muted }}># {data.invoiceNumber || '0001'}</div>
         </div>
@@ -68,7 +76,9 @@ export function InvoicePreview({ data }: { data: InvoiceData }) {
         style={{ display: 'flex', gap: '24px', marginTop: '14px', fontSize: '12px', color: muted }}
       >
         <span>Issued: {data.issueDate || '—'}</span>
-        <span>Due: {data.dueDate || '—'}</span>
+        <span>
+          {dateLabel}: {data.dueDate || '—'}
+        </span>
       </div>
 
       <table

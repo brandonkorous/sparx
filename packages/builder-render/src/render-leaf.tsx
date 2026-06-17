@@ -77,6 +77,7 @@ import {
   type BuilderProduct,
 } from './commerce';
 import { BuilderIcon } from './icon';
+import { renderSiteUiAtom } from './site-atoms';
 import { SignupForm } from './signup';
 import { SAMPLE_BUILDER_PRODUCT } from './sample-product';
 import { sxAttrs } from './behaviors/attrs';
@@ -140,6 +141,55 @@ const CLASS_ON_LEAF: ReadonlySet<string> = new Set([
   'Logo',
   'NavMenu',
   'SocialLinks',
+  // Site-UI atoms (docs/102 Track A) — each renders a real @sparx/site-ui component
+  // that wears the recipe + utilities on its own root, so the host suppresses its
+  // wrapper class and passes node.class through as leafClass.
+  'Input',
+  'Textarea',
+  'Select',
+  'Checkbox',
+  'Radio',
+  'Switch',
+  'Range',
+  'FileInput',
+  'Label',
+  'Field',
+  'Validator',
+  'Alert',
+  'Callout',
+  'Progress',
+  'RadialProgress',
+  'Skeleton',
+  'Spinner',
+  'Avatar',
+  'Tag',
+  'Rating',
+  'Kbd',
+  'Status',
+  'Table',
+  'List',
+  'ChatBubble',
+  'Countdown',
+  'Menu',
+  'Steps',
+  'Pagination',
+  'Breadcrumb',
+  'Link',
+  'Dock',
+  'Indicator',
+  'Join',
+  'Mask',
+  'Browser',
+  'Window',
+  'Phone',
+  'Code',
+  'Swap',
+  'Filter',
+  'Calendar',
+  'Diff',
+  'TextRotate',
+  'Hover3DCard',
+  'HoverGallery',
 ]);
 
 /** Does this leaf type style its own element with node.class (so the host should
@@ -692,7 +742,12 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
         </EmailTextLeaf>
       );
 
-    default:
-      return null;
+    // The rest of the @sparx/site-ui library, exposed as droppable atoms (docs/102
+    // Track A) — form controls, feedback, data display, navigation, mockups. Their
+    // render is the shared site-atoms map; `undefined` means not one of them.
+    default: {
+      const atom = renderSiteUiAtom(node, { leafClass, value, bound, cardinality, edit, children });
+      return atom === undefined ? null : atom;
+    }
   }
 }

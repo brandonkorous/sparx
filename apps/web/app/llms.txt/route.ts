@@ -8,6 +8,7 @@
 
 import { MODULES, MODULE_ORDER } from '@/lib/modules';
 import { DOC_PAGES } from '@/lib/docs';
+import { TOOLS } from '@/components/marketing/tools/registry';
 
 export const dynamic = 'force-static';
 
@@ -53,6 +54,10 @@ export function GET(): Response {
 
   const docLines = DOC_PAGES.map((p) => `- [${p.title}](${BASE}${p.href})`).join('\n');
 
+  const toolLines = TOOLS.map((t) => `- [${t.name}](${BASE}/tools/${t.slug}): ${t.tagline}`).join(
+    '\n'
+  );
+
   const body = `# sparx
 
 > sparx (by WizeWorks) is a modular content and commerce operating system: storefront, commerce, CRM, CMS, email, B2B/wholesale, dropship, and a first-class AI/MCP integration in one platform. Tenants activate only the modules they need — a CMS-only publisher, a CRM-only team, and a B2B distributor are all equally first-class.
@@ -66,6 +71,12 @@ ${moduleLines}
 ## Platform
 
 ${platformLines}
+
+## Free tools
+
+Free, browser-based utilities for founders and small teams. Each runs entirely client-side (nothing uploaded), needs no sign-up, and is the front door to the matching sparx module. Index at ${BASE}/tools.
+
+${toolLines}
 
 ## Documentation
 
