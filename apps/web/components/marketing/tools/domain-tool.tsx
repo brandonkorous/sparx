@@ -14,7 +14,12 @@ interface DomainResult {
 }
 
 function cleanName(input: string): string {
-  return input.trim().toLowerCase().replace(/^https?:\/\//, '').split('.')[0]!.replace(/[^a-z0-9-]/g, '');
+  return input
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, '')
+    .split('.')[0]!
+    .replace(/[^a-z0-9-]/g, '');
 }
 
 export function DomainTool() {
@@ -86,7 +91,14 @@ export function DomainTool() {
             </div>
           </Field>
           <div>
-            <Button type="button" color="module" variant="solid" size="md" onClick={check} disabled={loading || !base || selected.size === 0}>
+            <Button
+              type="button"
+              color="module"
+              variant="solid"
+              size="md"
+              onClick={check}
+              disabled={loading || !base || selected.size === 0}
+            >
               {loading ? <Spinner className="h-4 w-4" /> : <Search className="h-4 w-4" />}
               Check availability
             </Button>
@@ -101,27 +113,68 @@ export function DomainTool() {
               {ordered.map((domain) => {
                 const r = results[domain];
                 return (
-                  <div key={domain} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '12px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border-default)' }}>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '14px', color: 'var(--color-text-primary)' }}>{domain}</span>
+                  <div
+                    key={domain}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '12px',
+                      padding: '12px 14px',
+                      borderRadius: 'var(--radius-md)',
+                      border: '1px solid var(--color-border-default)',
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: '14px',
+                        color: 'var(--color-text-primary)',
+                      }}
+                    >
+                      {domain}
+                    </span>
                     {!r ? (
                       <Spinner className="h-4 w-4" />
                     ) : r.available === true ? (
-                      <Badge color="success" variant="soft" size="sm"><Check className="h-3.5 w-3.5" />Available</Badge>
+                      <Badge color="success" variant="soft" size="sm">
+                        <Check className="h-3.5 w-3.5" />
+                        Available
+                      </Badge>
                     ) : r.available === false ? (
-                      <Badge color="neutral" variant="soft" size="sm"><X className="h-3.5 w-3.5" />Taken</Badge>
+                      <Badge color="neutral" variant="soft" size="sm">
+                        <X className="h-3.5 w-3.5" />
+                        Taken
+                      </Badge>
                     ) : (
-                      <Badge color="warning" variant="soft" size="sm"><Minus className="h-3.5 w-3.5" />Unknown</Badge>
+                      <Badge color="warning" variant="soft" size="sm">
+                        <Minus className="h-3.5 w-3.5" />
+                        Unknown
+                      </Badge>
                     )}
                   </div>
                 );
               })}
             </div>
           ) : (
-            <span style={{ fontFamily: 'var(--font-sans)', fontSize: '14px', color: 'var(--color-text-tertiary)' }}>
+            <span
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: '14px',
+                color: 'var(--color-text-tertiary)',
+              }}
+            >
               Enter a name and pick the extensions to check across them at once.
             </span>
           )}
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '12.5px', color: 'var(--color-text-tertiary)', margin: 0 }}>
+          <p
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '12.5px',
+              color: 'var(--color-text-tertiary)',
+              margin: 0,
+            }}
+          >
             Availability comes from live registry (RDAP) data. Register the name you want at any
             registrar — premium names may carry special pricing.
           </p>

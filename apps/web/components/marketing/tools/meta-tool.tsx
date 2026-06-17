@@ -4,12 +4,17 @@ import * as React from 'react';
 import { Input, Textarea } from '@sparx/ui';
 import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton } from './ui-kit';
 
-const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const esc = (s: string) =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1).trimEnd()}…` : s);
 
 function counter(len: number, max: number): React.ReactNode {
   const over = len > max;
-  return <span style={{ color: over ? 'var(--color-danger)' : 'var(--color-text-tertiary)' }}>{len}/{max}</span>;
+  return (
+    <span style={{ color: over ? 'var(--color-danger)' : 'var(--color-text-tertiary)' }}>
+      {len}/{max}
+    </span>
+  );
 }
 
 export function MetaTool() {
@@ -55,18 +60,36 @@ export function MetaTool() {
           <Field label="Title tag" htmlFor="meta-title" adornment={counter(title.length, 60)}>
             <Input id="meta-title" value={title} onChange={(e) => setTitle(e.target.value)} />
           </Field>
-          <Field label="Meta description" htmlFor="meta-desc" adornment={counter(description.length, 160)}>
-            <Textarea id="meta-desc" rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
+          <Field
+            label="Meta description"
+            htmlFor="meta-desc"
+            adornment={counter(description.length, 160)}
+          >
+            <Textarea
+              id="meta-desc"
+              rows={3}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
           </Field>
           <Field label="Page URL" htmlFor="meta-url">
             <Input id="meta-url" type="url" value={url} onChange={(e) => setUrl(e.target.value)} />
           </Field>
           <div className="tool-fieldgrid">
             <Field label="Site name" htmlFor="meta-site">
-              <Input id="meta-site" value={siteName} onChange={(e) => setSiteName(e.target.value)} />
+              <Input
+                id="meta-site"
+                value={siteName}
+                onChange={(e) => setSiteName(e.target.value)}
+              />
             </Field>
             <Field label="OG image URL" htmlFor="meta-img" hint="Optional 1200×630 image.">
-              <Input id="meta-img" type="url" value={image} onChange={(e) => setImage(e.target.value)} />
+              <Input
+                id="meta-img"
+                type="url"
+                value={image}
+                onChange={(e) => setImage(e.target.value)}
+              />
             </Field>
           </div>
         </Panel>
@@ -79,17 +102,37 @@ export function MetaTool() {
               {host}
               {crumb ? <span style={{ color: '#5f6368' }}> › {crumb}</span> : null}
             </span>
-            <span style={{ fontFamily: 'arial, sans-serif', fontSize: '20px', color: '#1a0dab', lineHeight: 1.3 }}>
+            <span
+              style={{
+                fontFamily: 'arial, sans-serif',
+                fontSize: '20px',
+                color: '#1a0dab',
+                lineHeight: 1.3,
+              }}
+            >
               {clip(title || 'Your page title', 60)}
             </span>
-            <span style={{ fontFamily: 'arial, sans-serif', fontSize: '14px', color: '#4d5156', lineHeight: 1.5 }}>
+            <span
+              style={{
+                fontFamily: 'arial, sans-serif',
+                fontSize: '14px',
+                color: '#4d5156',
+                lineHeight: 1.5,
+              }}
+            >
               {clip(description || 'Your meta description shows here.', 160)}
             </span>
           </div>
         </Panel>
 
         <Panel title="Social card">
-          <div style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden', border: '1px solid var(--color-border-default)' }}>
+          <div
+            style={{
+              borderRadius: 'var(--radius-lg)',
+              overflow: 'hidden',
+              border: '1px solid var(--color-border-default)',
+            }}
+          >
             <div
               style={{
                 aspectRatio: '1200 / 630',
@@ -103,19 +146,45 @@ export function MetaTool() {
               }}
             >
               {!image ? (
-                <span style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: 'var(--color-text-tertiary)' }}>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: '13px',
+                    color: 'var(--color-text-tertiary)',
+                  }}
+                >
                   og:image preview
                 </span>
               ) : null}
             </div>
             <div style={{ padding: '12px 14px', backgroundColor: 'var(--color-bg-surface)' }}>
-              <div style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', textTransform: 'uppercase', color: 'var(--color-text-tertiary)' }}>
+              <div
+                style={{
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '11px',
+                  textTransform: 'uppercase',
+                  color: 'var(--color-text-tertiary)',
+                }}
+              >
                 {host}
               </div>
-              <div style={{ fontFamily: 'var(--font-sans)', fontSize: '15px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+              <div
+                style={{
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  color: 'var(--color-text-primary)',
+                }}
+              >
                 {clip(title || 'Your page title', 70)}
               </div>
-              <div style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: 'var(--color-text-secondary)' }}>
+              <div
+                style={{
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '13px',
+                  color: 'var(--color-text-secondary)',
+                }}
+              >
                 {clip(description || 'Your description.', 120)}
               </div>
             </div>
@@ -124,7 +193,15 @@ export function MetaTool() {
 
         <Panel
           title="Meta tags"
-          action={<CopyButton value={snippet} label="Copy tags" toastLabel="Meta tags copied" color="module" variant="solid" />}
+          action={
+            <CopyButton
+              value={snippet}
+              label="Copy tags"
+              toastLabel="Meta tags copied"
+              color="module"
+              variant="solid"
+            />
+          }
         >
           <pre className="tool-code">{snippet}</pre>
         </Panel>

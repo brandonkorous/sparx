@@ -81,9 +81,21 @@ export function ToolLearn({ tool }: { tool: ToolMeta }) {
             >
               {seo.howTo.name}
             </h3>
-            <ol style={{ display: 'flex', flexDirection: 'column', gap: '12px', margin: 0, padding: 0, listStyle: 'none' }}>
+            <ol
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+                margin: 0,
+                padding: 0,
+                listStyle: 'none',
+              }}
+            >
               {seo.howTo.steps.map((step, i) => (
-                <li key={step.name} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                <li
+                  key={step.name}
+                  style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}
+                >
                   <span
                     aria-hidden
                     style={{
@@ -103,8 +115,18 @@ export function ToolLearn({ tool }: { tool: ToolMeta }) {
                   >
                     {i + 1}
                   </span>
-                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: '14.5px', lineHeight: '24px', color: 'var(--color-text-secondary)', margin: 0 }}>
-                    <strong style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>{step.name}.</strong>{' '}
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-sans)',
+                      fontSize: '14.5px',
+                      lineHeight: '24px',
+                      color: 'var(--color-text-secondary)',
+                      margin: 0,
+                    }}
+                  >
+                    <strong style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>
+                      {step.name}.
+                    </strong>{' '}
                     {step.text}
                   </p>
                 </li>

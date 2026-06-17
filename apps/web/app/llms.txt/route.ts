@@ -54,9 +54,9 @@ export function GET(): Response {
 
   const docLines = DOC_PAGES.map((p) => `- [${p.title}](${BASE}${p.href})`).join('\n');
 
-  const toolLines = TOOLS.map(
-    (t) => `- [${t.name}](${BASE}/tools/${t.slug}): ${t.tagline}`
-  ).join('\n');
+  const toolLines = TOOLS.map((t) => `- [${t.name}](${BASE}/tools/${t.slug}): ${t.tagline}`).join(
+    '\n'
+  );
 
   const body = `# sparx
 

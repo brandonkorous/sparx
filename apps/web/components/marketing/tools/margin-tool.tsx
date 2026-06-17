@@ -18,7 +18,13 @@ function StatTile({ label, value, accent }: { label: string; value: string; acce
         backgroundColor: 'var(--color-bg-surface)',
       }}
     >
-      <span style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
+      <span
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontSize: '12px',
+          color: 'var(--color-text-tertiary)',
+        }}
+      >
         {label}
       </span>
       <span
@@ -60,7 +66,11 @@ export function MarginTool() {
       <ControlsPane>
         <Panel title="Unit economics">
           <Field label="Currency" htmlFor="mc-cur">
-            <NativeSelect id="mc-cur" value={currency} onChange={(e) => setCurrency(e.target.value)}>
+            <NativeSelect
+              id="mc-cur"
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+            >
               {CURRENCIES.map((cur) => (
                 <option key={cur} value={cur}>
                   {cur}
@@ -104,9 +114,25 @@ export function MarginTool() {
               onChange={(e) => setTargetMargin(e.target.value)}
             />
           </Field>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-            <span style={{ fontFamily: 'var(--font-sans)', fontSize: '14px', color: 'var(--color-text-secondary)' }}>
-              Charge <strong style={{ color: 'var(--color-text-primary)' }}>{money(priceForTarget)}</strong>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '12px',
+            }}
+          >
+            <span
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: '14px',
+                color: 'var(--color-text-secondary)',
+              }}
+            >
+              Charge{' '}
+              <strong style={{ color: 'var(--color-text-primary)' }}>
+                {money(priceForTarget)}
+              </strong>
             </span>
             <Button
               type="button"
@@ -142,9 +168,20 @@ export function MarginTool() {
           </div>
           <div className="tool-fieldgrid">
             <StatTile label="Profit per unit" value={money(profit)} />
-            <StatTile label="Break-even units" value={breakEven !== null ? String(breakEven) : '—'} />
+            <StatTile
+              label="Break-even units"
+              value={breakEven !== null ? String(breakEven) : '—'}
+            />
           </div>
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', lineHeight: '20px', color: 'var(--color-text-tertiary)', margin: 0 }}>
+          <p
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '13px',
+              lineHeight: '20px',
+              color: 'var(--color-text-tertiary)',
+              margin: 0,
+            }}
+          >
             Margin is profit as a share of price; markup is profit as a share of cost.{' '}
             {breakEven !== null
               ? `At ${money(profit)} profit per unit, you cover ${money(fixed)} of fixed costs after ${breakEven} units.`

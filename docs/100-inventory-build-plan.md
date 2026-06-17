@@ -303,7 +303,7 @@ enforced. Fixes docs/99 defect D2. This is the commerce **integration** layer.
    restock follows cancellation.) ✅ **DONE.**
 4. **Returns restock** — `return-service.ts` `issueRefund()`: for each inspection `restockable=true`,
    `inventoryService.adjust({delta:+qty, reason:'return', referenceType:'Return', referenceId:returnId,
-   warehouseId, idempotencyKey})`; quantity is the line's approved (accepted-back) count, warehouse the
+warehouseId, idempotencyKey})`; quantity is the line's approved (accepted-back) count, warehouse the
    inspection's or the channel default. Runs post-commit (the refund is authority; restock is a follow-on).
    ✅ **DONE.**
 5. **Allocator** — `reserve()`'s picker is now **stock-aware**: resolve the channel default, prefer a

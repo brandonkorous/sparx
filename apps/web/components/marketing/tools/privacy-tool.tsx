@@ -46,15 +46,60 @@ function renderInline(text: string, key: number): React.ReactNode {
 
 function Markdown({ text }: { text: string }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', fontFamily: 'var(--font-sans)', color: '#27272a' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        fontFamily: 'var(--font-sans)',
+        color: '#27272a',
+      }}
+    >
       {text.split('\n').map((line, i) => {
         if (!line.trim()) return <div key={i} style={{ height: '8px' }} />;
-        if (line.startsWith('### ')) return <h4 key={i} style={{ fontSize: '14px', fontWeight: 700, margin: '12px 0 4px' }}>{line.slice(4)}</h4>;
-        if (line.startsWith('## ')) return <h3 key={i} style={{ fontSize: '16px', fontWeight: 700, margin: '16px 0 6px' }}>{line.slice(3)}</h3>;
-        if (line.startsWith('# ')) return <h2 key={i} style={{ fontSize: '22px', fontWeight: 700, margin: '0 0 8px' }}>{line.slice(2)}</h2>;
-        if (line.startsWith('- ')) return <div key={i} style={{ fontSize: '13.5px', lineHeight: 1.6, paddingLeft: '16px', position: 'relative' }}><span style={{ position: 'absolute', left: 0 }}>•</span>{renderInline(line.slice(2), i)}</div>;
-        if (line.startsWith('_') && line.endsWith('_')) return <p key={i} style={{ fontSize: '12.5px', color: '#71717a', margin: 0 }}>{line.slice(1, -1)}</p>;
-        return <p key={i} style={{ fontSize: '13.5px', lineHeight: 1.6, margin: 0 }}>{renderInline(line, i)}</p>;
+        if (line.startsWith('### '))
+          return (
+            <h4 key={i} style={{ fontSize: '14px', fontWeight: 700, margin: '12px 0 4px' }}>
+              {line.slice(4)}
+            </h4>
+          );
+        if (line.startsWith('## '))
+          return (
+            <h3 key={i} style={{ fontSize: '16px', fontWeight: 700, margin: '16px 0 6px' }}>
+              {line.slice(3)}
+            </h3>
+          );
+        if (line.startsWith('# '))
+          return (
+            <h2 key={i} style={{ fontSize: '22px', fontWeight: 700, margin: '0 0 8px' }}>
+              {line.slice(2)}
+            </h2>
+          );
+        if (line.startsWith('- '))
+          return (
+            <div
+              key={i}
+              style={{
+                fontSize: '13.5px',
+                lineHeight: 1.6,
+                paddingLeft: '16px',
+                position: 'relative',
+              }}
+            >
+              <span style={{ position: 'absolute', left: 0 }}>•</span>
+              {renderInline(line.slice(2), i)}
+            </div>
+          );
+        if (line.startsWith('_') && line.endsWith('_'))
+          return (
+            <p key={i} style={{ fontSize: '12.5px', color: '#71717a', margin: 0 }}>
+              {line.slice(1, -1)}
+            </p>
+          );
+        return (
+          <p key={i} style={{ fontSize: '13.5px', lineHeight: 1.6, margin: 0 }}>
+            {renderInline(line, i)}
+          </p>
+        );
       })}
     </div>
   );
@@ -73,22 +118,65 @@ export function PrivacyTool() {
       <ControlsPane>
         <Panel title="Your business">
           <div className="tool-fieldgrid">
-            <Field label="Business name"><Input value={data.businessName} onChange={(e) => set({ businessName: e.target.value })} /></Field>
-            <Field label="Website"><Input value={data.website} onChange={(e) => set({ website: e.target.value })} /></Field>
+            <Field label="Business name">
+              <Input
+                value={data.businessName}
+                onChange={(e) => set({ businessName: e.target.value })}
+              />
+            </Field>
+            <Field label="Website">
+              <Input value={data.website} onChange={(e) => set({ website: e.target.value })} />
+            </Field>
           </div>
           <div className="tool-fieldgrid">
-            <Field label="Contact email"><Input type="email" value={data.email} onChange={(e) => set({ email: e.target.value })} /></Field>
-            <Field label="Effective date"><Input type="date" value={data.effectiveDate} onChange={(e) => set({ effectiveDate: e.target.value })} /></Field>
+            <Field label="Contact email">
+              <Input
+                type="email"
+                value={data.email}
+                onChange={(e) => set({ email: e.target.value })}
+              />
+            </Field>
+            <Field label="Effective date">
+              <Input
+                type="date"
+                value={data.effectiveDate}
+                onChange={(e) => set({ effectiveDate: e.target.value })}
+              />
+            </Field>
           </div>
-          <Field label="Governing law" hint="Where your business operates."><Input value={data.jurisdiction} onChange={(e) => set({ jurisdiction: e.target.value })} /></Field>
+          <Field label="Governing law" hint="Where your business operates.">
+            <Input
+              value={data.jurisdiction}
+              onChange={(e) => set({ jurisdiction: e.target.value })}
+            />
+          </Field>
         </Panel>
 
         <Panel title="What applies to you">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {TOGGLES.map((t) => (
-              <div key={t.key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-                <span style={{ fontFamily: 'var(--font-sans)', fontSize: '14px', color: 'var(--color-text-primary)' }}>{t.label}</span>
-                <Switch checked={data[t.key] as boolean} onCheckedChange={(c) => set({ [t.key]: c })} />
+              <div
+                key={t.key}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '12px',
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: '14px',
+                    color: 'var(--color-text-primary)',
+                  }}
+                >
+                  {t.label}
+                </span>
+                <Switch
+                  checked={data[t.key] as boolean}
+                  onCheckedChange={(c) => set({ [t.key]: c })}
+                />
               </div>
             ))}
           </div>
@@ -100,23 +188,68 @@ export function PrivacyTool() {
           title="Document"
           action={
             <span style={{ display: 'inline-flex', gap: '6px' }}>
-              <Button type="button" size="sm" variant={doc === 'privacy' ? 'solid' : 'outline'} color={doc === 'privacy' ? 'module' : 'neutral'} onClick={() => setDoc('privacy')}>Privacy</Button>
-              <Button type="button" size="sm" variant={doc === 'terms' ? 'solid' : 'outline'} color={doc === 'terms' ? 'module' : 'neutral'} onClick={() => setDoc('terms')}>Terms</Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={doc === 'privacy' ? 'solid' : 'outline'}
+                color={doc === 'privacy' ? 'module' : 'neutral'}
+                onClick={() => setDoc('privacy')}
+              >
+                Privacy
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={doc === 'terms' ? 'solid' : 'outline'}
+                color={doc === 'terms' ? 'module' : 'neutral'}
+                onClick={() => setDoc('terms')}
+              >
+                Terms
+              </Button>
             </span>
           }
         >
-          <div style={{ maxHeight: '420px', overflowY: 'auto', padding: '24px', backgroundColor: '#ffffff', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border-default)' }}>
+          <div
+            style={{
+              maxHeight: '420px',
+              overflowY: 'auto',
+              padding: '24px',
+              backgroundColor: '#ffffff',
+              borderRadius: 'var(--radius-lg)',
+              border: '1px solid var(--color-border-default)',
+            }}
+          >
             <Markdown text={text} />
           </div>
           <div className="mkt-cluster" style={{ gap: '10px' }}>
-            <CopyButton value={text} label="Copy markdown" toastLabel="Document copied" color="module" variant="solid" />
-            <Button type="button" variant="outline" color="neutral" size="sm" onClick={() => downloadText(text, filename, 'text/markdown;charset=utf-8')}>
+            <CopyButton
+              value={text}
+              label="Copy markdown"
+              toastLabel="Document copied"
+              color="module"
+              variant="solid"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              color="neutral"
+              size="sm"
+              onClick={() => downloadText(text, filename, 'text/markdown;charset=utf-8')}
+            >
               <Download className="h-4 w-4" />
               Download .md
             </Button>
           </div>
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '12.5px', color: 'var(--color-text-tertiary)', margin: 0 }}>
-            A strong starting point — review and adapt it to your business. This is not legal advice.
+          <p
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '12.5px',
+              color: 'var(--color-text-tertiary)',
+              margin: 0,
+            }}
+          >
+            A strong starting point — review and adapt it to your business. This is not legal
+            advice.
           </p>
         </Panel>
       </OutputPane>

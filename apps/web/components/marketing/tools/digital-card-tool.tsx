@@ -62,27 +62,50 @@ export function DigitalCardTool() {
     });
   }, [vcard]);
 
-  const slug = full.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'contact';
+  const slug =
+    full
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '') || 'contact';
   const downloadVcf = () => downloadText(vcard, `${slug}.vcf`, 'text/vcard;charset=utf-8');
-  const downloadQr = () => canvasRef.current?.toBlob((b) => b && downloadBlob(b, `${slug}-qr.png`), 'image/png');
+  const downloadQr = () =>
+    canvasRef.current?.toBlob((b) => b && downloadBlob(b, `${slug}-qr.png`), 'image/png');
 
   return (
     <Workbench>
       <ControlsPane>
         <Panel title="Your details">
           <div className="tool-fieldgrid">
-            <Field label="First name"><Input value={data.firstName} onChange={(e) => set('firstName', e.target.value)} /></Field>
-            <Field label="Last name"><Input value={data.lastName} onChange={(e) => set('lastName', e.target.value)} /></Field>
+            <Field label="First name">
+              <Input value={data.firstName} onChange={(e) => set('firstName', e.target.value)} />
+            </Field>
+            <Field label="Last name">
+              <Input value={data.lastName} onChange={(e) => set('lastName', e.target.value)} />
+            </Field>
           </div>
           <div className="tool-fieldgrid">
-            <Field label="Job title"><Input value={data.title} onChange={(e) => set('title', e.target.value)} /></Field>
-            <Field label="Company"><Input value={data.company} onChange={(e) => set('company', e.target.value)} /></Field>
+            <Field label="Job title">
+              <Input value={data.title} onChange={(e) => set('title', e.target.value)} />
+            </Field>
+            <Field label="Company">
+              <Input value={data.company} onChange={(e) => set('company', e.target.value)} />
+            </Field>
           </div>
           <div className="tool-fieldgrid">
-            <Field label="Phone"><Input type="tel" value={data.phone} onChange={(e) => set('phone', e.target.value)} /></Field>
-            <Field label="Email"><Input type="email" value={data.email} onChange={(e) => set('email', e.target.value)} /></Field>
+            <Field label="Phone">
+              <Input type="tel" value={data.phone} onChange={(e) => set('phone', e.target.value)} />
+            </Field>
+            <Field label="Email">
+              <Input
+                type="email"
+                value={data.email}
+                onChange={(e) => set('email', e.target.value)}
+              />
+            </Field>
           </div>
-          <Field label="Website"><Input value={data.website} onChange={(e) => set('website', e.target.value)} /></Field>
+          <Field label="Website">
+            <Input value={data.website} onChange={(e) => set('website', e.target.value)} />
+          </Field>
         </Panel>
       </ControlsPane>
 
@@ -100,20 +123,56 @@ export function DigitalCardTool() {
               border: '1px solid var(--color-border-default)',
             }}
           >
-            <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: '18px', color: 'var(--color-text-primary)' }}>{full}</span>
-            <span style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: 'var(--color-text-secondary)' }}>
+            <span
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontWeight: 600,
+                fontSize: '18px',
+                color: 'var(--color-text-primary)',
+              }}
+            >
+              {full}
+            </span>
+            <span
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: '13px',
+                color: 'var(--color-text-secondary)',
+              }}
+            >
               {[data.title, data.company].filter(Boolean).join(' · ')}
             </span>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '8px', fontFamily: 'var(--font-sans)', fontSize: '13px', color: 'var(--color-text-secondary)' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '2px',
+                marginTop: '8px',
+                fontFamily: 'var(--font-sans)',
+                fontSize: '13px',
+                color: 'var(--color-text-secondary)',
+              }}
+            >
               {data.phone ? <span>{data.phone}</span> : null}
               {data.email ? <span>{data.email}</span> : null}
               {data.website ? <span>{data.website}</span> : null}
             </div>
           </div>
 
-          <div className="tool-checkerboard" style={{ display: 'flex', justifyContent: 'center', padding: '20px', borderRadius: 'var(--radius-lg)' }}>
+          <div
+            className="tool-checkerboard"
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              padding: '20px',
+              borderRadius: 'var(--radius-lg)',
+            }}
+          >
             <div style={{ position: 'relative', width: '180px', height: '180px' }}>
-              <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} />
+              <canvas
+                ref={canvasRef}
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+              />
             </div>
           </div>
 
@@ -128,7 +187,14 @@ export function DigitalCardTool() {
             </Button>
             <CopyButton value={vcard} label="Copy vCard" toastLabel="vCard copied" />
           </div>
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '12.5px', color: 'var(--color-text-tertiary)', margin: 0 }}>
+          <p
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '12.5px',
+              color: 'var(--color-text-tertiary)',
+              margin: 0,
+            }}
+          >
             Scan the QR to save the contact, or share the .vcf file. Saved on this device only.
           </p>
         </Panel>

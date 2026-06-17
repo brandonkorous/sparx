@@ -33,18 +33,81 @@ function ResultRow({ label, full, result }: { label: string; full: string; resul
   const map = {
     found: { color: 'success' as const, icon: <Check className="h-3.5 w-3.5" />, text: 'Found' },
     missing: { color: 'danger' as const, icon: <X className="h-3.5 w-3.5" />, text: 'Missing' },
-    error: { color: 'warning' as const, icon: <AlertTriangle className="h-3.5 w-3.5" />, text: 'Error' },
+    error: {
+      color: 'warning' as const,
+      icon: <AlertTriangle className="h-3.5 w-3.5" />,
+      text: 'Error',
+    },
     skip: { color: 'neutral' as const, icon: null, text: 'Not checked' },
   }[result.status];
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border-default)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-        <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: '14px', color: 'var(--color-text-primary)' }}>{full}</span>
-        <Badge color={map.color} variant="soft" size="sm">{map.icon}{map.text}</Badge>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+        padding: '14px',
+        borderRadius: 'var(--radius-md)',
+        border: '1px solid var(--color-border-default)',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '12px',
+        }}
+      >
+        <span
+          style={{
+            fontFamily: 'var(--font-sans)',
+            fontWeight: 500,
+            fontSize: '14px',
+            color: 'var(--color-text-primary)',
+          }}
+        >
+          {full}
+        </span>
+        <Badge color={map.color} variant="soft" size="sm">
+          {map.icon}
+          {map.text}
+        </Badge>
       </div>
-      {result.record ? <code style={{ fontFamily: 'var(--font-mono)', fontSize: '11.5px', color: 'var(--color-text-secondary)', wordBreak: 'break-all' }}>{result.record}</code> : null}
-      {result.status === 'missing' ? <span style={{ fontFamily: 'var(--font-sans)', fontSize: '12.5px', color: 'var(--color-text-tertiary)' }}>No {label} record published — generate one on the left.</span> : null}
-      {result.error ? <span style={{ fontFamily: 'var(--font-sans)', fontSize: '12.5px', color: 'var(--color-text-tertiary)' }}>{result.error}</span> : null}
+      {result.record ? (
+        <code
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '11.5px',
+            color: 'var(--color-text-secondary)',
+            wordBreak: 'break-all',
+          }}
+        >
+          {result.record}
+        </code>
+      ) : null}
+      {result.status === 'missing' ? (
+        <span
+          style={{
+            fontFamily: 'var(--font-sans)',
+            fontSize: '12.5px',
+            color: 'var(--color-text-tertiary)',
+          }}
+        >
+          No {label} record published — generate one on the left.
+        </span>
+      ) : null}
+      {result.error ? (
+        <span
+          style={{
+            fontFamily: 'var(--font-sans)',
+            fontSize: '12.5px',
+            color: 'var(--color-text-tertiary)',
+          }}
+        >
+          {result.error}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -61,7 +124,12 @@ export function DeliverabilityTool() {
   const [dmarcPolicy, setDmarcPolicy] = React.useState('none');
   const [rua, setRua] = React.useState('');
 
-  const include = provider === 'custom' ? (customInclude.trim() ? `include:${customInclude.trim()}` : '') : SPF_PROVIDERS[provider];
+  const include =
+    provider === 'custom'
+      ? customInclude.trim()
+        ? `include:${customInclude.trim()}`
+        : ''
+      : SPF_PROVIDERS[provider];
   const spfRecord = `v=spf1 ${include} ${spfPolicy}`.replace(/\s+/g, ' ').trim();
   const dmarcRecord = `v=DMARC1; p=${dmarcPolicy};${rua.trim() ? ` rua=mailto:${rua.trim()};` : ''} adkim=s; aspf=s; pct=100`;
 
@@ -87,13 +155,30 @@ export function DeliverabilityTool() {
       <ControlsPane>
         <Panel title="Check a domain">
           <Field label="Domain" htmlFor="dl-domain" hint="The domain you send email from.">
-            <Input id="dl-domain" placeholder="yourcompany.com" value={domain} onChange={(e) => setDomain(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && check()} />
+            <Input
+              id="dl-domain"
+              placeholder="yourcompany.com"
+              value={domain}
+              onChange={(e) => setDomain(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && check()}
+            />
           </Field>
-          <Field label="DKIM selector" htmlFor="dl-sel" hint="Common: google, selector1, k1, default, mail.">
+          <Field
+            label="DKIM selector"
+            htmlFor="dl-sel"
+            hint="Common: google, selector1, k1, default, mail."
+          >
             <Input id="dl-sel" value={selector} onChange={(e) => setSelector(e.target.value)} />
           </Field>
           <div>
-            <Button type="button" color="module" variant="solid" size="md" onClick={check} disabled={loading || !domain.trim()}>
+            <Button
+              type="button"
+              color="module"
+              variant="solid"
+              size="md"
+              onClick={check}
+              disabled={loading || !domain.trim()}
+            >
               {loading ? <Spinner className="h-4 w-4" /> : <Search className="h-4 w-4" />}
               Check records
             </Button>
@@ -119,7 +204,13 @@ export function DeliverabilityTool() {
             </Field>
           </div>
           {provider === 'custom' ? (
-            <Field label="Include domain" hint="From your sending service."><Input placeholder="spf.example.com" value={customInclude} onChange={(e) => setCustomInclude(e.target.value)} /></Field>
+            <Field label="Include domain" hint="From your sending service.">
+              <Input
+                placeholder="spf.example.com"
+                value={customInclude}
+                onChange={(e) => setCustomInclude(e.target.value)}
+              />
+            </Field>
           ) : null}
           <RecordOut host="@ (root)" record={spfRecord} />
         </Panel>
@@ -134,7 +225,12 @@ export function DeliverabilityTool() {
               </NativeSelect>
             </Field>
             <Field label="Reports to" hint="Optional email.">
-              <Input type="email" placeholder="dmarc@yourcompany.com" value={rua} onChange={(e) => setRua(e.target.value)} />
+              <Input
+                type="email"
+                placeholder="dmarc@yourcompany.com"
+                value={rua}
+                onChange={(e) => setRua(e.target.value)}
+              />
             </Field>
           </div>
           <RecordOut host="_dmarc" record={dmarcRecord} />
@@ -150,11 +246,25 @@ export function DeliverabilityTool() {
               <ResultRow label="DMARC" full="DMARC — failure policy" result={results.dmarc} />
             </div>
           ) : (
-            <span style={{ fontFamily: 'var(--font-sans)', fontSize: '14px', color: 'var(--color-text-tertiary)' }}>
+            <span
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: '14px',
+                color: 'var(--color-text-tertiary)',
+              }}
+            >
               Enter a domain and check to see its live SPF, DKIM, and DMARC records.
             </span>
           )}
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '12.5px', lineHeight: '19px', color: 'var(--color-text-tertiary)', margin: 0 }}>
+          <p
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '12.5px',
+              lineHeight: '19px',
+              color: 'var(--color-text-tertiary)',
+              margin: 0,
+            }}
+          >
             DKIM lives at a selector your provider chooses (e.g. <code>google._domainkey</code>). If
             DKIM shows as missing, try a different selector — your provider lists it in their setup
             docs.
@@ -168,10 +278,18 @@ export function DeliverabilityTool() {
 function RecordOut({ host, record }: { host: string; record: string }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-      <span style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
+      <span
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontSize: '12px',
+          color: 'var(--color-text-tertiary)',
+        }}
+      >
         Add a TXT record — host <code style={{ fontFamily: 'var(--font-mono)' }}>{host}</code>:
       </span>
-      <pre className="tool-code" style={{ maxHeight: 'none' }} >{record}</pre>
+      <pre className="tool-code" style={{ maxHeight: 'none' }}>
+        {record}
+      </pre>
       <div>
         <CopyButton value={record} label="Copy record" toastLabel="Record copied" />
       </div>

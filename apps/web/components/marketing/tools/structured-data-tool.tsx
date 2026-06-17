@@ -25,7 +25,11 @@ function prune<T>(obj: T): T {
     const out: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(obj as Record<string, unknown>)) {
       const pv = prune(v);
-      if (pv !== undefined && pv !== '' && !(typeof pv === 'object' && pv !== null && Object.keys(pv).length === 0)) {
+      if (
+        pv !== undefined &&
+        pv !== '' &&
+        !(typeof pv === 'object' && pv !== null && Object.keys(pv).length === 0)
+      ) {
         out[k] = pv;
       }
     }
@@ -79,7 +83,11 @@ function build(type: SchemaType, f: Fields, faq: Qa[]): object {
     ...base,
     mainEntity: faq
       .filter((x) => x.q.trim())
-      .map((x) => ({ '@type': 'Question', name: x.q, acceptedAnswer: { '@type': 'Answer', text: x.a } })),
+      .map((x) => ({
+        '@type': 'Question',
+        name: x.q,
+        acceptedAnswer: { '@type': 'Answer', text: x.a },
+      })),
   };
 }
 
@@ -117,39 +125,86 @@ export function StructuredDataTool() {
           {type === 'LocalBusiness' ? (
             <>
               <div className="tool-fieldgrid">
-                <Field label="Business name"><Input value={val('name')} onChange={(e) => set('name', e.target.value)} /></Field>
-                <Field label="Website"><Input value={val('url')} onChange={(e) => set('url', e.target.value)} /></Field>
+                <Field label="Business name">
+                  <Input value={val('name')} onChange={(e) => set('name', e.target.value)} />
+                </Field>
+                <Field label="Website">
+                  <Input value={val('url')} onChange={(e) => set('url', e.target.value)} />
+                </Field>
               </div>
               <div className="tool-fieldgrid">
-                <Field label="Phone"><Input value={val('phone')} onChange={(e) => set('phone', e.target.value)} /></Field>
-                <Field label="Price range" hint="e.g. $$"><Input value={val('priceRange')} onChange={(e) => set('priceRange', e.target.value)} /></Field>
+                <Field label="Phone">
+                  <Input value={val('phone')} onChange={(e) => set('phone', e.target.value)} />
+                </Field>
+                <Field label="Price range" hint="e.g. $$">
+                  <Input
+                    value={val('priceRange')}
+                    onChange={(e) => set('priceRange', e.target.value)}
+                  />
+                </Field>
               </div>
-              <Field label="Street"><Input value={val('street')} onChange={(e) => set('street', e.target.value)} /></Field>
+              <Field label="Street">
+                <Input value={val('street')} onChange={(e) => set('street', e.target.value)} />
+              </Field>
               <div className="tool-fieldgrid">
-                <Field label="City"><Input value={val('city')} onChange={(e) => set('city', e.target.value)} /></Field>
-                <Field label="Region / state"><Input value={val('region')} onChange={(e) => set('region', e.target.value)} /></Field>
+                <Field label="City">
+                  <Input value={val('city')} onChange={(e) => set('city', e.target.value)} />
+                </Field>
+                <Field label="Region / state">
+                  <Input value={val('region')} onChange={(e) => set('region', e.target.value)} />
+                </Field>
               </div>
               <div className="tool-fieldgrid">
-                <Field label="Postal code"><Input value={val('postal')} onChange={(e) => set('postal', e.target.value)} /></Field>
-                <Field label="Country" hint="2-letter code, e.g. US"><Input value={val('country')} onChange={(e) => set('country', e.target.value)} /></Field>
+                <Field label="Postal code">
+                  <Input value={val('postal')} onChange={(e) => set('postal', e.target.value)} />
+                </Field>
+                <Field label="Country" hint="2-letter code, e.g. US">
+                  <Input value={val('country')} onChange={(e) => set('country', e.target.value)} />
+                </Field>
               </div>
             </>
           ) : null}
 
           {type === 'Product' ? (
             <>
-              <Field label="Product name"><Input value={val('name')} onChange={(e) => set('name', e.target.value)} /></Field>
-              <Field label="Description"><Textarea rows={2} value={val('description')} onChange={(e) => set('description', e.target.value)} /></Field>
+              <Field label="Product name">
+                <Input value={val('name')} onChange={(e) => set('name', e.target.value)} />
+              </Field>
+              <Field label="Description">
+                <Textarea
+                  rows={2}
+                  value={val('description')}
+                  onChange={(e) => set('description', e.target.value)}
+                />
+              </Field>
               <div className="tool-fieldgrid">
-                <Field label="Brand"><Input value={val('brand')} onChange={(e) => set('brand', e.target.value)} /></Field>
-                <Field label="Image URL"><Input value={val('image')} onChange={(e) => set('image', e.target.value)} /></Field>
+                <Field label="Brand">
+                  <Input value={val('brand')} onChange={(e) => set('brand', e.target.value)} />
+                </Field>
+                <Field label="Image URL">
+                  <Input value={val('image')} onChange={(e) => set('image', e.target.value)} />
+                </Field>
               </div>
               <div className="tool-fieldgrid">
-                <Field label="Price"><Input type="number" value={val('price')} onChange={(e) => set('price', e.target.value)} /></Field>
-                <Field label="Currency" hint="e.g. USD"><Input value={val('currency')} onChange={(e) => set('currency', e.target.value)} /></Field>
+                <Field label="Price">
+                  <Input
+                    type="number"
+                    value={val('price')}
+                    onChange={(e) => set('price', e.target.value)}
+                  />
+                </Field>
+                <Field label="Currency" hint="e.g. USD">
+                  <Input
+                    value={val('currency')}
+                    onChange={(e) => set('currency', e.target.value)}
+                  />
+                </Field>
               </div>
               <Field label="Availability">
-                <NativeSelect value={val('availability') || 'InStock'} onChange={(e) => set('availability', e.target.value)}>
+                <NativeSelect
+                  value={val('availability') || 'InStock'}
+                  onChange={(e) => set('availability', e.target.value)}
+                >
                   <option value="InStock">In stock</option>
                   <option value="OutOfStock">Out of stock</option>
                   <option value="PreOrder">Pre-order</option>
@@ -160,31 +215,86 @@ export function StructuredDataTool() {
 
           {type === 'Article' ? (
             <>
-              <Field label="Headline"><Input value={val('headline')} onChange={(e) => set('headline', e.target.value)} /></Field>
-              <Field label="Image URL"><Input value={val('image')} onChange={(e) => set('image', e.target.value)} /></Field>
+              <Field label="Headline">
+                <Input value={val('headline')} onChange={(e) => set('headline', e.target.value)} />
+              </Field>
+              <Field label="Image URL">
+                <Input value={val('image')} onChange={(e) => set('image', e.target.value)} />
+              </Field>
               <div className="tool-fieldgrid">
-                <Field label="Author"><Input value={val('author')} onChange={(e) => set('author', e.target.value)} /></Field>
-                <Field label="Published date" hint="YYYY-MM-DD"><Input type="date" value={val('date')} onChange={(e) => set('date', e.target.value)} /></Field>
+                <Field label="Author">
+                  <Input value={val('author')} onChange={(e) => set('author', e.target.value)} />
+                </Field>
+                <Field label="Published date" hint="YYYY-MM-DD">
+                  <Input
+                    type="date"
+                    value={val('date')}
+                    onChange={(e) => set('date', e.target.value)}
+                  />
+                </Field>
               </div>
-              <Field label="Publisher"><Input value={val('publisher')} onChange={(e) => set('publisher', e.target.value)} /></Field>
+              <Field label="Publisher">
+                <Input
+                  value={val('publisher')}
+                  onChange={(e) => set('publisher', e.target.value)}
+                />
+              </Field>
             </>
           ) : null}
 
           {type === 'FAQPage' ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {faq.map((item, i) => (
-                <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border-default)' }}>
-                  <Input placeholder="Question" value={item.q} onChange={(e) => setFaq((p) => p.map((x, j) => (j === i ? { ...x, q: e.target.value } : x)))} />
+                <div
+                  key={i}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                    padding: '12px',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1px solid var(--color-border-default)',
+                  }}
+                >
+                  <Input
+                    placeholder="Question"
+                    value={item.q}
+                    onChange={(e) =>
+                      setFaq((p) => p.map((x, j) => (j === i ? { ...x, q: e.target.value } : x)))
+                    }
+                  />
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                    <Textarea rows={2} placeholder="Answer" value={item.a} onChange={(e) => setFaq((p) => p.map((x, j) => (j === i ? { ...x, a: e.target.value } : x)))} />
-                    <Button type="button" variant="ghost" color="neutral" size="sm" shape="square" aria-label="Remove" disabled={faq.length === 1} onClick={() => setFaq((p) => p.filter((_, j) => j !== i))}>
+                    <Textarea
+                      rows={2}
+                      placeholder="Answer"
+                      value={item.a}
+                      onChange={(e) =>
+                        setFaq((p) => p.map((x, j) => (j === i ? { ...x, a: e.target.value } : x)))
+                      }
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      color="neutral"
+                      size="sm"
+                      shape="square"
+                      aria-label="Remove"
+                      disabled={faq.length === 1}
+                      onClick={() => setFaq((p) => p.filter((_, j) => j !== i))}
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
               ))}
               <div>
-                <Button type="button" variant="outline" color="neutral" size="sm" onClick={() => setFaq((p) => [...p, { q: '', a: '' }])}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  color="neutral"
+                  size="sm"
+                  onClick={() => setFaq((p) => [...p, { q: '', a: '' }])}
+                >
                   <Plus className="h-4 w-4" /> Add question
                 </Button>
               </div>
@@ -194,10 +304,29 @@ export function StructuredDataTool() {
       </ControlsPane>
 
       <OutputPane>
-        <Panel title="JSON-LD" action={<CopyButton value={snippet} label="Copy script" toastLabel="Script copied" color="module" variant="solid" />}>
+        <Panel
+          title="JSON-LD"
+          action={
+            <CopyButton
+              value={snippet}
+              label="Copy script"
+              toastLabel="Script copied"
+              color="module"
+              variant="solid"
+            />
+          }
+        >
           <pre className="tool-code">{snippet}</pre>
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: 'var(--color-text-tertiary)', margin: 0 }}>
-            Paste this into your page&apos;s HTML, then verify it with Google&apos;s Rich Results Test.
+          <p
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '13px',
+              color: 'var(--color-text-tertiary)',
+              margin: 0,
+            }}
+          >
+            Paste this into your page&apos;s HTML, then verify it with Google&apos;s Rich Results
+            Test.
           </p>
         </Panel>
       </OutputPane>

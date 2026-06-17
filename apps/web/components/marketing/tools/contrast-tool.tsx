@@ -19,7 +19,13 @@ function Verdict({ label, pass }: { label: string; pass: boolean }) {
         border: '1px solid var(--color-border-default)',
       }}
     >
-      <span style={{ fontFamily: 'var(--font-sans)', fontSize: '14px', color: 'var(--color-text-primary)' }}>
+      <span
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontSize: '14px',
+          color: 'var(--color-text-primary)',
+        }}
+      >
         {label}
       </span>
       <Badge color={pass ? 'success' : 'danger'} variant="soft" size="sm">
@@ -81,7 +87,14 @@ export function ContrastTool() {
             <span style={{ fontFamily: 'var(--font-sans)', fontSize: '16px', color: fg }}>
               Normal text — the quick brown fox jumps over the lazy dog.
             </span>
-            <span style={{ fontFamily: 'var(--font-sans)', fontSize: '24px', fontWeight: 700, color: fg }}>
+            <span
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: '24px',
+                fontWeight: 700,
+                color: fg,
+              }}
+            >
               Large text — Aa Bb Cc
             </span>
           </div>
@@ -102,7 +115,13 @@ export function ContrastTool() {
             >
               {ratio.toFixed(2)}
             </span>
-            <span style={{ fontFamily: 'var(--font-sans)', fontSize: '20px', color: 'var(--color-text-tertiary)' }}>
+            <span
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: '20px',
+                color: 'var(--color-text-tertiary)',
+              }}
+            >
               : 1
             </span>
           </div>
@@ -112,7 +131,15 @@ export function ContrastTool() {
             <Verdict label="Large text — AA (3:1)" pass={rating.largeAA} />
             <Verdict label="Large text — AAA (4.5:1)" pass={rating.largeAAA} />
           </div>
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', lineHeight: '20px', color: 'var(--color-text-tertiary)', margin: 0 }}>
+          <p
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '13px',
+              lineHeight: '20px',
+              color: 'var(--color-text-tertiary)',
+              margin: 0,
+            }}
+          >
             Large text is 24px+, or 18.66px and bold. AA is the common legal and procurement bar;
             AAA is the stricter target for body text.
           </p>

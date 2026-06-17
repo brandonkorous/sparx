@@ -64,7 +64,11 @@ export function DocumentTool({ config }: { config: DocConfig }) {
     setData((prev) => {
       if (prev.issueDate) return prev;
       const today = new Date();
-      return { ...prev, issueDate: iso(today), dueDate: iso(new Date(today.getTime() + 14 * 86400000)) };
+      return {
+        ...prev,
+        issueDate: iso(today),
+        dueDate: iso(new Date(today.getTime() + 14 * 86400000)),
+      };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -94,18 +98,38 @@ export function DocumentTool({ config }: { config: DocConfig }) {
       <ControlsPane>
         <Panel title="Your business">
           <Field label="Business name" htmlFor="doc-bn">
-            <Input id="doc-bn" value={data.businessName} onChange={(e) => set({ businessName: e.target.value })} />
+            <Input
+              id="doc-bn"
+              value={data.businessName}
+              onChange={(e) => set({ businessName: e.target.value })}
+            />
           </Field>
           <Field label="Address" htmlFor="doc-ba">
-            <Textarea id="doc-ba" rows={2} value={data.businessAddress} onChange={(e) => set({ businessAddress: e.target.value })} />
+            <Textarea
+              id="doc-ba"
+              rows={2}
+              value={data.businessAddress}
+              onChange={(e) => set({ businessAddress: e.target.value })}
+            />
           </Field>
           <div className="tool-fieldgrid">
             <Field label="Email" htmlFor="doc-be">
-              <Input id="doc-be" type="email" value={data.businessEmail} onChange={(e) => set({ businessEmail: e.target.value })} />
+              <Input
+                id="doc-be"
+                type="email"
+                value={data.businessEmail}
+                onChange={(e) => set({ businessEmail: e.target.value })}
+              />
             </Field>
             <Field label="Logo">
               {data.logo ? (
-                <Button type="button" variant="outline" color="neutral" size="sm" onClick={() => set({ logo: null })}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  color="neutral"
+                  size="sm"
+                  onClick={() => set({ logo: null })}
+                >
                   <Trash2 className="h-4 w-4" /> Remove
                 </Button>
               ) : (
@@ -117,20 +141,37 @@ export function DocumentTool({ config }: { config: DocConfig }) {
 
         <Panel title={config.docTitle === 'QUOTE' ? 'Quote for' : 'Bill to'}>
           <Field label="Client name" htmlFor="doc-cn">
-            <Input id="doc-cn" value={data.clientName} onChange={(e) => set({ clientName: e.target.value })} />
+            <Input
+              id="doc-cn"
+              value={data.clientName}
+              onChange={(e) => set({ clientName: e.target.value })}
+            />
           </Field>
           <Field label="Client address" htmlFor="doc-ca">
-            <Textarea id="doc-ca" rows={2} value={data.clientAddress} onChange={(e) => set({ clientAddress: e.target.value })} />
+            <Textarea
+              id="doc-ca"
+              rows={2}
+              value={data.clientAddress}
+              onChange={(e) => set({ clientAddress: e.target.value })}
+            />
           </Field>
         </Panel>
 
         <Panel title="Details">
           <div className="tool-fieldgrid">
             <Field label={config.numberLabel} htmlFor="doc-no">
-              <Input id="doc-no" value={data.invoiceNumber} onChange={(e) => set({ invoiceNumber: e.target.value })} />
+              <Input
+                id="doc-no"
+                value={data.invoiceNumber}
+                onChange={(e) => set({ invoiceNumber: e.target.value })}
+              />
             </Field>
             <Field label="Currency" htmlFor="doc-cur">
-              <NativeSelect id="doc-cur" value={data.currency} onChange={(e) => set({ currency: e.target.value })}>
+              <NativeSelect
+                id="doc-cur"
+                value={data.currency}
+                onChange={(e) => set({ currency: e.target.value })}
+              >
                 {CURRENCIES.map((c) => (
                   <option key={c} value={c}>
                     {c}
@@ -141,31 +182,68 @@ export function DocumentTool({ config }: { config: DocConfig }) {
           </div>
           <div className="tool-fieldgrid">
             <Field label="Issue date" htmlFor="doc-issue">
-              <Input id="doc-issue" type="date" value={data.issueDate} onChange={(e) => set({ issueDate: e.target.value })} />
+              <Input
+                id="doc-issue"
+                type="date"
+                value={data.issueDate}
+                onChange={(e) => set({ issueDate: e.target.value })}
+              />
             </Field>
             <Field label={config.dateFieldLabel} htmlFor="doc-due">
-              <Input id="doc-due" type="date" value={data.dueDate} onChange={(e) => set({ dueDate: e.target.value })} />
+              <Input
+                id="doc-due"
+                type="date"
+                value={data.dueDate}
+                onChange={(e) => set({ dueDate: e.target.value })}
+              />
             </Field>
           </div>
           <div className="tool-fieldgrid">
             <Field label="Tax rate (%)" htmlFor="doc-tax">
-              <Input id="doc-tax" type="number" min={0} step="0.1" value={data.taxRate} onChange={(e) => set({ taxRate: Number(e.target.value) })} />
+              <Input
+                id="doc-tax"
+                type="number"
+                min={0}
+                step="0.1"
+                value={data.taxRate}
+                onChange={(e) => set({ taxRate: Number(e.target.value) })}
+              />
             </Field>
             <Field label="Discount" htmlFor="doc-disc" hint="Flat amount.">
-              <Input id="doc-disc" type="number" min={0} step="0.01" value={data.discount} onChange={(e) => set({ discount: Number(e.target.value) })} />
+              <Input
+                id="doc-disc"
+                type="number"
+                min={0}
+                step="0.01"
+                value={data.discount}
+                onChange={(e) => set({ discount: Number(e.target.value) })}
+              />
             </Field>
           </div>
           <Field label="Accent color">
-            <ColorPicker value={data.accent} onChange={(c) => set({ accent: c })} ariaLabel="Accent color" />
+            <ColorPicker
+              value={data.accent}
+              onChange={(c) => set({ accent: c })}
+              ariaLabel="Accent color"
+            />
           </Field>
         </Panel>
 
         <Panel title="Line items">
-          <InvoiceItems items={data.items} currency={data.currency} onChange={(items) => set({ items })} />
+          <InvoiceItems
+            items={data.items}
+            currency={data.currency}
+            onChange={(items) => set({ items })}
+          />
         </Panel>
 
         <Panel title="Notes">
-          <Textarea rows={2} value={data.notes} onChange={(e) => set({ notes: e.target.value })} placeholder="Terms, thank-you note…" />
+          <Textarea
+            rows={2}
+            value={data.notes}
+            onChange={(e) => set({ notes: e.target.value })}
+            placeholder="Terms, thank-you note…"
+          />
         </Panel>
       </ControlsPane>
 
@@ -173,14 +251,28 @@ export function DocumentTool({ config }: { config: DocConfig }) {
         <Panel
           title="Preview"
           action={
-            <Button type="button" color="module" variant="solid" size="sm" onClick={download} disabled={busy}>
+            <Button
+              type="button"
+              color="module"
+              variant="solid"
+              size="sm"
+              onClick={download}
+              disabled={busy}
+            >
               {busy ? <Spinner className="h-4 w-4" /> : <Download className="h-4 w-4" />}
               Download PDF
             </Button>
           }
         >
           <InvoicePreview data={data} title={config.docTitle} dateLabel={config.pdfDateLabel} />
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '12.5px', color: 'var(--color-text-tertiary)', margin: 0 }}>
+          <p
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '12.5px',
+              color: 'var(--color-text-tertiary)',
+              margin: 0,
+            }}
+          >
             Your details are saved on this device only, ready for the next one. The PDF is built
             entirely in your browser.
           </p>

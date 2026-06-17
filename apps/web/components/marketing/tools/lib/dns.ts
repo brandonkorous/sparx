@@ -20,10 +20,7 @@ interface DohResponse {
 function cleanTxt(data: string): string {
   // dns.google returns e.g. "\"v=spf1 include:_spf.google.com ~all\"" and may
   // join long records as "\"part1\" \"part2\"".
-  return data
-    .replace(/"\s+"/g, '')
-    .replace(/^"|"$/g, '')
-    .trim();
+  return data.replace(/"\s+"/g, '').replace(/^"|"$/g, '').trim();
 }
 
 export async function lookupTxt(name: string): Promise<TxtLookup> {
@@ -34,9 +31,7 @@ export async function lookupTxt(name: string): Promise<TxtLookup> {
     );
     if (!res.ok) return { name, records: [], error: `Lookup failed (${res.status})` };
     const json = (await res.json()) as DohResponse;
-    const records = (json.Answer ?? [])
-      .map((a) => cleanTxt(a.data ?? ''))
-      .filter(Boolean);
+    const records = (json.Answer ?? []).map((a) => cleanTxt(a.data ?? '')).filter(Boolean);
     return { name, records };
   } catch {
     return { name, records: [], error: 'Network error — could not reach the DNS resolver.' };

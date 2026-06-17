@@ -31,73 +31,87 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
   const tagline = tool.tagline.length > 132 ? `${tool.tagline.slice(0, 131)}…` : tool.tagline;
 
   return new ImageResponse(
-    (
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          backgroundColor: '#0A0A0A',
-          padding: '72px',
-          borderTop: `14px solid ${accent}`,
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', fontSize: 34, fontWeight: 700, color: '#FFFFFF', letterSpacing: '-0.03em' }}>
-            spar<span style={{ color: '#6366F1' }}>x</span>
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              fontSize: 18,
-              fontWeight: 600,
-              letterSpacing: '0.1em',
-              color: '#0A0A0A',
-              backgroundColor: accent,
-              padding: '10px 18px',
-              borderRadius: 9999,
-            }}
-          >
-            FREE TOOL
-          </div>
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        backgroundColor: '#0A0A0A',
+        padding: '72px',
+        borderTop: `14px solid ${accent}`,
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div
+          style={{
+            display: 'flex',
+            fontSize: 34,
+            fontWeight: 700,
+            color: '#FFFFFF',
+            letterSpacing: '-0.03em',
+          }}
+        >
+          spar<span style={{ color: '#6366F1' }}>x</span>
         </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <div
-            style={{
-              display: 'flex',
-              fontSize: 66,
-              fontWeight: 700,
-              color: '#FFFFFF',
-              letterSpacing: '-0.03em',
-              lineHeight: 1.05,
-              maxWidth: 980,
-            }}
-          >
-            {tool.name}
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              fontSize: 28,
-              color: '#A1A1AA',
-              lineHeight: 1.4,
-              maxWidth: 960,
-              marginTop: 24,
-            }}
-          >
-            {tagline}
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ display: 'flex', width: 14, height: 14, borderRadius: 9999, backgroundColor: accent }} />
-          <div style={{ display: 'flex', fontSize: 22, color: '#71717A' }}>sparx.works/tools</div>
+        <div
+          style={{
+            display: 'flex',
+            fontSize: 18,
+            fontWeight: 600,
+            letterSpacing: '0.1em',
+            color: '#0A0A0A',
+            backgroundColor: accent,
+            padding: '10px 18px',
+            borderRadius: 9999,
+          }}
+        >
+          FREE TOOL
         </div>
       </div>
-    ),
+
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div
+          style={{
+            display: 'flex',
+            fontSize: 66,
+            fontWeight: 700,
+            color: '#FFFFFF',
+            letterSpacing: '-0.03em',
+            lineHeight: 1.05,
+            maxWidth: 980,
+          }}
+        >
+          {tool.name}
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            fontSize: 28,
+            color: '#A1A1AA',
+            lineHeight: 1.4,
+            maxWidth: 960,
+            marginTop: 24,
+          }}
+        >
+          {tagline}
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div
+          style={{
+            display: 'flex',
+            width: 14,
+            height: 14,
+            borderRadius: 9999,
+            backgroundColor: accent,
+          }}
+        />
+        <div style={{ display: 'flex', fontSize: 22, color: '#71717A' }}>sparx.works/tools</div>
+      </div>
+    </div>,
     SIZE
   );
 }

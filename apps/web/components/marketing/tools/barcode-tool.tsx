@@ -55,7 +55,11 @@ export function BarcodeTool() {
       <ControlsPane>
         <Panel title="Barcode">
           <Field label="Format" htmlFor="bc-format" hint={hint}>
-            <NativeSelect id="bc-format" value={format} onChange={(e) => setFormat(e.target.value as BarcodeFormat)}>
+            <NativeSelect
+              id="bc-format"
+              value={format}
+              onChange={(e) => setFormat(e.target.value as BarcodeFormat)}
+            >
               {BARCODE_FORMATS.map((f) => (
                 <option key={f.value} value={f.value}>
                   {f.label}
@@ -74,11 +78,21 @@ export function BarcodeTool() {
               <ColorPicker value={lineColor} onChange={setLineColor} ariaLabel="Bar color" />
             </Field>
             <Field label="Background">
-              <ColorPicker value={background} onChange={setBackground} ariaLabel="Background color" />
+              <ColorPicker
+                value={background}
+                onChange={setBackground}
+                ariaLabel="Background color"
+              />
             </Field>
           </div>
           <Field label="Height" adornment={`${height}px`}>
-            <Slider value={[height]} onValueChange={(v) => setHeight(v[0] ?? 40)} min={40} max={160} step={5} />
+            <Slider
+              value={[height]}
+              onValueChange={(v) => setHeight(v[0] ?? 40)}
+              min={40}
+              max={160}
+              step={5}
+            />
           </Field>
           <Field label="Show number">
             <Switch checked={displayValue} onCheckedChange={setDisplayValue} />
@@ -104,7 +118,14 @@ export function BarcodeTool() {
               style={{ maxWidth: '100%', height: 'auto', display: valid ? 'block' : 'none' }}
             />
             {!valid ? (
-              <span style={{ fontFamily: 'var(--font-sans)', fontSize: '13.5px', color: 'var(--color-danger)', textAlign: 'center' }}>
+              <span
+                style={{
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '13.5px',
+                  color: 'var(--color-danger)',
+                  textAlign: 'center',
+                }}
+              >
                 {error}
               </span>
             ) : null}
@@ -115,7 +136,13 @@ export function BarcodeTool() {
                 <Download className="h-4 w-4" />
                 PNG
               </Button>
-              <Button type="button" color="neutral" variant="outline" size="sm" onClick={downloadSvg}>
+              <Button
+                type="button"
+                color="neutral"
+                variant="outline"
+                size="sm"
+                onClick={downloadSvg}
+              >
                 <Download className="h-4 w-4" />
                 SVG
               </Button>

@@ -44,7 +44,12 @@ export function ToolJsonLd({ tool }: { tool: ToolMeta }) {
         '@type': 'BreadcrumbList',
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://sparx.works' },
-          { '@type': 'ListItem', position: 2, name: 'Free tools', item: 'https://sparx.works/tools' },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Free tools',
+            item: 'https://sparx.works/tools',
+          },
           { '@type': 'ListItem', position: 3, name: tool.name, item: url },
         ],
       },
