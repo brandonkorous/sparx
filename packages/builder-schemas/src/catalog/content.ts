@@ -185,4 +185,97 @@ export const CONTENT_CATALOG: PlatformCatalogEntry[] = [
       ],
     }),
   }),
+
+  // ── Related posts — a "more to read" strip repeating article cards ────────────
+  entry({
+    key: 'related_posts',
+    name: 'Related posts',
+    category: 'content',
+    kind: 'comprehensive',
+    icon: 'newspaper',
+    description:
+      'A “more to read” strip — a repeating row of article cards over the blog_post type. Re-point it to another content type in the Data panel.',
+    surfaces: ['page', 'site'],
+    tags: ['related', 'more', 'articles', 'posts', 'recommended', 'cms', 'content'],
+    tree: el('section', 'w-full px-4 py-12', {
+      name: 'Related posts',
+      children: [
+        el('div', 'mx-auto max-w-6xl', {
+          children: [
+            atom('Heading', 'mb-6 text-2xl font-bold tracking-tight text-base-content', {
+              level: 'h2',
+              text: 'More to read',
+            }),
+            bound(
+              el('div', 'grid grid-cols-1 gap-6 @xl:grid-cols-3', {
+                name: 'Posts',
+                children: [postCard()],
+              }),
+              'cms.blog_post'
+            ),
+          ],
+        }),
+      ],
+    }),
+  }),
+
+  // ── Author bio — byline card with photo, role, and social links ───────────────
+  entry({
+    key: 'author_bio',
+    name: 'Author bio',
+    category: 'content',
+    kind: 'comprehensive',
+    icon: 'user-round',
+    description:
+      'A byline card — author photo, name, role, a short bio, and social links. Place it at the end of an article or on an author page.',
+    surfaces: ['page', 'site'],
+    tags: ['author', 'byline', 'bio', 'profile', 'writer', 'cms', 'content'],
+    tree: el(
+      'div',
+      'flex w-full flex-col items-center gap-4 rounded-box border border-base-200 bg-base-100 p-6 text-center @xl:flex-row @xl:items-start @xl:text-left',
+      {
+        name: 'Author bio',
+        children: [
+          atom('Image', 'h-16 w-16 shrink-0 rounded-full', {
+            ratio: 'square',
+            alt: 'Author photo',
+          }),
+          el('div', 'flex flex-col gap-2', {
+            children: [
+              el('div', 'flex flex-col gap-0.5', {
+                children: [
+                  atom('Heading', 'text-lg font-semibold text-base-content', {
+                    level: 'h3',
+                    text: 'Jordan Avery',
+                  }),
+                  el('p', 'text-sm text-base-content/60', { text: 'Senior writer' }),
+                ],
+              }),
+              atom('Text', 'text-sm leading-relaxed text-base-content/70', {
+                variant: 'body',
+                text: 'Jordan writes about design, craft, and the small decisions that add up to great products. Ten years in, still sweating the details.',
+              }),
+              el('div', 'flex justify-center gap-3 @xl:justify-start', {
+                name: 'Social links',
+                children: [
+                  el('a', 'text-base-content/50 transition-colors hover:text-primary', {
+                    attrs: { href: '#', ariaLabel: 'Twitter' },
+                    children: [atom('Icon', 'h-4 w-4', { name: 'twitter' })],
+                  }),
+                  el('a', 'text-base-content/50 transition-colors hover:text-primary', {
+                    attrs: { href: '#', ariaLabel: 'LinkedIn' },
+                    children: [atom('Icon', 'h-4 w-4', { name: 'linkedin' })],
+                  }),
+                  el('a', 'text-base-content/50 transition-colors hover:text-primary', {
+                    attrs: { href: '#', ariaLabel: 'Website' },
+                    children: [atom('Icon', 'h-4 w-4', { name: 'globe' })],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      }
+    ),
+  }),
 ];

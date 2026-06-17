@@ -65,6 +65,33 @@ function shoppableCard(): PlatformCatalogEntry['tree'] {
   );
 }
 
+// One line item in the cart summary — thumbnail, name + quantity, line price.
+function cartLine(name: string, qty: string, price: string): PlatformCatalogEntry['tree'] {
+  return el('div', 'flex items-center gap-3', {
+    children: [
+      atom('Image', 'h-14 w-14 shrink-0 rounded-field', { ratio: 'square', alt: name }),
+      el('div', 'flex flex-1 flex-col', {
+        children: [
+          el('span', 'text-sm font-medium text-base-content', { text: name }),
+          el('span', 'text-xs text-base-content/60', { text: `Qty ${qty}` }),
+        ],
+      }),
+      el('span', 'text-sm font-semibold text-base-content', { text: price }),
+    ],
+  });
+}
+
+// One collection pill in the horizontal nav — a link styled as a filter chip.
+function collectionPill(label: string, href: string, active = false): PlatformCatalogEntry['tree'] {
+  const tone = active
+    ? 'border-primary bg-primary text-primary-content'
+    : 'border-base-200 text-base-content hover:border-base-300 hover:bg-base-200';
+  return el('a', `rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${tone}`, {
+    text: label,
+    attrs: { href },
+  });
+}
+
 // ── Entries ─────────────────────────────────────────────────────────────────────
 
 export const COMMERCE_CATALOG: PlatformCatalogEntry[] = [
@@ -159,6 +186,115 @@ export const COMMERCE_CATALOG: PlatformCatalogEntry[] = [
                 bound(atom('BuyBox', ''), 'item'),
               ],
             }),
+          ],
+        }),
+      ],
+    }),
+  }),
+
+  // ── Related products — a cross-sell strip that repeats shoppable cards ─────────
+  entry({
+    key: 'related_products',
+    name: 'Related products',
+    category: 'commerce',
+    kind: 'comprehensive',
+    icon: 'shopping-bag',
+    description:
+      'A “You may also like” strip — a repeating row of shoppable cards. Points at the catalog by default; re-point it to a collection in the Data panel.',
+    surfaces: ['page', 'site'],
+    tags: ['related', 'cross-sell', 'recommended', 'you may also like', 'products', 'commerce'],
+    tree: el('section', 'w-full px-4 py-12', {
+      name: 'Related products',
+      children: [
+        el('div', 'mx-auto max-w-6xl', {
+          children: [
+            atom('Heading', 'mb-6 text-2xl font-bold tracking-tight text-base-content', {
+              level: 'h2',
+              text: 'You may also like',
+            }),
+            repeat(
+              el('div', 'grid grid-cols-2 gap-4 @2xl:grid-cols-4', {
+                name: 'Products',
+                children: [shoppableCard()],
+              }),
+              { from: 'all', limit: 4 }
+            ),
+          ],
+        }),
+      ],
+    }),
+  }),
+
+  // ── Cart summary — a mini-cart panel (line items + subtotal + checkout) ────────
+  entry({
+    key: 'mini_cart',
+    name: 'Cart summary',
+    category: 'commerce',
+    kind: 'comprehensive',
+    icon: 'shopping-cart',
+    description:
+      'A mini-cart panel — line items with thumbnails, a subtotal, and a checkout button. Drop it in a drawer or sidebar; wire the items to the live cart.',
+    surfaces: ['page', 'site'],
+    tags: ['cart', 'mini cart', 'basket', 'checkout', 'drawer', 'commerce'],
+    tree: el(
+      'aside',
+      'flex w-full max-w-sm flex-col gap-4 rounded-box border border-base-200 bg-base-100 p-5',
+      {
+        name: 'Cart summary',
+        attrs: { ariaLabel: 'Your cart' },
+        children: [
+          atom('Heading', 'text-lg font-semibold text-base-content', {
+            level: 'h3',
+            text: 'Your cart',
+          }),
+          el('div', 'flex flex-col gap-4', {
+            name: 'Line items',
+            children: [
+              cartLine('Stoneware pour-over mug', '2', '$76.00'),
+              cartLine('Linen tea towel set', '1', '$28.00'),
+              cartLine('Cast-iron trivet', '1', '$34.00'),
+            ],
+          }),
+          el('div', 'flex items-center justify-between border-t border-base-200 pt-4', {
+            children: [
+              el('span', 'text-sm text-base-content/70', { text: 'Subtotal' }),
+              el('span', 'text-lg font-semibold text-base-content', { text: '$138.00' }),
+            ],
+          }),
+          act(
+            atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md w-full', {
+              label: 'Checkout',
+            }),
+            'link',
+            '/checkout'
+          ),
+        ],
+      }
+    ),
+  }),
+
+  // ── Collection nav — a horizontal row of collection filter pills ──────────────
+  entry({
+    key: 'collection_nav',
+    name: 'Collection nav',
+    category: 'commerce',
+    kind: 'common',
+    icon: 'list-filter',
+    description:
+      'A horizontal row of collection links styled as filter pills — point each at a collection page and mark the current one active.',
+    surfaces: ['page', 'site'],
+    tags: ['collections', 'categories', 'filter', 'pills', 'nav', 'shop', 'commerce'],
+    tree: el('nav', 'w-full px-4 py-4', {
+      name: 'Collection nav',
+      attrs: { ariaLabel: 'Collections' },
+      children: [
+        el('div', 'mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-2', {
+          children: [
+            collectionPill('All', '/products', true),
+            collectionPill('New arrivals', '/collections/new'),
+            collectionPill('Best sellers', '/collections/best-sellers'),
+            collectionPill('Sale', '/collections/sale'),
+            collectionPill('Gifts', '/collections/gifts'),
           ],
         }),
       ],
