@@ -18,7 +18,9 @@
 
 import {
   AppWindow,
+  AppWindowMac,
   BellDot,
+  BellRing,
   Box,
   CalendarDays,
   ChevronDown,
@@ -26,6 +28,7 @@ import {
   Circle,
   CircleDashed,
   CircleDot,
+  CirclePlus,
   CircleUser,
   Columns2,
   Ellipsis,
@@ -783,6 +786,103 @@ const EFFECT_DEFS: ComponentDef[] = [
   }),
 ];
 
+// ── Overlay / floating (docs/102 Track C follow-up) ────────────────────────────
+//
+// The positioned overlays. Toast + FAB are presentational (platform `st-*` CSS owns
+// the `position: fixed`, so they bypass the Tailwind allowlist's clickjacking
+// guard); their render is the shared site-atoms map. The Dialog is the Radix island
+// (render-leaf's `BuilderDialog`) — the one atom a catalog composition can't express,
+// since a full-viewport backdrop needs raw `fixed inset-0`, which the allowlist
+// denies. Its recipe seed (`st-c-* st-v-*`) styles the TRIGGER button.
+
+const OVERLAY_DEFS: ComponentDef[] = [
+  atom({
+    type: 'Dialog',
+    label: 'Modal dialog',
+    icon: AppWindowMac,
+    class: 'st-c-primary st-v-solid',
+    acceptsChildren: true,
+    props: [
+      {
+        key: 'triggerLabel',
+        label: 'Button label',
+        control: 'text',
+        placeholder: 'Open dialog',
+      },
+      { key: 'title', label: 'Title', control: 'text', placeholder: 'Confirm your choice' },
+      {
+        key: 'description',
+        label: 'Description',
+        control: 'textarea',
+        placeholder: 'A short line under the title.',
+      },
+      { key: 'closeLabel', label: 'Close button', control: 'text', placeholder: 'Close' },
+      {
+        key: 'placement',
+        label: 'Placement',
+        control: 'select',
+        options: opts(['center', 'Center'], ['top', 'Top'], ['bottom', 'Bottom']),
+      },
+    ],
+    defaultProps: {
+      triggerLabel: 'Open dialog',
+      title: 'Confirm your choice',
+      description: 'This action needs a quick confirmation before it runs.',
+      closeLabel: 'Got it',
+      placement: 'center',
+    },
+  }),
+  atom({
+    type: 'Toast',
+    label: 'Toast region',
+    icon: BellRing,
+    acceptsChildren: true,
+    props: [
+      {
+        key: 'horizontal',
+        label: 'Horizontal anchor',
+        control: 'select',
+        options: opts(['start', 'Left'], ['center', 'Center'], ['end', 'Right']),
+      },
+      {
+        key: 'vertical',
+        label: 'Vertical anchor',
+        control: 'select',
+        options: opts(['top', 'Top'], ['middle', 'Middle'], ['bottom', 'Bottom']),
+      },
+    ],
+    defaultProps: { horizontal: 'end', vertical: 'bottom' },
+  }),
+  atom({
+    type: 'FAB',
+    label: 'Floating button',
+    icon: CirclePlus,
+    class: 'st-c-primary',
+    props: [
+      { key: 'icon', label: 'Icon', control: 'icon' },
+      { key: 'label', label: 'Accessible label', control: 'text', placeholder: 'New post' },
+      {
+        key: 'href',
+        label: 'Links to (optional)',
+        control: 'text',
+        placeholder: '/new or https://…',
+      },
+      {
+        key: 'placement',
+        label: 'Placement',
+        control: 'select',
+        options: opts(
+          ['bottom-end', 'Bottom right'],
+          ['bottom-start', 'Bottom left'],
+          ['top-end', 'Top right'],
+          ['top-start', 'Top left']
+        ),
+      },
+    ],
+    defaultProps: { icon: 'plus', label: 'Open actions', href: '', placement: 'bottom-end' },
+  }),
+];
+
 /** The full site-ui atom set added in Track A, spread into the registry's DEFS. */
 export const SITE_UI_ATOM_DEFS: ComponentDef[] = [
   ...FORM_DEFS,
@@ -792,4 +892,5 @@ export const SITE_UI_ATOM_DEFS: ComponentDef[] = [
   ...LAYOUT_DEFS,
   ...MOCKUP_DEFS,
   ...EFFECT_DEFS,
+  ...OVERLAY_DEFS,
 ];

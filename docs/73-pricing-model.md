@@ -1,67 +1,60 @@
 # sparx Platform — Pricing Model Spec
 
-**Version:** 2.0
+**Version:** 2.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-06-17
 
 ---
 
 ## 1. Core Philosophy
 
-**Open access. Physical limits only. Free to build, pay to publish.**
+**Open access. Physical limits only. 14 days free, then pay per module.**
 
-sparx does not gate features behind plan tiers. Every merchant has access to every capability of their activated modules — unlimited products, unlimited posts, unlimited customers, unlimited orders, unlimited automations, unlimited team members.
+sparx does not gate features behind plan tiers. Every tenant has access to every capability of their activated modules — unlimited products, unlimited posts, unlimited customers, unlimited orders, unlimited automations, unlimited team members.
 
 The only metered resources are physical:
 
 - **Storage** (files, images, videos)
 - **Email send volume** (Postal infrastructure has real cost at scale)
 
-This philosophy eliminates the resentment that feature gating creates. Merchants never hit an artificial wall. They understand and accept physical limits intuitively.
+This philosophy eliminates the resentment that feature gating creates. Tenants never hit an artificial wall. They understand and accept physical limits intuitively.
 
 ---
 
-## 2. The Free-to-Build Model
+## 2. The 14-Day Free Trial
 
 ```
-Build free. No card. No clock. Pay when you go live.
+14 days free. Full access. No card to start.
 ```
 
-Every merchant can build their entire store — products, content, email templates, theme, everything — before paying a cent. No time limit. No 14-day countdown.
+Every tenant starts on a 14-day free trial with full access to every module — build the whole site, add products, draft content, design email templates, all of it. No credit card to start.
 
-**What "going live" means:**
-Publishing their site to their sparx.zone URL or a custom domain. Everything before that — building, designing, adding products, drafting content — is free with no time limit.
+**How the trial works:**
+At signup the tenant picks the modules it wants, and a Stripe subscription is created **trialing** — one line item per active module, no payment method. The public site can go live during the trial.
 
 **The payment moment:**
-When a merchant clicks "Publish" or "Go Live," they're prompted to add a payment method. The billing cycle starts the day they publish. Nothing before that.
+A card is captured **after** onboarding (via a dashboard trial banner) and is required only to continue past day 14 — this protects the "no card to start" promise and the 5-minute path. Billing begins when the trial ends.
 
-**Inactive store archival:**
-
-- 90 days inactive (no login, no publish) → email: "Your store is still waiting"
-- 180 days inactive, no engagement → store archived (content preserved, URL released)
-- Merchant can restore at any time by logging in
+**End of trial — trial → grace → suspend:**
+The authoritative lifecycle lives in [17-billing-subscriptions.md](17-billing-subscriptions.md) §6. No card by day 14 → paid module features pause, but the **public site stays live** through the grace window. Tenant data is preserved for 30 days.
 
 ---
 
 ## 3. Module Pricing
 
-### The Spark Plan (Builder only)
+### The Spark plan (Builder only) — $10/mo
 
-**$10/mo** — activates on publish
+The entry point: a real, hosted website on sparx.
 
 Includes:
 
-- One live site on sparx.zone subdomain
+- One live site on a sparx.zone subdomain or your own custom domain
 - Full theme customizer
-- Unlimited pages (published via CMS)
-- Custom domain + SSL
-- 5GB storage
-- Full product catalog builder (products visible but not purchasable)
-- Content editor (posts draftable but not indexed)
-- Email template designer (templates buildable but not sendable)
-- Everything ready to activate — upgrade any module to go live
+- Unlimited pages
+- Custom domain + SSL, hosting + CDN
+- Generous fair-use storage (see [17-billing-subscriptions.md](17-billing-subscriptions.md) §3)
 
-The Spark plan is the entry point of a journey, not a stripped product. Products, content, and email templates built on Spark are instantly live when the relevant module is activated — no rebuilding.
+Builder is the website itself. Commerce (selling), CMS (blog and content), Email, and CRM each come from their own module — switch one on when you need it, and nothing is rebuilt. Builder is also optional: a headless tenant can run those modules off the API/MCP with no Builder at all (see [34-platform-glossary.md](34-platform-glossary.md)).
 
 ### Module Pricing (additive)
 
@@ -77,20 +70,6 @@ The Spark plan is the entry point of a journey, not a stripped product. Products
 | Dropship        | +$29/mo | Commerce              |
 | Chat            | +$19/mo | Any active module     |
 
-### Bundles (for pricing page display)
-
-Bundles are pre-configured toggle states — not separate products. The toggle calculator shows bundle savings when relevant combinations are active.
-
-| Bundle   | Modules                                                | Price   | vs. separate |
-| -------- | ------------------------------------------------------ | ------- | ------------ |
-| Starter  | Builder + Commerce                                     | $59/mo  | saves $0     |
-| Content  | Builder + CMS                                          | $59/mo  | saves $0     |
-| Growth   | Builder + Commerce + CRM + Email                       | $147/mo | saves $0     |
-| Pro      | Builder + Commerce + CMS + CRM + Email + AI + Dropship | $274/mo | saves $29    |
-| Business | All modules                                            | $373/mo | saves $29    |
-
-Note: bundles save less than expected because individual module pricing is already fair. The real savings story is vs. competitive stack (see Section 6).
-
 ---
 
 ## 4. The Toggle Pricing UI
@@ -100,7 +79,7 @@ The pricing page uses a toggle calculator instead of plan cards. Each module is 
 ```
 Switch on what you use.
 
-Builder          Base · $10    [●──]  ← always on, can't toggle off
+Builder          Site host · $10 [●──]  ← on; optional — no Builder = headless
 Commerce              + $49    [○──]
 CMS                   + $49    [●──]  ← on
 CRM                   + $49    [○──]
@@ -158,7 +137,7 @@ The "Same elsewhere" comparison updates dynamically:
 | L    | +200GB             | $60/mo  |
 | XL   | +1TB               | $200/mo |
 
-Storage upgrades stack — a merchant can add multiple tiers.
+Storage upgrades stack — a tenant can add multiple tiers.
 
 ### Storage Dashboard UI
 
@@ -180,7 +159,7 @@ Lead with free options before paid. Never show a red warning — calm, informati
 
 ### Auto-Compression
 
-Opt-in image compression at upload. Reduces file sizes 60–70% with no visible quality loss. Free. Enabled by default for new merchants, opt-in for existing.
+Opt-in image compression at upload. Reduces file sizes 60–70% with no visible quality loss. Free. Enabled by default for new tenants, opt-in for existing.
 
 ---
 
@@ -188,7 +167,7 @@ Opt-in image compression at upload. Reduces file sizes 60–70% with no visible 
 
 ### Included (all plans with Email module)
 
-**10,000 sends/mo** — covers most SMB merchants.
+**10,000 sends/mo** — covers most SMB tenants.
 
 ### Additional sends
 
@@ -202,7 +181,7 @@ On track for ~8,400 this month.
 Included in your plan.
 ```
 
-Merchants approaching or exceeding 10,000/mo are notified with their projected overage cost before it happens — never surprised on billing day.
+Tenants approaching or exceeding 10,000/mo are notified with their projected overage cost before it happens — never surprised on billing day.
 
 ---
 
@@ -241,8 +220,8 @@ Managed hosting add-on: $750/mo (GDS is first client at this tier).
 **Billing cycle:** Monthly, on the anniversary of publish date.  
 **Proration:** Modules activated mid-cycle are prorated to the cent.  
 **Downgrade:** Module deactivated → billing stops next cycle. Data preserved indefinitely.  
-**Failed payment:** 3-day grace period → store enters read-only mode → 7 more days → store paused (not deleted). Merchant can reactivate by updating payment method at any time.  
-**Cancellation:** Merchant can cancel at any time. Data export available immediately. Store remains accessible for remainder of paid period.
+**Failed payment:** 3-day grace period → store enters read-only mode → 7 more days → store paused (not deleted). Tenant can reactivate by updating payment method at any time.  
+**Cancellation:** Tenant can cancel at any time. Data export available immediately. Store remains accessible for remainder of paid period.
 
 ---
 

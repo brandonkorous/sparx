@@ -1145,6 +1145,9 @@ async function seedDemoInventory(tenantId: string): Promise<void> {
     await tx.product.deleteMany({ where: { tenantId, handle: { startsWith: 'inv-demo-' } } });
 
     const variantIdBySku = new Map<string, string>();
+    // sku → { id, costCents } — the purchasing seed (suppliers / POs) needs the
+    // cost to derive a believable purchase price below retail cost.
+    const variantMetaBySku = new Map<string, { id: string; costCents: number }>();
 
     for (const p of DEMO_PRODUCTS) {
       const prices = p.variants.map((v) => v.priceCents);
@@ -1183,6 +1186,7 @@ async function seedDemoInventory(tenantId: string): Promise<void> {
           },
         });
         variantIdBySku.set(v.sku, variant.id);
+        variantMetaBySku.set(v.sku, { id: variant.id, costCents: v.costCents });
 
         for (const lvl of v.levels) {
           const warehouseId = whByCode.get(lvl.warehouse)!;
@@ -1250,10 +1254,136 @@ async function seedDemoInventory(tenantId: string): Promise<void> {
       });
     }
 
+    // ── Supply path (P3b): suppliers, purchasing links, demo POs ──────────────
+    // Two vendors, each sourcing a few variants below the retail cost, plus a
+    // draft + a submitted PO so /inventory/suppliers + /purchase-orders render
+    // real data on a fresh tenant. Idempotent: suppliers upsert by code, their
+    // prior POs are cleared and recreated.
+    const DEMO_SUPPLIERS = [
+      {
+        code: 'SUP-BOSCH',
+        name: 'Bosch Diesel Supply',
+        terms: 'net30',
+        lead: 7,
+        city: 'Charleston',
+        region: 'SC',
+      },
+      {
+        code: 'SUP-STAN',
+        name: 'Stanadyne Distribution',
+        terms: 'net45',
+        lead: 14,
+        city: 'Windsor',
+        region: 'CT',
+      },
+    ];
+    const supplierByCode = new Map<string, string>();
+    for (const s of DEMO_SUPPLIERS) {
+      const row = await tx.supplier.upsert({
+        where: { tenantId_code: { tenantId, code: s.code } },
+        update: {
+          name: s.name,
+          paymentTerms: s.terms,
+          leadTimeDays: s.lead,
+          city: s.city,
+          region: s.region,
+          country: 'US',
+          isActive: true,
+          deletedAt: null,
+        },
+        create: {
+          tenantId,
+          code: s.code,
+          name: s.name,
+          paymentTerms: s.terms,
+          leadTimeDays: s.lead,
+          city: s.city,
+          region: s.region,
+          country: 'US',
+        },
+      });
+      supplierByCode.set(s.code, row.id);
+    }
+
+    // Purchasing links — first 6 variants split across the two suppliers, priced
+    // at 96% of the variant cost and flagged preferred.
+    const linkSkus = [...variantMetaBySku.entries()].slice(0, 6);
+    const buyCost = (costCents: number): number => Math.round(costCents * 0.96);
+    for (const [i, [sku, meta]] of linkSkus.entries()) {
+      const supplierId = supplierByCode.get(i % 2 === 0 ? 'SUP-BOSCH' : 'SUP-STAN')!;
+      await tx.supplierVariant.upsert({
+        where: { supplierId_variantId: { supplierId, variantId: meta.id } },
+        update: {
+          unitCostCents: buyCost(meta.costCents),
+          supplierSku: `${sku}-V`,
+          isPreferred: true,
+        },
+        create: {
+          tenantId,
+          supplierId,
+          variantId: meta.id,
+          unitCostCents: buyCost(meta.costCents),
+          supplierSku: `${sku}-V`,
+          minOrderQty: 5,
+          isPreferred: true,
+        },
+      });
+    }
+
+    // Clear prior demo POs (their lines already cascaded with the product reset),
+    // then create a draft + a submitted order numbered after any existing POs.
+    await tx.purchaseOrder.deleteMany({
+      where: { supplierId: { in: [...supplierByCode.values()] } },
+    });
+    const poBase = await tx.purchaseOrder.count({ where: { tenantId } });
+    const poDefs = [
+      { code: 'SUP-BOSCH', status: 'draft', skus: linkSkus.slice(0, 2), shipping: 0 },
+      { code: 'SUP-STAN', status: 'submitted', skus: linkSkus.slice(2, 4), shipping: 2500 },
+    ];
+    for (const [i, def] of poDefs.entries()) {
+      const lines = def.skus.map(([sku, meta]) => ({
+        sku,
+        meta,
+        qty: 20,
+        unitCostCents: buyCost(meta.costCents),
+      }));
+      const subtotal = lines.reduce((s, l) => s + l.qty * l.unitCostCents, 0);
+      const submitted = def.status === 'submitted';
+      const po = await tx.purchaseOrder.create({
+        data: {
+          tenantId,
+          number: `PO-${String(poBase + i + 1).padStart(6, '0')}`,
+          supplierId: supplierByCode.get(def.code)!,
+          warehouseId: mainId,
+          status: def.status,
+          currency: 'USD',
+          reference: 'Replenishment',
+          shippingCents: def.shipping,
+          subtotalCents: subtotal,
+          totalCents: subtotal + def.shipping,
+          ...(submitted ? { orderedAt: daysAgoDate(3), expectedArrivalAt: daysAgoDate(-11) } : {}),
+        },
+      });
+      for (const l of lines) {
+        await tx.purchaseOrderLine.create({
+          data: {
+            tenantId,
+            purchaseOrderId: po.id,
+            variantId: l.meta.id,
+            quantityOrdered: l.qty,
+            unitCostCents: l.unitCostCents,
+            supplierSku: `${l.sku}-V`,
+            description: l.sku,
+          },
+        });
+      }
+    }
+
     const variantCount = variantIdBySku.size;
     console.log(
       `Seeded demo inventory: ${DEMO_PRODUCTS.length} products / ${variantCount} variants across ` +
-        `${DEMO_WAREHOUSES.length} warehouses, with ledger movements + ${DEMO_LOTS.length} lots.`
+        `${DEMO_WAREHOUSES.length} warehouses, with ledger movements + ${DEMO_LOTS.length} lots, ` +
+        `${DEMO_SUPPLIERS.length} suppliers + ${poDefs.length} purchase orders.`
     );
   });
 }

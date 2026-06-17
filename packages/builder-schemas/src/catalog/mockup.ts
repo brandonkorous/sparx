@@ -6,8 +6,14 @@
 // a tenant can drop a screenshot or live composition inside and have it read as
 // "this product, on a screen". The frame is the value — it's `max-w` and scales
 // down to one piece of chrome on a narrow canvas; the slot inside is just an Image
-// or a placeholder the tenant swaps. Traffic-light dots are the one place literal
-// semantic fills (`bg-danger`/`bg-warning`/`bg-success`) read as decoration, not state.
+// or a placeholder the tenant swaps.
+//
+// The browser / phone / window frames compose the REAL st-mockup-* atoms now that
+// the registry exposes them (Layer 1, docs/102) — the chrome lives in the component,
+// the tenant just drops content inside. The two DARK code surfaces (code_block,
+// terminal) stay bespoke: their value is the per-TOKEN syntax coloring, which a
+// string-based Code atom can't express. Traffic-light dots there are the one place
+// literal semantic fills (`bg-danger`/`bg-warning`/`bg-success`) read as decoration.
 
 import { el, atom, entry, type PlatformCatalogEntry } from './_kit';
 
@@ -38,37 +44,11 @@ export const MOCKUP_CATALOG: PlatformCatalogEntry[] = [
       'A browser chrome frame — window dots and an address pill above a content slot for a screenshot or live preview.',
     surfaces: ['page', 'site'],
     tags: ['browser', 'window', 'chrome', 'mockup', 'frame', 'screenshot', 'preview'],
-    tree: el(
-      'figure',
-      'w-full max-w-3xl overflow-hidden rounded-box border border-base-300 bg-base-100 shadow-lg',
-      {
-        children: [
-          // Chrome bar — dots on the start, an address pill that fills the rest.
-          el('div', 'flex items-center gap-3 border-b border-base-200 bg-base-200 px-4 py-3', {
-            children: [
-              trafficLights(),
-              el(
-                'div',
-                'flex min-w-0 flex-1 items-center gap-2 rounded-full bg-base-100 px-3 py-1.5 text-sm text-base-content/60',
-                {
-                  children: [
-                    atom('Icon', 'h-3.5 w-3.5 shrink-0 text-base-content/40', { name: 'lock' }),
-                    el('span', 'truncate', { text: 'app.sparx.works' }),
-                  ],
-                }
-              ),
-              atom('Icon', 'hidden h-4 w-4 shrink-0 text-base-content/40 @xl:block', {
-                name: 'rotate-cw',
-              }),
-            ],
-          }),
-          // Content slot — swap for any screenshot; placeholder keeps a clean ratio.
-          el('div', 'bg-base-200', {
-            children: [atom('Image', 'w-full', { ratio: 'wide', alt: 'Screenshot' })],
-          }),
-        ],
-      }
-    ),
+    // The Browser atom (st-mockup-browser) renders the dots + address bar; the content
+    // slot is just the screenshot the tenant swaps.
+    tree: atom('Browser', 'w-full max-w-3xl', { url: 'app.sparx.works' }, [
+      atom('Image', 'w-full', { ratio: 'wide', alt: 'Screenshot' }),
+    ]),
   }),
 
   // ── Phone frame — thick rounded bezel, notch bar, screen slot ─────────────────
@@ -82,26 +62,11 @@ export const MOCKUP_CATALOG: PlatformCatalogEntry[] = [
       'A phone mockup with a rounded bezel and a notch over a tall screen slot for a mobile screenshot.',
     surfaces: ['page', 'site'],
     tags: ['phone', 'mobile', 'device', 'mockup', 'frame', 'screen', 'app'],
-    tree: el(
-      'figure',
-      'mx-auto w-full max-w-[18rem] rounded-[2.5rem] border-8 border-neutral bg-neutral p-2 shadow-xl',
-      {
-        children: [
-          el('div', 'relative overflow-hidden rounded-[1.75rem] bg-base-100', {
-            children: [
-              // Notch — a rounded bar floating over the top of the screen.
-              el(
-                'div',
-                'absolute left-1/2 top-2 z-40 h-5 w-28 -translate-x-1/2 rounded-full bg-neutral',
-                {}
-              ),
-              // Screen slot — a portrait Image stands in for the app screenshot.
-              atom('Image', 'w-full', { ratio: 'portrait', alt: 'App screen' }),
-            ],
-          }),
-        ],
-      }
-    ),
+    // The Phone atom (st-mockup-phone) renders the bezel + notch; the screen slot is
+    // the portrait screenshot inside.
+    tree: atom('Phone', 'mx-auto w-full max-w-[18rem]', {}, [
+      atom('Image', 'w-full', { ratio: 'portrait', alt: 'App screen' }),
+    ]),
   }),
 
   // ── Code block — dark surface, top bar (dots + filename), monospace lines ─────
@@ -172,45 +137,29 @@ export const MOCKUP_CATALOG: PlatformCatalogEntry[] = [
       'A generic desktop window — traffic-light controls and a title above a flexible body slot.',
     surfaces: ['page', 'site'],
     tags: ['window', 'desktop', 'app', 'mockup', 'frame', 'titlebar', 'os'],
-    tree: el(
-      'figure',
-      'w-full max-w-2xl overflow-hidden rounded-box border border-base-300 bg-base-100 shadow-lg',
-      {
+    // The Window atom (st-mockup-window) renders the dots + title bar; the body slot
+    // holds any composition the tenant drops in.
+    tree: atom('Window', 'w-full max-w-2xl', { title: 'Dashboard' }, [
+      el('div', 'flex flex-col gap-3 p-6', {
         children: [
-          // Titlebar — dots on the start, a centered window title.
-          el('div', 'relative flex items-center border-b border-base-200 bg-base-200 px-4 py-3', {
-            children: [
-              trafficLights(),
-              el(
-                'span',
-                'pointer-events-none absolute inset-x-0 text-center text-sm font-medium text-base-content/70',
-                { text: 'Dashboard' }
-              ),
-            ],
+          atom('Heading', 'text-base-content', { level: 'h3', text: 'Welcome back' }),
+          atom('Text', 'text-base-content/60', {
+            variant: 'body',
+            text: 'Replace this body with any layout — a chart, a form, or a screenshot.',
           }),
-          // Body slot — drop any composition here; a sample fills the empty frame.
-          el('div', 'flex flex-col gap-3 p-6', {
+          el('div', 'flex gap-3', {
             children: [
-              atom('Heading', 'text-base-content', { level: 'h3', text: 'Welcome back' }),
-              atom('Text', 'text-base-content/60', {
-                variant: 'body',
-                text: 'Replace this body with any layout — a chart, a form, or a screenshot.',
+              atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-sm', {
+                label: 'Continue',
               }),
-              el('div', 'flex gap-3', {
-                children: [
-                  atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-sm', {
-                    label: 'Continue',
-                  }),
-                  atom('Button', 'st-btn st-c-neutral st-v-ghost st-btn--sz-sm', {
-                    label: 'Cancel',
-                  }),
-                ],
+              atom('Button', 'st-btn st-c-neutral st-v-ghost st-btn--sz-sm', {
+                label: 'Cancel',
               }),
             ],
           }),
         ],
-      }
-    ),
+      }),
+    ]),
   }),
 
   // ── Terminal — dark shell, $ prompt, command + output, blinking cursor ────────

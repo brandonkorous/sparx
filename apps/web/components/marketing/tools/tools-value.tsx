@@ -22,25 +22,25 @@ const PILLARS: Pillar[] = [
     icon: Layers,
     module: 'builder',
     title: 'One platform, not twelve tabs',
-    body: 'Storefront, commerce, CRM, CMS, email, and B2B in one place — one login, one bill. Stop renting a dozen disconnected SaaS tools and paying an integrator to wire them together.',
+    body: 'Your site, content, CRM, email, commerce, and B2B live in one place — one login, one bill. Stop renting a dozen disconnected tools and paying someone to wire them together.',
   },
   {
     icon: Database,
     module: 'cms',
     title: 'One source of truth',
-    body: 'Every module sits on the same data layer. Orders, customers, content, and campaigns reference the same records — no sync jobs, no Zapier, no version that disagrees with the other version.',
+    body: 'Every module sits on the same data. A customer, a page, an order, a campaign — one record, read everywhere. No sync jobs, no Zapier, no version that disagrees with the other version.',
   },
   {
     icon: ToggleRight,
     module: 'commerce',
-    title: 'Pay only for what you run',
-    body: 'Modules switch on independently. A CMS-only publisher, a CRM-only team, and a B2B distributor are all first-class. No tiers, no seat minimums, no paying for capability you never touch.',
+    title: 'Pay only for what you switch on',
+    body: 'Modules turn on independently. Run CMS on its own, CRM on its own, or the full stack — all of it first-class. No tiers, no seat minimums, no paying for capability you never touch.',
   },
   {
     icon: Sparkles,
     module: 'ai',
     title: 'API-first and AI-native',
-    body: 'Every feature is an API endpoint, and a first-class MCP server lets Claude, ChatGPT, or Copilot read and write your live business data in plain English. The dashboard is just one way in.',
+    body: "Every feature is an API, and a built-in MCP server lets Claude, ChatGPT, or Copilot read and write your live business data in plain English. Ask for it; it's done. The dashboard is just one way in.",
   },
 ];
 
@@ -49,8 +49,8 @@ export function ToolsValue() {
     <Section surface="page" padding="lg">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
         <SectionHeader
-          headline="The tools are free. The platform behind them runs your company"
-          lede="Every tool here is built on sparx — the modular content and commerce OS. When a free utility isn't enough, the same platform carries the whole business."
+          headline="The tools are free. The platform behind them runs the whole business"
+          lede="Every tool here is built on sparx — one platform for your website, your content, and, when you sell, your commerce. Activate the modules you need, on one login, one bill, and one data layer. Publish a content site with no checkout, run a CRM on its own, or sell to the world. It's all first-class."
           accent={getModuleColor('builder').color}
           headlineSize={38}
         />

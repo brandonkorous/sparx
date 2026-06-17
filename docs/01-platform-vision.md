@@ -1,8 +1,8 @@
 # sparx Platform — Vision & Strategy
 
-**Version:** 2.1
+**Version:** 2.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-03
+**Last Updated:** 2026-06-17
 
 ---
 
@@ -22,7 +22,7 @@ sparx is a modular content and commerce operating system. You activate only the 
 
 **The modules:**
 
-- **Site** — Site builder, themes, pages, live in 5 minutes
+- **Builder** — the site builder: themes, pages, your website on a custom domain, live in 5 minutes. The only module that renders a public site — without it, sparx is headless (CMS/CRM/Commerce via API + MCP)
 - **Commerce** — Products, cart, checkout, orders, payments
 - **CMS** — Content editor, blog, media library, SEO (standalone — no shop required)
 - **CRM** — Customer intelligence, pipeline, activity log, automation
@@ -31,7 +31,7 @@ sparx is a modular content and commerce operating system. You activate only the 
 - **AI/MCP** — Native MCP server; Claude, ChatGPT, and Copilot speak your business data
 - **Dropship** — Supplier connectors, catalog sync, automated order routing
 
-Each module is independently activatable. A publisher running a content site pays for Site + CMS. A wholesale distributor pays for Commerce + B2B + CRM. A dropship entrepreneur pays for Commerce + Dropship.
+Each module is independently activatable. A publisher running a content site pays for Builder + CMS. A wholesale distributor pays for Commerce + B2B + CRM. A dropship entrepreneur pays for Commerce + Dropship.
 
 And sparx is built to _last_, not just to launch. Generate your site with AI if you want — sparx is MCP-native, so you can. But sparx is where a site **lives** afterward: you maintain and enhance it yourself in a visual, no-code editor, with full code available as an option and never a requirement (the four-tier escape ladder, [doc 47](47-class-first-authoring-model.md)). **AI to start; sparx to last.**
 
@@ -59,7 +59,7 @@ Building product businesses without inventory. Need supplier sync, margin calcul
 
 | Capability                     | sparx | Shopify    | HubSpot | WordPress   |
 | ------------------------------ | ----- | ---------- | ------- | ----------- |
-| Store live < 5 min             | ✅    | ❌         | ❌      | ❌          |
+| Site live in < 5 min           | ✅    | ❌         | ❌      | ❌          |
 | Modular pricing                | ✅    | ❌         | ❌      | ❌          |
 | Per-module activation          | ✅    | ❌         | ❌      | ❌          |
 | CMS standalone                 | ✅    | ❌         | ❌      | ✅          |
@@ -76,11 +76,13 @@ Building product businesses without inventory. Need supplier sync, margin calcul
 
 ## 6. Pricing Model
 
+This is the strategy-level summary. Authoritative module prices and rules live in [17-billing-subscriptions.md](17-billing-subscriptions.md). Pricing is **purely per-module** — a tenant pays for exactly the modules it activates; there are no bundles and no plan tiers.
+
 ### Module Pricing
 
 | Module        | Price               |
 | ------------- | ------------------- |
-| Site          | $49/mo              |
+| Builder       | $10/mo              |
 | Commerce      | +$49/mo             |
 | CMS           | $49/mo (standalone) |
 | CRM           | +$49/mo             |
@@ -89,21 +91,15 @@ Building product businesses without inventory. Need supplier sync, margin calcul
 | AI/MCP        | +$49/mo             |
 | Dropship      | +$29/mo             |
 
-### Bundles (for simplicity)
+### Enterprise
 
-| Bundle         | Modules                                               | Price   |
-| -------------- | ----------------------------------------------------- | ------- |
-| **Starter**    | Site + Commerce                                       | $79/mo  |
-| **Content**    | Site + CMS                                            | $79/mo  |
-| **Growth**     | Site + Commerce + CRM + Email                         | $149/mo |
-| **Pro**        | All modules except B2B                                | $299/mo |
-| **Business**   | All modules                                           | $449/mo |
-| **Enterprise** | All modules + custom frontend + managed hosting + SLA | Custom  |
+For large clients: all modules + custom frontend + managed hosting + SLA, at custom pricing (see [17-billing-subscriptions.md](17-billing-subscriptions.md) §4). Not a bundle or tier — a bespoke contract.
 
 ### Transaction Fees
 
-- Starter / Growth: 0.5% per transaction
-- Pro / Business / Enterprise: 0%
+- Commerce only: 0.5% per transaction
+- With CRM added: 0.3% per transaction
+- Active modules totaling $299+/mo: 0%
 
 ### Managed Hosting Add-On
 

@@ -29,9 +29,10 @@ export function ToolsIndex() {
                 margin: 0,
               }}
             >
-              Quick, genuinely good utilities for founders, makers, and small teams — favicons, QR
-              codes, campaign links, social cards, email signatures, invoices. Every one runs
-              entirely in your browser. Nothing to upload, nothing to install, no account.
+              Favicons, QR codes, campaign links, social cards, email signatures, invoices, and a
+              dozen more — the small jobs that eat an afternoon. Built for founders, makers, and
+              small teams who&rsquo;d rather get it done and move on. Open one and start; your work
+              stays on your machine, and nothing here costs a thing.
             </p>
             <TrustRow />
           </div>
@@ -64,7 +65,7 @@ export function ToolsIndex() {
               style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '640px' }}
             >
               <Display as="h2" size={30}>
-                These run on the same platform you can build your business on
+                Same platform. From a free favicon to your whole business
               </Display>
               <p
                 style={{
@@ -75,9 +76,10 @@ export function ToolsIndex() {
                   margin: 0,
                 }}
               >
-                sparx is the modular content and commerce OS — storefront, CRM, CMS, email, B2B, and
-                AI, activated independently on one data layer and one bill. The tools are a taste;
-                the platform is the meal.
+                sparx is the modular content and commerce OS — your website, CMS, CRM, email,
+                commerce, B2B, and AI, each switched on when you need it, all on one data layer and
+                one bill. These tools handle a single job for free. sparx handles the rest, for
+                years.
               </p>
             </div>
             <Button asChild color="primary" variant="solid" size="lg" style={{ flexShrink: 0 }}>

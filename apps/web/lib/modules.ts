@@ -43,42 +43,42 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
     slug: 'builder',
     module: 'builder',
     label: 'Builder',
-    headlinePrimary: 'Themes, pages,',
-    headlineSecondary: 'live URLs',
-    title: 'sparx Builder — Themes, pages, live URLs.',
+    headlinePrimary: 'Your site,',
+    headlineSecondary: 'live',
+    title: 'sparx Builder — Your site, live in five minutes.',
     description:
-      'The sparx site builder. Pick a theme, edit blocks, point your domain. No code. No staging dance. Live in five minutes.',
-    lede: 'The site builder. Pick a theme, edit blocks, point your domain. No code. No staging dance. The same theme system powers a five-product test store and a 50,000-SKU catalog.',
+      'The website module. Pick a theme, edit blocks, point your domain — SSL and CDN handled. Content site or store, live in five minutes. No code required.',
+    lede: 'The website module. Pick a theme, edit blocks in the browser, point your domain. SSL and the global CDN are handled for you. The same builder serves a one-page portfolio, a 40-post blog, or a 50,000-SKU catalog.',
     features: [
       {
         number: '01',
         title: 'Theme-first.',
-        body: 'Pick a polished theme, customize the bits that matter, publish. Power users build fully custom frontends against the same API.',
+        body: 'Start from a polished theme, change the parts that matter, publish. Want full control? Build a custom frontend against the same API — coding optional, never required.',
       },
       {
         number: '02',
         title: 'Block editor.',
-        body: 'Drag, drop, edit. Every block is responsive and accessible by default. No mystery markup, no shadow DOM.',
+        body: 'Drag, drop, edit in the browser. Every block is responsive and accessible by default — clean markup, no mystery wrappers, no shadow DOM.',
       },
       {
         number: '03',
         title: 'Custom domain + SSL.',
-        body: 'Point your DNS, we provision a Let’s Encrypt cert automatically. No third-party DNS service, no upcharge.',
+        body: 'Point your DNS and your certificate provisions itself. No separate DNS service, no certificate to renew, no upcharge.',
       },
       {
         number: '04',
         title: 'CDN-cached.',
-        body: 'Edge-cached pages, instant TTFB worldwide. Stale-while-revalidate on every page so editors see updates immediately.',
+        body: 'Pages serve from the edge, fast everywhere. Edits go live the moment you publish — no cache to clear, no wait.',
       },
       {
         number: '05',
         title: 'Headless if you want.',
-        body: 'Same data, different head. Builder SDK for Next.js, Remix, Astro — TypeScript types generated from your schema.',
+        body: 'Same data, your own front end. The Builder SDK works with Next.js, Remix, and Astro, with TypeScript types generated from your schema.',
       },
       {
         number: '06',
-        title: 'Multi-store, one login.',
-        body: 'Run several brands from one sparx account. Each store has its own domain, theme, and module mix.',
+        title: 'Multi-site, one login.',
+        body: 'Run several sites from one sparx account. Each site has its own domain, theme, and module mix — billed together, switched between in a click.',
       },
     ],
     pricing: {
@@ -86,7 +86,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       period: '/mo',
       modifier: '',
       bundleNote:
-        'Builder hosts and serves your site — pages, custom domains, SSL, and the global CDN. It’s an optional module, not a required base; switch it on when you want a hosted sparx site, on one bill with everything else.',
+        "Builder hosts and serves your site — pages, custom domains, SSL, and the global CDN. It's a module, not a required base: switch it on when you want a hosted sparx site, leave it off and run headless through the API and MCP. One bill with everything else.",
     },
   },
   commerce: {

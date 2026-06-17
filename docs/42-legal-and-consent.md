@@ -1,8 +1,8 @@
 # 42 — Legal Documents & Cookie Consent
 
-Version: 1.0
+Version: 1.1
 Author: Brandon Korous
-Last Updated: 2026-06-02
+Last Updated: 2026-06-17
 
 > The machinery that makes a tenant site legally shippable: the legal/policy pages
 > a tenant shows its own shoppers, a configurable cookie-consent framework, and
@@ -37,11 +37,11 @@ Legal content on the platform splits into three independent concerns. Keeping th
 separate is the central design decision — they have different owners, audiences, and
 storage.
 
-| Layer                       | Whose docs   | Audience                | Storage                                                     | Editor                    |
-| --------------------------- | ------------ | ----------------------- | ----------------------------------------------------------- | ------------------------- |
-| **L1 — Tenant legal pages** | The tenant's | The tenant's shoppers   | CMS `content_entries` on the tenant                         | Tenant (templates seeded) |
-| **L2 — Cookie consent**     | The tenant's | The tenant's shoppers   | `consent_settings` / `consent_records`                      | Tenant configures         |
-| **L3 — Platform legal**     | sparx's      | Tenants (the merchants) | Versioned pages on `apps/web` + `platform_legal_acceptance` | sparx (WizeWorks)         |
+| Layer                       | Whose docs   | Audience              | Storage                                                     | Editor                    |
+| --------------------------- | ------------ | --------------------- | ----------------------------------------------------------- | ------------------------- |
+| **L1 — Tenant legal pages** | The tenant's | The tenant's shoppers | CMS `content_entries` on the tenant                         | Tenant (templates seeded) |
+| **L2 — Cookie consent**     | The tenant's | The tenant's shoppers | `consent_settings` / `consent_records`                      | Tenant configures         |
+| **L3 — Platform legal**     | sparx's      | Tenants (the tenants) | Versioned pages on `apps/web` + `platform_legal_acceptance` | sparx (WizeWorks)         |
 
 L1 and L2 share the site and the seeded **cookie-policy** page (the consent
 preference center links to it). L3 lives entirely on the marketing/dashboard side and

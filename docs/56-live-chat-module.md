@@ -1,17 +1,17 @@
 # sparx Platform — Live Chat Module Spec
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-06-17
 
 ---
 
 ## 1. Overview
 
-sparx Live Chat is a built-in customer communication module. Merchants get a branded chat widget on their site and a unified inbox in the dashboard — no Intercom, no Zendesk, no Crisp required. The AI layer handles common questions instantly; humans handle the rest.
+sparx Live Chat is a built-in customer communication module. Tenants get a branded chat widget on their site and a unified inbox in the dashboard — no Intercom, no Zendesk, no Crisp required. The AI layer handles common questions instantly; humans handle the rest.
 
 **Module:** Chat · +$19/mo  
-**Surfaces:** Site widget, merchant dashboard inbox, sparx.market product pages
+**Surfaces:** Site widget, tenant dashboard inbox, sparx.market product pages
 
 ---
 
@@ -33,7 +33,7 @@ A native chat widget that works out of the box — on their sparx.zone site and 
 
 Floating chat bubble on tenant's site (sparx.zone or custom domain). Shopper opens conversation → tenant responds from dashboard inbox. Conversation history saved in CRM.
 
-### Surface 2 — Merchant Dashboard Inbox
+### Surface 2 — Tenant Dashboard Inbox
 
 All customer conversations in one place. Assign to staff members. See customer's order history in sidebar. Quick replies, saved responses. Mobile push notifications.
 
@@ -282,7 +282,7 @@ Anthropic model: `claude-haiku-4-5` (fast, low cost per message, adequate for Q&
 **Tenant (dashboard):**
 
 - Real-time: WebSocket push to dashboard (already open)
-- Push notifications: Web Push API (`/settings/notifications` to subscribe) — merchant gets a browser notification when a new conversation arrives and they're not on the inbox page
+- Push notifications: Web Push API (`/settings/notifications` to subscribe) — tenant gets a browser notification when a new conversation arrives and they're not on the inbox page
 - Email fallback: if no WebSocket connection for > 5 minutes, publish `chat.message.received` to Pub/Sub → email-worker sends a "New chat message from {customer}" email
 
 **Customer (widget):**

@@ -1,8 +1,8 @@
 # sparx Brand Guide
 
-**Version:** 1.5
+**Version:** 1.6
 **Author:** Brandon Korous / WizeWorks
-**Last Updated:** 2026-06-16
+**Last Updated:** 2026-06-17
 
 ---
 
@@ -76,21 +76,21 @@ Each module owns one color. This color appears identically across three touchpoi
 2. The module's nav item in the sparx dashboard sidebar
 3. The 3px top stripe on all cards within that module
 
-| Module        | Color Name | Hex       | Why                                                      |
-| ------------- | ---------- | --------- | -------------------------------------------------------- |
-| Site          | Indigo     | `#6366F1` | The platform color — Site IS the foundation              |
-| Commerce      | Orange     | `#F97316` | Action, conversion, energy — every "Buy Now" button ever |
-| CMS           | Teal       | `#14B8A6` | Editorial, calm, focused — content creation energy       |
-| CRM           | Cyan       | `#06B6D4` | Connective, relational, people-centric                   |
-| Email         | Sky        | `#0EA5E9` | Communication, reach, delivery                           |
-| B2B/Wholesale | Slate      | `#475569` | Serious, industrial, business-grade                      |
-| AI/MCP        | Rose       | `#EC4899` | Premium, intelligent, unexpected — different in kind     |
-| Dropship      | Emerald    | `#10B981` | Growth, supply chain, organic                            |
-| Invoicing     | Lime       | `#65A30D` | Getting paid — cashflow, money in                        |
-| Inventory     | Amber      | `#F59E0B` | Stock, supply, the warehouse                             |
-| Live Chat     | Violet     | `#8B5CF6` | Conversational, responsive, human                        |
-| Automations   | Fuchsia    | `#D946EF` | Workflows firing — work happening on its own             |
-| SEO           | Yellow     | `#EAB308` | Visibility, getting found, daylight                      |
+| Module        | Color Name | Hex       | Why                                                                            |
+| ------------- | ---------- | --------- | ------------------------------------------------------------------------------ |
+| Builder       | Indigo     | `#6366F1` | The platform color — Builder builds the site, the foundation it all renders on |
+| Commerce      | Orange     | `#F97316` | Action, conversion, energy — every "Buy Now" button ever                       |
+| CMS           | Teal       | `#14B8A6` | Editorial, calm, focused — content creation energy                             |
+| CRM           | Cyan       | `#06B6D4` | Connective, relational, people-centric                                         |
+| Email         | Sky        | `#0EA5E9` | Communication, reach, delivery                                                 |
+| B2B/Wholesale | Slate      | `#475569` | Serious, industrial, business-grade                                            |
+| AI/MCP        | Rose       | `#EC4899` | Premium, intelligent, unexpected — different in kind                           |
+| Dropship      | Emerald    | `#10B981` | Growth, supply chain, organic                                                  |
+| Invoicing     | Lime       | `#65A30D` | Getting paid — cashflow, money in                                              |
+| Inventory     | Amber      | `#F59E0B` | Stock, supply, the warehouse                                                   |
+| Live Chat     | Violet     | `#8B5CF6` | Conversational, responsive, human                                              |
+| Automations   | Fuchsia    | `#D946EF` | Workflows firing — work happening on its own                                   |
+| SEO           | Yellow     | `#EAB308` | Visibility, getting found, daylight                                            |
 
 ### The AI/MCP Exception
 
@@ -250,13 +250,13 @@ Implementation note: this is a **new content section** in `apps/web` (a sibling 
 
 Each module marketing domain uses its module color as the primary accent, with sparx.works' neutral palette as the base:
 
-| Domain         | Module          | Accent    |
-| -------------- | --------------- | --------- |
-| sparx.works    | Platform / Site | `#6366F1` |
-| sparxcms.com   | CMS             | `#14B8A6` |
-| sparxcrm.com   | CRM             | `#06B6D4` |
-| sparxemail.com | Email           | `#0EA5E9` |
-| sparxb2b.com   | B2B/Wholesale   | `#475569` |
+| Domain         | Module             | Accent    |
+| -------------- | ------------------ | --------- |
+| sparx.works    | Platform / Builder | `#6366F1` |
+| sparxcms.com   | CMS                | `#14B8A6` |
+| sparxcrm.com   | CRM                | `#06B6D4` |
+| sparxemail.com | Email              | `#0EA5E9` |
+| sparxb2b.com   | B2B/Wholesale      | `#475569` |
 
 Each site is conversion-optimized for a specific search intent. All CTAs point to `sparx.works/signup?module={module}` — the module query param pre-selects the relevant module during onboarding.
 

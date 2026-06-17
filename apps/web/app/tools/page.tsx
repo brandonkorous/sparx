@@ -3,7 +3,7 @@ import { ToolsIndex } from '@/components/marketing/tools/tools-index';
 import { TOOLS } from '@/components/marketing/tools/registry';
 
 const DESCRIPTION =
-  'Free, browser-based tools for founders and small teams — a favicon generator, QR code maker, UTM link builder, Open Graph image maker, email signature generator, and invoice generator. Every tool runs entirely in your browser: nothing is uploaded, no sign-up, no watermark.';
+  'Free tools that run in your browser — favicon and QR code generators, a UTM builder, OG image maker, email signatures, and invoices. No upload. No sign-up.';
 
 export const metadata: Metadata = {
   title: 'Free tools for builders & businesses',
@@ -21,7 +21,8 @@ export const metadata: Metadata = {
   alternates: { canonical: '/tools' },
   openGraph: {
     title: 'Free tools for builders & businesses · sparx',
-    description: DESCRIPTION,
+    description:
+      'Favicons, QR codes, UTM links, social cards, email signatures, invoices — and more. Free, in your browser. Nothing uploaded, no account, no watermark.',
     url: 'https://sparx.works/tools',
     siteName: 'sparx',
     type: 'website',
@@ -30,7 +31,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Free tools for builders & businesses · sparx',
     description:
-      'Favicons, QR codes, UTM links, social cards, email signatures, invoices — free, in your browser.',
+      'Favicons, QR codes, UTM links, invoices, and more. Free, in your browser. No sign-up.',
   },
 };
 

@@ -85,6 +85,10 @@ export type {
   InventoryReservation,
   LotBatch,
   SerialUnit,
+  Supplier,
+  SupplierVariant,
+  PurchaseOrder,
+  PurchaseOrderLine,
   // Commerce — pricing + promotions
   PriceList,
   PriceListEntry,

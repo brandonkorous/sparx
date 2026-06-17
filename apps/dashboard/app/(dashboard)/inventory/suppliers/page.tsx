@@ -1,0 +1,90 @@
+import Link from 'next/link';
+import { Truck, Plus } from 'lucide-react';
+
+import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+
+import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
+
+import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { getUserPreferences } from '../../_shell/preferences';
+import { SuppliersList, type SupplierRow } from './_components/suppliers-list';
+
+// Suppliers — the inbound vendor records (docs/100 P3a). Who stock is purchased
+// FROM; purchase orders + receiving (P3b/P3c) build on these. List + create +
+// detail (edit/archive + per-variant purchasing links).
+
+export const dynamic = 'force-dynamic';
+
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default async function SuppliersPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
+  const [prefs, { data: suppliers, meta }] = await Promise.all([
+    getUserPreferences(),
+    api.getPaged<SupplierRow[]>(
+      `/v1/inventory/suppliers?${new URLSearchParams({
+        include_archived: 'true',
+        take: String(take),
+        skip: String(skip),
+      }).toString()}`
+    ),
+  ]);
+  const total = (meta?.total as number | undefined) ?? suppliers.length;
+  const inactiveOnPage = suppliers.filter((s) => !s.isActive).length;
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
+
+  return (
+    <Container size="full">
+      <Stack gap={6} className="py-10">
+        <PageHeader
+          icon={<Truck className="h-5 w-5" />}
+          title="Suppliers"
+          badge={
+            <Badge color="module">
+              {total} supplier{total === 1 ? '' : 's'}
+              {inactiveOnPage ? ` · ${inactiveOnPage} inactive on this page` : ''}
+            </Badge>
+          }
+          description="Vendors you purchase stock from. Each supplier carries contact + default terms; per-variant purchasing detail (their part number, cost, MOQ) is set on the supplier's detail page and feeds purchase orders, receiving, and the moving-average cost basis."
+          actions={
+            <Button color="module" asChild leftIcon={<Plus className="h-4 w-4" />}>
+              <Link href="/inventory/suppliers/new">New</Link>
+            </Button>
+          }
+        />
+
+        <ListToolbar enableViewToggle searchable={false} />
+
+        {suppliers.length === 0 ? (
+          <Card padding="none">
+            <EmptyState
+              icon={<Truck className="h-5 w-5" />}
+              title={total === 0 ? 'No suppliers yet' : 'No suppliers on this page'}
+              description="Add your first supplier to start tracking who you buy from. Purchase orders and receiving build on suppliers."
+              action={
+                <Button color="module" asChild leftIcon={<Plus className="h-4 w-4" />}>
+                  <Link href="/inventory/suppliers/new">New</Link>
+                </Button>
+              }
+            />
+          </Card>
+        ) : (
+          <SuppliersList rows={suppliers} view={view} />
+        )}
+
+        <ListPager total={total} />
+      </Stack>
+    </Container>
+  );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
+}

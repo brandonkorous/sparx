@@ -1,8 +1,8 @@
 # sparx Platform — Email Platform PRD
 
-**Version:** 3.1
+**Version:** 3.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-17
 
 ---
 
@@ -260,7 +260,7 @@ Per automation and per broadcast:
 - **Unsubscribed** — opted out
 - **Bounced** — hard and soft counts with reasons
 - **Spam complaints** — feedback loop data
-- **Revenue attributed** — orders placed within 24hr of email click (Pro+)
+- **Revenue attributed** — orders placed within 24hr of email click
 
 ---
 

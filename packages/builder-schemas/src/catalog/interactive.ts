@@ -6,7 +6,8 @@
 // underline — because they predate the behavior runtime. THIS file is what that
 // runtime (Pillar 5, @sparx/builder-render behaviors) unlocks: real autoplay
 // carousels, a continuously-scrolling marquee, a scroll-adaptive nav, a click-open
-// mega-menu, a single-open FAQ accordion, JS-wired tabs.
+// mega-menu, a single-open FAQ accordion, JS-wired tabs, plus a side drawer and an
+// anchored popover (both the same `menu` trigger→panel disclosure).
 //
 // The interactivity is authored, never coded: a node is marked a behavior ROOT with
 // `behave(node, { type, ...params })` and its moving parts with `part(node, role)`.
@@ -81,12 +82,8 @@ const marqueeLogo = (label: string) =>
     { text: label }
   );
 
-// A five-star rating row rendered as glyphs (presentational).
-const starRow = () =>
-  el('div', 'flex items-center gap-0.5 text-warning', {
-    attrs: { ariaLabel: 'Rated 5 out of 5' },
-    children: ['★', '★', '★', '★', '★'].map((s) => el('span', '', { text: s })),
-  });
+// A five-star rating row — the real Rating atom (st-rating), read-only display.
+const starRow = () => atom('Rating', 'st-c-warning', { value: '5', count: '5' });
 
 // One testimonial slide — quote + attribution. `part(_, 'slide')`.
 const testimonialSlide = (quote: string, name: string, role: string) =>
@@ -556,6 +553,135 @@ export const INTERACTIVE_CATALOG: PlatformCatalogEntry[] = [
         ],
       }),
       { type: 'tabs' }
+    ),
+  }),
+
+  // ── Drawer — a button slides in a side panel (menu behavior) ──────────────────
+  // The panel pins with the SANCTIONED `st-fixed-right` (a full-height right rail
+  // capped at 33vw — never a full-viewport overlay, so it can't be a clickjacking
+  // surface; raw `fixed inset-0` is denied by the compile allowlist). A modal/dialog
+  // needs a dimmed full-viewport backdrop, which the position model intentionally
+  // forbids — that one is the site-ui Dialog (st-dialog) atom path, a follow-up.
+  entry({
+    key: 'drawer_panel',
+    name: 'Drawer',
+    category: 'navigation',
+    kind: 'comprehensive',
+    icon: 'panel-right',
+    description:
+      'A button that opens a side panel of navigation or settings, closing on Escape, outside-click, or a link. Ships closed; the canvas reveals it for editing.',
+    surfaces: ['page', 'site'],
+    tags: ['drawer', 'side panel', 'off-canvas', 'sidebar', 'sheet', 'menu', 'navigation'],
+    tree: behave(
+      el('div', 'inline-block', {
+        name: 'Drawer',
+        children: [
+          // A RAW button (not the Button atom): a behavior part must emit data-sx-*,
+          // which only the raw-element render path does. It wears the st-btn recipe so
+          // it still looks like a Button.
+          part(
+            el('button', 'st-btn st-c-neutral st-v-outline st-btn--sz-md', {
+              text: 'Open menu',
+              attrs: { type: 'button' },
+            }),
+            'trigger'
+          ),
+          part(
+            el(
+              'div',
+              'st-fixed-right z-50 flex w-72 flex-col gap-1 border-l border-base-200 bg-base-100 p-5 shadow-2xl',
+              {
+                name: 'Panel',
+                attrs: { hidden: true, role: 'dialog', ariaLabel: 'Menu' },
+                children: [
+                  el('div', 'mb-3 flex items-center justify-between', {
+                    children: [
+                      atom('Heading', 'text-base font-semibold text-base-content', {
+                        level: 'h3',
+                        text: 'Menu',
+                      }),
+                      el(
+                        'a',
+                        'text-lg leading-none text-base-content/40 transition-colors hover:text-base-content',
+                        { text: '✕', attrs: { href: '#', ariaLabel: 'Close' } }
+                      ),
+                    ],
+                  }),
+                  el('a', 'rounded-field px-3 py-2 text-sm text-base-content hover:bg-base-200', {
+                    text: 'Home',
+                    attrs: { href: '/' },
+                  }),
+                  el('a', 'rounded-field px-3 py-2 text-sm text-base-content hover:bg-base-200', {
+                    text: 'Shop',
+                    attrs: { href: '/products' },
+                  }),
+                  el('a', 'rounded-field px-3 py-2 text-sm text-base-content hover:bg-base-200', {
+                    text: 'About',
+                    attrs: { href: '/about' },
+                  }),
+                  el('a', 'rounded-field px-3 py-2 text-sm text-base-content hover:bg-base-200', {
+                    text: 'Contact',
+                    attrs: { href: '/contact' },
+                  }),
+                ],
+              }
+            ),
+            'panel'
+          ),
+        ],
+      }),
+      { type: 'menu' }
+    ),
+  }),
+
+  // ── Popover — a button reveals an anchored card (menu behavior) ───────────────
+  entry({
+    key: 'popover',
+    name: 'Popover',
+    category: 'actions',
+    kind: 'comprehensive',
+    icon: 'message-square',
+    description:
+      'A trigger that reveals a small anchored card of detail, closing on outside-click or Escape. Ships closed; the canvas reveals it for editing.',
+    surfaces: ['page', 'site'],
+    tags: ['popover', 'tooltip', 'flyout', 'hint', 'detail', 'actions'],
+    tree: behave(
+      el('div', 'relative inline-block', {
+        name: 'Popover',
+        children: [
+          // A RAW button (a behavior part must emit data-sx-*; the Button atom does
+          // not). It wears the st-btn recipe so it still looks like a Button.
+          part(
+            el('button', 'st-btn st-c-neutral st-v-outline st-btn--sz-sm', {
+              text: 'Details',
+              attrs: { type: 'button' },
+            }),
+            'trigger'
+          ),
+          part(
+            el(
+              'div',
+              'absolute left-0 top-full z-40 mt-2 w-64 rounded-box border border-base-200 bg-base-100 p-4 shadow-lg',
+              {
+                name: 'Panel',
+                attrs: { hidden: true, role: 'dialog', ariaLabel: 'Shipping estimate' },
+                children: [
+                  atom('Heading', 'text-sm font-semibold text-base-content', {
+                    level: 'h3',
+                    text: 'Shipping estimate',
+                  }),
+                  atom('Text', 'mt-1 text-sm text-base-content/70', {
+                    variant: 'body',
+                    text: 'Free 3–5 day shipping on orders over $75. Express options are offered at checkout.',
+                  }),
+                ],
+              }
+            ),
+            'panel'
+          ),
+        ],
+      }),
+      { type: 'menu' }
     ),
   }),
 ];

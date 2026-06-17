@@ -469,23 +469,18 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
       'A container with a small count badge pinned to its top-right corner — relative box, absolute indicator. The cart / inbox pattern.',
     surfaces: ['page', 'site'],
     tags: ['indicator', 'badge', 'notification', 'count', 'corner', 'layout'],
-    tree: el('div', 'relative inline-flex', {
-      children: [
-        el(
-          'button',
-          'flex h-11 w-11 items-center justify-center rounded-field border border-base-200 text-base-content/70 transition-colors hover:bg-base-200',
-          {
-            attrs: { type: 'button', ariaLabel: 'Notifications' },
-            children: [atom('Icon', 'h-5 w-5', { name: 'bell' })],
-          }
-        ),
-        el(
-          'span',
-          'absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-danger px-1 text-xs font-semibold text-danger-content',
-          { text: '3' }
-        ),
-      ],
-    }),
+    // The real Indicator atom (st-indicator) pins the count badge to the corner of
+    // its content. (Was a hand-rolled relative box + absolute span.)
+    tree: atom('Indicator', 'inline-flex', { label: '3', placement: 'top-end' }, [
+      el(
+        'button',
+        'flex h-11 w-11 items-center justify-center rounded-field border border-base-200 text-base-content/70 transition-colors hover:bg-base-200',
+        {
+          attrs: { type: 'button', ariaLabel: 'Notifications' },
+          children: [atom('Icon', 'h-5 w-5', { name: 'bell' })],
+        }
+      ),
+    ]),
   }),
 
   // ── Join group — input + button sharing a seam ────────────────────────────────
@@ -499,22 +494,16 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
       'Horizontally joined items that share their seams — here an email input joined to a subscribe button reading as one control.',
     surfaces: ['page', 'site'],
     tags: ['join', 'group', 'input group', 'subscribe', 'attached', 'layout'],
-    tree: el('div', 'flex w-full max-w-md items-stretch', {
-      children: [
-        el(
-          'input',
-          'min-w-0 flex-1 rounded-l-field border border-base-300 bg-base-100 px-4 py-2 text-sm text-base-content placeholder:text-base-content/40 focus:border-primary focus:outline-none',
-          {
-            attrs: { type: 'email', name: 'email', placeholder: 'you@example.com' },
-          }
-        ),
-        el(
-          'button',
-          '-ml-px shrink-0 rounded-r-field bg-primary px-5 py-2 text-sm font-medium text-primary-content transition-colors hover:bg-primary/90',
-          { text: 'Subscribe', attrs: { type: 'button' } }
-        ),
-      ],
-    }),
+    // The real Join atom (st-join) collapses the inner seam between an Input and a
+    // Button so they read as one control. (Was hand-rolled rounded-l/r + -ml-px.)
+    tree: atom('Join', 'w-full max-w-md', { orientation: 'horizontal' }, [
+      atom('Input', 'st-c-primary st-fv-outline grow', {
+        type: 'email',
+        name: 'email',
+        placeholder: 'you@example.com',
+      }),
+      atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md', { label: 'Subscribe' }),
+    ]),
   }),
 
   // ── Sticky section header — bar that pins above scrolling content ─────────────

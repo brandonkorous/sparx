@@ -1,8 +1,8 @@
 # WizeWorks Platform — Testing Strategy
 
-**Version:** 1.1  
+**Version:** 1.2  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-17
 
 ---
 
@@ -221,7 +221,7 @@ export default defineConfig({
 ### E2E Example: Tenant Onboarding
 
 ```typescript
-test('merchant can complete onboarding in under 5 minutes', async ({ page }) => {
+test('tenant can complete onboarding in under 5 minutes', async ({ page }) => {
   const start = Date.now();
 
   await page.goto('/register');

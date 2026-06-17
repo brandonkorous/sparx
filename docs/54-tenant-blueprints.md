@@ -1,8 +1,8 @@
 # Tenant Blueprints — one-click templates that provision a whole tenant
 
-**Version:** 0.4.2
+**Version:** 0.4.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-06
+**Last Updated:** 2026-06-17
 
 ---
 
@@ -27,7 +27,7 @@ _underlying artifact_ (a page, a product, an email), those docs win.
 
 It builds on:
 
-- [docs/15 — Merchant Onboarding](15-merchant-onboarding-prd.md): the "live in under 5
+- [docs/15 — Tenant Onboarding](15-merchant-onboarding-prd.md): the "live in under 5
   minutes" goal and the onboarding theme step. Blueprints are the richer, opt-in version of
   the starter seeding onboarding already does.
 - [docs/51 — Content Architecture](51-content-architecture.md): content types own their

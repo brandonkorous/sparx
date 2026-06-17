@@ -76,6 +76,7 @@ import {
   BuilderVariantPicker,
   type BuilderProduct,
 } from './commerce';
+import { BuilderDialog } from './dialog';
 import { BuilderIcon } from './icon';
 import { renderSiteUiAtom } from './site-atoms';
 import { SignupForm } from './signup';
@@ -190,6 +191,12 @@ const CLASS_ON_LEAF: ReadonlySet<string> = new Set([
   'TextRotate',
   'Hover3DCard',
   'HoverGallery',
+  // Overlay / floating (docs/102 Track C follow-up): the positioned regions
+  // (Toast/FAB, platform `st-*` CSS owns the `fixed`) + the Dialog island, all
+  // styling their own element with node.class.
+  'Toast',
+  'FAB',
+  'Dialog',
 ]);
 
 /** Does this leaf type style its own element with node.class (so the host should
@@ -741,6 +748,29 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
           123 Example St, Springfield, IL 62704
         </EmailTextLeaf>
       );
+
+    // ── Modal / dialog (docs/102 Track C follow-up) ──────────────────────────
+    // The Radix-backed overlay island — the one atom that can't be a catalog
+    // composition (a full-viewport backdrop needs `fixed inset-0`, denied by the
+    // compile allowlist). Email has no JS modal, so it falls through to the panel
+    // body content rendered inline (the children) — no trigger, no overlay.
+    case 'Dialog': {
+      if (email) return <>{children}</>;
+      const placement = (str('placement') || 'center') as 'top' | 'center' | 'bottom';
+      return (
+        <BuilderDialog
+          leafClass={leafClass}
+          triggerLabel={str('triggerLabel') || 'Open dialog'}
+          title={str('title') || (edit ? 'Dialog title' : 'Dialog')}
+          description={str('description') || undefined}
+          closeLabel={str('closeLabel') || 'Close'}
+          placement={placement}
+          edit={edit}
+        >
+          {children}
+        </BuilderDialog>
+      );
+    }
 
     // The rest of the @sparx/site-ui library, exposed as droppable atoms (docs/102
     // Track A) — form controls, feedback, data display, navigation, mockups. Their
