@@ -33,8 +33,11 @@ function makeRow(
     id: string;
     key: string;
     name: string;
-    family: string;
+    category: string;
     kind: string;
+    icon: string;
+    description: string;
+    surfaces: string[];
     tree: unknown;
     behaviors: unknown;
     thumbnail: string | null;
@@ -52,8 +55,11 @@ function makeRow(
     id: 'pc_123',
     key: 'hero_split',
     name: 'Split Hero',
-    family: 'hero',
+    category: 'marketing',
     kind: 'comprehensive',
+    icon: 'sparkles',
+    description: 'A split hero with a headline and a CTA.',
+    surfaces: ['page', 'site'],
     tree: { id: 'root', type: 'Section', class: '', props: {}, children: [] },
     behaviors: null,
     thumbnail: null,
@@ -193,7 +199,10 @@ describe('platformCatalogService — CRUD', () => {
     const input = {
       key: 'hero_split',
       name: 'Split Hero',
+      category: 'marketing' as const,
       kind: 'comprehensive' as const,
+      icon: 'sparkles',
+      description: 'A split hero with a headline and a CTA.',
       tree: { id: 'root', type: 'Section', class: '', props: {}, children: [] },
     };
     await expect(svc.create('user_abc', input)).rejects.toThrow(/key.*already/i);
@@ -207,7 +216,10 @@ describe('platformCatalogService — CRUD', () => {
     const input = {
       key: 'hero_split',
       name: 'Split Hero',
+      category: 'marketing' as const,
       kind: 'comprehensive' as const,
+      icon: 'sparkles',
+      description: 'A split hero with a headline and a CTA.',
       tree: { id: 'root', type: 'Section', class: '', props: {}, children: [] },
     };
     const result = await svc.create('user_abc', input);

@@ -5,11 +5,28 @@
 
 import { z } from 'zod';
 import { BuilderNodeSchema, type BuilderNode } from './node';
+import { CATALOG_KINDS, CATALOG_CATEGORIES } from './catalog';
+import { ComponentSurface } from './component';
 
-// ── Kind / status / visibility enums ─────────────────────────────────────────
+// ── Kind / category / surface / status / visibility enums ─────────────────────
+//
+// ONE vocabulary (docs/98 §5): a DB-backed catalog row is a PERSISTED catalog entry,
+// so its kind / category / surfaces reuse the SAME closed sets as the data-as-code
+// PLATFORM_CATALOG — built from the canonical constants here so the DB contract and
+// the static catalog can never drift. A published row is therefore shape-compatible
+// with a `PlatformCatalogEntry` and renders in the Add palette identically.
+//
+// `kind` is a real DB enum (clean identifiers). `category`/`surfaces` are stored as
+// validated STRINGS (VARCHAR / TEXT[]) rather than DB enums — the category slugs are
+// hyphenated (`data-display`), which are invalid Postgres enum identifiers, and this
+// matches the package's "catalog data is validated by @sparx/builder-schemas, never
+// by the DB" convention (cf. the `tree` JSON column).
 
-export const PlatformComponentKind = z.enum(['section', 'common', 'comprehensive', 'email']);
+export const PlatformComponentKind = z.enum(CATALOG_KINDS);
 export type PlatformComponentKind = z.infer<typeof PlatformComponentKind>;
+
+export const PlatformComponentCategory = z.enum(CATALOG_CATEGORIES);
+export type PlatformComponentCategory = z.infer<typeof PlatformComponentCategory>;
 
 export const PlatformComponentStatus = z.enum([
   'draft',
@@ -47,13 +64,22 @@ export function isLegalTransition(
 
 // ── DTOs ──────────────────────────────────────────────────────────────────────
 
-/** Summary (no tree) — catalog list view. */
+/** Summary (no tree) — catalog list view. The first block mirrors a
+ *  `PlatformCatalogEntry` (key/name/category/kind/icon/description/surfaces/tags) so a
+ *  published row is palette-renderable; the rest is DB governance. */
 export interface PlatformComponentSummaryDto {
   id: string;
   key: string;
   name: string;
-  family: string;
+  category: PlatformComponentCategory;
   kind: PlatformComponentKind;
+  /** Lucide icon name for the palette tile. */
+  icon: string;
+  /** One-line palette description. */
+  description: string;
+  /** Editor surfaces this entry appears in (page / site / email). */
+  surfaces: ComponentSurface[];
+  /** Optional richer preview image (beyond the lucide icon). */
   thumbnail: string | null;
   tags: string[];
   status: PlatformComponentStatus;
@@ -82,8 +108,11 @@ export const CreatePlatformComponentInput = z.object({
     .max(64)
     .regex(/^[a-z][a-z0-9_]*$/, 'Use lowercase letters, numbers, and underscores.'),
   name: z.string().min(1).max(120),
-  family: z.string().min(1).max(32).default('content'),
+  category: PlatformComponentCategory,
   kind: PlatformComponentKind,
+  icon: z.string().min(1).max(64),
+  description: z.string().min(1).max(280),
+  surfaces: z.array(ComponentSurface).min(1).default(['page']),
   tree: BuilderNodeSchema,
   behaviors: z.unknown().nullish(),
   thumbnail: z.string().max(2048).nullish(),
@@ -95,8 +124,11 @@ export type CreatePlatformComponentInput = z.infer<typeof CreatePlatformComponen
 export const UpdatePlatformComponentInput = z
   .object({
     name: z.string().min(1).max(120).optional(),
-    family: z.string().min(1).max(32).optional(),
+    category: PlatformComponentCategory.optional(),
     kind: PlatformComponentKind.optional(),
+    icon: z.string().min(1).max(64).optional(),
+    description: z.string().min(1).max(280).optional(),
+    surfaces: z.array(ComponentSurface).min(1).optional(),
     tree: BuilderNodeSchema.optional(),
     behaviors: z.unknown().nullish(),
     thumbnail: z.string().max(2048).nullish(),

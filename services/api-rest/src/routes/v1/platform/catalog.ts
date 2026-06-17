@@ -30,17 +30,21 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { platformCatalogService } from '@sparx/builder';
+import {
+  PlatformComponentKind,
+  PlatformComponentCategory,
+  PlatformComponentStatus,
+} from '@sparx/builder-schemas';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 
 const IdParam = z.object({ id: z.string().min(1) });
+// Filters reuse the shared catalog vocabulary (one source of truth, docs/98 §5).
 const ListQuery = z.object({
-  kind: z.enum(['section', 'common', 'comprehensive', 'email']).optional(),
-  family: z.string().max(32).optional(),
+  kind: PlatformComponentKind.optional(),
+  category: PlatformComponentCategory.optional(),
   tags: z.string().optional(), // comma-separated
-  status: z
-    .enum(['draft', 'submitted', 'in_review', 'approved', 'published', 'archived', 'rejected'])
-    .optional(),
+  status: PlatformComponentStatus.optional(),
 });
 
 const catalogRoutes: FastifyPluginAsync = (app) => {
@@ -48,10 +52,10 @@ const catalogRoutes: FastifyPluginAsync = (app) => {
 
   app.get('/v1/platform/catalog', async (request) => {
     requireRole(request, 'viewer');
-    const { kind, family, tags } = ListQuery.parse(request.query);
+    const { kind, category, tags } = ListQuery.parse(request.query);
     const components = await platformCatalogService.listPublished({
       kind,
-      family,
+      category,
       tags: tags
         ? tags
             .split(',')

@@ -2,6 +2,14 @@
 -- platform's component library. A global table (no tenant_id): every tenant
 -- can read published rows; only platform admins write.
 --
+-- A persisted catalog entry: key/name/category/kind/icon/description/surfaces/
+-- tags/tree mirror the data-as-code `PlatformCatalogEntry`, so a published row
+-- is palette-renderable. `category` and `surfaces` are validated STRINGS (the
+-- shared CatalogCategory / ComponentSurface vocabulary in @sparx/builder-schemas)
+-- rather than DB enums — category slugs are hyphenated ('data-display'), invalid
+-- as Postgres enum identifiers, and this matches the package's "validated by
+-- builder-schemas, never the DB" convention (cf. the `tree` JSON column).
+--
 -- RLS approach (deliberate, non-standard):
 --   • This table is GLOBAL, not per-tenant. FORCE RLS is still applied so
 --     the sparx_app role cannot bypass it.
@@ -20,7 +28,7 @@
 -- seed rows are inserted through the pipeline.
 
 -- Enums
-CREATE TYPE "platform_component_kind" AS ENUM ('section', 'common', 'comprehensive', 'email');
+CREATE TYPE "platform_component_kind" AS ENUM ('common', 'comprehensive');
 CREATE TYPE "platform_component_status" AS ENUM ('draft', 'submitted', 'in_review', 'approved', 'published', 'archived', 'rejected');
 CREATE TYPE "platform_component_visibility" AS ENUM ('public', 'private');
 
@@ -29,8 +37,11 @@ CREATE TABLE "platform_components" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "key" VARCHAR(64) NOT NULL,
     "name" VARCHAR(120) NOT NULL,
-    "family" VARCHAR(32) NOT NULL DEFAULT 'content',
+    "category" VARCHAR(32) NOT NULL,
     "kind" "platform_component_kind" NOT NULL,
+    "icon" VARCHAR(64) NOT NULL,
+    "description" VARCHAR(280) NOT NULL,
+    "surfaces" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[],
     "tree" JSONB NOT NULL,
     "behaviors" JSONB,
     "thumbnail" VARCHAR(2048),
@@ -50,6 +61,7 @@ CREATE TABLE "platform_components" (
 CREATE UNIQUE INDEX "platform_components_key_key" ON "platform_components" ("key");
 CREATE INDEX "platform_components_status_idx" ON "platform_components" ("status");
 CREATE INDEX "platform_components_kind_idx" ON "platform_components" ("kind");
+CREATE INDEX "platform_components_category_idx" ON "platform_components" ("category");
 
 -- Row Level Security (GLOBAL table — see comment above for rationale)
 ALTER TABLE "platform_components" ENABLE ROW LEVEL SECURITY;

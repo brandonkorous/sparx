@@ -16,10 +16,12 @@ import {
   UpdatePlatformComponentInput,
   isLegalTransition,
   type BuilderNode,
+  type ComponentSurface,
   type PlatformComponentDto,
   type PlatformComponentSummaryDto,
   type PlatformComponentStatus,
   type PlatformComponentKind,
+  type PlatformComponentCategory,
 } from '@sparx/builder-schemas';
 import type { PlatformComponent } from '@sparx/db';
 // `Prisma` is a value import (used as both the type namespace and `Prisma.DbNull`).
@@ -34,8 +36,13 @@ function toSummary(row: PlatformComponent): PlatformComponentSummaryDto {
     id: row.id,
     key: row.key,
     name: row.name,
-    family: row.family,
+    // category + surfaces are VARCHAR/TEXT[] in the DB, validated against the shared
+    // vocabulary on write — narrow them back to the closed types on read.
+    category: row.category as PlatformComponentCategory,
     kind: row.kind,
+    icon: row.icon,
+    description: row.description,
+    surfaces: row.surfaces as ComponentSurface[],
     thumbnail: row.thumbnail,
     tags: row.tags,
     status: row.status,
@@ -63,16 +70,16 @@ const asJson = (v: unknown): Prisma.InputJsonValue => v as Prisma.InputJsonValue
 /** List published entries (public). */
 export async function listPublished(filter?: {
   kind?: PlatformComponentKind;
-  family?: string;
+  category?: PlatformComponentCategory;
   tags?: string[];
 }): Promise<PlatformComponentSummaryDto[]> {
   const where: Prisma.PlatformComponentWhereInput = { status: 'published', visibility: 'public' };
   if (filter?.kind) where.kind = filter.kind;
-  if (filter?.family) where.family = filter.family;
+  if (filter?.category) where.category = filter.category;
   if (filter?.tags && filter.tags.length > 0) where.tags = { hasSome: filter.tags };
   const rows = await prisma.platformComponent.findMany({
     where,
-    orderBy: [{ kind: 'asc' }, { family: 'asc' }, { name: 'asc' }],
+    orderBy: [{ category: 'asc' }, { kind: 'asc' }, { name: 'asc' }],
   });
   return rows.map(toSummary);
 }
@@ -120,8 +127,11 @@ export async function create(authorId: string, raw: unknown): Promise<PlatformCo
     data: {
       key: input.key,
       name: input.name,
-      family: input.family,
+      category: input.category,
       kind: input.kind,
+      icon: input.icon,
+      description: input.description,
+      surfaces: input.surfaces,
       tree: asJson(input.tree),
       behaviors: input.behaviors != null ? asJson(input.behaviors) : undefined,
       thumbnail: input.thumbnail ?? null,
@@ -145,8 +155,11 @@ export async function update(id: string, raw: unknown): Promise<PlatformComponen
     version: { increment: 1 },
   };
   if (input.name !== undefined) data.name = input.name;
-  if (input.family !== undefined) data.family = input.family;
+  if (input.category !== undefined) data.category = input.category;
   if (input.kind !== undefined) data.kind = input.kind;
+  if (input.icon !== undefined) data.icon = input.icon;
+  if (input.description !== undefined) data.description = input.description;
+  if (input.surfaces !== undefined) data.surfaces = input.surfaces;
   if (input.tree !== undefined) data.tree = asJson(input.tree);
   if (input.behaviors !== undefined)
     // Clearing a nullable Json column needs Prisma.DbNull (SQL NULL), not a raw null.
