@@ -1,4 +1,4 @@
-# Sparx Platform — Domain Transfer Runbook
+# sparx Platform — Domain Transfer Runbook
 
 **Version:** 1.1
 **Author:** Brandon Korous
@@ -8,7 +8,7 @@
 
 ## 1. What this runbook covers
 
-Moving eight Sparx-owned domains from GoDaddy (current registrar) to Cloudflare (new registrar + DNS). After this is complete, Cloudflare manages all platform DNS via Terraform.
+Moving eight sparx-owned domains from GoDaddy (current registrar) to Cloudflare (new registrar + DNS). After this is complete, Cloudflare manages all platform DNS via Terraform.
 
 | Domain           | Purpose                                                                                                     | Priority            |
 | ---------------- | ----------------------------------------------------------------------------------------------------------- | ------------------- |
@@ -84,7 +84,7 @@ This decouples DNS migration from registrar migration — if anything goes wrong
 
 ---
 
-## 4. Flipping Sparx to Cloudflare-managed DNS
+## 4. Flipping sparx to Cloudflare-managed DNS
 
 Once `sparx.works` is on Cloudflare nameservers (step 3c) — even before registrar transfer completes — Terraform can manage records.
 

@@ -21,7 +21,7 @@
 //
 // POD seam (docs/14 §10 — authoring deferred): print files attach to the sync
 // variant (`files[]`) and to order lines. We import finished sync products and
-// reference them by `sync_variant_id`; a future "design in Sparx" flow would
+// reference them by `sync_variant_id`; a future "design in sparx" flow would
 // add `files`/`placements` to the order line without reshaping this path.
 
 import type {

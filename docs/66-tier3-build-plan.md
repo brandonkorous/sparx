@@ -1,4 +1,4 @@
-# Sparx Platform — Tier 3 Build Plan
+# sparx Platform — Tier 3 Build Plan
 
 **Version:** 1.1
 **Author:** Brandon Korous
@@ -102,7 +102,7 @@ Three dashboard surfaces (none built yet):
 
 ### Slice 6 — Onboarding acceptance gate
 
-Single combined checkbox on the sign-up form: _"I agree to the Sparx [Terms of Service], [Privacy Policy], and [Acceptable Use Policy]."_ Links open in new tabs.
+Single combined checkbox on the sign-up form: _"I agree to the sparx [Terms of Service], [Privacy Policy], and [Acceptable Use Policy]."_ Links open in new tabs.
 
 Write `platform_legal_acceptance` rows (terms/privacy/aup) inside the existing `signUpMerchant` transaction, stamping `docVersion` from `legal-versions` constant and IP/UA from the server action.
 

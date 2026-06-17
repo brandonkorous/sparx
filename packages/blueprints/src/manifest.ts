@@ -73,6 +73,7 @@ export const BlueprintModuleSlug = z.enum([
   'email',
   'b2b',
   'dropship',
+  'inventory',
   'ai',
 ]);
 export type BlueprintModuleSlug = z.infer<typeof BlueprintModuleSlug>;

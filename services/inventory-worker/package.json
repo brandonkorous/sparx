@@ -2,7 +2,7 @@
   "name": "@sparx/inventory-worker",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx inventory sync worker. Handles inventory source sync (CSV + API) via Pub/Sub push (Cloud Run). docs/64 Inv Ph2.",
+  "description": "sparx inventory sync worker. Handles inventory source sync (CSV + API) via Pub/Sub push (Cloud Run). docs/64 Inv Ph2.",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
@@ -19,6 +19,7 @@
     "@prisma/client": "^6.19.3",
     "@sparx/db": "workspace:*",
     "@sparx/events": "workspace:*",
+    "@sparx/inventory": "workspace:*",
     "pino": "^9.5.0",
     "zod": "^4.4.3"
   },

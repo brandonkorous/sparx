@@ -137,7 +137,7 @@ describe('renderBillingDocumentHtml', () => {
     expect(html).toContain('>2.5<');
   });
 
-  it('falls back to the business name wordmark and Sparx default brand', () => {
+  it('falls back to the business name wordmark and sparx default brand', () => {
     const html = renderBillingDocumentHtml(baseData(), { businessName: 'Gillett Diesel' });
     expect(html).toContain('Gillett Diesel');
     expect(html).not.toContain('<img class="logo"');

@@ -13,7 +13,7 @@ export default async function WelcomePage() {
     <Container size="lg">
       <Stack gap={8} className="py-10">
         <PageHeader
-          title="Welcome to Sparx"
+          title="Welcome to sparx"
           badge={progress.state.finishedAt ? <Badge color="success">All set</Badge> : undefined}
           description="A short checklist to get your site production-ready. You can skip and come back any time."
         />

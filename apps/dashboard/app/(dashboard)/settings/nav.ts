@@ -76,7 +76,7 @@ export const SETTINGS_NAV: readonly SettingsNavItem[] = [
   {
     id: 'payments',
     label: 'Payments',
-    description: 'Accept payments with Sparx Pay or your own processor.',
+    description: 'Accept payments with sparx Pay or your own processor.',
     icon: Wallet,
     href: '/settings/payments',
     ready: true,

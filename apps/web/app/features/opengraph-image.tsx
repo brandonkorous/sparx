@@ -11,7 +11,7 @@ import { CAPABILITY_AREAS, capabilityCounts } from '@/lib/capabilities';
 export const runtime = 'nodejs';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
-export const alt = 'Everything inside Sparx — nearly 300 capabilities, one platform.';
+export const alt = 'Everything inside sparx — nearly 300 capabilities, one platform.';
 
 const MODULE_DOTS = CAPABILITY_AREAS.filter((a) => a.module).map((a) => a.accent);
 
@@ -45,7 +45,7 @@ export default function Image() {
             letterSpacing: '-0.03em',
           }}
         >
-          <span>Spar</span>
+          <span>spar</span>
           <span style={{ color: '#6366F1' }}>x</span>
         </div>
         <div

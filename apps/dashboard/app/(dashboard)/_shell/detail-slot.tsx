@@ -13,11 +13,18 @@ import { loadAuthorOptions } from '../cms/content/new/author-options';
 import { CategoryCreateForm } from '../commerce/categories/_components/category-create-form';
 import { loadCategoryParents } from '../commerce/categories/_components/category-parent-options';
 import { CollectionCreateForm } from '../commerce/collections/_components/collection-create-form';
-import { WarehouseCreateForm } from '../commerce/warehouses/_components/warehouse-create-form';
+import { WarehouseCreateForm } from '../inventory/warehouses/_components/warehouse-create-form';
 import { PriceListCreateForm } from '../commerce/pricing/_components/price-list-create-form';
 import { SegmentCreateForm } from '../crm/segments/_components/segment-create-form';
 import { PageCreateForm } from '../cms/_components/page-create-form';
 import { ContentTypeCreateForm } from '../cms/types/_components/content-type-create-form';
+import { IssueGiftCardForm } from '../commerce/gift-cards/_components/issue-gift-card-form';
+import { GrantAccountCreditForm } from '../commerce/account-credit/_components/grant-account-credit-form';
+import { AuthorCreateForm } from '../cms/authors/author-create-form';
+import { TaxonomyCreateForm } from '../cms/taxonomy/taxonomy-create-form';
+import { RedirectCreateForm } from '../cms/redirects/_components/redirect-create-form';
+import { AddSuppressionForm } from '../email/suppressions/_components/add-suppression-form';
+import { AddDomainForm } from '../email/domains/_components/add-domain-form';
 import { AuthorDetailContent } from '../cms/authors/[id]/_content';
 import { ContentTypeDetailContent } from '../cms/types/[typeKey]/_content';
 import { ContentEntryDetailContent } from '../cms/types/[typeKey]/[id]/_content';
@@ -46,7 +53,7 @@ import { ShippingProfileDetailContent } from '../commerce/shipping/profiles/[id]
 import { ShippingZoneDetailContent } from '../commerce/shipping/zones/[id]/_content';
 import { SubscriptionDetailContent } from '../commerce/subscriptions/[id]/_content';
 import { TaxZoneDetailContent } from '../commerce/tax/zones/[id]/_content';
-import { WarehouseDetailContent } from '../commerce/warehouses/[id]/_content';
+import { WarehouseDetailContent } from '../inventory/warehouses/[id]/_content';
 import { ComponentDetailContent } from '../builder/components/[type]/_content';
 
 // Server-only registry mapping a manifest entity type id → its detail content
@@ -112,6 +119,11 @@ const detailModules: Record<string, SparxModule> = {
   menu: 'cms',
   'content-type': 'cms',
   'content-entry': 'cms',
+  // CMS — create-only overlays (no detail view)
+  redirect: 'cms',
+  // Email — create-only overlays (no detail view)
+  'sending-domain': 'email',
+  suppression: 'email',
   // CRM
   customer: 'crm',
   'b2b-account': 'crm',
@@ -123,7 +135,9 @@ const detailModules: Record<string, SparxModule> = {
   product: 'commerce',
   category: 'commerce',
   collection: 'commerce',
-  warehouse: 'commerce',
+  // Warehouse is an inventory-module entity now (docs/100 P1e) — its overlay
+  // chrome wears the inventory accent even though it's reachable from commerce.
+  warehouse: 'inventory',
   review: 'commerce',
   'qa-question': 'commerce',
   subscription: 'commerce',
@@ -136,6 +150,9 @@ const detailModules: Record<string, SparxModule> = {
   'shipping-profile': 'commerce',
   'shipping-zone': 'commerce',
   'tax-zone': 'commerce',
+  // Commerce — create-only overlays (no detail view)
+  'gift-card': 'commerce',
+  'account-credit': 'commerce',
   // Builder
   'builder-component': 'builder',
 };
@@ -199,8 +216,42 @@ async function ContentEntryCreateOverlay() {
   return <ContentEntryWizard types={types} presentation="overlay" authors={authors} />;
 }
 
+// Account-credit "grant" overlay needs the tenant's customers to populate its
+// picker, so a thin server wrapper fetches + maps them (the documented pattern
+// for create overlays needing server data). Mirrors the /new route's fetch.
+interface AccountCreditCustomerRow {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
+}
+
+async function AccountCreditCreateOverlay() {
+  const customersPaged = await api.getPaged<AccountCreditCustomerRow[]>(
+    '/v1/crm/customers?take=200'
+  );
+  const customers = customersPaged.data.map((c) => {
+    const full = `${c.firstName ?? ''} ${c.lastName ?? ''}`.trim();
+    const name = full !== '' ? full : (c.email ?? c.id.slice(0, 8) + '…');
+    return { id: c.id, email: c.email, name };
+  });
+  return <GrantAccountCreditForm surface="overlay" customers={customers} />;
+}
+
 const createComponents: Record<string, React.ComponentType> = {
   category: CategoryCreateOverlay,
+  // Commerce single-column create overlays (no detail view — stay open with an
+  // inline result on success).
+  'gift-card': () => <IssueGiftCardForm surface="overlay" />,
+  'account-credit': AccountCreditCreateOverlay,
+  // CMS — author + taxonomy flow into their detail view on success; redirect
+  // has no detail view and stays open.
+  author: () => <AuthorCreateForm surface="overlay" />,
+  taxonomy: () => <TaxonomyCreateForm surface="overlay" />,
+  redirect: () => <RedirectCreateForm surface="overlay" />,
+  // Email create overlays (no detail view).
+  suppression: () => <AddSuppressionForm surface="overlay" />,
+  'sending-domain': () => <AddDomainForm surface="overlay" />,
   collection: () => <CollectionCreateForm surface="overlay" />,
   // Product create is the multi-step WizardFrame, rendered as its `inline`
   // variant so the surrounding drawer/modal chrome owns the overlay shell. It's

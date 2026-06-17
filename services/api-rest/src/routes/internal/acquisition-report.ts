@@ -3,14 +3,14 @@
 // attribution cookies — into a channel / source / campaign breakdown so a
 // WizeWorks operator can answer "which channels send us paying tenants?".
 //
-// Auth: shared secret in `X-Sparx-Internal-Acquisition-Token`, constant-time
+// Auth: shared secret in `X-sparx-Internal-Acquisition-Token`, constant-time
 // compared against env.SPARX_INTERNAL_ACQUISITION_TOKEN. This is a SEPARATE
 // secret from the cron token (SPARX_INTERNAL_CRON_TOKEN) on purpose — it exposes
 // cross-tenant business intelligence, a different blast radius than triggering a
 // scheduler, so it rotates independently and can be handed out without also
 // granting cron-trigger access.
 //
-// Why an internal token endpoint and not a dashboard page: Sparx has no
+// Why an internal token endpoint and not a dashboard page: sparx has no
 // staff/operator auth tier (docs/16 §2.4) — every session is pinned to exactly
 // one tenant, and the dashboard's data path is RLS-scoped to that tenant. A
 // cross-tenant view therefore can't live behind a normal dashboard login today.
@@ -49,7 +49,7 @@ function authorize(request: FastifyRequest): void {
   }
   const provided = request.headers[ACQ_TOKEN_HEADER];
   if (typeof provided !== 'string' || provided.length === 0) {
-    throw unauthorized('Missing X-Sparx-Internal-Acquisition-Token header.');
+    throw unauthorized('Missing X-sparx-Internal-Acquisition-Token header.');
   }
   const a = Buffer.from(provided, 'utf8');
   const b = Buffer.from(expected, 'utf8');

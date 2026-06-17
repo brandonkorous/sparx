@@ -11,7 +11,7 @@ when to reach for TanStack Query (`@sparx/query`) and — just as importantly �
 
 ## 1. The architecture this slots into
 
-Sparx is **server-first**. The default data path is:
+sparx is **server-first**. The default data path is:
 
 - **Reads** → React Server Components fetch on the server (often via `@/lib/api-rest-client`).
 - **Writes** → Server Actions (`'use server'`) mutate, then `revalidatePath` / `router.refresh()` re-renders.

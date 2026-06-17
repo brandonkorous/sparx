@@ -1148,7 +1148,7 @@ export function DashboardShowcase() {
           }
           lede={
             <>
-              Sparx is one URL, one login, one sidebar. Each active module gets a colored nav item
+              sparx is one URL, one login, one sidebar. Each active module gets a colored nav item
               and a 3px stripe on its cards — you always know where you are.
             </>
           }

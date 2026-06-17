@@ -2,7 +2,7 @@
   "name": "@sparx/provider-easypost",
   "version": "0.0.0",
   "private": true,
-  "description": "EasyPost provider for Sparx Commerce — implements ShippingProvider with deep multi-carrier coverage including freight/LTL for oversized items (play structures, industrial parts).",
+  "description": "EasyPost provider for sparx Commerce — implements ShippingProvider with deep multi-carrier coverage including freight/LTL for oversized items (play structures, industrial parts).",
   "type": "module",
   "exports": {
     ".": {

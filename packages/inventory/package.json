@@ -2,7 +2,7 @@
   "name": "@sparx/inventory",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx Inventory — supply-domain service layer (warehouses, stock levels + movement ledger, reservations, lots/serials, low-stock). Owns all stock; Commerce/B2B/Dropship are consumers. Extracted from @sparx/commerce (docs/100).",
+  "description": "sparx Inventory — supply-domain service layer (warehouses, stock levels + movement ledger, reservations, lots/serials, low-stock). Owns all stock; Commerce/B2B/Dropship are consumers. Extracted from @sparx/commerce (docs/100).",
   "type": "module",
   "exports": {
     ".": {

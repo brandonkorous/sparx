@@ -1,27 +1,50 @@
 import type { Metadata } from 'next';
 import { Nav } from '@/components/marketing/nav';
 import { Footer } from '@/components/marketing/footer';
-import { ComingSoon } from '@/components/marketing/coming-soon';
+import { BrandHero } from '@/components/marketing/brand/brand-hero';
+import { WordmarkSection } from '@/components/marketing/brand/wordmark-section';
+import { MonogramSection } from '@/components/marketing/brand/monogram-section';
+import { MisuseSection } from '@/components/marketing/brand/misuse-section';
+import { PrimaryColorSection } from '@/components/marketing/brand/primary-color-section';
+import { ModulesSection } from '@/components/marketing/brand/modules-section';
+import { PaletteSection } from '@/components/marketing/brand/palette-section';
+import { TypeSection } from '@/components/marketing/brand/type-section';
+import { PrinciplesSection } from '@/components/marketing/brand/principles-section';
+import { VoiceSection } from '@/components/marketing/brand/voice-section';
+import { NotSection } from '@/components/marketing/brand/not-section';
+import { DownloadsSection } from '@/components/marketing/brand/downloads-section';
 
 export const metadata: Metadata = {
-  title: 'Brand — Sparx',
+  title: 'Brand — sparx',
   description:
-    'The Sparx wordmark, color tokens, type scale, and usage rules. Press-ready brand kit available on request.',
+    'The sparx brand system: the lowercase wordmark (the “x” is always indigo), the thirteen-module color system, the Geist type scale, the voice, and the usage rules — plus press-ready logo downloads.',
   alternates: { canonical: '/brand' },
-  robots: { index: false },
+  openGraph: {
+    title: 'Brand — sparx',
+    description:
+      'The sparx wordmark, color system, type scale, voice, and usage rules. Press-ready logo assets included.',
+    url: 'https://sparx.works/brand',
+    type: 'website',
+  },
 };
 
 export default function BrandPage() {
   return (
-    <>
+    <main>
       <Nav />
-      <ComingSoon
-        eyebrow="Company"
-        title="Brand"
-        description="The Sparx wordmark (the 'x' is always indigo), the module color system, the Geist type scale, and the usage rules that keep the whole thing coherent. Press-ready brand kit and high-resolution wordmark pack available on request."
-        contact="brand@sparx.works"
-      />
+      <BrandHero />
+      <WordmarkSection />
+      <MonogramSection />
+      <MisuseSection />
+      <PrimaryColorSection />
+      <ModulesSection />
+      <PaletteSection />
+      <TypeSection />
+      <PrinciplesSection />
+      <VoiceSection />
+      <NotSection />
+      <DownloadsSection />
       <Footer />
-    </>
+    </main>
   );
 }

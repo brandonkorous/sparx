@@ -1,6 +1,6 @@
 # Integration submission
 
-An **integration** connects a Sparx tenant to an external service. The
+An **integration** connects a sparx tenant to an external service. The
 open-submission contract is the **declarative connector tier**: configuration only
 — auth, resources (endpoints + field mappings), and webhooks. The platform's own
 HTTP client runs it inside the tenant's context. **The submitter ships no code.**

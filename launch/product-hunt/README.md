@@ -1,6 +1,6 @@
-# Sparx — Product Hunt launch kit
+# sparx — Product Hunt launch kit
 
-Everything needed to submit Sparx to Product Hunt. **Lead angle:** AI/MCP-native —
+Everything needed to submit sparx to Product Hunt. **Lead angle:** AI/MCP-native —
 _"The first business OS your AI agent can actually operate."_
 
 ## Contents
@@ -22,10 +22,10 @@ The frames tell one story: **hook → platform → proof → permanence.**
 5. **05-sites** — _Content or commerce. Or both._ A real themed site with checkout + B2B.
 6. **06-stack** — _Cancel the six-tool stack._ One data layer replaces Shopify + HubSpot + Mailchimp + Zapier.
 7. **07-pricing** — _Pay only for what you use._ Modular pricing from $10/mo.
-8. **08-permanence** — _AI builds it. Sparx keeps it._ The closing statement.
+8. **08-permanence** — _AI builds it. sparx keeps it._ The closing statement.
 
 Frames are **hybrid**: real product surfaces (live marketing pages + the design-system
-mockups in `/mockups`) embedded in branded 1270×760 cards built from the real Sparx
+mockups in `/mockups`) embedded in branded 1270×760 cards built from the real sparx
 tokens. Frames 1 and 8 are bespoke brand cards. Sources, per frame, are listed in
 `gallery/frame.html` and the capture script.
 

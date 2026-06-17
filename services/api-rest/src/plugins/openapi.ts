@@ -25,9 +25,9 @@ const openapiPlugin: FastifyPluginAsync = async (app) => {
     openapi: {
       openapi: '3.1.0',
       info: {
-        title: 'Sparx API',
+        title: 'sparx API',
         description:
-          'Sparx public REST API. Tenant-scoped via Better Auth-issued internal JWTs (Phase 1) and `sparx_live_*` API keys (Phase 4+). Every response uses the envelope shape `{ success, data, meta? }` or `{ success: false, error: { code, message, request_id } }`. See docs/06-api-specification.md.',
+          'sparx public REST API. Tenant-scoped via Better Auth-issued internal JWTs (Phase 1) and `sparx_live_*` API keys (Phase 4+). Every response uses the envelope shape `{ success, data, meta? }` or `{ success: false, error: { code, message, request_id } }`. See docs/06-api-specification.md.',
         version: '1.0.0',
       },
       servers: [

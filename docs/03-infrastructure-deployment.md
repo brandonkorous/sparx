@@ -1,4 +1,4 @@
-# Sparx Platform — Infrastructure & Deployment
+# sparx Platform — Infrastructure & Deployment
 
 **Version:** 3.2
 **Author:** Brandon Korous
@@ -8,7 +8,7 @@
 
 ## 1. Philosophy — Start Cheap, Scale When Revenue Justifies It
 
-Sparx runs on Google Cloud Platform inside an existing WizeWorks GKE cluster. Every infrastructure decision is evaluated against this rule: **don't pay for a service when a simpler alternative covers the use case at this scale.**
+sparx runs on Google Cloud Platform inside an existing WizeWorks GKE cluster. Every infrastructure decision is evaluated against this rule: **don't pay for a service when a simpler alternative covers the use case at this scale.**
 
 The architecture is explicitly phased. Services are swapped up as tenant count and revenue grow — not before. The application code doesn't change between phases; only the backing services do.
 
@@ -20,7 +20,7 @@ WizeWorks runs on GCP startup credits. Post-incorporation, apply immediately to 
 
 ### Existing Cluster Reuse
 
-Sparx deploys into the existing WizeWorks GKE cluster as a new namespace set. No new cluster required at launch.
+sparx deploys into the existing WizeWorks GKE cluster as a new namespace set. No new cluster required at launch.
 
 ```
 Existing WizeWorks GKE cluster
@@ -199,7 +199,7 @@ spec:
 
 ### 4c. Pub/Sub Stays — It's Already Free
 
-Google Pub/Sub: first 10GB of message data per month is free. At ~1KB per message average, that's 10 million messages. At early stage Sparx will process maybe 50K–100K messages per month across all tenants. Pub/Sub cost: $0 for the foreseeable future.
+Google Pub/Sub: first 10GB of message data per month is free. At ~1KB per message average, that's 10 million messages. At early stage sparx will process maybe 50K–100K messages per month across all tenants. Pub/Sub cost: $0 for the foreseeable future.
 
 The event-driven architecture is worth keeping from day one. Retrofitting it later is significantly more painful than the $0 it costs now.
 

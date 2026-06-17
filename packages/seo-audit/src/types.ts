@@ -26,7 +26,7 @@ export type Grade = 'excellent' | 'good' | 'needs-work' | 'poor';
 export type OgImageState = 'custom' | 'generated' | 'none';
 
 /** The flat, normalized signal set the engine scores. Every field is something
- *  Sparx already holds or can derive from published content — no external crawl. */
+ *  sparx already holds or can derive from published content — no external crawl. */
 export interface AuditableEntity {
   entityType: EntityType;
 

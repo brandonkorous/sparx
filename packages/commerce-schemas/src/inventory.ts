@@ -60,8 +60,16 @@ export const InventoryAdjustReason = z.enum([
   'reserve',
   'release',
   'manual',
+  'sync', // corrective delta from an authoritative external source (ERP/WMS)
 ]);
 export type InventoryAdjustReason = z.infer<typeof InventoryAdjustReason>;
+
+// Who moved the stock — every movement is attributed to one of these so the
+// ledger answers "who, when, why, how much" (docs/100 §2.5). Defaults are
+// derived from the request context (a signed-in user → 'user', else 'system');
+// MCP/AI callers pass 'ai' and integration sync passes 'integration' + a source.
+export const InventoryActorType = z.enum(['user', 'ai', 'system', 'integration']);
+export type InventoryActorType = z.infer<typeof InventoryActorType>;
 
 export const AdjustInventoryInput = z.object({
   variantId: Uuid,
@@ -72,6 +80,13 @@ export const AdjustInventoryInput = z.object({
   referenceId: Uuid.optional(),
   note: z.string().max(2000).optional(),
   unitCostCents: z.number().int().nonnegative().optional(),
+  // Attribution + idempotency overrides (all optional; the service fills actor
+  // from context when omitted). `idempotencyKey` makes a retried/redelivered
+  // write apply exactly once.
+  actorType: InventoryActorType.optional(),
+  actorId: z.string().max(127).optional(),
+  source: z.string().max(63).optional(),
+  idempotencyKey: z.string().max(127).optional(),
 });
 export type AdjustInventoryInput = z.infer<typeof AdjustInventoryInput>;
 

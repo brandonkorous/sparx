@@ -1,4 +1,4 @@
-# Sparx Platform — Automation Feature Build Log
+# sparx Platform — Automation Feature Build Log
 
 **Version:** 1.24
 **Author:** Brandon Korous
@@ -840,7 +840,7 @@ change). New `@sparx/automation-schemas` dashboard dep (canonical types + `trigg
   and NOT the `@detail` drawer system (that's keyed off module manifests) — it mirrors **SEO** (the
   platform-tool precedent): a neutral rail tile + mobile-nav entry shown when **≥1 module is active**,
   and a `layout.tsx` wrapping the surface in `<ModuleProvider module="platform">` so `color="module"` /
-  `variant="module"` resolve to the platform brand (Sparx Indigo). The page itself renders an "activate
+  `variant="module"` resolve to the platform brand (sparx Indigo). The page itself renders an "activate
   a module" state if a tenant somehow has 0 active.
 - ☑ **List** — status-filter chips (All/Active/Paused/Draft/Error + counts), a card per rule with the
   derived module tags ("CRM + Email"), trigger summary, run/error counts + last-run, `OriginBadge`
@@ -1204,7 +1204,7 @@ provisionDefaults` on `module.activated` for `email`; placed at the api-rest com
   `/[id]/edit`, `/[id]/runs`, `/[id]/runs/[runId]`. **Platform-level, not a module** — `ModuleManifest.id`
   excludes `'platform'` and the `@detail` drawer system is keyed off module manifests, so (like SEO) it
   uses full-page routes, a neutral rail + mobile-nav tile shown when ≥1 module is active, and a
-  `layout.tsx` `<ModuleProvider module="platform">` (Sparx Indigo) for `color/variant="module"`. Built:
+  `layout.tsx` `<ModuleProvider module="platform">` (sparx Indigo) for `color/variant="module"`. Built:
   status-filtered list (module tags + run stats + inline enable/pause), the full builder (event/schedule
   `TriggerEditor` with a predicate scan reusing the `ConditionEditor`; the flat AND/OR condition editor;
   the ordered `ActionEditor` — typed config fields for picker-free actions + a JSON escape hatch, picker

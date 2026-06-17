@@ -1,7 +1,7 @@
-// Sparx Pay — Stripe Connect destination charges (docs/94 ADR §6). The charge is
-// created on Sparx's PLATFORM account with on_behalf_of + transfer_data.destination →
+// sparx Pay — Stripe Connect destination charges (docs/94 ADR §6). The charge is
+// created on sparx's PLATFORM account with on_behalf_of + transfer_data.destination →
 // the merchant's connected account; application_fee_amount collects the flat 0.5%
-// platform fee before the remainder settles to the merchant. Sparx owns the charge +
+// platform fee before the remainder settles to the merchant. sparx owns the charge +
 // dispute surface; the merchant never touches Stripe beyond Express onboarding.
 
 import type Stripe from 'stripe';
@@ -26,14 +26,14 @@ export const SPARX_PAY_ID = 'sparx_pay';
 
 class SparxPayUnconfiguredError extends Error {
   constructor() {
-    super('Sparx Pay is unavailable — the platform Stripe key is not configured.');
+    super('sparx Pay is unavailable — the platform Stripe key is not configured.');
     this.name = 'SparxPayUnconfiguredError';
   }
 }
 
 export class SparxPayGateway implements PaymentGateway {
   readonly id = SPARX_PAY_ID;
-  readonly name = 'Sparx Pay';
+  readonly name = 'sparx Pay';
 
   private platform(): Stripe {
     const stripe = getPlatformStripe();

@@ -1,4 +1,4 @@
-# Sparx Platform — Billing Build Plan
+# sparx Platform — Billing Build Plan
 
 **Version:** 1.2
 **Author:** Brandon Korous

@@ -13,6 +13,6 @@
   },
   "pricing": { "model": "subscription", "priceCents": 0 },
   "media": [{ "file": "media/logo.svg", "kind": "image", "alt": "Acme CRM logo" }],
-  "author": { "displayName": "Sparx", "website": "https://sparx.works" },
+  "author": { "displayName": "sparx", "website": "https://sparx.works" },
   "requires": { "modules": ["builder"] }
 }

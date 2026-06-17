@@ -42,7 +42,7 @@ import {
 //                            Pub/Sub instead — see CLAUDE.md.
 
 const DEFAULT_FROM_ENV = 'SPARX_EMAIL_FROM';
-const FALLBACK_FROM = 'Sparx <noreply@sparx.email>';
+const FALLBACK_FROM = 'sparx <noreply@sparx.email>';
 
 function defaultFrom(): string {
   return process.env[DEFAULT_FROM_ENV] ?? FALLBACK_FROM;
@@ -104,7 +104,7 @@ export type TemplateSend =
  * — never hand-write a separate text version, it just drifts from the HTML.
  */
 export interface RenderTemplateOptions {
-  /** Per-tenant brand. When omitted, the Sparx defaults render. Platform
+  /** Per-tenant brand. When omitted, the sparx defaults render. Platform
    *  emails (OTP/2FA, system) intentionally pass no brand. */
   brand?: Partial<BrandTokens>;
 }

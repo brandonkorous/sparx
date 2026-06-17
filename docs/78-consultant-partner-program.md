@@ -1,4 +1,4 @@
-# Sparx Platform — Consultant & Partner Program Spec
+# sparx Platform — Consultant & Partner Program Spec
 
 **Version:** 1.0
 **Author:** Brandon Korous
@@ -8,7 +8,7 @@
 
 ## 1. Overview
 
-The Sparx Consultant role allows non-WizeWorks individuals — web designers, digital agencies, ecommerce consultants, marketing firms — to access and manage multiple merchant accounts from a single login. A consultant is not a WizeWorks employee and not the merchant. They are a trusted third party granted access by the merchant.
+The sparx Consultant role allows non-WizeWorks individuals — web designers, digital agencies, ecommerce consultants, marketing firms — to access and manage multiple merchant accounts from a single login. A consultant is not a WizeWorks employee and not the merchant. They are a trusted third party granted access by the merchant.
 
 This is distinct from:
 
@@ -20,7 +20,7 @@ This is distinct from:
 
 ## 2. How It Works
 
-A consultant is a Sparx user who belongs to multiple tenant organizations simultaneously, with different roles in each. The merchant invites them. The merchant controls their permissions. The merchant can revoke access at any time.
+A consultant is a sparx user who belongs to multiple tenant organizations simultaneously, with different roles in each. The merchant invites them. The merchant controls their permissions. The merchant can revoke access at any time.
 
 ### Consultant Login Experience
 
@@ -77,7 +77,7 @@ The same roles available to staff members are assignable to consultants. Merchan
 ```
 Free:           Manage up to 3 client accounts
                 Standard multi-tenant dashboard
-                No additional cost beyond normal Sparx login
+                No additional cost beyond normal sparx login
 
 Consultant:     $49/mo
                 Unlimited client accounts
@@ -85,7 +85,7 @@ Consultant:     $49/mo
                 White-label reports (consultant's logo)
                 Priority support channel (direct Slack)
                 Early feature access
-                Listed in Sparx Partner Directory (optional)
+                Listed in sparx Partner Directory (optional)
 ```
 
 The free tier exists to let consultants get started without commitment. The $49/mo upgrade is triggered naturally when they hit their 4th client — the dashboard prompts them at that point.
@@ -191,7 +191,7 @@ CRM
 [Download PDF]   [Email to client]
 ```
 
-Reports are generated on-demand. The consultant's branding (logo, colors) replaces Sparx branding on the report. The merchant never sees who generated it unless the consultant chooses to include their contact info.
+Reports are generated on-demand. The consultant's branding (logo, colors) replaces sparx branding on the report. The merchant never sees who generated it unless the consultant chooses to include their contact info.
 
 ---
 
@@ -202,19 +202,19 @@ Consultants on the paid plan can opt into the public partner directory at `sparx
 ```
 sparx.works/partners
 
-Find a Sparx consultant
+Find a sparx consultant
 
 Specialty: [All ▾]   Location: [All ▾]   [Search]
 
 ┌─────────────────────────────────────────────────────┐
 │ Apex Digital Agency                                  │
 │ Fresno, CA · ecommerce, B2B, email                  │
-│ ★★★★★ 12 Sparx merchants                           │
+│ ★★★★★ 12 sparx merchants                           │
 │ [View profile]  [Contact]                            │
 ├─────────────────────────────────────────────────────┤
 │ Maria Chen Consulting                                │
 │ Remote · design, site builder, CMS                  │
-│ ★★★★½ 8 Sparx merchants                            │
+│ ★★★★½ 8 sparx merchants                            │
 │ [View profile]  [Contact]                            │
 └─────────────────────────────────────────────────────┘
 ```
@@ -270,7 +270,7 @@ Revenue share is a future addition — not required for the initial consultant r
 
 A self-paced online certification covering:
 
-- Sparx platform fundamentals
+- sparx platform fundamentals
 - Site builder and theme system
 - Commerce module setup and optimization
 - B2B/wholesale configuration
@@ -281,7 +281,7 @@ A self-paced online certification covering:
 
 Certified consultants:
 
-- Get a "Sparx Certified" badge on their directory listing
+- Get a "sparx Certified" badge on their directory listing
 - Are prioritized in search results on the partner directory
 - Get access to dedicated partner Slack channel
 - Early access to beta features

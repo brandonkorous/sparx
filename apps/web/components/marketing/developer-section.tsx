@@ -57,7 +57,7 @@ const FEATURES = [
       </svg>
     ),
     title: 'Self-host or managed',
-    body: 'Run Sparx on your own GKE cluster, or let WizeWorks operate it ($750/mo, includes Gillett-tier support).',
+    body: 'Run sparx on your own GKE cluster, or let WizeWorks operate it ($750/mo, includes Gillett-tier support).',
   },
 ] as const;
 
@@ -76,7 +76,7 @@ export function DeveloperSection() {
           }
           lede={
             <>
-              Every Sparx feature exists as a REST and GraphQL endpoint before it exists as a
+              Every sparx feature exists as a REST and GraphQL endpoint before it exists as a
               screen. Webhook into Pub/Sub. Ship headless with the Builder SDK. Self-host if you
               want it.
             </>

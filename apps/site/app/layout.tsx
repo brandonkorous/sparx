@@ -36,6 +36,7 @@ import { getPublishedBuilderLayout, getPublishedBuilderStyles } from '@/lib/buil
 import { loadSiteData } from '@/lib/builder-data';
 import { ConsentManager } from '@/components/consent/consent-manager';
 import { SiteAnalyticsBeacon } from '@/components/site-analytics-beacon';
+import { TopProgressBar } from '@/components/top-progress-bar';
 import { ChatWidget } from '@sparx/chat-widget';
 import { ChunkReloadGuard } from '@sparx/ui';
 import { mediaUrl } from '@/lib/media';
@@ -104,9 +105,9 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     robots: { index: true, follow: true },
     // The tenant's own favicon always wins. Until they set one, fall back to
-    // the Sparx mark (public/) rather than the browser's default globe — a
+    // the sparx mark (public/) rather than the browser's default globe — a
     // brand-new store still looks finished. Deliberately favicon-only: no
-    // apple-icon / manifest, so Sparx never brands a tenant's home-screen
+    // apple-icon / manifest, so sparx never brands a tenant's home-screen
     // install. Assets: apps/site/public/{favicon.ico,sparx-icon.svg}.
     icons: favicon
       ? { icon: favicon }
@@ -413,6 +414,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         ) : null}
       </head>
       <body className="st-body">
+        {/* Page-top loading bar in the tenant's own brand (--st-primary). */}
+        <TopProgressBar />
         {/* Silently recover a shopper's tab whose chunks were purged by a deploy.
             Deliberately no visible "refresh" toast on customer-facing pages. */}
         <ChunkReloadGuard />

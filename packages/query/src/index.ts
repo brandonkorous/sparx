@@ -2,7 +2,7 @@
 //
 // ONE import source for client-interactive server state. Re-exports the full
 // TanStack Query surface (hooks, types, QueryClient, dehydrate, HydrationBoundary,
-// isServer, …) alongside the Sparx setup so feature code imports everything from
+// isServer, …) alongside the sparx setup so feature code imports everything from
 // `@sparx/query` rather than reaching for `@tanstack/react-query` directly.
 //
 // - The client <QueryProvider> lives at the `@sparx/query/provider` subpath

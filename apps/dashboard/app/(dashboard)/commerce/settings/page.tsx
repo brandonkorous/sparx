@@ -52,7 +52,7 @@ interface WarehouseRow {
 export default async function CommerceSiteSettingsPage() {
   const [settings, warehouses] = await Promise.all([
     api.get<CommerceSiteSettings>('/v1/commerce/site/settings'),
-    api.get<WarehouseRow[]>('/v1/commerce/warehouses'),
+    api.get<WarehouseRow[]>('/v1/inventory/locations'),
   ]);
 
   const initialForForm = {

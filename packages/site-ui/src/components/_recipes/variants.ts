@@ -21,7 +21,7 @@
  *  still accepted (it maps to `st-c-${color}`) while keeping autocomplete.
  *  `surface` is the neutral page-surface slot (base-100 fill / base-content
  *  ink) — the light-glass / chrome case. site-ui has no module colors (those
- *  are Sparx-admin only, in @sparx/ui). */
+ *  are sparx-admin only, in @sparx/ui). */
 export const COLOR_KEYS = [
   'primary',
   'secondary',

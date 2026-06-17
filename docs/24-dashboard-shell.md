@@ -1,4 +1,4 @@
-# Sparx Platform — Dashboard Shell
+# sparx Platform — Dashboard Shell
 
 **Version:** 1.5
 **Author:** Brandon Korous
@@ -289,7 +289,7 @@ Favorites and Recents stay reachable everywhere because they live in the rail (a
 
 ### 5.3 No Top-Tab Strip
 
-Sparx has **no top tab strip** above the search button. Rationale:
+sparx has **no top tab strip** above the search button. Rationale:
 
 - App-mode tabs (Inbox, Activity, Home dashboard) compete with the `Tenant > Module` breadcrumb in the header, which already does spatial-orientation work.
 - Cross-module surfaces (notifications, account-wide activity) belong in the bottom utility row or as a dedicated Module — not as a separate top-level switcher.

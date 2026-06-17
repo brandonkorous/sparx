@@ -1,5 +1,5 @@
 // Payments settings (docs/94 ADR §13) — pick the gateway and run Stripe's hosted
-// Connect onboarding. Sparx Pay is the recommended, branded path (Stripe Connect under
+// Connect onboarding. sparx Pay is the recommended, branded path (Stripe Connect under
 // the hood); merchants can also bring their own Stripe account or take payments
 // manually. Module-gated on Commerce (the primary payment consumer); a tenant without
 // it sees the activation upsell.
@@ -26,7 +26,7 @@ export default async function PaymentsSettingsPage(): Promise<React.JSX.Element>
         <PageHeader
           icon={<Wallet className="h-5 w-5" />}
           title="Payments"
-          description="Choose how you accept payments. Sparx Pay sets you up in minutes — Sparx handles disputes, settlement, and PCI, and takes a flat 0.5% per transaction. Or connect your own processor and keep Sparx out of the money flow."
+          description="Choose how you accept payments. sparx Pay sets you up in minutes — sparx handles disputes, settlement, and PCI, and takes a flat 0.5% per transaction. Or connect your own processor and keep sparx out of the money flow."
         />
         <PaymentsManager initialConfig={config} />
       </Stack>

@@ -1,4 +1,4 @@
-# Sparx Platform — Pricing Model Spec
+# sparx Platform — Pricing Model Spec
 
 **Version:** 2.0
 **Author:** Brandon Korous
@@ -10,7 +10,7 @@
 
 **Open access. Physical limits only. Free to build, pay to publish.**
 
-Sparx does not gate features behind plan tiers. Every merchant has access to every capability of their activated modules — unlimited products, unlimited posts, unlimited customers, unlimited orders, unlimited automations, unlimited team members.
+sparx does not gate features behind plan tiers. Every merchant has access to every capability of their activated modules — unlimited products, unlimited posts, unlimited customers, unlimited orders, unlimited automations, unlimited team members.
 
 The only metered resources are physical:
 
@@ -137,7 +137,7 @@ The "Same elsewhere" comparison updates dynamically:
 | CRM      | HubSpot Starter       | $50/mo            |
 | Email    | Mailchimp Standard    | $100/mo           |
 | B2B      | Shopify B2B add-on    | $200/mo           |
-| AI/MCP   | No equivalent         | "Unique to Sparx" |
+| AI/MCP   | No equivalent         | "Unique to sparx" |
 | Dropship | DSers Pro             | $20/mo            |
 | Chat     | Intercom Starter      | $74/mo            |
 
@@ -215,7 +215,7 @@ Merchants approaching or exceeding 10,000/mo are notified with their projected o
 | Up to $200/mo | 0.25%           |
 | $299/mo+      | 0%              |
 
-Transaction fees only apply to Sparx-processed payments (Commerce module checkout). B2B orders with manual payment (invoices, wire transfers) are not subject to transaction fees.
+Transaction fees only apply to sparx-processed payments (Commerce module checkout). B2B orders with manual payment (invoices, wire transfers) are not subject to transaction fees.
 
 sparx.market has a separate commission structure (see 62-sparx-market-architecture.md).
 

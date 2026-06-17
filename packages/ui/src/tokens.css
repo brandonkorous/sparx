@@ -1,5 +1,5 @@
 /* ──────────────────────────────────────────────────────────────
-   Sparx Design Tokens — single source of truth.
+   sparx Design Tokens — single source of truth.
    Imported once per app in the root layout. All @sparx/ui components
    reference these variables. Never hardcode colors in components.
    See docs/23-frontend-component-architecture.md §4.
@@ -414,5 +414,64 @@
   100% {
     left: 100%;
     width: 40%;
+  }
+}
+
+/* ── Top navigation progress bar (TopProgress) ───────────────────────────────
+   A page-top loading bar whose fill REVEALS a gradient sized to the viewport,
+   so progress moves through the brand palette. Two scopes, one principle —
+   "show the current scope's identity":
+     • platform → the full module spectrum (identity = every module at once)
+     • a module → a light→base→deep sweep of --module-active
+   The bar is anchored at the viewport's left edge, so its growing width uncovers
+   more of the 100vw-wide gradient. Token-driven; tenant theme overrides flow
+   through. Layout (fixed / top / width / opacity) is owned by the component. */
+.sx-topbar__bar {
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 100vw 100%;
+  /* Module sweep: a specular light→base→deep ramp of the active hue. The white/
+     black anchors are luminance highlight/shadow (a glossy sheen), not brand
+     colors, so the bar reads the same in light and dark mode. */
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in oklch, var(--module-active) 72%, #ffffff) 0%,
+    var(--module-active) 50%,
+    color-mix(in oklch, var(--module-active) 84%, #000000) 100%
+  );
+}
+.sx-topbar--spectrum .sx-topbar__bar {
+  background-image: linear-gradient(
+    90deg,
+    var(--module-builder) 0%,
+    var(--module-crm) 13%,
+    var(--module-cms) 26%,
+    var(--module-dropship) 39%,
+    var(--module-seo) 52%,
+    var(--module-inventory) 64%,
+    var(--module-commerce) 76%,
+    var(--module-ai) 88%,
+    var(--module-chat) 100%
+  );
+}
+
+/* Leading-edge "peg": a soft comet glow at the fill's head. */
+.sx-topbar__peg {
+  border-radius: var(--radius-full);
+  box-shadow:
+    0 0 10px 1px var(--module-active),
+    0 0 6px 0 var(--module-active);
+  transform: rotate(2.5deg) translateY(-1px);
+}
+.sx-topbar--spectrum .sx-topbar__peg {
+  box-shadow:
+    0 0 10px 1px var(--module-chat),
+    0 0 6px 0 var(--module-ai);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The trickle is already suppressed in JS; drop the glow's implied motion. */
+  .sx-topbar__peg {
+    display: none;
   }
 }

@@ -1,4 +1,4 @@
-# Sparx Platform — Cost & Scaling Guide
+# sparx Platform — Cost & Scaling Guide
 
 **Version:** 1.1
 **Author:** Brandon Korous

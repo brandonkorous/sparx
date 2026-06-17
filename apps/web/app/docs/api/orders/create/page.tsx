@@ -6,7 +6,7 @@ import { CodeBlock } from '@/components/docs/code-block';
 export const metadata: Metadata = {
   title: 'Create an order',
   description:
-    'POST /v1/crm/orders — create an order in the Sparx CRM. Parameters, line items, computed totals, the response shape, and error codes.',
+    'POST /v1/crm/orders — create an order in the sparx CRM. Parameters, line items, computed totals, the response shape, and error codes.',
   alternates: { canonical: '/docs/api/orders/create' },
 };
 
@@ -190,7 +190,7 @@ export default function CreateOrderPage() {
             Override the human-facing order number. Auto-generated when omitted.
           </ApiParam>
           <ApiParam name="metadata" type="object">
-            Arbitrary key/value pairs you can attach. Returned verbatim; never used by Sparx.
+            Arbitrary key/value pairs you can attach. Returned verbatim; never used by sparx.
           </ApiParam>
 
           <ApiSection title="Returns" />

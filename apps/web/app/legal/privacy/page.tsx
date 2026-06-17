@@ -3,8 +3,8 @@ import { LEGAL_DOC_VERSIONS } from '@/lib/legal-versions';
 import { LegalDoc, LegalSection, LegalP, LegalList } from '@/components/marketing/legal-doc';
 
 export const metadata: Metadata = {
-  title: 'Privacy policy — Sparx',
-  description: 'How Sparx collects, uses, and protects personal information.',
+  title: 'Privacy policy — sparx',
+  description: 'How sparx collects, uses, and protects personal information.',
   alternates: { canonical: '/legal/privacy' },
 };
 
@@ -18,16 +18,16 @@ export default function PrivacyPage() {
       effectiveDate={v.effectiveDate}
       intro={
         <>
-          How WizeWorks handles personal information across the Sparx platform — both the data we
+          How WizeWorks handles personal information across the sparx platform — both the data we
           collect about our own customers and the data we process on their behalf.
         </>
       }
     >
       <LegalSection heading="1. Two roles, two relationships">
         <LegalP>
-          Sparx serves two kinds of people, and our role differs for each. When you sign up for
-          Sparx as a merchant or publisher, we are the <strong>data controller</strong> for your
-          account information. When your customers interact with a store or site you run on Sparx,
+          sparx serves two kinds of people, and our role differs for each. When you sign up for
+          sparx as a merchant or publisher, we are the <strong>data controller</strong> for your
+          account information. When your customers interact with a store or site you run on sparx,
           you are the controller of their personal data and we act as your{' '}
           <strong>data processor</strong> — see the{' '}
           <a href="/legal/dpa">Data Processing Addendum</a>. This policy describes the first

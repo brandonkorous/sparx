@@ -182,7 +182,7 @@ export async function handle(event: EmailSendEvent, logger: Logger): Promise<Han
       // colors/logo. When the send carries a `propertyId` (docs/49 Phase 7b),
       // resolve the SITE's brand (its `brand_override` merged over the tenant
       // brand) so a template send on behalf of one site looks like that site;
-      // null → tenant brand, and a tenant with no brand → Sparx defaults.
+      // null → tenant brand, and a tenant with no brand → sparx defaults.
       // Best-effort: a brand failure must not block delivery.
       let brand = null;
       try {
@@ -230,7 +230,7 @@ export async function handle(event: EmailSendEvent, logger: Logger): Promise<Han
 }
 
 function defaultRawFrom(): string {
-  return process.env.SPARX_EMAIL_FROM ?? 'Sparx <noreply@sparx.email>';
+  return process.env.SPARX_EMAIL_FROM ?? 'sparx <noreply@sparx.email>';
 }
 
 function isPermanent(err: unknown): boolean {

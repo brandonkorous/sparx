@@ -1,4 +1,4 @@
-# Sparx Platform — Architecture Overview
+# sparx Platform — Architecture Overview
 
 **Version:** 2.1
 **Author:** Brandon Korous
@@ -8,7 +8,7 @@
 
 ## 1. Architecture Philosophy
 
-Sparx is built API-first, cloud-native, modular, and multi-tenant from day one. Every feature exposed in the UI is available via API. The platform runs on Google Kubernetes Engine (GKE) with horizontal scalability at every layer.
+sparx is built API-first, cloud-native, modular, and multi-tenant from day one. Every feature exposed in the UI is available via API. The platform runs on Google Kubernetes Engine (GKE) with horizontal scalability at every layer.
 
 Core tenets:
 
@@ -178,8 +178,8 @@ Shared database, row-level isolation using PostgreSQL Row Level Security (RLS). 
 
 Better Auth's organization model maps directly:
 
-- Better Auth Organization = Sparx Tenant
-- Better Auth Organization Member = Sparx Staff User
+- Better Auth Organization = sparx Tenant
+- Better Auth Organization Member = sparx Staff User
 - Tenant context established from Better Auth session claims
 
 ---
@@ -222,7 +222,7 @@ Postal routes via the tenant's DKIM-signed domain (or sparx.email)
     ↓ Dedicated IP pool
 Recipient's inbox
     ↓
-Bounces/complaints → Postal webhook → Sparx suppression list
+Bounces/complaints → Postal webhook → sparx suppression list
 ```
 
 ---

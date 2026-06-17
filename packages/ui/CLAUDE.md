@@ -24,4 +24,4 @@ Every color-bearing component uses **four-axis** `color × variant × size` via 
 
 ## The wordmark
 
-The Sparx wordmark renders with the **"x" always in Sparx Indigo `#6366F1`** — never one solid color. Geist 500, tracking `-0.03em`.
+The sparx wordmark renders with the **"x" always in sparx Indigo `#6366F1`** — never one solid color. Geist 500, tracking `-0.03em`.

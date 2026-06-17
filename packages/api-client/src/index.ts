@@ -1,4 +1,5 @@
-// @sparx/api-client — TypeScript SDK for the Sparx public REST API.
+// @sparx/api-client — TypeScript SDK for the sparx public REST API.
+// (The exported `Sparx` class keeps its PascalCase — it's a code identifier, not brand text.)
 //
 // Quick start:
 //

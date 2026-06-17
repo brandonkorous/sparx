@@ -1,4 +1,4 @@
-// @sparx/provider-shippo — Shippo ShippingProvider + Sparx Shipping
+// @sparx/provider-shippo — Shippo ShippingProvider + sparx Shipping
 // white-label. Phase 0 stub: interface contracts in place, real Shippo
 // SDK calls land in Phase 5.
 
@@ -47,10 +47,10 @@ const shippoMetadata: ProviderMetadataDescriptor = {
 
 const sparxShippingMetadata: ProviderMetadataDescriptor = {
   slug: SPARX_SHIPPING_SLUG,
-  displayName: 'Sparx Shipping',
+  displayName: 'sparx Shipping',
   description:
     'One-click shipping with discounted USPS, UPS, and FedEx rates. No carrier accounts needed.',
-  vendor: 'Sparx',
+  vendor: 'sparx',
   kinds: ['shipping'],
   supportedCurrencies: ['USD'],
   supportedCountries: ['US'],

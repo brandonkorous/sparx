@@ -1,6 +1,6 @@
 'use client';
 
-// Non-blocking banner shown on the dashboard home when Sparx's platform legal
+// Non-blocking banner shown on the dashboard home when sparx's platform legal
 // docs have a newer material version the signed-in owner hasn't accepted
 // (docs/42 §6). Mirrors the onboarding banner — a nudge, not a hard gate.
 

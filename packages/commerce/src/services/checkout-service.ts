@@ -335,9 +335,9 @@ export async function createPaymentIntent(
     );
   }
 
-  // Resolve the tenant's active gateway (Sparx Pay / Stripe Direct) and open the
+  // Resolve the tenant's active gateway (sparx Pay / Stripe Direct) and open the
   // intent through PaymentService. The gateway sets metadata.tenantId on the intent so
-  // the payment webhook can resolve the tenant; the platform fee (Sparx Pay only) is
+  // the payment webhook can resolve the tenant; the platform fee (sparx Pay only) is
   // recorded on the payment_intents ledger. The intent id IS the paymentRef the
   // webhook later reconciles against.
   const gateway = await resolvePaymentGateway(ctx.tenantId);

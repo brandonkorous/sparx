@@ -5,12 +5,12 @@ import { Container, Display, Dot, Spark } from '@/components/marketing/primitive
 import { EarlyAccessForm } from './early-access-form';
 
 export const metadata: Metadata = {
-  title: 'Early access — Sparx',
+  title: 'Early access — sparx',
   description:
-    'Sparx is the modular OS for content and commerce — storefront, CRM, CMS, email, B2B, and AI in one platform. Join the early-access list and we’ll bring you in.',
+    'sparx is the modular OS for content and commerce — storefront, CRM, CMS, email, B2B, and AI in one platform. Join the early-access list and we’ll bring you in.',
   alternates: { canonical: '/early' },
   openGraph: {
-    title: 'Get early access to Sparx',
+    title: 'Get early access to sparx',
     description:
       'One platform for content and commerce — built by AI, kept by you. Join the early-access list.',
     url: '/early',
@@ -54,7 +54,7 @@ export default function EarlyAccessPage() {
               }}
             >
               <Display as="h1" size={80} lineHeight={76}>
-                Be first on Sparx
+                Be first on sparx
                 <Spark />
               </Display>
 
@@ -68,7 +68,7 @@ export default function EarlyAccessPage() {
                   margin: 0,
                 }}
               >
-                Sparx is the modular OS for content and commerce — storefront, CRM, CMS, email, B2B,
+                sparx is the modular OS for content and commerce — storefront, CRM, CMS, email, B2B,
                 and AI in one platform that builds your site and keeps it. We&rsquo;re opening it up
                 gradually. Join the list and we&rsquo;ll bring you in.
               </p>

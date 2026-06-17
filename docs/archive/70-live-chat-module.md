@@ -1,4 +1,4 @@
-# Sparx Platform — Live Chat Module Spec
+# sparx Platform — Live Chat Module Spec
 
 **Version:** 1.0
 **Author:** Brandon Korous
@@ -8,7 +8,7 @@
 
 ## 1. Overview
 
-Sparx Live Chat is a built-in customer communication module. Merchants get a branded chat widget on their site and a unified inbox in the dashboard — no Intercom, no Zendesk, no Crisp required. The AI layer handles common questions instantly; humans handle the rest.
+sparx Live Chat is a built-in customer communication module. Merchants get a branded chat widget on their site and a unified inbox in the dashboard — no Intercom, no Zendesk, no Crisp required. The AI layer handles common questions instantly; humans handle the rest.
 
 **Module:** Chat · +$19/mo  
 **Surfaces:** Site widget, merchant dashboard inbox, sparx.market product pages
@@ -17,7 +17,7 @@ Sparx Live Chat is a built-in customer communication module. Merchants get a bra
 
 ## 2. Why Build It
 
-Every Sparx merchant currently solves customer support themselves. Options are:
+Every sparx merchant currently solves customer support themselves. Options are:
 
 - Ignore it (bad for conversion)
 - Pay Intercom/Zendesk ($100–300/mo)
@@ -39,7 +39,7 @@ All customer conversations in one place. Assign to staff members. See customer's
 
 ### Surface 3 — sparx.market Chat
 
-"Chat with [Merchant Name]" on product pages. Routes to that merchant's inbox. Shopper identified if they have a Sparx account.
+"Chat with [Merchant Name]" on product pages. Routes to that merchant's inbox. Shopper identified if they have a sparx account.
 
 ---
 
@@ -159,7 +159,7 @@ interface ChatWidgetConfig {
   awayMessage: string; // shown when merchant is offline
   operatingHours: OperatingHours | null; // null = always on
   aiEnabled: boolean; // default true
-  aiPersonaName: string; // "Sparx Assistant" or custom
+  aiPersonaName: string; // "sparx Assistant" or custom
   collectEmail: boolean; // ask before starting chat if anonymous
   showOnPages: 'all' | 'product' | 'cart' | string[];
 }

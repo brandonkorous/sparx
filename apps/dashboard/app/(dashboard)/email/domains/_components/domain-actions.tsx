@@ -79,7 +79,7 @@ export function DomainActions({ domain }: { domain: SendingDomainRow }) {
           <AlertDialogHeader>
             <AlertDialogTitle>Remove {domain.domain}?</AlertDialogTitle>
             <AlertDialogDescription>
-              This removes the domain from Mailgun and Sparx. Email can no longer be sent from it
+              This removes the domain from Mailgun and sparx. Email can no longer be sent from it
               until you add and verify it again.
             </AlertDialogDescription>
           </AlertDialogHeader>

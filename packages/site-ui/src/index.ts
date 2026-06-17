@@ -238,6 +238,15 @@ export {
   type ToastHorizontal,
   type ToastVertical,
 } from './components/toast';
+export { TopProgress, type TopProgressProps } from './components/top-progress';
+export {
+  siteProgress,
+  withSiteProgress,
+  ROUTE_ID as TOP_PROGRESS_ROUTE_ID,
+  type SiteProgressState,
+  type SiteProgressHandle,
+  type SiteProgressStartOptions,
+} from './components/top-progress-controller';
 
 // ── Catalog: display / input ───────────────────────────────
 export { Countdown, type CountdownProps } from './components/countdown';

@@ -2,7 +2,7 @@
   "name": "@sparx/markup-recompute-worker",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx markup recompute worker (docs/48 Phase 4). Receives variant.cost.updated events via Pub/Sub push (Cloud Run HTTP entrypoint) and re-derives the list price for variants bound to a markup rule — auto-applying within the rule's tolerance band, or staging the change for human approval beyond it.",
+  "description": "sparx markup recompute worker (docs/48 Phase 4). Receives variant.cost.updated events via Pub/Sub push (Cloud Run HTTP entrypoint) and re-derives the list price for variants bound to a markup rule — auto-applying within the rule's tolerance band, or staging the change for human approval beyond it.",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {

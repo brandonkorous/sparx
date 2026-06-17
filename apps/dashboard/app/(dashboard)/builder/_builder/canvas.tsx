@@ -1419,7 +1419,7 @@ export function Canvas({
               chrome (docs/52 §1). The legal footer stays chrome. */}
           {page}
           <div className="bx-sendfoot" aria-hidden>
-            {frame.senderName} · sent with Sparx
+            {frame.senderName} · sent with sparx
             <br />
             <span className="bx-sendfoot__links">Unsubscribe</span> ·{' '}
             <span className="bx-sendfoot__links">Manage preferences</span>

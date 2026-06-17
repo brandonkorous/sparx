@@ -1,10 +1,10 @@
-# 89 — Sparx Feature Catalog
+# 89 — sparx Feature Catalog
 
 **Version:** 1.0
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-11
 
-The single, exhaustive inventory of **everything Sparx does** — every user-facing
+The single, exhaustive inventory of **everything sparx does** — every user-facing
 capability across every module, with an honest build status. The per-module PRDs
 (docs/08–14, etc.) describe _intent_; this document describes _reality_ as of the
 date above, grounded in the actual `packages/`, `services/`, and `apps/` code, not
@@ -424,7 +424,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 
 - ✅ **Unified marketplace** — one catalog API serving dashboard (Install) + public site (Sign up).
 - ✅ **Four categories** — blueprints, themes, components, integrations (registry-driven).
-- ✅ **Publisher model** — Sparx / tenant / partner publishers, RLS-scoped listings.
+- ✅ **Publisher model** — sparx / tenant / partner publishers, RLS-scoped listings.
 - ✅ **Blueprint browse + install + go-live** — gallery, detail, one-tap install → draft → live.
 - ✅ **Theme & component listings** — saved token/node-tree payloads.
 - ✅ **Storage-backed bundles** — payloads as GCS artifacts (icon/preview required); 30 first-party bundles ingested.
@@ -488,7 +488,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 - ✅ **Cookie consent settings** — mode (off/GDPR/CCPA), categories, banner text, policy slug, version.
 - ✅ **Consent banner + append-only record** — every decision logged (visitor/customer, categories, IP, UA).
 - ✅ **Visitor→customer consent stitching** — edge used for attribution.
-- ✅ **Platform legal docs** — versioned Sparx ToS/Privacy/DPA/AUP with acceptance tracking.
+- ✅ **Platform legal docs** — versioned sparx ToS/Privacy/DPA/AUP with acceptance tracking.
 - 🗺️ **Legal completeness checklist UI** — per-kind complete/missing/stale status.
 - 🗺️ **DPA for EU tenants, GDPR/CCPA enforcement dashboard.**
 

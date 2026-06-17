@@ -5,7 +5,7 @@ import { ImageResponse } from 'next/og';
 // card's structure — wordmark + tag, big headline, module-dot footer — with
 // platform-specific copy. system-ui fonts so no remote font fetch is needed.
 export const runtime = 'edge';
-export const alt = 'Sparx — One platform for content and commerce.';
+export const alt = 'sparx — One platform for content and commerce.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -46,7 +46,7 @@ export default function Image() {
             letterSpacing: '-0.03em',
           }}
         >
-          <span>Spar</span>
+          <span>spar</span>
           <span style={{ color: '#6366F1' }}>x</span>
         </div>
         <div

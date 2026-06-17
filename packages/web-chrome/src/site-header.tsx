@@ -70,7 +70,7 @@ export function SiteHeader({
           gap: '16px',
         }}
       >
-        <a href={link('/')} aria-label="Sparx home" style={{ display: 'inline-flex' }}>
+        <a href={link('/')} aria-label="sparx home" style={{ display: 'inline-flex' }}>
           <Wordmark />
         </a>
 

@@ -94,7 +94,7 @@ const KIND_DESCRIPTION: Record<ProviderKind, string> = {
   dropship:
     'Supplier catalog ingest + order forwarding. Dropship products route their fulfillment through the supplier API.',
   identity:
-    'External identity / OAuth. Reserved for a future module — Better Auth handles Sparx-side identity today.',
+    'External identity / OAuth. Reserved for a future module — Better Auth handles sparx-side identity today.',
 };
 
 export function ProvidersLists({ groups, view }: { groups: KindGroup[]; view: 'table' | 'card' }) {

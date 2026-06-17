@@ -1,4 +1,4 @@
-# Sparx Platform — Invoicing Spec
+# sparx Platform — Invoicing Spec
 
 **Version:** 1.0
 **Author:** Brandon Korous
@@ -8,7 +8,7 @@
 
 ## 1. Overview
 
-Invoicing is built into the Commerce and B2B modules — not a separate module. The value is the integration: a Sparx invoice knows the customer's order history, payment terms, and CRM context. It's not a standalone billing tool.
+Invoicing is built into the Commerce and B2B modules — not a separate module. The value is the integration: a sparx invoice knows the customer's order history, payment terms, and CRM context. It's not a standalone billing tool.
 
 **Included in Commerce (+$49/mo):**
 
@@ -34,7 +34,7 @@ Invoicing is built into the Commerce and B2B modules — not a separate module. 
 Merchant sells something, wants to send a formal invoice instead of just an order confirmation. Common in B2B — "send me an invoice I can give to accounting." One-click from the order detail page.
 
 **Use case 2 — Standalone invoice**
-Merchant invoices for services, consulting, custom work that doesn't go through the Sparx site. A contractor, photographer, or service business creates an invoice from scratch, sends it to a client, and gets paid.
+Merchant invoices for services, consulting, custom work that doesn't go through the sparx site. A contractor, photographer, or service business creates an invoice from scratch, sends it to a client, and gets paid.
 
 **Use case 3 — Quote → Invoice (B2B)**
 B2B merchant has an approved quote. One click converts to invoice with all line items, pricing, and payment terms preserved. Client receives invoice email with payment link.

@@ -12,7 +12,7 @@ import {
 
 /**
  * The /ai marketing page — the AI · MCP module, told as a positioning story
- * rather than the generic module template. The thesis is the inversion: Sparx
+ * rather than the generic module template. The thesis is the inversion: sparx
  * does NOT ship another chatbot you have to learn; it opens a direct line (the
  * Model Context Protocol) so the assistant you already use can read and write
  * your live business data. "Bring your own AI."
@@ -169,9 +169,9 @@ function TheInversion() {
           accent={AI.color}
           headline={
             <>
-              Sparx inside your AI &mdash;{' '}
+              sparx inside your AI &mdash;{' '}
               <span style={{ color: 'var(--color-text-tertiary)' }}>
-                not another AI inside Sparx
+                not another AI inside sparx
               </span>
             </>
           }
@@ -179,7 +179,7 @@ function TheInversion() {
             <>
               Every other platform&rsquo;s move is to add a chatbot you have to learn. That&rsquo;s
               vendor-centric &mdash; it assumes their product deserves your attention. We did the
-              opposite: Sparx doesn&rsquo;t ask for your attention, it makes your business{' '}
+              opposite: sparx doesn&rsquo;t ask for your attention, it makes your business{' '}
               <em>reachable</em> from wherever your attention already is.
             </>
           }
@@ -195,7 +195,7 @@ function TheInversion() {
         />
         <ContrastCard
           tone="accent"
-          kicker="The Sparx way"
+          kicker="The sparx way"
           title="A line to the AI you have"
           points={sparx}
         />
@@ -443,7 +443,7 @@ function AskInPlainEnglish() {
   // Each example is its OWN chat window — window chrome, the assistant it runs
   // in, a real transcript, and a live input bar — so it reads as "this happens
   // inside the AI you already use," not an API console. No code or schema; the
-  // only "tech" is the friendly "Used Sparx" line, the same disclosure real MCP
+  // only "tech" is the friendly "Used sparx" line, the same disclosure real MCP
   // clients surface. Clients + personas are mixed on purpose (a blog post,
   // customers, a sales check, stock) so every kind of owner sees themselves, in
   // whichever assistant they already use.
@@ -598,7 +598,7 @@ function ChatWindow({
           <UserAvatar />
         </div>
 
-        {/* assistant turn — avatar + bubble + the friendly "Used Sparx" receipt */}
+        {/* assistant turn — avatar + bubble + the friendly "Used sparx" receipt */}
         <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
           <ChatAvatar label="AI" accent />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: 0 }}>
@@ -628,7 +628,7 @@ function ChatWindow({
               }}
             >
               <Dot color={AI.color} size={6} />
-              Used Sparx · {via}
+              Used sparx · {via}
             </span>
           </div>
         </div>

@@ -70,6 +70,10 @@ const ALL_MODULES: readonly ModuleSlug[] = [
 //   transitively (`requiredModules('b2b')` pulls in Commerce AND Builder).
 export const BUNDLED_FREE: Partial<Record<ModuleSlug, readonly ModuleSlug[]>> = {
   invoicing: ['b2b', 'commerce'],
+  // Stock tracking rides along free with selling modules: any Commerce or B2B
+  // tenant gets the full inventory surface at $0 (mirrors invoicing↔b2b/commerce).
+  // A WMS-only tenant with neither pays the $29 standalone `inventory` price.
+  inventory: ['commerce', 'b2b'],
 };
 
 export const REQUIRES: Partial<Record<ModuleSlug, readonly ModuleSlug[]>> = {

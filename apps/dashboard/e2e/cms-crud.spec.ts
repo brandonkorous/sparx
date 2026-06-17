@@ -86,7 +86,7 @@ test.describe('CMS pages — create, edit, publish, delete', () => {
     await expect(page.getByText('Reverted to draft.')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Publish' })).toBeVisible();
 
-    // 6. Delete — open the Sparx AlertDialog and confirm. The dialog
+    // 6. Delete — open the sparx AlertDialog and confirm. The dialog
     // listener is kept as a no-op safety net in case anything else on the
     // page pops a native browser dialog.
     page.once('dialog', (d) => d.accept());

@@ -78,10 +78,10 @@ export type {
   FitmentItem,
   FitmentVariant,
   ProductFitment,
-  // Commerce — inventory
+  // Inventory module
   Warehouse,
   InventoryLevel,
-  InventoryAdjustment,
+  InventoryMovement,
   InventoryReservation,
   LotBatch,
   SerialUnit,

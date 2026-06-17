@@ -1,4 +1,4 @@
-# Sparx Platform — Product Markup, Surcharges & Fee Pass-Through
+# sparx Platform — Product Markup, Surcharges & Fee Pass-Through
 
 **Version:** 0.2 (design notes — not yet scheduled)
 **Author:** Brandon Korous
@@ -25,7 +25,7 @@
 ## 1. Why
 
 A merchant sells what it buys. The gap between **cost** (what the merchant paid) and **price**
-(what the customer is charged) is the markup, and right now Sparx makes the merchant type that
+(what the customer is charged) is the markup, and right now sparx makes the merchant type that
 gap in by hand for every variant. `product_variants` already stores `cost`, `price`, and
 `compare_at_price` ([05](05-data-model.md) §3), but nothing connects them: change a cost and the
 price doesn't move; import a vendor price list at cost and you still have to set every sell price
@@ -196,7 +196,7 @@ by markup at document time** rather than pulled from the catalog. This is the pa
   computed price, timestamp). The invoice is then reproducible forever, even after the part's
   catalog cost changes. This snapshot is mandatory — invoices are financial records.
 
-> **Dependency / gap:** Sparx has no standalone "manual invoice" or "repair order" entity today —
+> **Dependency / gap:** sparx has no standalone "manual invoice" or "repair order" entity today —
 > invoices are generated _from orders_ ([10](10-b2b-wholesale-prd.md) §7). The full invoice-markup
 > experience (especially service/repair invoices that mix labor + marked-up parts + sublet) needs
 > that surface to exist. Until then, invoice-time markup is limited to lines on order-derived
@@ -250,7 +250,7 @@ than blindly add a percent:
 
 This ties into the legal/consent framework in [42-legal-and-consent.md](42-legal-and-consent.md).
 The platform default is **off**; a tenant opts in, picks jurisdictions/payment methods, and is
-responsible for compliance, while Sparx supplies the disclosure surfaces (checkout notice,
+responsible for compliance, while sparx supplies the disclosure surfaces (checkout notice,
 invoice line, policy-page copy). Treat per-jurisdiction enablement and disclosure as a
 **requirement, not a nicety**. (A "cash discount" framing — list the card price and discount for
 cash — is the compliant alternative some merchants prefer; out of scope for v1 but noted.)

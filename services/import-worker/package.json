@@ -2,7 +2,7 @@
   "name": "@sparx/import-worker",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx import worker. Receives import.job.created events via Pub/Sub push (Cloud Run HTTP entrypoint), processes CSV rows from the import_jobs.raw_rows JSONB column, and writes per-row results to import_job_rows. Supports products and customers with upsert-by-natural-key semantics.",
+  "description": "sparx import worker. Receives import.job.created events via Pub/Sub push (Cloud Run HTTP entrypoint), processes CSV rows from the import_jobs.raw_rows JSONB column, and writes per-row results to import_job_rows. Supports products and customers with upsert-by-natural-key semantics.",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {

@@ -7,7 +7,7 @@ import { startStripeConnectAction } from '../_lib/actions';
 
 // Step 5 — Payments (work pane). Connects Stripe CONNECT — the account that
 // RECEIVES customer money — which the note makes clear is separate from the
-// tenant's own Sparx subscription. Continue/Skip lives in the setup card; this
+// tenant's own sparx subscription. Continue/Skip lives in the setup card; this
 // body owns the Connect action (a redirect to Stripe OAuth).
 export function StepPayments({ stripeConnected }: { stripeConnected: boolean }) {
   const [error, setError] = React.useState<string | null>(null);
@@ -70,7 +70,7 @@ export function StepPayments({ stripeConnected }: { stripeConnected: boolean }) 
             <span className="font-medium text-[var(--color-text-secondary)]">
               receives money from your customers
             </span>{' '}
-            — separate from your own Sparx subscription, which stays free for 14 days.
+            — separate from your own sparx subscription, which stays free for 14 days.
           </Text>
         </div>
       </div>

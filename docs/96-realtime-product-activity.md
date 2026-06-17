@@ -1,4 +1,4 @@
-# Sparx Platform — Realtime Product Activity Channel
+# sparx Platform — Realtime Product Activity Channel
 
 **Version:** 1.0
 **Author:** Brandon Korous

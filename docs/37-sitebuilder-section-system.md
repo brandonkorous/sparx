@@ -115,7 +115,7 @@ Every gap found in the exercise, ranked by leverage (how much of a real landing 
 | 10  | **No vertical/positional text placement**   | Hero copy near top; panel headings bottom-left                                  | `align` is horizontal only; vertical placement is hard-coded                                                                      | PageLayout          |
 | 11  | **No full-viewport height**                 | Hero is ~100vh                                                                  | Hero padding clamp / banner `≤480px`                                                                                              | PageLayout          |
 | 12  | **Header can't be a landing header**        | Transparent nav overlaying the hero, arbitrary top-level nav, centered wordmark | `SiteHeader` is opaque, above the hero, nav is **collection-derived**, logo capped at 34px                                        | **SiteLayout**      |
-| 13  | **Footer can't collapse / no real socials** | One centered row of legal links; real brand glyphs                              | `SiteFooter` is multi-column + social rendered as **single capital letters** + forced "Powered by Sparx"                          | **SiteLayout**      |
+| 13  | **Footer can't collapse / no real socials** | One centered row of legal links; real brand glyphs                              | `SiteFooter` is multi-column + social rendered as **single capital letters** + forced "Powered by sparx"                          | **SiteLayout**      |
 | 14  | **Empty section disappears silently**       | — (authoring quality)                                                           | `featured-products`/`collection-grid` `return null` with no editor placeholder                                                    | PageLayout (editor) |
 
 ### 3.1 Generality cross-check
@@ -220,7 +220,7 @@ build:
 - Arbitrary top-level nav (a menu the tenant defines, not only collection-derived links) + logo
   sizing.
 - Footer: optional single centered legal row, real social glyphs (icon set, not first-letter), and
-  "Powered by Sparx" as a **plan entitlement** (see §9).
+  "Powered by sparx" as a **plan entitlement** (see §9).
 
 ---
 
@@ -298,7 +298,7 @@ The theme-not-applying bug (brand color overrides masking a selected theme) was 
 2. **Embed allowlist & CSP.** Which hosts (Google/Mapbox maps, YouTube/Vimeo, form providers)? The
    allowlist is enforced server-side at publish; the site's CSP `frame-src` must match. Needs a
    security sign-off before Phase D.
-3. **"Powered by Sparx" removal as a plan entitlement** — ties into
+3. **"Powered by sparx" removal as a plan entitlement** — ties into
    [docs/17-billing-subscriptions.md](17-billing-subscriptions.md). Decide before Phase F.
 4. **Carousel as a client island.** How does the preview bridge resolve a click into a specific
    slide, and what's the hydration budget for a previously all-static page?

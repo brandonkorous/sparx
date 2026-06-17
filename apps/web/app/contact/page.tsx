@@ -4,7 +4,7 @@ import { Footer } from '@/components/marketing/footer';
 import { ComingSoon } from '@/components/marketing/coming-soon';
 
 export const metadata: Metadata = {
-  title: 'Contact — Sparx',
+  title: 'Contact — sparx',
   description:
     'Sales, support, partnerships, press. Pick the right address or just write hello@sparx.works.',
   alternates: { canonical: '/contact' },

@@ -1,4 +1,4 @@
-# Sparx Platform — Wizards, Import/Export & Bulk Operations
+# sparx Platform — Wizards, Import/Export & Bulk Operations
 
 **Version:** 1.0
 **Author:** Brandon Korous
@@ -336,7 +336,7 @@ Template CSV links appear on the import dialog: "Download template" pre-fills he
    - Row count shown: "47 rows found"
 
 2. **Map columns** (shown only if headers don't match exactly — e.g., a Shopify export uses different column names)
-   - Left: detected column names; Right: Sparx field selector
+   - Left: detected column names; Right: sparx field selector
    - Auto-mapped where names match; manual for unrecognized columns
    - Required fields flagged red if unmapped
 

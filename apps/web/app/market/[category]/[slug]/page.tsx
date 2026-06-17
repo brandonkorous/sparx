@@ -32,10 +32,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { category, slug } = await params;
   const item = await fetchListing(category, slug);
-  if (!item) return { title: 'Marketplace — Sparx' };
+  if (!item) return { title: 'Marketplace — sparx' };
   const image = item.media.find((m) => m.kind === 'image')?.url;
   return {
-    title: `${item.name} — Sparx Marketplace`,
+    title: `${item.name} — sparx Marketplace`,
     description: item.tagline ?? item.description ?? undefined,
     alternates: { canonical: `/market/${category}/${slug}` },
     openGraph: image ? { images: [{ url: image }] } : undefined,

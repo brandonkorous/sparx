@@ -45,9 +45,9 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
     label: 'Builder',
     headlinePrimary: 'Themes, pages,',
     headlineSecondary: 'live URLs',
-    title: 'Sparx Builder — Themes, pages, live URLs.',
+    title: 'sparx Builder — Themes, pages, live URLs.',
     description:
-      'The Sparx site builder. Pick a theme, edit blocks, point your domain. No code. No staging dance. Live in five minutes.',
+      'The sparx site builder. Pick a theme, edit blocks, point your domain. No code. No staging dance. Live in five minutes.',
     lede: 'The site builder. Pick a theme, edit blocks, point your domain. No code. No staging dance. The same theme system powers a five-product test store and a 50,000-SKU catalog.',
     features: [
       {
@@ -78,7 +78,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       {
         number: '06',
         title: 'Multi-store, one login.',
-        body: 'Run several brands from one Sparx account. Each store has its own domain, theme, and module mix.',
+        body: 'Run several brands from one sparx account. Each store has its own domain, theme, and module mix.',
       },
     ],
     pricing: {
@@ -86,7 +86,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       period: '/mo',
       modifier: '',
       bundleNote:
-        'Builder hosts and serves your site — pages, custom domains, SSL, and the global CDN. It’s an optional module, not a required base; switch it on when you want a hosted Sparx site, on one bill with everything else.',
+        'Builder hosts and serves your site — pages, custom domains, SSL, and the global CDN. It’s an optional module, not a required base; switch it on when you want a hosted sparx site, on one bill with everything else.',
     },
   },
   commerce: {
@@ -95,9 +95,9 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
     label: 'Commerce',
     headlinePrimary: 'Cart, checkout,',
     headlineSecondary: 'orders',
-    title: 'Sparx Commerce — Cart, checkout, orders.',
+    title: 'sparx Commerce — Cart, checkout, orders.',
     description:
-      'Products, inventory, payments. Stripe, PayPal, Klarna. Tax and shipping handled. The transactional core of Sparx.',
+      'Products, inventory, payments. Stripe, PayPal, Klarna. Tax and shipping handled. The transactional core of sparx.',
     lede: 'Products, inventory, payments. Stripe, PayPal, Klarna out of the box. Tax (Avalara, TaxJar) and shipping (Shippo, EasyPost) wired in. D2C and B2B from the same codebase.',
     features: [
       {
@@ -113,7 +113,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       {
         number: '03',
         title: 'Payments, plural.',
-        body: 'Stripe, PayPal, Klarna, Affirm. No per-transaction Sparx fee on Pro+. You keep your processor relationships.',
+        body: 'Stripe, PayPal, Klarna, Affirm. No per-transaction sparx fee on Pro+. You keep your processor relationships.',
       },
       {
         number: '04',
@@ -145,7 +145,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
     label: 'CMS',
     headlinePrimary: 'Words, media,',
     headlineSecondary: 'SEO',
-    title: 'Sparx CMS — Words, media, SEO.',
+    title: 'sparx CMS — Words, media, SEO.',
     description:
       'Editor, blog, media library, structured content. Works standalone — no Builder required.',
     lede: 'Editor, blog, media library, structured content. Works standalone — no Builder required. The same publishing toolset whether you sell something or just write.',
@@ -186,7 +186,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       period: '/mo',
       modifier: '',
       bundleNote:
-        'A flat $49/mo that runs standalone — no Builder required. Add Builder when you want it rendered on a hosted Sparx site. One bill with everything else, cancel anytime.',
+        'A flat $49/mo that runs standalone — no Builder required. Add Builder when you want it rendered on a hosted sparx site. One bill with everything else, cancel anytime.',
     },
     marketingDomain: 'sparxcms.com',
   },
@@ -196,7 +196,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
     label: 'CRM',
     headlinePrimary: 'Customers,',
     headlineSecondary: 'pipeline, signal',
-    title: 'Sparx CRM — Customers, pipeline, signal.',
+    title: 'sparx CRM — Customers, pipeline, signal.',
     description:
       'Activity log, automations, segments. Built on your commerce data — not stitched to it.',
     lede: 'Activity log, automations, segments — sitting on top of the same database as your orders. No sync, no Zapier, no "the HubSpot record disagrees with the Shopify record."',
@@ -247,7 +247,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
     label: 'Email',
     headlinePrimary: 'Transactional',
     headlineSecondary: 'and marketing',
-    title: 'Sparx Email — Transactional and marketing.',
+    title: 'sparx Email — Transactional and marketing.',
     description:
       'Self-hosted Postal on sparx.email. Your domain, your reputation. No SendGrid markup.',
     lede: 'Self-hosted Postal on sparx.email. Your sending domain, your reputation, SPF/DKIM/DMARC auto-configured. No per-email markup, no $0.0008 nickel-and-dime.',
@@ -298,10 +298,10 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
     label: 'B2B · Wholesale · Fleet',
     headlinePrimary: 'Industrial-grade,',
     headlineSecondary: 'out of the box',
-    title: 'Sparx B2B — Wholesale, fleet, net terms.',
+    title: 'sparx B2B — Wholesale, fleet, net terms.',
     description:
       'Account-tier pricing, RFQ, purchase orders, fleet accounts, service scheduling. Built for industrial.',
-    lede: 'Shopify charges $2,400/mo for B2B and still doesn’t do net terms properly. Sparx ships wholesale pricing, RFQ, purchase orders, fleet accounts, and service scheduling natively. $99/mo. Built for how industrial actually works.',
+    lede: 'Shopify charges $2,400/mo for B2B and still doesn’t do net terms properly. sparx ships wholesale pricing, RFQ, purchase orders, fleet accounts, and service scheduling natively. $99/mo. Built for how industrial actually works.',
     features: [
       {
         number: '01',
@@ -326,7 +326,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       {
         number: '05',
         title: 'Service scheduling.',
-        body: 'Bookable bays, technicians, parts. Customer-portal scheduling. Reminders via Sparx Email.',
+        body: 'Bookable bays, technicians, parts. Customer-portal scheduling. Reminders via sparx Email.',
       },
       {
         number: '06',
@@ -349,15 +349,15 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
     label: 'AI · MCP',
     headlinePrimary: 'Bring your',
     headlineSecondary: 'own AI',
-    title: 'Sparx AI — Bring your own AI. Native MCP for Claude, ChatGPT, Copilot.',
+    title: 'sparx AI — Bring your own AI. Native MCP for Claude, ChatGPT, Copilot.',
     description:
-      'Don’t learn another chatbot. Connect Claude, ChatGPT, or Copilot to Sparx and run your business in plain English — from the chat you already use. No exports, no CSVs.',
+      'Don’t learn another chatbot. Connect Claude, ChatGPT, or Copilot to sparx and run your business in plain English — from the chat you already use. No exports, no CSVs.',
     lede: 'We didn’t build you another AI assistant to learn. We opened a direct line so the AI you already use — Claude, ChatGPT, Copilot — can read and write your live business data in plain English, from the same chat you’re already in. No new tool, no new tab, no exports.',
     features: [
       {
         number: '01',
         title: 'Nothing new to learn.',
-        body: 'Stay in the assistant you already trust. Sparx shows up as tools inside it — no second app, no separate chat history, no bot to babysit.',
+        body: 'Stay in the assistant you already trust. sparx shows up as tools inside it — no second app, no separate chat history, no bot to babysit.',
       },
       {
         number: '02',
@@ -399,7 +399,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
     label: 'Dropship',
     headlinePrimary: 'Suppliers, sync,',
     headlineSecondary: 'fulfillment',
-    title: 'Sparx Dropship — Suppliers, sync, fulfillment.',
+    title: 'sparx Dropship — Suppliers, sync, fulfillment.',
     description: 'Catalog sync, margin math, automated order routing. Sell without inventory.',
     lede: 'Catalog sync, margin math, automated order routing. Sell without holding inventory — but with a real platform underneath, not a Shopify app stacked on a Shopify app.',
     features: [
@@ -411,7 +411,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       {
         number: '02',
         title: 'Margin math.',
-        body: 'Set per-supplier markup rules (flat, percentage, tiered). Sparx maintains your retail price as supplier costs change.',
+        body: 'Set per-supplier markup rules (flat, percentage, tiered). sparx maintains your retail price as supplier costs change.',
       },
       {
         number: '03',
@@ -426,12 +426,12 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       {
         number: '05',
         title: 'Tracking & fulfillment.',
-        body: 'Supplier sends tracking, Sparx forwards to customer via Sparx Email with your branding.',
+        body: 'Supplier sends tracking, sparx forwards to customer via sparx Email with your branding.',
       },
       {
         number: '06',
         title: 'No middleman markup.',
-        body: 'You connect directly to your suppliers. Sparx takes $29/mo flat — no per-order Sparx fee, no Oberlo-style cut.',
+        body: 'You connect directly to your suppliers. sparx takes $29/mo flat — no per-order sparx fee, no Oberlo-style cut.',
       },
     ],
     pricing: {

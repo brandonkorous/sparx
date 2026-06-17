@@ -2,7 +2,7 @@
 //
 // Kept separate from CmsApi/MediaApi (the REST helpers) because GraphQL
 // lives on a sibling service (api-graphql) reached either via
-// graphql.sparx.works or, in cluster, via the api-graphql svc. The Sparx
+// graphql.sparx.works or, in cluster, via the api-graphql svc. The sparx
 // constructor lets consumers set a different baseUrl for GraphQL if they
 // want to address it directly; by default it falls back to the same base
 // URL as REST (which Caddy routes via host match).

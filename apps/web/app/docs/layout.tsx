@@ -5,9 +5,9 @@ import { Footer } from '@/components/marketing/footer';
 import { DocsSidebar, DocsMobileNav } from '@/components/docs/sidebar';
 
 export const metadata: Metadata = {
-  title: { default: 'Documentation', template: '%s — Sparx Docs' },
+  title: { default: 'Documentation', template: '%s — sparx Docs' },
   description:
-    'Developer documentation for Sparx — guides, REST & GraphQL API reference, SDKs, and the MCP server. Build on the modular content and commerce OS.',
+    'Developer documentation for sparx — guides, REST & GraphQL API reference, SDKs, and the MCP server. Build on the modular content and commerce OS.',
 };
 
 /**

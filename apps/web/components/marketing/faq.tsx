@@ -37,7 +37,7 @@ const FAQ_ITEMS: FaqItem[] = [
     order: 40,
     question: 'Where does my data live? Who owns it?',
     answer:
-      'You own your data. Sparx runs on Google Kubernetes Engine in us-central1 with Postgres backed up nightly. Multi-tenancy is enforced at the database level with row-level security — your data is isolated from every other tenant. Full export to JSON or SQL is available in the dashboard at any time, no support ticket required.',
+      'You own your data. sparx runs on Google Kubernetes Engine in us-central1 with Postgres backed up nightly. Multi-tenancy is enforced at the database level with row-level security — your data is isolated from every other tenant. Full export to JSON or SQL is available in the dashboard at any time, no support ticket required.',
   },
   {
     id: 'static-5',

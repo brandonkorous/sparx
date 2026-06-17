@@ -14,6 +14,9 @@ COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 COPY tsconfig.base.json ./
 COPY packages/db ./packages/db
 COPY packages/events ./packages/events
+COPY packages/crm-schemas ./packages/crm-schemas
+COPY packages/commerce-schemas ./packages/commerce-schemas
+COPY packages/inventory ./packages/inventory
 COPY services/inventory-worker ./services/inventory-worker
 
 RUN pnpm install --filter @sparx/inventory-worker... --frozen-lockfile --prod=false

@@ -7,7 +7,7 @@
 > Companion to [22-typesense-search-spec.md](22-typesense-search-spec.md). That doc
 > specifies the three **rich** collections (products, customers, orders). This doc
 > specifies the **universal** collection that makes _every_ user-facing entity in
-> Sparx searchable, and the registry + event plumbing that keeps adding an entity
+> sparx searchable, and the registry + event plumbing that keeps adding an entity
 > cheap.
 
 ---
@@ -32,7 +32,7 @@ stores:
 
 Reproducing the bespoke pattern 25× means ~25 collections and ~25 Pub/Sub
 topic+subscription pairs. That does not scale, and it produces no _global_ search —
-the "find anything in Sparx" command an OS should have.
+the "find anything in sparx" command an OS should have.
 
 ## 2. Goals / non-goals
 
@@ -41,7 +41,7 @@ the "find anything in Sparx" command an OS should have.
 - One **universal collection** that any entity can project into with a uniform shape.
 - Adding an entity to search = **one projector + one line post-commit**. No new
   collection, no new topic, no new subscription, no Terraform.
-- A real **global ⌘K** ("search everything across Sparx"), tenant-isolated and
+- A real **global ⌘K** ("search everything across sparx"), tenant-isolated and
   module/permission-gated.
 - Per-module list pages can search their own entity type against the universal index.
 - The three rich collections **keep** their faceted/ranked behaviour and site

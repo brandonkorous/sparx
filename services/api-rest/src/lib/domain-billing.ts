@@ -1,7 +1,7 @@
 // Domain checkout — the tenant-billing seam for buying/renewing a domain.
 //
 // A domain registration is a HARD pass-through cost: the instant we call GoDaddy
-// `purchaseDomain`, ICANN/GoDaddy bills the Sparx reseller account for real —
+// `purchaseDomain`, ICANN/GoDaddy bills the sparx reseller account for real —
 // there is no trial and no reversal. So we MUST charge the tenant for real BEFORE
 // we register, and refund if registration then fails. That charge needs a tenant
 // card on file (Stripe), which is the billing slice still to land.

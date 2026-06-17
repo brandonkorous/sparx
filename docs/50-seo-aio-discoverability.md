@@ -6,7 +6,7 @@ Last Updated: 2026-06-04
 
 > Discoverability is a **platform capability**, not a per-app chore. It spans two audiences —
 > traditional search crawlers and the new wave of answer/generative engines (AIO) — and two
-> surfaces — the Sparx **marketing site** (`apps/web`) and every **tenant site**
+> surfaces — the sparx **marketing site** (`apps/web`) and every **tenant site**
 > (`apps/site`). For tenants, SEO/AIO is a _product feature they control_ through the Builder and
 > CMS, the same way [auth](16-auth-security.md), [billing](17-billing-subscriptions.md), and
 > [consent](42-legal-and-consent.md) each became first-class. This doc records the model and the
@@ -21,9 +21,9 @@ best practices) for both app classes. Traditional SEO was already strong on tena
 (per-page metadata, Product + BreadcrumbList JSON-LD, per-tenant `robots.txt`, `next/image`); the
 sharp gaps were **sitemap completeness**, **redirect enforcement**, **Builder-page SEO**, and a
 total **absence of an AIO layer** — conspicuous for a platform whose positioning is _"AI builds it,
-Sparx keeps it"_ and whose MCP server is first-class ([07](07-mcp-server-spec.md)).
+sparx keeps it"_ and whose MCP server is first-class ([07](07-mcp-server-spec.md)).
 
-The throughline: a tenant's findability is _their_ outcome, surfaced through Sparx's authoring
+The throughline: a tenant's findability is _their_ outcome, surfaced through sparx's authoring
 tools. So the controls live in the product (the Builder SEO panel), and the platform emits correct,
 complete machinery by default.
 
@@ -177,7 +177,7 @@ remaining follow-ups live with the feature in §7.6.)
 - **hreflang / i18n** — deferred platform-wide ([12](12-cms-prd.md) Phase 2). Multi-locale content +
   `hreflang` alternates + locale-aware sitemap. _Trigger:_ first multi-locale tenant.
 - **Marketing `title.template`** — deferred. Every marketing page already carries the brand in its
-  `<title>` (module pages "Sparx X — …", static pages "X — Sparx"), so a root template is pure DRY
+  `<title>` (module pages "sparx X — …", static pages "X — sparx"), so a root template is pure DRY
   with no SEO gain and would double-brand unless all ~17 pages + `makeMetadata` were converted to
   bare/`absolute` titles in lockstep. Revisit only if the page count grows enough to make the
   boilerplate a real maintenance cost.

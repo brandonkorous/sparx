@@ -22,7 +22,7 @@ import { CodeBlock } from '@/components/docs/code-block';
 export const metadata: Metadata = {
   title: 'Quickstart',
   description:
-    'Go from zero to a live Sparx integration in about ten minutes — create an API key, place your first order over the REST API, read the response, and react to events.',
+    'Go from zero to a live sparx integration in about ten minutes — create an API key, place your first order over the REST API, read the response, and react to events.',
   alternates: { canonical: '/docs/quickstart' },
 };
 
@@ -121,7 +121,7 @@ export default function QuickstartPage() {
       ]}
       title="Quickstart"
       badge={<Badge tone="gray">API v1</Badge>}
-      lede="Go from zero to a live integration in about ten minutes. You'll create an API key, place an order over the REST API, read the response, and see how to react to events — the same surface the dashboard uses, because every Sparx feature is an API endpoint first."
+      lede="Go from zero to a live integration in about ten minutes. You'll create an API key, place an order over the REST API, read the response, and see how to react to events — the same surface the dashboard uses, because every sparx feature is an API endpoint first."
       meta={
         <>
           <span>Updated 2026-06-05</span>
@@ -142,7 +142,7 @@ export default function QuickstartPage() {
       next={{ title: 'Authentication', href: '/docs/authentication' }}
     >
       <Callout type="info" title="Prerequisites">
-        You need a Sparx tenant with the <strong>CRM</strong> module active, and an existing
+        You need a sparx tenant with the <strong>CRM</strong> module active, and an existing
         customer to attach the order to. No tenant yet?{' '}
         <DocLink href="/pricing">Create one free</DocLink> — live in under five minutes, no card
         required.
@@ -150,10 +150,10 @@ export default function QuickstartPage() {
 
       <DocSection id="overview" title="Overview">
         <p>
-          Sparx is API-first: the dashboard, the storefront, and AI agents over MCP are all
+          sparx is API-first: the dashboard, the storefront, and AI agents over MCP are all
           consumers of the same REST and GraphQL surface. An integration touches three things — an
           authenticated <strong>client</strong> (your API key), a <strong>resource</strong> you read
-          or write, and the <strong>events</strong> Sparx emits in response.
+          or write, and the <strong>events</strong> sparx emits in response.
         </p>
         <DocFigure caption="A write returns immediately and emits an event; side effects run in workers, never inline in the request.">
           <span className="pillbox">Your app</span>
@@ -196,7 +196,7 @@ export default function QuickstartPage() {
           <Step n={2} title="Place your first order">
             <p>
               Orders live in the CRM, which owns the customer and order spine. POST a customer id
-              and one or more line items; Sparx computes the totals. Here it is in three languages —
+              and one or more line items; sparx computes the totals. Here it is in three languages —
               no SDK required, just HTTP:
             </p>
             <EndpointChip method="POST" path="/v1/crm/orders" />
@@ -338,7 +338,7 @@ export default function QuickstartPage() {
 
       <DocSection id="errors" title="Errors & status codes">
         <p>
-          Sparx uses conventional HTTP status codes and returns a machine-readable{' '}
+          sparx uses conventional HTTP status codes and returns a machine-readable{' '}
           <InlineCode>error.code</InlineCode> on every failure. Handle these at minimum:
         </p>
         <DocTable>
@@ -388,8 +388,8 @@ export default function QuickstartPage() {
             </tr>
           </tbody>
         </DocTable>
-        <DocQuote cite="— Sparx API design principle">
-          &ldquo;AI builds it, Sparx keeps it.&rdquo; Every endpoint you call today is versioned and
+        <DocQuote cite="— sparx API design principle">
+          &ldquo;AI builds it, sparx keeps it.&rdquo; Every endpoint you call today is versioned and
           deprecation-warned — never silently broken under you.
         </DocQuote>
       </DocSection>

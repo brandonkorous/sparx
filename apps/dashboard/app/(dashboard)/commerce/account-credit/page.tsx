@@ -1,34 +1,16 @@
-import { CircleDollarSign } from 'lucide-react';
+import { CircleDollarSign, Plus } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  EmptyState,
-  Heading,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
+import { Badge, Card, Container, EmptyState, Heading, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
+import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
-import { GrantAccountCreditForm } from './_components/grant-account-credit-form';
 import { AccountCreditList, type AccountCreditRow } from './_components/account-credit-list';
 
 export const dynamic = 'force-dynamic';
-
-interface CrmCustomerRow {
-  id: string;
-  firstName: string | null;
-  lastName: string | null;
-  email: string | null;
-}
 
 interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -38,7 +20,7 @@ export default async function AccountCreditPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
 
-  const [prefs, balancesPaged, customersPaged] = await Promise.all([
+  const [prefs, balancesPaged] = await Promise.all([
     getUserPreferences(),
     api.getPaged<AccountCreditRow[]>(
       `/v1/commerce/account-credit?${new URLSearchParams({
@@ -46,18 +28,11 @@ export default async function AccountCreditPage({ searchParams }: PageProps) {
         skip: String(skip),
       }).toString()}`
     ),
-    api.getPaged<CrmCustomerRow[]>('/v1/crm/customers?take=200'),
   ]);
   const balances = balancesPaged.data;
   const total = (balancesPaged.meta?.total as number | undefined) ?? balances.length;
 
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
-
-  const recentCustomers = customersPaged.data.map((c) => {
-    const full = `${c.firstName ?? ''} ${c.lastName ?? ''}`.trim();
-    const name = full !== '' ? full : (c.email ?? c.id.slice(0, 8) + '…');
-    return { id: c.id, email: c.email, name };
-  });
 
   return (
     <Container size="full">
@@ -71,22 +46,17 @@ export default async function AccountCreditPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Per-customer credit balance — accrues from refunds, loyalty conversions, or manual grants. Spent at checkout via the pricing pipeline."
+          actions={
+            <EntityCreateButton
+              entityType="account-credit"
+              newHref="/commerce/account-credit/new"
+              color="module"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New
+            </EntityCreateButton>
+          }
         />
-
-        <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>Grant credit</Heading>
-              <CardDescription>
-                Adds to a customer&apos;s balance for the named currency. New customer + new
-                currency creates a fresh balance row.
-              </CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
-            <GrantAccountCreditForm customers={recentCustomers} />
-          </CardContent>
-        </Card>
 
         <Heading level={3}>Outstanding balances</Heading>
 
@@ -97,7 +67,20 @@ export default async function AccountCreditPage({ searchParams }: PageProps) {
             <EmptyState
               icon={<CircleDollarSign className="h-5 w-5" />}
               title={total === 0 ? 'No account credit issued yet' : 'No balances on this page'}
-              description="Grant credit above or have it auto-issued from a refund."
+              description="Grant credit with the New button, or have it auto-issued from a refund."
+              action={
+                total === 0 ? (
+                  <EntityCreateButton
+                    entityType="account-credit"
+                    newHref="/commerce/account-credit/new"
+                    variant="outline"
+                    size="sm"
+                    leftIcon={<Plus className="h-4 w-4" />}
+                  >
+                    New
+                  </EntityCreateButton>
+                ) : undefined
+              }
             />
           </Card>
         ) : (

@@ -109,7 +109,7 @@ const searchConsoleRoutes: FastifyPluginAsync = (app) => {
     const refreshToken = tokens.refreshToken ?? '';
     if (!refreshToken) {
       throw badRequest(
-        'Google did not return a refresh token — remove Sparx from your Google account permissions and reconnect.'
+        'Google did not return a refresh token — remove sparx from your Google account permissions and reconnect.'
       );
     }
     const sites = await listSites(tokens.accessToken);

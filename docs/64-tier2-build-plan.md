@@ -1,4 +1,4 @@
-# Sparx Platform — Tier 2 Module Build Plan
+# sparx Platform — Tier 2 Module Build Plan
 
 **Version:** 1.0
 **Author:** Brandon Korous
@@ -61,7 +61,7 @@ Purchase flow sequence (per docs/24 §4):
 
 1. [Stub] Stripe charge → mock `payment_intent_id`
 2. GoDaddy: `purchaseDomain` → `orderId`
-3. GoDaddy: `configureDNS` with Sparx DNS records (CNAME @/www → customers.sparx.zone, SPF TXT, DKIM TXT with generated keypair, DMARC, MX)
+3. GoDaddy: `configureDNS` with sparx DNS records (CNAME @/www → customers.sparx.zone, SPF TXT, DKIM TXT with generated keypair, DMARC, MX)
 4. DB: insert `domain_purchases` + upsert `domains` row (`type: purchased`, `status: pending_ssl`)
 5. Pub/Sub: publish `domain.purchased`
 6. Return success — Caddy on-demand TLS handles SSL from first request
@@ -256,11 +256,11 @@ New tables (all RLS ENABLE + FORCE):
 ```sql
 stock_locations      -- warehouse / bin / store per tenant
 stock_levels         -- per-variant per-location on_hand + committed + available (generated)
-inventory_source_links -- ties a Sparx variant to its external SKU
+inventory_source_links -- ties a sparx variant to its external SKU
 inventory_sources    -- one configured connection per tenant per external system
 ```
 
-`product_variants.inventory_quantity` stays as the denormalized rollup for Sparx-native SKUs. For externally-linked variants it becomes a materialized sum of `stock_levels` (updated by the sync worker).
+`product_variants.inventory_quantity` stays as the denormalized rollup for sparx-native SKUs. For externally-linked variants it becomes a materialized sum of `stock_levels` (updated by the sync worker).
 
 A variant with no `inventory_source_links` row behaves exactly as today — non-breaking.
 
@@ -288,7 +288,7 @@ First cloud-API adapter. Candidate: **Cin7/DEAR** or **Katana** (widely used, go
 
 **Blocked on Gillett Diesel confirmation** — need: Fishbowl version/edition, whether IT will allow an outbound HTTPS agent, and which connectivity port is available. Do not scope further until answered.
 
-When unblocked: Windows agent (Node.js + pkg or Tauri) that talks to Fishbowl's LAN API, long-polls a command queue on Sparx, and pushes stock snapshots via outbound HTTPS. Pairing/enrollment flow mints a tenant-scoped API key.
+When unblocked: Windows agent (Node.js + pkg or Tauri) that talks to Fishbowl's LAN API, long-polls a command queue on sparx, and pushes stock snapshots via outbound HTTPS. Pairing/enrollment flow mints a tenant-scoped API key.
 
 ---
 

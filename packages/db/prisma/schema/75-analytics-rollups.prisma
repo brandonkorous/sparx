@@ -137,23 +137,24 @@ model RollupAutomationDailyRuns {
 }
 
 // One row per (tenant, UTC day) SNAPSHOT of inventory valuation (docs/97 §5).
-// UNLIKE the other rollups, this is NOT recomputable from history: stock_levels
-// carry only a CURRENT quantity (no per-day movement ledger), so a day's value
-// can only be captured AS OF the nightly run. The snapshot cron upserts today's
-// row each night; past rows are immutable point-in-time captures, so the "value
-// over time" chart builds forward from first capture (no backfill is possible).
-// The read live-overlays today (current valuation) so the chart is fresh before
+// UNLIKE the other rollups, this is captured AS OF the nightly run rather than
+// recomputed from history: a past day's value depends on that day's moving-average
+// cost basis, which isn't cheaply reconstructable, so the snapshot cron upserts
+// today's row each night, past rows are immutable point-in-time captures, and the
+// "value over time" chart builds forward from first capture (no backfill). The
+// read live-overlays today (current valuation) so the chart is fresh before
 // tonight's snapshot.
 //
-// Valuation mirrors the live `/v1/inventory/reports/summary` definition exactly:
-// total_cost_cents = Σ(stock_level.on_hand × variant.cost_cents) and
-// total_retail_cents = Σ(stock_level.on_hand × variant.price_cents).
+// Valuation reads the MASTER stock model (inventory_levels, docs/100 P1c) and
+// mirrors the live `/v1/inventory/reports/summary` definition exactly:
+// total_cost_cents = Σ(inventory_level.on_hand × moving-average cost) and
+// total_retail_cents = Σ(inventory_level.on_hand × variant.price_cents).
 model RollupInventoryDailyValuation {
   tenantId String   @map("tenant_id") @db.Uuid
   // The UTC day this snapshot was captured (date only — no time component).
   bucket   DateTime @db.Date
 
-  // Total on-hand units across every (variant, location) stock level.
+  // Total on-hand units across every (variant, warehouse) inventory level.
   totalUnits       Int    @default(0) @map("total_units")
   // Inventory value at cost / at retail, in integer cents.
   totalCostCents   BigInt @default(0) @map("total_cost_cents")

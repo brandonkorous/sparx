@@ -236,7 +236,7 @@ Brand is **owned at the tenant/platform level, above every module.** Three force
 - **It already fragments.** Brand is spread across Commerce `SiteTheme` (`logoMediaId`,
   `logoDarkMediaId`, `faviconMediaId` + color tokens) and a per-module
   `EmailSettings.brandingOverride`. `resolveEmailBrand` cascades Commerce `SiteTheme` →
-  the email override → Sparx defaults; the intended Site-Builder-snapshot source is documented
+  the email override → sparx defaults; the intended Site-Builder-snapshot source is documented
   but `not yet exposed — falls through`. There is no single record a tenant sets, the email
   override is precisely the kind of per-module brand redefinition §6.2 forbids, and a tenant
   without a site has no shared identity for email. A tenant-level brand removes the

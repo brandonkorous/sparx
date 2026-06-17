@@ -12,7 +12,7 @@ import * as React from 'react';
 import { Plus } from 'lucide-react';
 import { Button, Input, Label, NativeSelect, Text } from '@sparx/ui';
 
-import { createWarehouseAction } from '../../../inventory-actions';
+import { createWarehouseAction } from '../../../../inventory/_lib/inventory-actions';
 
 interface InlineWarehouseCreateProps {
   /** Called with the new warehouse id once it's created, so the caller can

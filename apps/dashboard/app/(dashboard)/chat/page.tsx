@@ -129,7 +129,7 @@ interface ActivityEntry {
 // Real conversation sources → friendly channel labels.
 const CHANNEL_LABEL: Record<string, string> = {
   site: 'Website',
-  sparx_market: 'Sparx Market',
+  sparx_market: 'sparx Market',
   dashboard: 'Dashboard',
 };
 

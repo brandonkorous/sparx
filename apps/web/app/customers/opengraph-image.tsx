@@ -4,7 +4,7 @@ import { ImageResponse } from 'next/og';
 // tag, big headline, module-dot footer) with customers copy. system-ui fonts so
 // no remote font fetch is needed.
 export const runtime = 'edge';
-export const alt = 'Sparx — Who builds on Sparx. Every kind of operator, one platform.';
+export const alt = 'sparx — Who builds on sparx. Every kind of operator, one platform.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -45,7 +45,7 @@ export default function Image() {
             letterSpacing: '-0.03em',
           }}
         >
-          <span>Spar</span>
+          <span>spar</span>
           <span style={{ color: '#6366F1' }}>x</span>
         </div>
         <div
@@ -89,7 +89,7 @@ export default function Image() {
         >
           <div style={{ display: 'flex' }}>Who builds</div>
           <div style={{ display: 'flex', alignItems: 'flex-end', color: '#A1A1AA' }}>
-            <span>on Sparx</span>
+            <span>on sparx</span>
             <span
               style={{
                 width: 24,

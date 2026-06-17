@@ -1,5 +1,5 @@
 // Minimal GoDaddy API subset for the domain-worker: DNS configuration retry
-// and the Sparx DNS record set builder. Only configureDNS and buildSparxDnsRecords
+// and the sparx DNS record set builder. Only configureDNS and buildSparxDnsRecords
 // are needed here — the full client lives in services/api-rest/src/lib/godaddy.ts.
 
 import { env } from './env.js';

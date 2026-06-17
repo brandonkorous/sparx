@@ -66,7 +66,7 @@ export function Testimonial() {
             &ldquo;We were paying{' '}
             <span style={{ color: 'var(--color-text-tertiary)' }}>$35,400 a year</span>
             {
-              ' for Shopify + HubSpot and still couldn’t ask a simple question across both. We moved to Sparx in '
+              ' for Shopify + HubSpot and still couldn’t ask a simple question across both. We moved to sparx in '
             }
             <span style={{ color: 'var(--sparx-primary)' }}>two weeks</span>
             {'. The fleet module alone paid for the migration.”'}

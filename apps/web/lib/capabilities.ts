@@ -1,5 +1,5 @@
 /**
- * The full Sparx capability catalog — the data behind the `/features` page and
+ * The full sparx capability catalog — the data behind the `/features` page and
  * the home-page "everything included" band.
  *
  * The marketing site headlines 11 modules; the platform actually ships hundreds
@@ -556,7 +556,7 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
   {
     id: 'partners',
     name: 'Partners & Admin',
-    summary: 'Tools for agencies, consultants, and the people who run Sparx.',
+    summary: 'Tools for agencies, consultants, and the people who run sparx.',
     accent: '#64748B',
     module: false,
     capabilities: [

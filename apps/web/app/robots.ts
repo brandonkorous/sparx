@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 
-// AI / answer-engine crawlers we explicitly welcome (docs/50). Sparx is built
-// AI-native (MCP-first, "AI builds it, Sparx keeps it"), so the marketing site
+// AI / answer-engine crawlers we explicitly welcome (docs/50). sparx is built
+// AI-native (MCP-first, "AI builds it, sparx keeps it"), so the marketing site
 // opts INTO answer-engine and model crawlers rather than the common default of
 // blocking them. The `*` rule already permits everyone; these named groups make
 // the intent explicit and are the lever to tighten later if ever needed.

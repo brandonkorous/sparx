@@ -45,7 +45,7 @@ export default function GlobalError({
             Something went wrong
           </p>
           <h1 style={{ fontSize: '26px', fontWeight: 600, margin: '0 0 10px' }}>
-            Sparx hit an error
+            sparx hit an error
           </h1>
           <p style={{ fontSize: '15px', lineHeight: 1.6, color: '#6b6b86', margin: '0 0 24px' }}>
             Something unexpected happened while loading the page. Please try again in a moment.

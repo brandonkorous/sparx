@@ -1,4 +1,4 @@
-# Sparx Platform — Invoicing & Billing Documents
+# sparx Platform — Invoicing & Billing Documents
 
 **Version:** 0.3 (built — Phases 1–8 shipped; standalone $19 pricing + auto-enable wired)
 **Author:** Brandon Korous
@@ -8,7 +8,7 @@
 > a human-built estimate / work order / invoice / ticket that moves through a tenant-configured
 > stage workflow, mixes marked-up parts with labor and pass-through charges, and bills a retail
 > customer **or** a B2B account. This is the surface [48-product-markup-pricing.md](48-product-markup-pricing.md)
-> §5/§11 named as the prerequisite (and blocker) for invoice/quote-line markup — "Sparx has no
+> §5/§11 named as the prerequisite (and blocker) for invoice/quote-line markup — "sparx has no
 > standalone manual-invoice / repair-order entity today." This doc designs it as a first-class,
 > industry-neutral module, not a repair-shop one-off.
 
@@ -16,7 +16,7 @@
 
 ## 1. Why
 
-Sparx already turns a **cart into a charge** well: a customer checks out, an `Order` is created, and
+sparx already turns a **cart into a charge** well: a customer checks out, an `Order` is created, and
 a net-terms B2B order auto-generates a `B2bInvoice` ([10-b2b-wholesale-prd.md](10-b2b-wholesale-prd.md) §9).
 That is the **transactional** path — automated, product-driven, fast.
 
@@ -26,7 +26,7 @@ they go), and it's finalized into an invoice. A salon rings up a service. A tatt
 deposit against a future session. A caterer bills an event. None of these start from a cart — the
 document **is** the work, built line by line and moved through stages.
 
-Today Sparx cannot do this:
+Today sparx cannot do this:
 
 - `B2bInvoice` is a **header only** (`amount_cents`, no line items) — it records _that_ a net-terms
   order is owed, not _what_ is on it.

@@ -30,7 +30,7 @@ interface FitmentDomainRow {
 }
 
 // Fitment reference data — the "what your products are compatible with"
-// dictionary. Generalized across domains: Sparx seeds the Vehicle domain
+// dictionary. Generalized across domains: sparx seeds the Vehicle domain
 // (Make → Model → Engine + Year) globally; tenants can register their
 // own (Pet: Species → Breed; Device: Brand → Model; Apparel: Size; ...)
 // or extend the Vehicle domain with custom marques.

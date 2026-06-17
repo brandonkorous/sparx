@@ -4,7 +4,7 @@ import { Footer } from '@/components/marketing/footer';
 import { ComingSoon } from '@/components/marketing/coming-soon';
 
 export const metadata: Metadata = {
-  title: 'Careers — Sparx',
+  title: 'Careers — sparx',
   description:
     "We're hiring engineers, designers, and a customer success lead. Remote-first, Visalia or anywhere.",
   alternates: { canonical: '/careers' },

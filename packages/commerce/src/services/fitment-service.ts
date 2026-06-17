@@ -39,7 +39,7 @@ import { CommerceConflictError, CommerceNotFoundError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
 
-// Sparx-seeded global Vehicle domain — UUID matches the migration.
+// sparx-seeded global Vehicle domain — UUID matches the migration.
 export const VEHICLE_DOMAIN_ID = '00000000-0000-0000-0000-000000000001';
 
 // ─── Public shapes ────────────────────────────────────────────────────

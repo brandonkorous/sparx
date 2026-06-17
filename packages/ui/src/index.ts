@@ -311,6 +311,16 @@ export {
   NavigationMenuIndicator,
   navigationMenuTriggerStyle,
 } from './components/navigation/navigation-menu';
+export { TopProgress, type TopProgressProps } from './components/navigation/top-progress';
+export {
+  topProgress,
+  withTopProgress,
+  ROUTE_ID,
+  type TopProgressState,
+  type TopProgressHandle,
+  type StartOptions,
+} from './components/navigation/top-progress-controller';
+export { resolveRouteModule } from './components/navigation/top-progress-nav';
 
 // ── Data display ──────────────────────────────────────────
 export { Code, codeVariants, type CodeProps } from './components/data/code';

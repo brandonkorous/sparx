@@ -1,4 +1,4 @@
-// Event type registry — central list of every Pub/Sub event Sparx publishes.
+// Event type registry — central list of every Pub/Sub event sparx publishes.
 // Topic name == event type (per-topic + for_each Terraform pattern), so a
 // publisher with a typed `EventType` cannot accidentally publish to a topic
 // that hasn't been provisioned.

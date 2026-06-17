@@ -5,8 +5,8 @@ import type { MetadataRoute } from 'next';
 // in apps/web/public/.
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Sparx',
-    short_name: 'Sparx',
+    name: 'sparx',
+    short_name: 'sparx',
     description: 'A modular content and commerce operating system by WizeWorks.',
     start_url: '/',
     display: 'standalone',

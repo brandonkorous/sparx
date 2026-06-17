@@ -1,4 +1,4 @@
-# Sparx Platform — Wizard Layout Pattern
+# sparx Platform — Wizard Layout Pattern
 
 **Version:** 1.0
 **Author:** Brandon Korous
@@ -43,13 +43,13 @@ This doc owns the **layout**. The **flows** that live inside it (which steps, wh
 
 | Slot   | Content                                                                                                                                                   |
 | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Top    | Sparx wordmark (full-page) or the wizard's title (modal), e.g. "New product"                                                                              |
+| Top    | sparx wordmark (full-page) or the wizard's title (modal), e.g. "New product"                                                                              |
 | Middle | Vertical journey — numbered markers + label + sublabel; a connector line; states: `upcoming` (outline), `current` (filled, ring), `done` (filled + check) |
 | Bottom | A context card (icon + one line that reframes the current step) and utility links (Sign out / Need help, or Cancel)                                       |
 
 ### Rail color follows the module
 
-The rail adopts the active module color via `<ModuleProvider>` (`--module-active`). Onboarding/first-run uses **Builder Indigo**; a **Product** wizard's rail is **Commerce orange**; a **B2B Account** wizard's is **B2B slate**; and so on. The rail is a **flat solid fill** of the module color (no gradient — Sparx is flat by default); use the module's strong shade (e.g. indigo `#4f46e5`, commerce `#ea580c`). Wordmark "x" stays Sparx Indigo regardless (brand rule).
+The rail adopts the active module color via `<ModuleProvider>` (`--module-active`). Onboarding/first-run uses **Builder Indigo**; a **Product** wizard's rail is **Commerce orange**; a **B2B Account** wizard's is **B2B slate**; and so on. The rail is a **flat solid fill** of the module color (no gradient — sparx is flat by default); use the module's strong shade (e.g. indigo `#4f46e5`, commerce `#ea580c`). Wordmark "x" stays sparx Indigo regardless (brand rule).
 
 ### Working-pane anatomy
 

@@ -45,7 +45,7 @@ import type { SendableEmail } from '../types';
 // back out of the node's Tailwind-native `class` string (docs/61), since the
 // renderer emits inline styles rather than the classes themselves.
 
-const FALLBACK_FROM = 'Sparx <noreply@sparx.email>';
+const FALLBACK_FROM = 'sparx <noreply@sparx.email>';
 
 // Header wordmark size token → px (logo height + name font scale from this). Mirrors
 // the canvas leaf's mapping so the editor preview and the send agree.

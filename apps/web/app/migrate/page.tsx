@@ -4,7 +4,7 @@ import { Footer } from '@/components/marketing/footer';
 import { ComingSoon } from '@/components/marketing/coming-soon';
 
 export const metadata: Metadata = {
-  title: 'Migration tools — Sparx',
+  title: 'Migration tools — sparx',
   description:
     'Native importers for Shopify, HubSpot, Mailchimp, and WordPress. The Gillett Diesel migration ran in 14 days end-to-end including custom checkout work.',
   alternates: { canonical: '/migrate' },

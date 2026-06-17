@@ -18,6 +18,6 @@
     { "file": "media/preview.png", "kind": "image", "alt": "Aurora theme home page" },
     { "file": "media/swatch.svg", "kind": "image", "alt": "Aurora palette swatch" }
   ],
-  "author": { "displayName": "Sparx", "website": "https://sparx.works" },
+  "author": { "displayName": "sparx", "website": "https://sparx.works" },
   "requires": { "modules": ["builder"] }
 }

@@ -1,4 +1,4 @@
-# Sparx Platform — Live Chat Module Spec
+# sparx Platform — Live Chat Module Spec
 
 **Version:** 1.0
 **Author:** Brandon Korous
@@ -8,7 +8,7 @@
 
 ## 1. Overview
 
-Sparx Live Chat is a built-in customer communication module. Merchants get a branded chat widget on their site and a unified inbox in the dashboard — no Intercom, no Zendesk, no Crisp required. The AI layer handles common questions instantly; humans handle the rest.
+sparx Live Chat is a built-in customer communication module. Merchants get a branded chat widget on their site and a unified inbox in the dashboard — no Intercom, no Zendesk, no Crisp required. The AI layer handles common questions instantly; humans handle the rest.
 
 **Module:** Chat · +$19/mo  
 **Surfaces:** Site widget, merchant dashboard inbox, sparx.market product pages
@@ -17,7 +17,7 @@ Sparx Live Chat is a built-in customer communication module. Merchants get a bra
 
 ## 2. Why Build It
 
-Every Sparx tenant currently solves customer support themselves. Options are:
+Every sparx tenant currently solves customer support themselves. Options are:
 
 - Ignore it (bad for conversion)
 - Pay Intercom/Zendesk ($100–300/mo)
@@ -39,7 +39,7 @@ All customer conversations in one place. Assign to staff members. See customer's
 
 ### Surface 3 — sparx.market Chat
 
-"Chat with [Tenant Name]" on product pages. Routes to that tenant's inbox. Shopper identified if they have a Sparx account.
+"Chat with [Tenant Name]" on product pages. Routes to that tenant's inbox. Shopper identified if they have a sparx account.
 
 ---
 
@@ -161,7 +161,7 @@ interface ChatWidgetConfig {
   awayMessage: string; // shown when tenant is offline
   operatingHours: OperatingHours | null; // null = always on
   aiEnabled: boolean; // default true
-  aiPersonaName: string; // "Sparx Assistant" or custom
+  aiPersonaName: string; // "sparx Assistant" or custom
   collectEmail: boolean; // ask before starting chat if anonymous
   showOnPages: 'all' | 'product' | 'cart' | string[];
 }
@@ -230,7 +230,7 @@ Right panel (conversation selected):
 
 ### Typing indicators
 
-Both sides see a typing indicator (three-dot animation) while the other party is composing. Transmitted over WebSocket as a `typing` event, debounced 1 s after last keystroke. AI responses show a "Sparx AI is thinking..." indicator during inference.
+Both sides see a typing indicator (three-dot animation) while the other party is composing. Transmitted over WebSocket as a `typing` event, debounced 1 s after last keystroke. AI responses show a "sparx AI is thinking..." indicator during inference.
 
 ### Read receipts
 
@@ -308,7 +308,7 @@ Inside hours: normal chat. The operating hours check runs client-side (widget) a
 
 Product pages on sparx.market show a "Chat with [Tenant Name]" button when the tenant has chat enabled. Clicking opens an inline chat panel (same `@sparx/chat-widget`, configured with `source: 'sparx_market'`).
 
-If the shopper has a Sparx account (signed in to sparx.market), their identity is passed to the widget automatically. If anonymous, `collectEmail: true` is forced.
+If the shopper has a sparx account (signed in to sparx.market), their identity is passed to the widget automatically. If anonymous, `collectEmail: true` is forced.
 
 Conversations from sparx.market appear in the tenant's inbox with source badge "sparx.market".
 
@@ -322,7 +322,7 @@ Conversations from sparx.market appear in the tenant's inbox with source badge "
 | Monthly price        | $19/mo                |
 | Annual price         | $182/yr               |
 | Standalone           | No (requires Builder) |
-| Billing product name | "Sparx Chat"          |
+| Billing product name | "sparx Chat"          |
 
 Add to `PRICE_CATALOG` in `packages/billing/src/price-catalog.ts` and create the Stripe product/prices during the billing Phase 1 work (docs/67).
 

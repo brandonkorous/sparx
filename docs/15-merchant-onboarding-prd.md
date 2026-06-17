@@ -1,4 +1,4 @@
-# Sparx Platform — Onboarding PRD
+# sparx Platform — Onboarding PRD
 
 **Version:** 2.0
 **Author:** Brandon Korous
@@ -20,7 +20,7 @@ If information can be collected later without blocking launch, it is collected l
 
 Onboarding is **not a modal**. It is a focused full-screen route (`apps/dashboard/app/(onboarding)`) outside the dashboard shell — no sidebar, no topbar.
 
-- **Persistent left rail** (Builder Indigo): the Sparx wordmark, an **always-visible vertical journey** (every step with done/current state), and a one-line context blurb that changes per step. The rail never moves — it is the single source of progress and a sense of place.
+- **Persistent left rail** (Builder Indigo): the sparx wordmark, an **always-visible vertical journey** (every step with done/current state), and a one-line context blurb that changes per step. The rail never moves — it is the single source of progress and a sense of place.
 - **Clean working pane** on the right: the only thing that changes between steps. Left-aligned headline + supporting line at the top of each step. Nothing floats center-stacked in a void.
 - **Responsive** (top-2 rule): under ~940px the rail collapses to a slim indigo top bar with a compact dot-progress; the pane goes full width; grids stack to one column.
 
@@ -53,7 +53,7 @@ An exact replica of the marketing **pricing switchboard** (`apps/web/components/
 
 - Modules and prices are owned by **docs/17 §2**. Defaults on: **Builder ($10) + Commerce ($49) + CMS ($49)** = $108/mo.
 - The plan card shows what the tenant pays **after** the 14-day trial. The CTA is **Continue** (the trial already started at signup; see §8). Subtext: _"Free for 14 days · no card today."_
-- **Builder can be turned off.** Builder renders and serves the hosted site; a tenant running Sparx **headless** (own frontend against the API/MCP, or a content/CRM-only back office) does not need it. Turning Builder **off** triggers a **warn + confirm** ("Your hosted site won't be served — you'll use Sparx headlessly. Continue?") per the destructive-action rule.
+- **Builder can be turned off.** Builder renders and serves the hosted site; a tenant running sparx **headless** (own frontend against the API/MCP, or a content/CRM-only back office) does not need it. Turning Builder **off** triggers a **warn + confirm** ("Your hosted site won't be served — you'll use sparx headlessly. Continue?") per the destructive-action rule.
 - The selection is the input to Step 2's filter and to billing.
 
 ### 4.2 — Step 2 · Template
@@ -83,7 +83,7 @@ Names the tenant's company and its first site. Signup already ran `slugify(compa
 
 ### 4.5 — Step 5 · Payments (conditional)
 
-**Stripe Connect** — connects the tenant's _own_ account so their site can accept customer payments and receive payouts. This is entirely separate from the tenant's Sparx subscription (docs/17 §5).
+**Stripe Connect** — connects the tenant's _own_ account so their site can accept customer payments and receive payouts. This is entirely separate from the tenant's sparx subscription (docs/17 §5).
 
 - **Conditional:** shown only if a **selling module** (Commerce / B2B / Dropship) is enabled. A content/CRM-only tenant skips this step — there is nothing to collect.
 - **Skippable;** the site still launches, and checkout simply stays off until Connect is finished.

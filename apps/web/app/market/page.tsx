@@ -14,9 +14,9 @@ import { ListingCard } from './_components/listing-card';
 import { CategoryTiles } from './_components/category-tiles';
 
 export const metadata: Metadata = {
-  title: 'Marketplace — Sparx',
+  title: 'Marketplace — sparx',
   description:
-    'Blueprints, themes, components, and integrations for Sparx. Start from a whole themed site — pages, products, content, and emails — and go live in minutes.',
+    'Blueprints, themes, components, and integrations for sparx. Start from a whole themed site — pages, products, content, and emails — and go live in minutes.',
   alternates: { canonical: '/market' },
 };
 
@@ -52,8 +52,8 @@ export default async function MarketplaceHomePage() {
             }
             lede={
               <>
-                Blueprints, themes, components, and integrations — curated for Sparx. Start from a
-                whole themed site and customize from there. AI builds it, Sparx keeps it.
+                Blueprints, themes, components, and integrations — curated for sparx. Start from a
+                whole themed site and customize from there. AI builds it, sparx keeps it.
               </>
             }
           />

@@ -5,7 +5,7 @@
  * select and drag to reorder) and the RIGHT pane is the inspector (the selected
  * node's properties). The chrome uses the dashboard design tokens (--color-* /
  * --module-active) so it matches the app and follows light/dark + the platform
- * accent (Sparx Indigo).
+ * accent (sparx Indigo).
  *
  * Purpose-built editor controls (the spine, node cards, inspector cards) live
  * here as semantic classes rather than re-skinned utilities — same approach as

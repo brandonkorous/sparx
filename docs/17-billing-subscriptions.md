@@ -1,4 +1,4 @@
-# Sparx Platform — Billing & Subscriptions
+# sparx Platform — Billing & Subscriptions
 
 **Version:** 2.5
 **Author:** Brandon Korous
@@ -8,7 +8,7 @@
 
 ## 1. Philosophy
 
-Sparx billing is modular and honest. Tenants pay only for what they activate. No hidden tiers. No "you need to upgrade to access that." Every module has a clear price and a clear value proposition.
+sparx billing is modular and honest. Tenants pay only for what they activate. No hidden tiers. No "you need to upgrade to access that." Every module has a clear price and a clear value proposition.
 
 The CMS and Commerce engines are deliberately separated — a content publisher shouldn't pay for a shopping cart they'll never use, and a wholesale distributor shouldn't pay for a blog module they'll never touch.
 
@@ -33,7 +33,7 @@ Each module is independently activatable:
 ### Module Rules
 
 - Every module is independent and optional — a tenant activates only the ones it uses (minimum one).
-- Builder is optional, not a required base. It hosts and serves a website (pages, themes, domains, SSL, CDN); a tenant that wants a hosted Sparx site turns it on.
+- Builder is optional, not a required base. It hosts and serves a website (pages, themes, domains, SSL, CDN); a tenant that wants a hosted sparx site turns it on.
 - Headless consumers don't need Builder — a content-only publisher (CMS), a CRM-only team, or anyone driving their own frontend off the API/MCP can run without it.
 - **B2B requires Commerce** — enabling B2B auto-activates **and bills** Commerce (B2B is wholesale _on top of_ the commerce engine), and Commerce cannot be turned off while B2B is on. Enforced in the activation handlers (`@sparx/modules` `REQUIRES` graph), not just documented.
 - **Invoicing is a bundled-free capability of Commerce and B2B** — either one activates the full Invoicing surface (authoring, AR, aging, templates, MCP tools) at **$0**. A tenant with neither pays **$19** for it standalone (a service business — contractor, repair shop, consultant — that quotes and bills without a site). Modeled as the `@sparx/modules` `BUNDLED_FREE` graph: the standalone `invoicing` flag is only ever set on a real $19 purchase, so the bundled case is never billed.
@@ -49,7 +49,7 @@ Each module is independently activatable:
 
 ## 3. Usage & Fair Use
 
-Sparx does not meter the things a business grows into. Consistent with the per-module model:
+sparx does not meter the things a business grows into. Consistent with the per-module model:
 
 - **Unlimited team members** — no per-seat pricing on any plan.
 - **No per-record metering** — products, customers, and content are unlimited; you're never billed per row or per contact.
@@ -75,7 +75,7 @@ For clients requiring custom frontends, dedicated infrastructure, or contractual
 
 ### Managed Hosting Add-On
 
-Available on any plan for tenants who want Sparx to operate their infrastructure:
+Available on any plan for tenants who want sparx to operate their infrastructure:
 
 **$750/month includes:**
 
@@ -96,7 +96,7 @@ Gillett Diesel Service Inc. is the first managed hosting client at $750/month, o
 
 ### Two Stripe integrations — never conflated
 
-1. **Platform billing (tenant pays Sparx)** — Stripe **Billing / Subscriptions**. One subscription per tenant; **one item per active module** (add/remove mid-cycle, prorated). The 14-day trial and the lifecycle in §6 live here. The card is collected post-onboarding, **never during it**.
+1. **Platform billing (tenant pays sparx)** — Stripe **Billing / Subscriptions**. One subscription per tenant; **one item per active module** (add/remove mid-cycle, prorated). The 14-day trial and the lifecycle in §6 live here. The card is collected post-onboarding, **never during it**.
 2. **Merchant payouts (the tenant's customers pay the tenant)** — Stripe **Connect**. Connected in the onboarding "Payments" step (docs/15 §4.5), conditional on a selling module being active. Transaction fees (above) are taken here. Entirely independent of the tenant's own subscription.
 
 All billing handled via Stripe:
@@ -125,7 +125,7 @@ Tenants manage billing via embedded Stripe Customer Portal:
 - Download invoices
 - Cancel subscription (with exit survey)
 
-No custom billing UI — the Stripe Customer Portal is embedded into Sparx dashboard settings.
+No custom billing UI — the Stripe Customer Portal is embedded into sparx dashboard settings.
 
 ---
 
@@ -154,7 +154,7 @@ The site stays live for visitors; the dashboard nudges daily. A lapsed **active*
 
 ### Day 21 — Suspend
 
-No active subscription past grace → the **site** (`apps/site`) serves a full-page, **non-bypassable** "site unavailable" overlay — a friendly Sparx-flavored message (e.g. _"Catching a fresh spark — back in a flash"_) that never exposes a billing problem to the tenant's customers. The site is suspended to the public; **the dashboard stays fully open** so the owner can add a card or export. **Nothing is deleted.**
+No active subscription past grace → the **site** (`apps/site`) serves a full-page, **non-bypassable** "site unavailable" overlay — a friendly sparx-flavored message (e.g. _"Catching a fresh spark — back in a flash"_) that never exposes a billing problem to the tenant's customers. The site is suspended to the public; **the dashboard stays fully open** so the owner can add a card or export. **Nothing is deleted.**
 
 ### Anytime — Reactivate
 
@@ -185,4 +185,4 @@ Trial-to-paid conversion is a primary business metric. Target: >30%.
 
 ## 7. Billing for the WizeWorks Portfolio
 
-Each WizeWorks product (kanNINJA, HelpNinja, Sparx, etc.) has independent billing. Sparx billing is not shared with other WizeWorks products. Future consideration: a WizeWorks portfolio bundle that gives clients across multiple products a combined discount — but that's a future-state decision after each product has its own customer base.
+Each WizeWorks product (kanNINJA, HelpNinja, sparx, etc.) has independent billing. sparx billing is not shared with other WizeWorks products. Future consideration: a WizeWorks portfolio bundle that gives clients across multiple products a combined discount — but that's a future-state decision after each product has its own customer base.

@@ -1,8 +1,9 @@
 // Commerce list endpoints that the dashboard needs but the service layer
-// hasn't yet abstracted: tenant-wide variant catalog, active recalls,
-// account-credit balances, cart inbox, checkout-session inbox, tenant-wide
-// reviews / questions, question detail, wishlist analytics, plus an
-// enriched warehouse-levels view that joins variant + product columns.
+// hasn't yet abstracted: tenant-wide variant catalog, account-credit balances,
+// cart inbox, checkout-session inbox, tenant-wide reviews / questions, question
+// detail, and wishlist analytics. (Inventory's enriched-levels + active-recalls
+// reads moved to the inventory module's own namespace — see routes/v1/inventory/
+// stock.ts + lots.ts — docs/100 P1e.)
 //
 // These all go through `withRequestTenant` so RLS still enforces tenant
 // isolation. Each handler is a thin Prisma query and is a candidate to
@@ -17,13 +18,6 @@ import { notFound } from '@sparx/api-core/errors';
 import { requireCommerceModule } from '../../../lib/commerce-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
-const WarehouseParam = z.object({ warehouseId: z.string().uuid() });
-
-const EnrichedLevelsQuery = z.object({
-  low_stock_only: z.coerce.boolean().optional(),
-  take: z.coerce.number().int().min(1).max(1000).optional(),
-  skip: z.coerce.number().int().min(0).optional(),
-});
 
 const AccountCreditQuery = z.object({
   min_balance_cents: z.coerce.number().int().optional(),
@@ -95,107 +89,6 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
         productTitle: r.product.title,
         productHandle: r.product.handle,
         productStatus: r.product.status,
-      }))
-    );
-  });
-
-  // ── Enriched warehouse levels (sku + product columns) ────────────
-  app.get('/v1/commerce/inventory/levels/warehouse/:warehouseId/enriched', async (request) => {
-    requireRole(request, 'viewer');
-    await requireCommerceModule(request);
-    const { warehouseId } = WarehouseParam.parse(request.params);
-    const q = EnrichedLevelsQuery.parse(request.query);
-    const take = Math.min(q.take ?? 200, 1000);
-    const skip = q.skip ?? 0;
-    const lowStockOnly = q.low_stock_only === true;
-    const where = { warehouseId };
-
-    const { rows, total } = await withRequestTenant(request, async (tx) => {
-      const [rows, total] = await Promise.all([
-        tx.inventoryLevel.findMany({
-          where,
-          orderBy: [{ updatedAt: 'desc' }],
-          take,
-          skip,
-          select: {
-            variantId: true,
-            warehouseId: true,
-            onHand: true,
-            allocated: true,
-            reorderPoint: true,
-            reorderQuantity: true,
-            updatedAt: true,
-            variant: {
-              select: {
-                sku: true,
-                title: true,
-                product: { select: { id: true, title: true, handle: true } },
-              },
-            },
-          },
-        }),
-        tx.inventoryLevel.count({ where }),
-      ]);
-      return { rows, total };
-    });
-    const enriched = rows.map((r) => ({
-      variantId: r.variantId,
-      warehouseId: r.warehouseId,
-      onHand: r.onHand,
-      allocated: r.allocated,
-      available: r.onHand - r.allocated,
-      reorderPoint: r.reorderPoint,
-      reorderQuantity: r.reorderQuantity,
-      updatedAt: r.updatedAt.toISOString(),
-      sku: r.variant.sku,
-      variantTitle: r.variant.title,
-      productId: r.variant.product.id,
-      productTitle: r.variant.product.title,
-      productHandle: r.variant.product.handle,
-    }));
-    // Filter in-process for low-stock since Prisma can't compare two columns.
-    // The low-stock toggle narrows the current page in place; `total` reflects
-    // the un-narrowed level count for the warehouse (the main paginated list).
-    const filtered = lowStockOnly
-      ? enriched.filter((r) => r.reorderPoint !== null && r.onHand <= (r.reorderPoint ?? 0))
-      : enriched;
-    return paged(filtered, { total, per_page: take });
-  });
-
-  // ── Active recalls ────────────────────────────────────────────────
-  app.get('/v1/commerce/inventory/recalls/active', async (request) => {
-    requireRole(request, 'viewer');
-    await requireCommerceModule(request);
-    const rows = await withRequestTenant(request, (tx) =>
-      tx.lotBatch.findMany({
-        where: { recallStatus: 'active' },
-        orderBy: { recalledAt: 'desc' },
-        take: 200,
-        select: {
-          id: true,
-          lotNumber: true,
-          recallReason: true,
-          recalledAt: true,
-          warehouse: { select: { id: true, code: true, name: true } },
-          variant: {
-            select: { id: true, sku: true, product: { select: { id: true, title: true } } },
-          },
-        },
-      })
-    );
-    return ok(
-      rows.map((r) => ({
-        id: r.id,
-        lotNumber: r.lotNumber,
-        recallReason: r.recallReason,
-        recalledAt: r.recalledAt?.toISOString() ?? null,
-        warehouseId: r.warehouse.id,
-        warehouseCode: r.warehouse.code,
-        warehouseName: r.warehouse.name,
-        variantId: r.variant.id,
-        variantSku: r.variant.sku,
-        productId: r.variant.product.id,
-        productTitle: r.variant.product.title,
       }))
     );
   });

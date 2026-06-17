@@ -1,4 +1,4 @@
-// Sparx Email Platform — public package barrel.
+// sparx Email Platform — public package barrel.
 //
 // Re-exports the service layer plus the shared error/event vocabulary the
 // REST/MCP/Server-Action transports consume. Every external write into the

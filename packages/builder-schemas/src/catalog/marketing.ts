@@ -135,7 +135,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                       featureLine('1 published site'),
                       featureLine('Up to 25 products'),
                       featureLine('Community support'),
-                      featureLine('Sparx subdomain'),
+                      featureLine('sparx subdomain'),
                     ],
                   }),
                   atom('Button', 'st-btn st-c-neutral st-v-outline st-btn--sz-md mt-auto w-full', {
@@ -248,7 +248,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               'blockquote',
               'text-2xl font-medium leading-relaxed text-base-content @3xl:text-3xl',
               {
-                text: '“Sparx replaced four separate tools for us. We relaunched our store in a weekend and orders climbed 38% the first month.”',
+                text: '“sparx replaced four separate tools for us. We relaunched our store in a weekend and orders climbed 38% the first month.”',
               }
             ),
             el('figcaption', 'flex items-center gap-4', {
@@ -291,7 +291,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               text: 'Loved by thousands of merchants',
             }),
             el('p', 'text-lg text-base-content/60', {
-              text: 'From first-time sellers to established wholesalers, teams ship faster on Sparx.',
+              text: 'From first-time sellers to established wholesalers, teams ship faster on sparx.',
             }),
           ],
         }),
@@ -1016,7 +1016,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
           children: [
             atom('Image', 'w-full rounded-box object-cover shadow-md', {
               ratio: 'wide',
-              alt: 'The Sparx storefront editor in action',
+              alt: 'The sparx storefront editor in action',
             }),
             el('div', 'flex flex-col items-start gap-5', {
               children: [

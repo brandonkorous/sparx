@@ -166,10 +166,10 @@ model Tenant {
   fitmentVariants   FitmentVariant[]
   productFitments   ProductFitment[]
 
-  // Commerce module — inventory + lots
+  // Inventory module — warehouses, levels, movement ledger, lots
   warehouses            Warehouse[]
   inventoryLevels       InventoryLevel[]
-  inventoryAdjustments  InventoryAdjustment[]
+  inventoryMovements    InventoryMovement[]
   inventoryReservations InventoryReservation[]
   lotBatches            LotBatch[]
   serialUnits           SerialUnit[]
@@ -184,20 +184,20 @@ model Tenant {
   surchargeRules         SurchargeRule[]
 
   // Invoicing module (docs/87) — authored billing documents
-  documentWorkflows        DocumentWorkflow[]
-  documentStages           DocumentStage[]
-  billingDocumentLineTypes BillingDocumentLineType[]
-  billingDocuments         BillingDocument[]
-  billingDocumentLines     BillingDocumentLine[]
-  billingDocumentSnapshots BillingDocumentSnapshot[]
-  billingDocumentPayments  BillingDocumentPayment[]
-  billingDocumentTemplates BillingDocumentTemplate[]
-  discounts                Discount[]
-  discountUsages           DiscountUsage[]
-  giftCards                GiftCard[]
-  giftCardTransactions     GiftCardTransaction[]
-  accountCredits             AccountCredit[]
-  accountCreditTransactions  AccountCreditTransaction[]
+  documentWorkflows         DocumentWorkflow[]
+  documentStages            DocumentStage[]
+  billingDocumentLineTypes  BillingDocumentLineType[]
+  billingDocuments          BillingDocument[]
+  billingDocumentLines      BillingDocumentLine[]
+  billingDocumentSnapshots  BillingDocumentSnapshot[]
+  billingDocumentPayments   BillingDocumentPayment[]
+  billingDocumentTemplates  BillingDocumentTemplate[]
+  discounts                 Discount[]
+  discountUsages            DiscountUsage[]
+  giftCards                 GiftCard[]
+  giftCardTransactions      GiftCardTransaction[]
+  accountCredits            AccountCredit[]
+  accountCreditTransactions AccountCreditTransaction[]
 
   // Commerce module — bundles + configurator
   bundles                Bundle[]
@@ -294,12 +294,12 @@ model Tenant {
   builderArchetypes        BuilderArchetype[]
 
   // SEO — stored audit scorecard snapshots for the site-wide overview (docs/50 §7)
-  seoAudits SeoAudit[]
+  seoAudits                SeoAudit[]
   // SEO — Google Search Console: per-(tenant, property) OAuth connection + the
   // ingested organic-search rollup and top queries (docs/50 §7, docs/97 §4)
-  searchConsoleConnections  SearchConsoleConnection[]
-  rollupSearchConsoleDaily  RollupSearchConsoleDaily[]
-  searchConsoleQueries      SearchConsoleQuery[]
+  searchConsoleConnections SearchConsoleConnection[]
+  rollupSearchConsoleDaily RollupSearchConsoleDaily[]
+  searchConsoleQueries     SearchConsoleQuery[]
 
   // Email platform — management surface (docs/13)
   emailSettings       EmailSettings?
@@ -311,9 +311,9 @@ model Tenant {
 
   // Legal & consent (docs/42)
   siteDocPlacements SiteDocPlacement[]
-  consentSettings         ConsentSettings?
-  consentRecords          ConsentRecord[]
-  legalAcceptances        PlatformLegalAcceptance[]
+  consentSettings   ConsentSettings?
+  consentRecords    ConsentRecord[]
+  legalAcceptances  PlatformLegalAcceptance[]
 
   // Onboarding (docs/65 Ph2) — per-tip progress rows shown for 7 days post-signup
   onboardingChecklist OnboardingChecklist[]
@@ -344,10 +344,8 @@ model Tenant {
   dropshipProductLinks DropshipProductLink[]
   dropshipOrders       DropshipOrder[]
 
-  // Inventory Sync (docs/64 Ph Inv-1)
+  // Inventory Sync (docs/64 Ph Inv-1) — folded onto the master stock model (docs/100 P1c)
   inventorySources     InventorySource[]
-  stockLocations       StockLocation[]
-  stockLevels          StockLevel[]
   inventorySourceLinks InventorySourceLink[]
 
   // Automation module (docs/81) — the cross-module rule engine

@@ -24,7 +24,7 @@ model DropshipSupplier {
   updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt   DateTime? @map("deleted_at") @db.Timestamptz
 
-  tenant         Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant         Tenant                     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   products       DropshipProduct[]
   dropshipOrders DropshipOrder[]
   // Per-site enablement (docs/14, docs/49). A connection is tenant-wide — one

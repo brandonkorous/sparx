@@ -2,7 +2,7 @@
   "name": "@sparx/commerce",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx Commerce — service layer (single source of truth shared by REST, GraphQL, MCP, Server Actions, storefront, and B2B portal), event consumers, MCP tool registry. Mirrors @sparx/crm's locked decision #7 architecture: one service layer, many transports.",
+  "description": "sparx Commerce — service layer (single source of truth shared by REST, GraphQL, MCP, Server Actions, storefront, and B2B portal), event consumers, MCP tool registry. Mirrors @sparx/crm's locked decision #7 architecture: one service layer, many transports.",
   "type": "module",
   "exports": {
     ".": {

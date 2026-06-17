@@ -82,7 +82,7 @@ function buildPaymentSecretReader(): PaymentSecretReader {
       }
       if (ref.startsWith('projects/')) return readGsm(ref);
 
-      // Sparx Pay connected account id — non-secret, on the tenant root row.
+      // sparx Pay connected account id — non-secret, on the tenant root row.
       const acct = SPARX_PAY_ACCOUNT_REF.exec(ref);
       if (acct) {
         const tenant = await prisma.tenant.findUnique({

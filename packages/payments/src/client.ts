@@ -1,5 +1,5 @@
 // The platform Stripe client — the single WizeWorks platform account that acts as
-// the Connect *platform* for Sparx Pay destination charges. Same account + key as
+// the Connect *platform* for sparx Pay destination charges. Same account + key as
 // platform module billing (`STRIPE_SECRET_KEY`); a Stripe platform account both runs
 // its own billing subscriptions and hosts connected accounts.
 //

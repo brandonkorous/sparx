@@ -1,18 +1,19 @@
-// Inventory Sync — multi-source stock management.
-// (docs/64 Inventory Sync Ph1)
+// Inventory Sync — external feeds into the unified stock model.
+// (docs/64 Inventory Sync Ph1; unified onto the master model in docs/100 P1c)
 //
 // InventorySource represents a feed/connection that provides stock counts
 // (e.g. a warehouse CSV feed, a WMS API, or a 3PL).
 //
-// StockLocation is a named physical or virtual location (warehouse, bin, 3PL
-// node) that holds units of a variant.
+// There is ONE stock model: the master `inventory_levels` / `inventory_warehouses`
+// (schema/34, owned by @sparx/inventory). The old standalone `stock_levels` /
+// `stock_locations` tables were folded into it (docs/100 P1c) — a feed's incoming
+// quantity is reconciled into `inventory_levels` through `applyMovement()` (a
+// corrective `sync` movement), so onHand stays reconcilable to `Σ(movements)` and
+// every source funnels through the one ledger writer.
 //
-// StockLevel is the current on-hand quantity for a (variant, location) pair.
-// A row per variant per location; updated in-place by the sync worker.
-//
-// InventorySourceLink binds a source's external SKU/location to the
-// corresponding (ProductVariant, StockLocation) pair inside Sparx so the
-// sync worker can map incoming rows to the right DB records.
+// InventorySourceLink binds a source's external SKU/location to the corresponding
+// (ProductVariant, Warehouse) pair inside Sparx so the sync worker can map
+// incoming rows to the right DB records.
 
 model InventorySource {
   id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -39,63 +40,16 @@ model InventorySource {
   @@map("inventory_sources")
 }
 
-model StockLocation {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId    String   @map("tenant_id") @db.Uuid
-  // human name, e.g. "Main Warehouse", "LA 3PL"
-  name        String   @db.VarChar(255)
-  // warehouse | bin | 3pl | virtual | transit
-  type        String   @default("warehouse") @db.VarChar(20)
-  // ISO 3166-1 alpha-2
-  countryCode String?  @map("country_code") @db.VarChar(2)
-  address     String?  @db.Text
-  isDefault   Boolean  @default(false) @map("is_default")
-  active      Boolean  @default(true)
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz
-
-  tenant      Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  levels      InventorySourceLink[]
-  stockLevels StockLevel[]
-
-  @@index([tenantId, active])
-  @@map("stock_locations")
-}
-
-// Current on-hand quantity for a (variant, location) pair.
-// Upserted by the sync worker; one row per variant × location.
-model StockLevel {
-  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId   String @map("tenant_id") @db.Uuid
-  variantId  String @map("variant_id") @db.Uuid
-  locationId String @map("location_id") @db.Uuid
-
-  // Units currently on hand at this location.
-  onHand    Int @default(0) @map("on_hand")
-  // Units committed to open orders (allocated), not yet shipped.
-  allocated Int @default(0)
-  // onHand - allocated = available to promise.
-  available Int @default(0) @map("available")
-
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
-
-  tenant   Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  variant  ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
-  location StockLocation  @relation(fields: [locationId], references: [id], onDelete: Cascade)
-
-  @@unique([tenantId, variantId, locationId], map: "stock_levels_variant_location_unique")
-  @@index([tenantId, locationId])
-  @@map("stock_levels")
-}
-
 // Maps an external SKU/location reference from an InventorySource to a
-// (ProductVariant, StockLocation) inside Sparx.
+// (ProductVariant, Warehouse) inside Sparx. The matched feed quantity is
+// reconciled into `inventory_levels` for that (variant, warehouse) via
+// `applyMovement()` (docs/100 P1c).
 model InventorySourceLink {
-  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId   String @map("tenant_id") @db.Uuid
-  sourceId   String @map("source_id") @db.Uuid
-  variantId  String @map("variant_id") @db.Uuid
-  locationId String @map("location_id") @db.Uuid
+  id          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String @map("tenant_id") @db.Uuid
+  sourceId    String @map("source_id") @db.Uuid
+  variantId   String @map("variant_id") @db.Uuid
+  warehouseId String @map("warehouse_id") @db.Uuid
 
   // External identifiers as they appear in the source feed.
   externalSku      String  @map("external_sku") @db.VarChar(255)
@@ -106,10 +60,10 @@ model InventorySourceLink {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant   Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  source   InventorySource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
-  variant  ProductVariant  @relation(fields: [variantId], references: [id], onDelete: Cascade)
-  location StockLocation   @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  tenant    Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  source    InventorySource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  variant   ProductVariant  @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  warehouse Warehouse       @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, sourceId, externalSku, externalLocation], map: "inventory_source_link_unique")
   @@index([tenantId, sourceId])

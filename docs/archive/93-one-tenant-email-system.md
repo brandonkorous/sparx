@@ -8,7 +8,7 @@
 > Builder-authored node-tree — there is exactly **one** authoring system for tenant
 > email (the Email Builder, docs/52). The coded React Email templates that today
 > render `order-confirmation` / `shipping-confirmation` / the appointment set move
-> into the Builder as keyed defaults (joining the 13 of docs/91). Emails that Sparx
+> into the Builder as keyed defaults (joining the 13 of docs/91). Emails that sparx
 > sends to the **merchant** (onboarding, account, operational) and **auth/security**
 > infrastructure (password reset, email verification) **stay coded**. The
 > `/email/templates` dashboard page — a thin subject/intro/outro override surface
@@ -57,7 +57,7 @@ The only truly synchronous email would be OTP/2FA, which does not exist yet (§8
 > reasonably want to control.
 >
 > An email **stays coded** when it is either
-> (a) **platform** — Sparx → the merchant/staff (onboarding, billing, domain,
+> (a) **platform** — sparx → the merchant/staff (onboarding, billing, domain,
 > operational alerts), or
 > (b) **auth/security infrastructure** — password reset, email verification — where
 > merchant-editable structure is a security and support liability. This holds **even
@@ -78,11 +78,11 @@ the merchant doesn't edit **structure/copy**, not that it's unbranded.
 | `appointment-confirmation` | tenant → customer                    | `v1/b2b/scheduling`                         | **→ Builder** (`appointment-confirmation` key)        |
 | `appointment-reminder`     | tenant → customer                    | `v1/b2b/scheduling`                         | **→ Builder** (`appointment-reminder` key)            |
 | `appointment-cancelled`    | tenant → customer                    | `v1/b2b/scheduling`                         | **→ Builder** (`appointment-cancelled` key)           |
-| `welcome-merchant`         | Sparx → merchant                     | Better Auth (`@sparx/auth`)                 | **Stays coded** (platform onboarding)                 |
-| `email-verification`       | Sparx → dashboard user               | Better Auth (`@sparx/auth`)                 | **Stays coded** (auth)                                |
+| `welcome-merchant`         | sparx → merchant                     | Better Auth (`@sparx/auth`)                 | **Stays coded** (platform onboarding)                 |
+| `email-verification`       | sparx → dashboard user               | Better Auth (`@sparx/auth`)                 | **Stays coded** (auth)                                |
 | `password-reset`           | dashboard user **and** site customer | Better Auth + `public/account`              | **Stays coded** (auth infra — §1.2)                   |
-| `domain-renewal-reminder`  | Sparx → merchant                     | `domain-worker` cron                        | **Stays coded** (platform/account)                    |
-| `chat-notification`        | Sparx-system → owner/admin **staff** | `lib/chat/notify`                           | **Stays coded** (operational; links to the dashboard) |
+| `domain-renewal-reminder`  | sparx → merchant                     | `domain-worker` cron                        | **Stays coded** (platform/account)                    |
+| `chat-notification`        | sparx-system → owner/admin **staff** | `lib/chat/notify`                           | **Stays coded** (operational; links to the dashboard) |
 
 The customer-facing chat email (`chat-satisfaction`) is already a Builder default —
 `chat-notification` above is the **staff** alert, a different email.

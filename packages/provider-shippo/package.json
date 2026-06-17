@@ -2,7 +2,7 @@
   "name": "@sparx/provider-shippo",
   "version": "0.0.0",
   "private": true,
-  "description": "Shippo provider for Sparx Commerce — implements ShippingProvider. Default Sparx Shipping (white-label) and the explicit Shippo install both share this package.",
+  "description": "Shippo provider for sparx Commerce — implements ShippingProvider. Default sparx Shipping (white-label) and the explicit Shippo install both share this package.",
   "type": "module",
   "exports": {
     ".": {
