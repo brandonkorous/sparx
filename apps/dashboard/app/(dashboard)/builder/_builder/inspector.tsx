@@ -4526,6 +4526,7 @@ export interface InspectorProps {
 function TailwindSurface({
   node,
   def,
+  email,
   skinContexts,
   arrangeContexts,
   onClass,
@@ -4533,6 +4534,12 @@ function TailwindSurface({
 }: {
   node: BuilderNode;
   def: ComponentDef;
+  /** The email surface honors only the inline-style subset `emailStyleFor` compiles
+   *  (typography / color / spacing / borders) plus, for CONTAINERS, the
+   *  direction/columns/gap the send parses into its table layout. The web-only
+   *  sections (Layout, Sizing, Effects, Filters, Transforms, Interactivity, …) are
+   *  hidden there so a control never silently no-ops in the mail (docs/98 §3.6c). */
+  email: boolean;
   /** Responsive + state + dark layers (skin cards). */
   skinContexts: StyleContext[];
   /** Responsive-only layers (layout / flex / grid / spacing / size / position). */
@@ -4540,6 +4547,29 @@ function TailwindSurface({
   onClass: (value: string) => void;
   onProp: (key: string, value: unknown) => void;
 }) {
+  // Email: the honored subset only. Typography / Backgrounds (fill) / Borders /
+  // Spacing map onto the leaf inline-style compiler; Flexbox & Grid shows for a
+  // CONTAINER because the send parses its direction/columns/gap into Row/Column
+  // tables (a leaf has no email-honored layout). Everything else is web-only.
+  if (email) {
+    return (
+      <>
+        {def.kind === 'container' ? (
+          <FlexGridCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+        ) : null}
+        <SpacingCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+        <TypographyCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+        <BackgroundCard
+          node={node}
+          def={def}
+          contexts={skinContexts}
+          onClass={onClass}
+          onProp={onProp}
+        />
+        <BordersCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+      </>
+    );
+  }
   return (
     <>
       {/* Layout — display / overflow / aspect (Tailwind: Layout). */}
@@ -4672,6 +4702,7 @@ function MultiSelectPanel({
           <TailwindSurface
             node={node}
             def={def}
+            email={surface === 'email'}
             skinContexts={skinContexts}
             arrangeContexts={arrangeContexts}
             onClass={onClass}
@@ -4901,6 +4932,7 @@ export function Inspector({
         <TailwindSurface
           node={node}
           def={def}
+          email={surface === 'email'}
           skinContexts={skinContexts}
           arrangeContexts={arrangeContexts}
           onClass={onClass}

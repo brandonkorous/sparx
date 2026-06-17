@@ -77,4 +77,22 @@ describe('platform component catalog', () => {
     expect(findCatalogEntry(first.key)?.key).toBe(first.key);
     expect(findCatalogEntry('definitely_not_a_key')).toBeUndefined();
   });
+
+  it('email blocks are email-scoped and use only named nodes (no raw HTML)', () => {
+    const email = catalogForSurface('email');
+    // Hero / content / CTA / order summary / product grid / footer (docs/98 §3.6c).
+    expect(email.length).toBeGreaterThanOrEqual(6);
+    const types: string[] = [];
+    const walk = (n: { type: string; children?: unknown[] }): void => {
+      types.push(n.type);
+      for (const c of (n.children ?? []) as { type: string; children?: unknown[] }[]) walk(c);
+    };
+    for (const e of email) {
+      expect(e.surfaces, `"${e.key}" must be email-scoped`).toContain('email');
+      walk(e.tree);
+    }
+    // The email surface has no raw `el:*` HTML — every block composes named EMAIL
+    // node types only, so nothing a mail client can't render leaks in.
+    expect(types.some((t) => t.startsWith('el:'))).toBe(false);
+  });
 });

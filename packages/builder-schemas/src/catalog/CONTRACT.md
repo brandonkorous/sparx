@@ -50,6 +50,25 @@ entry({
 });
 ```
 
+## Email surface (`surfaces: ['email']`) — a different medium
+
+Email blocks (`email.ts`) are authored under tighter rules than page/site, because a
+mail client renders inline styles, not `tenant.css` (docs/98 §3.6c):
+
+- **Named nodes only — NO `el()` raw HTML.** Compose from `atom('Section'|'Stack'|
+'Grid'|'Card', …)` containers and `atom('Heading'|'Text'|'Button'|'Divider'|
+'ImageDisplay'|'line_item_table'|'unsubscribe_link'|'physical_address', …)` leaves.
+  The email surface has no raw-element palette (`catalog.test.ts` rejects `el:*` here).
+- **Base classes only — NO variants.** No `@3xl:`/`md:`/`hover:`/`dark:`, no arbitrary
+  `[…]`. The email compiler (`emailStyleFor`) drops anything prefixed or bracketed.
+- **Only the honored subset does anything.** Containers: `flex flex-col`/`flex-row` /
+  `grid grid-cols-N` / `gap-N` / `p-N` / `bg-*` (the send parses direction/columns/gap
+  /padding and inlines bg/border/radius). Leaves: text size/weight/leading/tracking,
+  `text-*`/`bg-*`/`border-*` color, alignment, padding/margin, border, radius. Avoid
+  shadows, filters, transforms, sizing, position — they no-op in mail.
+- **No header block.** The `email_wordmark` header is pinned + auto-injected by
+  `normalizeEmailTree`; a second one would be de-duped.
+
 ## Token utilities (these compile to tenant `--st-*`; use ONLY these colors)
 
 - Surfaces/text: `bg-base-100|200|300`, `text-base-content` (+ opacity: `text-base-content/60`),

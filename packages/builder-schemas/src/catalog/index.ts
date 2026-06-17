@@ -23,6 +23,7 @@ import { LAYOUT_CATALOG } from './layout';
 import { MARKETING_CATALOG } from './marketing';
 import { MOCKUP_CATALOG } from './mockup';
 import { INTERACTIVE_CATALOG } from './interactive';
+import { EMAIL_CATALOG } from './email';
 
 // Public surface — the taxonomy + entry types only. The authoring helpers
 // (el/atom/bound/behave/part/cid/entry) stay internal to the category files; the
@@ -57,6 +58,9 @@ export const PLATFORM_CATALOG: PlatformCatalogEntry[] = [
   ...MARKETING_CATALOG,
   ...MOCKUP_CATALOG,
   ...INTERACTIVE_CATALOG,
+  // Email-surface blocks (surfaces: ['email']) — grouped into the email palette by
+  // catalogGroupsForSurface, invisible to page/site.
+  ...EMAIL_CATALOG,
 ];
 
 /** Catalog entries available on a given editor surface (page / site / email). */
