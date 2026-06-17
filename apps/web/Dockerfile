@@ -24,6 +24,7 @@ COPY packages/web-chrome/package.json packages/web-chrome/
 COPY packages/legal/package.json packages/legal/
 COPY packages/attribution/package.json packages/attribution/
 COPY packages/chat-widget/package.json packages/chat-widget/
+COPY packages/site-themes/package.json packages/site-themes/
 
 # Install only the @sparx/web subgraph (its deps + transitive workspace deps).
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
@@ -34,6 +35,7 @@ COPY packages/web-chrome packages/web-chrome
 COPY packages/legal packages/legal
 COPY packages/attribution packages/attribution
 COPY packages/chat-widget packages/chat-widget
+COPY packages/site-themes packages/site-themes
 COPY apps/web apps/web
 
 # next.config.ts must have `output: 'standalone'` and outputFileTracingRoot
