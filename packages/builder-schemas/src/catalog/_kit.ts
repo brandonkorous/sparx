@@ -17,7 +17,7 @@
 // AND the server. Trees are validated against BuilderNodeSchema by the assembling
 // index, so a malformed entry fails at module load, not at stamp time.
 
-import type { BuilderNode } from '../node';
+import type { BuilderNode, BindingAction, CollectionSource } from '../node';
 import type { ComponentSurface } from '../component';
 
 // ── Taxonomy ──────────────────────────────────────────────────────────────────
@@ -145,6 +145,32 @@ export function atom(
  *  a Heading bound to `product.title`) and return it, for inline composition. */
 export function bound(node: BuilderNode, path: string): BuilderNode {
   node.binding = { path };
+  return node;
+}
+
+// ── Binding the spine (docs/98 Pillar 7 — commerce + content composites) ────────
+//
+// `bound()` writes the FIELD binding (a path). The v2 spine adds two more a catalog
+// composite expresses directly: a COLLECTION repeater and an ACTION trigger. An
+// entity PIN is deliberately NOT authored here — a template carries no concrete
+// record id; the tenant pins one after dropping, and the composite's `item.*`
+// bindings + static placeholder text resolve the moment a record enters scope (a
+// pin, or a repeated item). See CONTRACT.md "Binding the spine".
+
+/** Mark a container a COLLECTION REPEATER (docs/98 Pillar 7) — its children render
+ *  once per product in the source (`{ from: 'all' }`, or a specific collection /
+ *  category by id), each item scoping its subtree to that product so an inner
+ *  PriceTag / add-to-cart resolves the right one. */
+export function repeat(node: BuilderNode, source: CollectionSource): BuilderNode {
+  node.binding = { source };
+  return node;
+}
+
+/** Attach an interactive ACTION to a trigger element (docs/98 Pillar 7):
+ *  `add-to-cart` / `buy-now` fire against the product an ancestor scope establishes;
+ *  `link` navigates to `href`; `submit` posts the enclosing form. */
+export function act(node: BuilderNode, action: BindingAction, href?: string): BuilderNode {
+  node.binding = { action, ...(href ? { href } : {}) };
   return node;
 }
 

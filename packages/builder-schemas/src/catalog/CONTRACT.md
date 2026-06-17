@@ -13,6 +13,8 @@ reference — match its quality, structure, and comment style exactly).
 
 ```ts
 import { el, atom, bound, behave, part, entry, type PlatformCatalogEntry } from './_kit';
+// commerce / content composites that bind the spine also import:
+import { repeat, act } from './_kit';
 ```
 
 ## Helpers
@@ -29,6 +31,11 @@ import { el, atom, bound, behave, part, entry, type PlatformCatalogEntry } from 
 - `bound(node, 'path')` → attach a data binding (e.g. `bound(atom('Wordmark',''),'site.identity')`,
   `bound(atom('Heading','',{level:'h2'}),'product.title')`). Use only where a real
   data field fits; otherwise author static placeholder text.
+- `repeat(node, { from, id?, limit? })` → mark a container a COLLECTION REPEATER
+  (commerce). `from: 'all'` iterates the catalog; the tenant re-points it to a
+  collection/category after dropping. Each item scopes its subtree to a product.
+- `act(node, action, href?)` → attach an ACTION to a trigger: `'add-to-cart'` /
+  `'buy-now'` (resolve the product in scope), `'link'` (to `href`), `'submit'`.
 - `behave(node, { type, ...params })` → mark a node a behavior ROOT (Pillar 5). See
   the interactivity section below.
 - `part(node, role)` → mark a node a structural PART of its enclosing behavior.
@@ -49,6 +56,28 @@ entry({
   tree: el(/* … */), // a SINGLE root node
 });
 ```
+
+## Binding the spine (commerce + content composites — docs/98 Pillar 7)
+
+A composite that SELLS or DISPLAYS A RECORD binds the v2 spine, not just field paths.
+The rule that makes a template reusable: **never bake a concrete record id into catalog
+data.** A template is authored inert-but-rich — `item.*` bindings with believable static
+placeholder copy — and gets its scope one of two ways:
+
+- **Tenant-pinned (standalone).** The composite's ROOT container is the pin target. The
+  tenant drops it, then pins a product / collection / category / content entry via the
+  Data panel ("A record"); that writes `{ entity, id }` onto the root and scopes the
+  subtree. Until pinned, the static placeholders show and any add-to-cart is inert — the
+  correct unbound-canvas state.
+- **Repeated.** Wrap the card in `repeat(container, { from:'all', limit:N })` (commerce)
+  or `bound(container, 'cms.<type>')` (content arrays — the `source` schema is
+  commerce-only). Each item scopes its subtree, so the same card renders per record.
+
+Inside a scoped subtree, bind leaves to `item.*`: a product card → `item.image` /
+`item.title` / `item.price` + `act(atom('Button',…,{label:'Add to cart'}),'add-to-cart')`;
+a content card → `item.featuredImage` / `item.title` / `item.body`. An `add-to-cart` /
+`buy-now` button only resolves a product when a product scope (a product pin, or any
+`repeat`) is an ancestor — place it accordingly.
 
 ## Email surface (`surfaces: ['email']`) — a different medium
 
