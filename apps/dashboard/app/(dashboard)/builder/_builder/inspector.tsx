@@ -56,6 +56,7 @@ import {
   Trash2,
   Type,
   X,
+  Zap,
   type LucideIcon,
 } from 'lucide-react';
 import { Input, NativeSelect, Switch, Textarea, cn, useConfirm } from '@sparx/ui';
@@ -76,6 +77,7 @@ import {
   type NavLink,
   type PropSpec as ComponentPropSpec,
 } from '@sparx/builder-schemas';
+import { BEHAVIOR_DESCRIPTORS, SX_ROLES, type BehaviorDescriptor } from '@sparx/builder-render';
 
 import { CREATABLE_KINDS, type CreatableType } from './field-kinds';
 import { TokenInput, TokenTextarea } from './token-field';
@@ -1097,6 +1099,149 @@ function MotionCard({
       {def.kind === 'container' ? (
         <StyleControlField node={node} def={def} control={STAGGER_CONTROL} onClass={onClass} />
       ) : null}
+    </Card>
+  );
+}
+
+// Behavior (docs/98 Pillar 5) — the ad-hoc authoring counterpart to the ready-made
+// interactive composites. It marks a CONTAINER as a behavior ROOT (`props.behavior`)
+// and/or any node as a structural PART (`props.sxRole`) of an enclosing behavior.
+// The render walkers lower both to the controlled `data-sx-*` vocabulary the runtime
+// reads — nothing here emits raw `data-*`. Web surfaces only (the runtime doesn't run
+// in email). The composites bake these in; this card builds new ones by hand.
+const SX_ROLE_LABELS: Record<string, string> = {
+  track: 'Track (slide / marquee rail)',
+  slide: 'Slide',
+  prev: 'Previous button',
+  next: 'Next button',
+  dot: 'Dot (pagination)',
+  dots: 'Dots container',
+  trigger: 'Trigger (opens a panel)',
+  panel: 'Panel (revealed content)',
+  item: 'Item (one accordion row)',
+  tab: 'Tab button',
+  spy: 'Section link (scroll highlight)',
+};
+
+interface BehaviorSpec {
+  type: string;
+  [param: string]: string | number | boolean;
+}
+
+function readBehaviorSpec(node: BuilderNode): BehaviorSpec | null {
+  const b = node.props.behavior;
+  if (b && typeof b === 'object' && typeof (b as { type?: unknown }).type === 'string') {
+    return b as BehaviorSpec;
+  }
+  return null;
+}
+
+function behaviorDefaults(desc: BehaviorDescriptor): BehaviorSpec {
+  const spec: BehaviorSpec = { type: desc.name };
+  for (const p of desc.params) spec[p.key] = p.default;
+  return spec;
+}
+
+function behaviorSummary(node: BuilderNode): string | undefined {
+  const spec = readBehaviorSpec(node);
+  const role = typeof node.props.sxRole === 'string' ? node.props.sxRole : null;
+  const parts: string[] = [];
+  if (spec) parts.push(BEHAVIOR_DESCRIPTORS.find((d) => d.name === spec.type)?.label ?? spec.type);
+  if (role) parts.push(SX_ROLE_LABELS[role] ?? role);
+  return parts.length > 0 ? parts.join(' · ') : undefined;
+}
+
+function BehaviorCard({
+  node,
+  def,
+  onProp,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  onProp: (key: string, value: unknown) => void;
+}) {
+  const spec = readBehaviorSpec(node);
+  const desc = spec ? (BEHAVIOR_DESCRIPTORS.find((d) => d.name === spec.type) ?? null) : null;
+  const role = typeof node.props.sxRole === 'string' ? node.props.sxRole : '';
+  const isContainer = def.kind === 'container';
+
+  const setType = (name: string) => {
+    if (!name) {
+      onProp('behavior', undefined);
+      return;
+    }
+    const d = BEHAVIOR_DESCRIPTORS.find((x) => x.name === name);
+    onProp('behavior', d ? behaviorDefaults(d) : { type: name });
+  };
+  const setParam = (key: string, value: string | number | boolean) => {
+    if (spec) onProp('behavior', { ...spec, [key]: value });
+  };
+
+  return (
+    <Card
+      icon={Zap}
+      title="Behavior"
+      summary={behaviorSummary(node)}
+      defaultOpen={false}
+      caption="Make this an interactive component — a carousel, menu, accordion, tabs… driven by the same runtime the ready-made interactive blocks use. No code."
+    >
+      {isContainer ? (
+        <>
+          <Field label="This block is a">
+            <NativeSelect
+              size="sm"
+              value={spec?.type ?? ''}
+              onChange={(e) => setType(e.target.value)}
+            >
+              <option value="">— Not interactive —</option>
+              {BEHAVIOR_DESCRIPTORS.map((d) => (
+                <option key={d.name} value={d.name}>
+                  {d.label}
+                </option>
+              ))}
+            </NativeSelect>
+          </Field>
+          {desc ? (
+            <>
+              <p className="bx-inspector__tip">{desc.help}</p>
+              {desc.params.map((p) =>
+                p.kind === 'bool' ? (
+                  <div key={p.key} className="bx-row">
+                    <span className="bx-field__label">{p.label}</span>
+                    <Switch
+                      checked={Boolean(spec?.[p.key] ?? p.default)}
+                      onCheckedChange={(v) => setParam(p.key, v)}
+                    />
+                  </div>
+                ) : (
+                  <Field key={p.key} label={p.label}>
+                    <Input
+                      type="number"
+                      inputMode="numeric"
+                      value={String(spec?.[p.key] ?? p.default)}
+                      onChange={(e) => setParam(p.key, Number(e.target.value) || 0)}
+                    />
+                  </Field>
+                )
+              )}
+            </>
+          ) : null}
+        </>
+      ) : null}
+      <Field label="Part of a behavior">
+        <NativeSelect
+          size="sm"
+          value={role}
+          onChange={(e) => onProp('sxRole', e.target.value || undefined)}
+        >
+          <option value="">— None —</option>
+          {SX_ROLES.map((r) => (
+            <option key={r} value={r}>
+              {SX_ROLE_LABELS[r] ?? r}
+            </option>
+          ))}
+        </NativeSelect>
+      </Field>
     </Card>
   );
 }
@@ -4381,6 +4526,7 @@ export interface InspectorProps {
 function TailwindSurface({
   node,
   def,
+  email,
   skinContexts,
   arrangeContexts,
   onClass,
@@ -4388,6 +4534,12 @@ function TailwindSurface({
 }: {
   node: BuilderNode;
   def: ComponentDef;
+  /** The email surface honors only the inline-style subset `emailStyleFor` compiles
+   *  (typography / color / spacing / borders) plus, for CONTAINERS, the
+   *  direction/columns/gap the send parses into its table layout. The web-only
+   *  sections (Layout, Sizing, Effects, Filters, Transforms, Interactivity, …) are
+   *  hidden there so a control never silently no-ops in the mail (docs/98 §3.6c). */
+  email: boolean;
   /** Responsive + state + dark layers (skin cards). */
   skinContexts: StyleContext[];
   /** Responsive-only layers (layout / flex / grid / spacing / size / position). */
@@ -4395,6 +4547,29 @@ function TailwindSurface({
   onClass: (value: string) => void;
   onProp: (key: string, value: unknown) => void;
 }) {
+  // Email: the honored subset only. Typography / Backgrounds (fill) / Borders /
+  // Spacing map onto the leaf inline-style compiler; Flexbox & Grid shows for a
+  // CONTAINER because the send parses its direction/columns/gap into Row/Column
+  // tables (a leaf has no email-honored layout). Everything else is web-only.
+  if (email) {
+    return (
+      <>
+        {def.kind === 'container' ? (
+          <FlexGridCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+        ) : null}
+        <SpacingCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+        <TypographyCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+        <BackgroundCard
+          node={node}
+          def={def}
+          contexts={skinContexts}
+          onClass={onClass}
+          onProp={onProp}
+        />
+        <BordersCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+      </>
+    );
+  }
   return (
     <>
       {/* Layout — display / overflow / aspect (Tailwind: Layout). */}
@@ -4527,6 +4702,7 @@ function MultiSelectPanel({
           <TailwindSurface
             node={node}
             def={def}
+            email={surface === 'email'}
             skinContexts={skinContexts}
             arrangeContexts={arrangeContexts}
             onClass={onClass}
@@ -4756,6 +4932,7 @@ export function Inspector({
         <TailwindSurface
           node={node}
           def={def}
+          email={surface === 'email'}
           skinContexts={skinContexts}
           arrangeContexts={arrangeContexts}
           onClass={onClass}
@@ -4766,6 +4943,11 @@ export function Inspector({
             email surface (mail clients strip classes, so an entrance is inert
             there). Kept alongside the raw Transitions & Animation card. */}
         {surface !== 'email' ? <MotionCard node={node} def={def} onClass={onClass} /> : null}
+
+        {/* Behavior (docs/98 Pillar 5) — turn a container into an interactive
+            component, or mark a node as a part of one. Web surfaces only (the
+            behavior runtime doesn't run in email). */}
+        {surface !== 'email' ? <BehaviorCard node={node} def={def} onProp={onProp} /> : null}
 
         <CustomCssCard node={node} onClass={onClass} />
       </div>

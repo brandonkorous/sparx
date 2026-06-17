@@ -33,6 +33,7 @@ import * as React from 'react';
 import { Image as ImageIcon } from 'lucide-react';
 import {
   coerceNavLinks,
+  emailStyleFor,
   isRawElementType,
   isRawVoidType,
   legacyButtonStyleToClass,
@@ -78,7 +79,9 @@ import {
 import { BuilderIcon } from './icon';
 import { SignupForm } from './signup';
 import { SAMPLE_BUILDER_PRODUCT } from './sample-product';
+import { sxAttrs } from './behaviors/attrs';
 import {
+  CANVAS_EMAIL_PALETTE,
   EmailButtonLeaf,
   EmailDividerLeaf,
   EmailHeadingLeaf,
@@ -293,6 +296,14 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
   const { node, value, cardinality, bound, mode, surface, leafClass, children, emailSample } = args;
   const email = surface === 'email';
   const edit = mode === 'edit';
+  // Email canvas parity (Email v2 §3.6c): the email-safe subset of node.class compiled
+  // to an inline style, mirroring the real send's `classStyleFor`. Merged LAST on each
+  // email leaf so an author's class wins over the email default — so the editor preview
+  // and the delivered mail agree. Empty (and thus a no-op) for a class with no
+  // email-relevant tokens, or off the email surface entirely.
+  const emailStyle: React.CSSProperties | undefined = email
+    ? emailStyleFor(node.class, CANVAS_EMAIL_PALETTE)
+    : undefined;
   const p = node.props;
   const str = (k: string): string => (typeof p[k] === 'string' ? p[k] : '');
   // {{merge.token}} resolution on the email surface (identity elsewhere — no tokens).
@@ -333,7 +344,9 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
   // own tag, so the walker passes it as `leafClass` and omits its wrapper.
   if (isRawElementType(node.type)) {
     const tag = rawTagOf(node.type)!;
-    const attrs = safeElementAttrs(node);
+    // Sanctioned behavior markers (Pillar 5) ride along as data-sx-* on the raw tag,
+    // so a raw leaf used as a carousel dot / accordion trigger is wired by the runtime.
+    const attrs = { ...sxAttrs(node), ...safeElementAttrs(node) };
     if (isRawVoidType(node.type)) {
       // An unsourced media void previews as a slot in the editor so it stays selectable.
       if (edit && (tag === 'img' || tag === 'source') && !attrs.src) {
@@ -355,7 +368,12 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
       // without changing the semantic level.
       const size = str('size') === 'display' ? 'display' : undefined;
       const text = boundOr(str('text') || ph('Heading'));
-      if (email) return <EmailHeadingLeaf level={level}>{text}</EmailHeadingLeaf>;
+      if (email)
+        return (
+          <EmailHeadingLeaf level={level} style={emailStyle}>
+            {text}
+          </EmailHeadingLeaf>
+        );
       return (
         <Heading level={level} size={size} className={leafClass}>
           {text}
@@ -365,7 +383,12 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
     case 'Text': {
       const variant = (str('variant') || 'body') as 'body' | 'eyebrow' | 'meta';
       const text = boundOr(str('text') || ph('Some text'));
-      if (email) return <EmailTextLeaf variant={variant}>{text}</EmailTextLeaf>;
+      if (email)
+        return (
+          <EmailTextLeaf variant={variant} style={emailStyle}>
+            {text}
+          </EmailTextLeaf>
+        );
       return (
         <Text variant={variant} className={leafClass}>
           {text}
@@ -378,7 +401,12 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
         // Bound to a CMS richtext field. Preview data is a representative string in
         // the editor; the live site resolves the real doc.
         if (typeof value === 'string') {
-          if (email) return <EmailTextLeaf variant="body">{value}</EmailTextLeaf>;
+          if (email)
+            return (
+              <EmailTextLeaf variant="body" style={emailStyle}>
+                {value}
+              </EmailTextLeaf>
+            );
           return (
             <article className={cls}>
               <p>{value}</p>
@@ -387,12 +415,17 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
         }
         const html = renderDocToHtml(value);
         if (html) {
-          if (email) return <EmailProseLeaf html={html} />;
+          if (email) return <EmailProseLeaf html={html} style={emailStyle} />;
           return <article className={cls} dangerouslySetInnerHTML={{ __html: html }} />;
         }
         const plain = asText(value);
         if (!plain) return null;
-        if (email) return <EmailTextLeaf variant="body">{plain}</EmailTextLeaf>;
+        if (email)
+          return (
+            <EmailTextLeaf variant="body" style={emailStyle}>
+              {plain}
+            </EmailTextLeaf>
+          );
         return (
           <article className={cls}>
             <p>{plain}</p>
@@ -404,12 +437,17 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
       // docs/52 §9) — closing the canvas-showed-it / site-didn't gap.
       const html = p.doc ? renderDocToHtml(p.doc) : '';
       if (html) {
-        if (email) return <EmailProseLeaf html={html} />;
+        if (email) return <EmailProseLeaf html={html} style={emailStyle} />;
         return <article className={cls} dangerouslySetInnerHTML={{ __html: html }} />;
       }
       if (!edit) return null;
       const empty = 'Rich body content renders here — paragraphs, headings, lists, quotes, links.';
-      if (email) return <EmailTextLeaf variant="body">{empty}</EmailTextLeaf>;
+      if (email)
+        return (
+          <EmailTextLeaf variant="body" style={emailStyle}>
+            {empty}
+          </EmailTextLeaf>
+        );
       return (
         <article className={cls}>
           <p>{empty}</p>
@@ -421,7 +459,7 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
       // On email, the filled accent CTA at the @sparx/email scale (docs/93).
       if (email) {
         return (
-          <EmailButtonLeaf>
+          <EmailButtonLeaf style={emailStyle}>
             {label}
             {children}
           </EmailButtonLeaf>
@@ -642,13 +680,17 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
     }
     case 'unsubscribe_link':
       return (
-        <EmailTextLeaf variant="meta">
+        <EmailTextLeaf variant="meta" style={emailStyle}>
           You’re receiving this because you opted in.{' '}
           <span style={{ textDecoration: 'underline' }}>Unsubscribe</span>
         </EmailTextLeaf>
       );
     case 'physical_address':
-      return <EmailTextLeaf variant="meta">123 Example St, Springfield, IL 62704</EmailTextLeaf>;
+      return (
+        <EmailTextLeaf variant="meta" style={emailStyle}>
+          123 Example St, Springfield, IL 62704
+        </EmailTextLeaf>
+      );
 
     default:
       return null;

@@ -67,6 +67,7 @@ export type AttrKey =
   | 'title'
   | 'role'
   | 'ariaLabel'
+  | 'hidden'
   | 'href'
   | 'target'
   | 'rel'
@@ -128,6 +129,7 @@ const ATTR_NAME: Record<AttrKey, string> = {
   title: 'title',
   role: 'role',
   ariaLabel: 'aria-label',
+  hidden: 'hidden',
   href: 'href',
   target: 'target',
   rel: 'rel',
@@ -195,10 +197,14 @@ const BOOL_ATTRS = new Set<AttrKey>([
   'loop',
   'muted',
   'open',
+  'hidden',
 ]);
 
-/** Attribute keys allowed on EVERY raw element (identity + a11y). */
-export const GLOBAL_ATTRS: AttrKey[] = ['id', 'title', 'role', 'ariaLabel'];
+/** Attribute keys allowed on EVERY raw element (identity + a11y + visibility).
+ *  `hidden` lets a node ship closed in the SSR markup — the behavior runtime
+ *  (Pillar 5) toggles it, so JS-revealed panels (menu/tabs/accordion) don't flash
+ *  open before hydration; it doubles as a plain "hide element" control. */
+export const GLOBAL_ATTRS: AttrKey[] = ['id', 'title', 'role', 'ariaLabel', 'hidden'];
 
 // `href` is allowed but values are scheme-checked so a tenant can't author a
 // `javascript:` / `data:` URL. (Relative + http(s) + mailto/tel + anchors only.)

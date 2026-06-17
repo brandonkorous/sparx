@@ -22,9 +22,15 @@
 // font / hairline color the email default doesn't can see that one axis shift
 // between this preview and the send. Closing that needs the email canvas to be
 // themed from the resolved email brand (a separate, deliberate change).
+//
+// CLASS OVERRIDES (Email v2 §3.6c): on top of the scale + brand chrome, each leaf
+// accepts a `style` the host (`renderLeaf`) compiles from the node's `class` via the
+// email-safe `emailStyleFor` against `CANVAS_EMAIL_PALETTE` below. It is merged LAST,
+// so an author's size/weight/color/alignment/spacing wins over the default — exactly
+// as the real send applies its `classStyleFor`, so the editor preview matches the mail.
 
 import * as React from 'react';
-import { EMAIL_DESIGN } from '@sparx/builder-schemas';
+import { EMAIL_DESIGN, type EmailPalette } from '@sparx/builder-schemas';
 
 const { typography, colors, spacing, radius } = EMAIL_DESIGN;
 
@@ -38,19 +44,49 @@ const PRIMARY = `var(--st-primary, ${colors.brand})`;
 const PRIMARY_FG = `var(--st-primary-content, ${colors.textInverse})`;
 const BORDER = `var(--st-border, ${colors.border})`;
 
+// The palette the email-safe class compiler (`emailStyleFor`, Email v2 §3.6c)
+// resolves a node's color tokens against, for the CANVAS. It mirrors the leaf's own
+// brand source above — the `--st-*` theme vars with the EMAIL_DESIGN fallback — so a
+// class-set color (`text-primary`, `bg-base-200`) tracks the live theme exactly like
+// the built-in colors do, and the documented site-theme-vs-email-brand caveat applies
+// uniformly (no NEW divergence). The non-color axes the compiler emits (size, weight,
+// spacing, alignment, border, radius) are concrete and identical to the real send.
+// The send's analog is `classStyleFor(class, brand)` in @sparx/email's render path.
+export const CANVAS_EMAIL_PALETTE: EmailPalette = {
+  primary: PRIMARY,
+  primaryForeground: PRIMARY_FG,
+  accent: `var(--st-accent, ${colors.brand})`,
+  background: `var(--st-base-100, ${colors.surface})`,
+  foreground: FG,
+  muted: `var(--st-base-200, ${colors.surfaceMuted})`,
+  border: BORDER,
+};
+
 /** A Heading at the email scale. The renderer collapses h2/h3 to the subheading
  *  size — only h1 is the display heading — so mirror that here for an exact match. */
 export function EmailHeadingLeaf({
   level,
   children,
+  style,
 }: {
   level: 'h1' | 'h2' | 'h3';
   children: React.ReactNode;
+  /** Builder class-compiled overrides (Email v2), merged LAST so an author's
+   *  size/weight/color/alignment wins over the email default — matching the send. */
+  style?: React.CSSProperties;
 }) {
   const scale = level === 'h1' ? typography.heading : typography.subheading;
   const Tag = level === 'h1' ? 'h1' : 'h2';
   return (
-    <Tag style={{ ...scale, color: FG, fontFamily: FONT_HEADING, margin: `0 0 ${spacing.sm}px` }}>
+    <Tag
+      style={{
+        ...scale,
+        color: FG,
+        fontFamily: FONT_HEADING,
+        margin: `0 0 ${spacing.sm}px`,
+        ...style,
+      }}
+    >
       {children}
     </Tag>
   );
@@ -61,9 +97,12 @@ export function EmailHeadingLeaf({
 export function EmailTextLeaf({
   variant,
   children,
+  style,
 }: {
   variant: 'body' | 'eyebrow' | 'meta';
   children: React.ReactNode;
+  /** Builder class-compiled overrides (Email v2), merged last. */
+  style?: React.CSSProperties;
 }) {
   if (variant === 'body') {
     return (
@@ -73,6 +112,7 @@ export function EmailTextLeaf({
           color: FG,
           fontFamily: FONT_BODY,
           margin: `0 0 ${spacing.md}px`,
+          ...style,
         }}
       >
         {children}
@@ -86,6 +126,7 @@ export function EmailTextLeaf({
         color: colors.textMuted,
         fontFamily: FONT_BODY,
         margin: `${spacing.md}px 0 0`,
+        ...style,
       }}
     >
       {children}
@@ -95,7 +136,15 @@ export function EmailTextLeaf({
 
 /** The accent button — the email's filled primary CTA (the canvas never fires its
  *  action, so a styled span is enough, matching how other canvas buttons render). */
-export function EmailButtonLeaf({ children }: { children: React.ReactNode }) {
+export function EmailButtonLeaf({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  /** Builder class-compiled overrides (Email v2), merged last — an author can recolor
+   *  or resize the CTA from its class while the layout/hit-area defaults remain. */
+  style?: React.CSSProperties;
+}) {
   return (
     <span
       style={{
@@ -108,6 +157,7 @@ export function EmailButtonLeaf({ children }: { children: React.ReactNode }) {
         textDecoration: 'none',
         display: 'inline-block',
         fontFamily: FONT_BODY,
+        ...style,
       }}
     >
       {children}
@@ -193,10 +243,10 @@ export function EmailWordmarkLeaf({
 /** Authored rich text serialized to HTML, wrapped in the email body base so prose
  *  inherits the email's font/size/color — headings keep the browser's own sizing,
  *  exactly like the real send (no <style> block to lean on). */
-export function EmailProseLeaf({ html }: { html: string }) {
+export function EmailProseLeaf({ html, style }: { html: string; style?: React.CSSProperties }) {
   return (
     <div
-      style={{ ...typography.body, color: FG, fontFamily: FONT_BODY }}
+      style={{ ...typography.body, color: FG, fontFamily: FONT_BODY, ...style }}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
