@@ -33,11 +33,11 @@ const socialDot = (name: string, label: string) =>
     { attrs: { href: '#', ariaLabel: label }, children: [atom('Icon', 'h-4 w-4', { name })] }
   );
 
-// A comparison-table check / dash cell — present vs. absent for a plan.
-const cellYes = () =>
-  el('td', 'border-b border-base-200 px-4 py-3 text-center text-success', { text: '✓' });
-const cellNo = () =>
-  el('td', 'border-b border-base-200 px-4 py-3 text-center text-base-content/30', { text: '—' });
+// A comparison-table check / dash cell — present vs. absent for a plan. The cell
+// chrome (padding, row borders) comes from the st-table class on the <table>, so
+// these carry only alignment + the semantic color.
+const cellYes = () => el('td', 'text-center text-success', { text: '✓' });
+const cellNo = () => el('td', 'text-center text-base-content/30', { text: '—' });
 
 // A bento-mosaic cell — a padded tile; `span` widens it on a wide container, `tone`
 // sets its surface (a colored cell carries its own -content text for the children).
@@ -866,24 +866,22 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                 text: 'Compare every plan',
               }
             ),
-            el('div', 'overflow-x-auto rounded-box border border-base-200', {
+            el('div', 'st-table-wrap rounded-box border border-base-200', {
               children: [
-                el('table', 'w-full min-w-lg border-collapse text-sm', {
+                el('table', 'st-table st-table--sz-md min-w-lg', {
                   children: [
                     el('thead', '', {
                       children: [
                         el('tr', 'bg-base-200', {
                           children: [
-                            el('th', 'px-4 py-3 text-left font-semibold text-base-content', {
+                            el('th', 'text-left font-semibold text-base-content', {
                               text: 'Feature',
                             }),
-                            el('th', 'px-4 py-3 text-center font-semibold text-base-content', {
+                            el('th', 'text-center font-semibold text-base-content', {
                               text: 'Starter',
                             }),
-                            el('th', 'px-4 py-3 text-center font-semibold text-primary', {
-                              text: 'Pro',
-                            }),
-                            el('th', 'px-4 py-3 text-center font-semibold text-base-content', {
+                            el('th', 'text-center font-semibold text-primary', { text: 'Pro' }),
+                            el('th', 'text-center font-semibold text-base-content', {
                               text: 'Enterprise',
                             }),
                           ],
@@ -894,41 +892,15 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                       children: [
                         el('tr', '', {
                           children: [
-                            el(
-                              'td',
-                              'border-b border-base-200 px-4 py-3 font-medium text-base-content',
-                              {
-                                text: 'Published sites',
-                              }
-                            ),
-                            el(
-                              'td',
-                              'border-b border-base-200 px-4 py-3 text-center text-base-content/70',
-                              { text: '1' }
-                            ),
-                            el(
-                              'td',
-                              'border-b border-base-200 px-4 py-3 text-center text-base-content/70',
-                              { text: '5' }
-                            ),
-                            el(
-                              'td',
-                              'border-b border-base-200 px-4 py-3 text-center text-base-content/70',
-                              {
-                                text: 'Unlimited',
-                              }
-                            ),
+                            el('td', 'font-medium text-base-content', { text: 'Published sites' }),
+                            el('td', 'text-center text-base-content/70', { text: '1' }),
+                            el('td', 'text-center text-base-content/70', { text: '5' }),
+                            el('td', 'text-center text-base-content/70', { text: 'Unlimited' }),
                           ],
                         }),
                         el('tr', '', {
                           children: [
-                            el(
-                              'td',
-                              'border-b border-base-200 px-4 py-3 font-medium text-base-content',
-                              {
-                                text: 'Custom domain',
-                              }
-                            ),
+                            el('td', 'font-medium text-base-content', { text: 'Custom domain' }),
                             cellNo(),
                             cellYes(),
                             cellYes(),
@@ -936,40 +908,30 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                         }),
                         el('tr', '', {
                           children: [
-                            el(
-                              'td',
-                              'border-b border-base-200 px-4 py-3 font-medium text-base-content',
-                              {
-                                text: 'Abandoned-cart recovery',
-                              }
-                            ),
-                            cellNo(),
-                            cellYes(),
-                            cellYes(),
-                          ],
-                        }),
-                        el('tr', '', {
-                          children: [
-                            el(
-                              'td',
-                              'border-b border-base-200 px-4 py-3 font-medium text-base-content',
-                              {
-                                text: 'Wholesale & net terms',
-                              }
-                            ),
-                            cellNo(),
-                            cellNo(),
-                            cellYes(),
-                          ],
-                        }),
-                        el('tr', '', {
-                          children: [
-                            el('td', 'px-4 py-3 font-medium text-base-content', {
-                              text: 'SSO & audit logs',
+                            el('td', 'font-medium text-base-content', {
+                              text: 'Abandoned-cart recovery',
                             }),
-                            el('td', 'px-4 py-3 text-center text-base-content/30', { text: '—' }),
-                            el('td', 'px-4 py-3 text-center text-base-content/30', { text: '—' }),
-                            el('td', 'px-4 py-3 text-center text-success', { text: '✓' }),
+                            cellNo(),
+                            cellYes(),
+                            cellYes(),
+                          ],
+                        }),
+                        el('tr', '', {
+                          children: [
+                            el('td', 'font-medium text-base-content', {
+                              text: 'Wholesale & net terms',
+                            }),
+                            cellNo(),
+                            cellNo(),
+                            cellYes(),
+                          ],
+                        }),
+                        el('tr', '', {
+                          children: [
+                            el('td', 'font-medium text-base-content', { text: 'SSO & audit logs' }),
+                            cellNo(),
+                            cellNo(),
+                            cellYes(),
                           ],
                         }),
                       ],
