@@ -24,6 +24,9 @@ async function main(): Promise<void> {
   // api-rest bootstrap for the full rationale.
   registerCrmConsumers();
 
+  // (Order cancellation is REST-only — api-graphql doesn't cancel orders — so the
+  // commerce cancel-restock consumer isn't installed here. It rides in api-rest.)
+
   // Wrap the CRM publisher so every publishCrmEvent() also enqueues a
   // WebhookDelivery row per matching tenant subscription.
   installCrmWebhookFanout();

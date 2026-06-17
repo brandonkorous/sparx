@@ -25,11 +25,13 @@ import {
 } from '@sparx/commerce-schemas';
 import { withTenant } from '@sparx/db';
 import type { Prisma, TxClient } from '@sparx/db';
+import { inventoryService } from '@sparx/inventory';
 
 import { writeAuditLog } from '../audit';
 import { CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
+import { isInventoryActive } from '../inventory-gate';
 
 import * as configuratorService from './configurator-service';
 import * as pricingService from './pricing-service';
@@ -138,6 +140,7 @@ export async function addItem(
   rawInput: unknown
 ): Promise<{ cartItemId: string }> {
   const input = AddCartItemInput.parse(rawInput);
+  const inventoryActive = await isInventoryActive(ctx.tenantId);
 
   const cartItemId = await withTenant(ctx, async (tx) => {
     const cart = await tx.cart.findFirst({
@@ -218,6 +221,23 @@ export async function addItem(
       select: { id: true },
     });
 
+    // Soft-hold the stock against this line (docs/100 §2.4). Atomic with the
+    // line write: a `deny`-policy shortfall throws InventoryOutOfStockError and
+    // rolls the whole add back, so a customer can never add more than is
+    // available. No-op when inventory is off (untracked = always available).
+    if (inventoryActive) {
+      const hold = await inventoryService.reserveOnTx(tx, ctx, {
+        variantId,
+        quantity: input.quantity,
+        holderType: 'cart',
+        holderId: input.cartId,
+      });
+      await tx.cartItem.update({
+        where: { id: item.id },
+        data: { inventoryReservationId: hold.reservationId },
+      });
+    }
+
     await recomputeTotals(tx, ctx, input.cartId);
 
     await writeAuditLog({
@@ -246,23 +266,54 @@ export async function addItem(
 
 export async function updateItem(ctx: ServiceContext, rawInput: unknown): Promise<void> {
   const input = UpdateCartItemInput.parse(rawInput);
+  const inventoryActive = await isInventoryActive(ctx.tenantId);
 
   const cartId = await withTenant(ctx, async (tx) => {
     const item = await tx.cartItem.findFirst({
       where: { id: input.cartItemId },
-      select: { id: true, cartId: true, variantId: true, unitPriceCents: true },
+      select: {
+        id: true,
+        cartId: true,
+        variantId: true,
+        unitPriceCents: true,
+        quantity: true,
+        inventoryReservationId: true,
+      },
     });
     if (!item) throw new CommerceNotFoundError('CartItem', input.cartItemId);
 
     if (input.quantity === 0) {
+      // Remove — release the soft hold first, then drop the line.
+      if (inventoryActive && item.inventoryReservationId) {
+        await inventoryService.releaseOnTx(tx, ctx, item.inventoryReservationId);
+      }
       await tx.cartItem.delete({ where: { id: input.cartItemId } });
     } else {
+      // Re-hold on a quantity change: release the prior hold and reserve the new
+      // quantity (a `deny` shortfall throws and rolls back the increase). When
+      // the quantity is unchanged the existing hold stands.
+      let reservationId = item.inventoryReservationId;
+      if (inventoryActive && item.quantity !== input.quantity) {
+        if (item.inventoryReservationId) {
+          await inventoryService.releaseOnTx(tx, ctx, item.inventoryReservationId);
+        }
+        const hold = await inventoryService.reserveOnTx(tx, ctx, {
+          variantId: item.variantId,
+          quantity: input.quantity,
+          holderType: 'cart',
+          holderId: item.cartId,
+        });
+        reservationId = hold.reservationId;
+      }
       await tx.cartItem.update({
         where: { id: input.cartItemId },
         data: {
           quantity: input.quantity,
           subtotalCents: item.unitPriceCents * input.quantity,
           ...(input.attributes ? { attributes: serializeAttributes(input.attributes) } : {}),
+          ...(reservationId !== item.inventoryReservationId
+            ? { inventoryReservationId: reservationId }
+            : {}),
         },
       });
     }
@@ -296,9 +347,23 @@ export async function removeItem(ctx: ServiceContext, cartItemId: string): Promi
 }
 
 export async function clear(ctx: ServiceContext, cartId: string): Promise<void> {
+  const inventoryActive = await isInventoryActive(ctx.tenantId);
   await withTenant(ctx, async (tx) => {
     const cart = await tx.cart.findFirst({ where: { id: cartId }, select: { id: true } });
     if (!cart) throw new CommerceNotFoundError('Cart', cartId);
+    // Release each line's soft hold before dropping the lines, so cleared carts
+    // don't leak `allocated` until their TTL expires.
+    if (inventoryActive) {
+      const held = await tx.cartItem.findMany({
+        where: { cartId, inventoryReservationId: { not: null } },
+        select: { inventoryReservationId: true },
+      });
+      for (const h of held) {
+        if (h.inventoryReservationId) {
+          await inventoryService.releaseOnTx(tx, ctx, h.inventoryReservationId);
+        }
+      }
+    }
     await tx.cartItem.deleteMany({ where: { cartId } });
     await tx.cartDiscount.deleteMany({ where: { cartId } });
     await tx.cart.update({
@@ -344,6 +409,7 @@ export async function merge(
   if (input.sourceCartId === input.targetCartId) {
     throw new CommerceValidationError('sourceCartId and targetCartId must differ');
   }
+  const inventoryActive = await isInventoryActive(ctx.tenantId);
 
   await withTenant(ctx, async (tx) => {
     const [source, target] = await Promise.all([
@@ -401,8 +467,17 @@ export async function merge(
       });
     }
 
-    // Source cart's items moved; delete the source so future lookups
-    // can't re-merge it.
+    // Source cart's items moved; release their soft holds (the merged target
+    // lines carry no hold — checkout decrements no-hold lines directly) so the
+    // deleted source cart doesn't leak `allocated`, then delete the source so
+    // future lookups can't re-merge it.
+    if (inventoryActive) {
+      for (const srcItem of source.items) {
+        if (srcItem.inventoryReservationId) {
+          await inventoryService.releaseOnTx(tx, ctx, srcItem.inventoryReservationId);
+        }
+      }
+    }
     await tx.cartItem.deleteMany({ where: { cartId: source.id } });
     await tx.cartDiscount.deleteMany({ where: { cartId: source.id } });
     await tx.cart.delete({ where: { id: source.id } });

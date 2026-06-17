@@ -51,6 +51,7 @@ export type UpdateWarehouseInput = z.infer<typeof UpdateWarehouseInput>;
 export const InventoryAdjustReason = z.enum([
   'sale',
   'return',
+  'cancel', // restock reversing a cancelled order's sale movements (docs/100 P2)
   'recount',
   'loss',
   'damage',

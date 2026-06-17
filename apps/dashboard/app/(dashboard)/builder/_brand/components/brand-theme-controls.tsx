@@ -350,7 +350,7 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
 
       {/* Brand-owned colour identity — applies across the site, email, and CMS. */}
       <Section title="Brand colors" hint="The Sx mark previews the text colour on each fill.">
-        <div className="grid grid-cols-3 gap-2.5">
+        <div className="grid grid-cols-2 gap-2.5">
           <ColorSwatch
             label="Primary"
             color={colorPrimary ?? compiledColors.primary}
@@ -414,17 +414,17 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
 
       {/* Presentation-owned surfaces, edited per mode. */}
       <Section title="Surfaces" hint={`Editing ${modeLabel} mode — switch it in the preview.`}>
-        {/* The base scale (base-100/200/300) plus the neutral UI fill. The Sx on
-            each base layer previews — and edits — the shared surface text colour;
-            Neutral wraps to the next row, aligned under Base-100. */}
-        <div className="grid grid-cols-3 gap-2.5">
+        {/* The base scale (base-100/200/300) plus the neutral UI fill, two per
+            row. The Sx on each base layer previews — and edits — the shared
+            surface text colour; Neutral wraps onto the next row beside Base-300. */}
+        <div className="grid grid-cols-2 gap-2.5">
           {BASE_LAYERS.map(renderSwatch)}
           {renderSwatch(SURFACE_NEUTRAL)}
         </div>
       </Section>
 
       <Section title="Status colors">
-        <div className="grid grid-cols-3 gap-2.5">{STATUS_PAIRS.map(renderSwatch)}</div>
+        <div className="grid grid-cols-2 gap-2.5">{STATUS_PAIRS.map(renderSwatch)}</div>
       </Section>
 
       <Section title="Typography">

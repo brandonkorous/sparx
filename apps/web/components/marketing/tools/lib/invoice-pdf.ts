@@ -44,8 +44,15 @@ async function toPngBytes(dataUrl: string): Promise<Uint8Array | null> {
   }
 }
 
-/** Build the invoice PDF and return it as a Blob. */
-export async function generateInvoicePdf(data: InvoiceData): Promise<Blob> {
+export interface DocLabels {
+  /** Big heading word, e.g. "INVOICE" or "QUOTE". */
+  title?: string;
+  /** Second date label, e.g. "Due" or "Valid until". */
+  dateLabel?: string;
+}
+
+/** Build the document PDF and return it as a Blob. */
+export async function generateInvoicePdf(data: InvoiceData, labels: DocLabels = {}): Promise<Blob> {
   const { PDFDocument, StandardFonts, rgb } = await import('pdf-lib');
   const totals = computeTotals(data);
 
@@ -79,7 +86,7 @@ export async function generateInvoicePdf(data: InvoiceData): Promise<Blob> {
   } else {
     text(data.businessName || 'Your Business', m, y, 18, bold);
   }
-  rt('INVOICE', right, y + 2, 26, bold, accent);
+  rt(labels.title ?? 'INVOICE', right, y + 2, 26, bold, accent);
   rt(`# ${data.invoiceNumber || '0001'}`, right, y - 22, 11, font, muted);
 
   y -= 70;
@@ -122,7 +129,7 @@ export async function generateInvoicePdf(data: InvoiceData): Promise<Blob> {
 
   // Dates row
   text(`Issued: ${data.issueDate || '—'}`, m, y, 10, font, muted);
-  text(`Due: ${data.dueDate || '—'}`, 320, y, 10, font, muted);
+  text(`${labels.dateLabel ?? 'Due'}: ${data.dueDate || '—'}`, 320, y, 10, font, muted);
   y -= 26;
 
   // Table header

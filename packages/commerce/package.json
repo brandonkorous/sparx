@@ -17,6 +17,10 @@
       "types": "./src/mcp/index.ts",
       "default": "./src/mcp/index.ts"
     },
+    "./consumers": {
+      "types": "./src/consumers/index.ts",
+      "default": "./src/consumers/index.ts"
+    },
     "./manifest": {
       "types": "./src/manifest.ts",
       "default": "./src/manifest.ts"

@@ -31,4 +31,6 @@ export type {
   ReservationResult,
   LotBatchRow,
   LowStockRow,
+  SellLine,
+  CommittedSale,
 } from './services/inventory-service';

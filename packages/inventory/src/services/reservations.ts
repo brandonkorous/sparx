@@ -1,8 +1,14 @@
 // Reservations — soft (cart, TTL) and hard (order/subscription) holds against
 // future fulfillment. Reserve/release/expire move only `allocated` (the
 // InventoryReservation rows ARE the allocated ledger, so they write no movement
-// row). Commit is the one that actually removes stock — it funnels the onHand
-// decrement through `applyMovement` as a `sale`.
+// row). Commit (the sell-path one) is the one that actually removes stock — it
+// funnels the onHand decrement through `applyMovement` as a `sale`; see
+// ./sell-path.ts.
+//
+// The tenant-tx-aware cores (`reserveOnTx` / `releaseOnTx`) are exported so the
+// commerce cart seam can reserve/release ATOMICALLY with the cart-line write
+// (one transaction, no window where the line exists without its hold). The
+// public `reserve` / `release` wrap them in their own `withTenant`.
 
 import { ReserveInventoryInput } from '@sparx/commerce-schemas';
 import { withTenant } from '@sparx/db';
@@ -24,110 +30,138 @@ export interface ReservationResult {
   expiresAt: string | null;
 }
 
-/**
- * Reserve stock for a cart line, order line, or subscription occurrence.
- * Picks a warehouse if not specified (the first active one with enough
- * available stock). Throws InventoryOutOfStockError when stock is short
- * and the variant's inventoryPolicy is `deny`. For `continue` /
- * `preorder` policies, succeeds even when stock is short (allocated may
- * temporarily exceed onHand — surfaces as a negative `available` in the
- * dashboard).
- */
-export async function reserve(ctx: ServiceContext, rawInput: unknown): Promise<ReservationResult> {
-  const input = ReserveInventoryInput.parse(rawInput);
-
-  return withTenant(ctx, async (tx) => {
-    const variant = await tx.productVariant.findFirst({
-      where: { id: input.variantId, deletedAt: null },
-      select: { id: true, inventoryPolicy: true },
-    });
-    if (!variant) throw new InventoryNotFoundError('Variant', input.variantId);
-
-    const warehouseId = input.warehouseId ?? (await pickWarehouseFor(tx, input));
-
-    const level = await tx.inventoryLevel.upsert({
-      where: {
-        variantId_warehouseId: {
-          variantId: input.variantId,
-          warehouseId,
-        },
-      },
-      create: {
-        tenantId: ctx.tenantId,
-        variantId: input.variantId,
-        warehouseId,
-        onHand: 0,
-        allocated: 0,
-      },
-      update: {},
-    });
-
-    const available = level.onHand - level.allocated;
-    if (available < input.quantity && variant.inventoryPolicy === 'deny') {
-      throw new InventoryOutOfStockError(input.variantId, input.quantity, Math.max(0, available));
-    }
-
-    await tx.inventoryLevel.update({
-      where: {
-        variantId_warehouseId: {
-          variantId: input.variantId,
-          warehouseId,
-        },
-      },
-      data: { allocated: { increment: input.quantity }, asOf: new Date() },
-    });
-
-    const ttlSeconds =
-      input.holderType === 'cart' ? (input.ttlSeconds ?? CART_TTL_SECONDS_DEFAULT) : null;
-    const expiresAt = ttlSeconds ? new Date(Date.now() + ttlSeconds * 1000) : null;
-
-    const reservation = await tx.inventoryReservation.create({
-      data: {
-        tenantId: ctx.tenantId,
-        variantId: input.variantId,
-        warehouseId,
-        quantity: input.quantity,
-        holderType: input.holderType,
-        holderId: input.holderId,
-        expiresAt,
-        status: 'active',
-      },
-    });
-
-    await syncProductInStock(tx, input.variantId);
-
-    return {
-      reservationId: reservation.id,
-      warehouseId,
-      expiresAt: expiresAt?.toISOString() ?? null,
-    };
-  });
+interface LockedLevel {
+  on_hand: number;
+  allocated: number;
 }
 
-/** Release an active reservation. Returns the freed quantity to allocated. */
+/**
+ * Reserve stock for a cart line, order line, or subscription occurrence —
+ * INSIDE the caller's tenant transaction. Picks a warehouse if not specified
+ * (the stock-aware allocator below), then locks the chosen level `FOR UPDATE`
+ * before the availability check so two carts racing for the last unit can't both
+ * pass under a `deny` policy. Throws InventoryOutOfStockError when stock is short
+ * and the variant's inventoryPolicy is `deny`. For `continue` / `preorder`,
+ * succeeds even when short (allocated may temporarily exceed onHand — surfaces as
+ * a negative `available` in the dashboard).
+ */
+export async function reserveOnTx(
+  tx: TxClient,
+  ctx: ServiceContext,
+  input: ReserveInventoryInput
+): Promise<ReservationResult> {
+  const variant = await tx.productVariant.findFirst({
+    where: { id: input.variantId, deletedAt: null },
+    select: { id: true, inventoryPolicy: true },
+  });
+  if (!variant) throw new InventoryNotFoundError('Variant', input.variantId);
+
+  const warehouseId =
+    input.warehouseId ??
+    (await pickWarehouseFor(tx, {
+      variantId: input.variantId,
+      quantity: input.quantity,
+      holderType: input.holderType,
+    }));
+
+  // Ensure the level row exists atomically (Prisma upsert is SELECT-then-INSERT
+  // and would collide on a concurrent first reserve), then lock it FOR UPDATE so
+  // the availability check + allocated bump serialize against concurrent holds.
+  await tx.$executeRaw`
+    INSERT INTO inventory_levels (tenant_id, variant_id, warehouse_id, on_hand, allocated, as_of, updated_at)
+    VALUES (${ctx.tenantId}::uuid, ${input.variantId}::uuid, ${warehouseId}::uuid, 0, 0, now(), now())
+    ON CONFLICT (variant_id, warehouse_id) DO NOTHING
+  `;
+  const locked = await tx.$queryRaw<LockedLevel[]>`
+    SELECT on_hand, allocated
+    FROM inventory_levels
+    WHERE variant_id = ${input.variantId}::uuid AND warehouse_id = ${warehouseId}::uuid
+    FOR UPDATE
+  `;
+  const current = locked[0];
+  if (!current) {
+    throw new InventoryValidationError('Inventory level not found while reserving stock');
+  }
+
+  const available = current.on_hand - current.allocated;
+  if (available < input.quantity && variant.inventoryPolicy === 'deny') {
+    throw new InventoryOutOfStockError(input.variantId, input.quantity, Math.max(0, available));
+  }
+
+  await tx.inventoryLevel.update({
+    where: { variantId_warehouseId: { variantId: input.variantId, warehouseId } },
+    data: { allocated: { increment: input.quantity }, asOf: new Date() },
+  });
+
+  const ttlSeconds =
+    input.holderType === 'cart' ? (input.ttlSeconds ?? CART_TTL_SECONDS_DEFAULT) : null;
+  const expiresAt = ttlSeconds ? new Date(Date.now() + ttlSeconds * 1000) : null;
+
+  const reservation = await tx.inventoryReservation.create({
+    data: {
+      tenantId: ctx.tenantId,
+      variantId: input.variantId,
+      warehouseId,
+      quantity: input.quantity,
+      holderType: input.holderType,
+      holderId: input.holderId,
+      expiresAt,
+      status: 'active',
+    },
+  });
+
+  await syncProductInStock(tx, input.variantId);
+
+  return {
+    reservationId: reservation.id,
+    warehouseId,
+    expiresAt: expiresAt?.toISOString() ?? null,
+  };
+}
+
+/** Public reserve — opens its own tenant transaction. */
+export async function reserve(ctx: ServiceContext, rawInput: unknown): Promise<ReservationResult> {
+  const input = ReserveInventoryInput.parse(rawInput);
+  return withTenant(ctx, (tx) => reserveOnTx(tx, ctx, input));
+}
+
+/**
+ * Release an active reservation INSIDE the caller's transaction. Returns the
+ * freed quantity to `allocated`. Idempotent — a non-active reservation no-ops,
+ * and an unknown id no-ops (the line may point at a reaped hold).
+ */
+export async function releaseOnTx(
+  tx: TxClient,
+  _ctx: ServiceContext,
+  reservationId: string
+): Promise<void> {
+  const reservation = await tx.inventoryReservation.findFirst({ where: { id: reservationId } });
+  if (reservation?.status !== 'active') return;
+
+  await tx.inventoryReservation.update({
+    where: { id: reservationId },
+    data: { status: 'released', releasedAt: new Date() },
+  });
+  await tx.inventoryLevel.update({
+    where: {
+      variantId_warehouseId: {
+        variantId: reservation.variantId,
+        warehouseId: reservation.warehouseId,
+      },
+    },
+    data: { allocated: { decrement: reservation.quantity }, asOf: new Date() },
+  });
+
+  await syncProductInStock(tx, reservation.variantId);
+}
+
+/** Public release — opens its own tenant transaction. Throws on an unknown id
+ *  (the explicit API contract); the cart seam uses `releaseOnTx`, which no-ops. */
 export async function release(ctx: ServiceContext, reservationId: string): Promise<void> {
   await withTenant(ctx, async (tx) => {
-    const reservation = await tx.inventoryReservation.findFirst({
-      where: { id: reservationId },
-    });
+    const reservation = await tx.inventoryReservation.findFirst({ where: { id: reservationId } });
     if (!reservation) throw new InventoryNotFoundError('InventoryReservation', reservationId);
-    if (reservation.status !== 'active') return; // idempotent
-
-    await tx.inventoryReservation.update({
-      where: { id: reservationId },
-      data: { status: 'released', releasedAt: new Date() },
-    });
-    await tx.inventoryLevel.update({
-      where: {
-        variantId_warehouseId: {
-          variantId: reservation.variantId,
-          warehouseId: reservation.warehouseId,
-        },
-      },
-      data: { allocated: { decrement: reservation.quantity }, asOf: new Date() },
-    });
-
-    await syncProductInStock(tx, reservation.variantId);
+    await releaseOnTx(tx, ctx, reservationId);
   });
 }
 
@@ -135,7 +169,9 @@ export async function release(ctx: ServiceContext, reservationId: string): Promi
  * Commit an active reservation — the goods have left the building. Funnels the
  * onHand decrement through the ledger (`sale` movement) and drops `allocated`
  * in the same locked write, then emits threshold events. `idempotencyKey` lets
- * a redelivered fulfillment/order event commit exactly once.
+ * a redelivered fulfillment/order event commit exactly once. (The sell-path
+ * commit that runs inside the checkout tx lives in ./sell-path.ts; this is the
+ * standalone form for callers committing a single hard hold.)
  */
 export async function commit(
   ctx: ServiceContext,
@@ -225,14 +261,19 @@ export async function expireDueReservations(ctx: ServiceContext): Promise<{ rele
   return { released };
 }
 
-async function pickWarehouseFor(
+/**
+ * Stock-aware single-source allocator. Resolves the channel from the holder, then
+ * prefers an active warehouse that (a) defaults for the channel AND can fulfill
+ * the quantity, else (b) any warehouse that can fulfill, else (c) the channel
+ * default (a backorder under a continue/preorder policy), else (d) the first
+ * active warehouse. Multi-warehouse split + proximity/cost routing layer on top
+ * of this once the location geo/cost model lands (docs/100 P5) — this is the
+ * deterministic single-source floor the sell path needs today.
+ */
+export async function pickWarehouseFor(
   tx: TxClient,
-  input: { quantity: number; holderType: string }
+  input: { variantId: string; quantity: number; holderType: string }
 ): Promise<string> {
-  // Phase 2 picker: first active warehouse with sufficient available
-  // stock; falls back to the first active warehouse if no one has it
-  // (the variant's inventoryPolicy decides whether that's an error).
-  // Channel-aware routing comes in Phase 5 once Checkout passes channel.
   const channel =
     input.holderType === 'cart'
       ? 'storefront'
@@ -244,18 +285,37 @@ async function pickWarehouseFor(
     where: { isActive: true, deletedAt: null },
     select: { id: true, defaultForChannel: true },
   });
-
-  const matchingChannel = candidates.filter((w) => {
-    const list = Array.isArray(w.defaultForChannel) ? (w.defaultForChannel as string[]) : [];
-    return list.includes(channel);
-  });
-  const ordered = matchingChannel.length > 0 ? matchingChannel : candidates;
-
-  if (ordered.length === 0) {
+  if (candidates.length === 0) {
     throw new InventoryValidationError(
       'No active warehouses exist — create one before reserving stock'
     );
   }
 
-  return ordered[0]!.id;
+  const channelMatches = candidates.filter((w) => {
+    const list = Array.isArray(w.defaultForChannel) ? (w.defaultForChannel as string[]) : [];
+    return list.includes(channel);
+  });
+
+  // Available stock for this variant across the candidate warehouses.
+  const levels = await tx.inventoryLevel.findMany({
+    where: { variantId: input.variantId, warehouseId: { in: candidates.map((w) => w.id) } },
+    select: { warehouseId: true, onHand: true, allocated: true },
+  });
+  const availableBy = new Map(levels.map((l) => [l.warehouseId, l.onHand - l.allocated]));
+  const canFulfill = (id: string): boolean => (availableBy.get(id) ?? 0) >= input.quantity;
+
+  // (a) channel-default warehouse that can fulfill, richest first.
+  const channelFulfilling = channelMatches
+    .filter((w) => canFulfill(w.id))
+    .sort((a, b) => (availableBy.get(b.id) ?? 0) - (availableBy.get(a.id) ?? 0));
+  if (channelFulfilling[0]) return channelFulfilling[0].id;
+
+  // (b) any warehouse that can fulfill, richest first.
+  const anyFulfilling = candidates
+    .filter((w) => canFulfill(w.id))
+    .sort((a, b) => (availableBy.get(b.id) ?? 0) - (availableBy.get(a.id) ?? 0));
+  if (anyFulfilling[0]) return anyFulfilling[0].id;
+
+  // (c) channel default (backorder), then (d) first active.
+  return (channelMatches[0] ?? candidates[0])!.id;
 }

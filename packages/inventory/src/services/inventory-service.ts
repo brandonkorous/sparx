@@ -29,8 +29,28 @@ export type { InventoryLevelRow, LowStockRow } from './levels';
 export { adjust, transfer } from './movements';
 
 // ─── Reservations (cart soft / order hard) ────────────────────────────
-export { reserve, release, commit, expireDueReservations } from './reservations';
+// The tx-aware cores (`reserveOnTx` / `releaseOnTx`) let the commerce cart seam
+// hold/release stock atomically with the cart-line write; `pickWarehouseFor` is
+// the stock-aware single-source allocator.
+export {
+  reserve,
+  reserveOnTx,
+  release,
+  releaseOnTx,
+  commit,
+  expireDueReservations,
+  pickWarehouseFor,
+} from './reservations';
 export type { ReservationResult } from './reservations';
+
+// ─── Sell path (checkout commit · cancel restock · default warehouse) ──
+export {
+  commitSaleOnTx,
+  emitSaleEvents,
+  reverseOrderSale,
+  resolveDefaultWarehouseId,
+} from './sell-path';
+export type { SellLine, CommittedSale } from './sell-path';
 
 // ─── External-feed reconcile (sync sources) ───────────────────────────
 export { reconcileStockLevel } from './sync';

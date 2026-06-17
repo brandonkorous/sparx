@@ -1,6 +1,6 @@
 # sparx Platform — Inventory Product Build Plan
 
-**Version:** 1.3
+**Version:** 1.4
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-16
 
@@ -271,7 +271,7 @@ touching MCP/scheduler imports (typecheck-driven).
 
 ---
 
-### Phase 2 — Sell path (wire the reservation engine)
+### Phase 2 — Sell path (wire the reservation engine) ✅ DONE
 
 **Goal:** stock becomes real-time accurate; oversell is structurally prevented; `inventory_policy` is
 enforced. Fixes docs/99 defect D2. This is the commerce **integration** layer.
@@ -279,31 +279,59 @@ enforced. Fixes docs/99 defect D2. This is the commerce **integration** layer.
 **Work (exact seam points from the audit):**
 
 1. **Cart soft-hold** — `packages/commerce/src/services/cart-service.ts`:
-   - `addItem()` (~L206, after `cartItem.create`): `inventory.reserve({variantId, quantity,
-holderType:'cart', holderId:cartId, ttlSeconds:1800})`; store `reservationId` on the line.
-   - `updateItem()` (~L257–260): release + re-reserve on qty change; release on remove.
-   - **Schema add:** `CartItem.inventoryReservationId` (migration).
-2. **Hard-hold / decrement at checkout** — `checkout-service.ts` `complete()` (~L537, inside the order
-   tx, before session marked complete): `inventory.commit(reservationId)` per line → decrements
-   `allocated`+`onHand`, writes `sale` movement with `referenceId=order.id`. CRM `order-service` stays
-   inventory-agnostic by design (checkout owns the seam).
-3. **Release on cancel / payment-fail** — new **inventory event consumer** (in `inventory-worker` or an
-   `order.cancelled` handler): on `order.cancelled` / payment void, find `InventoryReservation` for
-   `holderType:'order', holderId:orderId` → `release()`. The reservation-reaper already expires cart TTLs.
-4. **Returns restock** — `return-service.ts` `issueRefund()` (~L449): for each inspection
-   `restockable=true`, `inventory.adjust({delta:+qty, reason:'return', referenceId:returnId, warehouseId})`.
-5. **Allocator** — replace the "first active warehouse" picker in `reserve()` with a channel→default-
-   location map then proximity/cost-aware split; partial allocation + backorder remainder when
-   `inventory_policy='continue'`.
-6. **inStock sync** — confirm `inventory.changed`/`depleted` → commerce flips `Product.inStock`
-   (event-driven, already partially present via `syncProductInStock`).
+   - `addItem()` (after `cartItem.create`): reserves the line atomically inside the cart tx and stores the
+     `reservationId` on the line. A `deny`-policy shortfall throws and rolls the add back (can't add past
+     available). ✅ **DONE** — via the tx-aware `inventoryService.reserveOnTx(tx, ctx, {…})`.
+   - `updateItem()`: release + re-reserve on qty change; release on remove. ✅ **DONE** — plus `clear()`
+     and `merge()` release the source holds so a cleared/merged cart never leaks `allocated`.
+   - **Schema add:** `CartItem.inventoryReservationId` (migration `20260903000000_cart_item_reservation`,
+     nullable, NOT a FK — soft cross-module pointer). ✅ **DONE.**
+2. **Hard-hold / decrement at checkout** — `checkout-service.ts` `complete()` (inside the completion tx,
+   before the session is marked complete): `inventoryService.commitSaleOnTx(tx, ctx, {orderId, lines})`
+   decrements `onHand` (+ releases the soft hold's `allocated`) and writes a `sale` movement with
+   `referenceId=order.id`. Idempotency-keyed per line (`order-commit:<orderId>:<lineKey>`) so a retried
+   completion never double-decrements; skipped for B2B approval-gated orders (placement defers). CRM
+   `order-service` stays inventory-agnostic by design (checkout owns the seam). ✅ **DONE.** The B2B
+   **approval route** (`/v1/b2b/approval-queue/:orderId/approve`) commits the decrement when it places a
+   held order — the other placement path. ✅ **DONE.**
+3. **Release on cancel / payment-fail** — new commerce **event consumer** (`@sparx/commerce/consumers`,
+   installed at api-rest/api-mcp boot on the in-process platform bus, gated per-tenant on the inventory
+   module): on `order.cancelled`, `inventoryService.reverseOrderSale({orderId})` reverses each `sale`
+   movement with a compensating `cancel` movement (idempotency-keyed off the source movement) and releases
+   any lingering holds. Kept in commerce, NOT CRM, so the order service stays inventory-agnostic. (Payment
+   failure that does NOT cancel the order intentionally does not restock — the order stays open for retry;
+   restock follows cancellation.) ✅ **DONE.**
+4. **Returns restock** — `return-service.ts` `issueRefund()`: for each inspection `restockable=true`,
+   `inventoryService.adjust({delta:+qty, reason:'return', referenceType:'Return', referenceId:returnId,
+   warehouseId, idempotencyKey})`; quantity is the line's approved (accepted-back) count, warehouse the
+   inspection's or the channel default. Runs post-commit (the refund is authority; restock is a follow-on).
+   ✅ **DONE.**
+5. **Allocator** — `reserve()`'s picker is now **stock-aware**: resolve the channel default, prefer a
+   warehouse that can fulfill (richest first), else any that can, else the channel default (backorder under
+   `continue`/`preorder`), else first active. ✅ **DONE** (single-source). Multi-warehouse **split** +
+   proximity/cost routing layers on top once the location geo/cost model lands — **deferred to P5** (no
+   geo/cost data wired yet), noted in `pickWarehouseFor`.
+6. **inStock sync** — `inventory.depleted`/`low`/`adjusted` events + `Product.inStock` flip via
+   `syncProductInStock` (called inside every `applyMovement`, fired post-commit by the sell path). ✅
+   **Confirmed wired.**
 
 **Deploy gate:** place an order in the seeded store → `onHand` decrements, movement row written, PDP
-hides at zero under `deny`, backorders allowed under `continue`; cancel/refund restock verified.
+hides at zero under `deny`, backorders allowed under `continue`; cancel/refund restock verified. The
+inventory-side guarantees (oversell block under `deny`, commit drops onHand + releases allocated keeping
+`onHand == Σ(movements)`, idempotent re-commit, cancel restock + idempotent redelivery, backorder under
+`continue`) are pinned by `packages/inventory/test/integration/sell-path.test.ts` (DB-backed); the full
+storefront e2e is the review/Playwright pass.
 
-**Risks:** transactional correctness (commit must be atomic with order insert); double-decrement if both
-a commit and an `order.created` consumer fire — pick **one** authority (checkout commit), make the
-consumer idempotent; concurrency (two carts, last unit) — rely on row locks in the level update.
+> **✅ Phase 2 (Sell path) is COMPLETE.** The reservation engine is wired end-to-end: cart soft-holds with
+> oversell protection, checkout (and B2B approval) commit as the single decrement authority, an idempotent
+> `order.cancelled` consumer restocks, returns restock on refund, and the allocator is stock-aware. Fixes
+> docs/99 D2 (orders now move inventory). Next: **P3 — supply path (suppliers, POs, receiving, reorder).**
+
+**Risks:** transactional correctness (commit composes into the checkout completion tx; idempotency keys per
+line make a retried completion safe); double-decrement if both a commit and an `order.created` consumer
+fire — resolved by a single authority (checkout/approval commit), no order.created decrement consumer;
+concurrency (two carts, last unit) — the reserve availability check now takes a `FOR UPDATE` row lock, so
+the last unit can't be double-held under `deny`.
 
 ---
 

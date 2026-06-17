@@ -110,7 +110,7 @@ model InventoryMovement {
   delta        Int // signed
   balanceAfter Int?   @map("balance_after") // onHand AFTER this movement (running balance)
   reason       String @db.VarChar(20)
-  // ^ sale | return | recount | loss | damage | transfer_in | transfer_out | receive | reserve | release | manual | sync
+  // ^ sale | return | cancel | recount | loss | damage | transfer_in | transfer_out | receive | reserve | release | manual | sync
 
   referenceType String? @map("reference_type") @db.VarChar(63)
   referenceId   String? @map("reference_id") @db.Uuid

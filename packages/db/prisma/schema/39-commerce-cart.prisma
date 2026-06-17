@@ -64,6 +64,15 @@ model CartItem {
   unitPriceCents Int @map("unit_price_cents")
   subtotalCents  Int @map("subtotal_cents")
 
+  // Soft hold against this line (docs/100 §2.4, P2 sell path). Set when the
+  // inventory module is active: addItem reserves stock (cart TTL), updateItem
+  // releases + re-reserves on qty change, and checkout commits it into a `sale`
+  // movement. Intentionally NOT a FK — it points across the module boundary into
+  // inventory_reservations, and the reaper/expiry may retire the reservation out
+  // from under the line (a stale id reads as "no active hold" on re-check). Null
+  // when inventory is off (untracked variants are always available).
+  inventoryReservationId String? @map("inventory_reservation_id") @db.Uuid
+
   // Configurator payload (when the variant is the resolution of a
   // configurable parent). Stored intact so the line item can be
   // re-resolved on price refresh.
