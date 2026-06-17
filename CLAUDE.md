@@ -27,7 +27,7 @@ Nothing has been `pnpm install`ed yet — the first time anyone clones, they nee
 
 ### Pre-push guard
 
-`pnpm install` wires `git config core.hooksPath .githooks` (via the root `prepare` script), which enables [.githooks/pre-push](.githooks/pre-push). Every `git push` first runs `pnpm install --frozen-lockfile && pnpm format:check && pnpm lint && pnpm typecheck` against the working tree. A red local check blocks the push — this is intentional: CI on `main` is the production tripwire, not a debugging surface. Bypass deliberately with `git push --no-verify` if you really need to (e.g. recovering from a hook bug).
+`pnpm install` wires `git config core.hooksPath .githooks` (via the root `prepare` script), which enables [.githooks/pre-push](.githooks/pre-push). Every `git push` first runs `pnpm install --frozen-lockfile && pnpm format:check && pnpm lint && pnpm typecheck` against the working tree. A red local check blocks the push — this is intentional: CI on `main` is the production tripwire, not a debugging surface. Fix the failing check before pushing — `--no-verify` is not an acceptable bypass.
 
 ### File & function size
 
