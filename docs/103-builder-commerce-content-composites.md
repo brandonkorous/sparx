@@ -1,12 +1,12 @@
 # Builder v2 — Commerce & Content composites (the binding-spine payoff)
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous / WizeWorks
 **Last Updated:** 2026-06-17
 
 > **Purpose.** The binding spine (docs/98 Pillar 7) is finished end-to-end — a node can pin to a product / collection / category / CMS entry, repeat a collection, and carry an add-to-cart action — but **nothing in the component catalog uses it.** A designer who wants to sell or publish has to hand-assemble the buy-box, the repeater, and the article layout from raw atoms every single time. This doc scopes the **comprehensive composites that turn the spine into drop-in building blocks**, plus the modern marketing patterns and page scaffolds a working web designer expects to find in the palette and currently doesn't. It is the catalog-content half of docs/98 §8 acceptance, and it closes the "engine built, no car" gap.
 >
-> **Status (v1.1 — built; live acceptance pending):** Phases 0–4 are shipped and gate-green (builder-schemas + builder-render tests/typecheck; dashboard + site typecheck) across five commits. All **17 composites** across the three tiers are in the catalog (`commerce` + `content` are new palette categories), plus the `repeat`/`act` authoring helpers and the `counter` runtime behavior. The one remaining item is **Phase 5 — the live-browser acceptance pass** (§5), which also discharges the long-open docs/98 §8 / docs/102 §8 items; it boots three dev servers against the shared dev DB, so it is held for a deliberate run.
+> **Status (v1.2 — Phases 0–6 built; live acceptance pending):** all the build work is shipped and gate-green (builder-schemas + builder-render + db tests/typecheck; dashboard + site typecheck). Phases 0–4 delivered the **17 composites** across three tiers (`commerce` + `content` are new palette categories) + the `repeat`/`act` helpers + the `counter` behavior. **Phase 6 then closed every item this doc had deferred** (§7): a **searchable Add palette** (the list grew long), `comparison_table` re-skinned onto `st-table` (docs/102's last flag), **five breadth composites** (related products/posts, mini-cart, collection nav, author bio), a **functional cookie banner** (the `dismiss` behavior + true `st-fixed-bottom`), a real **image lightbox** (the `BuilderLightbox` island), an **auto table-of-contents** (the `toc` behavior + `article_with_toc`), and the **platform_components seed** so `/v1/platform/catalog/*` returns the real library. Three new runtime behaviors landed (`counter`, `dismiss`, `toc`) + one client island (`Lightbox`). The one remaining item is **Phase 5 — the live-browser acceptance pass** (§5), which also discharges the long-open docs/98 §8 / docs/102 §8 items; it boots three dev servers against the shared dev DB, so it is held for a deliberate run.
 
 ---
 
@@ -70,11 +70,14 @@ A shoppable/record composite ships **inert-but-rich**: its leaves carry `bound(a
 
 Animated count-up stats need JS the closed behavior set does not have. Add `counter` to the runtime (`@sparx/builder-render` behaviors) and mirror it into `_kit.ts` `SX_BEHAVIOR_NAMES` + the drift test (`behaviors.test.ts`). Spec: a root `behave(node,{type:'counter'})` over N `part(node,'item')` value elements; on first scroll into view (IntersectionObserver, `threshold` param) each item counts from 0 to the integer in its text over ~1.2s, then stops. Canvas previews the final value (no animation), matching the carousel/marquee canvas-suppression convention. This is the **only** runtime extension in this doc; everything else rides existing behaviors. It lands in **Phase 3** alongside its sole consumer (`stats_counter`), not in the Phase 0 foundation.
 
-### 3.5 Explicitly deferred (noted, not silently dropped)
+### 3.5 Initially deferred — all built in Phase 6 (§6)
 
-- **Image lightbox** (click a gallery image → full-screen overlay with prev/next). A true lightbox needs a new overlay behavior the closed set lacks; the Tier-2 gallery ships as a **masonry grid** (CSS columns, no JS) and lightbox is a future behavior addition.
-- **True-`fixed` cookie/consent bar.** Raw `fixed` is denied in catalog data (only the FAB/Toast/Dialog islands emit sanctioned fixed). The Tier-3 consent banner ships as a **`sticky bottom-0`** bar the tenant places at page end — visually equivalent for the catalog medium.
-- **Maintenance page** — folded into `coming_soon` (same scaffold, different copy), not a separate entry.
+These were parked in v1.0 then finished under the "nothing is deferred before launch" directive:
+
+- **Image lightbox** — **built.** Not a behavior (a full-screen overlay would fight the canvas-reveal); built as the **`BuilderLightbox` client island** (mirrors the modal) against new `st-lightbox` CSS, plus a `gallery_lightbox` composite. The static `gallery_masonry` stays too.
+- **True-`fixed` cookie/consent bar** — **built.** Re-skinned `cookie_consent` onto the sanctioned `st-fixed-bottom` (the only allowed `position:fixed` emitter) and made it functional with the new **`dismiss`** behavior (remembers via localStorage).
+- **Maintenance page** — folded into `coming_soon` (same scaffold, different copy), as planned.
+- **`article_body` TOC** — **built** as a separate `article_with_toc` composite driven by the new **`toc`** behavior (generates links from the rendered headings, live-only), leaving `article_body` as the simple single-column read.
 
 ## 4. The composites (17 catalog entries across three tiers)
 
@@ -117,7 +120,7 @@ The content twins of the commerce trio: a publisher pins a content entry and the
 | -------------------- | --------------- | ------------- | --------- | ----------------------------------------------------------------------------- |
 | `coming_soon`        | Coming soon     | comprehensive | layout    | full-bleed centered hero + newsletter capture (also the maintenance scaffold) |
 | `error_404`          | 404 page        | common        | layout    | centered not-found with a home action                                         |
-| `cookie_consent`     | Consent banner  | comprehensive | feedback  | `sticky bottom-0` accept/decline bar (§3.5)                                   |
+| `cookie_consent`     | Consent banner  | comprehensive | feedback  | `st-fixed-bottom` accept/decline bar, dismissible (§3.5, §6d)                 |
 | `contact_section`    | Contact section | comprehensive | marketing | heading + the existing `contact_form` + an `EmbedFrame` map                   |
 | `sale_countdown_bar` | Sale countdown  | comprehensive | marketing | slim announcement strip wrapping the existing `Countdown` atom                |
 
@@ -128,7 +131,8 @@ The content twins of the commerce trio: a publisher pins a content entry and the
 - **Phase 2 — Content composites.** Add the `content` category (+ label) AND `catalog/content.ts` (3 entries) → register, tests, commit.
 - **Phase 3 — Marketing patterns** (6 entries across `marketing.ts`/`interactive.ts`) → tests, commit. **Includes the `counter` runtime behavior** (§3.4) for `stats_counter`: add to the runtime registry + the `_kit.ts` `SX_BEHAVIOR_NAMES` mirror + the `behaviors.test.ts` drift test, then the composite.
 - **Phase 4 — Page scaffolds & utility** (5 entries across `layout.ts`/`feedback.ts`/`marketing.ts`) → tests, commit.
-- **Phase 5 — Live acceptance.** Boot api-rest + dashboard + site against seeded data; in the editor: drop `product_grid` (repeats real products), pin `product_spotlight` to a product and confirm Add-to-cart adds the right variant on the published page; pin `featured_article` to a real post; drop `stats_counter` and confirm count-up live but static on canvas; confirm canvas == published for each. This **discharges docs/98 §8 and docs/102 §8** (the long-open live-browser items) in the same pass. Then revert the test page.
+- **Phase 5 — Live acceptance.** Boot api-rest + dashboard + site against seeded data; in the editor: drop `product_grid` (repeats real products), pin `product_spotlight` to a product and confirm Add-to-cart adds the right variant on the published page; pin `featured_article` to a real post; drop `stats_counter` and confirm count-up live but static on canvas; open the `gallery_lightbox`; dismiss the `cookie_consent`; confirm canvas == published for each. This **discharges docs/98 §8 and docs/102 §8** (the long-open live-browser items) in the same pass. Then revert the test page. _(Held: boots three dev servers against the shared dev DB.)_
+- **Phase 6 — Close every deferred item (built).** Per the "nothing is deferred" directive, the §3.5/§7 parking lot was emptied: **6a** searchable Add palette (page/site + email); **6b** `comparison_table` → `st-table` (docs/102's last flag); **6c** five breadth composites (related products/posts, mini-cart, collection nav, author bio); **6d** functional `cookie_consent` (the `dismiss` behavior + `st-fixed-bottom`); **6e** the `BuilderLightbox` island + `gallery_lightbox`; **6f** the `toc` behavior + `article_with_toc`; **6g** the `platform_components` seed. Three new behaviors (`counter`/`dismiss`/`toc`) + one island (`Lightbox`); each slice its own commit, gate-green.
 
 Phases 1–4 are independent given Phase 0 and can land in any order; each is a self-contained catalog batch behind no flag (published catalog data is identical for every tenant).
 
@@ -139,9 +143,9 @@ Phases 1–4 are independent given Phase 0 and can land in any order; each is a 
 - **Gates:** `pnpm format && pnpm lint && pnpm typecheck` across `builder-schemas → builder-render → site → dashboard`; the pre-push RLS audit. Catalog files are data-as-code (line-limit-exempt); the kit/behavior changes respect the ≤250/≤50 cohesion budget.
 - **Live (Phase 5):** the browser acceptance above.
 
-## 7. Out of scope (noted, not dropped)
+## 7. Out of scope (genuinely separate work)
 
-Image lightbox + true-`fixed` overlays (§3.5); a separate maintenance entry (folded into `coming_soon`); the DB-backed `PlatformComponent` admin UI (the API already ships — these entries seed straight in via the existing data-as-code pipeline); reproducing more than 2–3 reference mockups (docs/98 §8 stretch); re-skinning the one flagged `comparison_table` onto `st-table` (docs/102 follow-up, unrelated).
+The deferred items that were once here are **built** (§3.5 / §6). What remains out of scope is work that belongs to other docs, not this one: the DB-backed `PlatformComponent` **admin UI** (the API + seed now ship — the authoring/review front-end is a separate app, docs/98 §5); reproducing more than 2–3 of the docs/98 §8 reference mockups (a stretch acceptance, not a build target); and any new email-surface composites beyond the existing set (Email v2 is its own track, docs/98 §3.6c).
 
 ## 8. Risks / footguns
 
