@@ -136,9 +136,96 @@ describe('renderSiteUiAtom (via renderLeaf) — real components + the author rec
   });
 });
 
+describe('overlay / floating atoms (docs/102 Track C follow-up)', () => {
+  it('Toast: a positioned region anchored by horizontal × vertical, stacking children', () => {
+    const html = leaf(
+      { type: 'Toast', props: { horizontal: 'end', vertical: 'top' } },
+      { children: <span>Heads up</span> }
+    );
+    expect(html).toContain('st-toast');
+    expect(html).toContain('st-toast--h-end');
+    expect(html).toContain('st-toast--v-top');
+    expect(html).toContain('Heads up');
+  });
+
+  it('Toast: previews a sample notification in the editor when empty', () => {
+    const html = leaf({ type: 'Toast', props: {} }, { mode: 'edit' });
+    expect(html).toContain('st-alert');
+    expect(html).toContain('Saved');
+  });
+
+  it('FAB: a floating action button wearing the recipe color + an icon', () => {
+    const html = leaf(
+      { type: 'FAB', props: { icon: 'plus', label: 'New post', placement: 'bottom-end' } },
+      { leafClass: 'st-c-accent' }
+    );
+    expect(html).toContain('st-fab');
+    expect(html).toContain('st-fab--bottom-end');
+    expect(html).toContain('st-c-accent');
+    expect(html).toContain('aria-label="New post"');
+  });
+
+  it('FAB: an href turns the main control into a link', () => {
+    const html = leaf({ type: 'FAB', props: { label: 'Compose', href: '/new' } });
+    expect(html).toContain('<a');
+    expect(html).toContain('href="/new"');
+  });
+
+  it('Dialog (edit): the trigger recipe + the inline static panel, open for editing', () => {
+    const html = leaf(
+      {
+        type: 'Dialog',
+        props: { triggerLabel: 'Open', title: 'Are you sure?', closeLabel: 'Got it' },
+      },
+      { mode: 'edit', leafClass: 'st-c-accent st-v-soft', children: <p>Body content</p> }
+    );
+    // The trigger wears node.class as a real Button.
+    expect(html).toContain('st-btn');
+    expect(html).toContain('st-c-accent');
+    expect(html).toContain('st-v-soft');
+    expect(html).toContain('>Open<');
+    // The canvas panel is the inline static variant (NOT the fixed live modal).
+    expect(html).toContain('st-dialog--static');
+    expect(html).toContain('Are you sure?');
+    expect(html).toContain('Body content');
+    expect(html).toContain('Got it');
+  });
+
+  it('Dialog (live): renders the trigger; the closed Radix panel is not inline', () => {
+    const html = leaf(
+      { type: 'Dialog', props: { triggerLabel: 'Open dialog', title: 'Hi' } },
+      { mode: 'live', leafClass: 'st-c-primary st-v-solid' }
+    );
+    expect(html).toContain('st-btn');
+    expect(html).toContain('Open dialog');
+    expect(html).not.toContain('st-dialog--static');
+  });
+
+  it('Dialog (email): falls through to the body content (no JS modal)', () => {
+    const html = leaf(
+      { type: 'Dialog', props: { triggerLabel: 'Open', title: 'Hi' } },
+      { surface: 'email', children: <p>Just the body</p> }
+    );
+    expect(html).toContain('Just the body');
+    expect(html).not.toContain('st-dialog');
+  });
+});
+
 describe('leafWearsClass — the new atoms style their own element', () => {
-  it('is true across the form / feedback / display / nav / mockup families', () => {
-    for (const t of ['Input', 'Alert', 'Avatar', 'Table', 'Menu', 'Steps', 'Browser', 'Mask']) {
+  it('is true across the form / feedback / display / nav / mockup / overlay families', () => {
+    for (const t of [
+      'Input',
+      'Alert',
+      'Avatar',
+      'Table',
+      'Menu',
+      'Steps',
+      'Browser',
+      'Mask',
+      'Toast',
+      'FAB',
+      'Dialog',
+    ]) {
       expect(leafWearsClass(t)).toBe(true);
     }
   });

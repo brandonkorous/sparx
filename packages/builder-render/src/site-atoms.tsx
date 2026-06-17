@@ -43,6 +43,7 @@ import {
   DiffResizer,
   Dock,
   DockItem,
+  FAB,
   Field,
   FileInput,
   Filter,
@@ -79,12 +80,14 @@ import {
   Tag,
   Textarea,
   TextRotate,
+  Toast,
   Validator,
   Window,
   type AvatarShape,
   type ChatPlacement,
   type ChipTreatmentKey,
   type ColorKey,
+  type FABPlacement,
   type FieldTreatmentKey,
   type IndicatorPlacement,
   type JoinOrientation,
@@ -97,6 +100,8 @@ import {
   type StepsOrientation,
   type StepState,
   type SwapAnimation,
+  type ToastHorizontal,
+  type ToastVertical,
 } from '@sparx/site-ui';
 import type { BuilderNode, Cardinality } from '@sparx/builder-schemas';
 
@@ -793,6 +798,47 @@ export function renderSiteUiAtom(
       const images = textLines(node, 'images').map((src) => ({ src }));
       if (images.length < 2) return ctx.edit ? <div className="bx-ph bx-ratio-wide" /> : null;
       return <HoverGallery images={images} className={r.className} />;
+    }
+
+    // ── Overlay / floating ────────────────────────────────────────────────────
+    // Both pin with `position: fixed` from their platform `st-*` CSS (so they
+    // bypass the Tailwind allowlist's clickjacking guard, which denies raw `fixed`).
+    // In the canvas they float to the stage corner, like the drawer's fixed rail.
+    case 'Toast': {
+      const horizontal = (str(node, 'horizontal') || 'end') as ToastHorizontal;
+      const vertical = (str(node, 'vertical') || 'bottom') as ToastVertical;
+      // A dropped notification (Alert/Card) per child; an empty region previews a
+      // sample notification in the editor so it stays visible + selectable.
+      const body =
+        ctx.children ??
+        (ctx.edit ? (
+          <Alert color="info" variant="soft">
+            <Alert.Title>Saved</Alert.Title>
+            <Alert.Body>Your changes are live.</Alert.Body>
+          </Alert>
+        ) : null);
+      return (
+        <Toast horizontal={horizontal} vertical={vertical} className={r.className}>
+          {body}
+        </Toast>
+      );
+    }
+    case 'FAB': {
+      const icon = str(node, 'icon') || 'plus';
+      const label = str(node, 'label') || 'Open actions';
+      const href = str(node, 'href');
+      const placement = (str(node, 'placement') || 'bottom-end') as FABPlacement;
+      return (
+        <FAB
+          color={asColor(r.color)}
+          placement={placement}
+          href={href || undefined}
+          aria-label={label}
+          className={r.className}
+        >
+          <BuilderIcon name={icon} />
+        </FAB>
+      );
     }
 
     default:

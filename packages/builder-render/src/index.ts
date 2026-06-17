@@ -32,6 +32,7 @@ export {
 // Interactive islands — rendered identically on both surfaces.
 export { BuilderCarousel, type BuilderCarouselProps } from './carousel';
 export { BuilderIcon } from './icon';
+export { BuilderDialog, type BuilderDialogProps } from './dialog';
 export { SignupForm } from './signup';
 export {
   BuilderBuyBox,

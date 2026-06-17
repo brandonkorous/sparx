@@ -1,6 +1,6 @@
 # Builder Component Library — Consistency & Coverage Audit
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous / WizeWorks
 **Last Updated:** 2026-06-17
 
@@ -8,17 +8,18 @@
 
 ---
 
-## 0. Status (v1.1 — Tracks A/B/C shipped)
+## 0. Status (v1.2 — Tracks A/B/C shipped; overlays closed)
 
 - **Track A — DONE** (merged to `main`, PR #67). The other ~47 site-ui components are registered as droppable atoms: defs in [registry-atoms.ts](<../apps/dashboard/app/(dashboard)/builder/_builder/registry-atoms.ts>) (spread into the registry), rendered by the shared `renderSiteUiAtom` map in [site-atoms.tsx](../packages/builder-render/src/site-atoms.tsx) (render-leaf delegates to it; new types join `CLASS_ON_LEAF`). `recipeFromClass` bridges site-ui's prop-based recipe to the builder's class-token recipe, so the inspector's Color/Emphasis controls drive every atom (`defaults.class` = axis tokens only; the component emits its own `st-<base>`). Covered by `site-atoms.test.tsx`.
 - **Track B — DONE** across 8 of 9 catalog files. Re-authored onto atoms: `feedback`, `data-input` (#67), then `mockup`/`data-display`/`navigation` and `layout`/`interactive`/`marketing`. `actions.ts` is left as-is on purpose — it is already Button-atom-based, and its segmented join would reorder icons (the Button atom renders icon-after-label) while its dropdown is interactive.
-- **Track C — interactive partially shipped.** Palette coverage was already closed by Track A (the ~20 components are droppable atoms). New interactive catalog entries (`interactive.ts`): **drawer** (sanctioned `st-fixed-right` rail) and **popover** (`absolute`), both composing the existing closed `menu` behavior — no new runtime code. Behavior parts (`data-sx-*`) are RAW `el('button')`/`el('div')`, because only the raw-element render path emits them; the named atom render does not.
+- **Track C — interactive shipped + overlays closed.** Palette coverage was already closed by Track A (the ~20 components are droppable atoms). New interactive catalog entries (`interactive.ts`): **drawer** (sanctioned `st-fixed-right` rail) and **popover** (`absolute`), both composing the existing closed `menu` behavior — no new runtime code. Behavior parts (`data-sx-*`) are RAW `el('button')`/`el('div')`, because only the raw-element render path emits them; the named atom render does not. The **overlay/floating trio** is now registered as droppable atoms too:
+  - **Modal / dialog** — the one atom a catalog composition CAN'T express (a dimmed full-viewport backdrop needs raw `fixed inset-0`, which the allowlist denies). Shipped as the **`BuilderDialog`** client island (render-leaf case): live = the platform-authored site-ui **`Dialog` (`st-dialog`, Radix)** — focus-trap, scroll-lock, ESC/overlay close, portal; canvas = the trigger + the panel shown inline-open via the new **`.st-dialog--static`** modifier (no portal, so children stay selectable in the scoped canvas). The node's recipe (`st-c-*`/`st-v-*`) styles the TRIGGER button; the panel body is the dropped children.
+  - **Toast** + **FAB** — presentational site-atoms (their `position: fixed` lives in platform `st-*` CSS, so it bypasses the Tailwind clickjacking guard). Toast stacks dropped notifications by horizontal × vertical anchor; FAB is a recipe-colored floating button (icon + a11y label + placement + optional href).
 
 ### Open follow-ups
 
-1. **Modal / dialog atom.** Intentionally NOT a catalog composition: a dimmed full-viewport backdrop needs raw `fixed inset-0`, which the compile allowlist denies by design (clickjacking guard; only edge-pinned `st-fixed-*` pass, none center-overlays). The correct path is the site-ui **`Dialog` (`st-dialog`, Radix)** atom — its CSS is platform-authored, so it bypasses the Tailwind allowlist. This is a client-island atom addition.
-2. **§8 live-browser acceptance** — drop an Alert/Input from the palette and drive its color via the inspector; stamp a re-authored catalog entry; exercise the drawer/popover behavior live.
-3. _Optional / low value:_ FAB and Toast atoms (positioning wrappers, deferred); the `actions.ts` segmented groups; `avatar_group`/`chat_thread` still use explicit-initials circles (the Avatar atom derives initials from a name).
+1. **§8 live-browser acceptance** — drop an Alert/Input from the palette and drive its color via the inspector; stamp a re-authored catalog entry; exercise the drawer/popover behavior + the modal live. (Note: the canvas `st-dialog--static`/`st-fab`/`st-toast` CSS ships in the `@layer components` bundle, so `styles.canvas.css` must be rebuilt — `pnpm --filter @sparx/site-ui build` / turbo handles it before the dashboard.)
+2. _Optional / low value:_ the `actions.ts` segmented groups; FAB speed-dial actions (the bare floating button is the canonical FAB); `avatar_group`/`chat_thread` still use explicit-initials circles (the Avatar atom derives initials from a name).
 
 ---
 

@@ -35,6 +35,19 @@
   bottom: 2rem;
   transform: translateX(-50%);
 }
+/* Builder canvas preview: the panel shown IN-FLOW (not fixed) so an author can
+ * select + edit it in place — the live modal still uses the fixed `.st-dialog`
+ * above (the canvas can't portal it without leaving the scoped tenant styles).
+ * `position: relative` keeps the absolute close button anchored to the panel;
+ * `left: auto` cancels the centering offset the base rule sets. */
+.st-dialog--static {
+  position: relative;
+  left: auto;
+  transform: none;
+  width: auto;
+  max-height: none;
+  animation: none;
+}
 .st-dialog__title {
   margin: 0 0 0.5rem;
   font-family: var(--st-font-heading, inherit);
@@ -47,6 +60,35 @@
     --st-text-secondary,
     color-mix(in oklab, var(--st-base-content, #23211c) 70%, transparent)
   );
+}
+/* Corner dismiss — a quiet icon button pinned to the panel's top-right. */
+.st-dialog__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--st-radius-field, 0.5rem);
+  background: transparent;
+  color: color-mix(in oklab, var(--st-base-content, #23211c) 55%, transparent);
+  cursor: pointer;
+}
+.st-dialog__close:hover {
+  background: var(--st-base-200, #ece9e2);
+  color: var(--st-base-content, #23211c);
+}
+/* Action row — trailing buttons (Close / confirm) under the body. */
+.st-dialog__footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
 }
 @keyframes st-overlay-in {
   from {
