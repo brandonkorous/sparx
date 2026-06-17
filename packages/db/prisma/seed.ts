@@ -11,6 +11,7 @@ import { PrismaClient, type Prisma } from '@prisma/client';
 import { hashPassword } from 'better-auth/crypto';
 import { listBlueprints, type Blueprint } from '@sparx/blueprints';
 import { LEGAL_TEMPLATES, legalEntryBody } from '@sparx/legal-templates';
+import { PLATFORM_CATALOG } from '@sparx/builder-schemas';
 
 const prisma = new PrismaClient();
 
@@ -1471,6 +1472,36 @@ async function seedDemoInventory(tenantId: string): Promise<void> {
   });
 }
 
+// The platform COMPONENT catalog (docs/98 §5) — the GLOBAL platform_components table
+// (no tenant_id). The published library IS the data-as-code PLATFORM_CATALOG, so the
+// seed mirrors every entry in as a `published` row: this is what the
+// `/v1/platform/catalog/*` API serves and what a future admin app lists. Idempotent
+// upsert by key; descriptions are clamped to the column's 280-char bound. Authored by
+// the reserved `system` id (the seed predates any real platform user). Stays in sync
+// with the static catalog automatically — new catalog entries seed with no change here.
+async function seedPlatformCatalog(): Promise<void> {
+  for (const e of PLATFORM_CATALOG) {
+    const data = {
+      name: e.name,
+      category: e.category,
+      kind: e.kind,
+      icon: e.icon,
+      description: e.description.slice(0, 280),
+      surfaces: e.surfaces,
+      tree: e.tree as unknown as Prisma.InputJsonValue,
+      tags: e.tags ?? [],
+      status: 'published' as const,
+      visibility: 'public' as const,
+    };
+    await prisma.platformComponent.upsert({
+      where: { key: e.key },
+      update: data,
+      create: { key: e.key, authorId: 'system', ...data },
+    });
+  }
+  console.log(`[seed] platform component catalog: ${PLATFORM_CATALOG.length} entries published`);
+}
+
 async function main(): Promise<void> {
   // tenants has no RLS — safe to upsert outside a tenant context. Default
   // settings (incl. the module activation registry read by
@@ -1605,6 +1636,16 @@ async function main(): Promise<void> {
   } catch (err) {
     console.warn(
       `[seed] marketplace catalog seed skipped: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
+
+  // Platform component catalog (docs/98 §5) — global platform data, independent of
+  // any tenant. Wrapped so a catalog hiccup never blocks the rest of the seed.
+  try {
+    await seedPlatformCatalog();
+  } catch (err) {
+    console.warn(
+      `[seed] platform catalog seed skipped: ${err instanceof Error ? err.message : String(err)}`
     );
   }
 
