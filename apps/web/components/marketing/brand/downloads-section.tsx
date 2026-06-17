@@ -153,14 +153,26 @@ export function DownloadsSection() {
                 }}
               >
                 <span style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                  <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: '14px', color: '#FFFFFF' }}>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-sans)',
+                      fontWeight: 500,
+                      fontSize: '14px',
+                      color: '#FFFFFF',
+                    }}
+                  >
                     {a.name}
                   </span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: '#52525B' }}>
+                  <span
+                    style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: '#52525B' }}
+                  >
                     {a.format}
                   </span>
                 </span>
-                <span aria-hidden style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: '#818CF8' }}>
+                <span
+                  aria-hidden
+                  style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: '#818CF8' }}
+                >
                   Download ↓
                 </span>
               </div>
@@ -182,7 +194,12 @@ export function DownloadsSection() {
           </span>
           <a
             href="mailto:brand@sparx.works"
-            style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: '#A1A1AA', textDecoration: 'none' }}
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '12px',
+              color: '#A1A1AA',
+              textDecoration: 'none',
+            }}
           >
             brand@sparx.works
           </a>

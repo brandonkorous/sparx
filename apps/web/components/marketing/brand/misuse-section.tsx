@@ -42,7 +42,8 @@ const DONTS: { caption: string; demo: React.ReactNode }[] = [
     demo: <Faux xColor="#10B981" />,
   },
   {
-    caption: 'Don’t let the “x” vanish into the letters. Keep it indigo — or, in one-color use, dimmed.',
+    caption:
+      'Don’t let the “x” vanish into the letters. Keep it indigo — or, in one-color use, dimmed.',
     demo: <Faux xColor="var(--color-text-primary)" />,
   },
   {

@@ -13,7 +13,16 @@ const ROLES: Role[] = [
   {
     role: 'Display',
     specimen: (
-      <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: 'clamp(34px, 5vw, 52px)', letterSpacing: '-0.025em', lineHeight: 1.05, color: 'var(--color-text-primary)' }}>
+      <span
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontWeight: 500,
+          fontSize: 'clamp(34px, 5vw, 52px)',
+          letterSpacing: '-0.025em',
+          lineHeight: 1.05,
+          color: 'var(--color-text-primary)',
+        }}
+      >
         Everything, ignited.
       </span>
     ),
@@ -23,7 +32,16 @@ const ROLES: Role[] = [
   {
     role: 'Heading',
     specimen: (
-      <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: '24px', letterSpacing: '0', lineHeight: 1.25, color: 'var(--color-text-primary)' }}>
+      <span
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontWeight: 500,
+          fontSize: '24px',
+          letterSpacing: '0',
+          lineHeight: 1.25,
+          color: 'var(--color-text-primary)',
+        }}
+      >
         Activate only what you need
       </span>
     ),
@@ -33,7 +51,15 @@ const ROLES: Role[] = [
   {
     role: 'Body',
     specimen: (
-      <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '17px', lineHeight: 1.6, color: 'var(--color-text-secondary)' }}>
+      <span
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontWeight: 400,
+          fontSize: '17px',
+          lineHeight: 1.6,
+          color: 'var(--color-text-secondary)',
+        }}
+      >
         sparx lets typography do the heavy lifting — no decorative elements, no gradients. White
         space is intentional, and every element has a reason to exist.
       </span>
@@ -44,7 +70,16 @@ const ROLES: Role[] = [
   {
     role: 'Label',
     specimen: (
-      <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text-secondary)' }}>
+      <span
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontWeight: 500,
+          fontSize: '11px',
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+          color: 'var(--color-text-secondary)',
+        }}
+      >
         Badge · metadata
       </span>
     ),
@@ -76,13 +111,29 @@ export function TypeSection() {
                 borderTop: i === 0 ? 'none' : '1px solid var(--color-border-default)',
               }}
             >
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', flex: 1, minWidth: 0 }}>
-                <span style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: 'var(--color-text-tertiary)' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '14px',
+                  flex: 1,
+                  minWidth: 0,
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: '13px',
+                    color: 'var(--color-text-tertiary)',
+                  }}
+                >
                   {r.role}
                 </span>
                 {r.specimen}
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', minWidth: '220px' }}>
+              <div
+                style={{ display: 'flex', flexDirection: 'column', gap: '12px', minWidth: '220px' }}
+              >
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                   {r.specs.map((s) => (
                     <span
@@ -100,7 +151,14 @@ export function TypeSection() {
                     </span>
                   ))}
                 </div>
-                <span style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', lineHeight: '20px', color: 'var(--color-text-tertiary)' }}>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: '13px',
+                    lineHeight: '20px',
+                    color: 'var(--color-text-tertiary)',
+                  }}
+                >
                   {r.use}
                 </span>
               </div>
@@ -111,8 +169,8 @@ export function TypeSection() {
         <div className="mkt-grid-2-1">
           <Note title="Two weights only">
             400 (regular) and 500 (medium) — never 600 or 700, which feel heavy against the clean
-            sparx UI. The wordmark is the one deliberate exception: it sets in a bold display face so
-            its letterforms match the monogram.
+            sparx UI. The wordmark is the one deliberate exception: it sets in a bold display face
+            so its letterforms match the monogram.
           </Note>
           <Note title="Fallback stack">
             <div className="mkt-cluster" style={{ gap: '8px' }}>
@@ -139,10 +197,25 @@ function Note({ title, children }: { title: string; children: React.ReactNode })
         borderRadius: 'var(--radius-xl)',
       }}
     >
-      <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: '15px', color: 'var(--color-text-primary)', margin: 0 }}>
+      <h3
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontWeight: 500,
+          fontSize: '15px',
+          color: 'var(--color-text-primary)',
+          margin: 0,
+        }}
+      >
         {title}
       </h3>
-      <div style={{ fontFamily: 'var(--font-sans)', fontSize: '14px', lineHeight: '22px', color: 'var(--color-text-secondary)' }}>
+      <div
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontSize: '14px',
+          lineHeight: '22px',
+          color: 'var(--color-text-secondary)',
+        }}
+      >
         {children}
       </div>
     </div>

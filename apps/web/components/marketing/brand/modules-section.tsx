@@ -10,19 +10,97 @@ interface ModuleColor {
 }
 
 const MODULES: ModuleColor[] = [
-  { module: 'Site / Builder', colorName: 'Indigo', hex: '#6366F1', token: '--module-builder', why: 'The platform color — the site is the foundation.' },
-  { module: 'Commerce', colorName: 'Orange', hex: '#F97316', token: '--module-commerce', why: 'Action, conversion, energy — every “Buy Now” ever.' },
-  { module: 'CMS', colorName: 'Teal', hex: '#14B8A6', token: '--module-cms', why: 'Editorial, calm, focused — content-creation energy.' },
-  { module: 'CRM', colorName: 'Cyan', hex: '#06B6D4', token: '--module-crm', why: 'Connective, relational, people-centric.' },
-  { module: 'Email', colorName: 'Sky', hex: '#0EA5E9', token: '--module-email', why: 'Communication, reach, delivery.' },
-  { module: 'B2B / Wholesale', colorName: 'Slate', hex: '#475569', token: '--module-b2b', why: 'Serious, industrial, business-grade.' },
-  { module: 'AI / MCP', colorName: 'Rose', hex: '#EC4899', token: '--module-ai', why: 'Premium, intelligent, unexpected — different in kind.' },
-  { module: 'Dropship', colorName: 'Emerald', hex: '#10B981', token: '--module-dropship', why: 'Growth, supply chain, organic.' },
-  { module: 'Invoicing', colorName: 'Lime', hex: '#65A30D', token: '--module-invoicing', why: 'Getting paid — cashflow, money in.' },
-  { module: 'Inventory', colorName: 'Amber', hex: '#F59E0B', token: '--module-inventory', why: 'Stock, supply, the warehouse.' },
-  { module: 'Live Chat', colorName: 'Violet', hex: '#8B5CF6', token: '--module-chat', why: 'Conversational, responsive, human.' },
-  { module: 'Automations', colorName: 'Fuchsia', hex: '#D946EF', token: '--module-automations', why: 'Workflows firing — work happening on its own.' },
-  { module: 'SEO', colorName: 'Yellow', hex: '#EAB308', token: '--module-seo', why: 'Visibility, getting found, daylight.' },
+  {
+    module: 'Site / Builder',
+    colorName: 'Indigo',
+    hex: '#6366F1',
+    token: '--module-builder',
+    why: 'The platform color — the site is the foundation.',
+  },
+  {
+    module: 'Commerce',
+    colorName: 'Orange',
+    hex: '#F97316',
+    token: '--module-commerce',
+    why: 'Action, conversion, energy — every “Buy Now” ever.',
+  },
+  {
+    module: 'CMS',
+    colorName: 'Teal',
+    hex: '#14B8A6',
+    token: '--module-cms',
+    why: 'Editorial, calm, focused — content-creation energy.',
+  },
+  {
+    module: 'CRM',
+    colorName: 'Cyan',
+    hex: '#06B6D4',
+    token: '--module-crm',
+    why: 'Connective, relational, people-centric.',
+  },
+  {
+    module: 'Email',
+    colorName: 'Sky',
+    hex: '#0EA5E9',
+    token: '--module-email',
+    why: 'Communication, reach, delivery.',
+  },
+  {
+    module: 'B2B / Wholesale',
+    colorName: 'Slate',
+    hex: '#475569',
+    token: '--module-b2b',
+    why: 'Serious, industrial, business-grade.',
+  },
+  {
+    module: 'AI / MCP',
+    colorName: 'Rose',
+    hex: '#EC4899',
+    token: '--module-ai',
+    why: 'Premium, intelligent, unexpected — different in kind.',
+  },
+  {
+    module: 'Dropship',
+    colorName: 'Emerald',
+    hex: '#10B981',
+    token: '--module-dropship',
+    why: 'Growth, supply chain, organic.',
+  },
+  {
+    module: 'Invoicing',
+    colorName: 'Lime',
+    hex: '#65A30D',
+    token: '--module-invoicing',
+    why: 'Getting paid — cashflow, money in.',
+  },
+  {
+    module: 'Inventory',
+    colorName: 'Amber',
+    hex: '#F59E0B',
+    token: '--module-inventory',
+    why: 'Stock, supply, the warehouse.',
+  },
+  {
+    module: 'Live Chat',
+    colorName: 'Violet',
+    hex: '#8B5CF6',
+    token: '--module-chat',
+    why: 'Conversational, responsive, human.',
+  },
+  {
+    module: 'Automations',
+    colorName: 'Fuchsia',
+    hex: '#D946EF',
+    token: '--module-automations',
+    why: 'Workflows firing — work happening on its own.',
+  },
+  {
+    module: 'SEO',
+    colorName: 'Yellow',
+    hex: '#EAB308',
+    token: '--module-seo',
+    why: 'Visibility, getting found, daylight.',
+  },
 ];
 
 export function ModulesSection() {
@@ -110,10 +188,10 @@ export function ModulesSection() {
             just functions. sparx Indigo + Rose is near-complementary, so it reads as hierarchy.
           </Callout>
           <Callout accent="#F59E0B" title="When a module color is also a semantic hue">
-            Inventory’s Amber is the warning hue, so inside Inventory, stock alerts use danger/red to
-            stay distinct from the module chrome. On a solid Amber or Yellow fill (Inventory, SEO),
-            text and icons use dark ink — white fails AA. Warning, danger, and success keep their
-            meaning on every surface, in every module.
+            Inventory’s Amber is the warning hue, so inside Inventory, stock alerts use danger/red
+            to stay distinct from the module chrome. On a solid Amber or Yellow fill (Inventory,
+            SEO), text and icons use dark ink — white fails AA. Warning, danger, and success keep
+            their meaning on every surface, in every module.
           </Callout>
         </div>
       </div>

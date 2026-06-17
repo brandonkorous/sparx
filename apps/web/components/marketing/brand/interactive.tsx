@@ -76,7 +76,10 @@ export function CopyValue({ value, label, tone = 'subtle' }: CopyValueProps) {
       }}
     >
       <span>{value}</span>
-      <span aria-hidden style={{ color: copied ? 'var(--color-success)' : 'var(--color-text-tertiary)' }}>
+      <span
+        aria-hidden
+        style={{ color: copied ? 'var(--color-success)' : 'var(--color-text-tertiary)' }}
+      >
         {copied ? '✓' : '⧉'}
       </span>
     </button>

@@ -121,7 +121,13 @@ function IdentityList() {
           key={row.label}
           style={{ display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: '24px' }}
         >
-          <dt style={{ fontFamily: 'var(--font-sans)', fontSize: '12.5px', color: 'var(--color-text-tertiary)' }}>
+          <dt
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '12.5px',
+              color: 'var(--color-text-tertiary)',
+            }}
+          >
             {row.label}
           </dt>
           <dd
@@ -143,7 +149,11 @@ function IdentityList() {
 
 function SectionIndex() {
   return (
-    <nav aria-label="On this page" className="mkt-cluster" style={{ gap: '8px', paddingTop: '4px' }}>
+    <nav
+      aria-label="On this page"
+      className="mkt-cluster"
+      style={{ gap: '8px', paddingTop: '4px' }}
+    >
       {BRAND_SECTIONS.map((s) => (
         <a
           key={s.id}

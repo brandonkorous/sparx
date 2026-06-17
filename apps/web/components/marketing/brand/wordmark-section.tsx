@@ -84,14 +84,27 @@ function ConstructionPanel() {
               borderTop: i === 0 ? 'none' : '1px solid var(--color-border-default)',
             }}
           >
-            <dt style={{ fontFamily: 'var(--font-sans)', fontSize: '14px', color: 'var(--color-text-secondary)' }}>
+            <dt
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: '14px',
+                color: 'var(--color-text-secondary)',
+              }}
+            >
               {row.label}
             </dt>
             <dd style={{ margin: 0 }}>
               {row.copy ? (
                 <CopyValue value={row.value} tone="strong" />
               ) : (
-                <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: '14px', color: 'var(--color-text-primary)' }}>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontWeight: 500,
+                    fontSize: '14px',
+                    color: 'var(--color-text-primary)',
+                  }}
+                >
                   {row.value}
                 </span>
               )}
@@ -119,7 +132,15 @@ function ClearSpacePanel() {
       >
         <OfficialWordmark style={{ width: 'min(240px, 60vw)' }} />
       </div>
-      <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13.5px', lineHeight: '21px', color: 'var(--color-text-secondary)', margin: 0 }}>
+      <p
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontSize: '13.5px',
+          lineHeight: '21px',
+          color: 'var(--color-text-secondary)',
+          margin: 0,
+        }}
+      >
         The dashed frame marks the minimum clear space — the height of the “x” on all sides. Below{' '}
         <strong style={{ color: 'var(--color-text-primary)' }}>16px</strong> tall the “x” loses its
         color contrast; switch to the monogram mark instead.
@@ -131,7 +152,15 @@ function ClearSpacePanel() {
 function OneColorVariants() {
   return (
     <Panel title="One-color variants">
-      <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13.5px', lineHeight: '21px', color: 'var(--color-text-secondary)', margin: 0 }}>
+      <p
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontSize: '13.5px',
+          lineHeight: '21px',
+          color: 'var(--color-text-secondary)',
+          margin: 0,
+        }}
+      >
         For print, photography, or any surface where the indigo can’t sit, use the one-color lockup.
         The “x” stays legible by dropping to 50% opacity instead of changing hue.
       </p>
@@ -174,9 +203,23 @@ function SizeLadder() {
     <Panel title="Size ladder">
       <div className="mkt-cluster" style={{ gap: '40px', rowGap: '28px', alignItems: 'flex-end' }}>
         {LADDER.map((h) => (
-          <div key={h} style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-start' }}>
+          <div
+            key={h}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              alignItems: 'flex-start',
+            }}
+          >
             <OfficialWordmark style={{ height: `${h}px`, width: 'auto' }} />
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
+            <span
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '11px',
+                color: 'var(--color-text-tertiary)',
+              }}
+            >
               {h}px tall
             </span>
           </div>
@@ -188,11 +231,27 @@ function SizeLadder() {
 
 function Rules() {
   return (
-    <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+    <ul
+      style={{
+        margin: 0,
+        padding: 0,
+        listStyle: 'none',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '12px',
+      }}
+    >
       {RULES.map((rule) => (
         <li
           key={rule}
-          style={{ display: 'flex', gap: '12px', fontFamily: 'var(--font-sans)', fontSize: '15px', lineHeight: '24px', color: 'var(--color-text-secondary)' }}
+          style={{
+            display: 'flex',
+            gap: '12px',
+            fontFamily: 'var(--font-sans)',
+            fontSize: '15px',
+            lineHeight: '24px',
+            color: 'var(--color-text-secondary)',
+          }}
         >
           <span aria-hidden style={{ color: 'var(--sparx-primary)', flexShrink: 0 }}>
             —
@@ -217,7 +276,15 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
         borderRadius: 'var(--radius-xl)',
       }}
     >
-      <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: '15px', color: 'var(--color-text-primary)', margin: 0 }}>
+      <h3
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontWeight: 500,
+          fontSize: '15px',
+          color: 'var(--color-text-primary)',
+          margin: 0,
+        }}
+      >
         {title}
       </h3>
       {children}

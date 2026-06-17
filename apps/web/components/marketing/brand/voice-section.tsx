@@ -5,8 +5,14 @@ const ROTATION = ['Commerce', 'Content', 'Customers', 'Email', 'Wholesale', 'AI'
 
 const TABLE: { instead: string; says: string }[] = [
   { instead: 'Start your free trial today', says: 'Live in 5 minutes.' },
-  { instead: 'Powerful features for growing businesses', says: 'Pay for what you use. Own everything.' },
-  { instead: 'Our AI-powered insights help you understand your customers', says: 'Ask your AI anything about your business.' },
+  {
+    instead: 'Powerful features for growing businesses',
+    says: 'Pay for what you use. Own everything.',
+  },
+  {
+    instead: 'Our AI-powered insights help you understand your customers',
+    says: 'Ask your AI anything about your business.',
+  },
   { instead: 'Flexible pricing for every stage', says: 'Add B2B for $99/mo. No upgrade required.' },
   { instead: 'Build a website with AI in seconds', says: 'AI builds it. sparx keeps it.' },
 ];
@@ -53,8 +59,8 @@ function TaglineBand() {
       </Display>
       <p style={lede}>
         The hero rotates the leading noun through the offerings — each landing on{' '}
-        <em style={{ fontStyle: 'normal', color: 'var(--color-text-primary)' }}>ignited.</em> with the
-        indigo spark. Static form for titles, OG, and social:{' '}
+        <em style={{ fontStyle: 'normal', color: 'var(--color-text-primary)' }}>ignited.</em> with
+        the indigo spark. Static form for titles, OG, and social:{' '}
         <strong style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>
           Everything, ignited.
         </strong>
@@ -141,15 +147,32 @@ function PermanenceBand() {
         <Spark color="#818CF8" />
       </Display>
       <p style={{ ...lede, color: '#A1A1AA', maxWidth: '680px' }}>
-        The durability story, for the era of disposable AI-generated sites. sparx is MCP-native — this
-        is AI <em style={{ fontStyle: 'normal', color: '#fff' }}>plus</em> permanence, never AI versus
-        AI. Easy to create is table stakes now; easy to keep — maintain, enhance, own — is ours.
+        The durability story, for the era of disposable AI-generated sites. sparx is MCP-native —
+        this is AI <em style={{ fontStyle: 'normal', color: '#fff' }}>plus</em> permanence, never AI
+        versus AI. Easy to create is table stakes now; easy to keep — maintain, enhance, own — is
+        ours.
       </p>
-      <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <ul
+        style={{
+          margin: 0,
+          padding: 0,
+          listStyle: 'none',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '10px',
+        }}
+      >
         {PERMANENCE.map((line) => (
           <li
             key={line}
-            style={{ display: 'flex', gap: '12px', fontFamily: 'var(--font-sans)', fontSize: '15px', lineHeight: '24px', color: '#D4D4D8' }}
+            style={{
+              display: 'flex',
+              gap: '12px',
+              fontFamily: 'var(--font-sans)',
+              fontSize: '15px',
+              lineHeight: '24px',
+              color: '#D4D4D8',
+            }}
           >
             <span aria-hidden style={{ color: '#818CF8' }}>
               —

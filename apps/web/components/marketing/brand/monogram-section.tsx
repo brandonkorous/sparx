@@ -34,16 +34,24 @@ export function MonogramSection() {
               <Row label="Source" value="sparx-mark.svg" />
             </dl>
             <p style={{ ...note, margin: 0 }}>
-              In product UI it renders via{' '}
-              <code style={code}>&lt;SparxMark&gt;</code> from <code style={code}>@sparx/ui</code>.
-              As a favicon — where CSS variables can’t resolve — each app ships a static{' '}
-              <code style={code}>app/icon.svg</code> that inlines the hex plus a{' '}
-              <code style={code}>prefers-color-scheme</code> rule.
+              In product UI it renders via <code style={code}>&lt;SparxMark&gt;</code> from{' '}
+              <code style={code}>@sparx/ui</code>. As a favicon — where CSS variables can’t resolve
+              — each app ships a static <code style={code}>app/icon.svg</code> that inlines the hex
+              plus a <code style={code}>prefers-color-scheme</code> rule.
             </p>
           </Panel>
 
           <Panel title="When to use it">
-            <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '11px' }}>
+            <ul
+              style={{
+                margin: 0,
+                padding: 0,
+                listStyle: 'none',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '11px',
+              }}
+            >
               {USE.map((u) => (
                 <li
                   key={u}
@@ -63,11 +71,34 @@ export function MonogramSection() {
                 </li>
               ))}
             </ul>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '28px', flexWrap: 'wrap', paddingTop: '4px' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'flex-end',
+                gap: '28px',
+                flexWrap: 'wrap',
+                paddingTop: '4px',
+              }}
+            >
               {SIZES.map((s) => (
-                <div key={s} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', color: 'var(--color-text-primary)' }}>
+                <div
+                  key={s}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '8px',
+                    color: 'var(--color-text-primary)',
+                  }}
+                >
                   <SparxMark size={s} />
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '11px',
+                      color: 'var(--color-text-tertiary)',
+                    }}
+                  >
                     {s}px
                   </span>
                 </div>
@@ -107,7 +138,13 @@ function Tile({
       >
         <SparxMark size={72} />
       </div>
-      <span style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: 'var(--color-text-tertiary)' }}>
+      <span
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontSize: '13px',
+          color: 'var(--color-text-tertiary)',
+        }}
+      >
         {label}
       </span>
     </div>
@@ -127,7 +164,15 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
         borderRadius: 'var(--radius-xl)',
       }}
     >
-      <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: '15px', color: 'var(--color-text-primary)', margin: 0 }}>
+      <h3
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontWeight: 500,
+          fontSize: '15px',
+          color: 'var(--color-text-primary)',
+          margin: 0,
+        }}
+      >
         {title}
       </h3>
       {children}
@@ -147,7 +192,13 @@ function Row({ label, value }: { label: string; value: string }) {
         borderTop: '1px solid var(--color-border-default)',
       }}
     >
-      <dt style={{ fontFamily: 'var(--font-sans)', fontSize: '14px', color: 'var(--color-text-secondary)' }}>
+      <dt
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontSize: '14px',
+          color: 'var(--color-text-secondary)',
+        }}
+      >
         {label}
       </dt>
       <dd style={{ margin: 0 }}>
