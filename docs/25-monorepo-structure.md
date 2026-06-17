@@ -1,4 +1,4 @@
-# Sparx Platform — Monorepo Structure
+# sparx Platform — Monorepo Structure
 
 **Version:** 1.2  
 **Author:** Brandon Korous  

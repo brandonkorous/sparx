@@ -1,13 +1,13 @@
 import * as React from 'react';
 
-// The Sparx monogram mark — the lowercase "sx" glyph drawn from the brand SVG
+// The sparx monogram mark — the lowercase "sx" glyph drawn from the brand SVG
 // (images/SVG/icon.svg). Single source of truth so the favicon lockup, the
 // dashboard chrome, and the <Wordmark icon> lockup all render the same shape.
 //
 // Theming (docs/sparx-brand-guide.md §2):
 //   - The "s" uses `currentColor`, so it adopts the surrounding text color and
 //     flips correctly in light/dark surfaces.
-//   - The "x" is ALWAYS Sparx Indigo via `--sparx-primary` — never recolored,
+//   - The "x" is ALWAYS sparx Indigo via `--sparx-primary` — never recolored,
 //     matching the wordmark's indigo "x".
 //
 // For the browser favicon (which can't read our CSS variables) use the static

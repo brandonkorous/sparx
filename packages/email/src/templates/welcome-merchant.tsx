@@ -14,7 +14,7 @@ export interface WelcomeMerchantEmailProps {
   outro?: string;
 }
 
-// This is a PLATFORM email (Sparx → the new account owner) sent at signup, before
+// This is a PLATFORM email (sparx → the new account owner) sent at signup, before
 // any site is named. It deliberately carries NO site or tenant name — a tenant has
 // many sites and names them later, so there is nothing meaningful to greet with
 // here (docs/49). The greeting uses the owner's first name; the site is referred to
@@ -26,13 +26,13 @@ export function WelcomeMerchantEmail({
   outro,
 }: WelcomeMerchantEmailProps) {
   return (
-    <EmailLayout preview="Welcome to Sparx">
+    <EmailLayout preview="Welcome to sparx">
       <Section>
-        <EmailHeading>Welcome to Sparx</EmailHeading>
+        <EmailHeading>Welcome to sparx</EmailHeading>
         <EmailParagraph>Hi {name ?? 'there'},</EmailParagraph>
         {intro ? <EmailParagraph>{intro}</EmailParagraph> : null}
         <EmailParagraph>
-          Your site is live on Sparx. A short checklist is waiting in your dashboard — confirm your
+          Your site is live on sparx. A short checklist is waiting in your dashboard — confirm your
           details, add your first page, and pick a theme when the Sitebuilder module ships. You can
           finish it now or come back anytime.
         </EmailParagraph>
@@ -43,4 +43,4 @@ export function WelcomeMerchantEmail({
   );
 }
 
-export const welcomeMerchantSubject = 'Welcome to Sparx';
+export const welcomeMerchantSubject = 'Welcome to sparx';

@@ -1,6 +1,6 @@
 // Per-tenant rate limits for the MCP transport (abuse prevention).
 //
-// Sparx is MODULE-based, not plan-tiered: a tenant pays per module, not for a
+// sparx is MODULE-based, not plan-tiered: a tenant pays per module, not for a
 // Starter/Pro/Enterprise plan. So MCP ELIGIBILITY is gated by the `ai` module
 // (see auth.ts), NOT by a plan. This limiter is purely a safety cap against
 // runaway loops / scrapers — one flat per-tenant quota for every MCP-eligible

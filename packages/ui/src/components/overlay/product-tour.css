@@ -1,4 +1,4 @@
-/* Sparx theme override for Driver.js. Imported once by consumers (e.g. dashboard root layout). */
+/* sparx theme override for Driver.js. Imported once by consumers (e.g. dashboard root layout). */
 
 .sparx-tour.driver-popover {
   background: var(--color-surface-raised);

@@ -1,6 +1,6 @@
 // Shell manifest contract. Pure types — no runtime, no React.
 //
-// Every Sparx module exports a single static ModuleManifest. The dashboard
+// Every sparx module exports a single static ModuleManifest. The dashboard
 // shell composes manifests to render the sidebar, breadcrumbs, ⌘K, and the
 // ... menu. See docs/24-dashboard-shell.md §3 for the full spec.
 

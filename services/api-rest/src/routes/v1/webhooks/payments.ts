@@ -41,7 +41,7 @@ const paymentWebhookRoutes: FastifyPluginAsync = async (app) => {
     }
   );
 
-  // ── Sparx Pay — the platform account's single webhook (destination charges). The
+  // ── sparx Pay — the platform account's single webhook (destination charges). The
   //    tenant rides in payment_intent.metadata.tenantId / the connected account id.
   app.post('/v1/public/webhooks/sparx-pay', async (request, reply) => {
     const sig = signature(request.headers);

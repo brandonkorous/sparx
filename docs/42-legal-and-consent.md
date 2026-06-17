@@ -6,7 +6,7 @@ Last Updated: 2026-06-02
 
 > The machinery that makes a tenant site legally shippable: the legal/policy pages
 > a tenant shows its own shoppers, a configurable cookie-consent framework, and
-> Sparx's own platform legal docs with a tenant acceptance gate. Builds out the
+> sparx's own platform legal docs with a tenant acceptance gate. Builds out the
 > "tenant tools" promised in [16-auth-security.md](16-auth-security.md) §10 (consent
 > tracking, cookie banner) and the policy-page use case in [12-cms-prd.md](12-cms-prd.md)
 > §3, and finally lands the `site_doc_placements` bridge so marketplace
@@ -22,12 +22,12 @@ Tenant sites ship today with no legal scaffolding and no consent mechanism:
   starter templates, no completeness view, no footer wiring.
 - There is no cookie consent anything — no banner, no preference center, no consent
   log, no per-tenant config.
-- Sparx's own platform legal docs (ToS / Privacy / DPA / AUP) are `ComingSoon` stubs
+- sparx's own platform legal docs (ToS / Privacy / DPA / AUP) are `ComingSoon` stubs
   on the marketing site, and tenants never agree to them (the sign-up form has no
   acceptance checkbox).
 
 The compliance posture is already decided ([16-auth-security.md](16-auth-security.md)
-§10): **Sparx is the data processor, tenants are the data controllers**; a DPA is
+§10): **sparx is the data processor, tenants are the data controllers**; a DPA is
 available to all and required for EU tenants; breach notification within 72h. This doc
 is the build plan that makes that posture real.
 
@@ -41,7 +41,7 @@ storage.
 | --------------------------- | ------------ | ----------------------- | ----------------------------------------------------------- | ------------------------- |
 | **L1 — Tenant legal pages** | The tenant's | The tenant's shoppers   | CMS `content_entries` on the tenant                         | Tenant (templates seeded) |
 | **L2 — Cookie consent**     | The tenant's | The tenant's shoppers   | `consent_settings` / `consent_records`                      | Tenant configures         |
-| **L3 — Platform legal**     | Sparx's      | Tenants (the merchants) | Versioned pages on `apps/web` + `platform_legal_acceptance` | Sparx (WizeWorks)         |
+| **L3 — Platform legal**     | sparx's      | Tenants (the merchants) | Versioned pages on `apps/web` + `platform_legal_acceptance` | sparx (WizeWorks)         |
 
 L1 and L2 share the site and the seeded **cookie-policy** page (the consent
 preference center links to it). L3 lives entirely on the marketing/dashboard side and
@@ -256,7 +256,7 @@ a future checkout terms gate uses `placement='terms_gate'`.
 
 ## 6. L3 — Platform legal & acceptance
 
-### 6.1 Where Sparx's own docs live
+### 6.1 Where sparx's own docs live
 
 Real, statically-rendered, indexable pages on the marketing site (`apps/web`) replace
 the `ComingSoon` stubs at `app/legal/{terms,privacy,dpa,aup}` and `app/security`. A
@@ -280,7 +280,7 @@ the plugin lands.
 ### 6.3 Onboarding acceptance gate
 
 A single required combined checkbox on the existing sign-up form — _"I agree to the
-Sparx Terms of Service, Privacy Policy, and Acceptable Use Policy"_ (links open in new
+sparx Terms of Service, Privacy Policy, and Acceptable Use Policy"_ (links open in new
 tabs) — adds **zero** wizard steps and honors the [15-merchant-onboarding-prd.md](15-merchant-onboarding-prd.md)
 under-5-minutes goal. The `platform_legal_acceptance` rows (terms / privacy / aup) are
 written **inside the existing `signUpMerchant` transaction**, stamping `docVersion` from

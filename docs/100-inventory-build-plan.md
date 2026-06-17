@@ -1,4 +1,4 @@
-# Sparx Platform — Inventory Product Build Plan
+# sparx Platform — Inventory Product Build Plan
 
 **Version:** 1.3
 **Author:** Brandon Korous
@@ -8,7 +8,7 @@
 
 ## 0. What this is
 
-The build plan for **Inventory as a first-class, standalone Sparx product** — the scope decided in
+The build plan for **Inventory as a first-class, standalone sparx product** — the scope decided in
 [docs/99 §4](99-inventory-implementation-audit.md). docs/99 is the audit + target architecture; this
 doc is the _how_: package topology, data model, the six phases, and the exact integration points.
 

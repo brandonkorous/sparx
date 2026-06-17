@@ -2,7 +2,7 @@
   "name": "@sparx/site-themes",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx Site Builder — tenant site theme presets (Apex/Industrial/Drift/Market/Fleet/Drop), light+dark token defaults, and the token compiler (docs/29-sitebuilder-architecture.md §4).",
+  "description": "sparx Site Builder — tenant site theme presets (Apex/Industrial/Drift/Market/Fleet/Drop), light+dark token defaults, and the token compiler (docs/29-sitebuilder-architecture.md §4).",
   "type": "module",
   "exports": {
     ".": {

@@ -23,7 +23,7 @@
 [docs/60](60-marketplace.md) defines the **catalog** — the categorized browse/detail
 surface for Blueprints, Themes, Components, and Integrations, backed by four tables
 behind a uniform adapter. This doc defines the layer that makes that catalog a real
-**creator marketplace**: how anyone (Sparx first, third parties next) **submits** an
+**creator marketplace**: how anyone (sparx first, third parties next) **submits** an
 item, how it is **reviewed**, where its artifact is **stored**, how the runtime
 **applies/installs it with no deploy**, and how creators eventually **get paid**.
 
@@ -39,11 +39,11 @@ previously deferred).
 
 ## 2. The vision in one paragraph
 
-Anyone can publish a **blueprint, theme, component, or integration** to the Sparx
+Anyone can publish a **blueprint, theme, component, or integration** to the sparx
 marketplace and optionally **charge** for it (within platform price caps). A
 submission is a small **bundle** (a zip) that is **scanned and approved or denied**.
 Approved items are **applied/installed at runtime from stored data — never a code
-deploy**. Sparx publishes its own first-party catalog **through the same pipeline**;
+deploy**. sparx publishes its own first-party catalog **through the same pipeline**;
 we are simply the first, auto-approved publisher.
 
 ## 3. The load-bearing principle: data in, data out
@@ -245,7 +245,7 @@ is a **sandboxed code tier**:
 ## 10. Publisher model, review, versioning
 
 - **Publishers** (`marketplace_publishers`, docs/60 D9): `sparx | tenant | partner`.
-  Sparx is verified + auto-approved. Tenant/partner publishers onboard, agree to terms,
+  sparx is verified + auto-approved. Tenant/partner publishers onboard, agree to terms,
   and (for paid items) connect Stripe.
 - **Review:** automated scan (§5) for everyone; **manual** approve/deny for
   third-party submissions (a review queue with the offending paths / cap explanation
@@ -282,7 +282,7 @@ private bundles/artifacts, public CDN media only • RLS-scoped catalog writes
 
 | Phase                          | Ships                                                                                                                                                                                                                                                                        | Notes                                                                                                           |
 | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| **1 — Data runtime + dogfood** | The no-deploy apply/install/add runtime (§7) reading **storage-backed artifacts** + Sparx's own 10/10/10 catalog authored to the §4 contract, **ingested to storage** (compile → `writeObject` → thin row) and pushed through validation. The `DataThemePreset` engine seam. | Delivers the original ask; proves the contract **and the storage path** end-to-end. No self-service intake yet. |
+| **1 — Data runtime + dogfood** | The no-deploy apply/install/add runtime (§7) reading **storage-backed artifacts** + sparx's own 10/10/10 catalog authored to the §4 contract, **ingested to storage** (compile → `writeObject` → thin row) and pushed through validation. The `DataThemePreset` engine seam. | Delivers the original ask; proves the contract **and the storage path** end-to-end. No self-service intake yet. |
 | **2 — Submission + review**    | The **self-service** front door: zip upload → §5 pipeline → review queue → publish. Publisher onboarding (tenant/partner). Declarative **integration connector** tier (Connect). (Storage + ingest already exist from Phase 1; Phase 2 adds the upload UI + review queue.)   | Opens third-party intake for free items.                                                                        |
 | **3 — Monetization**           | Price caps enforced + Stripe Connect payouts + paid acquire/billing.                                                                                                                                                                                                         | The financial subsystem.                                                                                        |
 | **4 — Code tier**              | The integration sandbox (§9) for code providers.                                                                                                                                                                                                                             | The hardest/riskiest; demand-driven.                                                                            |

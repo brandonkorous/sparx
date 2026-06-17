@@ -305,7 +305,7 @@ const SlugQuery = z.object({ slug: z.string().max(120) });
 const SlugBody = z.object({ slug: SlugSchema });
 
 // The platform's OWN tenant (docs/80 §2) may claim a reserved BRAND slug — the
-// reservation stops OUTSIDE tenants from squatting Sparx/WizeWorks subdomains, not
+// reservation stops OUTSIDE tenants from squatting sparx/WizeWorks subdomains, not
 // the platform itself. Designated by SPARX_PLATFORM_TENANT_ID (ops-set, never
 // user-settable). Keyed on the IMMUTABLE tenant id — stable across the very rename
 // it authorizes — so the env value never changes as korous-store → wizeworks.

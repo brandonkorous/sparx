@@ -49,7 +49,7 @@ export function UpdateNotifier(): null {
     // `id` dedupes: the same sticky toast is reused no matter how many polls
     // observe the new version. Never auto-reload — the builder and forms hold
     // unsaved state, so the refresh stays user-initiated.
-    toast('A new version of Sparx is available', {
+    toast('A new version of sparx is available', {
       id: TOAST_ID,
       description: 'Refresh to load the latest updates.',
       duration: Number.POSITIVE_INFINITY,

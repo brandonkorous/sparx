@@ -69,7 +69,7 @@ export default function GlobalError({
           </h1>
           <p style={{ fontSize: '15px', lineHeight: 1.6, color: '#6b6b86', margin: '0 0 24px' }}>
             {isChunkError
-              ? 'A new version of Sparx was just released. Reloading to catch up — this only takes a moment.'
+              ? 'A new version of sparx was just released. Reloading to catch up — this only takes a moment.'
               : 'An unexpected error stopped the dashboard from loading. Please try again in a moment.'}
           </p>
           {isChunkError ? null : (

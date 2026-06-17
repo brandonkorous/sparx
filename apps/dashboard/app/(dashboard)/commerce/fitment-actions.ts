@@ -9,7 +9,7 @@ import { restAction } from './_rest-action';
 // surfaces the tree using domain.labels (e.g. Make/Model/Engine for
 // vehicle, Brand/Model for device) and domain.rangeUnit for narrowing.
 //
-// Sparx seeds a global "vehicle" domain so the Gillett case works
+// sparx seeds a global "vehicle" domain so the Gillett case works
 // out-of-the-box; tenants register their own domains for other catalog
 // shapes (pet store registers Species → Breed, phone case shop
 // registers Brand → Model, etc.).

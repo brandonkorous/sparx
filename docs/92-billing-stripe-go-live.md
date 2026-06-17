@@ -1,4 +1,4 @@
-# Sparx Platform — Stripe Integration Map & Go-Live Tracker
+# sparx Platform — Stripe Integration Map & Go-Live Tracker
 
 **Version:** 1.3
 **Author:** Brandon Korous
@@ -8,14 +8,14 @@
 
 > **⚠️ Superseded for COMMERCE payments (Part B) and the transaction fee.**
 > The commerce payment architecture in this doc — `@sparx/provider-stripe`, the
-> per-installation webhook B-G1, the Sparx Pay Connect onboarding B-G2.1 — has been
+> per-installation webhook B-G1, the sparx Pay Connect onboarding B-G2.1 — has been
 > **rebuilt** as the vendor-agnostic `@sparx/payments` gateway. See
 > [docs/94-ADR-payment-gateway.md](94-ADR-payment-gateway.md), the authority for
 > everything tenant→shopper.
 >
 > The **Phase 7 tiered transaction fee** — `recordTransactionFee`, `meterOrderFee`, and
 > the `transaction_fee` meter — has been **removed**. There are no tiers, only modules,
-> so the only platform payment fee is **Sparx Pay's flat 0.5%**, collected at charge
+> so the only platform payment fee is **sparx Pay's flat 0.5%**, collected at charge
 > time via Stripe `application_fee_amount` and recorded on `payment_intents.platform_fee`
 > (docs/94 §8).
 >
@@ -46,14 +46,14 @@ no account, and no code path — conflating them is the classic footgun.
 | Dimension      | **A · Platform billing**                            | **B · Commerce payments** (now docs/94)                                                  |
 | -------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------- |
 | Who pays whom  | tenant → **WizeWorks** (us)                         | shopper → **tenant**                                                                     |
-| Stripe account | one platform account (`STRIPE_SECRET_KEY`)          | Sparx Pay = platform account (Connect destination charges); Stripe Direct = tenant's own |
+| Stripe account | one platform account (`STRIPE_SECRET_KEY`)          | sparx Pay = platform account (Connect destination charges); Stripe Direct = tenant's own |
 | Code           | `@sparx/billing`                                    | `@sparx/payments` (gateway abstraction — docs/94)                                        |
-| What           | per-module subscriptions                            | Sparx Pay / Stripe Direct at checkout + invoice pay-links + B2B card                     |
+| What           | per-module subscriptions                            | sparx Pay / Stripe Direct at checkout + invoice pay-links + B2B card                     |
 | API version    | `2024-11-20.acacia`                                 | `2024-11-20.acacia`                                                                      |
 | Webhook        | `…/v1/public/webhooks/stripe/billing`               | `…/v1/public/webhooks/{sparx-pay,stripe-direct}`                                         |
 | Status         | engine built; **not yet provisioned/live** (Part A) | re-architected on `@sparx/payments` — see docs/94                                        |
 
-Platform fee: the only payment fee is **Sparx Pay's flat 0.5%**, taken at charge time
+Platform fee: the only payment fee is **sparx Pay's flat 0.5%**, taken at charge time
 via `application_fee_amount` (docs/94 §8). There is no metered transaction fee.
 
 ---
@@ -65,7 +65,7 @@ via `application_fee_amount` (docs/94 §8). There is no metered transaction fee.
 | Area                                           | Status | Note                                                                                                                             |
 | ---------------------------------------------- | :----: | -------------------------------------------------------------------------------------------------------------------------------- |
 | Billing engine (`@sparx/billing`)              |   ✅   | Customer/subscription sync, webhook reconcile, portal, state read — built                                                        |
-| ~~Phase 7 transaction fee~~                    |   ❌   | **REMOVED** — no tiers, only modules. Sparx Pay's flat 0.5% (charge-time `application_fee`) is the only payment fee (docs/94 §8) |
+| ~~Phase 7 transaction fee~~                    |   ❌   | **REMOVED** — no tiers, only modules. sparx Pay's flat 0.5% (charge-time `application_fee`) is the only payment fee (docs/94 §8) |
 | Module Products + Prices in Stripe             |   ⬜   | 10 products, ~19 prices — none exist yet (§4)                                                                                    |
 | Billing **webhook endpoint** + secret          |   ⬜   | None — subscription/invoice events won't reach us (§6)                                                                           |
 | Billing **portal configuration**               |   ⬜   | None — `POST /v1/billing/portal` will error until one exists (§6)                                                                |
@@ -81,7 +81,7 @@ via `application_fee_amount` (docs/94 §8). There is no metered transaction fee.
 ## 2. Phase 7 evaluation — transaction-fee metering · ❌ REMOVED
 
 > This section is **historical**. The tiered transaction fee was removed (no tiers,
-> only modules). The only payment fee is now Sparx Pay's flat 0.5% via
+> only modules). The only payment fee is now sparx Pay's flat 0.5% via
 > `application_fee_amount` (docs/94 §8). `recordTransactionFee`, `meterOrderFee`, the
 > `transaction_fee` meter, and the fee subscription item no longer exist. The original
 > evaluation is preserved below for context.
@@ -128,7 +128,7 @@ order placed
      [1] Billing Meter  event_name='transaction_fee', aggregation=sum,
                         customer_mapping.by_id on 'stripe_customer_id',
                         value_settings.event_payload_key='value'
-     [2] Metered Price  product "Sparx Transaction Fees", currency=usd,
+     [2] Metered Price  product "sparx Transaction Fees", currency=usd,
                         unit_amount=1 ($0.01), recurring{ interval:month,
                         usage_type:metered, meter:<meter id> }
      [3] Subscription item for [2] on the tenant's subscription (no quantity)
@@ -308,7 +308,7 @@ derives a Stripe client per call from the install config + Secret Manager
 - **Stripe** (`stripe`) — explicit bring-your-own-keys: `publishableKey` +
   `secretKeyRef` (Secret Manager) + optional `webhookSecretRef`, `enableStripeTax`,
   `apiVersion`, `statementDescriptor`. Per-install, RLS-scoped.
-- **Sparx Pay** (`sparx-pay`) — white-label of the same impl ("powered by Stripe"),
+- **sparx Pay** (`sparx-pay`) — white-label of the same impl ("powered by Stripe"),
   surfacing only business legal name + ACH + EIN.
 
 Capability kinds: `payment`, `tax`, `subscription_billing`.
@@ -323,7 +323,7 @@ Capability kinds: `payment`, `tax`, `subscription_billing`.
 | Stripe Tax                                                          | `tax.ts` (gated on `enableStripeTax`)                       | ✅ impl present (exported in bundle)                                                                                              |
 | Shopper subscriptions                                               | `subscription.ts` + `/v1/commerce/subscriptions/*`          | ✅ impl present (exported in bundle)                                                                                              |
 | Install / config / test / enable / uninstall                        | `/v1/commerce/providers/*`, Settings → Integrations         | ✅                                                                                                                                |
-| Sparx Pay managed Connect onboarding                                | `sparx-branded.ts`                                          | ⬜ **marketed but not implemented** (§B3)                                                                                         |
+| sparx Pay managed Connect onboarding                                | `sparx-branded.ts`                                          | ⬜ **marketed but not implemented** (§B3)                                                                                         |
 
 **Net:** a tenant who pastes their own Stripe keys can take live card payments at
 checkout today (the site confirms client-side and finalizes on `/complete`,
@@ -346,7 +346,7 @@ runs the **shared** reconciliation extracted into
 providers persist-only. No separate worker — reconciliation is inline + idempotent,
 matching the billing webhook. Async signals (ACH, disputes, dashboard refunds) now land.
 
-**G2 — Sparx Pay managed Connect.** Built as two slices (Stripe-hosted-first — no
+**G2 — sparx Pay managed Connect.** Built as two slices (Stripe-hosted-first — no
 custom onboarding/account UI):
 
 - **Slice 1 — onboarding ✅ BUILT.** [`lib/sparx-pay-connect.ts`](../services/api-rest/src/lib/sparx-pay-connect.ts)
@@ -358,7 +358,7 @@ custom onboarding/account UI):
     **Express dashboard** login links. Routes: `POST …/sparx-pay/onboard`,
     `GET …/sparx-pay/status`, `POST …/sparx-pay/dashboard-link`. `reconcileAccountUpdated`
     is ready for a Connect `account.updated` push if/when we wire one.
-- **Slice 2 — charge routing + application fee ⬜ (money path).** Route Sparx Pay
+- **Slice 2 — charge routing + application fee ⬜ (money path).** Route sparx Pay
   checkout charges through the connected account (`stripeAccount` direct **or**
   `on_behalf_of` + `transfer_data.destination`) with `application_fee_amount` = the
   platform fee. Touches `@sparx/provider-stripe` (the client must branch: platform key
@@ -376,14 +376,14 @@ collected two ways, and **which is possible depends on how the tenant takes paym
   `application_fee`. The only way to bill the fee is to invoice it on the tenant's
   **platform** subscription — which is exactly **Phase 7's metered transaction-fee
   item** (Part A §2–3). _This is why Phase 7 exists._
-- **Sparx Pay (if/when Connect ships, G2)** — charges run through our platform
+- **sparx Pay (if/when Connect ships, G2)** — charges run through our platform
   Connect, so the fee could be taken inline as `application_fee_amount` per charge,
   no metering. Phase 7's metered path then becomes the fallback for non-Connect
   tenants; the two coexist and are never both applied to one order.
 
 **Decision captured:** Phase 7 (metered fee on the platform subscription) is the
 correct and currently-only fee-collection mechanism. Don't swap it for Connect fees
-until Sparx Pay's managed-Connect path exists; then gate per-order on which payment
+until sparx Pay's managed-Connect path exists; then gate per-order on which payment
 rail the order used.
 
 ## B5. Commerce-side work remaining
@@ -391,8 +391,8 @@ rail the order used.
 | #      | Change                                                                                                                                         | Status |
 | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------- | :----: |
 | B-G1   | ✅ Provider webhook ingress route + shared reconciliation + dedupe/persist (no migration; unscoped-read pattern). Inline reconcile, no worker. |   ✅   |
-| B-G2.1 | ✅ Sparx Pay Connect **onboarding** — Express account + hosted Account Link + status sync + Express dashboard link                             |   ✅   |
-| B-G2.2 | Sparx Pay **charge routing** via Connect + `application_fee` (money path; provider-client branch + §B4 fee) — needs charge-model decision      |   ⬜   |
+| B-G2.1 | ✅ sparx Pay Connect **onboarding** — Express account + hosted Account Link + status sync + Express dashboard link                             |   ✅   |
+| B-G2.2 | sparx Pay **charge routing** via Connect + `application_fee` (money path; provider-client branch + §B4 fee) — needs charge-model decision      |   ⬜   |
 | B-V    | Verify `tax.ts` / `subscription.ts` behaviour end-to-end against a sandbox install                                                             |   ⬜   |
 
 > Part B is **out of scope for the billing go-live** (Part A). It's captured here so

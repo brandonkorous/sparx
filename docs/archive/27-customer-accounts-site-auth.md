@@ -1,4 +1,4 @@
-# Sparx Platform — Customer Accounts & Site Authentication
+# sparx Platform — Customer Accounts & Site Authentication
 
 **Version:** 1.1.1
 **Author:** Brandon Korous
@@ -13,8 +13,8 @@ from a tenant's site. It is deliberately separate from **Layer 1** (tenant staff
 auth, [docs/16-auth-security.md](../16-auth-security.md)), which uses Better Auth and lives in
 `packages/auth`.
 
-A shopper who registers at `acme.sparx.zone` is a customer of **Acme**, not of Sparx. They
-have no relationship to the Sparx dashboard, no `users` row, and no presence on any other
+A shopper who registers at `acme.sparx.zone` is a customer of **Acme**, not of sparx. They
+have no relationship to the sparx dashboard, no `users` row, and no presence on any other
 tenant's store. The same person can hold a separate account at `bravo.sparx.zone` with the
 **same email address** and a **different password** — the two are unrelated identities.
 

@@ -1,4 +1,4 @@
-# Sparx Platform — CMS PRD
+# sparx Platform — CMS PRD
 
 **Version:** 2.0.1
 **Author:** Brandon Korous
@@ -8,11 +8,11 @@
 
 ## 1. Overview
 
-The Sparx CMS is a **standalone module** — it can be activated with or without Commerce. A content publisher, blogger, documentation site, or portfolio can run entirely on Sparx CMS ($49/mo) without ever activating the Commerce module.
+The sparx CMS is a **standalone module** — it can be activated with or without Commerce. A content publisher, blogger, documentation site, or portfolio can run entirely on sparx CMS ($49/mo) without ever activating the Commerce module.
 
 When combined with Commerce, the CMS powers product descriptions, landing pages, and the blog. When used standalone, it is a full headless CMS with a visual editor, media library, SEO tools, and API access.
 
-This deliberate separation is a core Sparx differentiator — tenants pay for what they use.
+This deliberate separation is a core sparx differentiator — tenants pay for what they use.
 
 ---
 
@@ -27,7 +27,7 @@ This deliberate separation is a core Sparx differentiator — tenants pay for wh
 
 **Headless CMS (API-only, no Site):**
 
-- Development teams querying Sparx CMS API to render content in their own frontend
+- Development teams querying sparx CMS API to render content in their own frontend
 - CMS module only ($49/mo) — no Site required
 - Full REST + GraphQL access to all content
 
@@ -188,7 +188,7 @@ GET /v1/navigation/{location}   (header, footer)
 
 Authentication: API key with `read:content` scope.
 
-Content types and custom fields are also queryable. This enables teams to use Sparx as a headless CMS feeding any frontend — Next.js, Astro, SvelteKit, native mobile, whatever.
+Content types and custom fields are also queryable. This enables teams to use sparx as a headless CMS feeding any frontend — Next.js, Astro, SvelteKit, native mobile, whatever.
 
 The `@sparx/site-sdk` NPM package includes typed helpers for all content types.
 

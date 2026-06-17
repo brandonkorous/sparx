@@ -155,7 +155,7 @@ type PurchaseInput = z.infer<typeof PurchaseInput>;
 const purchaseDomainTool = {
   name: 'purchase_domain',
   description:
-    'Register a new domain through the Sparx GoDaddy reseller account and connect it to this tenant. ' +
+    'Register a new domain through the sparx GoDaddy reseller account and connect it to this tenant. ' +
     'Configures DNS automatically (CNAME, SPF, DKIM, DMARC). ' +
     'Requires the registrant contact information for ICANN compliance. ' +
     'Payment is billed to the tenant account (Stripe charge stubbed during beta — no charge now). ' +

@@ -5,11 +5,11 @@ import { authPrisma } from './prisma';
 import { publishAuthEmail } from './email-events';
 import { finalizeOAuthSignup, provisionTenantForOAuth } from './oauth-provisioning';
 
-// Sparx Better Auth server instance. One per process — same caching strategy
+// sparx Better Auth server instance. One per process — same caching strategy
 // as @sparx/db's prisma client so dev HMR does not leak adapters.
 //
 // Schema dependencies (packages/db/prisma/schema.prisma):
-//   - User has Sparx extensions `tenantId` + `role` exposed via additionalFields
+//   - User has sparx extensions `tenantId` + `role` exposed via additionalFields
 //   - Session / Account / Verification shapes match Better Auth's expectations
 //
 // The organization plugin (docs/16 §2) is intentionally NOT enabled yet — it
@@ -29,7 +29,7 @@ function createAuth() {
   const googleSecret = process.env.GOOGLE_CLIENT_SECRET;
 
   return betterAuth({
-    appName: 'Sparx',
+    appName: 'sparx',
     baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:3001',
     secret: process.env.BETTER_AUTH_SECRET,
     database: prismaAdapter(authPrisma, { provider: 'postgresql' }),

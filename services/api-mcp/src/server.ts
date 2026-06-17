@@ -21,7 +21,7 @@ import { ALL_MCP_TOOLS, type AnyMcpTool } from './tool-registry.js';
 const SERVER_INFO = { name: 'sparx-mcp', version: '1.0.0' } as const;
 
 // Scopes whose tools also require a specific MODULE to be active (beyond the
-// global `ai` gate). Sparx is module-based — a disabled module stores no rows
+// global `ai` gate). sparx is module-based — a disabled module stores no rows
 // (docs/87 §14) — so a tool that writes a module's data refuses when that module
 // is off, mirroring the REST routes' `requireXModule`. Only modules that opt in
 // appear here; everything else is reachable on scope alone (the prior behavior).

@@ -14,7 +14,7 @@ import { TopProgressBar } from '../components/top-progress-bar';
 import { UpdateNotifier } from '../components/update-notifier';
 import './globals.css';
 
-// Inter powers the Sparx wordmark (bold, to match the monogram mark). Exposed
+// Inter powers the sparx wordmark (bold, to match the monogram mark). Exposed
 // as --font-wordmark, which @sparx/ui's <Wordmark> consumes.
 const interWordmark = Inter({
   subsets: ['latin'],
@@ -24,8 +24,8 @@ const interWordmark = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Sparx Dashboard',
-  description: 'Admin for the Sparx content and commerce platform.',
+  title: 'sparx Dashboard',
+  description: 'Admin for the sparx content and commerce platform.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

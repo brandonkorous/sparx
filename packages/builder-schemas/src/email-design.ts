@@ -12,7 +12,7 @@
 // this package) is what stops the canvas and the actual send from drifting.
 //
 // Values mirror the email design system (docs/52): a fixed monochrome chrome with
-// a single Sparx Indigo accent. Hex strings (mail clients strip <style> blocks and
+// a single sparx Indigo accent. Hex strings (mail clients strip <style> blocks and
 // ignore CSS variables, so every value ends up inlined); typography line-heights
 // are px (a unitless ratio would be reinterpreted against client-injected sizes).
 
@@ -21,7 +21,7 @@ export const EMAIL_DESIGN = {
    *  falls back to it when no brand font is compiled. */
   fontFamily: 'Helvetica, Arial, sans-serif',
   colors: {
-    brand: '#6366F1', // Sparx Indigo — accent only, never large fills.
+    brand: '#6366F1', // sparx Indigo — accent only, never large fills.
     textPrimary: '#0F172A',
     textMuted: '#64748B',
     textInverse: '#FFFFFF',

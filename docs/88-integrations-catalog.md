@@ -76,7 +76,7 @@ ninth without adding it here** — that's the same discipline as the module mani
 | 3   | **Sync source**               | Mirror of an external system of record (ERP/WMS/ledger)                                      | sync bridge + reconciliation                                       | **Connect source**       | inbound-primary, batched  | on-prem bridge / credentials                 |
 | 4   | **Connector (action target)** | Outbound effector an automation action or webhook invokes                                    | automation action executor (gated)                                 | **Authorize**            | outbound, event-time      | external side effect → gate layer            |
 | 5   | **Data source**               | Read-only binding into the builder (`ext.*` REST/GraphQL/SQL)                                | hardened SSRF proxy + render path                                  | **Bind**                 | inbound, render-time      | SSRF; untrusted upstream                     |
-| 6   | **Inbound trigger**           | External system calls _into_ Sparx (webhook / channel push) → fires an automation            | event bus + `automation.trigger` fan-in                            | **Generate URL**         | inbound                   | shared-secret auth on the endpoint           |
+| 6   | **Inbound trigger**           | External system calls _into_ sparx (webhook / channel push) → fires an automation            | event bus + `automation.trigger` fan-in                            | **Generate URL**         | inbound                   | shared-secret auth on the endpoint           |
 | 7   | **Identity provider**         | SSO/OIDC for platform or site auth                                                           | Better Auth (platform) / `@sparx/customer-auth` (site)             | **Enable SSO**           | inbound, login-time       | token/secret handling                        |
 | 8   | **Registrar**                 | Domain purchase, DNS, transfer                                                               | domain service                                                     | **Buy / Connect domain** | outbound, lifecycle       | money movement; DNS authority                |
 
@@ -160,7 +160,7 @@ framework:
 - **Metadata** ([metadata.ts](../packages/integration-framework/src/metadata.ts)) carries the install
   card: `slug`, `displayName`, `vendor`, `kinds[]`, supported currencies/countries, a stringified
   **JSON Schema** for the config form, a `webhookPathTemplate`, and `requiredScopes[]`. `whitelabelOf`
-  flags a Sparx-branded wrapper ("powered by Stripe").
+  flags a sparx-branded wrapper ("powered by Stripe").
 - **Registration** happens in [providers-bootstrap.ts](../services/api-rest/src/lib/providers-bootstrap.ts)
   (idempotent; "already registered" is swallowed for HMR/test). **A new provider is not live until it
   is added here** — the marketplace seed row alone does nothing.
@@ -201,7 +201,7 @@ gateManifest }`. The params schema renders in the automation builder exactly lik
   install, just consumed by the action executor instead of checkout.
 - **Trust.** First-party connectors only at launch. Partner-published connectors are the **sharp
   edge** ([docs/60](60-marketplace.md) §11, [docs/85](85-creator-marketplace.md)) — gated behind
-  Sparx review + the deferred code sandbox, well beyond the first publishing phase.
+  sparx review + the deferred code sandbox, well beyond the first publishing phase.
 
 The **inbound** half (shape #6) is already speced: a tenant's unique webhook URL POSTs in and fires
 the net-new `webhook.received` trigger ([docs/81](81-automation-module.md) §10 / [docs/82](82-event-bus-unification.md)

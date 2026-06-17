@@ -1,4 +1,4 @@
-# Sparx Platform — Typesense Search Specification
+# sparx Platform — Typesense Search Specification
 
 **Version:** 1.1.1
 **Author:** Brandon Korous

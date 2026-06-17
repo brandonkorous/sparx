@@ -10,7 +10,7 @@
 
 The WizeWorks MCP (Model Context Protocol) Server is a first-class platform service that exposes tenant business data to AI assistants — Claude, ChatGPT, and Microsoft Copilot. It enables natural language interaction with live business data without any custom integration work by the tenant.
 
-The MCP server runs as a dedicated Kubernetes deployment. Access is gated by the **`ai` module** (the AI-Integrations capability), consistent with Sparx's module-based model — a tenant activates the `ai` module to use MCP, exactly as it activates any other module. There are **no plan tiers** (no Starter/Pro/Enterprise); "a tenant pays only for what it uses." A request from a tenant without the `ai` module active is rejected at the transport. Per-tool scopes then decide which module's tools each call can run.
+The MCP server runs as a dedicated Kubernetes deployment. Access is gated by the **`ai` module** (the AI-Integrations capability), consistent with sparx's module-based model — a tenant activates the `ai` module to use MCP, exactly as it activates any other module. There are **no plan tiers** (no Starter/Pro/Enterprise); "a tenant pays only for what it uses." A request from a tenant without the `ai` module active is rejected at the transport. Per-tool scopes then decide which module's tools each call can run.
 
 ---
 

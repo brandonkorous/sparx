@@ -1,5 +1,5 @@
 // SubscriptionBilling — drives the actual charge schedule for a
-// Sparx Subscription. Stripe implements this with Stripe Subscriptions;
+// sparx Subscription. Stripe implements this with Stripe Subscriptions;
 // future providers (Braintree, Recurly) plug in here without touching
 // subscriptionService.
 
@@ -9,7 +9,7 @@ import type { ProviderRunContext } from './context';
 import type { ProviderMetadataDescriptor } from './metadata';
 
 export interface SubscriptionPlanInput {
-  /** Sparx-side Subscription.id, used for idempotency + correlation. */
+  /** sparx-side Subscription.id, used for idempotency + correlation. */
   subscriptionId: string;
   providerCustomerRef: string;
   paymentMethodRef: string;

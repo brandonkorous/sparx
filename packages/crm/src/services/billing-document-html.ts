@@ -16,7 +16,7 @@
 // PDF bytes are the documented fast-follow.
 
 /** Brand tokens the render reads. All optional — unset tokens fall back to the
- *  Sparx defaults, so a tenant with no brand identity still prints cleanly.
+ *  sparx defaults, so a tenant with no brand identity still prints cleanly.
  *  Concrete color/font values only (never CSS custom properties): the artifact is
  *  self-contained and prints/opens anywhere. */
 export interface BillingRenderBrand {
@@ -50,10 +50,10 @@ const DEFAULT_BRAND: Required<Omit<BillingRenderBrand, 'logoUrl' | 'addressLines
   border: '#E5E7EB',
   fontHeading: "'Geist', system-ui, -apple-system, Segoe UI, sans-serif",
   fontBody: "'Geist', system-ui, -apple-system, Segoe UI, sans-serif",
-  businessName: 'Sparx',
+  businessName: 'sparx',
 };
 
-/** Merge a partial brand over the Sparx defaults. */
+/** Merge a partial brand over the sparx defaults. */
 export function resolveBillingBrand(brand: BillingRenderBrand = {}): ResolvedBrand {
   return { ...DEFAULT_BRAND, ...brand };
 }

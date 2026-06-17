@@ -1,4 +1,4 @@
-// Sparx CRM — schema package barrel.
+// sparx CRM — schema package barrel.
 //
 // Single source of truth for the shape of every Server Action / REST / MCP
 // write into the CRM. The service layer (@sparx/crm) and Server Actions

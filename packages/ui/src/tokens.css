@@ -1,5 +1,5 @@
 /* ──────────────────────────────────────────────────────────────
-   Sparx Design Tokens — single source of truth.
+   sparx Design Tokens — single source of truth.
    Imported once per app in the root layout. All @sparx/ui components
    reference these variables. Never hardcode colors in components.
    See docs/23-frontend-component-architecture.md §4.

@@ -7,7 +7,7 @@ import { siteProgress } from './top-progress-controller';
 // Storefront page-top loading bar. Springs in on a navigation, trickles toward
 // a cap, then snaps to 100% and fades when the route commits. The fill reveals a
 // light→base→deep sweep of the TENANT's brand (--st-primary) sized to the
-// viewport, so it reads as the merchant's own — not Sparx's. The app feeds the
+// viewport, so it reads as the merchant's own — not sparx's. The app feeds the
 // route via the `route` prop (it owns usePathname()), keeping this component
 // router-agnostic. Styling is the semantic `.st-topbar*` classes (styles/
 // top-progress.css); only the dynamic width/opacity are inline.

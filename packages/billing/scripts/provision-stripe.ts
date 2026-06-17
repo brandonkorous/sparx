@@ -148,7 +148,7 @@ async function ensurePortalConfig(
     return 'bpc_dryrun';
   }
   const created = await stripe.billingPortal.configurations.create({
-    business_profile: { headline: 'Sparx — manage your subscription' },
+    business_profile: { headline: 'sparx — manage your subscription' },
     features: {
       customer_update: { enabled: true, allowed_updates: ['email', 'address', 'tax_id'] },
       invoice_history: { enabled: true },
@@ -184,7 +184,7 @@ async function ensureWebhook(stripe: Stripe, apiUrl: string): Promise<void> {
   const created = await stripe.webhookEndpoints.create({
     url,
     enabled_events: WEBHOOK_EVENTS,
-    description: 'Sparx platform billing',
+    description: 'sparx platform billing',
     metadata: { sparx_managed: 'true' },
   });
   webhookSecret = created.secret;
@@ -208,7 +208,7 @@ async function main(): Promise<void> {
   const moduleProducts: { product: string; prices: string[] }[] = [];
   for (const [slug, monthly] of Object.entries(MODULE_MONTHLY_CENTS) as [ModuleSlug, number][]) {
     const name = MODULE_NAMES[slug] ?? slug;
-    const product = await ensureProduct(stripe, `sparx_${slug}`, `Sparx ${name}`);
+    const product = await ensureProduct(stripe, `sparx_${slug}`, `sparx ${name}`);
     const monthlyId = await ensurePrice(stripe, {
       lookupKey: `sparx_${slug}_monthly`,
       product,
@@ -231,7 +231,7 @@ async function main(): Promise<void> {
   const hostingProduct = await ensureProduct(
     stripe,
     'sparx_managed_hosting',
-    'Sparx Managed Hosting'
+    'sparx Managed Hosting'
   );
   const hostingPrice = await ensurePrice(stripe, {
     lookupKey: 'sparx_managed_hosting_monthly',

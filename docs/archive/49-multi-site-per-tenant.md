@@ -1,4 +1,4 @@
-# Sparx Platform — Multi-Site per Tenant
+# sparx Platform — Multi-Site per Tenant
 
 **Version:** 1.11 (Phases 1–6 + 7a + 8a/8b built; 7b email render path + per-site blueprint install + new-site wizard built 2026-06-12; `EmailEvent.property_id` now persisted per send + new-site discard-confirm; order-trigger payoff tracked as Phase 9; only 7b authoring/overrides remain — BLOCKED on email-defaults. **§3·B added 2026-06-13: the customer-facing site name is `Property.name`, never `Tenant.name`** — storefront + email leaks fixed, `businessName` deprecated as a name source)
 **Author:** Brandon Korous
@@ -62,7 +62,7 @@ Each of those wants **a second site that shares the back office**, not a second 
 
 ## 2. Two axes — this is NOT multi-workspace (read first)
 
-Sparx has two orthogonal "more than one" needs. Conflating them is the trap doc 32 §2 was
+sparx has two orthogonal "more than one" needs. Conflating them is the trap doc 32 §2 was
 guarding against. They are different and both legitimate:
 
 | Axis                         | "One **_ has many _**"          | Isolation boundary                                               | Shares                                                            | Mechanism                                                             |

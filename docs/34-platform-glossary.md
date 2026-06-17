@@ -8,13 +8,13 @@
 
 ## 1. Why this exists
 
-Several core nouns in Sparx were overloaded — most of all the retired **"storefront"**, which
+Several core nouns in sparx were overloaded — most of all the retired **"storefront"**, which
 had been used for a paid module, a runtime app, a tenant's public website, and (loosely, in
 prose) "the shop." That overload produced wrong statements in design discussions (e.g. "a
 storefront is required for a brand," which inverts the real dependency — see §4).
 
 As of 2026-06-13 the platform retires **`storefront`** and **`store`** as names for the tenant's
-website. Sparx is a **general website-as-a-service**; the website is the **site**, and selling is
+website. sparx is a **general website-as-a-service**; the website is the **site**, and selling is
 just one module (**Commerce**) layered onto it. The website-building module, its settings, its
 runtime, and its public output are all **site** — never "store." See §5 for the full mapping.
 
@@ -29,7 +29,7 @@ architecture committed in [01-platform-vision.md](01-platform-vision.md),
 
 ## 2. The layer model (read this first)
 
-Sparx is, at its root, a **website platform**. The website is the base; every other capability
+sparx is, at its root, a **website platform**. The website is the base; every other capability
 is a feature layered onto it. Concretely:
 
 ```
@@ -111,7 +111,7 @@ can hold a brand with no site published at all.
 
 This supersedes the earlier deferral. The `storefront` module and every `store`/`storefront`
 name for the tenant's website are renamed to **`site`** vocabulary. "Store" implied a commerce-only
-product; Sparx is a general website-as-a-service. The canonical mapping:
+product; sparx is a general website-as-a-service. The canonical mapping:
 
 | Old                                                              | New                                                    |
 | ---------------------------------------------------------------- | ------------------------------------------------------ |

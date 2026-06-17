@@ -2,7 +2,7 @@
   "name": "@sparx/ui",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx shared component library (CVA + Radix + Tailwind v4).",
+  "description": "sparx shared component library (CVA + Radix + Tailwind v4).",
   "type": "module",
   "sideEffects": [
     "**/*.css"

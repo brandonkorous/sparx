@@ -1,4 +1,4 @@
-# Sparx Platform — Vision & Strategy
+# sparx Platform — Vision & Strategy
 
 **Version:** 2.1
 **Author:** Brandon Korous
@@ -16,9 +16,9 @@ AI tools (Claude, ChatGPT, Copilot) have become indispensable — but they have 
 
 And the newest problem runs the other way. A wave of AI tools can now generate an entire website from a prompt in seconds — but a generated site is a snapshot, not a system. The moment you need to maintain it, add real commerce, connect customer data, or change it next quarter, you are back to a developer or starting from scratch. The market is filling with sites that are effortless to _create_ and impossible to _keep_.
 
-## 2. The Solution — Sparx
+## 2. The Solution — sparx
 
-Sparx is a modular content and commerce operating system. You activate only the modules you need — content, commerce, or both. Every module shares the same data layer, the same dashboard, and the same API — so there's never a sync problem, never a missing integration, never a "you need the $2,400/month plan for that."
+sparx is a modular content and commerce operating system. You activate only the modules you need — content, commerce, or both. Every module shares the same data layer, the same dashboard, and the same API — so there's never a sync problem, never a missing integration, never a "you need the $2,400/month plan for that."
 
 **The modules:**
 
@@ -33,13 +33,13 @@ Sparx is a modular content and commerce operating system. You activate only the 
 
 Each module is independently activatable. A publisher running a content site pays for Site + CMS. A wholesale distributor pays for Commerce + B2B + CRM. A dropship entrepreneur pays for Commerce + Dropship.
 
-And Sparx is built to _last_, not just to launch. Generate your site with AI if you want — Sparx is MCP-native, so you can. But Sparx is where a site **lives** afterward: you maintain and enhance it yourself in a visual, no-code editor, with full code available as an option and never a requirement (the four-tier escape ladder, [doc 47](47-class-first-authoring-model.md)). **AI to start; Sparx to last.**
+And sparx is built to _last_, not just to launch. Generate your site with AI if you want — sparx is MCP-native, so you can. But sparx is where a site **lives** afterward: you maintain and enhance it yourself in a visual, no-code editor, with full code available as an option and never a requirement (the four-tier escape ladder, [doc 47](47-class-first-authoring-model.md)). **AI to start; sparx to last.**
 
 ## 3. The WizeWorks Context
 
-Sparx is built and operated by WizeWorks (wize.works), based in Visalia, California, incorporated in 2026. WizeWorks owns and operates a portfolio of software products including kanNINJA (project management), HelpNinja (AI support), and others. Sparx is the flagship content and commerce platform.
+sparx is built and operated by WizeWorks (wize.works), based in Visalia, California, incorporated in 2026. WizeWorks owns and operates a portfolio of software products including kanNINJA (project management), HelpNinja (AI support), and others. sparx is the flagship content and commerce platform.
 
-The first Enterprise client is Gillett Diesel Service Inc. (Bluffdale, Utah) — migrating from Shopify + HubSpot ($35,400/year) to Sparx (custom frontend, managed hosting). Gillett's requirements drove the initial B2B, fleet, and MCP feature set.
+The first Enterprise client is Gillett Diesel Service Inc. (Bluffdale, Utah) — migrating from Shopify + HubSpot ($35,400/year) to sparx (custom frontend, managed hosting). Gillett's requirements drove the initial B2B, fleet, and MCP feature set.
 
 ## 4. Target Market
 
@@ -57,7 +57,7 @@ Building product businesses without inventory. Need supplier sync, margin calcul
 
 ## 5. Competitive Differentiation
 
-| Capability                     | Sparx | Shopify    | HubSpot | WordPress   |
+| Capability                     | sparx | Shopify    | HubSpot | WordPress   |
 | ------------------------------ | ----- | ---------- | ------- | ----------- |
 | Store live < 5 min             | ✅    | ❌         | ❌      | ❌          |
 | Modular pricing                | ✅    | ❌         | ❌      | ❌          |
@@ -107,12 +107,12 @@ Building product businesses without inventory. Need supplier sync, margin calcul
 
 ### Managed Hosting Add-On
 
-For clients who want Sparx to operate their infrastructure:
+For clients who want sparx to operate their infrastructure:
 
 - $750/month — hosting, uptime, backups, security patches, support, updates
 - Gillett Diesel is the first managed hosting client
 
-## 7. The Sparx Promise
+## 7. The sparx Promise
 
 > A new customer signs up, picks a theme, activates the modules they need, and is live — publishing their first page or taking their first order — in under 5 minutes. No developer required. No app store required. No Zapier required.
 
@@ -120,15 +120,15 @@ Every product decision is evaluated against this promise. If a feature slows the
 
 ### The second promise: built to last
 
-The 5-minute promise gets you live. The permanence promise keeps you there. In an era when anyone can generate a website in seconds — and abandon it just as fast — Sparx is the platform a site grows up on. You maintain and enhance it yourself, in a no-code editor, for years: no rebuild, no developer on retainer. Coding is always optional, never required, and never out of reach when you want it ([doc 47](47-class-first-authoring-model.md) escape ladder). You own the data and the site; Sparx is the platform, not the warden.
+The 5-minute promise gets you live. The permanence promise keeps you there. In an era when anyone can generate a website in seconds — and abandon it just as fast — sparx is the platform a site grows up on. You maintain and enhance it yourself, in a no-code editor, for years: no rebuild, no developer on retainer. Coding is always optional, never required, and never out of reach when you want it ([doc 47](47-class-first-authoring-model.md) escape ladder). You own the data and the site; sparx is the platform, not the warden.
 
-> **AI builds it. Sparx keeps it.**
+> **AI builds it. sparx keeps it.**
 
 These two promises are one arc, not a tension: _fast to start, permanent to keep._ "Live in 5 minutes" is the on-ramp; "built to last" is why you stay.
 
 ## 8. Domain Strategy
 
-Sparx owns a portfolio of domains creating independent SEO acquisition channels:
+sparx owns a portfolio of domains creating independent SEO acquisition channels:
 
 - **sparx.works** — Primary brand and platform home (dashboard, API, MCP, marketing)
 - **sparx.zone** — Tenant sites (`acme.sparx.zone` + custom-domain CNAME target). Shopify-style split keeps tenant reputation/cookies/SEO isolated from the platform brand.

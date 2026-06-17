@@ -1,4 +1,4 @@
-// Sparx CRM — public package barrel.
+// sparx CRM — public package barrel.
 //
 // Re-exports the service layer plus the shared types REST/GraphQL/MCP
 // transports use. Per the locked decision #7 (one service layer, three

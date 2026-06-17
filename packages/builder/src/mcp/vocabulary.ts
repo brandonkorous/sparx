@@ -16,7 +16,7 @@
 
 export const BUILDER_STYLE_GUIDE = {
   overview:
-    'Author a Sparx site page as a tree of nodes. Every node is { id?, type, name?, class?, props, binding?, children? }. ' +
+    'Author a sparx site page as a tree of nodes. Every node is { id?, type, name?, class?, props, binding?, children? }. ' +
     '`type` picks a component from the catalog below; `class` is a Tailwind-native string that compiles to the tenant theme; ' +
     '`props` is component data; `binding` pulls live data; `children` nest. There is ONE styling surface — the class string. ' +
     'Containers arrange children (flex/grid); leaves render content. Pages are DRAFTs until published. ' +

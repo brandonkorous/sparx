@@ -23,13 +23,13 @@ export function EmailVerificationEmail({
   outro,
 }: EmailVerificationEmailProps) {
   return (
-    <EmailLayout preview="Confirm your Sparx email">
+    <EmailLayout preview="Confirm your sparx email">
       <Section>
         <EmailHeading>Confirm your email</EmailHeading>
         <EmailParagraph>{name ? `Hi ${name},` : 'Hi there,'}</EmailParagraph>
         {intro ? <EmailParagraph>{intro}</EmailParagraph> : null}
         <EmailParagraph>
-          Thanks for creating a Sparx account. Confirm this email address to unlock everything —
+          Thanks for creating a sparx account. Confirm this email address to unlock everything —
           connecting a custom domain, going live, and sending email. The link expires in{' '}
           {expiresInMinutes} minutes.
         </EmailParagraph>
@@ -40,11 +40,11 @@ export function EmailVerificationEmail({
           <EmailLink href={verifyUrl}>{verifyUrl}</EmailLink>
         </EmailParagraph>
         <EmailMuted>
-          If you didn&apos;t create a Sparx account, you can safely ignore this email.
+          If you didn&apos;t create a sparx account, you can safely ignore this email.
         </EmailMuted>
       </Section>
     </EmailLayout>
   );
 }
 
-export const emailVerificationSubject = 'Confirm your Sparx email';
+export const emailVerificationSubject = 'Confirm your sparx email';

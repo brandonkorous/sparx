@@ -1,17 +1,17 @@
-# Sparx Platform — Documentation Index
+# sparx Platform — Documentation Index
 
-**Platform:** Sparx (sparx.works)
+**Platform:** sparx (sparx.works)
 **Company:** WizeWorks (wize.works)
 **Author:** Brandon Korous (me@brandonkorous.com)
 **Last Updated:** 2026-06-11
 
 ---
 
-## What Is Sparx?
+## What Is sparx?
 
-Sparx is WizeWorks' unified content and commerce operating system — a modular platform that gives any organization a live website, CMS, CRM, commerce, email, B2B wholesale, dropshipping, and AI integration in one place. Publish content, sell products, or both — you activate only the modules you need. Built and operated by WizeWorks.
+sparx is WizeWorks' unified content and commerce operating system — a modular platform that gives any organization a live website, CMS, CRM, commerce, email, B2B wholesale, dropshipping, and AI integration in one place. Publish content, sell products, or both — you activate only the modules you need. Built and operated by WizeWorks.
 
-Sparx is to WizeWorks what Shopify is to its parent company — except Sparx spans content and commerce, is modular, open to headless use, MCP-native, and never charges you for features you don't need.
+sparx is to WizeWorks what Shopify is to its parent company — except sparx spans content and commerce, is modular, open to headless use, MCP-native, and never charges you for features you don't need.
 
 ## Domain Portfolio
 
@@ -31,7 +31,7 @@ Sparx is to WizeWorks what Shopify is to its parent company — except Sparx spa
 
 ## WizeWorks Portfolio Context
 
-Sparx is one of several products under the WizeWorks umbrella:
+sparx is one of several products under the WizeWorks umbrella:
 
 - sparx.works — Content & commerce platform (this platform)
 - kanninja.com — Project management
@@ -49,12 +49,12 @@ Sparx is one of several products under the WizeWorks umbrella:
 3. **Progressive disclosure** — Power features exist but never block the simple path
 4. **API-first** — Every feature accessible via API; the UI is one consumer among many
 5. **MCP-native** — AI integration is a first-class citizen, not a plugin
-6. **Own your data** — You own your data; Sparx is the platform, not the warden
+6. **Own your data** — You own your data; sparx is the platform, not the warden
 7. **Single pane of glass** — Every active module visible in one unified dashboard
 
 ## Module Structure
 
-Sparx is built around independently activatable modules:
+sparx is built around independently activatable modules:
 
 Each module is an independent, flat-priced toggle (no tiers, no base plan). See [17-billing-subscriptions.md](17-billing-subscriptions.md) §2.
 
@@ -74,7 +74,7 @@ Each module is an independent, flat-priced toggle (no tiers, no base plan). See 
 
 Decisions locked in during the v2 documentation pass (vs. the original WizeWorks-Platform draft):
 
-- **Platform name:** Sparx (`sparx.works`) — was "WizeWorks Platform"
+- **Platform name:** sparx (`sparx.works`) — was "WizeWorks Platform"
 - **Email infrastructure:** Postal (self-hosted) — was Resend
 - **Auth:** Better Auth (self-hosted, open source) — was custom JWT only
 - **Pricing:** Modular per-module — was tiered plans
@@ -85,7 +85,7 @@ Decisions locked in during the v2 documentation pass (vs. the original WizeWorks
 
 | #   | Document                           | Description                                                                                                                                                                                                                                                                                                                      |
 | --- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 01  | Platform Vision & Strategy         | Why Sparx exists, who it's for, how it competes                                                                                                                                                                                                                                                                                  |
+| 01  | Platform Vision & Strategy         | Why sparx exists, who it's for, how it competes                                                                                                                                                                                                                                                                                  |
 | 02  | Architecture Overview              | System design, infrastructure, tech stack                                                                                                                                                                                                                                                                                        |
 | 03  | Infrastructure & Deployment        | GKE, Terraform, CI/CD, environments                                                                                                                                                                                                                                                                                              |
 | 04  | Domain & SSL Automation            | Subdomain provisioning, custom domains, cert management                                                                                                                                                                                                                                                                          |
@@ -151,6 +151,6 @@ Decisions locked in during the v2 documentation pass (vs. the original WizeWorks
 | 81  | Automation Module                  | _Planned._ One cross-module workflow engine; Locked/Managed/Custom tiers, mandatory gate layer, durable resumable runs, AI authoring; external Zapier/Make/n8n as complementary partners                                                                                                                                         |
 | 82  | Event Bus Unification & Fan-In     | _Planned — docs/81 Phase 0._ Unify the divergent `EventType` registries into one canonical source + a single `automation.trigger` fan-in topic teed from all three publish paths                                                                                                                                                 |
 | 83  | Tenant Attribution (L-TEN) Tracker | _Planned — docs/80 Phase 3._ Build tracker for tenant-level site attribution: capture in apps/site, 3 tables + columns on customers/orders, ingestion API, conversion stitching, reports, MCP                                                                                                                                    |
-| 85  | Creator Marketplace                | _Planned — extends docs/60._ Third-party submissions (theme/component/blueprint/integration) as an allow-listed bundle compiled to a declarative artifact; GCS storage, scan/approve review, no-deploy runtime apply, feature-count price caps + payouts, deferred integration code sandbox; Sparx dogfoods it                   |
+| 85  | Creator Marketplace                | _Planned — extends docs/60._ Third-party submissions (theme/component/blueprint/integration) as an allow-listed bundle compiled to a declarative artifact; GCS storage, scan/approve review, no-deploy runtime apply, feature-count price caps + payouts, deferred integration code sandbox; sparx dogfoods it                   |
 | 88  | Integrations Catalog & Taxonomy    | _Planned — hub._ The front door for integrations: the `purpose` × `shape` taxonomy (8 closed shapes), an index mapping every integration doc with build status, the code-vs-catalog reconciliation (`ProviderKind` vs phantom facets), the workflow-connector contract (docs/81 shape #4), and a prioritized named build catalog |
 | 86  | Wizard Layout Pattern              | Two-pane wizard frame as a reusable pattern — full-page (onboarding) + modal (create-wizards) variants; one `WizardFrame` primitive, module-colored rail                                                                                                                                                                         |

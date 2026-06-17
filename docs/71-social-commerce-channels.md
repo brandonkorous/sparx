@@ -1,4 +1,4 @@
-# Sparx Platform — Social Commerce & Channel Integration Spec
+# sparx Platform — Social Commerce & Channel Integration Spec
 
 **Version:** 1.0
 **Author:** Brandon Korous
@@ -8,9 +8,9 @@
 
 ## 1. Overview
 
-Sparx integrates with social commerce platforms and marketplaces via a unified Channel Adapter architecture. Merchants connect their existing accounts (TikTok Shop, Instagram Shopping, Facebook Shop, Google Shopping, Amazon) from the Sparx dashboard. Product catalogs sync bidirectionally, orders from all channels appear in Sparx order management, and inventory stays in sync in real time across all channels.
+sparx integrates with social commerce platforms and marketplaces via a unified Channel Adapter architecture. Merchants connect their existing accounts (TikTok Shop, Instagram Shopping, Facebook Shop, Google Shopping, Amazon) from the sparx dashboard. Product catalogs sync bidirectionally, orders from all channels appear in sparx order management, and inventory stays in sync in real time across all channels.
 
-**Core principle:** Sparx is the single source of truth for inventory, products, orders, and customers — regardless of which channel the sale came from.
+**Core principle:** sparx is the single source of truth for inventory, products, orders, and customers — regardless of which channel the sale came from.
 
 ---
 
@@ -63,7 +63,7 @@ channelRegistry.register(new AmazonAdapter());
 - Content API for Shopping handles catalog sync
 - Should be automatic for all merchants (opt-out, not opt-in)
 - Free organic placement drives traffic to merchant's sparx.zone site
-- No order management needed — checkout stays on Sparx
+- No order management needed — checkout stays on sparx
 
 **Meta — Instagram Shopping + Facebook Shop**
 
@@ -84,7 +84,7 @@ channelRegistry.register(new AmazonAdapter());
 **Pinterest Catalogs**
 
 - Product feed sync (not full order management)
-- Drives traffic to Sparx site — high purchase intent audience
+- Drives traffic to sparx site — high purchase intent audience
 - Strong for fashion, home, food, lifestyle merchants
 - Relatively lightweight — primarily a product feed, not full order integration
 
@@ -106,12 +106,12 @@ channelRegistry.register(new AmazonAdapter());
 
 ## 4. Inventory Source of Truth
 
-**Sparx DB is the single source of truth.** Inventory is decremented in Sparx first, then pushed to all connected channels.
+**sparx DB is the single source of truth.** Inventory is decremented in sparx first, then pushed to all connected channels.
 
 ```
 Order placed on TikTok Shop
-  → TikTok webhook → Sparx API
-  → Decrement inventory in Sparx DB
+  → TikTok webhook → sparx API
+  → Decrement inventory in sparx DB
   → Pub/Sub: inventory.updated
   → Channel sync worker pushes new quantity to:
       - Instagram Shopping
@@ -121,7 +121,7 @@ Order placed on TikTok Shop
   → Prevents overselling across all channels
 ```
 
-Critical invariant: inventory is NEVER re-incremented on a failed channel push. Failed pushes go to dead letter queue with retry. The Sparx count is always authoritative.
+Critical invariant: inventory is NEVER re-incremented on a failed channel push. Failed pushes go to dead letter queue with retry. The sparx count is always authoritative.
 
 ---
 
@@ -138,7 +138,7 @@ ALTER TABLE orders ADD COLUMN external_id VARCHAR(255);
 -- Channel's own order ID
 
 ALTER TABLE orders ADD COLUMN external_status VARCHAR(50);
--- Channel's status (mapped to Sparx status on ingest)
+-- Channel's status (mapped to sparx status on ingest)
 
 ALTER TABLE orders ADD COLUMN channel_fee_cents INTEGER;
 -- Marketplace commission charged by channel
@@ -218,7 +218,7 @@ Product list integration:
 
 ## 8. Analytics — Channel Revenue Breakdown
 
-All channel revenue surfaces in the Sparx analytics dashboard:
+All channel revenue surfaces in the sparx analytics dashboard:
 
 ```
 Revenue by channel · Last 30 days
@@ -246,7 +246,7 @@ get_top_products_by_channel({ channel, period, limit })
 
 Google Shopping is unique — it should be automatic for every merchant, not a manual opt-in. When a merchant launches their store:
 
-1. Sparx automatically creates a Google Merchant Center account (via GMC API)
+1. sparx automatically creates a Google Merchant Center account (via GMC API)
 2. Product feed submitted for all public products
 3. Free organic Google Shopping listings appear within 3–5 days
 4. Merchant notified: "Your products are now appearing in Google Shopping"
@@ -263,8 +263,8 @@ This is a significant activation moment — products showing up in Google search
 
 - [ ] Apply for ISV partner access (partner.tiktokshop.com) — do immediately
 - [ ] OAuth connect flow + token storage
-- [ ] Product sync (Sparx → TikTok)
-- [ ] Product import (TikTok → Sparx)
+- [ ] Product sync (sparx → TikTok)
+- [ ] Product import (TikTok → sparx)
 - [ ] Order webhook ingestion
 - [ ] Fulfillment push (tracking → TikTok)
 - [ ] Inventory sync worker

@@ -186,7 +186,7 @@ export const VENDOR_CATALOG: DropshipVendor[] = [
     label: 'CSV feed',
     tagline: 'Any supplier — import a product feed, fulfill orders manually',
     description:
-      'For suppliers without an API: point Sparx at a CSV product feed to import the catalog. Orders are fulfilled manually with your supplier (no automated submission or tracking).',
+      'For suppliers without an API: point sparx at a CSV product feed to import the catalog. Orders are fulfilled manually with your supplier (no automated submission or tracking).',
     connectionMethod: 'manual',
     pod: false,
     capabilities: {

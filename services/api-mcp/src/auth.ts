@@ -8,7 +8,7 @@
 //      Integrations dashboard, verified via @sparx/auth/api-keys. Scopes
 //      come from the key row; role is fixed as 'api'.
 //
-// In both cases the tenant must have the `ai` MODULE active. Sparx is
+// In both cases the tenant must have the `ai` MODULE active. sparx is
 // module-based (a tenant pays per module, not per plan tier) — MCP / the AI
 // Integrations surface IS the `ai` module, so that flag is the eligibility
 // gate. Per-tool scopes still decide which tools run.

@@ -2,7 +2,7 @@
 // readout). None of this is stored: an unset brand color falls back to the
 // active theme at render time, but the editor still needs *something* to draw so
 // the board never looks broken and the contrast badge has a pair to rate. The
-// fallbacks mirror the Sparx defaults (indigo / white / sky); keep them here as
+// fallbacks mirror the sparx defaults (indigo / white / sky); keep them here as
 // the single source so the board and the form can't drift apart.
 
 export const BRAND_PREVIEW_FALLBACK = {

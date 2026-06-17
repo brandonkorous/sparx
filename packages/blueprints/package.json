@@ -2,7 +2,7 @@
   "name": "@sparx/blueprints",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx Tenant Blueprints (docs/54) — the declarative manifest format for marketplace templates that provision a whole tenant (brand/theme + content + commerce + pages + emails + components), plus the in-repo blueprint catalog and an integrity validator. Zod-only (no DB, no React) so the installer worker, api-rest, and the dashboard can all import it.",
+  "description": "sparx Tenant Blueprints (docs/54) — the declarative manifest format for marketplace templates that provision a whole tenant (brand/theme + content + commerce + pages + emails + components), plus the in-repo blueprint catalog and an integrity validator. Zod-only (no DB, no React) so the installer worker, api-rest, and the dashboard can all import it.",
   "type": "module",
   "exports": {
     ".": {

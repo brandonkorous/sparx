@@ -2,7 +2,7 @@
   "name": "@sparx/push-worker",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx web-push worker. Receives push.send events via Pub/Sub push (Cloud Run HTTP entrypoint) and delivers Web Push notifications to staff browser subscriptions via VAPID. Prunes expired (410/404) subscriptions. No-ops when VAPID keys are unset so it is deployable before keys are provisioned.",
+  "description": "sparx web-push worker. Receives push.send events via Pub/Sub push (Cloud Run HTTP entrypoint) and delivers Web Push notifications to staff browser subscriptions via VAPID. Prunes expired (410/404) subscriptions. No-ops when VAPID keys are unset so it is deployable before keys are provisioned.",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {

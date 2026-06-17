@@ -1,4 +1,4 @@
-# Sparx Platform — WizeWorks Admin Portal Spec
+# sparx Platform — WizeWorks Admin Portal Spec
 
 **Version:** 1.0
 **Author:** Brandon Korous
@@ -8,10 +8,10 @@
 
 ## 1. Overview
 
-`admin.wize.works` is the unified WizeWorks operations portal. It provides internal staff with oversight, management, and support tooling across all WizeWorks products — Sparx, kanNINJA, HelpNinja, and future products.
+`admin.wize.works` is the unified WizeWorks operations portal. It provides internal staff with oversight, management, and support tooling across all WizeWorks products — sparx, kanNINJA, HelpNinja, and future products.
 
 **Domain:** admin.wize.works  
-**Auth:** Better Auth, WizeWorks staff only. Completely separate from Sparx merchant auth.  
+**Auth:** Better Auth, WizeWorks staff only. Completely separate from sparx merchant auth.  
 **GCP project:** WizeWorks project (NOT SparxWorks project — keep internal ops separate from product infrastructure)
 
 ---
@@ -23,7 +23,7 @@ WizeWorks staff roles (Better Auth organization = WizeWorks):
 | Role          | Access                                      |
 | ------------- | ------------------------------------------- |
 | super_admin   | Everything across all products              |
-| sparx_admin   | Sparx product only                          |
+| sparx_admin   | sparx product only                          |
 | billing_admin | Financial data only, all products           |
 | support       | Read-only + impersonation (no billing data) |
 | developer     | Logs, infrastructure metrics, API keys      |
@@ -34,7 +34,7 @@ Staff never share accounts. Every action is audit-logged with staff member ID, t
 
 ## 3. Product Sections
 
-### /sparx — Sparx Operations
+### /sparx — sparx Operations
 
 **Tenant Management**
 
@@ -99,7 +99,7 @@ Staff never share accounts. Every action is audit-logged with staff member ID, t
 
 - Total WizeWorks MRR (all products combined)
 - Revenue by product
-- Revenue by plan tier (Sparx)
+- Revenue by plan tier (sparx)
 - Churn and expansion revenue
 - Upcoming renewals (next 30 days)
 - Failed payments across all products

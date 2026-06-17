@@ -1,6 +1,6 @@
-# marketplace-catalog — Sparx first-party bundles (dogfood)
+# marketplace-catalog — sparx first-party bundles (dogfood)
 
-This tree holds Sparx's own marketplace items, authored to the
+This tree holds sparx's own marketplace items, authored to the
 [`marketplace-templates/`](../marketplace-templates/) contract and ingested through
 the **same** pipeline a third party will use (docs/85 §14). One folder per item:
 

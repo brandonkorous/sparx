@@ -1,4 +1,4 @@
-// subscriptionService — auto-ship / recurring orders. The Sparx side
+// subscriptionService — auto-ship / recurring orders. The sparx side
 // owns the schedule shape, the item set, the customer-facing
 // pause/skip/cancel surface, and the dunning state machine. Actual
 // charges are driven by a SubscriptionBilling provider (Stripe by

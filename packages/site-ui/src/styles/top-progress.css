@@ -1,6 +1,6 @@
 /* Surface TopProgress — the storefront page-top loading bar. Its fill REVEALS a
  * sweep of the TENANT brand (--st-primary) sized to the viewport, so progress
- * moves through the merchant's own color — never Sparx's. Anchored at the
+ * moves through the merchant's own color — never sparx's. Anchored at the
  * viewport's left edge: growing width uncovers more of the 100vw gradient.
  * Dynamic width/opacity are set inline by the component; everything else lives
  * here. */

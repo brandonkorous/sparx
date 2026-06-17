@@ -8,10 +8,10 @@ import { colors, fontFamily } from './tokens';
 // a `brand` prop through every template + atom, we put the resolved brand on a
 // React context: `renderTemplate` wraps the tree in <BrandProvider brand={…}>
 // and every atom reads it via `useBrand()`. With no provider, atoms fall back
-// to `defaultBrand` (the Sparx chrome) — so existing render paths are unchanged.
+// to `defaultBrand` (the sparx chrome) — so existing render paths are unchanged.
 //
 // The brand is resolved per tenant by @sparx/email-platform's brand-service
-// (storefront theme tokens → settings override → Sparx defaults), light palette
+// (storefront theme tokens → settings override → sparx defaults), light palette
 // only (email-client dark mode is unreliable).
 
 export interface BrandTokens {
@@ -49,7 +49,7 @@ export const defaultBrand: BrandTokens = {
   border: colors.border,
   fontHeading: fontFamily,
   fontBody: fontFamily,
-  siteName: 'Sparx',
+  siteName: 'sparx',
 };
 
 const BrandContext = React.createContext<BrandTokens>(defaultBrand);

@@ -38,7 +38,7 @@ export default function WebhooksPage() {
           badge={<Badge variant="outline">coming soon</Badge>}
           description={
             <>
-              Subscribe an external endpoint to <code>content.*</code> events so a publish in Sparx
+              Subscribe an external endpoint to <code>content.*</code> events so a publish in sparx
               triggers a downstream rebuild, cache purge, or notification. Backend wiring is live —
               the dashboard editor lands in a follow-up.
             </>
@@ -67,7 +67,7 @@ export default function WebhooksPage() {
             <Heading level={3}>Events you can subscribe to</Heading>
             <CardDescription>
               Every state-changing CMS mutation fans out to Pub/Sub and (when subscribed) to your
-              endpoint with an HMAC-SHA256 signature in the <code>X-Sparx-Signature</code> header.
+              endpoint with an HMAC-SHA256 signature in the <code>X-sparx-Signature</code> header.
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -1,6 +1,6 @@
-# Sparx Marketplace — submission package templates
+# sparx Marketplace — submission package templates
 
-This folder is the **canonical contract** for everything published to the Sparx
+This folder is the **canonical contract** for everything published to the sparx
 marketplace. There is one template per category:
 
 | Category        | Folder                          | Payload is…                         | Runs code? |
@@ -15,7 +15,7 @@ mappings, webhooks) — pure configuration, no executable code. Integrations tha
 need real custom logic are a separate **sandboxed code tier** (see the design doc),
 not part of the open submission contract.
 
-Sparx publishes its own first-party themes/components/blueprints/integrations
+sparx publishes its own first-party themes/components/blueprints/integrations
 **through this same contract** — we are just the first publisher, auto-approved.
 There is one pipeline, not two.
 
@@ -93,7 +93,7 @@ its computed cap is denied with the cap explained. Free is always allowed.
   the category's Zod schema → integrity cross-refs → image scan → price-cap check.
 - **approved**: artifact + media written to object storage; a catalog row is created
   (`status: published`); the item is **applyable/installable immediately, no deploy**.
-- First-party (Sparx) submissions skip manual review (auto-approved) but run the
+- First-party (sparx) submissions skip manual review (auto-approved) but run the
   same automated scan.
 
 See the design doc for the full pipeline (storage layout, review queue, runtime

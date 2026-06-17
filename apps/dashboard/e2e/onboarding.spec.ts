@@ -10,7 +10,7 @@ test.describe('/welcome — onboarding checklist', () => {
   test('renders the checklist with the right step states', async ({ page }) => {
     await page.goto('/welcome');
 
-    await expect(page.getByRole('heading', { name: 'Welcome to Sparx', level: 1 })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Welcome to sparx', level: 1 })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Setup progress', level: 3 })).toBeVisible();
     await expect(page.getByRole('progressbar')).toBeVisible();
 
@@ -53,7 +53,7 @@ test.describe('/welcome — onboarding checklist', () => {
     await expect(page).toHaveURL(/\/$/);
 
     // Banner should no longer appear on dashboard home.
-    await expect(page.getByRole('heading', { name: 'Finish setting up Sparx' })).not.toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Finish setting up sparx' })).not.toBeVisible();
   });
 });
 
@@ -65,6 +65,6 @@ test.describe('Dashboard home — onboarding banner', () => {
 
   test('welcome route is reachable directly when needed', async ({ page }) => {
     await page.goto('/welcome');
-    await expect(page.getByRole('heading', { name: 'Welcome to Sparx', level: 1 })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Welcome to sparx', level: 1 })).toBeVisible();
   });
 });

@@ -292,7 +292,7 @@ inspector. A template's detail page links into the full-bleed designer.
 ## 10. Brand
 
 The composer renders through the existing `resolveEmailBrand(ctx)` resolver, threaded as
-`BrandTokens` through `<BrandProvider>` (today: Commerce `SiteTheme` → Sparx defaults; doc 30
+`BrandTokens` through `<BrandProvider>` (today: Commerce `SiteTheme` → sparx defaults; doc 30
 §6 Phase 1 rewires it to the tenant-level `TenantBrand`). The composer **never** introduces a
 per-email brand control — consistent with doc 30 §6.2 (consumers read brand, never override) and the
 already-removed `EmailSettings` brand-color field. "Preview as recipient" changes _data_, not brand.

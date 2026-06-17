@@ -417,7 +417,7 @@ export async function issueRefund(
     return payment?.processorRef ?? null;
   });
 
-  // Settle through the tenant's gateway (Sparx Pay / Stripe Direct). The charge.refunded
+  // Settle through the tenant's gateway (sparx Pay / Stripe Direct). The charge.refunded
   // webhook later reconciles the order's payment status; this just triggers the refund.
   if (chargeRef) {
     let result;

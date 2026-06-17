@@ -29,7 +29,7 @@ import { RAIL_BG, RailWordmark } from '../brand/brand-rail';
 //                         collapses to the compact top-bar layout in a narrow
 //                         drawer via the same breakpoint as the modal.
 //
-// The rail is a FLAT SOLID fill of the active module color (no gradient — Sparx
+// The rail is a FLAT SOLID fill of the active module color (no gradient — sparx
 // is flat by default), driven by the wrapping <ModuleProvider> via
 // `--module-active`. Onboarding's rail is Builder Indigo; a Product wizard's is
 // Commerce orange; and so on, with zero per-call color props.
@@ -54,7 +54,7 @@ export type WizardVariant = 'page' | 'modal' | 'inline';
 export interface WizardFrameProps {
   variant?: WizardVariant;
   /** Page variant: the brand node at the rail top. Defaults to the inverted
-   *  Sparx wordmark (white "Spar" + a light tint of the module color "x"). */
+   *  sparx wordmark (white "Spar" + a light tint of the module color "x"). */
   wordmark?: React.ReactNode;
   /** Modal variant: the wizard's title at the rail top, e.g. "New product". */
   title?: React.ReactNode;

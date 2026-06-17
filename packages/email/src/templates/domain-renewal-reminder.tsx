@@ -51,7 +51,7 @@ export function DomainRenewalReminderEmail({
           </>
         )}
         <EmailMuted>
-          You&apos;re receiving this because {domainName} is registered through Sparx. Visit your
+          You&apos;re receiving this because {domainName} is registered through sparx. Visit your
           domain settings to update renewal preferences.
         </EmailMuted>
       </Section>

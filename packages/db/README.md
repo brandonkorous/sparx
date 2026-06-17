@@ -1,6 +1,6 @@
 # @sparx/db
 
-Sparx data layer. Owns the Prisma schema, generated client, migrations, and the tenant-context helper that every API request handler uses to wrap its DB work.
+sparx data layer. Owns the Prisma schema, generated client, migrations, and the tenant-context helper that every API request handler uses to wrap its DB work.
 
 ## What's in scope here
 
@@ -98,4 +98,4 @@ Decision F3 ([docs/16-auth-security.md](../../docs/16-auth-security.md) §4): te
 
 ## Better Auth alignment
 
-The `User`, `Session`, `Account`, and `Verification` shapes match what Better Auth's Prisma adapter expects ([docs/16-auth-security.md](../../docs/16-auth-security.md) §1). Once the auth service lands, Better Auth uses these tables directly via `user.additionalFields` for the Sparx columns (`tenantId`, `role`, `lastLoginAt`).
+The `User`, `Session`, `Account`, and `Verification` shapes match what Better Auth's Prisma adapter expects ([docs/16-auth-security.md](../../docs/16-auth-security.md) §1). Once the auth service lands, Better Auth uses these tables directly via `user.additionalFields` for the sparx columns (`tenantId`, `role`, `lastLoginAt`).

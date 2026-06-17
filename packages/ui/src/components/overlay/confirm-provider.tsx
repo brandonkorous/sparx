@@ -8,7 +8,7 @@
 //   if (!ok) return;
 //
 // instead of `window.confirm(...)`. One shared AlertDialog renders inside the
-// provider, so confirms are always Sparx-styled and consistent — no native
+// provider, so confirms are always sparx-styled and consistent — no native
 // browser modal, no per-component AlertDialog boilerplate.
 
 import * as React from 'react';

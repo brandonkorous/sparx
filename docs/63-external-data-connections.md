@@ -14,7 +14,7 @@ Last Updated: 2026-06-08
 
 ## Why this doc
 
-Today a Builder page can only bind to data Sparx itself owns: the tenant's CMS
+Today a Builder page can only bind to data sparx itself owns: the tenant's CMS
 content types, Commerce products, CRM lists, and site/brand chrome (docs/43). The
 next obvious capability — and one the whole no-code industry is conspicuously bad
 at — is letting a tenant **bind a live _external_ data source** (a REST/GraphQL
@@ -38,7 +38,7 @@ endpoint they control.
 | **Framer**    | `fetch` from APIs in code components; forms POST to external endpoints.                                          | Code components only; not a first-class bindable source.                                                |
 
 The common failure is that **none of them have a uniform binding model that an
-external source can simply join.** Sparx does. Our renderer doesn't render
+external source can simply join.** sparx does. Our renderer doesn't render
 "products" — it renders **bindings with a cardinality contract** (scalar / object
 / array, docs/43). The moment external data lands in the resolver `root` shaped to
 a declared schema, _every existing piece works unchanged_: the binding picker,
@@ -254,7 +254,7 @@ Same proxy, POST with a JSON body, response mapped identically.
 
 The scariest kind; full spec but **last**.
 
-- **Never** touches the Sparx Cloud SQL instance. A `sql` Connection is a
+- **Never** touches the sparx Cloud SQL instance. A `sql` Connection is a
   **bring-your-own** connection string (the tenant's own DB), stored as an
   encrypted `connection_secret` (`sql_dsn`).
 - Execution constraints, all enforced in the proxy:

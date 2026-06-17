@@ -2,7 +2,7 @@
   "name": "@sparx/provider-paypal",
   "version": "0.0.0",
   "private": true,
-  "description": "PayPal provider for Sparx Commerce — marketplace listing stub. Phase 0 ships metadata only; full PaymentProvider implementation lands in a follow-up build.",
+  "description": "PayPal provider for sparx Commerce — marketplace listing stub. Phase 0 ships metadata only; full PaymentProvider implementation lands in a follow-up build.",
   "type": "module",
   "exports": {
     ".": {

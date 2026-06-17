@@ -24,7 +24,7 @@ export async function GET(request: Request) {
   // Shared exclusions applied to every crawler group: the internal API and any
   // leaked preview-token URL.
   const disallow = ['Disallow: /api/', 'Disallow: /*?sparxPreview='];
-  // AI / answer-engine crawlers we explicitly welcome (docs/50) — Sparx is
+  // AI / answer-engine crawlers we explicitly welcome (docs/50) — sparx is
   // AI-native, so storefronts opt INTO model + answer-engine discovery. They get
   // the same exclusions as everyone else, just named so the intent is on record.
   const aiAgents = [

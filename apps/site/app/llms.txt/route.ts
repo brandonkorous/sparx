@@ -37,7 +37,7 @@ export async function GET(request: Request) {
       ? settings.description.trim()
       : typeof settings.tagline === 'string' && settings.tagline.trim()
         ? settings.tagline.trim()
-        : `${site.name} — an online store powered by Sparx.`;
+        : `${site.name} — an online store powered by sparx.`;
 
   const policySlug = site.consent?.policyPageSlug;
 
@@ -58,7 +58,7 @@ export async function GET(request: Request) {
       : ''
   }
 
-This store runs on Sparx (sparx.works). For the complete, always-current list of URLs, use the sitemap above.
+This store runs on sparx (sparx.works). For the complete, always-current list of URLs, use the sitemap above.
 `;
 
   return new Response(body, {

@@ -10,9 +10,9 @@ import { useBrand } from './brand';
 //     lockup, parity with the site header's <Wordmark> (packages/site-ui),
 //   • 'logo'             — the logo alone (for logos that already bake in the name),
 //   • 'name'             — the store/site name alone (the "spar<x>" mark when the
-//                          brand is the Sparx fallback).
+//                          brand is the sparx fallback).
 // Each treatment DEGRADES gracefully when its part is missing (logo with no logo →
-// name; lockup with only one part → that part; neither → the Sparx default).
+// name; lockup with only one part → that part; neither → the sparx default).
 //
 // Mail clients strip <style> blocks and don't honour CSS variables, so every value
 // is inlined; brand colors/fonts come from the BrandContext.
@@ -36,10 +36,10 @@ export function EmailWordmark({
   const brand = useBrand();
   const logoUrl = brand.logoUrl;
   const hasLogo = Boolean(logoUrl);
-  const hasName = Boolean(brand.siteName) && brand.siteName !== 'Sparx';
+  const hasName = Boolean(brand.siteName) && brand.siteName !== 'sparx';
 
   // Which parts the treatment asks for, then a name fallback so the header is never
-  // empty (a logo-only treatment with no logo, etc. → the name / Sparx default).
+  // empty (a logo-only treatment with no logo, etc. → the name / sparx default).
   const wantLogo = treatment !== 'name' && hasLogo;
   const wantName = treatment !== 'logo' && hasName;
   const showLogo = wantLogo;

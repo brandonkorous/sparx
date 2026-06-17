@@ -1,4 +1,4 @@
-# Sparx Platform — Dashboard Working-Area Standard
+# sparx Platform — Dashboard Working-Area Standard
 
 **Version:** 1.5
 **Author:** Brandon Korous

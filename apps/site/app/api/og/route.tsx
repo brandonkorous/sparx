@@ -10,7 +10,7 @@ import { ImageResponse } from 'next/og';
 export const runtime = 'edge';
 
 const SIZE = { width: 1200, height: 630 };
-const DEFAULT_ACCENT = '#6366F1'; // Sparx indigo, when the tenant set no brand colour
+const DEFAULT_ACCENT = '#6366F1'; // sparx indigo, when the tenant set no brand colour
 const HEX = /^[0-9a-fA-F]{6}$/;
 
 // Title type scales down as it gets longer so it always fits the card.

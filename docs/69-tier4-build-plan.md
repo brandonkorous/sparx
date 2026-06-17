@@ -1,4 +1,4 @@
-# Sparx Platform — Tier 4 Build Plan
+# sparx Platform — Tier 4 Build Plan
 
 **Version:** 1.0
 **Author:** Brandon Korous

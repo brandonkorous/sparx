@@ -18,14 +18,14 @@ const TENANT_SLUG = 'e2e-store';
 const STAFF_EMAIL = 'e2e-staff@sparx.test';
 const STAFF_PASSWORD = 'e2e-test-password';
 
-// The first-party publisher every Sparx-core listing belongs to (docs/60 D9).
+// The first-party publisher every sparx-core listing belongs to (docs/60 D9).
 const SPARX_PUBLISHER_SLUG = 'sparx';
 
-// The Sparx-core THEME catalog (docs/60 §6, Marketplace Themes). Each row's
+// The sparx-core THEME catalog (docs/60 §6, Marketplace Themes). Each row's
 // `slug` is the @sparx/site-themes preset key, so the dashboard "Apply" action
 // (PUT /v1/sitebuilder/config/theme { themeKey }) and the storefront token
 // compiler resolve it by slug — the heavy token payload stays in the in-code
-// preset, so `tokens` is left NULL for these Sparx-core rows (mirrors blueprints).
+// preset, so `tokens` is left NULL for these sparx-core rows (mirrors blueprints).
 // Curated marketplace copy + facets live here rather than importing the presets,
 // so the catalog row needs no @sparx/site-themes dependency.
 const SPARX_THEMES: {
@@ -267,27 +267,27 @@ function blueprintContents(bp: Blueprint): Record<string, number | string | bool
   };
 }
 
-// Seed the Sparx-core marketplace catalog (docs/60 §6) from the in-code
+// Seed the sparx-core marketplace catalog (docs/60 §6) from the in-code
 // @sparx/blueprints registry — idempotent (upsert by slug). The catalog row is a
 // thin, browse-ready projection (spine + vertical/modules/contents); the heavy
 // manifest stays in the registry and is resolved by slug at install time, so
-// `definition` is left NULL for Sparx-core rows.
+// `definition` is left NULL for sparx-core rows.
 //
-// Runs with NO tenant context (Sparx-core, publisher_tenant_id NULL): the
+// Runs with NO tenant context (sparx-core, publisher_tenant_id NULL): the
 // catalog tables are FORCE-RLS with a `marketplace_visibility` policy whose
 // WITH CHECK is `publisher_tenant_id IS NOT DISTINCT FROM current_tenant_id()`,
 // so clearing app.tenant_id lets the NULL ⇔ NULL insert through (and seeds rows
 // `published`, which the same policy keeps readable for the idempotent re-upsert).
 async function seedMarketplaceCatalog(): Promise<void> {
   await prisma.$transaction(async (tx) => {
-    // No tenant context — Sparx-core listings. Explicit (not relying on a fresh
+    // No tenant context — sparx-core listings. Explicit (not relying on a fresh
     // connection) so a pooled connection can't leak a prior tenant id.
     await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = ''`);
 
     const publisher = await tx.marketplacePublisher.upsert({
       where: { slug: SPARX_PUBLISHER_SLUG },
-      update: { type: 'sparx', displayName: 'Sparx', verified: true },
-      create: { slug: SPARX_PUBLISHER_SLUG, type: 'sparx', displayName: 'Sparx', verified: true },
+      update: { type: 'sparx', displayName: 'sparx', verified: true },
+      create: { slug: SPARX_PUBLISHER_SLUG, type: 'sparx', displayName: 'sparx', verified: true },
     });
 
     for (const bp of listBlueprints()) {
@@ -409,11 +409,11 @@ async function seedMarketplaceCatalog(): Promise<void> {
   });
 }
 
-// The Sparx-core INTEGRATION catalog (docs/60 §6, Marketplace Integrations). Each
+// The sparx-core INTEGRATION catalog (docs/60 §6, Marketplace Integrations). Each
 // row's `providerSlug` maps to a real integration-framework provider bundle
 // (@sparx/provider-*); the marketplace is DISCOVERY and the dashboard "Connect"
 // CTA hands off to Settings → Integrations (/commerce/providers) for the actual
-// install/config (docs/66 MP-Ph3). `configSchema` is NULL for these Sparx-core
+// install/config (docs/66 MP-Ph3). `configSchema` is NULL for these sparx-core
 // rows (resolved by provider slug at connect time).
 const SPARX_INTEGRATIONS: {
   slug: string;
@@ -435,7 +435,7 @@ const SPARX_INTEGRATIONS: {
     accent: '#635bff',
     tagline: 'Accept cards, wallets, and local payment methods worldwide.',
     description:
-      'Connect Stripe to take card and wallet payments, issue refunds, and reconcile payouts. The default, battle-tested payments rail for Sparx commerce.',
+      'Connect Stripe to take card and wallet payments, issue refunds, and reconcile payouts. The default, battle-tested payments rail for sparx commerce.',
     sortWeight: 60,
   },
   {
@@ -500,12 +500,12 @@ const SPARX_INTEGRATIONS: {
   },
 ];
 
-// The Sparx-core COMPONENT catalog (docs/60 §6/§7, Marketplace Components). A
+// The sparx-core COMPONENT catalog (docs/60 §6/§7, Marketplace Components). A
 // curated selection of the builder's system components (the in-code PALETTE
 // registry) — each row's `slug` IS the component `type`, so the dashboard "Add"
 // action deep-links to /builder/components/<type> (where the existing "Copy to my
 // components" flow clones it into a tenant BuilderComponent, docs/53). The node
-// `tree` is NULL for these Sparx-core rows (resolved by type at copy time, like
+// `tree` is NULL for these sparx-core rows (resolved by type at copy time, like
 // blueprints/themes); copy is curated marketplace metadata, kept inline so the
 // catalog row needs no dependency on the dashboard registry. Low-level primitives
 // (Divider, Stack, Icon) are intentionally omitted — the marketplace surfaces
@@ -615,7 +615,7 @@ const SPARX_COMPONENTS: {
     surfaces: ['page', 'site'],
     tagline: 'An email-capture form wired to your CRM.',
     description:
-      'Capture emails straight into your CRM as subscribers. Drop it in a footer or a landing section and the submissions just flow into Sparx.',
+      'Capture emails straight into your CRM as subscribers. Drop it in a footer or a landing section and the submissions just flow into sparx.',
     sortWeight: 58,
   },
   {
@@ -1385,7 +1385,7 @@ async function main(): Promise<void> {
     );
   }
 
-  // Sparx-core marketplace catalog (docs/60) — platform data, independent of the
+  // sparx-core marketplace catalog (docs/60) — platform data, independent of the
   // e2e tenant. Wrapped so a catalog hiccup never blocks the rest of the seed.
   try {
     await seedMarketplaceCatalog();

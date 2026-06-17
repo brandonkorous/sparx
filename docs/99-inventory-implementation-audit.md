@@ -1,4 +1,4 @@
-# Sparx Platform — Inventory Implementation Audit (docs vs. code)
+# sparx Platform — Inventory Implementation Audit (docs vs. code)
 
 **Version:** 1.1
 **Author:** Brandon Korous
@@ -199,7 +199,7 @@ This is the one area that is genuinely **complete and correct** against the docs
 
 ## 4. The correct, feature-complete path
 
-This is the full scope of a production-grade inventory system for Sparx — not a patch to make the
+This is the full scope of a production-grade inventory system for sparx — not a patch to make the
 page non-empty. Unification is the **foundation** of it, not a substitute for it. Everything below is
 in scope; the phases are a **deploy order** (ship the moment each layer works — docs/03 deploy-early),
 **not** a scope cut. Nothing here is deferred to "someday."
@@ -210,7 +210,7 @@ Inventory is a **first-class, full-featured product in its own right** (`invento
 docs/89 §9) — not an appendage of commerce. It owns the **supply** side; Commerce owns the **demand/sale**
 side; they meet at checkout via a thin contract. This mirrors how **Dropship** is its own supply space
 that "comes together" in Commerce/B2B, and how the platform treats CMS-only / CRM-only as equally
-first-class (Sparx is content **and/or** commerce — selling is one capability, never the assumption).
+first-class (sparx is content **and/or** commerce — selling is one capability, never the assumption).
 
 **Standalone-usable is a hard requirement.** A tenant can activate **Inventory alone** — warehouse /
 stock / supplier / PO / receiving / count / valuation / ERP-sync management as a standalone WMS-lite
@@ -333,7 +333,7 @@ audit-log viewer**, **transfers** UI, **purchase orders + receiving**, **supplie
 **lots/serials**, and the **sync connections + SKU-mapping + health** screens. Commerce/B2B integrations
 add on top when active: per-account stock visibility, fitment-filtered availability, min/max order qty,
 and fleet/work-order holds (docs/10). A dedicated marketing page + module overview give it the same
-front-door as every other Sparx product.
+front-door as every other sparx product.
 
 ### 4.8 Build order (deployable slices, full surface committed)
 

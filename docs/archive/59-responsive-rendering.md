@@ -1,4 +1,4 @@
-# Sparx Platform — Responsive Rendering
+# sparx Platform — Responsive Rendering
 
 **Version:** 0.1 (BUILT — site renderer + editor canvas)
 **Author:** Brandon Korous
@@ -6,7 +6,7 @@
 
 > **Top-2 platform rule.** No site shipped in 2026 survives if it is not
 > responsive, and no tenant will pay for one that isn't. Responsiveness is
-> non-negotiable for **both** surfaces: the Sparx platform UI (dashboard +
+> non-negotiable for **both** surfaces: the sparx platform UI (dashboard +
 > builder) **and** every tenant site/property the platform generates. Any
 > change that can render a fixed-width layout at a phone viewport is a bug.
 

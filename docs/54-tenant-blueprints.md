@@ -493,7 +493,7 @@ renders the themed home/PDP/blog and the product add-to-cart works.
 Phase-1's marketplace is dashboard-only (post-auth, admin-gated). The high-leverage next step is a
 **public** template gallery on the marketing site (`apps/web`, pre-auth) that turns "browse a
 template" into "start a tenant" — aligned with the onboarding "live in under 5 minutes" goal
-([docs/15](15-merchant-onboarding-prd.md)) and the "AI builds it, Sparx keeps it" permanence
+([docs/15](15-merchant-onboarding-prd.md)) and the "AI builds it, sparx keeps it" permanence
 positioning ([docs/01](01-platform-vision.md) §7).
 
 Funnel:

@@ -72,7 +72,7 @@ export function AddDomainForm({ surface }: AddDomainFormProps) {
         <Stack gap={1}>
           <Heading level={2}>Add a sending domain</Heading>
           <Text size="sm" variant="muted">
-            Enter the domain (or subdomain) you want to send from. Sparx provisions it in Mailgun
+            Enter the domain (or subdomain) you want to send from. sparx provisions it in Mailgun
             and shows the exact DNS records to publish.
           </Text>
         </Stack>

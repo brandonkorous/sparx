@@ -24,7 +24,7 @@
 
 ## 1. Why this exists
 
-Sparx is about to drive traffic from many channels (Product Hunt, Hacker News, the MCP registries,
+sparx is about to drive traffic from many channels (Product Hunt, Hacker News, the MCP registries,
 Reddit, paid search/social, the per-module marketing domains). Today the only instrumentation is
 PostHog on `apps/web` ([posthog-provider.tsx](../apps/web/components/posthog-provider.tsx)), configured
 `person_profiles: 'identified_only'`. That captures `utm_*` as **event** properties on `$pageview`
@@ -33,13 +33,13 @@ majority, and the conversion happens on a **different registrable surface** (`ap
 where the channel context is already gone. The result: we can see who visited, not which channel
 produced a customer. That gap is the entire reason to spend a launch.
 
-The same gap exists one level down. A Sparx tenant replacing Shopify + HubSpot expects to answer
+The same gap exists one level down. A sparx tenant replacing Shopify + HubSpot expects to answer
 "which campaign drove the most revenue last quarter" — and to ask it in plain language of their AI.
-No commerce platform exposes that natively; Sparx's MCP server can.
+No commerce platform exposes that natively; sparx's MCP server can.
 
 ## 2. The two-level model
 
-Attribution in Sparx is **two systems that share one engine**, mirroring the two-surface pattern in
+Attribution in sparx is **two systems that share one engine**, mirroring the two-surface pattern in
 [doc 50 §1](50-seo-aio-discoverability.md):
 
 | Level                             | Subject              | Surface(s)                                                                                       | Conversion event                                  | Stored on                                          | Audience                     |
@@ -220,7 +220,7 @@ Attribution is **not** strictly-necessary. It maps onto doc 42's four categories
 A tenant on a **custom domain** whose checkout or account lives on `*.sparx.zone` crosses an eTLD+1
 boundary the cookie can't span. Handle with **link decoration**: the site appends a short-lived
 signed `?_sx=` handoff param (the visitor id + a capture nonce) to cross-origin navigations into the
-Sparx-hosted surface; the receiving middleware mints/reconciles the cookie from it. Same mechanism we
+sparx-hosted surface; the receiving middleware mints/reconciles the cookie from it. Same mechanism we
 use for `sparx.works → app.sparx.works` when a future custom WizeWorks domain is involved. No
 third-party cookies, ever.
 
@@ -256,7 +256,7 @@ delivery footgun) so the attribution-aware consumer actually receives it.
 
 ### 7.3 Don't double-count
 
-PostHog remains the **product-analytics** system of record for events/funnels; the Sparx tables are
+PostHog remains the **product-analytics** system of record for events/funnels; the sparx tables are
 the **attribution system of record** for revenue joins and the tenant-facing feature. The signup/order
 conversion is written once server-side and mirrored to PostHog by `identify`/`capture` — the DB row is
 canonical for money, PostHog for behavior.
@@ -333,9 +333,9 @@ attribution?: {
 **Shipped (interim):** the acquisition funnel above is exposed today as a cross-tenant **internal
 endpoint** — `GET /internal/acquisition/summary` (JSON, or `?format=csv`; optional `since`/`until`
 window) — aggregating `tenants.acquisition_*` by channel / source / campaign with a `with_billing`
-conversion proxy (`stripeCustomerId` set). It is **not** a dashboard page: Sparx has no cross-tenant
+conversion proxy (`stripeCustomerId` set). It is **not** a dashboard page: sparx has no cross-tenant
 operator login yet (see [docs/16 §2.4](16-auth-security.md)), so the report runs as a
-System/Internal principal behind a shared-secret header (`X-Sparx-Internal-Acquisition-Token`,
+System/Internal principal behind a shared-secret header (`X-sparx-Internal-Acquisition-Token`,
 [docs/16 §2.5](16-auth-security.md)). A real launch-day operator console lands when the platform-operator
 auth tier is built.
 
@@ -403,7 +403,7 @@ stored in plaintext for this purpose.
 ## 15. Reporting & warehouse
 
 - **PostHog** for behavioral funnels/retention (system of record for events).
-- **Sparx DB** for revenue-joined attribution (system of record for money) — the tenant-facing reports
+- **sparx DB** for revenue-joined attribution (system of record for money) — the tenant-facing reports
   query this directly via `api-rest`, RLS-scoped.
 - **Warehouse (Phase 6):** export touches + conversions to **BigQuery** (GCP-native) for SQL and
   large-window multi-touch recompute. Optionally surfaced back into a Builder page through the
@@ -446,7 +446,7 @@ touches a module, RLS on every tenant table, event-driven, conventional commits.
 
 ## 18. Non-goals
 
-- Not a replacement for PostHog/GA as the product-analytics tool — Sparx complements them with
+- Not a replacement for PostHog/GA as the product-analytics tool — sparx complements them with
   **revenue-joined, first-party, MCP-readable** attribution.
 - Not a full BI suite (no arbitrary pivot builder in v1; reports are curated + MCP-queryable).
 - No fingerprinting, no probabilistic cross-device, no third-party-cookie reliance, no buying

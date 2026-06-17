@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
-// TipTap-based rich text editor with a Sparx-styled toolbar. Controlled via
+// TipTap-based rich text editor with a sparx-styled toolbar. Controlled via
 // `value` (HTML string) + `onChange`. StarterKit gives us paragraph/headings/
 // lists/blockquote/code-block/bold/italic/strike/hr/history; we add Link and
 // Placeholder. Active marks tint with --module-active.

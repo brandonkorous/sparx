@@ -88,7 +88,7 @@ export async function reconcilePaymentEvent(
     case 'dispute.created':
     case 'dispute.closed':
       // No automated action yet — disputes are handled in the Stripe dashboard
-      // (Sparx owns the dispute surface for Sparx Pay). Recorded above for audit.
+      // (sparx owns the dispute surface for sparx Pay). Recorded above for audit.
       log.info(
         { type: parsed.type, externalId: parsed.externalId },
         'payment webhook: dispute event recorded'
@@ -189,7 +189,7 @@ async function handleSucceeded(
       where: { processorRef: intent.id },
       select: { id: true, orderId: true, status: true },
     });
-    // The ledger row (informational source of truth for "what Sparx earned").
+    // The ledger row (informational source of truth for "what sparx earned").
     await tx.paymentIntent.updateMany({
       where: { externalId: intent.id },
       data: { status: 'succeeded' },

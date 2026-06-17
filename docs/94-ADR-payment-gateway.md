@@ -1,17 +1,17 @@
-# ADR — Payment Gateway Architecture & Sparx Pay
+# ADR — Payment Gateway Architecture & sparx Pay
 
 **For:** Claude Code / build agent
 **Date:** 2026-06-12
 **Status:** Decided — do not relitigate.
 **Context:** Zero users in production. Build the full gateway abstraction
-now. Use Stripe Connect as the Sparx Pay implementation.
+now. Use Stripe Connect as the sparx Pay implementation.
 
 ---
 
 ## 1. The Decision
 
-Sparx does not build its own payment processing. Stripe Connect (destination
-charges) is the Sparx Pay implementation. A `PaymentGateway` interface
+sparx does not build its own payment processing. Stripe Connect (destination
+charges) is the sparx Pay implementation. A `PaymentGateway` interface
 abstracts all payment vendors so the checkout, invoicing, and B2B payment
 flows never know which vendor is processing.
 
@@ -21,30 +21,30 @@ volume makes Stripe's economics a material margin issue. That is not now.
 
 ---
 
-## 2. Sparx Pay — What It Is
+## 2. sparx Pay — What It Is
 
-Sparx Pay is a Sparx-branded product powered by Stripe Connect destination
-charges. Merchants see "Sparx Pay." They do not see Stripe unless they
-look at their bank statement. The branding is Sparx. The infrastructure
+sparx Pay is a sparx-branded product powered by Stripe Connect destination
+charges. Merchants see "sparx Pay." They do not see Stripe unless they
+look at their bank statement. The branding is sparx. The infrastructure
 is Stripe.
 
 **Why destination charges (not direct charges):**
 
-Destination charges create the charge on Sparx's platform Stripe account
+Destination charges create the charge on sparx's platform Stripe account
 with `on_behalf_of` + `transfer_data.destination` → the merchant's
-connected account. `application_fee_amount` collects the Sparx platform
+connected account. `application_fee_amount` collects the sparx platform
 fee automatically before the remainder transfers to the merchant.
 
 This means:
 
-- Sparx owns the charge and dispute surface
-- Sparx controls dispute responses — merchants don't handle Stripe disputes
+- sparx owns the charge and dispute surface
+- sparx controls dispute responses — merchants don't handle Stripe disputes
 - Platform fee collection is automatic — no invoicing merchants for fees
-- PCI compliance surface is Sparx's responsibility, not the merchant's
+- PCI compliance surface is sparx's responsibility, not the merchant's
 - Merchants don't need to understand Stripe beyond Connect onboarding
 
 Direct charges would put all of the above on the merchant. That contradicts
-the "Sparx handles the complexity" pitch. Destination charges is correct.
+the "sparx handles the complexity" pitch. Destination charges is correct.
 
 ---
 
@@ -238,7 +238,7 @@ export class PaymentService {
     const gateway = await this.getGatewayForTenant(params.tenantId);
     const intent = await gateway.createPaymentIntent(params);
 
-    // Apply platform fee only if Sparx Pay
+    // Apply platform fee only if sparx Pay
     // (fee collection happens in Stripe via application_fee_amount —
     //  this is informational for our records)
     const platformFee =
@@ -266,7 +266,7 @@ export class PaymentService {
 
 ---
 
-## 6. Sparx Pay Implementation (Stripe Connect Destination Charges)
+## 6. sparx Pay Implementation (Stripe Connect Destination Charges)
 
 ```typescript
 // packages/payments/src/gateways/sparx-pay.ts
@@ -275,7 +275,7 @@ import Stripe from 'stripe';
 
 export class SparxPayGateway implements PaymentGateway {
   readonly id = 'sparx_pay';
-  readonly name = 'Sparx Pay';
+  readonly name = 'sparx Pay';
 
   private platform: Stripe;
 
@@ -385,7 +385,7 @@ export class SparxPayGateway implements PaymentGateway {
 
   private async getMerchantAccountId(tenantId: string): Promise<string> {
     const creds = await secretManager.get(`payments/${tenantId}/sparx_pay/stripe_account_id`);
-    if (!creds) throw new Error(`No Sparx Pay account for tenant ${tenantId}`);
+    if (!creds) throw new Error(`No sparx Pay account for tenant ${tenantId}`);
     return creds;
   }
 }
@@ -396,7 +396,7 @@ export class SparxPayGateway implements PaymentGateway {
 ## 7. Stripe Direct Implementation (Merchant's Own Stripe Account)
 
 For merchants who want to use their own Stripe account directly.
-Sparx is not in the payment flow. No platform fee collected.
+sparx is not in the payment flow. No platform fee collected.
 
 ```typescript
 // packages/payments/src/gateways/stripe-direct.ts
@@ -412,7 +412,7 @@ export class StripeDirectGateway implements PaymentGateway {
       amount: params.amount,
       currency: params.currency,
       // No on_behalf_of — this IS the merchant's account
-      // No application_fee_amount — Sparx takes no fee
+      // No application_fee_amount — sparx takes no fee
       metadata: {
         tenantId: params.tenantId,
         orderId: params.orderId ?? '',
@@ -469,48 +469,48 @@ export class StripeDirectGateway implements PaymentGateway {
 ## 8. Transaction Fee Rules
 
 ```
-Sparx Pay (destination charges):
+sparx Pay (destination charges):
   Platform fee: 0.5% on every payment processed
   Collected:    automatically via application_fee_amount
   Applied to:   site checkout, invoice payment links,
-                B2B order payments, any Sparx Pay transaction
+                B2B order payments, any sparx Pay transaction
 
 Any other gateway (stripe_direct, paypal, square, etc.):
   Platform fee: $0
-  Reason:       Sparx is not in the payment flow.
+  Reason:       sparx is not in the payment flow.
                 There is no mechanism to collect a fee and
-                no justification for one — Sparx provided
+                no justification for one — sparx provided
                 no payment infrastructure.
 
 Manual payments (check, cash, wire, ACH direct):
   Platform fee: $0
-  Reason:       Sparx never touched the money.
+  Reason:       sparx never touched the money.
                 Merchant marks invoice as paid manually.
 ```
 
 No tier-based fee structure. No plan-based fee structure. One rule:
-Sparx Pay = 0.5% fee. Everything else = no fee. Simple, honest,
+sparx Pay = 0.5% fee. Everything else = no fee. Simple, honest,
 and consistent with the modules-not-plans philosophy.
 
 **Invoicing specifically:**
 
-Invoice paid via Sparx Pay payment link → 0.5% fee applies.
+Invoice paid via sparx Pay payment link → 0.5% fee applies.
 Invoice paid manually (check, wire, ACH) → no fee.
 Merchant controls which path by whether they include a payment link.
 
 ---
 
-## 9. Sparx Pay Onboarding (Connect Onboarding)
+## 9. sparx Pay Onboarding (Connect Onboarding)
 
 During merchant onboarding, after module activation:
 
 ```
-Step: Connect Sparx Pay
+Step: Connect sparx Pay
 
-Option A: Use Sparx Pay (recommended)
+Option A: Use sparx Pay (recommended)
   → Stripe Connect Express onboarding
   → Merchant provides: business name, bank account, SSN/EIN
-  → Sparx handles: disputes, PCI compliance surface,
+  → sparx handles: disputes, PCI compliance surface,
     fee collection, settlement
   → Takes ~5 minutes
 
@@ -518,7 +518,7 @@ Option B: Use your own payment processor
   → Select from: Stripe (your account), PayPal, Square, Other
   → Merchant provides their own API credentials
   → Merchant handles: disputes, PCI compliance, everything
-  → Sparx routes checkout to their gateway
+  → sparx routes checkout to their gateway
 
 Option C: Skip for now
   → Store can be built but not take payments
@@ -526,14 +526,14 @@ Option C: Skip for now
 ```
 
 Connect Express (not Custom or Standard) is the right Stripe Connect
-tier for Sparx Pay:
+tier for sparx Pay:
 
-- Express: Stripe hosts the onboarding UI, Sparx has moderate control
-- Custom: Sparx builds the entire onboarding UI, maximum control
+- Express: Stripe hosts the onboarding UI, sparx has moderate control
+- Custom: sparx builds the entire onboarding UI, maximum control
 - Standard: merchant manages their own full Stripe account
 
 Express is correct for now. The onboarding is fast, Stripe handles KYC,
-and Sparx has enough control for the destination charges model.
+and sparx has enough control for the destination charges model.
 Move to Custom connect only if Express's limitations become a real
 constraint — that is a future decision.
 
@@ -590,7 +590,7 @@ CREATE TABLE payment_intents (
   external_id     VARCHAR(255) NOT NULL,  -- gateway's own intent ID
   amount          INTEGER NOT NULL,        -- cents
   currency        CHAR(3) NOT NULL DEFAULT 'usd',
-  platform_fee    INTEGER NOT NULL DEFAULT 0,  -- cents, 0 if not Sparx Pay
+  platform_fee    INTEGER NOT NULL DEFAULT 0,  -- cents, 0 if not sparx Pay
   status          VARCHAR(50) NOT NULL DEFAULT 'pending',
   order_id        UUID REFERENCES orders(id),
   billing_doc_id  UUID REFERENCES billing_documents(id),
@@ -623,7 +623,7 @@ Do not build any of the following. These are future decisions.
    Requires: state money transmission licenses (47 states),
    PCI DSS Level 1 compliance, banking relationships,
    fraud tooling, 12-18 months, significant capital.
-   Revisit when Sparx Pay GMV volume makes Stripe's
+   Revisit when sparx Pay GMV volume makes Stripe's
    per-transaction economics a material margin issue.
    That is not now.
 
@@ -663,7 +663,7 @@ Do not build any of the following. These are future decisions.
 ✅ Site checkout uses PaymentService (not Stripe directly)
 ✅ Invoice payment link creation uses PaymentService
 ✅ B2B order payment uses PaymentService
-✅ Sparx Pay Connect Express onboarding flow in dashboard
+✅ sparx Pay Connect Express onboarding flow in dashboard
 ✅ Settings → Payments shows active gateway + onboarding status
 ✅ Manual payment recording does not create a PaymentIntent
    (no gateway involved, no fee, merchant marks paid manually)

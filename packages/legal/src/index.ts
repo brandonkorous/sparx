@@ -1,4 +1,4 @@
-// Single source of truth for Sparx's OWN platform legal document versions
+// Single source of truth for sparx's OWN platform legal document versions
 // (docs/42 §6). The marketing pages that render each doc, the signUpMerchant
 // acceptance recorder, and the re-acceptance check all read from here, so the
 // version a tenant accepts is exactly the version that was on the page.

@@ -2,12 +2,12 @@ import * as React from 'react';
 import { cn } from '../../utils/cn';
 import { SparxMark } from './sparx-mark';
 
-// The Sparx wordmark. Single source of truth so the marketing site, the
+// The sparx wordmark. Single source of truth so the marketing site, the
 // dashboard auth header, OG images, and any embedded badge all render the
 // same letterforms.
 //
 // Brand rules (docs/sparx-brand-guide.md §2):
-//   - The "x" is ALWAYS Sparx Indigo (#6366F1) — never a solid one-color
+//   - The "x" is ALWAYS sparx Indigo (#6366F1) — never a solid one-color
 //     wordmark.
 //   - Set in Inter bold (700), tracking -0.03em, to match the weight and
 //     proportions of the monogram mark.
@@ -30,7 +30,7 @@ import { SparxMark } from './sparx-mark';
 export interface WordmarkProps extends React.HTMLAttributes<HTMLSpanElement> {
   /** Font size in px. Default 22 (matches marketing header + email header). */
   size?: number;
-  /** Render the Sparx monogram mark before the wordmark (icon + wordmark lockup). */
+  /** Render the sparx monogram mark before the wordmark (icon + wordmark lockup). */
   icon?: boolean;
 }
 

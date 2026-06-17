@@ -1,4 +1,4 @@
-# Sparx Platform — Domain Purchase & Management Spec
+# sparx Platform — Domain Purchase & Management Spec
 
 **Version:** 1.2  
 **Author:** Brandon Korous  
@@ -8,7 +8,7 @@
 
 ## 1. Overview
 
-Sparx integrates with the GoDaddy Reseller API to allow tenants to search, purchase, and instantly connect a custom domain during onboarding or from the dashboard. Domain goes live with HTTPS and email authentication in under 60 seconds. No DNS configuration required. No registrar login. No CNAME records to add manually.
+sparx integrates with the GoDaddy Reseller API to allow tenants to search, purchase, and instantly connect a custom domain during onboarding or from the dashboard. Domain goes live with HTTPS and email authentication in under 60 seconds. No DNS configuration required. No registrar login. No CNAME records to add manually.
 
 This is a genuine differentiator. No other commerce platform does native domain purchase with instant automatic connection.
 
@@ -87,7 +87,7 @@ Returns: `orderId`.
 
 ### Automatic DNS Configuration
 
-After purchase, immediately call `PUT /v1/domains/{domain}/records` to replace ALL DNS with Sparx config:
+After purchase, immediately call `PUT /v1/domains/{domain}/records` to replace ALL DNS with sparx config:
 
 | Type  | Name               | Value                                                  | TTL  |
 | ----- | ------------------ | ------------------------------------------------------ | ---- |
@@ -104,10 +104,10 @@ GoDaddy DNS propagates in seconds for newly registered domains (GoDaddy controls
 
 ## 4. The Full Purchase Flow
 
-1. Stripe charge (domain price + Sparx convenience fee) → payment confirmed
+1. Stripe charge (domain price + sparx convenience fee) → payment confirmed
 2. GoDaddy Reseller API: purchase domain → `orderId` returned (~2–5 seconds)
 3. GoDaddy DNS API: configure all records → ~1–2 seconds, propagates in seconds
-4. Sparx DB: create domain record, `status: pending_ssl`
+4. sparx DB: create domain record, `status: pending_ssl`
 5. Pub/Sub: `domain.purchased` event → domain worker → validates DNS → marks `verified`
 6. Caddy on-demand TLS: cert issued on first HTTPS request
 7. Domain status: `active`, `ssl_status: provisioned`
@@ -119,9 +119,9 @@ GoDaddy DNS propagates in seconds for newly registered domains (GoDaddy controls
 
 ### Renewal
 
-Nightly cron checks domains expiring within 30 days. Email notifications at: 30 days, 14 days, 7 days, day of expiry. GoDaddy handles auto-renewal (`renewAuto: true` at purchase). Sparx charges tenant's saved payment method before GoDaddy charges us.
+Nightly cron checks domains expiring within 30 days. Email notifications at: 30 days, 14 days, 7 days, day of expiry. GoDaddy handles auto-renewal (`renewAuto: true` at purchase). sparx charges tenant's saved payment method before GoDaddy charges us.
 
-### Transfer Out (Tenant Cancels Sparx)
+### Transfer Out (Tenant Cancels sparx)
 
 Tenant owns their domain and can take it:
 
@@ -142,7 +142,7 @@ Price: ~$7.99/yr. Shown as optional add-on at purchase time.
 
 ## 6. Pricing & Revenue
 
-Display: reseller wholesale cost + Sparx convenience fee (~$1.50–3.00 depending on TLD).
+Display: reseller wholesale cost + sparx convenience fee (~$1.50–3.00 depending on TLD).
 
 Suggested markups:
 

@@ -248,7 +248,7 @@ async function resolveSparxPublisherId(tx: TxClient): Promise<string> {
     select: { id: true },
   });
   if (!pub) {
-    throw new Error('Sparx publisher not found — run the catalog seed before ingesting.');
+    throw new Error('sparx publisher not found — run the catalog seed before ingesting.');
   }
   return pub.id;
 }

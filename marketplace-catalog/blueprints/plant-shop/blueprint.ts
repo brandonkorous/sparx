@@ -1,4 +1,4 @@
-// Plant Shop — a Sparx first-party marketplace blueprint (docs/85). The payload is
+// Plant Shop — a sparx first-party marketplace blueprint (docs/85). The payload is
 // a declarative @sparx/blueprints manifest; the ingest validates it (safeParseBlueprint)
 // and writes it to storage as the artifact the installer replays into a new site.
 export default {

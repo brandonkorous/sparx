@@ -1,4 +1,4 @@
-// The default email templates Sparx provisions on email-module activation
+// The default email templates sparx provisions on email-module activation
 // (docs/91 + docs/93). Unlike the single `welcome` STARTER_EMAIL (seeded on first list),
 // these are KEYED defaults that back the platform's transactional + marketing
 // automations and are per-site overridable (docs/49 Phase 7b). Each is a

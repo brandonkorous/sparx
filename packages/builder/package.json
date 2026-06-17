@@ -2,7 +2,7 @@
   "name": "@sparx/builder",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx Builder — service layer for the composition-model page editor (page catalog, draft save, publish). One service, many transports (docs/41-builder-page-model.md).",
+  "description": "sparx Builder — service layer for the composition-model page editor (page catalog, draft save, publish). One service, many transports (docs/41-builder-page-model.md).",
   "type": "module",
   "exports": {
     ".": {

@@ -1,6 +1,6 @@
 // ShippingProvider — real-time carrier rates, label purchase, tracking,
 // and label voiding. Shippo, EasyPost, future direct-carrier integrations
-// implement this. Sparx Shipping is a white-label wrapper over Shippo.
+// implement this. sparx Shipping is a white-label wrapper over Shippo.
 
 import type { RateOption, ShipmentRequest } from '@sparx/commerce-schemas';
 

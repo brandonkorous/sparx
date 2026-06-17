@@ -1,11 +1,11 @@
-# Sparx — Product Hunt Launch Copy
+# sparx — Product Hunt Launch Copy
 
 **Lead angle:** AI/MCP-native — _"The first business OS your AI agent can actually operate."_
 **Last updated:** 2026-06-09
 **Author:** Brandon Korous
 
 > Paste-ready. Every field below maps 1:1 to a field on the Product Hunt submission form.
-> Character counts are noted where PH enforces a limit. Voice follows the Sparx brand guide
+> Character counts are noted where PH enforces a limit. Voice follows the sparx brand guide
 > §7: short sentences, second person, present tense, no "revolutionary / game-changing."
 
 ---
@@ -13,7 +13,7 @@
 ## 1. Name
 
 ```
-Sparx
+sparx
 ```
 
 Listed maker name / company: **WizeWorks**
@@ -75,7 +75,7 @@ The first business OS your AI agent can actually operate
 **Primary (258 chars):**
 
 ```
-Sparx is a modular content & commerce OS — site builder, CMS, CRM, commerce, email, B2B & dropship in one dashboard. It's MCP-native, so Claude, ChatGPT & Copilot can read your data and run your business. Turn on only what you need. Live in 5 minutes.
+sparx is a modular content & commerce OS — site builder, CMS, CRM, commerce, email, B2B & dropship in one dashboard. It's MCP-native, so Claude, ChatGPT & Copilot can read your data and run your business. Turn on only what you need. Live in 5 minutes.
 ```
 
 **Shorter backup (185 chars), if you want air:**
@@ -89,19 +89,19 @@ A modular content & commerce OS your AI can actually run. Site builder, CMS, CRM
 ## 6. First comment (the maker's intro)
 
 > This is the single most-read piece of copy on launch day. PH ranking weights early
-> engagement, so end on a real question. Sparx voice: short sentences, no hedging.
+> engagement, so end on a real question. sparx voice: short sentences, no hedging.
 
 ```
 Hey Product Hunt 👋
 
-I'm Brandon, founder of WizeWorks. We build Sparx.
+I'm Brandon, founder of WizeWorks. We build sparx.
 
 Here's the thing that started this: AI can now read your email, your calendar, your
 docs — but it's blind to the system that actually runs your business. You can't ask
 your AI "who are my top 10 customers this quarter" or "draft the back-in-stock email
 for these SKUs," because no commerce or CRM platform exposes its data natively.
 
-Sparx fixes that. It's a modular content & commerce OS — site builder, CMS, CRM,
+sparx fixes that. It's a modular content & commerce OS — site builder, CMS, CRM,
 commerce, email, B2B/wholesale, and dropship — all on one data layer, one dashboard,
 one bill. And it ships with a native MCP server, so Claude, ChatGPT, and Copilot can
 read your customers, orders, and content and actually do the work. Not a chatbot
@@ -117,8 +117,8 @@ Three things make it different:
   pull reports, update products, send campaigns — in plain language.
 
 • Built to last. Anyone can generate a website in 10 seconds now. Almost nobody can
-  keep one alive. Sparx is where an AI-built site grows up: a visual no-code editor,
-  real commerce, your data — for years. AI builds it. Sparx keeps it.
+  keep one alive. sparx is where an AI-built site grows up: a visual no-code editor,
+  real commerce, your data — for years. AI builds it. sparx keeps it.
 
 We built it to replace the Shopify + HubSpot + Mailchimp + Zapier stack our first
 enterprise customer was paying $35K/year for. One platform. One bill. Live in 5 minutes.
@@ -136,12 +136,12 @@ business for you tomorrow, which part would you hand over first? 👇
 
 | #   | Caption (overlaid headline)                                  | What the real screen shows                                                                    |
 | --- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| 1   | **The first business OS your AI agent can actually operate** | MCP conversation: "Who are my top 10 customers this quarter?" → real answer pulled from Sparx |
+| 1   | **The first business OS your AI agent can actually operate** | MCP conversation: "Who are my top 10 customers this quarter?" → real answer pulled from sparx |
 | 2   | **One platform. Eight modules. One bill.**                   | Dashboard with the module switcher / sidebar; the 3px module stripes                          |
 | 3   | **Your AI speaks your business**                             | MCP / Claude updating a product + drafting a campaign in plain language                       |
 | 4   | **Build it once. Keep it forever.**                          | The visual no-code site builder canvas                                                        |
 | 5   | **Live in under 5 minutes**                                  | Onboarding: pick theme → flip modules → live                                                  |
-| 6   | **Replace the whole stack**                                  | The comparison table (Sparx vs Shopify + HubSpot + Mailchimp + Zapier)                        |
+| 6   | **Replace the whole stack**                                  | The comparison table (sparx vs Shopify + HubSpot + Mailchimp + Zapier)                        |
 | 7   | **Content or commerce. Or both.**                            | A real published tenant storefront                                                            |
 | 8   | **Pay only for what you use**                                | The modular pricing switchboard                                                               |
 
@@ -149,7 +149,7 @@ business for you tomorrow, which part would you hand over first? 👇
 
 ## 8. Thumbnail / logo
 
-- **Logo:** the `Sx` monogram (S in text color, **x in Sparx Indigo `#6366F1`**), 240×240, on `#FAFAFA`.
+- **Logo:** the `Sx` monogram (S in text color, **x in sparx Indigo `#6366F1`**), 240×240, on `#FAFAFA`.
 - **Gallery thumbnail:** Frame 1 (PH uses the first gallery image as the feed card — it must carry the hook alone).
 
 ---
@@ -169,7 +169,7 @@ business for you tomorrow, which part would you hand over first? 👇
 **X / Twitter (≤280):**
 
 ```
-We just launched Sparx on Product Hunt 🚀
+We just launched sparx on Product Hunt 🚀
 
 It's a modular content & commerce OS — and it's MCP-native, so your AI agent can
 actually run your business. Ask Claude "who are my top customers" and get a real answer.
@@ -183,9 +183,9 @@ Would love your support 👇
 **LinkedIn:**
 
 ```
-Today we launched Sparx on Product Hunt.
+Today we launched sparx on Product Hunt.
 
-Most platforms let AI *talk about* your business. Sparx lets AI *run* it.
+Most platforms let AI *talk about* your business. sparx lets AI *run* it.
 
 It's a modular content & commerce OS — storefront, CMS, CRM, commerce, email, B2B,
 and dropship on one data layer — with a native MCP server. Claude, ChatGPT, and
@@ -202,7 +202,7 @@ If you've got 30 seconds, a look (and an upvote) means a lot: [PH link]
 ## 11. Hunter / outreach note (optional)
 
 If a well-followed hunter posts instead of self-posting, send them §1–§6 plus the gallery.
-Lead the DM with the one-liner: _"Sparx — the first business OS your AI agent can actually
+Lead the DM with the one-liner: _"sparx — the first business OS your AI agent can actually
 operate. Modular content + commerce, MCP-native, live in 5 min."_
 
 ---

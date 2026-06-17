@@ -1,7 +1,7 @@
 // @sparx/payments — vendor-agnostic payment gateway abstraction (docs/94 ADR).
 // Every payment flow (storefront checkout, invoice payment links, B2B order
 // payments) calls PaymentService and never knows which gateway is behind it.
-// Sparx Pay = Stripe Connect destination charges (flat 0.5% via application_fee);
+// sparx Pay = Stripe Connect destination charges (flat 0.5% via application_fee);
 // Stripe Direct = the merchant's own account (no platform fee).
 
 export type {

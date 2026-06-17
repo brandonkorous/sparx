@@ -1,4 +1,4 @@
-# Sparx Platform — Tier 1 Build Plan
+# sparx Platform — Tier 1 Build Plan
 
 **Version:** 1.0
 **Author:** Brandon Korous
@@ -170,7 +170,7 @@ Update onboarding Step 4 from "show subdomain only" to the full domain search fl
 
 **Depends on:** Tier 2 Legal & Consent slice 6 (or can be built independently ahead of it).
 
-Add the combined acceptance checkbox to the sign-up form: _"I agree to the Sparx Terms of Service, Privacy Policy, and Acceptable Use Policy."_ Write `platform_legal_acceptance` rows (terms/privacy/aup) inside the existing `signUpMerchant` transaction (docs/42 §6.3). Zero extra wizard steps — happens on the existing account-creation screen.
+Add the combined acceptance checkbox to the sign-up form: _"I agree to the sparx Terms of Service, Privacy Policy, and Acceptable Use Policy."_ Write `platform_legal_acceptance` rows (terms/privacy/aup) inside the existing `signUpMerchant` transaction (docs/42 §6.3). Zero extra wizard steps — happens on the existing account-creation screen.
 
 ---
 

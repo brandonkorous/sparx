@@ -1,6 +1,6 @@
 // Internal endpoints invoked by the Invoicing k8s CronJobs (k8s/cronjobs/).
 //
-// Auth: shared secret in `X-Sparx-Internal-Cron-Token`, constant-time
+// Auth: shared secret in `X-sparx-Internal-Cron-Token`, constant-time
 // compared against env.SPARX_INTERNAL_CRON_TOKEN. Same pattern as the CRM and
 // Commerce internal cron surfaces — ClusterIP-only, no JWT.
 //
@@ -28,7 +28,7 @@ function authorize(request: FastifyRequest): void {
   }
   const provided = request.headers[CRON_TOKEN_HEADER];
   if (typeof provided !== 'string' || provided.length === 0) {
-    throw unauthorized('Missing X-Sparx-Internal-Cron-Token header.');
+    throw unauthorized('Missing X-sparx-Internal-Cron-Token header.');
   }
   const a = Buffer.from(provided, 'utf8');
   const b = Buffer.from(expected, 'utf8');

@@ -1,8 +1,8 @@
 // Typesense schema for the UNIVERSAL `entities` collection (docs/39).
 //
-// Every user-facing entity in Sparx — across CMS, Commerce, CRM, Email, and
+// Every user-facing entity in sparx — across CMS, Commerce, CRM, Email, and
 // Site Builder — projects a uniform document into this one collection. It
-// powers global ⌘K ("find anything across Sparx") and list-page search for
+// powers global ⌘K ("find anything across sparx") and list-page search for
 // entities that don't warrant their own rich, faceted collection.
 //
 // The three rich collections (products/customers/orders) keep their own

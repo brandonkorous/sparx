@@ -33,7 +33,7 @@ page's draft tree, and a minimal publish (snapshot draft → published).
 ## 2. The persisted unit — `BuilderPage`
 
 One row per page a tenant has. A page template (doc 40) and a page instance are the
-same row: Sparx _ships_ a curated set as starting points, the tenant _edits_ them and
+same row: sparx _ships_ a curated set as starting points, the tenant _edits_ them and
 _creates_ more. There is no separate "template" entity.
 
 | Column                    | Type         | Notes                                                                  |

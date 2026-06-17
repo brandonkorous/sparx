@@ -108,7 +108,7 @@ describe('syncModuleItems', () => {
     const call = h.stub.value!.subscriptions.create.mock.calls[0];
     expect(call).toBeDefined();
     const createArg = call![0] as { items: { price: string }[] };
-    // Exactly the module item — the Sparx Pay 0.5% fee is collected at charge time
+    // Exactly the module item — the sparx Pay 0.5% fee is collected at charge time
     // (application_fee_amount), never as a metered subscription line (docs/94 §8).
     expect(createArg.items.map((i) => i.price)).toEqual(['price_commerce_m']);
   });

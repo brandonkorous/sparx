@@ -273,7 +273,7 @@ async function findPurchasedDomain(tenantId: string, id: string) {
   const row = await prisma.domain.findFirst({ where: { id, tenantId } });
   if (!row) throw notFound('Domain', id);
   if (row.type !== 'purchased') {
-    throw conflict('This operation is only available for Sparx-purchased domains.', {
+    throw conflict('This operation is only available for sparx-purchased domains.', {
       field: 'type',
     });
   }
@@ -349,7 +349,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
   //      the deferred-purchase flow the domain is chosen before it's bought).
   //   2. Charge the tenant for real (chargeForDomain) BEFORE registering.
   //   3. GoDaddy: purchaseDomain → orderId (refund the charge if this fails).
-  //   4. GoDaddy: generateDkimKeypair + configureDNS (Sparx record set)
+  //   4. GoDaddy: generateDkimKeypair + configureDNS (sparx record set)
   //   5. DB: insert domain_purchases + upsert domains row (type: purchased)
   //   6. Pub/Sub: publish domain.purchased
   //   7. Return { domain, orderId, expiresAt, purchase }
@@ -357,7 +357,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     const auth = requireRole(request, 'editor');
     await requireVerifiedEmail(request);
 
-    // 0. Checkout gate. A domain registration bills the Sparx reseller account the
+    // 0. Checkout gate. A domain registration bills the sparx reseller account the
     //    instant GoDaddy is called (ICANN: no trial, no reversal), so buying is
     //    OFF until tenant billing (Stripe) lets us charge the buyer FIRST. Free
     //    *.sparx.zone subdomains and connecting an owned domain are unaffected —
@@ -565,7 +565,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
       ]);
     }
     if (isZoneHost(host)) {
-      throw validationError('That host is managed by Sparx and is added automatically.', [
+      throw validationError('That host is managed by sparx and is added automatically.', [
         { field: 'host', message: 'sparx.zone subdomains cannot be connected.' },
       ]);
     }

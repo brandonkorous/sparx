@@ -1,4 +1,4 @@
-// Payments configuration + Sparx Pay onboarding (docs/94 ADR §9, §13). The dashboard's
+// Payments configuration + sparx Pay onboarding (docs/94 ADR §9, §13). The dashboard's
 // Settings → Payments surface: read the active gateway + onboarding status, pick a
 // gateway, and launch Stripe's hosted Connect flows. Thin launchers — we never render
 // onboarding or account-management UI (Stripe-hosted-first).

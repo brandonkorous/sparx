@@ -98,7 +98,7 @@ const maxDepthBelow = (prev: FlatNode | undefined): number =>
  * node still present but its descendants hidden (pass `collapsed ∪ {activeId}` to
  * flattenTree). Mirrors the well-trodden dnd-kit "sortable tree" projection — move
  * the active row to the hovered slot, read the row now above it, and let the
- * horizontal drag offset choose a depth — with one Sparx constraint: you can only
+ * horizontal drag offset choose a depth — with one sparx constraint: you can only
  * nest one level deeper than the row above when that row CAN hold children
  * (`acceptsChildren`); otherwise you become its sibling. So a Section can never
  * land inside a Heading.

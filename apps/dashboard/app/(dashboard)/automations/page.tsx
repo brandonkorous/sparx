@@ -197,7 +197,7 @@ export default async function AutomationsPage() {
           <PageHeader
             icon={<Zap className="h-5 w-5" />}
             title="Automations"
-            description="Cross-module “when X, if Y, do Z” rules that connect your Sparx modules."
+            description="Cross-module “when X, if Y, do Z” rules that connect your sparx modules."
           />
           <Card padding="none">
             <EmptyState

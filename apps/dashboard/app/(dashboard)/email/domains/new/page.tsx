@@ -15,7 +15,7 @@ export default function NewSendingDomainPage() {
       <Stack gap={6} className="py-10">
         <PageHeader
           title="Add a sending domain"
-          description="Enter the domain (or subdomain) you want to send from. Sparx provisions it in Mailgun and shows the exact DNS records to publish."
+          description="Enter the domain (or subdomain) you want to send from. sparx provisions it in Mailgun and shows the exact DNS records to publish."
         />
         <AddDomainForm surface="page" />
       </Stack>

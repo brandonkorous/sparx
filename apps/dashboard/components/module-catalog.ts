@@ -44,7 +44,7 @@ export const moduleCatalog: Record<ModuleSlug, ModuleCatalogEntry> = {
     title: 'Builder',
     tagline: 'Themes, layouts, pages, and custom domains.',
     description:
-      'The Builder module is the foundation every Sparx site is built on — brand-driven themes, reusable layouts, a visual page editor, and your own domain with automatic SSL.',
+      'The Builder module is the foundation every sparx site is built on — brand-driven themes, reusable layouts, a visual page editor, and your own domain with automatic SSL.',
     features: [
       {
         title: 'Themes',

@@ -1,6 +1,6 @@
 // Internal endpoint invoked by the Search Console k8s CronJob (k8s/cronjobs/).
 //
-// Auth: shared secret in `X-Sparx-Internal-Cron-Token`, constant-time compared
+// Auth: shared secret in `X-sparx-Internal-Cron-Token`, constant-time compared
 // against env.SPARX_INTERNAL_CRON_TOKEN — same pattern as the other internal
 // cron surfaces (ClusterIP-only, no JWT).
 //
@@ -31,7 +31,7 @@ function authorize(request: FastifyRequest): void {
   if (!expected) throw unauthorized('Internal cron token is not configured.');
   const provided = request.headers[CRON_TOKEN_HEADER];
   if (typeof provided !== 'string' || provided.length === 0) {
-    throw unauthorized('Missing X-Sparx-Internal-Cron-Token header.');
+    throw unauthorized('Missing X-sparx-Internal-Cron-Token header.');
   }
   const a = Buffer.from(provided, 'utf8');
   const b = Buffer.from(expected, 'utf8');

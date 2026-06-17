@@ -1,4 +1,4 @@
-# Sparx Platform — Automation Module Spec
+# sparx Platform — Automation Module Spec
 
 **Version:** 1.6
 **Author:** Brandon Korous
@@ -8,15 +8,15 @@
 
 ## 1. Overview
 
-The Sparx Automation capability is a cross-module workflow engine built into the platform. It handles automations that span multiple Sparx modules — the things external tools like Zapier and Make.com can't do well because they lack deep access to your unified data layer.
+The sparx Automation capability is a cross-module workflow engine built into the platform. It handles automations that span multiple sparx modules — the things external tools like Zapier and Make.com can't do well because they lack deep access to your unified data layer.
 
-External automation platforms (Zapier, Make.com, n8n) are first-class integration partners for reaching outside Sparx. They are not competitors to this engine — they are complementary. Sparx Automations handles internal cross-module logic; Zapier handles external service connections.
+External automation platforms (Zapier, Make.com, n8n) are first-class integration partners for reaching outside sparx. They are not competitors to this engine — they are complementary. sparx Automations handles internal cross-module logic; Zapier handles external service connections.
 
 It is built **on top of the machinery that already exists** — the typed Pub/Sub event bus (`@sparx/events`, [packages/api-core/src/pubsub.ts](../packages/api-core/src/pubsub.ts)), the durable outbound webhook engine ([packages/api-core/src/webhook-delivery.ts](../packages/api-core/src/webhook-delivery.ts)), and the daily Cloud Scheduler ticks ([packages/crm/src/schedulers/automation-triggers.ts](../packages/crm/src/schedulers/automation-triggers.ts)). It does not introduce a new queue runtime or a new delivery model.
 
 **Module vs. platform capability.** Automations is **a platform-level capability, not a separately-gated module.** Any tenant with at least one active module that emits or consumes triggers gets it — there is no `automations` module slug to activate, no separate 404 gate, and the `automation-worker` always runs. (This is a deliberate exception to the "disabled module runs no workers" rule, because automations only have value _connecting_ other modules; gating them behind their own flag would be circular.) The dashboard surface is visible whenever ≥1 trigger-capable module is active.
 
-**Included with:** Any active Sparx module — no separate charge
+**Included with:** Any active sparx module — no separate charge
 **Volume metering:** see §11 (a business decision, not yet-built infra)
 **Build timeline:** Month 4–5 (after core modules stable)
 
@@ -24,11 +24,11 @@ It is built **on top of the machinery that already exists** — the typed Pub/Su
 
 ## 2. What This Is and Isn't
 
-### What Sparx Automations handles
+### What sparx Automations handles
 
 ```
-✅ Triggers from any Sparx module (order, CRM, email, inventory, etc.)
-✅ Actions in any Sparx module (send email, create task, update deal, etc.)
+✅ Triggers from any sparx module (order, CRM, email, inventory, etc.)
+✅ Actions in any sparx module (send email, create task, update deal, etc.)
 ✅ Cross-module conditional logic (if/then)
 ✅ Durable delays and scheduled actions (survive redeploys — see §7)
 ✅ AI-assisted automation creation (describe in plain English → built for you)
@@ -38,7 +38,7 @@ It is built **on top of the machinery that already exists** — the typed Pub/Su
 ✅ Official Zapier, Make.com, and n8n connectors
 ```
 
-### What Sparx Automations does NOT handle
+### What sparx Automations does NOT handle
 
 ```
 ❌ Native integrations to Slack, Google Sheets, Asana, etc.
@@ -50,13 +50,13 @@ It is built **on top of the machinery that already exists** — the typed Pub/Su
 
 No code-execution steps is a deliberate, permanent constraint — consistent with the platform-wide rule that tenant-authored trees are **declarative and never execute arbitrary code** (same stance as tenant components). The automation rule is a typed JSON document; the AI assistant authors that document, and the engine validates it server-side.
 
-The division is clean: **inside Sparx** is the automation engine's job. **Outside Sparx** is Zapier/Make's job. Tenants use both — they are complementary, not competing.
+The division is clean: **inside sparx** is the automation engine's job. **Outside sparx** is Zapier/Make's job. Tenants use both — they are complementary, not competing.
 
 ---
 
 ## 3. What Already Exists (Don't Rebuild)
 
-Sparx already runs a lot of automation-shaped machinery. It is the **starting material** for this engine, not a parallel runtime to preserve: its events feed the bus the engine consumes, and its fixed behaviors become the engine's seed **system automations** (§3.1). What exists today, verified in the repo:
+sparx already runs a lot of automation-shaped machinery. It is the **starting material** for this engine, not a parallel runtime to preserve: its events feed the bus the engine consumes, and its fixed behaviors become the engine's seed **system automations** (§3.1). What exists today, verified in the repo:
 
 ```
 Event substrate:
@@ -85,7 +85,7 @@ Scheduled / triggered engines already shipped:
 
 ### 3.1 One engine — every tenant-facing automation lives here (Locked / Managed / Custom)
 
-**Scope.** This section is about **tenant-facing** behaviors — automations acting on the tenant's _own_ business: their customers, orders, B2B accounts, emails. Sparx's own _operational_ automations (tenant provisioning, our billing, module-activation plumbing, infra) are a different thing entirely — they stay in core and are never surfaced here. Everything below is about the tenant's platform, not ours.
+**Scope.** This section is about **tenant-facing** behaviors — automations acting on the tenant's _own_ business: their customers, orders, B2B accounts, emails. sparx's own _operational_ automations (tenant provisioning, our billing, module-activation plumbing, infra) are a different thing entirely — they stay in core and are never surfaced here. Everything below is about the tenant's platform, not ours.
 
 **Decision (supersedes the v1.1–v1.2 "mirror the cron" idea).** There is **one** automation runtime. We do **not** keep parallel hardcoded automation engines beside it. Every tenant-facing behavior shaped like an automation — _when X (event or schedule), if Y, do Z_ — is defined and executed on this engine, in one of three tiers:
 
@@ -167,7 +167,7 @@ SETTINGS      → Active/inactive, run limits, error handling
 
 ### 5.1 How triggers reach the engine (the fan-in)
 
-> **Correction vs. v1.0.** There is **no wildcard subscription.** Sparx provisions **one Pub/Sub topic per event type** and subscribers only see their own topic — both publishers say so explicitly ([pubsub.ts:1-7](../packages/api-core/src/pubsub.ts#L1-L7), [publisher.ts:1-6](../packages/events/src/publisher.ts#L1-L6)). `pubsub.subscribe('*')` cannot exist.
+> **Correction vs. v1.0.** There is **no wildcard subscription.** sparx provisions **one Pub/Sub topic per event type** and subscribers only see their own topic — both publishers say so explicitly ([pubsub.ts:1-7](../packages/api-core/src/pubsub.ts#L1-L7), [publisher.ts:1-6](../packages/events/src/publisher.ts#L1-L6)). `pubsub.subscribe('*')` cannot exist.
 
 The engine consumes a single **fan-in topic** — `automation.trigger` — that every publish path _also_ tees into, carrying the original event type as a message attribute. This is exactly the pattern the CRM bridge already uses to tee two buses into Pub/Sub for the commerce-indexer ([pubsub-bridge.ts](../packages/crm/src/pubsub-bridge.ts)). The tee must be installed at **all three publish paths**, because the bus is fragmented today:
 
@@ -181,7 +181,7 @@ The `automation-worker` is a **Cloud Run push consumer** on `automation.trigger`
 
 ### 5.2 Triggers
 
-All triggers come from the Sparx event bus or the scheduler. Triggers are annotated **[exists]** (an event type is already published) or **[ADD]** (the event must be emitted + its topic provisioned in Terraform before the trigger is real).
+All triggers come from the sparx event bus or the scheduler. Triggers are annotated **[exists]** (an event type is already published) or **[ADD]** (the event must be emitted + its topic provisioned in Terraform before the trigger is real).
 
 **Commerce triggers:**
 
@@ -377,7 +377,7 @@ ALTER TABLE automation_run_steps FORCE  ROW LEVEL SECURITY;
 
 ## 7. Execution Engine
 
-> **Rewritten vs. v1.0** to match how Sparx actually runs work: a Cloud Run push consumer on the fan-in topic, a **durable, resumable** run state machine (no parked promises), and the advisory-lock tick pattern proven by `webhook-delivery.ts`. **No `subscribe('*')`. No BullMQ** — BullMQ appears in no Sparx code; the platform's async substrate is Pub/Sub + Cloud Run + advisory-lock loops.
+> **Rewritten vs. v1.0** to match how sparx actually runs work: a Cloud Run push consumer on the fan-in topic, a **durable, resumable** run state machine (no parked promises), and the advisory-lock tick pattern proven by `webhook-delivery.ts`. **No `subscribe('*')`. No BullMQ** — BullMQ appears in no sparx code; the platform's async substrate is Pub/Sub + Cloud Run + advisory-lock loops.
 
 `services/automation-worker/` (Cloud Run push, `cloud-run-worker` TF module):
 
@@ -653,13 +653,13 @@ Body: any JSON payload
 → Payload available (via the resolver) to automation conditions + actions
 ```
 
-This lets any external system (ERP, POS, custom app) trigger Sparx automations without Zapier. The `webhook.received` event is **net-new** (§5.2) and must be added with its topic before this works.
+This lets any external system (ERP, POS, custom app) trigger sparx automations without Zapier. The `webhook.received` event is **net-new** (§5.2) and must be added with its topic before this works.
 
 ---
 
 ## 11. Pricing
 
-Automations are included with any active Sparx module. No separate charge. Charging for automations would mean the platform doesn't fully work without paying an extra fee — that's a worse product, not a different tier. The modules are what you pay for; automations are how those modules talk to each other.
+Automations are included with any active sparx module. No separate charge. Charging for automations would mean the platform doesn't fully work without paying an extra fee — that's a worse product, not a different tier. The modules are what you pay for; automations are how those modules talk to each other.
 
 ```
 Included with any active module:

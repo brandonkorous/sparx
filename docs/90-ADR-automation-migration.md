@@ -348,11 +348,11 @@ Locked (tenant cannot disable or edit):
   → b2b-overdue-escalation (already built, already locked)
   → Any future compliance or legal invariant
   → Rule: only lock if "tenant disabled this" creates legal
-    or financial liability for Sparx or the merchant
+    or financial liability for sparx or the merchant
 
 Managed (seeded on, fully editable by tenant):
   → Everything else in this catalog
-  → Merchants own their automations even when Sparx seeded them
+  → Merchants own their automations even when sparx seeded them
   → They can edit, disable, clone, or delete managed automations
 ```
 
