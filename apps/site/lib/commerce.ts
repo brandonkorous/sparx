@@ -490,6 +490,53 @@ export async function getProductsFull(
   }
 }
 
+/** A collection / category OWN-record (docs/98 Pillar 7 record-display) — its own
+ *  fields, NOT its products. `heroMediaId` resolves to an image via `mediaUrl`. */
+export interface PublicEntityRecord {
+  id: string;
+  name: string;
+  handle: string;
+  description: string | null;
+  heroMediaId: string | null;
+}
+
+/** Hydrate collection OWN-records by id (record-display pins), order preserved.
+ *  Returns [] (never throws) so a builder page degrades to empty. */
+export async function getCollectionRecordsFull(
+  tenantSlug: string,
+  ids: string[]
+): Promise<PublicEntityRecord[]> {
+  if (ids.length === 0) return [];
+  try {
+    const { data } = await publicGet<PublicEntityRecord[]>(
+      '/v1/public/commerce/collections/full',
+      { tenant: tenantSlug, ids: ids.join(',') },
+      [`commerce:${tenantSlug}:collections`]
+    );
+    return data;
+  } catch {
+    return [];
+  }
+}
+
+/** Hydrate category OWN-records by id (record-display pins), order preserved. */
+export async function getCategoryRecordsFull(
+  tenantSlug: string,
+  ids: string[]
+): Promise<PublicEntityRecord[]> {
+  if (ids.length === 0) return [];
+  try {
+    const { data } = await publicGet<PublicEntityRecord[]>(
+      '/v1/public/commerce/categories/full',
+      { tenant: tenantSlug, ids: ids.join(',') },
+      [`commerce:${tenantSlug}:categories`]
+    );
+    return data;
+  } catch {
+    return [];
+  }
+}
+
 export async function getProduct(
   tenantSlug: string,
   handle: string

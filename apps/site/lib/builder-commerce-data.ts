@@ -20,7 +20,13 @@ import {
 } from '@sparx/builder-schemas';
 import type { BuilderProduct } from '@sparx/builder-render';
 
-import { getProductsFull, type PublicProduct } from './commerce';
+import {
+  getCategoryRecordsFull,
+  getCollectionRecordsFull,
+  getProductsFull,
+  type PublicEntityRecord,
+  type PublicProduct,
+} from './commerce';
 import { mediaUrl } from './media';
 
 /** Map a full PublicProduct into the BuilderProduct a pinned/looped product binds:
@@ -69,11 +75,30 @@ export function productToBuilderRecord(
   };
 }
 
+/** Map a collection / category OWN-record into the `item.*` fields a record-display
+ *  pin exposes (docs/98 Pillar 7): name / handle / description plus a resolved hero
+ *  `image` ({ url, alt } | null). Distinct from the product map — a banner pinned to
+ *  a category reads ITS fields, not a product's. */
+function entityRecordToBuilder(
+  rec: PublicEntityRecord,
+  tenantSlug: string
+): Record<string, unknown> {
+  const url = rec.heroMediaId ? mediaUrl(rec.heroMediaId, tenantSlug) : null;
+  return {
+    id: rec.id,
+    name: rec.name,
+    handle: rec.handle,
+    description: rec.description ?? '',
+    image: url ? { url, alt: rec.name } : null,
+  };
+}
+
 /** Resolve every commerce ref a tree binds (docs/98 Pillar 7): the products it pins
- *  by id (`__pins['product:<id>']`) and the product arrays its collection sources
- *  load (`__sources[<sourceKey>]`). Each source resolves independently; a failed
- *  fetch degrades to an empty/absent record rather than failing the page. Returns a
- *  partial `root` the caller merges over its other data. */
+ *  by id (`__pins['product:<id>']`), the collection/category RECORDS it pins for
+ *  record-display (`__pins['collection:<id>']` / `__pins['category:<id>']`), and the
+ *  product arrays its collection sources load (`__sources[<sourceKey>]`). Each fetch
+ *  resolves independently; a failure degrades to an absent record rather than failing
+ *  the page. Returns a partial `root` the caller merges over its other data. */
 export async function loadCommerceData(
   tenantSlug: string,
   tree: BuilderNode,
@@ -81,7 +106,16 @@ export async function loadCommerceData(
 ): Promise<DataSources> {
   const refs = collectBindingRefs(tree);
   const productPinIds = refs.entities.filter((e) => e.entity === 'product').map((e) => e.id);
-  if (productPinIds.length === 0 && refs.sources.length === 0) return {};
+  const collectionPinIds = refs.entities.filter((e) => e.entity === 'collection').map((e) => e.id);
+  const categoryPinIds = refs.entities.filter((e) => e.entity === 'category').map((e) => e.id);
+  if (
+    productPinIds.length === 0 &&
+    collectionPinIds.length === 0 &&
+    categoryPinIds.length === 0 &&
+    refs.sources.length === 0
+  ) {
+    return {};
+  }
 
   const pins: Record<string, unknown> = {};
   const sources: Record<string, unknown> = {};
@@ -93,6 +127,26 @@ export async function loadCommerceData(
       getProductsFull(tenantSlug, { ids: productPinIds }).then((products) => {
         for (const p of products) {
           pins[entityPinKey('product', p.id)] = productToBuilderRecord(p, tenantSlug, currency);
+        }
+      })
+    );
+  }
+
+  // Collection / category RECORD pins (record-display) — one batched fetch each.
+  if (collectionPinIds.length > 0) {
+    tasks.push(
+      getCollectionRecordsFull(tenantSlug, collectionPinIds).then((recs) => {
+        for (const r of recs) {
+          pins[entityPinKey('collection', r.id)] = entityRecordToBuilder(r, tenantSlug);
+        }
+      })
+    );
+  }
+  if (categoryPinIds.length > 0) {
+    tasks.push(
+      getCategoryRecordsFull(tenantSlug, categoryPinIds).then((recs) => {
+        for (const r of recs) {
+          pins[entityPinKey('category', r.id)] = entityRecordToBuilder(r, tenantSlug);
         }
       })
     );

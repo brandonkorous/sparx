@@ -85,7 +85,13 @@ import { TokenInput, TokenTextarea } from './token-field';
 import { SeoScoreChip } from '@/components/seo/seo-score';
 
 import { type Binding, type BuilderNode, type PageSeo } from './model';
-import { bindGroups, bindHint, itemBindPaths, type ScopeInfo } from './binding-catalog';
+import {
+  bindGroups,
+  bindHint,
+  cmsTypesFromCatalog,
+  itemBindPaths,
+  type ScopeInfo,
+} from './binding-catalog';
 import {
   DataConnect,
   dataConnectMode,
@@ -4917,7 +4923,12 @@ export function Inspector({
             or wire a button's click action. Web surfaces only (no cart in email). */}
         {surface !== 'email' && dataConnectMode(node, def) ? (
           <Card icon={Database} title="Data" summary={dataConnectSummary(node)}>
-            <DataConnect node={node} def={def} onBind={onBind} />
+            <DataConnect
+              node={node}
+              def={def}
+              onBind={onBind}
+              cmsTypes={cmsTypesFromCatalog(catalog)}
+            />
           </Card>
         ) : null}
 

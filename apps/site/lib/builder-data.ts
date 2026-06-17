@@ -11,9 +11,16 @@
 // tree's `product.*` / `page.*` bindings resolve to that one record. `crm.list`
 // still resolves empty until its loader lands.
 
-import type { BuilderNode, DataSources } from '@sparx/builder-schemas';
+import {
+  PINS_ROOT,
+  SOURCES_ROOT,
+  collectBindingRefs,
+  entityPinKey,
+  type BuilderNode,
+  type DataSources,
+} from '@sparx/builder-schemas';
 
-import { publicGet, type ApiEntry, type BlogPostBody } from './content';
+import { getEntryById, publicGet, type ApiEntry, type BlogPostBody } from './content';
 import { listProducts, type PublicProductListItem } from './commerce';
 import { mediaUrl } from './media';
 import type { ResolvedSite } from './site-context';
@@ -138,6 +145,41 @@ function resolveEntryBodyAssets(
   return b;
 }
 
+/** Hydrate the CMS entries a tree PINS by id (docs/98 Pillar 7 record-display) into
+ *  `__pins['cms:<id>']` — the entry body with asset fields resolved, so a section
+ *  pinned to a blog post reads `item.title` / `item.body` / `item.featuredImage`.
+ *  One fetch per pin; a missing/unpublished entry simply doesn't render. */
+async function loadCmsPins(tenantSlug: string, tree: BuilderNode): Promise<DataSources> {
+  const ids = collectBindingRefs(tree)
+    .entities.filter((e) => e.entity === 'cms')
+    .map((e) => e.id);
+  if (ids.length === 0) return {};
+  const pins: Record<string, unknown> = {};
+  await Promise.all(
+    ids.map((id) =>
+      getEntryById(tenantSlug, id).then((entry) => {
+        if (entry) pins[entityPinKey('cms', id)] = resolveEntryBodyAssets(entry.body, tenantSlug);
+      })
+    )
+  );
+  return Object.keys(pins).length > 0 ? { [PINS_ROOT]: pins } : {};
+}
+
+/** Merge a partial resolver root into `root`, deep-merging the reserved `__pins` /
+ *  `__sources` maps so the commerce loader's pins and the CMS loader's pins coexist
+ *  (a plain Object.assign would clobber one writer's pin map with the other's). */
+function mergeDataRoots(root: DataSources, partial: DataSources): void {
+  for (const [k, v] of Object.entries(partial)) {
+    const reserved = k === PINS_ROOT || k === SOURCES_ROOT;
+    const existing = root[k];
+    if (reserved && existing && typeof existing === 'object' && v && typeof v === 'object') {
+      Object.assign(existing as Record<string, unknown>, v as Record<string, unknown>);
+    } else {
+      root[k] = v;
+    }
+  }
+}
+
 /** Fetch every source the tree binds to and return the resolver `root`. A
  *  failed fetch degrades that source to empty rather than failing the page.
  *  `record` (collection templates) injects a single in-scope record at its
@@ -154,13 +196,17 @@ export async function loadBuilderData(
   const root: DataSources = {};
   const tasks: Promise<void>[] = [];
 
-  // docs/98 Pillar 7: hydrate the products a pin / collection source binds (under
-  // the reserved __pins / __sources roots) alongside the CMS + all-products sources.
+  // docs/98 Pillar 7: hydrate the records a tree pins/iterates under the reserved
+  // __pins / __sources roots — products + collection/category records (commerce) and
+  // CMS entries — merged (not clobbered) so both pin writers coexist.
   tasks.push(
     loadCommerceData(tenantSlug, tree, currency)
-      .then((commerceRoot) => {
-        Object.assign(root, commerceRoot);
-      })
+      .then((commerceRoot) => mergeDataRoots(root, commerceRoot))
+      .catch(() => undefined)
+  );
+  tasks.push(
+    loadCmsPins(tenantSlug, tree)
+      .then((cmsRoot) => mergeDataRoots(root, cmsRoot))
       .catch(() => undefined)
   );
 

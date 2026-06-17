@@ -70,6 +70,21 @@ export async function publicGet<T>(
   return json.data;
 }
 
+/** Fetch ONE content entry by id (docs/98 Pillar 7 record-display) — a node pinned
+ *  to a specific CMS entry. Published-only (the public surface); any miss/failure
+ *  degrades to null so a stale pin renders empty rather than crashing the page. */
+export async function getEntryById(tenantSlug: string, id: string): Promise<ApiEntry | null> {
+  try {
+    return await publicGet<ApiEntry>(
+      `/v1/public/content/entries/${encodeURIComponent(id)}`,
+      { tenant: tenantSlug },
+      { tag: `entry:${tenantSlug}:id:${id}` }
+    );
+  } catch {
+    return null;
+  }
+}
+
 export interface PageBody {
   title?: string;
   // `body` is the rich-text field the `page` content type defines (shape

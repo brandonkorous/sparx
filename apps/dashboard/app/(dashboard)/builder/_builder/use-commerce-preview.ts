@@ -1,22 +1,45 @@
 'use client';
 
-// Canvas commerce overlay (docs/98 Pillar 7). A tree that PINS a product or REPEATS
-// a collection needs the REAL products hydrated so the editor canvas previews what
-// the published site will render — not the generic sample. This hook collects the
-// tree's commerce refs, fetches the matching products (debounced, off the main
-// thread via a server action), and returns a `DataSources` overlay carrying the
-// reserved `__pins` / `__sources` roots the shared resolver reads. The caller merges
-// it over `buildPreviewData(...)`; until it resolves (or for an unpinned tree) the
-// overlay is empty and the canvas falls back to the sample product.
+// Canvas record overlay (docs/98 Pillar 7). A tree that PINS a product / collection /
+// category / CMS entry, or REPEATS a collection, needs the REAL records hydrated so
+// the editor canvas previews what the published site will render — not the generic
+// sample. This hook collects the tree's binding refs, fetches the matching records
+// (debounced, off the main thread via server actions for both the commerce + content
+// surfaces), and returns a `DataSources` overlay carrying the reserved `__pins` /
+// `__sources` roots the shared resolver reads. The caller merges it over
+// `buildPreviewData(...)`; until it resolves (or for an unbound tree) the overlay is
+// empty and the canvas falls back to the sample data.
 
 import * as React from 'react';
 
-import { collectBindingRefs, type DataSources } from '@sparx/builder-schemas';
+import {
+  PINS_ROOT,
+  SOURCES_ROOT,
+  collectBindingRefs,
+  type DataSources,
+} from '@sparx/builder-schemas';
 
 import type { BuilderNode } from './model';
 import { hydrateCommerceForBuilder } from '../_lib/commerce-binding-actions';
+import { hydrateCmsForBuilder } from '../_lib/cms-binding-actions';
 
 const EMPTY: DataSources = {};
+
+/** Merge two overlay roots, deep-merging the reserved `__pins` / `__sources` maps so
+ *  the commerce + CMS hydrators' pins coexist (mirrors the site loader's merge). */
+function mergeOverlays(a: DataSources, b: DataSources): DataSources {
+  const out: DataSources = { ...a };
+  for (const [k, v] of Object.entries(b)) {
+    const reserved = k === PINS_ROOT || k === SOURCES_ROOT;
+    const existing = out[k];
+    if (reserved && existing && typeof existing === 'object' && v && typeof v === 'object') {
+      out[k] = { ...(existing as Record<string, unknown>), ...(v as Record<string, unknown>) };
+    } else {
+      out[k] = v;
+    }
+  }
+  return out;
+}
 
 export function useCommercePreview(tree: BuilderNode | null): DataSources {
   // The commerce refs the tree binds, and a stable signature of WHICH products /
@@ -39,10 +62,13 @@ export function useCommercePreview(tree: BuilderNode | null): DataSources {
     }
     let alive = true;
     // Coalesce a burst of edits (pick a product, then tweak the limit) into one fetch.
+    // Both surfaces hydrate in parallel; their `__pins` are merged (not clobbered).
     const timer = setTimeout(() => {
-      void hydrateCommerceForBuilder(refs).then((data) => {
-        if (alive) setOverlay(data);
-      });
+      void Promise.all([hydrateCommerceForBuilder(refs), hydrateCmsForBuilder(refs)]).then(
+        ([commerce, cms]) => {
+          if (alive) setOverlay(mergeOverlays(commerce, cms));
+        }
+      );
     }, 200);
     return () => {
       alive = false;

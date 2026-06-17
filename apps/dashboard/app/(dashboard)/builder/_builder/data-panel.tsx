@@ -27,10 +27,9 @@ import type { ComponentDef } from './registry';
 import {
   listCategoriesForBuilder,
   listCollectionsForBuilder,
-  searchProductsForBuilder,
   type NamedPick,
-  type ProductPick,
 } from '../_lib/commerce-binding-actions';
+import { RecordPin } from './data-panel-pins';
 
 const UNSET = '__unset';
 const ACTION_LEAF_TAGS = new Set(['a', 'button']);
@@ -59,7 +58,7 @@ export function dataConnectSummary(node: BuilderNode): string | undefined {
   if (b.action) return ACTION_LABELS[b.action] ?? b.action;
   if (b.source)
     return `Repeats ${b.source.from === 'all' ? 'all products' : (b.label ?? b.source.from)}`;
-  if (b.entity === 'product') return `Pinned: ${b.label ?? 'a product'}`;
+  if (b.entity) return `Pinned: ${b.label ?? b.entity}`;
   return undefined;
 }
 
@@ -74,30 +73,35 @@ export function DataConnect({
   node,
   def,
   onBind,
+  cmsTypes,
 }: {
   node: BuilderNode;
   def: ComponentDef;
   onBind: (target: string | Binding | null) => void;
+  /** The content types a CMS pin can choose from (docs/98 Pillar 7 record-display). */
+  cmsTypes: { key: string; name: string }[];
 }) {
   const mode = dataConnectMode(node, def);
-  if (mode === 'record') return <RecordConnect node={node} onBind={onBind} />;
+  if (mode === 'record') return <RecordConnect node={node} onBind={onBind} cmsTypes={cmsTypes} />;
   if (mode === 'action') return <ActionConnect node={node} onBind={onBind} />;
   return null;
 }
 
-// ── Container → pin a product / repeat a source ───────────────────────────────
+// ── Container → pin a record / repeat a source ────────────────────────────────
 
 type RecordTab = 'none' | 'pin' | 'repeat';
 
 function RecordConnect({
   node,
   onBind,
+  cmsTypes,
 }: {
   node: BuilderNode;
   onBind: (target: string | Binding | null) => void;
+  cmsTypes: { key: string; name: string }[];
 }) {
   const b = node.binding;
-  const initial: RecordTab = b?.source ? 'repeat' : b?.entity === 'product' ? 'pin' : 'none';
+  const initial: RecordTab = b?.source ? 'repeat' : b?.entity ? 'pin' : 'none';
   const [tab, setTab] = React.useState<RecordTab>(initial);
 
   return (
@@ -123,7 +127,7 @@ function RecordConnect({
           aria-pressed={tab === 'pin'}
           onClick={() => setTab('pin')}
         >
-          A product
+          A record
         </button>
         <button
           type="button"
@@ -135,80 +139,14 @@ function RecordConnect({
           Many products
         </button>
       </div>
-      {tab === 'pin' ? <ProductPin binding={b} onBind={onBind} /> : null}
+      {tab === 'pin' ? <RecordPin binding={b} onBind={onBind} cmsTypes={cmsTypes} /> : null}
       {tab === 'repeat' ? <SourceRepeat binding={b} onBind={onBind} /> : null}
       {tab === 'none' ? (
         <p className="bx-source__hint">
-          A static block. Pin it to one product to build a product card, or repeat many to build a
-          grid — each child then reads <code>item.title</code>, <code>item.price</code>, an image…
+          A static block. Pin it to one record — a product, a collection or category, a content
+          entry — so its children read <code>item.*</code>, or repeat many products to build a grid.
         </p>
       ) : null}
-    </div>
-  );
-}
-
-function ProductPin({
-  binding,
-  onBind,
-}: {
-  binding: Binding | undefined;
-  onBind: (target: string | Binding | null) => void;
-}) {
-  const [q, setQ] = React.useState('');
-  const [items, setItems] = React.useState<ProductPick[] | null>(null);
-  const pinnedId = binding?.entity === 'product' ? binding.id : null;
-
-  React.useEffect(() => {
-    let alive = true;
-    const t = setTimeout(() => {
-      void searchProductsForBuilder(q).then((res) => {
-        if (alive) setItems(res);
-      });
-    }, 200);
-    return () => {
-      alive = false;
-      clearTimeout(t);
-    };
-  }, [q]);
-
-  return (
-    <div className="bx-source__picker">
-      <Input
-        size="sm"
-        value={q}
-        placeholder="Search products…"
-        aria-label="Search products"
-        onChange={(e) => setQ(e.target.value)}
-      />
-      <NativeSelect
-        size="sm"
-        aria-label="Pin to a product"
-        value={pinnedId ?? UNSET}
-        onChange={(e) => {
-          const id = e.target.value;
-          if (id === UNSET) {
-            onBind(null);
-            return;
-          }
-          const title = items?.find((p) => p.id === id)?.title;
-          onBind({ entity: 'product', id, ...(title ? { label: title } : {}) });
-        }}
-      >
-        <option value={UNSET}>{items === null ? 'Loading…' : '— Choose a product —'}</option>
-        {/* Keep the pinned product selectable even if it's outside the current search. */}
-        {pinnedId && !items?.some((p) => p.id === pinnedId) ? (
-          <option value={pinnedId}>{binding?.label ?? 'Pinned product'}</option>
-        ) : null}
-        {(items ?? []).map((p) => (
-          <option key={p.id} value={p.id}>
-            {p.title}
-          </option>
-        ))}
-      </NativeSelect>
-      <p className="bx-source__hint">
-        Everything inside now reads this product — a Heading bound to <code>item.title</code>, a
-        Price to <code>item.price</code>, an Add-to-cart button that sells it.
-      </p>
     </div>
   );
 }

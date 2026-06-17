@@ -182,6 +182,41 @@ async function fetchFull(
   return api.get<PublicFull[]>(`/v1/public/commerce/products/full?${params.toString()}`);
 }
 
+// ── Collection / category record pins (docs/98 Pillar 7 record-display) ────────
+
+interface PublicRecord {
+  id: string;
+  name: string;
+  handle: string;
+  description: string | null;
+  heroMediaId: string | null;
+}
+
+async function fetchRecords(
+  slug: string,
+  kind: 'collection' | 'category',
+  ids: string[]
+): Promise<PublicRecord[]> {
+  if (ids.length === 0) return [];
+  const path = kind === 'collection' ? 'collections' : 'categories';
+  const params = new URLSearchParams({ tenant: slug, ids: ids.join(',') });
+  return api.get<PublicRecord[]>(`/v1/public/commerce/${path}/full?${params.toString()}`);
+}
+
+/** A collection/category own-record → the `item.*` fields a record-display pin reads
+ *  (name / handle / description + a resolved hero `image`). Mirrors the site loader's
+ *  `entityRecordToBuilder` so canvas == live. */
+function recordToItem(rec: PublicRecord, slug: string): Record<string, unknown> {
+  const url = publicMediaUrl(rec.heroMediaId, slug);
+  return {
+    id: rec.id,
+    name: rec.name,
+    handle: rec.handle,
+    description: rec.description ?? '',
+    image: url ? { url, alt: rec.name } : null,
+  };
+}
+
 /** Hydrate the products a tree's pins + collection sources reference, shaped into
  *  the reserved `__pins` / `__sources` roots the shared resolver reads — so the
  *  editor canvas previews the REAL pinned/looped products (docs/98 Pillar 7), the
@@ -194,7 +229,18 @@ export async function hydrateCommerceForBuilder(
 ): Promise<DataSources> {
   try {
     const productPinIds = refs.entities.filter((e) => e.entity === 'product').map((e) => e.id);
-    if (productPinIds.length === 0 && refs.sources.length === 0) return {};
+    const collectionPinIds = refs.entities
+      .filter((e) => e.entity === 'collection')
+      .map((e) => e.id);
+    const categoryPinIds = refs.entities.filter((e) => e.entity === 'category').map((e) => e.id);
+    if (
+      productPinIds.length === 0 &&
+      collectionPinIds.length === 0 &&
+      categoryPinIds.length === 0 &&
+      refs.sources.length === 0
+    ) {
+      return {};
+    }
     const slug = await tenantSlug();
     const pins: Record<string, unknown> = {};
     const sources: Record<string, unknown> = {};
@@ -207,6 +253,20 @@ export async function hydrateCommerceForBuilder(
             for (const p of products) {
               pins[entityPinKey('product', p.id)] = toBuilderProduct(p, slug, currency);
             }
+          })
+          .catch(() => undefined)
+      );
+    }
+    // Collection / category RECORD pins (record-display) — own fields, not products.
+    for (const [kind, ids] of [
+      ['collection', collectionPinIds],
+      ['category', categoryPinIds],
+    ] as const) {
+      if (ids.length === 0) continue;
+      tasks.push(
+        fetchRecords(slug, kind, ids)
+          .then((recs) => {
+            for (const r of recs) pins[entityPinKey(kind, r.id)] = recordToItem(r, slug);
           })
           .catch(() => undefined)
       );

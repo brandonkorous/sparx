@@ -82,7 +82,14 @@ describe('source + pin keys', () => {
 describe('resolveBinding — kind-aware resolution', () => {
   const scope: Scope = {
     root: {
-      __pins: { 'product:p1': { title: 'Pinned' } },
+      __pins: {
+        'product:p1': { title: 'Pinned' },
+        // Record-display pins resolve through the SAME generic __pins path — a CMS
+        // entry body, a collection record, a category record (docs/98 Pillar 7).
+        'cms:e9': { title: 'Field Notes', body: 'A post body.' },
+        'collection:c1': { name: 'Summer drop', description: 'Warm-weather picks.' },
+        'category:k2': { name: 'Outerwear', image: { url: '/k2.jpg' } },
+      },
       __sources: { 'collection:c1': [{ title: 'A' }, { title: 'B' }] },
       commerce: { product: [{ title: 'All-0' }] },
     },
@@ -97,6 +104,21 @@ describe('resolveBinding — kind-aware resolution', () => {
   it('resolves an entity pin from __pins', () => {
     expect(resolveBinding(scope, { entity: 'product', id: 'p1' })).toEqual({ title: 'Pinned' });
     expect(resolveBinding(scope, { entity: 'product', id: 'missing' })).toBeUndefined();
+  });
+
+  it('resolves cms / collection / category record pins from __pins (record-display)', () => {
+    expect(resolveBinding(scope, { entity: 'cms', id: 'e9', cmsType: 'post' })).toEqual({
+      title: 'Field Notes',
+      body: 'A post body.',
+    });
+    expect(resolveBinding(scope, { entity: 'collection', id: 'c1' })).toEqual({
+      name: 'Summer drop',
+      description: 'Warm-weather picks.',
+    });
+    expect(resolveBinding(scope, { entity: 'category', id: 'k2' })).toEqual({
+      name: 'Outerwear',
+      image: { url: '/k2.jpg' },
+    });
   });
 
   it('resolves a collection source from __sources (array → iterate)', () => {

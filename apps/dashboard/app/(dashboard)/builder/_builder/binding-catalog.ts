@@ -31,6 +31,20 @@ export const EMPTY_CATALOG: BindingCatalog = { sources: [] };
 const PRODUCT_SCOPE_FIELDS: FieldSchema[] =
   COMMERCE_SOURCES.find((s) => s.key === 'product')?.fields ?? [];
 
+// The OWN-record fields a collection / category PIN scopes descendants to (docs/98
+// Pillar 7 record-display) — a banner pinned to a category reads item.name /
+// item.description / item.image, NOT a product's fields. Static (the record shape is
+// fixed); a CMS pin instead reuses its content type's record source from the catalog.
+const recordScopeFields = (idLabel: string): FieldSchema[] => [
+  { key: 'id', label: `${idLabel} ID`, kind: 'text', cardinality: 'scalar' },
+  { key: 'name', label: 'Name', kind: 'text', cardinality: 'scalar' },
+  { key: 'handle', label: 'Handle (URL)', kind: 'text', cardinality: 'scalar' },
+  { key: 'description', label: 'Description', kind: 'text', cardinality: 'scalar' },
+  { key: 'image', label: 'Hero image', kind: 'image', cardinality: 'scalar' },
+];
+const COLLECTION_SCOPE_FIELDS = recordScopeFields('Collection');
+const CATEGORY_SCOPE_FIELDS = recordScopeFields('Category');
+
 // ── Module accent colors (editor chrome — independent of the tenant brand) ────
 // Mirrors sample.ts MODULES. A bare binding path (e.g. `blog_post.title`) hides
 // which module owns it, so we resolve the source via the catalog and color by
@@ -46,6 +60,15 @@ const SCOPE_COLOR = '#6366f1'; // item.* / index — resolved from the enclosing
 
 export function moduleColor(module: string | undefined): string {
   return (module ? MODULE_COLOR[module] : undefined) ?? SCOPE_COLOR;
+}
+
+/** The tenant's content types a node can PIN a single entry from (docs/98 Pillar 7
+ *  record-display) — the catalog's CMS RECORD sources (one object source per type),
+ *  as `{ key, name }`. `key` is the `cmsType` the binding carries. */
+export function cmsTypesFromCatalog(catalog: BindingCatalog): { key: string; name: string }[] {
+  return catalog.sources
+    .filter((s) => s.module === 'cms' && s.cardinality === 'object')
+    .map((s) => ({ key: s.key, name: s.label }));
 }
 
 // ── Path → source resolution ──────────────────────────────────────────────────
@@ -122,12 +145,19 @@ export function scopeAt(catalog: BindingCatalog, chain: BuilderNode[]): ScopeInf
   for (const n of chain.slice(0, -1)) {
     const b = n.binding;
     if (!b) continue;
-    // docs/98 Pillar 7: a product pin (object) or a collection source (array) scopes
-    // descendants to PRODUCT fields — so a card pinned to a product, or one item of
-    // a repeated collection, offers item.title / item.price / item.images below.
-    if (b.entity === 'product' || b.source) {
-      fields = PRODUCT_SCOPE_FIELDS;
-      label = b.label ?? 'product';
+    // docs/98 Pillar 7: an entity pin (object) or a collection source (array) scopes
+    // descendants to that record's fields. A product pin / any product source →
+    // PRODUCT fields; a collection/category RECORD pin → its own fields; a CMS entry
+    // pin → its content type's record fields (from the catalog). So a heading inside
+    // offers item.title / item.name / item.body etc. for the pinned record.
+    if (b.entity || b.source) {
+      if (b.source) fields = PRODUCT_SCOPE_FIELDS;
+      else if (b.entity === 'collection') fields = COLLECTION_SCOPE_FIELDS;
+      else if (b.entity === 'category') fields = CATEGORY_SCOPE_FIELDS;
+      else if (b.entity === 'cms')
+        fields = catalog.sources.find((s) => s.key === b.cmsType)?.fields ?? [];
+      else fields = PRODUCT_SCOPE_FIELDS; // entity === 'product'
+      label = b.label ?? b.entity ?? 'product';
       active = true;
       continue;
     }

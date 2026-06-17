@@ -93,6 +93,43 @@ function splitCsv(value?: string): string[] | undefined {
 
 const HandleParams = z.object({ handle: z.string().min(1).max(255) });
 
+// Batched own-record fetch by id (docs/98 Pillar 7 record-display): a node PINNED to
+// a collection/category resolves ITS fields. Mirrors `products/full`'s id contract.
+const IdsQuery = z.object({
+  tenant: z.string().min(1).max(63),
+  ids: z.string().optional(),
+});
+
+/** Parse a `?ids=a,b,c` list into valid uuids (deduped order kept, capped at 48). */
+function parseIdList(raw: string | undefined): string[] {
+  if (!raw) return [];
+  return raw
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s) => z.string().uuid().safeParse(s).success)
+    .slice(0, 48);
+}
+
+/** Re-sort fetched rows to the requested id order (Prisma `in` doesn't preserve it). */
+function orderByIds<T extends { id: string }>(ids: string[], rows: T[]): T[] {
+  const byId = new Map(rows.map((r) => [r.id, r]));
+  return ids.flatMap((id) => {
+    const r = byId.get(id);
+    return r ? [r] : [];
+  });
+}
+
+// The own-record fields a collection / category PIN exposes (id + name + handle +
+// description + hero asset id). `heroMediaId` is the raw asset id — the builder's
+// record mapper resolves it to a URL, exactly as products return `primaryImageId`.
+const RECORD_SELECT = {
+  id: true,
+  name: true,
+  handle: true,
+  description: true,
+  heroMediaId: true,
+} as const;
+
 async function resolveTenantBySlug(slug: string): Promise<string> {
   const t = await prisma.tenant.findUnique({
     where: { slug },
@@ -165,6 +202,24 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
       })
     );
     return ok(rows);
+  });
+
+  // Record-display pins (docs/98 Pillar 7): a node pinned to a collection renders
+  // the collection's OWN fields (name, description, hero), distinct from listing its
+  // products. Batched by id, order preserved — the analogue of products/full. Static
+  // segment, so it never shadows (or is shadowed by) `/collections/:handle`.
+  app.get('/v1/public/commerce/collections/full', async (request) => {
+    const q = IdsQuery.parse(request.query);
+    const tenantId = await resolveTenantBySlug(q.tenant);
+    const ids = parseIdList(q.ids);
+    if (ids.length === 0) return ok([]);
+    const rows = await withTenant({ tenantId }, (tx) =>
+      tx.productCollection.findMany({
+        where: { id: { in: ids }, deletedAt: null },
+        select: RECORD_SELECT,
+      })
+    );
+    return ok(orderByIds(ids, rows));
   });
 
   app.get('/v1/public/commerce/collections/:handle', async (request) => {
@@ -507,6 +562,22 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
       })
     );
     return ok(rows);
+  });
+
+  // Record-display pins (docs/98 Pillar 7): a node pinned to a category renders the
+  // category's OWN fields (a category banner), distinct from listing its products.
+  app.get('/v1/public/commerce/categories/full', async (request) => {
+    const q = IdsQuery.parse(request.query);
+    const tenantId = await resolveTenantBySlug(q.tenant);
+    const ids = parseIdList(q.ids);
+    if (ids.length === 0) return ok([]);
+    const rows = await withTenant({ tenantId }, (tx) =>
+      tx.productCategory.findMany({
+        where: { id: { in: ids }, deletedAt: null },
+        select: RECORD_SELECT,
+      })
+    );
+    return ok(orderByIds(ids, rows));
   });
 
   // ─── Fitment ───────────────────────────────────────────────────────
