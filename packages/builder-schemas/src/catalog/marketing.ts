@@ -39,6 +39,35 @@ const cellYes = () =>
 const cellNo = () =>
   el('td', 'border-b border-base-200 px-4 py-3 text-center text-base-content/30', { text: '—' });
 
+// A bento-mosaic cell — a padded tile; `span` widens it on a wide container, `tone`
+// sets its surface (a colored cell carries its own -content text for the children).
+const bentoCell = (span: string, tone: string, title: string, body: string) =>
+  el('div', `flex min-h-44 flex-col justify-end gap-2 rounded-box p-6 ${tone} ${span}`, {
+    children: [
+      atom('Heading', 'text-lg font-semibold', { level: 'h3', text: title }),
+      atom('Text', 'text-sm opacity-80', { variant: 'body', text: body }),
+    ],
+  });
+
+// One numbered "how it works" step — a badge, a heading, and a line of copy.
+const stepItem = (n: string, title: string, body: string) =>
+  el('div', 'flex flex-col items-center gap-3 text-center', {
+    children: [
+      el(
+        'div',
+        'flex h-12 w-12 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-content',
+        { text: n }
+      ),
+      atom('Heading', 'text-lg font-semibold text-base-content', { level: 'h3', text: title }),
+      atom('Text', 'text-sm text-base-content/70', { variant: 'body', text: body }),
+    ],
+  });
+
+// One masonry gallery image — `break-inside-avoid` keeps a photo whole across the
+// CSS columns; the natural ratio varies per tile so the wall reads as masonry.
+const galleryImage = (ratio: 'wide' | 'square' | 'portrait') =>
+  atom('Image', 'mb-4 w-full break-inside-avoid rounded-box', { ratio, alt: 'Gallery image' });
+
 export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
   // ── CTA band — accent full-width call to action ───────────────────────────────
   entry({
@@ -1036,6 +1065,180 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                 atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md', {
                   label: 'Explore the builder',
                 }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    }),
+  }),
+
+  // ── Bento grid — an asymmetric feature mosaic ─────────────────────────────────
+  entry({
+    key: 'bento_grid',
+    name: 'Bento grid',
+    category: 'marketing',
+    kind: 'comprehensive',
+    icon: 'layout-dashboard',
+    description:
+      'An asymmetric mosaic of feature tiles — wide and standard cells in a balanced grid that collapses to one column on a narrow container.',
+    surfaces: ['page', 'site'],
+    tags: ['bento', 'mosaic', 'features', 'grid', 'highlights', 'marketing'],
+    tree: el('section', 'w-full px-4 py-16', {
+      name: 'Bento grid',
+      children: [
+        el('div', 'mx-auto max-w-6xl', {
+          children: [
+            atom('Heading', 'mb-8 text-3xl font-bold tracking-tight text-base-content', {
+              level: 'h2',
+              text: 'Everything in one place',
+            }),
+            el('div', 'grid grid-cols-1 gap-4 @xl:grid-cols-3', {
+              name: 'Tiles',
+              children: [
+                bentoCell(
+                  '@xl:col-span-2',
+                  'bg-primary text-primary-content',
+                  'Build once, publish everywhere',
+                  'Pages, posts, and products share one canvas — design a section and reuse it across every site you run.'
+                ),
+                bentoCell(
+                  '',
+                  'bg-base-200 text-base-content',
+                  'Fast by default',
+                  'Static-rendered and image-optimized out of the box.'
+                ),
+                bentoCell(
+                  '',
+                  'bg-base-200 text-base-content',
+                  'Yours to own',
+                  'Export your work anytime — no lock-in, no surprises.'
+                ),
+                bentoCell(
+                  '@xl:col-span-2',
+                  'bg-neutral text-neutral-content',
+                  'Grows with you',
+                  'Turn on commerce, email, or a CRM the day you need it — the rest stays out of your way.'
+                ),
+              ],
+            }),
+          ],
+        }),
+      ],
+    }),
+  }),
+
+  // ── Video hero — a centered pitch above an embedded video ─────────────────────
+  entry({
+    key: 'video_hero',
+    name: 'Video hero',
+    category: 'marketing',
+    kind: 'common',
+    icon: 'circle-play',
+    description:
+      'A centered headline and call-to-action above a framed video embed — paste a video URL into the frame to bring it to life.',
+    surfaces: ['page', 'site'],
+    tags: ['video', 'hero', 'embed', 'demo', 'media', 'marketing'],
+    tree: el('section', 'w-full px-4 py-20', {
+      name: 'Video hero',
+      children: [
+        el('div', 'mx-auto flex max-w-3xl flex-col items-center gap-6 text-center', {
+          children: [
+            atom('Heading', 'text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl', {
+              level: 'h2',
+              text: 'See it in motion',
+            }),
+            atom('Text', 'text-lg text-base-content/70', {
+              variant: 'body',
+              text: 'A two-minute look at how it all fits together — from a blank canvas to a published, polished site.',
+            }),
+            atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-lg', { label: 'Start free' }),
+          ],
+        }),
+        el('div', 'mx-auto mt-10 w-full max-w-4xl overflow-hidden rounded-box shadow-lg', {
+          name: 'Video frame',
+          children: [atom('Video', 'w-full', { ratio: 'wide', url: '' })],
+        }),
+      ],
+    }),
+  }),
+
+  // ── How it works — three numbered steps ───────────────────────────────────────
+  entry({
+    key: 'process_steps',
+    name: 'How it works',
+    category: 'marketing',
+    kind: 'common',
+    icon: 'list-ordered',
+    description:
+      'A three-step “how it works” row — a numbered badge, heading, and a line of copy each, side by side and stacking on narrow containers.',
+    surfaces: ['page', 'site'],
+    tags: ['steps', 'process', 'how it works', 'onboarding', 'guide', 'marketing'],
+    tree: el('section', 'w-full px-4 py-16', {
+      name: 'How it works',
+      children: [
+        el('div', 'mx-auto max-w-5xl', {
+          children: [
+            atom(
+              'Heading',
+              'mb-10 text-center text-3xl font-bold tracking-tight text-base-content',
+              { level: 'h2', text: 'Up and running in three steps' }
+            ),
+            el('div', 'grid grid-cols-1 gap-10 @2xl:grid-cols-3', {
+              name: 'Steps',
+              children: [
+                stepItem(
+                  '1',
+                  'Create your space',
+                  'Sign up and name your site — you are in the editor in under a minute.'
+                ),
+                stepItem(
+                  '2',
+                  'Add your content',
+                  'Drop in sections, write your words, and connect products or posts.'
+                ),
+                stepItem(
+                  '3',
+                  'Publish and grow',
+                  'Go live on your domain, then turn on what you need as you scale.'
+                ),
+              ],
+            }),
+          ],
+        }),
+      ],
+    }),
+  }),
+
+  // ── Masonry gallery — a multi-column image wall ───────────────────────────────
+  entry({
+    key: 'gallery_masonry',
+    name: 'Masonry gallery',
+    category: 'marketing',
+    kind: 'common',
+    icon: 'images',
+    description:
+      'A multi-column image wall where photos keep their natural proportions — a portfolio or lookbook that reflows from one to three columns.',
+    surfaces: ['page', 'site'],
+    tags: ['gallery', 'masonry', 'portfolio', 'photos', 'lookbook', 'grid', 'marketing'],
+    tree: el('section', 'w-full px-4 py-16', {
+      name: 'Masonry gallery',
+      children: [
+        el('div', 'mx-auto max-w-5xl', {
+          children: [
+            atom('Heading', 'mb-8 text-3xl font-bold tracking-tight text-base-content', {
+              level: 'h2',
+              text: 'Selected work',
+            }),
+            el('div', 'columns-1 gap-4 @xl:columns-2 @3xl:columns-3', {
+              name: 'Photos',
+              children: [
+                galleryImage('portrait'),
+                galleryImage('square'),
+                galleryImage('wide'),
+                galleryImage('square'),
+                galleryImage('portrait'),
+                galleryImage('wide'),
               ],
             }),
           ],

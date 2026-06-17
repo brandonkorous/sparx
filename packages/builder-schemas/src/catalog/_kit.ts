@@ -198,6 +198,7 @@ export const SX_BEHAVIOR_NAMES = [
   'scrollspy',
   'marquee',
   'menu',
+  'counter',
 ] as const;
 export type SxBehaviorName = (typeof SX_BEHAVIOR_NAMES)[number];
 

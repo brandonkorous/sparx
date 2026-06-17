@@ -119,4 +119,10 @@ export const BEHAVIOR_DESCRIPTORS: BehaviorDescriptor[] = [
     help: 'Sets data-scrolled past a threshold and highlights the in-view section link.',
     params: [{ key: 'threshold', label: 'Scroll threshold (px)', kind: 'number', default: 8 }],
   },
+  {
+    name: 'counter',
+    label: 'Animated counter',
+    help: 'Counts each [data-sx-item] up to its authored value when scrolled into view.',
+    params: [{ key: 'duration', label: 'Duration (ms)', kind: 'number', default: 1400 }],
+  },
 ];

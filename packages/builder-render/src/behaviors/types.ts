@@ -31,6 +31,7 @@ export const BEHAVIOR_NAMES = [
   'scrollspy',
   'marquee',
   'menu',
+  'counter',
 ] as const;
 export type BehaviorName = (typeof BEHAVIOR_NAMES)[number];
 
