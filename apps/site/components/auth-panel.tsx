@@ -61,30 +61,29 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
 
   return (
     <div className="st-container--prose" style={{ paddingBlock: '2.5rem' }}>
-      <div
-        className="st-tabs"
-        role="tablist"
-        aria-label="Account"
-        style={{ marginBottom: '1.5rem' }}
-      >
-        <button
-          type="button"
-          role="tab"
-          aria-selected={mode === 'signin'}
-          className={['st-tab', mode === 'signin' && 'is-active'].filter(Boolean).join(' ')}
-          onClick={() => switchMode('signin')}
-        >
-          Sign in
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={mode === 'register'}
-          className={['st-tab', mode === 'register' && 'is-active'].filter(Boolean).join(' ')}
-          onClick={() => switchMode('register')}
-        >
-          Create account
-        </button>
+      <div className="st-tabs st-tabs--box st-c-primary" style={{ marginBottom: '1.5rem' }}>
+        <div className="st-tabs__list" role="tablist" aria-label="Account">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === 'signin'}
+            data-state={mode === 'signin' ? 'active' : 'inactive'}
+            className="st-tabs__tab"
+            onClick={() => switchMode('signin')}
+          >
+            Sign in
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === 'register'}
+            data-state={mode === 'register' ? 'active' : 'inactive'}
+            className="st-tabs__tab"
+            onClick={() => switchMode('register')}
+          >
+            Create account
+          </button>
+        </div>
       </div>
 
       <h1 className="st-h2" style={{ marginBottom: '0.5rem' }}>

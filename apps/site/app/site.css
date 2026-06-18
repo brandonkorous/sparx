@@ -1212,11 +1212,8 @@
     gap: 1rem;
     max-width: 560px;
   }
-  .st-field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-  }
+  /* `.st-field` root (flex column + gap) is owned by @sparx/site-ui (field.css);
+     the storefront keeps only the app-specific label + full-width-cell rules. */
   .st-field > span {
     font-size: 0.85rem;
     font-weight: 500;
@@ -1344,27 +1341,9 @@
     font-weight: 600;
   }
 
-  /* ── Tabs (auth panel) ─────────────────────────────────────── */
-  .st-tabs {
-    display: inline-flex;
-    border: 1px solid var(--st-border-strong);
-    border-radius: var(--st-radius-sm);
-    overflow: hidden;
-  }
-  .st-tab {
-    font: inherit;
-    font-size: 0.92rem;
-    font-weight: 500;
-    padding: 0.6rem 1.1rem;
-    border: none;
-    background: var(--st-surface);
-    color: var(--st-text-secondary);
-    cursor: pointer;
-  }
-  .st-tab.is-active {
-    background: var(--st-primary);
-    color: var(--st-on-primary);
-  }
+  /* Tabs — the auth panel's sign-in / create-account toggle now renders
+     @sparx/site-ui's Tabs classes (`.st-tabs__list` / `.st-tabs__tab` + the `--box`
+     treatment), so the segmented control lives in site-ui, not here. */
 
   /* ── Wishlist button ───────────────────────────────────────── */
   .st-wishbtn {
