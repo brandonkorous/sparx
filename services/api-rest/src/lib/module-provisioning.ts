@@ -10,8 +10,9 @@
 // workflows/line-types each seed elsewhere):
 //
 //   commerce  → CommerceSiteSettings (primary site) + fallback shipping
-//               zone/profile/rate, + a default operating warehouse (inventory
-//               rides free with commerce).
+//               zone/profile/rate + an inactive home tax-nexus zone (no rates),
+//               + a default operating warehouse (inventory rides free with
+//               commerce).
 //   inventory → a default operating warehouse (standalone WMS path).
 //   b2b       → a default (inactive) tenant-wide purchase-approval rule, + a
 //               default warehouse (inventory rides free with b2b).
@@ -23,7 +24,7 @@
 // before the module-toggle route returns — no separate /bootstrap round-trip.
 
 import { isModuleEnabled } from '@sparx/auth';
-import { commerceSiteService, shippingService } from '@sparx/commerce';
+import { commerceSiteService, shippingService, taxService } from '@sparx/commerce';
 import { getPlatformBus, type PlatformEvent } from '@sparx/crm';
 import { prisma } from '@sparx/db';
 import { inventoryService } from '@sparx/inventory';
@@ -50,6 +51,7 @@ async function provisionForModule(tenantId: string, slug: ProvisionedModule): Pr
       }
       await commerceSiteService.bootstrapDefaults(ctx);
       await shippingService.bootstrapDefaults(ctx);
+      await taxService.bootstrapDefaults(ctx);
       break;
     }
     case 'inventory': {
