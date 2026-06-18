@@ -12,6 +12,7 @@ export {
   createWarehouse,
   updateWarehouse,
   archiveWarehouse,
+  bootstrapDefaultWarehouse,
 } from './warehouses';
 export type { WarehouseRow } from './warehouses';
 
