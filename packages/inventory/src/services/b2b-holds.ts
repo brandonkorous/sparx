@@ -205,7 +205,10 @@ export async function createFleetHold(
   const holdId = await withTenant(ctx, async (tx) => {
     await ensureAccount(tx, ctx, input.accountId);
     await ensureVariantExists(tx, input.variantId);
-    assertWithinLimits(input.quantity, await loadOverride(tx, ctx, input.accountId, input.variantId));
+    assertWithinLimits(
+      input.quantity,
+      await loadOverride(tx, ctx, input.accountId, input.variantId)
+    );
 
     const warehouseId =
       input.warehouseId ??
@@ -271,10 +274,7 @@ export async function releaseFleetHold(ctx: ServiceContext, holdId: string): Pro
  * onHand through the ledger (`sale`) and clears the allocation in one locked write.
  * Idempotent via the order-style idempotency key on the movement.
  */
-export async function consumeFleetHold(
-  ctx: ServiceContext,
-  holdId: string
-): Promise<FleetHoldRow> {
+export async function consumeFleetHold(ctx: ServiceContext, holdId: string): Promise<FleetHoldRow> {
   const outcome = await withTenant(ctx, async (tx) => {
     const hold = await tx.b2bFleetHold.findFirst({
       where: { id: holdId, tenantId: ctx.tenantId },
@@ -309,7 +309,12 @@ export async function consumeFleetHold(
       where: { id: holdId },
       data: { status: 'consumed', releasedAt: new Date() },
     });
-    return { result, variantId: hold.variantId, warehouseId: hold.warehouseId, quantity: hold.quantity };
+    return {
+      result,
+      variantId: hold.variantId,
+      warehouseId: hold.warehouseId,
+      quantity: hold.quantity,
+    };
   });
 
   if (outcome && !outcome.result.deduped) {

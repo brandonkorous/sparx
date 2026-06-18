@@ -18,12 +18,20 @@
 //               default warehouse (inventory rides free with b2b).
 //   chat      → a starter bank of quick replies.
 //
+// Separately, SAVED-VIEW PRESETS (docs/104 §5.A item 5) — a tenant-wide starter
+// set of named list filters (e.g. "Overdue invoices", "Abandoned carts") — seed
+// for every preset-bearing module the tenant has active on ANY activation, and in
+// the reconcile. This is platform list-state (a sibling of saved-views.ts), not a
+// per-module default, so it lives here at the composition root rather than in any
+// one domain consumer. It is bundle-aware: `invoicing` presets seed for any
+// Commerce/B2B tenant even though that tenant never writes the `invoicing` flag.
+//
 // Every bootstrap is find-or-create (a tenant's edits survive) and rows are kept
 // on deactivate, so a re-activation or a redelivered event is a safe no-op
 // (docs/104 R1–R4). The platform bus awaits every subscriber, so seeding finishes
 // before the module-toggle route returns — no separate /bootstrap round-trip.
 
-import { isModuleEnabled } from '@sparx/auth';
+import { isModuleEnabled, type ModuleSlug } from '@sparx/auth';
 import { commerceSiteService, shippingService, taxService } from '@sparx/commerce';
 import { getPlatformBus, type PlatformEvent } from '@sparx/crm';
 import { prisma } from '@sparx/db';
@@ -32,11 +40,30 @@ import type { FastifyBaseLogger } from 'fastify';
 
 import { bootstrapDefaultApprovalRule } from './b2b-defaults.js';
 import { quickReplyService } from './chat/index.js';
+import { bootstrapSavedViewPresets, SAVED_VIEW_PRESET_MODULES } from './saved-view-presets.js';
 
 /** The modules whose activation this provisioner seeds defaults for. */
 const PROVISIONED_MODULES = ['commerce', 'inventory', 'b2b', 'chat'] as const;
 type ProvisionedModule = (typeof PROVISIONED_MODULES)[number];
 const PROVISIONED_SET = new Set<string>(PROVISIONED_MODULES);
+
+/** Modules that carry a saved-view preset catalog (a superset of PROVISIONED —
+ *  e.g. crm/cms/invoicing have presets but no other L2 default seeder here). */
+const PRESET_MODULE_SET = new Set<string>(SAVED_VIEW_PRESET_MODULES);
+
+/** Seed the saved-view presets for every preset-bearing module a tenant currently
+ *  has active. Bundle-aware via `isModuleEnabled` — so a Commerce/B2B tenant gets
+ *  the `invoicing` presets even though its `invoicing` flag is never written. Each
+ *  bootstrap is idempotent find-or-create, so running across all preset modules on
+ *  every relevant activation (and in reconcile) is a safe, self-healing no-op. */
+async function provisionSavedViewPresets(tenantId: string): Promise<void> {
+  const ctx = { tenantId, userId: undefined };
+  for (const module of SAVED_VIEW_PRESET_MODULES) {
+    if (await isModuleEnabled(tenantId, module as ModuleSlug)) {
+      await bootstrapSavedViewPresets(ctx, module);
+    }
+  }
+}
 
 /** Run a single module's default seeders for one tenant. Shared by the forward
  *  consumer and the reconcile pass so both stay in lockstep. Each bootstrap is
@@ -80,8 +107,17 @@ export function registerModuleProvisioningConsumer(): () => void {
   const bus = getPlatformBus();
   return bus.subscribe('module.activated', async (event: PlatformEvent) => {
     const slug = (event.payload as { module?: string } | null)?.module;
-    if (!slug || !PROVISIONED_SET.has(slug)) return;
-    await provisionForModule(event.tenantId, slug as ProvisionedModule);
+    if (!slug) return;
+    if (PROVISIONED_SET.has(slug)) {
+      await provisionForModule(event.tenantId, slug as ProvisionedModule);
+    }
+    // Saved-view presets aren't a per-module default seeder — they're platform
+    // list-state. Seed them whenever a preset-bearing module (or a bundler of
+    // one, all of which are themselves preset modules) activates; the helper is
+    // bundle-aware, so activating Commerce/B2B also seeds the invoicing presets.
+    if (PRESET_MODULE_SET.has(slug)) {
+      await provisionSavedViewPresets(event.tenantId);
+    }
   });
 }
 
@@ -136,6 +172,29 @@ export async function reconcileModuleProvisioning(
         }
       }
     }
+
+    // Saved-view presets self-heal: union every tenant with any preset-bearing
+    // module active, then seed bundle-aware per tenant (one pass covers a tenant's
+    // whole preset set, incl. invoicing on Commerce/B2B tenants whose `invoicing`
+    // flag is never written, so the per-module scan can't see it directly).
+    const presetTenants = new Set<string>();
+    for (const slug of SAVED_VIEW_PRESET_MODULES) {
+      const rows = await prisma.$queryRaw<{ tenant_id: string }[]>`
+        SELECT tenant_id FROM find_tenants_with_active_module(${slug})
+      `;
+      for (const { tenant_id } of rows) presetTenants.add(tenant_id);
+    }
+    for (const tenantId of presetTenants) {
+      try {
+        await provisionSavedViewPresets(tenantId);
+      } catch (err) {
+        logger.error(
+          { err, tenantId },
+          'module-provisioning-reconcile: saved-view presets failed'
+        );
+      }
+    }
+
     return { acquired: true, tenants: tenantsTouched };
   } finally {
     await prisma.$queryRaw`SELECT pg_advisory_unlock(${RECONCILE_LOCK_KEY}::int)`;

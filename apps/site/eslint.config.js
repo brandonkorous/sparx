@@ -9,6 +9,18 @@ export default [
   ...rootConfig,
   {
     files: ['app/**/*.{ts,tsx}', 'components/**/*.{ts,tsx}'],
+    settings: {
+      // Map the site-ui field components to the DOM elements they render, so
+      // jsx-a11y resolves a `<label>` wrapping <SparxInput>/<SparxSelect>/
+      // <SparxTextarea> as associated (the control is nested at runtime).
+      'jsx-a11y': {
+        components: {
+          SparxInput: 'input',
+          SparxSelect: 'select',
+          SparxTextarea: 'textarea',
+        },
+      },
+    },
     rules: {
       'no-restricted-syntax': [
         'warn',

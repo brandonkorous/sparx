@@ -1,6 +1,6 @@
 # sparx Platform — Inventory Product Build Plan
 
-**Version:** 1.20
+**Version:** 1.21
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-17
 
@@ -720,11 +720,38 @@ exercised; a B2B account sees account-scoped availability.
 > (inventory package). **Latent bug fixed**: `listLowStock` relied on RLS only — under the superuser-local
 > role it leaked other tenants' rows; added explicit `l.tenant_id = ctx.tenantId` (reorder/movement-log/
 > analytics precedent). Tests: 5 api-mcp tests (`inventory-tools.test.ts`: globally-unique names [SDK-
+>
 > > collision guard], inventory scopes, not-under-commerce-scope, dispatch with module+scope, module-off
-> refusal); inventory **61/61**, commerce **7/7** (tool removal clean). docs/07 → v1.3. typecheck clean
-> (inventory / commerce / api-mcp); lint 0 errors. (Pre-existing, unrelated: api-mcp `smoke.test.ts`
-> `get_customers` fails locally — CRM `customerService.list` has the same superuser-RLS-leak vs the seeded
-> demo DB; out of inventory scope, flagged not fixed.)
+> > refusal); inventory **61/61**, commerce **7/7** (tool removal clean). docs/07 → v1.3. typecheck clean
+> > (inventory / commerce / api-mcp); lint 0 errors. (Pre-existing, unrelated: api-mcp `smoke.test.ts`
+> > `get_customers` fails locally — CRM `customerService.list` has the same superuser-RLS-leak vs the seeded
+> > demo DB; out of inventory scope, flagged not fixed.)
+
+> **P6d DONE — B2B inventory (docs/10), as a consumer of the master (docs/99 §4.0).** ✅ **Schema**: new
+> `B2bFleetHold` (`b2b_fleet_holds`) + `min_order_qty`/`max_order_qty` on `b2b_account_product_overrides`
+> (migration `20260913000000_b2b_fleet_holds`, FORCE RLS, status CHECK); back-relations on Tenant /
+> B2BAccount / ProductVariant / Warehouse; `work_order` added to the reservation holderType enum.
+> **Service** `@sparx/inventory` `b2b-holds.ts`: `accountAvailability` (master available net of buffer +
+> the account's own active holds + its min/max limits — explicitly tenant-scoped), `createFleetHold`
+> (enforces min/max → reserves via the reservation engine [holderType `work_order`] → records the hold, so
+> total stock is conserved as `allocated`), `releaseFleetHold` (frees the reservation), `consumeFleetHold`
+> (job shipped → `sale` through the ledger; idempotent), `listFleetHolds`. **API** `routes/v1/b2b/
+inventory.ts`: account availability, **fitment-filtered availability** (composes `fitmentService.lookup`
+> → variants → account availability), holds list, place / release / consume (b2b-gated; create also
+> inventory-gated). **Portal** (the deploy gate — "a B2B account sees account-scoped availability"):
+> `POST …/portal/:accountId/availability` + `GET …/portal/:accountId/holds`, contact-role-gated. **Dashboard**:
+> a Fleet-holds panel on the B2B account detail (SKU → check availability → place hold; release/consume per
+> hold). Tests: 5 inventory service tests (`b2b-holds.test.ts`: availability+limits, hold→release conserves
+> stock, consume sells through the ledger [Σ-invariant], min/max enforcement, deny-oversell refusal + no
+> orphan row) → suite **66/66**; 2 api-rest contract tests (`b2b-inventory.test.ts`: availability + hold
+> reflected, MODULE_DISABLED). typecheck clean (commerce-schemas / inventory / api-rest / dashboard); lint
+> 0 errors.
+
+> **✅ PHASE 6 COMPLETE — and the Inventory product is feature-complete.** All six phases shipped: P1
+> foundation → P2 sell path → P3 supply path → P4 corrections → P5 external sync → P6 API/reporting/MCP/B2B.
+> Inventory is a first-class, standalone-usable module owning the supply side; commerce / b2b / dropship are
+> consumers. Open by design (not gaps): the Fishbowl-NATIVE bridge reader (awaits a real Gillett instance,
+> docs/28 §8) and the §5.2 outbound sale-write (`two_way`, one-directional mirror for v1).
 
 ---
 

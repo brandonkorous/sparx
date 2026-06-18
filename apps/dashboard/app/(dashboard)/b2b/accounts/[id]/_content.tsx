@@ -1,5 +1,12 @@
 import { notFound } from 'next/navigation';
-import { Building2, AlertTriangle, CheckCircle, Globe, DollarSign } from 'lucide-react';
+import {
+  Building2,
+  AlertTriangle,
+  CheckCircle,
+  Globe,
+  DollarSign,
+  PackageCheck,
+} from 'lucide-react';
 
 import {
   Badge,
@@ -25,6 +32,7 @@ import { B2bTierAssigner } from './_components/b2b-tier-assigner';
 import { B2bAccountOverridesTable } from './_components/b2b-account-overrides-table';
 import { FleetProfileEditor } from './_components/fleet-profile-editor';
 import { ApprovalRulesEditor } from './_components/approval-rules-editor';
+import { FleetHoldsPanel, type FleetHold } from './_components/fleet-holds-panel';
 
 export const dynamic = 'force-dynamic';
 
@@ -126,6 +134,15 @@ export async function B2bAccountDetailContent({ id }: Props) {
 
   // Filter to rules scoped to this account only (not tenant-wide rules).
   const accountRules = approvalRules.filter((r) => r.accountId === id);
+
+  // Fleet / work-order holds (docs/100 P6d) — degrade to empty if the consuming
+  // inventory surface is unavailable rather than failing the whole page.
+  let holds: FleetHold[] = [];
+  try {
+    holds = (await api.getPaged<FleetHold[]>(`/v1/b2b/accounts/${id}/holds`)).data;
+  } catch {
+    holds = [];
+  }
 
   const util = account.creditUtilizationPct;
   const utilColor =
@@ -321,6 +338,23 @@ export async function B2bAccountDetailContent({ id }: Props) {
             </Table>
           </CardContent>
         )}
+      </Card>
+
+      {/* Fleet / work-order holds */}
+      <Card>
+        <CardHeader>
+          <Stack direction="row" align="center" gap={2}>
+            <PackageCheck className="h-4 w-4" />
+            <CardTitle>Fleet holds</CardTitle>
+          </Stack>
+          <CardDescription>
+            Reserve stock against inventory for this account&apos;s work orders before the order is
+            placed. Release frees the stock; consume commits it when the job ships.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <FleetHoldsPanel accountId={account.id} holds={holds} />
+        </CardContent>
       </Card>
 
       {/* Approval rules */}

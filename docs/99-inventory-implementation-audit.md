@@ -1,6 +1,6 @@
 # sparx Platform — Inventory Implementation Audit (docs vs. code)
 
-**Version:** 1.2
+**Version:** 1.3
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-17
 
@@ -8,14 +8,23 @@
 
 ## 0. Purpose & verdict
 
+> **STATUS (2026-06-17): FULLY REMEDIATED — every §2 gap is closed.** The six-phase build in
+> [docs/100](100-inventory-build-plan.md) is complete (P1 foundation → P2 sell path → P3 supply path → P4
+> corrections → P5 external sync → P6 API/reporting/MCP/B2B). Inventory is now a first-class, standalone
+> module owning the supply side; the §2 matrix below is the **historical gap record** that drove the build —
+> every ❌/🟡 row it lists has since shipped. Open _by design_ (not gaps): the Fishbowl-NATIVE on-prem
+> reader (awaits a real Gillett instance, docs/28 §8 — the file-export bridge works against any ERP today)
+> and the §5.2 outbound sale-write (`two_way`; v1 is a one-directional mirror).
+
 This is a point-in-time gap analysis of the **inventory** capability: every documented
 requirement mapped to the code that does (or does not) satisfy it. It exists because the
-`/inventory` dashboard pages are, in practice, near-empty — and the reason turned out to be
+`/inventory` dashboard pages were, in practice, near-empty — and the reason turned out to be
 architectural, not cosmetic.
 
-**Verdict: the implementation does _not_ meet the documented requirements.** The data model and
-service layer are largely built and well-designed, but three structural defects make the feature
-far less than the docs claim:
+**Verdict (at audit time — since remediated): the implementation did _not_ meet the documented
+requirements.** The data model and service layer were largely built and well-designed, but three
+structural defects made the feature far less than the docs claimed (all three are now fixed — see the
+inline RESOLVED notes):
 
 1. **Two parallel, disconnected inventory models exist.** ✅ **RESOLVED (P1c).** The `/inventory`
    overview, valuation, and reports read the **sync-module** table (`stock_levels`), which is empty for
@@ -24,13 +33,16 @@ far less than the docs claim:
    _Fix:_ the two models were unified onto the master (`inventory_levels`/`inventory_warehouses`); the
    reports + valuation now read it + the movement ledger, sync feeds reconcile into it via `applyMovement`,
    and `stock_levels`/`stock_locations` were dropped (migration `20260902000000_inventory_unify_stock`).
-2. **Orders never move inventory.** `reserve()` / `commit()` / `release()` exist but have **zero
-   callers**. Carts don't soft-hold, orders don't decrement, no worker consumes `order.*`. Stock only
-   changes via manual adjustment or MCP. The reservation engine is dead code.
-3. **The documented API contract is not implemented.** docs/06 §7 specifies `/v1/inventory`,
-   `PATCH /v1/inventory/:variant_id`, `POST /v1/inventory/adjustments`, `GET /v1/inventory/alerts`.
-   None exist as written; the operational endpoints live under `/v1/commerce/inventory/*` and the
-   `/v1/inventory/*` namespace was taken by the (incomplete) sync module instead.
+2. **Orders never move inventory.** ✅ **RESOLVED (P2).** `reserve()` / `commit()` / `release()` existed
+   but had **zero callers** — carts didn't soft-hold, orders didn't decrement, no worker consumed `order.*`.
+   _Fix:_ the cart seam reserves/releases atomically with the cart line, checkout commits the sale through
+   the ledger, the B2B approval route commits on placement, returns restock, and an `order.cancelled`
+   consumer reverses — the reservation engine is fully wired.
+3. **The documented API contract is not implemented.** ✅ **RESOLVED (P6a).** docs/06 §7 specifies
+   `GET /v1/inventory`, `PATCH /v1/inventory/:variant_id`, `POST /v1/inventory/adjustments`,
+   `GET /v1/inventory/alerts` — none existed as written; the `/v1/inventory/*` namespace was taken by the
+   sync module. _Fix:_ all four canonical endpoints ship (scope-enforced, module-gated), docs/06 §7 is
+   reconciled to the implemented shape, and the operational surface is the inventory module's own namespace.
 
 The feature catalog ([docs/89 §9](89-feature-catalog.md)) marks Multi-warehouse, Inventory levels,
 Adjustments, **Reservations**, Low-stock alerts, and CSV import all as **✅ Live**. Reservations is

@@ -18,7 +18,7 @@ model B2bFleetHold {
   workOrderRef String  @map("work_order_ref") @db.VarChar(127)
   note         String? @db.Text
   // active | released | consumed
-  status String @default("active") @db.VarChar(20)
+  status       String  @default("active") @db.VarChar(20)
 
   // Soft pointer to the InventoryReservation holding the `allocated` units (no FK
   // — the reaper/release may retire the reservation independently).

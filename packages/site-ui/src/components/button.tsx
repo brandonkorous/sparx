@@ -118,7 +118,7 @@ export function Button(props: ButtonProps): React.ReactElement {
   if (href !== undefined) {
     return (
       <a
-        href={disabled ? undefined : href}
+        href={href}
         target={target}
         rel={rel}
         className={classes}

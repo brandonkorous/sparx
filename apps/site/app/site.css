@@ -227,118 +227,25 @@
   flex: 1 0 auto;
 }
 
-/* ── Buttons ───────────────────────────────────────────────── */
-.st-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  font: inherit;
-  font-weight: 550;
-  font-size: 0.95rem;
-  line-height: 1;
-  padding: 0.85rem 1.5rem;
-  min-height: var(--st-size-field);
-  border-radius: var(--st-radius-field);
-  border: var(--st-border-width) solid transparent;
-  cursor: pointer;
-  text-decoration: none;
-  transition:
-    background var(--st-ease) 160ms,
-    border-color var(--st-ease) 160ms,
-    transform var(--st-ease) 120ms,
-    box-shadow var(--st-ease) 160ms;
-  white-space: nowrap;
-}
-.st-btn:active {
-  transform: translateY(1px);
-}
-.st-btn:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--st-primary) 35%, transparent);
-}
-.st-btn--primary {
-  background: var(--st-primary);
-  color: var(--st-on-primary);
-}
-.st-btn--primary:hover {
-  background: var(--st-primary-hover);
-}
-.st-btn--secondary {
-  background: var(--st-surface);
-  color: var(--st-text);
-  border-color: var(--st-border-strong);
-}
-.st-btn--secondary:hover {
-  border-color: var(--st-text);
-}
-.st-btn--ghost {
-  background: transparent;
-  color: var(--st-text);
-}
-.st-btn--ghost:hover {
-  background: var(--st-bg-subtle);
-}
-.st-btn--block {
-  width: 100%;
-}
-/* Light (white) and dark filled buttons — token-driven so they track the
-   theme's neutral ramp. Used by the multi-CTA system (solid/light/dark/ghost). */
-.st-btn--light {
-  background: var(--st-base-100);
-  color: var(--st-base-content);
-}
-.st-btn--light:hover {
-  background: color-mix(in oklab, var(--st-base-100) 88%, var(--st-base-content));
-}
-.st-btn--dark {
-  background: var(--st-base-content);
-  color: var(--st-base-100);
-}
-.st-btn--dark:hover {
-  background: color-mix(in oklab, var(--st-base-content) 86%, var(--st-base-100));
-}
-.st-btn--link {
-  background: transparent;
-  color: var(--st-primary);
-  padding-inline: 0.25rem;
-  min-height: 0;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.st-btn--lg {
-  padding: 1rem 1.75rem;
-  font-size: 1rem;
-}
-/* A row of up to two CTAs (hero, banner, panels, media+text, stats). */
+/* Buttons, fields, badges, and alerts are owned by @sparx/site-ui (the typed
+   SparxButton / SparxInput / SparxSelect / SparxAlert components and their
+   `.st-btn` / `.st-input` / `.st-alert` rules). The legacy duplicates that used
+   to live here were removed once apps/site adopted those components; what stays
+   in this file is app-specific layout + composites (cta rows, the product card,
+   the corner badge, the drawer, etc.). */
+
+/* A row of up to two CTAs (hero, banner, panels, media+text, stats). The button
+   recipe is carried by SparxButton; this is just the row layout. */
 .st-cta-row {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
   align-items: center;
 }
-/* On a media/photo context the ghost button reads in white. */
-.st-sb-hero[data-has-bg='true'] .st-btn--ghost,
-.st-sb-banner .st-btn--ghost,
-.st-sb-panel--media .st-btn--ghost {
-  border-color: rgb(255 255 255 / 0.7);
-  color: #fff;
-}
-.st-sb-hero[data-has-bg='true'] .st-btn--ghost:hover,
-.st-sb-banner .st-btn--ghost:hover,
-.st-sb-panel--media .st-btn--ghost:hover {
-  background: rgb(255 255 255 / 0.15);
-}
 /* A full-bleed (edge-to-edge) section wrapper — opts out of the centered
    container so a banner/hero can span the viewport width. */
 .st-section--flush {
   padding-inline: 0;
-}
-.st-btn[disabled],
-.st-btn[aria-disabled='true'] {
-  opacity: 0.5;
-  cursor: not-allowed;
-  pointer-events: none;
 }
 
 /* ── Header ────────────────────────────────────────────────── */
@@ -979,18 +886,6 @@
   font-size: 0.9rem;
   color: var(--st-text-muted);
 }
-.st-select {
-  font: inherit;
-  font-size: 0.9rem;
-  padding: 0.55rem 2rem 0.55rem 0.85rem;
-  min-height: var(--st-size-field);
-  border-radius: var(--st-radius-field);
-  border: var(--st-border-width) solid var(--st-border-strong);
-  background: var(--st-surface);
-  color: var(--st-text);
-  cursor: pointer;
-}
-
 /* ── Cart / line items ─────────────────────────────────────── */
 .st-line {
   display: grid;
@@ -1427,24 +1322,6 @@
   font-weight: 500;
   color: var(--st-text-secondary);
 }
-.st-input {
-  font: inherit;
-  font-size: 0.95rem;
-  padding: 0.7rem 0.85rem;
-  min-height: var(--st-size-field);
-  border-radius: var(--st-radius-field);
-  border: var(--st-border-width) solid var(--st-border-strong);
-  background: var(--st-surface);
-  color: var(--st-text);
-  width: 100%;
-  box-sizing: border-box;
-  transition: border-color var(--st-ease) 140ms;
-}
-.st-input:focus {
-  outline: none;
-  border-color: var(--st-primary);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--st-primary) 20%, transparent);
-}
 .st-check {
   display: flex;
   align-items: center;
@@ -1527,16 +1404,6 @@
 .st-steps__item[data-state='done'] .st-steps__dot {
   background: var(--st-success);
   color: #fff;
-}
-.st-alert {
-  padding: 0.85rem 1rem;
-  border-radius: var(--st-radius-sm);
-  font-size: 0.9rem;
-}
-.st-alert--error {
-  background: var(--color-danger-tint);
-  color: var(--color-danger-text);
-  border: var(--st-border-width) solid color-mix(in oklab, var(--st-danger) 30%, transparent);
 }
 
 /* Sister-site recognition notice (docs/58 D6) — a dismissible accent bar across
@@ -2995,40 +2862,11 @@ html.st-reveal-ready [data-section-type='hero'] .st-sb-hero__inner > *:nth-child
   }
 }
 
-/* ─── Translucent CTAs over media ───────────────────────────────────────────
-   On a photo/video context the light/dark filled buttons read better as frosted
-   glass (the premium "pill over imagery" look) than as flat opaque blocks. Only
-   applies inside a media section — elsewhere light/dark stay solid + on-token. */
-.st-sb-hero[data-has-bg='true'] .st-btn--light,
-.st-sb-banner .st-btn--light,
-.st-sb-panel--media .st-btn--light,
-.st-sb-carousel__slide .st-btn--light {
-  background: rgb(255 255 255 / 0.82);
-  color: #171a20;
-  backdrop-filter: blur(6px);
-}
-.st-sb-hero[data-has-bg='true'] .st-btn--light:hover,
-.st-sb-banner .st-btn--light:hover,
-.st-sb-panel--media .st-btn--light:hover,
-.st-sb-carousel__slide .st-btn--light:hover {
-  background: rgb(255 255 255 / 0.95);
-}
-.st-sb-hero[data-has-bg='true'] .st-btn--dark,
-.st-sb-banner .st-btn--dark,
-.st-sb-panel--media .st-btn--dark,
-.st-sb-carousel__slide .st-btn--dark {
-  background: rgb(23 26 32 / 0.72);
-  color: #fff;
-  backdrop-filter: blur(6px);
-}
-.st-sb-hero[data-has-bg='true'] .st-btn--dark:hover,
-.st-sb-banner .st-btn--dark:hover,
-.st-sb-panel--media .st-btn--dark:hover,
-.st-sb-carousel__slide .st-btn--dark:hover {
-  background: rgb(23 26 32 / 0.88);
-}
-/* Tesla-style media-overlay CTAs: pill-shaped and comfortably wide, independent
-   of the site's base control radius (the full-bleed hero/banner button look). */
+/* Media-overlay CTAs (the SbCtaRow `light`/`dark`/`ghost` styles) are now
+   SparxButton `glass` compositions (glass × surface / glass × neutral), which
+   own the frosted fill + legible ink. This file keeps only the pill SHAPE for a
+   button sitting over section media — independent of the site's base control
+   radius (the full-bleed hero/banner button look). */
 .st-sb-hero[data-has-bg='true'] .st-btn,
 .st-sb-banner .st-btn,
 .st-sb-panel--media .st-btn,

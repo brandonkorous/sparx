@@ -70,11 +70,7 @@ export {
   getFleetHold,
   listFleetHolds,
 } from './b2b-holds';
-export type {
-  FleetHoldRow,
-  AccountAvailabilityRow,
-  ListFleetHoldsFilter,
-} from './b2b-holds';
+export type { FleetHoldRow, AccountAvailabilityRow, ListFleetHoldsFilter } from './b2b-holds';
 
 // ─── Movement / audit-log read path (P4 corrections) ──────────────────
 // A filterable, paginated view over the append-only `inventory_movements`

@@ -1,8 +1,8 @@
 # 89 — sparx Feature Catalog
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-11
+**Last Updated:** 2026-06-17
 
 The single, exhaustive inventory of **everything sparx does** — every user-facing
 capability across every module, with an honest build status. The per-module PRDs
@@ -36,19 +36,19 @@ It exists for two reasons:
 Eleven activatable modules (`packages/modules` canonical slugs) plus the
 cross-cutting platform that every module shares.
 
-| #   | Module                  | Slug        | Headline                                              | Status      |
-| --- | ----------------------- | ----------- | ----------------------------------------------------- | ----------- |
-| 1   | Builder                 | `builder`   | Sites, pages, themes, email — visually authored       | ✅ Live     |
-| 2   | Commerce                | `commerce`  | Cart, checkout, orders, payments                      | ✅ Live     |
-| 3   | CMS                     | `cms`       | Words, media, structured content, SEO                 | ✅ Live     |
-| 4   | CRM                     | `crm`       | Customers, pipeline, segments, activity               | ✅ Live     |
-| 5   | Email                   | `email`     | Transactional + marketing on your own domain          | ✅ Live     |
-| 6   | B2B / Wholesale / Fleet | `b2b`       | Accounts, net terms, RFQ, fleet, scheduling           | ✅ Live     |
-| 7   | Invoicing               | `invoicing` | Estimates → work orders → invoices, billing documents | 🔨 In build |
-| 8   | Dropship                | `dropship`  | Supplier sync, margin math, order routing             | ✅ Live     |
-| 9   | Inventory               | `inventory` | Multi-warehouse stock, reservations, adjustments      | ✅ Live     |
-| 10  | Live Chat               | `chat`      | AI-first site chat + staff inbox                      | ✅ Live     |
-| 11  | AI / MCP                | `ai`        | First-class MCP server for Claude, ChatGPT, Copilot   | ✅ Live     |
+| #   | Module                  | Slug        | Headline                                                                                                               | Status      |
+| --- | ----------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------- | ----------- |
+| 1   | Builder                 | `builder`   | Sites, pages, themes, email — visually authored                                                                        | ✅ Live     |
+| 2   | Commerce                | `commerce`  | Cart, checkout, orders, payments                                                                                       | ✅ Live     |
+| 3   | CMS                     | `cms`       | Words, media, structured content, SEO                                                                                  | ✅ Live     |
+| 4   | CRM                     | `crm`       | Customers, pipeline, segments, activity                                                                                | ✅ Live     |
+| 5   | Email                   | `email`     | Transactional + marketing on your own domain                                                                           | ✅ Live     |
+| 6   | B2B / Wholesale / Fleet | `b2b`       | Accounts, net terms, RFQ, fleet, scheduling                                                                            | ✅ Live     |
+| 7   | Invoicing               | `invoicing` | Estimates → work orders → invoices, billing documents                                                                  | 🔨 In build |
+| 8   | Dropship                | `dropship`  | Supplier sync, margin math, order routing                                                                              | ✅ Live     |
+| 9   | Inventory               | `inventory` | Multi-warehouse ledger, reservations, suppliers/POs/receiving, counts/transfers, lots, sync, reporting, MCP, B2B holds | ✅ Live     |
+| 10  | Live Chat               | `chat`      | AI-first site chat + staff inbox                                                                                       | ✅ Live     |
+| 11  | AI / MCP                | `ai`        | First-class MCP server for Claude, ChatGPT, Copilot                                                                    | ✅ Live     |
 
 Cross-cutting platform (§12–§23) ships regardless of which modules a tenant runs:
 search, automation, multi-site, marketplace, auth, billing, onboarding, legal,
@@ -313,13 +313,22 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 
 ## 9. Inventory
 
+A first-class, **standalone-usable** module (WMS-lite without commerce) owning the supply side; commerce /
+b2b / dropship are consumers. The full six-phase build is shipped — see [docs/100](100-inventory-build-plan.md).
+
 - ✅ **Multi-warehouse** — owned / 3PL / dropship / virtual with addresses + default channels.
-- ✅ **Inventory levels** — on-hand, allocated, reorder point, lead time per variant per warehouse.
-- ✅ **Adjustments audit log** — sale/return/recount/loss/damage/transfer/receive/manual with reason + reference.
-- ✅ **Reservations** — soft holds (cart, TTL) + hard holds (order/subscription).
+- ✅ **One stock model + movement ledger** — on-hand is written ONLY through `applyMovement` (concurrency-safe, idempotent, attributed); `onHand == Σ(movements)` always holds, with moving-average cost.
+- ✅ **Reservations (wired)** — soft holds (cart, TTL) + hard holds (order/subscription); checkout commits, cancel reverses, returns restock.
+- ✅ **Adjustments + movement / audit-log viewer** — every stock change recorded with reason / reference / actor; filterable dashboard view.
+- ✅ **Suppliers, purchase orders, receiving, reorder engine** — per-variant purchasing links, PO lifecycle + print, goods receipts (lots on receipt), low-stock → suggested POs (manual + automated).
+- ✅ **Counts & transfers** — cycle/physical counts with variance approval; two-phase transfers through an in-transit location (stock conserved in motion).
+- ✅ **Lots / serials / recalls** — batch + unit traceability, expiry, hazmat, recall lifecycle.
 - ✅ **Low-stock alerts** — thresholds → `inventory.low` events.
-- ✅ **Inventory CSV import** — bulk load / adjust.
-- 🗺️ **External inventory sync** — ERP/WMS source-of-truth via on-prem agent / SaaS API / file drop (docs/28).
+- ✅ **External inventory sync** — ERP/WMS into the one ledger via Tier C file drop, Tier B SaaS API, Tier A on-prem bridge agent (docs/28); SKU-mapping queue, sync-health, conflict rules (UoM, safety buffer, stale-link, last-writer).
+- ✅ **Documented public API** — `GET /v1/inventory`, `PATCH /v1/inventory/:variant_id`, `POST /v1/inventory/adjustments` (JSON/CSV), `GET /v1/inventory/alerts` (scope-enforced, docs/06 §7).
+- ✅ **Reporting** — valuation + value-over-time, turnover / DIO, aging + dead-stock, reorder analysis; CSV export.
+- ✅ **MCP supply tools** — `get_low_inventory`, `get_inventory_valuation`, `suggest_reorders`, `update_inventory`, `create_purchase_order`, `receive_stock` (own `read:/write:inventory` scopes).
+- ✅ **B2B inventory** — account-scoped + fitment-filtered availability, per-account min/max order qty, fleet / work-order holds.
 
 ---
 

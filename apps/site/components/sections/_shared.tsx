@@ -41,13 +41,13 @@ export function SbLink({
 // CTA stays legible over arbitrary section media (docs/46): glass × surface =
 // the old light CTA, glass × neutral = the old dark CTA. Unknown/missing style
 // falls back to the primary solid button.
-const CTA_RECIPE: Record<string, { color: string; variant: TreatmentKey }> = {
+const CTA_RECIPE = {
   solid: { color: 'primary', variant: 'solid' },
   light: { color: 'surface', variant: 'glass' },
   dark: { color: 'neutral', variant: 'glass' },
   ghost: { color: 'surface', variant: 'glass' },
   link: { color: 'primary', variant: 'link' },
-};
+} satisfies Record<string, { color: string; variant: TreatmentKey }>;
 
 /** A row of up to two CTA buttons. Empty/invalid CTAs are dropped; renders
  *  nothing when none remain. `size="lg"` enlarges them (hero); `layout="stacked"`

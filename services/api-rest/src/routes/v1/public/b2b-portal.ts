@@ -391,6 +391,42 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
       { total: quoteTotal, skip: q.skip, take: q.take }
     );
   });
+
+  // ── Account-scoped availability (docs/100 P6d) ─────────────────────────────
+  // The account sees real master availability + its own holds + purchasing limits.
+  app.post('/v1/public/b2b/portal/:accountId/availability', async (request) => {
+    const tenantId = await resolveTenantId(request);
+    const ctx: CustomerAuthContext = { tenantId };
+    const customerId = await requirePortalCustomer(request, ctx);
+    const { accountId } = PathAccountId.parse(request.params);
+    await requireContactRole(ctx, customerId, accountId);
+    const body = AvailabilityBody.parse(request.body);
+
+    const rows = await inventoryService.accountAvailability(ctx, {
+      accountId,
+      variantIds: body.variantIds,
+      ...(body.warehouseId ? { warehouseId: body.warehouseId } : {}),
+    });
+    return ok({ availability: rows });
+  });
+
+  // ── The account's fleet / work-order holds ─────────────────────────────────
+  app.get('/v1/public/b2b/portal/:accountId/holds', async (request) => {
+    const tenantId = await resolveTenantId(request);
+    const ctx: CustomerAuthContext = { tenantId };
+    const customerId = await requirePortalCustomer(request, ctx);
+    const { accountId } = PathAccountId.parse(request.params);
+    await requireContactRole(ctx, customerId, accountId);
+    const q = HoldsQuery.parse(request.query);
+
+    const { items, total } = await inventoryService.listFleetHolds(ctx, {
+      accountId,
+      ...(q.status ? { status: q.status } : {}),
+      take: q.take,
+      skip: q.skip,
+    });
+    return paged(items, { total, skip: q.skip, take: q.take });
+  });
 };
 
 export default b2bPortalRoutes;
