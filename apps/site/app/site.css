@@ -506,15 +506,20 @@
      a product tile is still COMPOSED at the call site with positioning utilities
      over the tile's relative media. */
 
-  /* ── Rating ────────────────────────────────────────────────── */
-  .st-rating {
+  /* ── Star rating display (`.st-stars`) ─────────────────────────
+     The storefront's compact FRACTIONAL rating: one `★★★★★` glyph row with a
+     gradient mask filled to `--pct` (precise half-/quarter-stars). Named
+     `.st-stars` — distinct from @sparx/site-ui's `.st-rating` (per-star SVG masks,
+     interactive on/off), which can't express a fractional value. App-only chrome;
+     no collision, so it stays here. */
+  .st-stars {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
     font-size: 0.85rem;
     color: var(--st-text-secondary);
   }
-  .st-rating__stars {
+  .st-stars__fill {
     --pct: 0%;
     display: inline-block;
     font-size: 0.95rem;
@@ -848,23 +853,9 @@
     opacity: 0.5;
   }
 
-  /* ── Skeleton shimmer ──────────────────────────────────────── */
-  .st-skeleton {
-    background: linear-gradient(
-      90deg,
-      var(--st-bg-subtle) 25%,
-      color-mix(in srgb, var(--st-bg-subtle) 60%, var(--st-surface)) 50%,
-      var(--st-bg-subtle) 75%
-    );
-    background-size: 200% 100%;
-    animation: st-shimmer 1.4s infinite;
-    border-radius: var(--st-radius-sm);
-  }
-  @keyframes st-shimmer {
-    to {
-      background-position: -200% 0;
-    }
-  }
+  /* `.st-skeleton` is owned by @sparx/site-ui (skeleton.css) — an opacity pulse
+     (+ `--block`/`--text`/`--circle`), which already won the cascade over this
+     legacy shimmer, so the duplicate was removed. */
 
   /* ── Breadcrumbs ───────────────────────────────────────────── */
   .st-crumbs {

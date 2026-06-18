@@ -10,8 +10,8 @@ export interface RatingStarsProps {
 export function RatingStars({ rating, count, compact }: RatingStarsProps) {
   const pct = `${Math.max(0, Math.min(5, rating)) * 20}%`;
   return (
-    <span className="st-rating" aria-label={`Rated ${rating.toFixed(1)} out of 5`}>
-      <span className="st-rating__stars" style={{ ['--pct' as string]: pct }} aria-hidden="true">
+    <span className="st-stars" aria-label={`Rated ${rating.toFixed(1)} out of 5`}>
+      <span className="st-stars__fill" style={{ ['--pct' as string]: pct }} aria-hidden="true">
         ★★★★★
       </span>
       {!compact && count != null ? (
