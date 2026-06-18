@@ -501,84 +501,10 @@
     text-underline-offset: 3px;
   }
 
-  /* ── Product card ──────────────────────────────────────────── */
-  /* `.st-grid` (auto-fill default + `--cols-N`) now lives in @sparx/site-ui
-     (grid.css): `.st-grid--auto` is the responsive card grid, `.st-grid--cols-N`
-     the fixed-count one. Storefront grids author those classes directly. */
-  .st-card {
-    display: flex;
-    flex-direction: column;
-    text-decoration: none;
-    color: inherit;
-    border-radius: var(--st-radius);
-    background: var(--st-surface);
-    overflow: hidden;
-    transition:
-      transform var(--st-ease) 200ms,
-      box-shadow var(--st-ease) 200ms;
-  }
-  .st-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--st-shadow-md);
-  }
-  .st-card:focus-visible {
-    outline: 2px solid var(--st-primary);
-    outline-offset: 2px;
-  }
-  .st-card__media {
-    position: relative;
-    aspect-ratio: 1 / 1;
-    background: var(--st-bg-subtle);
-    overflow: hidden;
-  }
-  .st-card__media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform var(--st-ease) 400ms;
-  }
-  .st-card:hover .st-card__media img {
-    transform: scale(1.05);
-  }
-  .st-card__media--empty {
-    display: grid;
-    place-items: center;
-    color: var(--st-text-tertiary, #b8b8c0);
-    background: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--st-primary) 10%, transparent),
-      color-mix(in srgb, var(--st-primary) 3%, transparent)
-    );
-  }
-  .st-card__body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-    padding: 0.95rem 0.25rem 0.5rem;
-  }
-  .st-card__vendor {
-    font-size: 0.7rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--st-text-muted);
-  }
-  .st-card__title {
-    font-size: 0.98rem;
-    font-weight: 550;
-    letter-spacing: -0.01em;
-    line-height: 1.35;
-  }
-  .st-card__price {
-    font-size: 0.95rem;
-    font-weight: 600;
-    margin-top: 0.15rem;
-  }
-  .st-card__compare {
-    color: var(--st-text-muted);
-    text-decoration: line-through;
-    font-weight: 400;
-    margin-left: 0.4rem;
-  }
+  /* `.st-grid` and `.st-card` (incl. the product-tile parts `__media` / `__body` /
+     `__title` / `__price` / `__compare` and the `a.st-card` hover-lift) now live in
+     @sparx/site-ui (grid.css / card.css) — its single owner, so the cascade-layer
+     race can't drift them. The storefront authors the same class names directly. */
 
   /* ── Badges / pills ────────────────────────────────────────── */
   /* An inline label/status pill (Featured, Default, order status, …). It does NOT
