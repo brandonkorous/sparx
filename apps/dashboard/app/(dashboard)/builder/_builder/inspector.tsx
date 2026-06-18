@@ -27,6 +27,14 @@ import {
   AlignHorizontalJustifyCenter,
   AlignHorizontalJustifyEnd,
   AlignHorizontalJustifyStart,
+  ArrowDown,
+  ArrowDownLeft,
+  ArrowDownRight,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  ArrowUpLeft,
+  ArrowUpRight,
   AlignHorizontalSpaceAround,
   AlignHorizontalSpaceBetween,
   AlignJustify,
@@ -46,6 +54,7 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronUp,
+  CircleDot,
   ClipboardPaste,
   Copy,
   CopyPlus,
@@ -67,6 +76,7 @@ import {
   Plus,
   Replace,
   Rocket,
+  RotateCw,
   Search,
   Sparkles,
   SlidersHorizontal,
@@ -255,7 +265,13 @@ import {
   type StyleContext,
 } from './class-controls';
 import { ColorSwatchField, EmphasisSwatchField } from './color-swatch';
-import { IconChoiceField, PreviewTile, PreviewTileField } from './picker-fields';
+import {
+  IconChoiceField,
+  PositionPadField,
+  PreviewTile,
+  PreviewTileField,
+  SwitchField,
+} from './picker-fields';
 import { detectClassConflicts, resolveClassConflicts } from './class-conflicts';
 
 // ── Shared controls ──────────────────────────────────────────────────────────
@@ -303,6 +319,20 @@ const ALIGN_SELF_ICONS: Record<string, LucideIcon> = {
   center: AlignCenterHorizontal,
   end: AlignEndHorizontal,
   stretch: StretchVertical,
+};
+// Gradient direction reads as a compass — each linear angle is its arrow; radial
+// fills from the centre, conic sweeps around.
+const GRADIENT_DIR_ICONS: Record<string, LucideIcon> = {
+  r: ArrowRight,
+  l: ArrowLeft,
+  b: ArrowDown,
+  t: ArrowUp,
+  br: ArrowDownRight,
+  bl: ArrowDownLeft,
+  tr: ArrowUpRight,
+  tl: ArrowUpLeft,
+  radial: CircleDot,
+  conic: RotateCw,
 };
 
 function Field({
@@ -2331,12 +2361,13 @@ function BackgroundCard({
         onClass={onClass}
       />
       <Subgroup title="Gradient">
-        <StyleControlField
+        <IconChoiceField
           node={node}
-          def={def}
+          archetype={def.defaults.class}
           control={GRADIENT_DIRECTION_CONTROL}
-          prefix={prefix}
+          ctx={prefix}
           onClass={onClass}
+          icons={GRADIENT_DIR_ICONS}
         />
         {hasGradient ? (
           <>
@@ -2380,16 +2411,16 @@ function BackgroundCard({
           <StyleControlField
             node={node}
             def={def}
-            control={BG_POSITION_CONTROL}
+            control={BG_REPEAT_CONTROL}
             prefix={prefix}
             onClass={onClass}
           />
         </div>
-        <StyleControlField
+        <PositionPadField
           node={node}
-          def={def}
-          control={BG_REPEAT_CONTROL}
-          prefix={prefix}
+          archetype={def.defaults.class}
+          control={BG_POSITION_CONTROL}
+          ctx={prefix}
           onClass={onClass}
         />
       </Subgroup>
@@ -2644,38 +2675,34 @@ function FiltersCard({
           commit={commit}
         />
       </div>
-      <div className="bx-row2">
-        <StyleControlField
-          node={node}
-          def={def}
-          control={GRAYSCALE_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-        <StyleControlField
-          node={node}
-          def={def}
-          control={SEPIA_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-      </div>
-      <div className="bx-row2">
-        <StyleControlField
-          node={node}
-          def={def}
-          control={INVERT_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-        <StyleControlField
-          node={node}
-          def={def}
-          control={DROP_SHADOW_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-      </div>
+      <SwitchField
+        node={node}
+        archetype={def.defaults.class}
+        control={GRAYSCALE_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+      />
+      <SwitchField
+        node={node}
+        archetype={def.defaults.class}
+        control={SEPIA_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+      />
+      <SwitchField
+        node={node}
+        archetype={def.defaults.class}
+        control={INVERT_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+      />
+      <StyleControlField
+        node={node}
+        def={def}
+        control={DROP_SHADOW_CONTROL}
+        prefix={prefix}
+        onClass={onClass}
+      />
       <Subgroup title="Backdrop (behind a translucent element)">
         <StyleControlField
           node={node}
@@ -3223,22 +3250,21 @@ function TypographyCard({
         onClass={onClass}
         kind="tracking"
       />
-      <div className="bx-row2">
-        <StyleControlField
-          node={node}
-          def={def}
-          control={TEXT_CASE_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-        <StyleControlField
-          node={node}
-          def={def}
-          control={FONT_STYLE_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-      </div>
+      <PreviewTileField
+        node={node}
+        archetype={def.defaults.class}
+        control={TEXT_CASE_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+        kind="case"
+      />
+      <StyleControlField
+        node={node}
+        def={def}
+        control={FONT_STYLE_CONTROL}
+        prefix={prefix}
+        onClass={onClass}
+      />
       <StyleControlField
         node={node}
         def={def}
@@ -3255,22 +3281,21 @@ function TypographyCard({
         onClass={onClass}
       />
       <Subgroup title="Decoration">
-        <div className="bx-row2">
-          <StyleControlField
-            node={node}
-            def={def}
-            control={TEXT_DECORATION_CONTROL}
-            prefix={prefix}
-            onClass={onClass}
-          />
-          <StyleControlField
-            node={node}
-            def={def}
-            control={DECORATION_THICKNESS_CONTROL}
-            prefix={prefix}
-            onClass={onClass}
-          />
-        </div>
+        <PreviewTileField
+          node={node}
+          archetype={def.defaults.class}
+          control={TEXT_DECORATION_CONTROL}
+          ctx={prefix}
+          onClass={onClass}
+          kind="decoration"
+        />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={DECORATION_THICKNESS_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
         <StyleControlField
           node={node}
           def={def}

@@ -69,6 +69,10 @@ const EnvSchema = z
     GOOGLE_OAUTH_CLIENT_ID: z.string().optional(),
     GOOGLE_OAUTH_CLIENT_SECRET: z.string().optional(),
     SEARCH_CONSOLE_TOKEN_KEY: z.string().optional(),
+    // Active domain registrar (docs/24). The registrar is abstracted behind the
+    // @sparx/registrar `RegistrarClient` contract; this selects the provider.
+    // 'godaddy' today; 'namecom' lands once its @sparx/namecom client is wired.
+    REGISTRAR: z.enum(['godaddy', 'namecom']).default('godaddy'),
     // GoDaddy Reseller API credentials (docs/24 §3, docs/24 §10).
     // OTE (staging) credentials — used when the resolved env is OTE.
     GODADDY_API_KEY_OTE: z.string().optional(),

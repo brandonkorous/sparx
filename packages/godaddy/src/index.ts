@@ -1,4 +1,5 @@
-// GoDaddy Reseller API client (docs/24 §3, docs/24 §5).
+// GoDaddy Reseller API client (docs/24 §3, docs/24 §5) — one implementation of
+// the provider-agnostic `RegistrarClient` contract in @sparx/registrar.
 //
 // Reads OTE vs production credentials from process.env. All domain purchase,
 // DNS configuration, and lifecycle operations go through this module.
@@ -6,8 +7,35 @@
 // Auth: `sso-key {KEY}:{SECRET}` header per the GoDaddy Reseller API spec.
 // OTE base: https://api.ote-godaddy.com
 // Prod base: https://api.godaddy.com
+//
+// Consumers should depend on the `RegistrarClient` interface and obtain an
+// instance via `createGoDaddyRegistrar()` (or their service's registrar
+// resolver), not on the free functions below — that is what keeps name.com a
+// drop-in swap. The free functions remain exported as the implementation.
 
-import { generateKeyPairSync } from 'node:crypto';
+import {
+  RegistrarError,
+  buildSparxDnsRecords,
+  generateDkimKeypair,
+  type DnsRecord,
+  type DomainAvailability,
+  type DomainSuggestion,
+  type RegistrantContact,
+  type RegistrarClient,
+} from '@sparx/registrar';
+
+// Re-export the contract surface so existing `@sparx/godaddy` importers keep
+// working: the shared types, the neutral DNS/DKIM helpers, and the error.
+export {
+  RegistrarError,
+  buildSparxDnsRecords,
+  generateDkimKeypair,
+  type DnsRecord,
+  type DomainAvailability,
+  type DomainSuggestion,
+  type RegistrantContact,
+  type RegistrarClient,
+};
 
 const OTE_BASE = 'https://api.ote-godaddy.com';
 const PROD_BASE = 'https://api.godaddy.com';
@@ -41,7 +69,7 @@ function authHeader(): string {
   const secret = isProd ? process.env.GODADDY_API_SECRET_PROD : process.env.GODADDY_API_SECRET_OTE;
   if (!key || !secret) {
     const suffix = isProd ? 'PROD' : 'OTE';
-    throw new GoDaddyError(
+    throw new RegistrarError(
       `GoDaddy ${isProd ? 'production' : 'OTE'} API credentials not configured ` +
         `(set GODADDY_API_KEY_${suffix} / GODADDY_API_SECRET_${suffix})`,
       0
@@ -70,7 +98,7 @@ async function gd<T>(method: string, path: string, body?: unknown): Promise<T> {
     } catch {
       // JSON parse failure — use the status-only message
     }
-    throw new GoDaddyError(message, res.status);
+    throw new RegistrarError(message, res.status);
   }
 
   const text = await res.text();
@@ -81,66 +109,6 @@ async function gd<T>(method: string, path: string, body?: unknown): Promise<T> {
  *  cents — the unit the rest of sparx (markup, Stripe, UI) speaks. */
 function microToCents(micro: number | undefined | null): number {
   return micro != null ? Math.round(micro / 10000) : 0;
-}
-
-// ─── Error class ─────────────────────────────────────────────────────────────
-
-export class GoDaddyError extends Error {
-  constructor(
-    message: string,
-    public readonly status: number
-  ) {
-    super(message);
-    this.name = 'GoDaddyError';
-  }
-}
-
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-export interface DomainAvailability {
-  available: boolean;
-  /** First-year registration price, in cents. */
-  price: number;
-  /** Renewal price, in cents (differs sharply from `price` for promo TLDs, e.g. .shop). */
-  renewalPrice: number;
-  currency: string;
-  tld: string;
-}
-
-export interface DomainSuggestion {
-  domain: string;
-  available: boolean;
-  /** First-year registration price, in cents. */
-  price: number;
-  /** Renewal price, in cents. */
-  renewalPrice: number;
-  currency: string;
-  tld: string;
-}
-
-/** Full registrant contact — required for every GoDaddy domain registration. */
-export interface RegistrantContact {
-  firstName: string;
-  lastName: string;
-  email: string;
-  /** E.164 format: +1.4805551234 */
-  phone: string;
-  address1: string;
-  address2?: string;
-  city: string;
-  /** 2-letter state/province code. */
-  state: string;
-  postalCode: string;
-  /** ISO 3166-1 alpha-2. */
-  country: string;
-}
-
-export interface DnsRecord {
-  type: 'A' | 'AAAA' | 'CAA' | 'CNAME' | 'MX' | 'NS' | 'SRV' | 'TXT';
-  name: string;
-  data: string;
-  ttl: number;
-  priority?: number;
 }
 
 // GoDaddy response shapes (internal)
@@ -288,7 +256,7 @@ export async function getDomainSuggestions(
   });
 }
 
-// ─── Legal agreements ─────────────────────────────────────────────────────────
+// ─── Legal agreements (GoDaddy-specific) ───────────────────────────────────────
 
 export interface DomainAgreement {
   agreementKey: string;
@@ -338,7 +306,7 @@ export async function purchaseDomain(
   const tld = domain.split('.').slice(1).join('.');
   const agreementKeys = (await getDomainAgreements(tld, privacy)).map((a) => a.agreementKey);
   if (agreementKeys.length === 0) {
-    throw new GoDaddyError(
+    throw new RegistrarError(
       `GoDaddy returned no registration agreements for .${tld}; cannot purchase.`,
       0
     );
@@ -385,50 +353,6 @@ export async function configureDNS(domain: string, records: DnsRecord[]): Promis
   await gd<void>('PUT', `/v1/domains/${encodeURIComponent(domain)}/records`, records);
 }
 
-/** The canonical sparx DNS record set for a purchased domain (docs/24 §3). */
-export function buildSparxDnsRecords(dkimPublicKey: string): DnsRecord[] {
-  return [
-    { type: 'CNAME', name: '@', data: 'customers.sparx.zone', ttl: 600 },
-    { type: 'CNAME', name: 'www', data: 'customers.sparx.zone', ttl: 600 },
-    { type: 'TXT', name: '@', data: 'v=spf1 include:_spf.sparx.email ~all', ttl: 3600 },
-    {
-      type: 'TXT',
-      name: 'sparx._domainkey',
-      data: `v=DKIM1; k=rsa; p=${dkimPublicKey}`,
-      ttl: 3600,
-    },
-    {
-      type: 'TXT',
-      name: '_dmarc',
-      data: 'v=DMARC1; p=quarantine; rua=mailto:dmarc@sparx.email',
-      ttl: 3600,
-    },
-    { type: 'MX', name: '@', data: 'mail.sparx.email', ttl: 3600, priority: 10 },
-  ];
-}
-
-// ─── DKIM keypair ─────────────────────────────────────────────────────────────
-
-/**
- * Generate an RSA-2048 DKIM keypair. Returns:
- *   - publicKey: stripped PEM ready for the DKIM TXT `p=` value
- *   - privateKey: PKCS8 PEM for signing outbound mail
- */
-export function generateDkimKeypair(): { publicKey: string; privateKey: string } {
-  const { publicKey: pubPem, privateKey: privPem } = generateKeyPairSync('rsa', {
-    modulusLength: 2048,
-    publicKeyEncoding: { type: 'spki', format: 'pem' },
-    privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
-  });
-
-  const dkimPublicKey = pubPem
-    .replace('-----BEGIN PUBLIC KEY-----', '')
-    .replace('-----END PUBLIC KEY-----', '')
-    .replace(/\s+/g, '');
-
-  return { publicKey: dkimPublicKey, privateKey: privPem };
-}
-
 // ─── Renewal ──────────────────────────────────────────────────────────────────
 
 export async function renewDomain(
@@ -460,4 +384,24 @@ export async function setPrivacy(domain: string, enabled: boolean): Promise<void
 
 export async function setAutoRenew(domain: string, enabled: boolean): Promise<void> {
   await gd<void>('PATCH', `/v1/domains/${encodeURIComponent(domain)}`, { renewAuto: enabled });
+}
+
+// ─── RegistrarClient factory ────────────────────────────────────────────────
+
+/**
+ * A `RegistrarClient` backed by GoDaddy. The methods bind to the module
+ * functions above; GoDaddy's per-TLD agreement fetch is handled inside
+ * `purchaseDomain`, so it never surfaces on the neutral contract.
+ */
+export function createGoDaddyRegistrar(): RegistrarClient {
+  return {
+    checkAvailability,
+    getDomainSuggestions,
+    purchaseDomain,
+    configureDNS,
+    renewDomain,
+    initiateTransferOut,
+    setPrivacy,
+    setAutoRenew,
+  };
 }

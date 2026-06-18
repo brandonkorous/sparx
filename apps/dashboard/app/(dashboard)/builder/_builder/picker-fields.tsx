@@ -10,6 +10,7 @@
 
 import * as React from 'react';
 import { Check, type LucideIcon } from 'lucide-react';
+import { Switch } from '@sparx/ui';
 import type { BuilderNode } from '@sparx/builder-schemas';
 import {
   activeValue,
@@ -171,6 +172,81 @@ export function PreviewTileField({
             fonts={fonts}
           />
         ))}
+      </div>
+    </div>
+  );
+}
+
+// ── On/off Switch (grayscale / sepia / invert) ────────────────────────────────
+/** A labelled Switch for a two-option (on/off) class group — the friendly form of a
+ *  yes/no filter. Checked writes the `on` value; unchecking clears the group back to
+ *  the default (visually identical to off, and lets an archetype default show). */
+export function SwitchField({
+  node,
+  archetype,
+  control,
+  ctx = '',
+  onClass,
+}: {
+  node: BuilderNode;
+  archetype: string | undefined;
+  control: ClassControl;
+  ctx?: string;
+  onClass: (value: string) => void;
+}) {
+  const current = activeValue(node.class, control, ctx);
+  const commit = (on: boolean): void =>
+    onClass(
+      ensureArchetypeDefaults(applyValue(node.class, control, on ? 'on' : null, ctx), archetype)
+    );
+  return (
+    <div className="bx-row">
+      <span className="bx-field__label">{control.label}</span>
+      <Switch checked={current === 'on'} onCheckedChange={commit} />
+    </div>
+  );
+}
+
+// ── Position pad (background position) ─────────────────────────────────────────
+/** The anchor points laid out spatially as a cross (centre + edges) instead of a
+ *  dropdown. The corners are intentionally absent — the control carries no corner
+ *  values, so a cross reads complete where a gapped 3×3 would look broken. Each cell
+ *  is placed by `data-pos` (builder.css); re-clicking the active anchor clears it. */
+export function PositionPadField({
+  node,
+  archetype,
+  control,
+  ctx = '',
+  onClass,
+}: {
+  node: BuilderNode;
+  archetype: string | undefined;
+  control: ClassControl;
+  ctx?: string;
+  onClass: (value: string) => void;
+}) {
+  const current = activeValue(node.class, control, ctx);
+  const commit = (value: string | null): void =>
+    onClass(ensureArchetypeDefaults(applyValue(node.class, control, value, ctx), archetype));
+  return (
+    <div className="bx-field">
+      <span className="bx-field__label">{control.label}</span>
+      <div className="bx-pospad" role="group" aria-label={control.label}>
+        {control.options.map((o) => {
+          const on = current === o.value;
+          return (
+            <button
+              key={o.value}
+              type="button"
+              className="bx-pospad__cell"
+              data-pos={o.value}
+              aria-pressed={on}
+              aria-label={o.label}
+              title={o.label}
+              onClick={() => commit(on ? null : o.value)}
+            />
+          );
+        })}
       </div>
     </div>
   );

@@ -52,6 +52,7 @@ COPY packages/blueprints ./packages/blueprints
 COPY packages/marketplace-schemas ./packages/marketplace-schemas
 COPY packages/cms-editor ./packages/cms-editor
 COPY packages/email-platform ./packages/email-platform
+COPY packages/registrar ./packages/registrar
 COPY packages/godaddy ./packages/godaddy
 COPY packages/payments ./packages/payments
 COPY services/api-rest ./services/api-rest

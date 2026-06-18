@@ -3306,6 +3306,52 @@
   white-space: nowrap;
 }
 
+/* Position pad (picker-fields.tsx PositionPadField) — the 5 anchor points placed as
+   a cross in a 3×3 grid; empty corners are just gaps. Active anchor = filled module
+   colour, like a mini alignment pad. */
+.bx-pospad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 86px;
+  height: 86px;
+  gap: 4px;
+  padding: 6px;
+  background: var(--color-bg-subtle);
+  border-radius: 9px;
+}
+.bx-pospad__cell {
+  border: none;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--module-active) 12%, transparent);
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    transform 0.1s ease;
+}
+.bx-pospad__cell:hover {
+  background: color-mix(in srgb, var(--module-active) 26%, transparent);
+}
+.bx-pospad__cell[aria-pressed='true'] {
+  background: var(--module-active);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+}
+.bx-pospad__cell[data-pos='top'] {
+  grid-area: 1 / 2;
+}
+.bx-pospad__cell[data-pos='left'] {
+  grid-area: 2 / 1;
+}
+.bx-pospad__cell[data-pos='center'] {
+  grid-area: 2 / 2;
+}
+.bx-pospad__cell[data-pos='right'] {
+  grid-area: 2 / 3;
+}
+.bx-pospad__cell[data-pos='bottom'] {
+  grid-area: 3 / 2;
+}
+
 /* ── Preview tiles (picker-fields.tsx — corners / aspect / weight / columns / size /
    family / shadow / border / ring / tracking / leading / blur) ────────────────────
    Reuse the swatch cell frame (.bx-sw-cell / .bx-sw) for sizing + the selected ring;

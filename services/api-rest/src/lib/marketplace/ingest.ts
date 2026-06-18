@@ -118,7 +118,14 @@ function compareSemver(a: string, b: string): number {
 
 /** "Compile" the payload: import the authored TS/JS module and take its default
  *  (or `payload`) export as the raw data object. First-party only — third-party
- *  code runs in the §9 sandbox, not here. */
+ *  code runs in the §9 sandbox, not here.
+ *
+ *  MULTI-FILE PAYLOADS are supported: `payload` names a single ENTRY module, but
+ *  that entry may relative-import sibling data files in the bundle (e.g. a thin
+ *  blueprint.ts that imports ./parts/pages/home.ts). The dynamic import resolves the
+ *  whole relative graph, so a large blueprint ships as a folder of scoped, hand-
+ *  editable files instead of one wall — keep the graph self-contained (relative
+ *  imports + pure data, no `@sparx/*`). Sandboxing that graph is the §9/Phase-2 job. */
 async function loadPayload(dir: string, payloadFile: string): Promise<unknown> {
   const abs = join(dir, payloadFile);
   try {

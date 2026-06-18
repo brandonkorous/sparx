@@ -58,6 +58,7 @@ COPY packages/sitebuilder-schemas ./packages/sitebuilder-schemas
 COPY packages/sitebuilder ./packages/sitebuilder
 COPY packages/cms-editor ./packages/cms-editor
 COPY packages/email-platform ./packages/email-platform
+COPY packages/registrar ./packages/registrar
 COPY packages/godaddy ./packages/godaddy
 COPY services/api-mcp ./services/api-mcp
 

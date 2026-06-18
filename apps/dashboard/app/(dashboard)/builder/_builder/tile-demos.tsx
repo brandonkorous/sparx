@@ -21,7 +21,9 @@ export type TileKind =
   | 'ring'
   | 'tracking'
   | 'leading'
-  | 'blur';
+  | 'blur'
+  | 'case'
+  | 'decoration';
 
 // Each map keys an option VALUE (class-controls.ts) to the concrete CSS used inside
 // the 34px chip. The numbers are tuned to READ at chip scale, not 1:1 with the real
@@ -71,6 +73,19 @@ const BLUR_DEMO: Record<string, string> = {
   sm: 'blur(0.7px)',
   md: 'blur(1.4px)',
   lg: 'blur(2.4px)',
+};
+// Sample text is lowercase so capitalize is distinguishable from normal ("ag" vs
+// "Ag"); uppercase reads "AG".
+const CASE_DEMO: Record<string, string> = {
+  normal: 'none',
+  upper: 'uppercase',
+  caps: 'capitalize',
+};
+const DECO_DEMO: Record<string, string> = {
+  underline: 'underline',
+  'line-through': 'line-through',
+  overline: 'overline',
+  none: 'none',
 };
 
 export interface TileFonts {
@@ -186,6 +201,21 @@ function tileInner(kind: TileKind, value: string, fonts: TileFonts): React.React
     case 'blur':
       return (
         <span className="bx-ptile__aa" style={{ filter: BLUR_DEMO[value] ?? 'none' }}>
+          Ag
+        </span>
+      );
+    case 'case':
+      return (
+        <span className="bx-ptile__aa" style={{ textTransform: CASE_DEMO[value] ?? 'none' }}>
+          ag
+        </span>
+      );
+    case 'decoration':
+      return (
+        <span
+          className="bx-ptile__aa"
+          style={{ textDecorationLine: DECO_DEMO[value] ?? 'none', textUnderlineOffset: 2 }}
+        >
           Ag
         </span>
       );

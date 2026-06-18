@@ -29,6 +29,7 @@
     "@sparx/godaddy": "workspace:*",
     "@sparx/inventory": "workspace:*",
     "@sparx/email-platform": "workspace:*",
+    "@sparx/registrar": "workspace:*",
     "@sparx/search": "workspace:*",
     "@sparx/sitebuilder": "workspace:*",
     "fastify": "^5.6.1",

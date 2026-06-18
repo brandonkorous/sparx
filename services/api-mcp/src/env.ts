@@ -16,6 +16,10 @@ const EnvSchema = z.object({
   // Enables the real Pub/Sub bridge for CRM customer writes made via MCP
   // tools. Unset (dev) → the bridge is a no-op and writes stay on the stub.
   GCP_PROJECT_ID: z.string().optional(),
+  // Active domain registrar for the domain MCP tools (docs/24). Selects the
+  // provider behind the @sparx/registrar `RegistrarClient` contract. 'godaddy'
+  // today; 'namecom' once its @sparx/namecom client is wired.
+  REGISTRAR: z.enum(['godaddy', 'namecom']).default('godaddy'),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

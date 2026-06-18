@@ -49,18 +49,11 @@ import {
   CNAME_TARGET,
 } from '../../lib/domain.js';
 import {
-  checkAvailability,
-  getDomainSuggestions,
-  purchaseDomain,
-  configureDNS,
   buildSparxDnsRecords,
   generateDkimKeypair,
-  renewDomain as gdRenewDomain,
-  initiateTransferOut,
-  setPrivacy,
-  setAutoRenew,
-  GoDaddyError,
-} from '../../lib/godaddy.js';
+  getRegistrar,
+  RegistrarError,
+} from '../../lib/registrar.js';
 import { chargeForDomain, refundDomainCharge } from '../../lib/domain-billing.js';
 import { env } from '../../env.js';
 
@@ -284,12 +277,16 @@ async function findPurchasedDomain(tenantId: string, id: string) {
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature.
 const domainsRoutes: FastifyPluginAsync = async (app) => {
+  // The active registrar (GoDaddy today; swappable via env.REGISTRAR). Resolved
+  // once — construction is cheap and touches no credentials.
+  const registrar = getRegistrar();
+
   // ── POST /v1/domains/search ───────────────────────────────────────────────
   // Must be registered BEFORE /:id routes so the literal path wins.
   app.post('/v1/domains/search', async (request) => {
     requireRole(request, 'viewer');
     const { query } = SearchBody.parse(request.body);
-    const suggestions = await getDomainSuggestions(query);
+    const suggestions = await registrar.getDomainSuggestions(query);
 
     const priced = suggestions.map((s) => ({
       ...s,
@@ -307,7 +304,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
         dup.exact = true;
       } else {
         try {
-          const avail = await checkAvailability(exactHost);
+          const avail = await registrar.checkAvailability(exactHost);
           const fee = markupForTld(avail.tld);
           priced.unshift({
             domain: exactHost,
@@ -333,7 +330,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/domains/check', async (request) => {
     requireRole(request, 'viewer');
     const { domain } = CheckBody.parse(request.body);
-    const avail = await checkAvailability(domain);
+    const avail = await registrar.checkAvailability(domain);
     return ok({
       ...avail,
       displayPrice: avail.price + markupForTld(avail.tld),
@@ -397,7 +394,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     //    drives the renewal_price_cents column and any additional years — they
     //    differ sharply for TLDs like .shop ($0.99 to register, $59.99 to renew),
     //    so they must not be conflated.
-    const avail = await checkAvailability(host);
+    const avail = await registrar.checkAvailability(host);
     if (!avail.available) {
       throw conflict(
         'That domain is no longer available — it was registered elsewhere. Try another.',
@@ -427,7 +424,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     //    never billed for a domain they didn't get.
     let orderId: string;
     try {
-      ({ orderId } = await purchaseDomain(host, input.years, input.contact, input.privacy));
+      ({ orderId } = await registrar.purchaseDomain(host, input.years, input.contact, input.privacy));
     } catch (err) {
       await refundDomainCharge(paymentIntentId).catch(() => undefined);
       throw err;
@@ -439,7 +436,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
 
     let dnsConfigured = false;
     try {
-      await configureDNS(host, dnsRecords);
+      await registrar.configureDNS(host, dnsRecords);
       dnsConfigured = true;
     } catch (err) {
       // DNS config failure is non-fatal: the domain is registered. The
@@ -713,7 +710,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
 
     let orderId: string | null;
     try {
-      ({ orderId } = await gdRenewDomain(row.host, years));
+      ({ orderId } = await registrar.renewDomain(row.host, years));
     } catch (err) {
       await refundDomainCharge(paymentIntentId).catch(() => undefined);
       throw err;
@@ -761,10 +758,10 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
 
     let authCode: string;
     try {
-      ({ authCode } = await initiateTransferOut(row.host));
+      ({ authCode } = await registrar.initiateTransferOut(row.host));
     } catch (err) {
-      if (err instanceof GoDaddyError) {
-        throw validationError(`GoDaddy transfer-out failed: ${err.message}`, [
+      if (err instanceof RegistrarError) {
+        throw validationError(`Registrar transfer-out failed: ${err.message}`, [
           { field: 'domain', message: err.message },
         ]);
       }
@@ -788,7 +785,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
 
     const row = await findPurchasedDomain(auth.tenantId, id);
 
-    await setPrivacy(row.host, enabled);
+    await registrar.setPrivacy(row.host, enabled);
 
     const updated = await prisma.domain.update({
       where: { id },
@@ -806,7 +803,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
 
     const row = await findPurchasedDomain(auth.tenantId, id);
 
-    await setAutoRenew(row.host, enabled);
+    await registrar.setAutoRenew(row.host, enabled);
 
     const updated = await prisma.domain.update({
       where: { id },

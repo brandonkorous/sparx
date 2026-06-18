@@ -13,15 +13,8 @@
 
 import { z } from 'zod';
 import { prisma, withTenant } from '@sparx/db';
-import {
-  buildSparxDnsRecords,
-  checkAvailability,
-  configureDNS,
-  generateDkimKeypair,
-  getDomainSuggestions,
-  GoDaddyError,
-  purchaseDomain as gdPurchase,
-} from '@sparx/godaddy';
+import { buildSparxDnsRecords, generateDkimKeypair, RegistrarError } from '@sparx/registrar';
+import { getRegistrar } from './registrar.js';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
 import { env } from './env.js';
 
@@ -33,6 +26,9 @@ const pubLogger: PublisherLogger = {
   error: (obj, msg) => console.error(msg ?? '', obj),
 };
 const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLogger });
+
+// Active registrar (GoDaddy today; swappable via env.REGISTRAR). Cached singleton.
+const registrar = getRegistrar();
 
 interface Ctx {
   tenantId: string;
@@ -85,7 +81,7 @@ const checkDomainAvailabilityTool = {
   confirmation: false,
   async run(_ctx: Ctx, input: { domain: string }) {
     try {
-      const result = await checkAvailability(input.domain);
+      const result = await registrar.checkAvailability(input.domain);
       return {
         domain: input.domain,
         available: result.available,
@@ -93,7 +89,7 @@ const checkDomainAvailabilityTool = {
         currency: result.currency,
       };
     } catch (err) {
-      if (err instanceof GoDaddyError) {
+      if (err instanceof RegistrarError) {
         return { error: err.message, domain: input.domain };
       }
       throw err;
@@ -114,10 +110,10 @@ const suggestDomainsTool = {
   confirmation: false,
   async run(_ctx: Ctx, input: { query: string }) {
     try {
-      const suggestions = await getDomainSuggestions(input.query);
+      const suggestions = await registrar.getDomainSuggestions(input.query);
       return { suggestions };
     } catch (err) {
-      if (err instanceof GoDaddyError) {
+      if (err instanceof RegistrarError) {
         return { error: err.message, suggestions: [] };
       }
       throw err;
@@ -179,10 +175,15 @@ const purchaseDomainTool = {
     // 2. GoDaddy purchase.
     let orderId: string;
     try {
-      const result = await gdPurchase(input.domain, input.years, input.contact, input.privacy);
+      const result = await registrar.purchaseDomain(
+        input.domain,
+        input.years,
+        input.contact,
+        input.privacy
+      );
       orderId = result.orderId;
     } catch (err) {
-      if (err instanceof GoDaddyError) {
+      if (err instanceof RegistrarError) {
         throw new Error(`Domain purchase failed: ${err.message}`);
       }
       throw err;
@@ -198,7 +199,7 @@ const purchaseDomainTool = {
       dkimPublicKey = keypair.publicKey;
       dkimPrivateKey = keypair.privateKey;
       const dnsRecords = buildSparxDnsRecords(dkimPublicKey);
-      await configureDNS(input.domain, dnsRecords);
+      await registrar.configureDNS(input.domain, dnsRecords);
       dnsConfigured = true;
     } catch {
       // Logged by domain-worker after it retries via the event.
