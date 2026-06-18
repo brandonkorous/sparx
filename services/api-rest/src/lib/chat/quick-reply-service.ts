@@ -68,6 +68,79 @@ export async function create(
   });
 }
 
+// ─── Activation default (docs/104 L2) ─────────────────────────────────
+//
+// On `module.activated(chat)`, seed a small bank of canned responses so the
+// staff inbox's "/" autocomplete is useful on day one instead of empty. Generic,
+// industry-agnostic copy the tenant edits or replaces. Find-or-create per title
+// (and skip a shortcut that already exists) so a re-activation or a tenant that
+// already wrote their own replies is never disturbed (docs/104 R1–R4). `tenantId`
+// is scoped explicitly (not just RLS) since the local superuser bypasses RLS.
+const DEFAULT_QUICK_REPLIES: { title: string; body: string; shortcut: string }[] = [
+  {
+    title: 'Greeting',
+    body: 'Hi there! 👋 Thanks for reaching out — how can we help you today?',
+    shortcut: 'hi',
+  },
+  {
+    title: 'One moment',
+    body: 'Thanks for your patience — let me look into that for you right now.',
+    shortcut: 'wait',
+  },
+  {
+    title: 'Order status',
+    body: 'Happy to check on your order! Could you share your order number so I can pull it up?',
+    shortcut: 'order',
+  },
+  {
+    title: 'Shipping times',
+    body: "Most orders ship within 1–2 business days, and you'll get a tracking link by email as soon as yours is on its way.",
+    shortcut: 'shipping',
+  },
+  {
+    title: 'Returns',
+    body: "No problem — eligible items can be returned within 30 days of delivery. I can start a return for you whenever you're ready.",
+    shortcut: 'returns',
+  },
+  {
+    title: 'Business hours',
+    body: "Our team is here Monday–Friday, 9am–5pm. If we miss you, leave your email and we'll follow up as soon as we're back.",
+    shortcut: 'hours',
+  },
+  {
+    title: 'Anything else',
+    body: 'Glad I could help! Is there anything else I can do for you today?',
+    shortcut: 'else',
+  },
+];
+
+export async function bootstrapDefaults(ctx: TenantContext): Promise<{ created: number }> {
+  return withTenant(ctx, async (tx) => {
+    let created = 0;
+    for (const qr of DEFAULT_QUICK_REPLIES) {
+      const existingByTitle = await tx.chatQuickReply.findFirst({
+        where: { tenantId: ctx.tenantId, title: qr.title },
+        select: { id: true },
+      });
+      if (existingByTitle) continue;
+      const shortcutClash = await tx.chatQuickReply.findFirst({
+        where: { tenantId: ctx.tenantId, shortcut: qr.shortcut },
+        select: { id: true },
+      });
+      await tx.chatQuickReply.create({
+        data: {
+          tenantId: ctx.tenantId,
+          title: qr.title,
+          body: qr.body,
+          shortcut: shortcutClash ? null : qr.shortcut,
+        },
+      });
+      created += 1;
+    }
+    return { created };
+  });
+}
+
 export async function remove(ctx: TenantContext, id: string): Promise<void> {
   await withTenant(ctx, async (tx) => {
     const existing = await tx.chatQuickReply.findUnique({ where: { id }, select: { id: true } });
