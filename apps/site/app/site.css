@@ -583,11 +583,14 @@
   }
 
   /* ── Badges / pills ────────────────────────────────────────── */
+  /* An inline label/status pill (Featured, Default, order status, …). It does NOT
+     position itself — corner placement on a product tile is COMPOSED at the call
+     site with positioning utilities over the tile's relative media. A badge that
+     baked in `position: absolute` escaped its container and piled onto the page
+     corner wherever a site-ui inline badge was rendered (Builder pages). */
   .st-badge {
-    position: absolute;
-    top: 0.75rem;
-    left: 0.75rem;
-    z-index: 1;
+    display: inline-flex;
+    align-items: center;
     font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 0.04em;

@@ -32,8 +32,14 @@ export function ProductCard({
   return (
     <Link href={`/products/${product.handle}`} className="st-card">
       <div className="st-card__media">
-        {onSale ? <span className="st-badge st-badge--sale">Sale</span> : null}
-        {!product.inStock ? <span className="st-badge st-badge--out">Sold out</span> : null}
+        {/* Inline badge + positioning utilities over the relative media — the badge
+            stays a badge; the call site composes the corner placement. */}
+        {onSale ? (
+          <span className="st-badge st-badge--sale absolute top-3 left-3 z-10">Sale</span>
+        ) : null}
+        {!product.inStock ? (
+          <span className="st-badge st-badge--out absolute top-3 left-3 z-10">Sold out</span>
+        ) : null}
         {img ? (
           <Image
             src={img}
