@@ -1,6 +1,6 @@
 'use client';
 
-// Interactive PDP core. Holds the option selection, resolves the matching
+// Interactive PDP core (client island). Holds the option selection, resolves the matching
 // variant, and keeps the gallery, price, stock, and add-to-cart button in
 // sync. Server-loaded product data comes in via props; all interactivity is
 // client-side with no further fetches until "add to cart".
