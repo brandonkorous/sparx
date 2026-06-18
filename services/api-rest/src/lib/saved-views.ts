@@ -90,7 +90,8 @@ export async function create(
       where: { tenantId: ctx.tenantId, target: input.target, name: input.name, ownerUserId },
       select: { id: true },
     });
-    if (clash) throw conflict(`A view named "${input.name}" already exists here.`, { field: 'name' });
+    if (clash)
+      throw conflict(`A view named "${input.name}" already exists here.`, { field: 'name' });
     if (input.isDefault) await clearDefault(tx, ctx.tenantId, input.target, ownerUserId);
     const created = await tx.savedView.create({
       data: {
@@ -113,7 +114,8 @@ export async function update(
 ): Promise<SavedViewDto> {
   return withTenant(ctx, async (tx) => {
     const existing = await loadOwned(tx, ctx, id);
-    if (input.isDefault) await clearDefault(tx, ctx.tenantId, existing.target, existing.ownerUserId);
+    if (input.isDefault)
+      await clearDefault(tx, ctx.tenantId, existing.target, existing.ownerUserId);
     const updated = await tx.savedView.update({
       where: { id },
       data: {
