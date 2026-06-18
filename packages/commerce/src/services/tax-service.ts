@@ -314,6 +314,57 @@ export async function deleteExemption(ctx: ServiceContext, id: string): Promise<
   });
 }
 
+// ─── Activation default (docs/104 L2) ────────────────────────────────
+//
+// On `module.activated(commerce)`, seed the merchant's home nexus zone so the
+// Tax surface is wired with a guided starting point instead of an empty table.
+// Tax is deliberately unlike shipping: with no matching zone, `calculate()`
+// already returns a $0 breakdown (you only collect where you have nexus), so a
+// *live* default rate would be wrong — it would collect tax in a jurisdiction the
+// merchant isn't registered for. So the seed is ONE zone for the operating
+// country, **inactive and with zero rates**: `calculate()` only matches active
+// zones, so not a cent of tax is charged until the merchant fills in their
+// registration + rate and flips it active (or installs a TaxProvider, which
+// always wins). Find-or-create by "the tenant has any tax zone" — a merchant who
+// already configured tax is never touched. Country comes from the operating
+// warehouse (fallback 'US', matching the other commerce defaults). `tenantId` is
+// scoped explicitly (not just RLS) since the local superuser bypasses RLS
+// (docs/104 R1–R4).
+export async function bootstrapDefaults(ctx: ServiceContext): Promise<{ created: boolean }> {
+  return withTenant(ctx, async (tx) => {
+    const zoneCount = await tx.taxZone.count({ where: { tenantId: ctx.tenantId } });
+    if (zoneCount > 0) return { created: false };
+
+    const homeWarehouse = await tx.warehouse.findFirst({
+      where: { tenantId: ctx.tenantId, isSystem: false, deletedAt: null },
+      select: { country: true },
+    });
+    const country = homeWarehouse?.country ?? 'US';
+
+    const zone = await tx.taxZone.create({
+      data: {
+        tenantId: ctx.tenantId,
+        country,
+        region: null,
+        nexusType: 'physical',
+        isActive: false,
+      },
+      select: { id: true },
+    });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: 'system',
+      action: 'commerce.tax.bootstrapped',
+      entityType: 'TaxZone',
+      entityId: zone.id,
+      diff: { after: { country, nexusType: 'physical', isActive: false } },
+    });
+    return { created: true };
+  });
+}
+
 // ─── Calculation ─────────────────────────────────────────────────────
 //
 // When a TaxProvider plugin is installed it always wins. Until then,
