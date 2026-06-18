@@ -398,25 +398,37 @@
   }
 
   /* ── Footer ────────────────────────────────────────────────── */
-  .st-footer {
+  /* NAMED `.st-sitefooter`, NOT `.st-footer`, on purpose: @sparx/site-ui owns
+     `.st-footer` (the Builder Surface Footer — an auto-fit column grid on a
+     base-200 band, used by the canvas). This is the storefront CHROME footer, a
+     genuinely different component (brand blurb + sitemap columns + legal bottom
+     bar + a minimal variant). Sharing the `.st-footer` root let site-ui's grid
+     band silently win and strip this band's border-top / margin-top / surface
+     bg. Disambiguated (same pattern as `.st-stars`) — do NOT rename back. */
+  .st-sitefooter {
     margin-top: clamp(4rem, 8vw, 7rem);
     border-top: 1px solid var(--st-border);
     background: var(--st-surface);
   }
-  .st-footer__grid {
+  .st-sitefooter__grid {
     display: grid;
     grid-template-columns: 1.5fr repeat(3, 1fr);
     gap: 2.5rem;
     padding-block: clamp(2.5rem, 5vw, 4rem);
   }
-  .st-footer__col h4 {
+  .st-sitefooter__col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .st-sitefooter__col h4 {
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--st-text-muted);
     margin: 0 0 1rem;
   }
-  .st-footer__col a {
+  .st-sitefooter__col a {
     display: block;
     color: var(--st-text-secondary);
     text-decoration: none;
@@ -424,10 +436,10 @@
     padding: 0.3rem 0;
     transition: color var(--st-ease) 140ms;
   }
-  .st-footer__col a:hover {
+  .st-sitefooter__col a:hover {
     color: var(--st-text);
   }
-  .st-footer__bottom {
+  .st-sitefooter__bottom {
     border-top: 1px solid var(--st-border);
     padding-block: 1.5rem;
     display: flex;
@@ -999,7 +1011,7 @@
     .st-facets {
       position: static;
     }
-    .st-footer__grid {
+    .st-sitefooter__grid {
       grid-template-columns: 1fr 1fr;
     }
   }
@@ -1020,7 +1032,7 @@
     }
   }
   @media (max-width: 520px) {
-    .st-footer__grid {
+    .st-sitefooter__grid {
       grid-template-columns: 1fr;
       gap: 1.5rem;
     }
@@ -1504,7 +1516,7 @@
   }
 
   /* Footer social row. */
-  .st-footer__social {
+  .st-sitefooter__social {
     display: flex;
     gap: 0.5rem;
     margin-top: 1rem;
@@ -2312,10 +2324,10 @@
   /* ─── Minimal footer (docs/37 §6, gap #13) ──────────────────────────────────
    A single compact, centered link row + legal line — the thin legal/locale
    strip pattern, as opposed to the multi-column sitemap footer. */
-  .st-footer--minimal {
+  .st-sitefooter--minimal {
     margin-top: clamp(3rem, 6vw, 5rem);
   }
-  .st-footer__minimal {
+  .st-sitefooter__minimal {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -2323,25 +2335,25 @@
     text-align: center;
     padding-block: clamp(1.75rem, 4vw, 2.5rem);
   }
-  .st-footer__minimal-links {
+  .st-sitefooter__minimal-links {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.5rem 1.5rem;
   }
-  .st-footer__minimal-links a {
+  .st-sitefooter__minimal-links a {
     color: var(--st-text-secondary);
     text-decoration: none;
     font-size: 0.82rem;
     transition: color var(--st-ease) 140ms;
   }
-  .st-footer__minimal-links a:hover {
+  .st-sitefooter__minimal-links a:hover {
     color: var(--st-text);
   }
-  .st-footer__minimal .st-footer__social {
+  .st-sitefooter__minimal .st-sitefooter__social {
     margin-top: 0;
   }
-  .st-footer__minimal-legal {
+  .st-sitefooter__minimal-legal {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;

@@ -47,7 +47,7 @@ function FooterLink({ link }: { link: FooterColumn['links'][number] }) {
 function SocialRow({ socialLinks }: { socialLinks: FooterSocialLink[] }) {
   if (socialLinks.length === 0) return null;
   return (
-    <div className="st-footer__social">
+    <div className="st-sitefooter__social">
       {socialLinks.map((s) => (
         <a
           key={s.platform}
@@ -81,18 +81,18 @@ export function SiteFooter({
   if (variant === 'minimal') {
     const links = columns.flatMap((c) => c.links);
     return (
-      <footer className="st-footer st-footer--minimal">
+      <footer className="st-sitefooter st-sitefooter--minimal">
         <div className="st-container">
-          <div className="st-footer__minimal">
+          <div className="st-sitefooter__minimal">
             {links.length > 0 ? (
-              <nav className="st-footer__minimal-links" aria-label="Footer">
+              <nav className="st-sitefooter__minimal-links" aria-label="Footer">
                 {links.map((link) => (
                   <FooterLink key={link.href} link={link} />
                 ))}
               </nav>
             ) : null}
             <SocialRow socialLinks={social} />
-            <div className="st-footer__minimal-legal">
+            <div className="st-sitefooter__minimal-legal">
               <span>{legal}</span>
               <span>
                 Powered by <strong>sparx</strong>
@@ -105,10 +105,10 @@ export function SiteFooter({
   }
 
   return (
-    <footer className="st-footer">
+    <footer className="st-sitefooter">
       <div className="st-container">
-        <div className="st-footer__grid">
-          <div className="st-footer__col">
+        <div className="st-sitefooter__grid">
+          <div className="st-sitefooter__col">
             <span className="st-header__brand">{site.name}</span>
             <p
               className="st-muted"
@@ -119,7 +119,7 @@ export function SiteFooter({
             <SocialRow socialLinks={social} />
           </div>
           {columns.map((col) => (
-            <div key={col.title} className="st-footer__col">
+            <div key={col.title} className="st-sitefooter__col">
               <h4>{col.title}</h4>
               {col.links.map((link) => (
                 <FooterLink key={link.href} link={link} />
@@ -127,7 +127,7 @@ export function SiteFooter({
             </div>
           ))}
         </div>
-        <div className="st-footer__bottom">
+        <div className="st-sitefooter__bottom">
           <span>{legal}</span>
           <span>
             Powered by <strong>sparx</strong>
