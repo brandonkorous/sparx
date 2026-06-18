@@ -60,6 +60,12 @@ export interface MediaStorage {
   writeObject(key: string, contentType: string, body: Buffer | Readable): Promise<{ url: string }>;
   // Best-effort delete. Used by soft-delete GC and bucket cleanup.
   deleteObject(key: string): Promise<void>;
+  // Recursively delete every object under `prefix`. Used by bulk cleanup — e.g.
+  // purging the whole marketplace blueprint catalog (artifacts + media) across
+  // ALL versions in one call, since artifacts are immutable-per-version and a
+  // per-key delete would orphan older versions. Idempotent; a non-existent
+  // prefix is a no-op. `prefix` must be non-empty (refuses to wipe the root).
+  deletePrefix(prefix: string): Promise<void>;
   // Get the canonical public URL for a variant key. Constant-time in both
   // backends; no signing required because variants are world-readable.
   publicUrl(key: string): string;
@@ -169,6 +175,14 @@ class GcsStorage implements MediaStorage {
       });
   }
 
+  async deletePrefix(prefix: string): Promise<void> {
+    assertNonRootPrefix(prefix);
+    // Route to the same bucket the keys live on: marketplace artifacts/media are
+    // private (no `/variants/` segment); variant prefixes hit the public bucket.
+    const bucketName = this.isPublicKey(prefix) ? this.publicBucketName : this.privateBucketName;
+    await this.client.bucket(bucketName).deleteFiles({ prefix, force: true });
+  }
+
   publicUrl(key: string): string {
     // Only variants have a stable public URL. Originals are private —
     // callers asking for one are using the wrong path; route via a signed
@@ -200,6 +214,16 @@ class GcsStorage implements MediaStorage {
 function assertSafeKey(key: string): void {
   if (key.length === 0 || key.includes('..') || key.startsWith('/') || key.includes('\\')) {
     throw new Error(`Refusing unsafe storage key: ${JSON.stringify(key)}`);
+  }
+}
+
+// A recursive delete is a footgun: an empty / root prefix would wipe a whole
+// bucket. Require a non-trivial prefix that descends at least one directory
+// (`a/b…`) before any backend deletes by it. Used by deletePrefix in both modes.
+function assertNonRootPrefix(prefix: string): void {
+  const trimmed = prefix.trim();
+  if (trimmed.length === 0 || trimmed === '/' || !trimmed.replace(/\/+$/, '').includes('/')) {
+    throw new Error(`Refusing to delete by a root/too-broad prefix: ${JSON.stringify(prefix)}`);
   }
 }
 
@@ -265,6 +289,14 @@ class LocalStorage implements MediaStorage {
     await fs.rm(this.path(key), { force: true });
   }
 
+  async deletePrefix(prefix: string): Promise<void> {
+    assertNonRootPrefix(prefix);
+    assertSafeKey(prefix);
+    // Recursive rm of the on-disk directory the prefix maps to. `force` makes a
+    // missing dir a no-op (idempotent).
+    await fs.rm(join(this.root, prefix), { recursive: true, force: true });
+  }
+
   publicUrl(key: string): string {
     const base = this.publicBase || '';
     // Real path segments (not a single encodeURIComponent blob): the file route
@@ -321,12 +353,22 @@ export function variantKey(
   return `${tenantId}/variants/${assetId}/${format}-${width}.${ext}`;
 }
 
+// Marketplace storage prefixes (docs/85 §6) — the parent "directories" the keys
+// below descend from. The single source of truth for the marketplace object layout,
+// so a bulk cleanup (deletePrefix) and the per-object keys can never drift.
+export function marketplaceArtifactPrefix(category: string): string {
+  return `marketplace/${category}/`;
+}
+export function marketplaceMediaPrefix(category: string): string {
+  return `marketplace/media/${category}/`;
+}
+
 // Marketplace artifact key (docs/85 §6). Private object — the compiled,
 // immutable-per-version declarative artifact (theme tokens / component tree /
 // blueprint manifest / connector spec). No `/variants/` segment, so it lands on
 // the private bucket and is read back via readObject(), never a public URL.
 export function marketplaceArtifactKey(category: string, slug: string, version: string): string {
-  return `marketplace/${category}/${slug}/${version}.json`;
+  return `${marketplaceArtifactPrefix(category)}${slug}/${version}.json`;
 }
 
 // Marketplace media key (docs/85 §6) — the catalog card imagery (icon.png,
@@ -334,7 +376,7 @@ export function marketplaceArtifactKey(category: string, slug: string, version: 
 // served, world-readable, by GET /v1/public/marketplace/media/* (api-rest pipes
 // the bytes — the org forbids allUsers on the bucket; Cloudflare absorbs repeats).
 export function marketplaceMediaKey(category: string, slug: string, filename: string): string {
-  return `marketplace/media/${category}/${slug}/${filename}`;
+  return `${marketplaceMediaPrefix(category)}${slug}/${filename}`;
 }
 
 // The browser-reachable URL for a marketplace media object. Absolute in prod

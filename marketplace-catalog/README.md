@@ -4,6 +4,13 @@ This tree holds sparx's own marketplace items, authored to the
 [`marketplace-templates/`](../marketplace-templates/) contract and ingested through
 the **same** pipeline a third party will use (docs/85 §14). One folder per item:
 
+> **Authoring a blueprint?** Read the end-to-end guide first:
+> [`docs/guides/building-a-template.md`](../docs/guides/building-a-template.md). It
+> walks the full path — manifest → trees → theme → media → ingest → install — and
+> how to turn a design mockup into a working template. `blueprints/` ships only
+> hand-authored bundles now (the earlier demo set + its scratch generator were
+> removed); add a new one as `blueprints/<slug>/` per the guide.
+
 ```
 marketplace-catalog/
   themes/<slug>/        sparx.json + theme.ts      + media/{icon,preview}.png

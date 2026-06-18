@@ -11,6 +11,7 @@ import {
   PackageCheck,
   RefreshCw,
   ArrowLeftRight,
+  History,
 } from 'lucide-react';
 
 export const inventoryManifest: ModuleManifest = {
@@ -32,6 +33,7 @@ export const inventoryManifest: ModuleManifest = {
     { id: 'reorder', label: 'Reorder', icon: RefreshCw, href: '/inventory/reorder' },
     { id: 'counts', label: 'Counts', icon: ClipboardCheck, href: '/inventory/counts' },
     { id: 'transfers', label: 'Transfers', icon: ArrowLeftRight, href: '/inventory/transfers' },
+    { id: 'movements', label: 'Movements', icon: History, href: '/inventory/movements' },
     { id: 'lots', label: 'Lots & serials', icon: Layers, href: '/inventory/lots' },
     { id: 'sources', label: 'Sources', icon: Link2, href: '/inventory/sources' },
   ],
@@ -65,6 +67,12 @@ export const inventoryManifest: ModuleManifest = {
       label: 'New transfer',
       icon: Plus,
       href: '/inventory/transfers/new',
+    },
+    {
+      id: 'inventory.lot.create',
+      label: 'New lot',
+      icon: Plus,
+      href: '/inventory/lots/new',
     },
   ],
   entityTypes: [

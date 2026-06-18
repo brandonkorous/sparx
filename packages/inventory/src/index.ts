@@ -57,4 +57,11 @@ export type {
   InventoryTransferRow,
   InventoryTransferLineRow,
   InventoryTransferDetail,
+  MovementRow,
+  ListMovementsFilter,
+  LotRow,
+  LotDetail,
+  SerialRow,
+  ListLotsFilter,
+  ListSerialsFilter,
 } from './services/inventory-service';

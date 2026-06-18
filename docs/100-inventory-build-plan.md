@@ -1,6 +1,6 @@
 # sparx Platform — Inventory Product Build Plan
 
-**Version:** 1.11
+**Version:** 1.13
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-17
 
@@ -465,12 +465,39 @@ movements; reorder suggestion drafts a PO. All with commerce off.
    Emits `inventory.transfer.shipped` / `inventory.transfer.received`. Seed ships a draft MAIN → WEST-3PL the
    user can ship + receive (the deploy-gate exercise). DB-backed tests in `test/integration/transfers.test.ts`
    (4 cases; inventory suite 36/36).
-3. **Movement / audit-log viewer** — `/inventory/movements`: the `InventoryAdjustment` ledger, filter by
+3. **Movement / audit-log viewer** — `/inventory/movements`: the `inventory_movements` ledger, filter by
    variant/warehouse/reason/actor/date. This is the compliance surface docs/99 D5 flagged missing.
+   ✅ **DONE (P4c).** No new tables — a read-only, filterable, paginated view over the append-only ledger
+   every mutation already writes. New `@sparx/inventory` `movement-log.ts` `listMovements(ctx, filter)`
+   (Prisma `findMany` enriched with the variant SKU/product title + warehouse name; filters
+   variant/warehouse/reason/actor-type/actor-id/reference/created-at-range; **explicitly scopes `tenant_id`**
+   — not just RLS — because the local `sparx_owner` superuser bypasses RLS and a tenant-wide scan would
+   otherwise leak rows, matching the reorder-engine precedent). API `GET /v1/inventory/movements`
+   (`requireInventoryModule`, viewer). Dashboard `/inventory/movements`: a filter bar (item-by-SKU →
+   resolves to a variant id, warehouse, reason, actor, from/to date) + a newest-first ledger table
+   (when / item / location / reason badge / signed colored change / running balance / actor / reference),
+   deep-linkable by `?variant_id` with a removable "filtered to item" chip; `Movements` manifest section.
+   DB-backed tests in `test/integration/movements.test.ts` (4 cases: full feed newest-first + total; filter
+   by reason/variant/warehouse + AND-combined; actor-type + pagination; date range — inventory suite 40/40).
 4. **Lots/serials UI** — per-variant lot creation tab + serial list/status (models exist; no UI today).
+   ✅ **DONE (P4d).** No new tables — a management surface on the existing `LotBatch`/`SerialUnit` models. New
+   `@sparx/inventory` `lot-management.ts` adds the reads + status mutations on top of the create primitives
+   in `lots.ts`: `listLots` (filterable by item/warehouse/recall-state/expiry/lot-number, enriched with the
+   item + serial count, **explicit `tenant_id` scope** per the RLS-bypass precedent), `getLotBatch` (detail +
+   a serial-status breakdown), `listSerials`, `updateSerialStatus` (traceability metadata — it does NOT move
+   on-hand; the ledger does), and `clearRecall`. New `UpdateSerialStatusInput` schema. API extends
+   `/v1/inventory/lots` (GET list + `:id` + `:id/serials` + `:id/clear-recall`) and `/v1/inventory/serials`
+   (GET list + `PATCH :id`), keeping the existing create/recall/expiring endpoints. Dashboard rebuilds
+   `/inventory/lots` from a thin read-only summary into a full management surface: a filterable lot list, a
+   create form (item-by-SKU + warehouse + lot number + qty + mfg/expiry + hazmat class + supplier ref), and a
+   lot detail with the recall actions bar (recall with a reason + notify flag / clear recall, confirm-gated)
+   and a serial roster panel (list, add a serial, change status inline). `New lot` manifest action. DB-backed
+   tests in `test/integration/lots.test.ts` (4 cases: create + enriched/filtered list; add serials + status
+   change + roster breakdown; recall + recall-filter + clear; expiry-horizon filter — inventory suite 44/44).
 
 **Deploy gate:** run a cycle count with a variance → approval → `recount` movement; transfer between two
 warehouses through in-transit; movement viewer shows the full history; create a lot + serials in UI.
+**✅ All four met — Phase 4 is COMPLETE.**
 
 > **P4a (Counts) ✅ DONE** — a standalone tenant can run a cycle or full count, enter quantities, review the
 > variance, and post (with an admin approval over the value threshold), correcting stock via auditable
@@ -482,8 +509,17 @@ warehouses through in-transit; movement viewer shows the full history; create a 
 > destination), with total inventory conserved the whole way; a short receipt is written off in transit and
 > cancelling an in-transit transfer returns the goods to source. The in-transit warehouse is a per-tenant
 > system location (`is_system`), provisioned on first ship and hidden from the ordinary pickers/list.
-> **Next within P4:** **P4c** movement/audit-log viewer (docs/99 D5, read-only over `inventory_movements`),
-> **P4d** lots/serials UI — each independent of P4a/P4b.
+>
+> **P4c (Movement / audit-log viewer) ✅ DONE** — a standalone tenant can answer "who moved this stock, when,
+> why, and by how much" across the entire append-only ledger, filtered by item (SKU), warehouse, reason,
+> actor, and date range — the docs/99 D5 compliance surface. Read-only, no new tables.
+>
+> **P4d (Lots/serials UI) ✅ DONE — PHASE 4 COMPLETE.** A standalone tenant can record a lot (expiry, hazmat,
+> supplier ref, quantity), track per-unit serials and change their status, and run a recall (with reason +
+> notify) then clear it — a full management surface over the existing models, no new tables. With this the
+> whole of Phase 4 (counts · transfers · movement viewer · lots/serials) is delivered; **next is P5**
+> (external sync — Fishbowl for Gillett first) then **P6** (documented API + reporting + MCP supply tools +
+> B2B visibility).
 
 **Risks:** count-vs-live race (snapshot expected at count start, reconcile deltas at post) — **resolved**
 by the absolute `setOnHand` recount (delta computed against live on-hand under the row lock); approval

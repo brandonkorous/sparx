@@ -1,225 +1,151 @@
 import Link from 'next/link';
-import { CircleAlert, ShieldAlert } from 'lucide-react';
+import { CircleAlert, Plus, X } from 'lucide-react';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  EmptyState,
-  Heading,
-  PageHeader,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack, Text } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 
-// Lot batches — beauty + food + supplements + regulated goods carry
-// expiry + hazmat data per batch. Lists the next-to-expire and any
-// active recalls. Per-variant lot management lives on the product
-// detail page once Phase 2's PDP tab lands.
+import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { getUserPreferences } from '../../_shell/preferences';
+import { LotsFilterBar } from './_components/lots-filter-bar';
+import { LotsList } from './_components/lots-list';
+import { type LotRow } from './_components/types';
+
+// Lots & serials (docs/100 P4d) — batch traceability for regulated / expiring /
+// serialized stock. List (filter by item, lot number, warehouse, recall state,
+// expiring soon) + create + detail (serial roster + status changes + recall).
+// Standalone-usable. Quantities here are traceability metadata; authoritative
+// on-hand lives on the (variant, warehouse) level.
 
 export const dynamic = 'force-dynamic';
 
 const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
 
-interface LotBatchRow {
-  id: string;
-  variantId: string;
-  warehouseId: string;
-  warehouseCode: string;
-  lotNumber: string;
-  manufacturedAt: string | null;
-  expiresAt: string | null;
-  quantity: number;
-  hazmatClass: string;
-  recallStatus: string | null;
-  supplierBatchRef: string | null;
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default async function LotsPage() {
-  const horizon = new Date(2027, 5, 1).toISOString();
-  const [expiringSoon, activeRecalls] = await Promise.all([
-    api.get<LotBatchRow[]>(`/v1/inventory/lots/expiring?before=${encodeURIComponent(horizon)}`),
-    api.get<ActiveRecall[]>('/v1/inventory/recalls/active'),
+interface WarehouseOption {
+  id: string;
+  name: string;
+  code: string;
+}
+
+export default async function LotsPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
+
+  const f = {
+    variantId: str(params.variant_id),
+    sku: str(params.sku),
+    warehouseId: str(params.warehouse_id),
+    recallStatus: str(params.recall_status),
+    expiring: str(params.expiring) === '1',
+    q: str(params.q),
+  };
+
+  const query = new URLSearchParams({ take: String(take), skip: String(skip) });
+  if (f.variantId) query.set('variant_id', f.variantId);
+  if (f.warehouseId) query.set('warehouse_id', f.warehouseId);
+  if (f.recallStatus) query.set('recall_status', f.recallStatus);
+  if (f.q) query.set('q', f.q);
+  // The "expiring soon" toggle widens to a one-year horizon from now.
+  if (f.expiring) query.set('expiring_before', new Date(Date.now() + ONE_YEAR_MS).toISOString());
+
+  const [prefs, warehousePage, { data: lots, meta }] = await Promise.all([
+    getUserPreferences(),
+    api.getPaged<WarehouseOption[]>('/v1/inventory/locations?take=250'),
+    api.getPaged<LotRow[]>(`/v1/inventory/lots?${query.toString()}`),
   ]);
+  const total = (meta?.total as number | undefined) ?? lots.length;
+  const view = (str(params.view) || prefs.defaultListView) === 'card' ? 'card' : 'table';
+  const hasFilters = Boolean(f.variantId || f.warehouseId || f.recallStatus || f.expiring || f.q);
 
   return (
     <Container size="full">
       <Stack gap={6} className="py-10">
         <PageHeader
           icon={<CircleAlert className="h-5 w-5" />}
-          title="Lot batches"
+          title="Lots & serials"
           badge={
-            <>
-              {expiringSoon.length > 0 && (
-                <Badge color="warning">{expiringSoon.length} expiring within a year</Badge>
-              )}
-              {activeRecalls.length > 0 && (
-                <Badge color="danger">{activeRecalls.length} active recall</Badge>
-              )}
-            </>
+            <Badge color="module">
+              {total} lot{total === 1 ? '' : 's'}
+            </Badge>
           }
-          description="Hazmat-flagged batches inform shipping routing automatically. Recalled lots flip their unsold serials to scrapped and the dashboard surfaces affected customers so you can email them."
+          description="Batch + serial traceability for regulated, expiring, or serialized stock. Hazmat-flagged batches inform shipping routing; a recall flips the affected serials and surfaces who to notify."
+          actions={
+            <Button color="module" asChild leftIcon={<Plus className="h-4 w-4" />}>
+              <Link href="/inventory/lots/new">New lot</Link>
+            </Button>
+          }
         />
 
-        {activeRecalls.length > 0 && (
-          <Card>
-            <CardHeader>
-              <Stack direction="row" align="center" gap={2}>
-                <ShieldAlert className="h-5 w-5 text-[var(--color-danger)]" />
-                <Heading level={3}>Active recalls</Heading>
-              </Stack>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Lot</TableHead>
-                    <TableHead>Variant</TableHead>
-                    <TableHead>Warehouse</TableHead>
-                    <TableHead>Reason</TableHead>
-                    <TableHead>Recalled at</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {activeRecalls.map((r) => (
-                    <TableRow key={r.id}>
-                      <TableCell>
-                        <span className="font-mono text-xs">{r.lotNumber}</span>
-                      </TableCell>
-                      <TableCell>
-                        <Link
-                          href={`/commerce/products/${r.productId}`}
-                          className="hover:text-[var(--module-active)]"
-                        >
-                          {r.productTitle}
-                        </Link>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{r.warehouseCode}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Text size="sm">{r.recallReason ?? '—'}</Text>
-                      </TableCell>
-                      <TableCell>
-                        <Text size="xs" variant="muted">
-                          {r.recalledAt ? new Date(r.recalledAt).toLocaleDateString() : '—'}
-                        </Text>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
+        <LotsFilterBar
+          warehouses={warehousePage.data}
+          current={{ ...f, view: view === 'card' ? 'card' : '' }}
+        />
+
+        {f.variantId ? (
+          <Stack direction="row" gap={2} align="center" wrap>
+            <Text size="sm" variant="muted">
+              Filtered to item:
+            </Text>
+            <Badge color="module" variant="soft">
+              {f.sku || f.variantId.slice(0, 8)}
+            </Badge>
+            <Button asChild variant="ghost" size="sm" leftIcon={<X className="h-3.5 w-3.5" />}>
+              <Link href={clearVariantHref(f, view)}>Clear item</Link>
+            </Button>
+          </Stack>
+        ) : null}
+
+        <ListToolbar enableViewToggle searchable={false} />
+
+        {lots.length === 0 ? (
+          <Card padding="none">
+            <EmptyState
+              icon={<CircleAlert className="h-5 w-5" />}
+              title={hasFilters ? 'No lots match these filters' : 'No lots yet'}
+              description={
+                hasFilters
+                  ? 'Adjust or clear the filters to see more.'
+                  : 'Create a lot to track a batch by expiry, hazmat class, supplier reference, and per-unit serials — and to drive recalls.'
+              }
+              action={
+                <Button color="module" asChild leftIcon={<Plus className="h-4 w-4" />}>
+                  <Link href="/inventory/lots/new">New lot</Link>
+                </Button>
+              }
+            />
           </Card>
+        ) : (
+          <LotsList rows={lots} view={view} />
         )}
 
-        <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>Expiring within a year</Heading>
-              <CardDescription>
-                Sorted by closest expiry. Per-variant lot creation lives on the product detail
-                page&apos;s Inventory tab.
-              </CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
-            {expiringSoon.length === 0 ? (
-              <EmptyState
-                icon={<CircleAlert className="h-5 w-5" />}
-                title="No lots expiring soon"
-                description="Lots with no expiry, or lots expiring after the next year, don't show up here. Create one from a product detail page."
-              />
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Lot</TableHead>
-                    <TableHead>Quantity</TableHead>
-                    <TableHead>Warehouse</TableHead>
-                    <TableHead>Hazmat</TableHead>
-                    <TableHead>Expires</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {expiringSoon.map((l) => {
-                    const days = l.expiresAt
-                      ? Math.round(
-                          (new Date(l.expiresAt).getTime() -
-                            new Date(horizon).getTime() +
-                            ONE_YEAR_MS) /
-                            (24 * 60 * 60 * 1000)
-                        )
-                      : null;
-                    return (
-                      <TableRow key={l.id}>
-                        <TableCell>
-                          <span className="font-mono text-xs">{l.lotNumber}</span>
-                        </TableCell>
-                        <TableCell>{l.quantity}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{l.warehouseCode}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          {l.hazmatClass === 'none' ? (
-                            <Text size="xs" variant="muted">
-                              none
-                            </Text>
-                          ) : (
-                            <Badge color="warning">{l.hazmatClass}</Badge>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <Text size="sm">
-                            {l.expiresAt ? new Date(l.expiresAt).toLocaleDateString() : '—'}
-                          </Text>
-                          {days !== null && (
-                            <Text size="xs" variant="muted">
-                              {days} days
-                            </Text>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
-
-        <Stack direction="row" gap={2} justify="center">
-          <Button asChild variant="ghost">
-            <Link href="/commerce/products">Manage lots on a product</Link>
-          </Button>
-        </Stack>
+        <ListPager total={total} />
       </Stack>
     </Container>
   );
 }
 
-interface ActiveRecall {
-  id: string;
-  lotNumber: string;
-  recallReason: string | null;
-  recalledAt: string | null;
-  warehouseId: string;
-  warehouseCode: string;
-  warehouseName: string;
-  variantId: string;
-  variantSku: string;
-  productId: string;
-  productTitle: string;
+/** The current filter set minus the variant — keeps every other active filter. */
+function clearVariantHref(
+  f: { warehouseId: string; recallStatus: string; expiring: boolean; q: string },
+  view: 'table' | 'card'
+): string {
+  const qs = new URLSearchParams();
+  if (f.warehouseId) qs.set('warehouse_id', f.warehouseId);
+  if (f.recallStatus) qs.set('recall_status', f.recallStatus);
+  if (f.expiring) qs.set('expiring', '1');
+  if (f.q) qs.set('q', f.q);
+  if (view === 'card') qs.set('view', 'card');
+  const s = qs.toString();
+  return s ? `/inventory/lots?${s}` : '/inventory/lots';
+}
+
+function str(v: string | string[] | undefined): string {
+  if (Array.isArray(v)) return v[0] ?? '';
+  return typeof v === 'string' ? v : '';
 }

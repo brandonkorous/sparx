@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "farm-fresh-bowls",
+  "name": "Farm Fresh Bowls",
+  "version": "1.0.0",
+  "tagline": "Here to deliver health.",
+  "description": "A warm, organic storefront for a fresh-food brand — açaí bowls, smoothies and salads. Ships a full menu catalog, a brand story, locations, catering, product and blog templates, a matching theme, and a welcome email. Installs as a draft for the tenant to review, customize, and publish.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "retail",
+    "requiredModules": ["builder", "commerce", "cms", "email"]
+  },
+  "pricing": { "model": "free", "priceCents": 0 },
+  "media": [
+    { "file": "media/icon.png", "kind": "icon", "alt": "Farm Fresh Bowls icon" },
+    { "file": "media/preview.png", "kind": "preview", "alt": "Farm Fresh Bowls home page" }
+  ],
+  "author": { "displayName": "sparx", "website": "https://sparx.works" },
+  "accent": "#5C7A3D",
+  "sortWeight": 60
+}

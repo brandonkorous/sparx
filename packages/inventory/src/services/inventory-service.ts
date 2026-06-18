@@ -28,6 +28,12 @@ export type { InventoryLevelRow, LowStockRow } from './levels';
 // ─── Stock mutations (manual adjust + transfer) ───────────────────────
 export { adjust, transfer } from './movements';
 
+// ─── Movement / audit-log read path (P4 corrections) ──────────────────
+// A filterable, paginated view over the append-only `inventory_movements`
+// ledger — the compliance surface answering who moved stock, when, why, how much.
+export { listMovements } from './movement-log';
+export type { MovementRow, ListMovementsFilter } from './movement-log';
+
 // ─── Reservations (cart soft / order hard) ────────────────────────────
 // The tx-aware cores (`reserveOnTx` / `releaseOnTx`) let the commerce cart seam
 // hold/release stock atomically with the cart-line write; `pickWarehouseFor` is
@@ -65,6 +71,25 @@ export {
   initiateRecall,
 } from './lots';
 export type { LotBatchRow } from './lots';
+
+// ─── Lot/serial management surface (P4d) ──────────────────────────────
+// The dashboard management reads + status mutations on top of the create
+// primitives above: a filterable lot list, a lot detail with its serial roster,
+// per-serial status changes, and clearing a recall.
+export {
+  listLots,
+  getLotBatch,
+  listSerials,
+  updateSerialStatus,
+  clearRecall,
+} from './lot-management';
+export type {
+  LotRow,
+  LotDetail,
+  SerialRow,
+  ListLotsFilter,
+  ListSerialsFilter,
+} from './lot-management';
 
 // ─── Suppliers + per-variant purchasing detail (P3a supply path) ──────
 export {

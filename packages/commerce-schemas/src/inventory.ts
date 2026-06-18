@@ -164,6 +164,14 @@ export const CreateSerialUnitInput = z.object({
 });
 export type CreateSerialUnitInput = z.infer<typeof CreateSerialUnitInput>;
 
+// Change a serial unit's lifecycle status (in_stock → reserved/sold/returned/
+// scrapped/lost). Pure traceability metadata — authoritative on-hand stays on the
+// (variant, warehouse) level, moved only through the ledger.
+export const UpdateSerialStatusInput = z.object({
+  status: SerialUnitStatus,
+});
+export type UpdateSerialStatusInput = z.infer<typeof UpdateSerialStatusInput>;
+
 // Recall — flips matching sold units to a `recall_pending` state and
 // generates a customer notification list. The actual workflow is a
 // separate worker but its input is this.

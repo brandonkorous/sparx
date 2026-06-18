@@ -1,9 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { retailStoreBlog } from './blueprints/retail-store-blog';
-import { listBlueprints, listBlueprintSummaries } from './registry';
 import { assetRef } from './refs';
-import { parseBlueprint, safeParseBlueprint, validateBlueprintIntegrity } from './validate';
+import { parseBlueprint, safeParseBlueprint } from './validate';
 
 // A minimal blueprint that passes both Zod + integrity — the base every negative
 // case below mutates. Built fresh per test via structuredClone.
@@ -86,34 +84,6 @@ describe('parseBlueprint', () => {
     const m = baseManifest();
     m.version = 'v1';
     expect(() => parseBlueprint(m)).toThrow();
-  });
-});
-
-describe('the shipped retail-store-blog flagship', () => {
-  it('parses + passes integrity at module load', () => {
-    expect(retailStoreBlog.key).toBe('retail-store-blog');
-    expect(validateBlueprintIntegrity(retailStoreBlog)).toEqual([]);
-  });
-
-  it('ships its own named theme over a base preset', () => {
-    expect(retailStoreBlog.theme.name).toBe('Driftwood');
-    expect(retailStoreBlog.theme.basePresetKey).toBe('market');
-    expect(retailStoreBlog.theme.apply).toBe(true);
-  });
-
-  it('exercises every module', () => {
-    expect(retailStoreBlog.commerce?.products.length).toBeGreaterThan(0);
-    expect(retailStoreBlog.content.length).toBeGreaterThan(0);
-    expect(retailStoreBlog.emails.length).toBeGreaterThan(0);
-    expect(retailStoreBlog.pages.length).toBeGreaterThan(0);
-    expect(retailStoreBlog.components.length).toBeGreaterThan(0);
-    expect(retailStoreBlog.layout).toBeDefined();
-  });
-
-  it('is registered and summarizable', () => {
-    expect(listBlueprints().map((b) => b.key)).toContain('retail-store-blog');
-    const summary = listBlueprintSummaries().find((s) => s.key === 'retail-store-blog');
-    expect(summary?.requiresModules).toContain('commerce');
   });
 });
 

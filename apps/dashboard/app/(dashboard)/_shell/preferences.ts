@@ -10,15 +10,19 @@ export { DEFAULT_PREFERENCES };
 export type { DefaultDetailView, DefaultListView, UserPreferences } from './preferences-types';
 
 export async function getUserPreferences(_userId?: string): Promise<UserPreferences> {
-  // `/v1/me/preferences` resolves the current user from the request session,
-  // so the userId arg is unused — kept for call-site clarity. Server pages can
-  // call it with no args to read the preference bag (e.g. the list view).
-  return api.get<UserPreferences>('/v1/me/preferences');
+    // `/v1/me/preferences` resolves the current user from the request session,
+    // so the userId arg is unused — kept for call-site clarity. Server pages can
+    // call it with no args to read the preference bag (e.g. the list view).
+    try {
+        return await api.get<UserPreferences>('/v1/me/preferences');
+    } catch {
+        return DEFAULT_PREFERENCES;
+    }
 }
 
 export async function setUserPreferences(
-  _userId: string,
-  patch: Partial<UserPreferences>
+    _userId: string,
+    patch: Partial<UserPreferences>
 ): Promise<UserPreferences> {
-  return api.patch<UserPreferences>('/v1/me/preferences', patch);
+    return api.patch<UserPreferences>('/v1/me/preferences', patch);
 }
