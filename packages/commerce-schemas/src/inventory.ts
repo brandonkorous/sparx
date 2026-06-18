@@ -160,6 +160,30 @@ export const BulkAdjustmentInput = z.object({
 });
 export type BulkAdjustmentInput = z.infer<typeof BulkAdjustmentInput>;
 
+// ─── B2B inventory consumer (docs/100 P6d) ────────────────────────────
+//
+// B2B as a consumer of the master (docs/99 §4.0): a fleet / work-order hold
+// reserves stock for an account's job before the order exists, and account-scoped
+// availability surfaces what the account can see + reserve + its purchasing limits.
+
+export const CreateFleetHoldInput = z.object({
+  accountId: Uuid,
+  variantId: Uuid,
+  warehouseId: Uuid.optional(),
+  quantity: z.number().int().positive(),
+  workOrderRef: z.string().min(1).max(127),
+  note: z.string().max(2000).optional(),
+  heldByCustomerId: Uuid.optional(),
+});
+export type CreateFleetHoldInput = z.infer<typeof CreateFleetHoldInput>;
+
+export const AccountAvailabilityInput = z.object({
+  accountId: Uuid,
+  variantIds: z.array(Uuid).min(1).max(200),
+  warehouseId: Uuid.optional(),
+});
+export type AccountAvailabilityInput = z.infer<typeof AccountAvailabilityInput>;
+
 // ─── Reservations ─────────────────────────────────────────────────────
 //
 // Cart reservations are soft (30-minute TTL); order reservations are hard
@@ -170,7 +194,7 @@ export const ReserveInventoryInput = z.object({
   variantId: Uuid,
   warehouseId: Uuid.optional(), // service picks warehouse if absent
   quantity: z.number().int().positive(),
-  holderType: z.enum(['cart', 'order', 'subscription']),
+  holderType: z.enum(['cart', 'order', 'subscription', 'work_order']),
   holderId: Uuid,
   ttlSeconds: z
     .number()

@@ -7,6 +7,8 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
+import { SparxAlert, SparxButton, SparxInput } from '@sparx/site-ui';
+
 import { formatMoney } from '@/lib/format';
 import {
   createPaymentIntent,
@@ -124,9 +126,9 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
         <h2 className="st-h2" style={{ color: 'var(--st-text)' }}>
           Your cart is empty
         </h2>
-        <Link href="/products" className="st-btn st-btn--primary">
-          Shop all products
-        </Link>
+        <SparxButton asChild color="primary">
+          <Link href="/products">Shop all products</Link>
+        </SparxButton>
       </div>
     );
   }
@@ -140,19 +142,14 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
       <div className="st-checkout__main">
         <StepIndicator step={step} />
 
-        {error ? (
-          <div className="st-alert st-alert--error" role="alert">
-            {error}
-          </div>
-        ) : null}
+        {error ? <SparxAlert color="danger">{error}</SparxAlert> : null}
 
         {step === 'contact' ? (
           <form onSubmit={handleContact} className="st-form">
             <h2 className="st-h2">Contact</h2>
             <label className="st-field">
               <span>Email</span>
-              <input
-                className="st-input"
+              <SparxInput
                 type="email"
                 required
                 value={email}
@@ -169,9 +166,9 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
               />
               Email me with news and offers
             </label>
-            <button type="submit" className="st-btn st-btn--primary st-btn--lg" disabled={busy}>
+            <SparxButton type="submit" color="primary" size="lg" disabled={busy}>
               {busy ? 'Saving…' : 'Continue to shipping'}
-            </button>
+            </SparxButton>
           </form>
         ) : null}
 
@@ -208,16 +205,18 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
             ) : null}
 
             <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <button
+              <SparxButton
                 type="button"
-                className="st-btn st-btn--ghost"
+                color="neutral"
+                variant="ghost"
                 onClick={() => setStep('contact')}
               >
                 ← Back
-              </button>
-              <button
+              </SparxButton>
+              <SparxButton
                 type="submit"
-                className="st-btn st-btn--primary st-btn--lg"
+                color="primary"
+                size="lg"
                 style={{ flex: 1 }}
                 disabled={busy}
               >
@@ -226,7 +225,7 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
                   : rates.length === 0
                     ? 'Get shipping rates'
                     : 'Continue to payment'}
-              </button>
+              </SparxButton>
             </div>
           </form>
         ) : null}
@@ -291,9 +290,11 @@ function Confirmation({ orderNumber }: { orderNumber: string }) {
         Thank you! Your order <strong>{orderNumber}</strong> has been placed. A confirmation email
         is on its way.
       </p>
-      <Link href="/products" className="st-btn st-btn--primary" style={{ marginTop: '0.5rem' }}>
-        Continue shopping
-      </Link>
+      <SparxButton asChild color="primary">
+        <Link href="/products" style={{ marginTop: '0.5rem' }}>
+          Continue shopping
+        </Link>
+      </SparxButton>
     </div>
   );
 }

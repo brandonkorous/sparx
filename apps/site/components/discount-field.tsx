@@ -5,6 +5,8 @@
 
 import { useState } from 'react';
 
+import { SparxButton, SparxInput } from '@sparx/site-ui';
+
 import { useCart } from './cart-provider';
 
 export function DiscountField() {
@@ -27,17 +29,21 @@ export function DiscountField() {
   return (
     <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
       <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <input
-          className="st-select"
+        <SparxInput
           style={{ flex: 1 }}
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="Discount code"
           aria-label="Discount code"
         />
-        <button type="submit" className="st-btn st-btn--secondary" disabled={busy || !code.trim()}>
+        <SparxButton
+          type="submit"
+          color="neutral"
+          variant="outline"
+          disabled={busy || !code.trim()}
+        >
           {busy ? 'Applying…' : 'Apply'}
-        </button>
+        </SparxButton>
       </div>
       {error ? (
         <span style={{ color: 'var(--color-danger)', fontSize: '0.8rem' }}>{error}</span>

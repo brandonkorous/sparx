@@ -8,6 +8,8 @@
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
 
+import { SparxButton } from '@sparx/site-ui';
+
 import { formatMoney, formatPriceRange } from '@/lib/format';
 import { mediaUrl } from '@/lib/media';
 import type { PublicProduct, PublicProductVariant } from '@/lib/commerce';
@@ -328,9 +330,10 @@ export function ProductDetail({
               +
             </button>
           </div>
-          <button
+          <SparxButton
             type="button"
-            className="st-btn st-btn--primary st-btn--lg"
+            color="primary"
+            size="lg"
             style={{ flex: 1, minWidth: '200px' }}
             disabled={!resolvedVariant || !inStock || adding}
             onClick={handleAdd}
@@ -342,7 +345,7 @@ export function ProductDetail({
                 : adding
                   ? 'Adding…'
                   : 'Add to cart'}
-          </button>
+          </SparxButton>
           {(resolvedVariant ?? defaultVariant) ? (
             <WishlistButton variantId={(resolvedVariant ?? defaultVariant)!.id} />
           ) : null}

@@ -9,9 +9,11 @@ import b2bApprovalRoutes from './approval.js';
 import b2bSchedulingRoutes from './scheduling.js';
 import b2bImportExportRoutes from './import.js';
 import b2bReportRoutes from './reports.js';
+import b2bInventoryRoutes from './inventory.js';
 
 const b2bRoutes: FastifyPluginAsync = async (app) => {
   await app.register(b2bAccountRoutes);
+  await app.register(b2bInventoryRoutes);
   await app.register(b2bPricingTierRoutes);
   await app.register(b2bQuoteRoutes);
   await app.register(b2bInvoiceRoutes);

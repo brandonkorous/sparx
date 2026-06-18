@@ -2,6 +2,8 @@
 
 // Reusable address form. Controlled — emits the full Address on every change.
 
+import { SparxInput, SparxSelect } from '@sparx/site-ui';
+
 import type { Address } from '@/lib/checkout-client';
 
 export const EMPTY_ADDRESS: Address = {
@@ -38,8 +40,7 @@ export function AddressForm({
     <div className="st-addr">
       <label className="st-field st-field--full">
         <span>Full name</span>
-        <input
-          className="st-input"
+        <SparxInput
           required
           value={value.name}
           onChange={(e) => set('name', e.target.value)}
@@ -48,8 +49,7 @@ export function AddressForm({
       </label>
       <label className="st-field st-field--full">
         <span>Address</span>
-        <input
-          className="st-input"
+        <SparxInput
           required
           value={value.line1}
           onChange={(e) => set('line1', e.target.value)}
@@ -58,8 +58,7 @@ export function AddressForm({
       </label>
       <label className="st-field st-field--full">
         <span>Apartment, suite, etc. (optional)</span>
-        <input
-          className="st-input"
+        <SparxInput
           value={value.line2 ?? ''}
           onChange={(e) => set('line2', e.target.value)}
           autoComplete="address-line2"
@@ -67,8 +66,7 @@ export function AddressForm({
       </label>
       <label className="st-field">
         <span>City</span>
-        <input
-          className="st-input"
+        <SparxInput
           required
           value={value.city}
           onChange={(e) => set('city', e.target.value)}
@@ -77,8 +75,7 @@ export function AddressForm({
       </label>
       <label className="st-field">
         <span>State / Region</span>
-        <input
-          className="st-input"
+        <SparxInput
           value={value.region ?? ''}
           onChange={(e) => set('region', e.target.value)}
           autoComplete="address-level1"
@@ -86,8 +83,7 @@ export function AddressForm({
       </label>
       <label className="st-field">
         <span>Postal code</span>
-        <input
-          className="st-input"
+        <SparxInput
           required
           value={value.postalCode}
           onChange={(e) => set('postalCode', e.target.value)}
@@ -96,8 +92,7 @@ export function AddressForm({
       </label>
       <label className="st-field">
         <span>Country</span>
-        <select
-          className="st-input"
+        <SparxSelect
           value={value.country}
           onChange={(e) => set('country', e.target.value)}
           autoComplete="country"
@@ -107,12 +102,11 @@ export function AddressForm({
               {c.name}
             </option>
           ))}
-        </select>
+        </SparxSelect>
       </label>
       <label className="st-field st-field--full">
         <span>Phone (optional)</span>
-        <input
-          className="st-input"
+        <SparxInput
           type="tel"
           value={value.phone ?? ''}
           onChange={(e) => set('phone', e.target.value)}

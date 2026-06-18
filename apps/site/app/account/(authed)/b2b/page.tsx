@@ -8,6 +8,8 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import { SparxAlert } from '@sparx/site-ui';
+
 import { useCustomer } from '@/components/customer-provider';
 import { getB2bAccounts, type B2bAccountEntry } from '@/lib/customer-client';
 
@@ -50,9 +52,9 @@ export default function B2bPortalPage() {
 
   if (error) {
     return (
-      <div className="st-alert st-alert--error" role="alert">
+      <SparxAlert color="danger" role="alert">
         {error}
-      </div>
+      </SparxAlert>
     );
   }
 

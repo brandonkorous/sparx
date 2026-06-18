@@ -171,6 +171,7 @@ model Tenant {
   inventoryLevels        InventoryLevel[]
   inventoryMovements     InventoryMovement[]
   inventoryReservations  InventoryReservation[]
+  b2bFleetHolds          B2bFleetHold[]
   lotBatches             LotBatch[]
   serialUnits            SerialUnit[]
   suppliers              Supplier[]

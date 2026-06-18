@@ -59,6 +59,23 @@ export type {
   ReorderAnalysisRow,
 } from './analytics';
 
+// ─── B2B inventory consumer (docs/100 P6d) ────────────────────────────
+// Account-scoped availability + fleet/work-order holds (a hold is an account-
+// scoped reservation with a work-order ref). B2B consumes the master (docs/99 §4.0).
+export {
+  accountAvailability,
+  createFleetHold,
+  releaseFleetHold,
+  consumeFleetHold,
+  getFleetHold,
+  listFleetHolds,
+} from './b2b-holds';
+export type {
+  FleetHoldRow,
+  AccountAvailabilityRow,
+  ListFleetHoldsFilter,
+} from './b2b-holds';
+
 // ─── Movement / audit-log read path (P4 corrections) ──────────────────
 // A filterable, paginated view over the append-only `inventory_movements`
 // ledger — the compliance surface answering who moved stock, when, why, how much.

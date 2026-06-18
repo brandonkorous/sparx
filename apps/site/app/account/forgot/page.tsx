@@ -6,6 +6,8 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
+import { SparxAlert, SparxButton, SparxInput } from '@sparx/site-ui';
+
 import { useCustomer } from '@/components/customer-provider';
 import { requestPasswordReset } from '@/lib/customer-client';
 
@@ -28,10 +30,10 @@ export default function ForgotPasswordPage() {
           Reset your password
         </h1>
         {state === 'sent' ? (
-          <div className="st-alert" style={{ background: 'var(--st-bg-subtle)' }} role="status">
+          <SparxAlert color="success" role="status">
             If an account exists for <strong>{email}</strong>, we’ve sent a link to reset your
             password. Check your inbox.
-          </div>
+          </SparxAlert>
         ) : (
           <>
             <p className="st-muted" style={{ marginBottom: '1.5rem' }}>
@@ -40,8 +42,7 @@ export default function ForgotPasswordPage() {
             <form onSubmit={submit} className="st-form">
               <label className="st-field">
                 <span>Email</span>
-                <input
-                  className="st-input"
+                <SparxInput
                   type="email"
                   required
                   autoComplete="email"
@@ -49,13 +50,9 @@ export default function ForgotPasswordPage() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </label>
-              <button
-                type="submit"
-                className="st-btn st-btn--primary st-btn--lg"
-                disabled={state === 'busy'}
-              >
+              <SparxButton type="submit" color="primary" size="lg" disabled={state === 'busy'}>
                 {state === 'busy' ? 'Sending…' : 'Send reset link'}
-              </button>
+              </SparxButton>
             </form>
           </>
         )}

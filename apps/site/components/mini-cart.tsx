@@ -7,6 +7,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect } from 'react';
 
+import { SparxButton } from '@sparx/site-ui';
+
 import { formatMoney } from '@/lib/format';
 import { useCart } from './cart-provider';
 import { QuantityStepper } from './quantity-stepper';
@@ -62,9 +64,9 @@ export function MiniCart() {
               🛒
             </span>
             <p style={{ margin: 0 }}>Your cart is empty.</p>
-            <button type="button" className="st-btn st-btn--primary" onClick={closeDrawer}>
+            <SparxButton type="button" color="primary" onClick={closeDrawer}>
               Keep shopping
-            </button>
+            </SparxButton>
           </div>
         ) : (
           <>
@@ -124,20 +126,16 @@ export function MiniCart() {
               <p className="st-muted" style={{ fontSize: '0.8rem', margin: 0 }}>
                 Shipping &amp; taxes calculated at checkout.
               </p>
-              <Link
-                href="/checkout"
-                className="st-btn st-btn--primary st-btn--block st-btn--lg"
-                onClick={closeDrawer}
-              >
-                Checkout
-              </Link>
-              <Link
-                href="/cart"
-                className="st-btn st-btn--secondary st-btn--block"
-                onClick={closeDrawer}
-              >
-                View cart
-              </Link>
+              <SparxButton asChild color="primary" size="lg" className="w-full">
+                <Link href="/checkout" onClick={closeDrawer}>
+                  Checkout
+                </Link>
+              </SparxButton>
+              <SparxButton asChild color="neutral" variant="outline" className="w-full">
+                <Link href="/cart" onClick={closeDrawer}>
+                  View cart
+                </Link>
+              </SparxButton>
             </div>
           </>
         )}

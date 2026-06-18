@@ -10,6 +10,7 @@
 
 import { useState } from 'react';
 
+import { SparxButton, SparxInput } from '@sparx/site-ui';
 import type { EmailSignupConfig } from '@sparx/sitebuilder-schemas';
 
 export function EmailSignupSection({ config }: { config: EmailSignupConfig }) {
@@ -36,18 +37,17 @@ export function EmailSignupSection({ config }: { config: EmailSignupConfig }) {
             <label className="st-skip-link" htmlFor="st-newsletter-email">
               Email address
             </label>
-            <input
+            <SparxInput
               id="st-newsletter-email"
               type="email"
-              className="st-input"
               placeholder={config.placeholder}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-            <button type="submit" className="st-btn st-btn--primary">
+            <SparxButton type="submit" color="primary">
               {config.buttonLabel}
-            </button>
+            </SparxButton>
           </form>
         )}
       </div>

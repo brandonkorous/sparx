@@ -8,6 +8,8 @@
 // ?vendor=Bosch&vendor=Cummins); the search page reads the first today (the
 // api-rest filter is single-value per field) but the markup is multi-ready.
 
+import { SparxButton, SparxInput } from '@sparx/site-ui';
+
 import type { SearchFacets } from '@/lib/commerce';
 
 export interface SearchFacetValues {
@@ -51,8 +53,7 @@ export function SearchFacets({ action, facets, values }: SearchFacetsProps) {
       <div className="st-facet">
         <h4>Price</h4>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <input
-            className="st-select"
+          <SparxInput
             type="number"
             name="minPrice"
             inputMode="numeric"
@@ -63,8 +64,7 @@ export function SearchFacets({ action, facets, values }: SearchFacetsProps) {
             aria-label="Minimum price (dollars)"
           />
           <span className="st-muted">–</span>
-          <input
-            className="st-select"
+          <SparxInput
             type="number"
             name="maxPrice"
             inputMode="numeric"
@@ -111,16 +111,17 @@ export function SearchFacets({ action, facets, values }: SearchFacetsProps) {
       })}
 
       <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <button type="submit" className="st-btn st-btn--primary" style={{ flex: 1 }}>
+        <SparxButton type="submit" color="primary" style={{ flex: 1 }}>
           Apply
-        </button>
-        <a
-          href={values.q ? `${action}?q=${encodeURIComponent(values.q)}` : action}
-          className="st-btn st-btn--ghost"
-          aria-label="Clear filters"
-        >
-          Clear
-        </a>
+        </SparxButton>
+        <SparxButton asChild color="neutral" variant="ghost">
+          <a
+            href={values.q ? `${action}?q=${encodeURIComponent(values.q)}` : action}
+            aria-label="Clear filters"
+          >
+            Clear
+          </a>
+        </SparxButton>
       </div>
 
       {!hasAnyFacet ? (

@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { SparxAlert, SparxButton } from '@sparx/site-ui';
+
 import { useCustomer } from '@/components/customer-provider';
 import { getOrder, AccountError, type OrderDetail } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
@@ -56,17 +58,17 @@ export default function OrderDetailPage() {
         <p className="st-muted" style={{ marginBottom: '1rem' }}>
           We couldn’t find that order.
         </p>
-        <Link href="/account/orders" className="st-btn st-btn--secondary">
-          ← Back to orders
-        </Link>
+        <SparxButton asChild color="neutral" variant="outline">
+          <Link href="/account/orders">← Back to orders</Link>
+        </SparxButton>
       </div>
     );
   }
   if (error) {
     return (
-      <div className="st-alert st-alert--error" role="alert">
+      <SparxAlert color="danger" role="alert">
         Could not load this order.
-      </div>
+      </SparxAlert>
     );
   }
   if (!order) return <div className="st-skeleton" style={{ height: 320 }} />;

@@ -25,6 +25,7 @@
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { withTenant } from '@sparx/db';
+import { inventoryService } from '@sparx/inventory';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { unauthorized, forbidden, notFound } from '@sparx/api-core/errors';
 import {
@@ -36,6 +37,15 @@ import { resolveTenantId } from '../../../lib/public-commerce-context.js';
 
 const PathAccountId = z.object({ accountId: z.string().uuid() });
 const PagedQuery = z.object({
+  take: z.coerce.number().int().min(1).max(100).default(20),
+  skip: z.coerce.number().int().min(0).default(0),
+});
+const AvailabilityBody = z.object({
+  variantIds: z.array(z.string().uuid()).min(1).max(200),
+  warehouseId: z.string().uuid().optional(),
+});
+const HoldsQuery = z.object({
+  status: z.enum(['active', 'released', 'consumed']).optional(),
   take: z.coerce.number().int().min(1).max(100).default(20),
   skip: z.coerce.number().int().min(0).default(0),
 });

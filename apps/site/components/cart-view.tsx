@@ -6,6 +6,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { SparxButton } from '@sparx/site-ui';
+
 import { formatMoney } from '@/lib/format';
 import { useCart } from './cart-provider';
 import { QuantityStepper } from './quantity-stepper';
@@ -33,9 +35,11 @@ export function CartView() {
           Your cart is empty
         </h2>
         <p style={{ margin: 0 }}>Browse the catalog and add something you like.</p>
-        <Link href="/products" className="st-btn st-btn--primary" style={{ marginTop: '0.5rem' }}>
-          Shop all products
-        </Link>
+        <SparxButton asChild color="primary">
+          <Link href="/products" style={{ marginTop: '0.5rem' }}>
+            Shop all products
+          </Link>
+        </SparxButton>
       </div>
     );
   }
@@ -161,12 +165,12 @@ export function CartView() {
         <p className="st-muted" style={{ fontSize: '0.8rem', margin: 0 }}>
           Shipping &amp; taxes calculated at checkout.
         </p>
-        <Link href="/checkout" className="st-btn st-btn--primary st-btn--block st-btn--lg">
-          Proceed to checkout
-        </Link>
-        <Link href="/products" className="st-btn st-btn--ghost st-btn--block">
-          Continue shopping
-        </Link>
+        <SparxButton asChild color="primary" size="lg" className="w-full">
+          <Link href="/checkout">Proceed to checkout</Link>
+        </SparxButton>
+        <SparxButton asChild color="neutral" variant="ghost" className="w-full">
+          <Link href="/products">Continue shopping</Link>
+        </SparxButton>
       </aside>
     </div>
   );

@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
+import { SparxAlert, SparxButton, SparxInput } from '@sparx/site-ui';
+
 import { useCustomer } from '@/components/customer-provider';
 import { resetPassword, AccountError } from '@/lib/customer-client';
 
@@ -22,10 +24,10 @@ export function ResetForm() {
 
   if (!token) {
     return (
-      <div className="st-alert st-alert--error" role="alert">
+      <SparxAlert color="danger">
         This reset link is missing its token. Request a new one from{' '}
         <Link href="/account/forgot">forgot password</Link>.
-      </div>
+      </SparxAlert>
     );
   }
 
@@ -49,9 +51,9 @@ export function ResetForm() {
 
   if (state === 'done') {
     return (
-      <div className="st-alert" style={{ background: 'var(--st-bg-subtle)' }} role="status">
+      <SparxAlert color="neutral" variant="soft" role="status">
         Your password has been reset. Redirecting you to sign in…
-      </div>
+      </SparxAlert>
     );
   }
 
@@ -59,8 +61,7 @@ export function ResetForm() {
     <form onSubmit={submit} className="st-form">
       <label className="st-field">
         <span>New password</span>
-        <input
-          className="st-input"
+        <SparxInput
           type="password"
           required
           minLength={8}
@@ -74,8 +75,7 @@ export function ResetForm() {
       </label>
       <label className="st-field">
         <span>Confirm password</span>
-        <input
-          className="st-input"
+        <SparxInput
           type="password"
           required
           autoComplete="new-password"
@@ -83,18 +83,10 @@ export function ResetForm() {
           onChange={(e) => setConfirm(e.target.value)}
         />
       </label>
-      {error ? (
-        <div className="st-alert st-alert--error" role="alert">
-          {error}
-        </div>
-      ) : null}
-      <button
-        type="submit"
-        className="st-btn st-btn--primary st-btn--lg"
-        disabled={state === 'busy'}
-      >
+      {error ? <SparxAlert color="danger">{error}</SparxAlert> : null}
+      <SparxButton type="submit" color="primary" size="lg" disabled={state === 'busy'}>
         {state === 'busy' ? 'Saving…' : 'Set new password'}
-      </button>
+      </SparxButton>
     </form>
   );
 }

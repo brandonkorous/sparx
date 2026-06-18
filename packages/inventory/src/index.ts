@@ -85,4 +85,7 @@ export type {
   DeadStockItem,
   ReorderAnalysisReport,
   ReorderAnalysisRow,
+  FleetHoldRow,
+  AccountAvailabilityRow,
+  ListFleetHoldsFilter,
 } from './services/inventory-service';

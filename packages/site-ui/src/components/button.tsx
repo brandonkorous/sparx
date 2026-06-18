@@ -6,10 +6,12 @@
 // treatment authored once in recipes.css; `size` is the button's own padding
 // scale. No flat enum — the same recipe drives every color-bearing component.
 //
-// SERVER component (no 'use client'): emits markup + classes, no client runtime,
-// so the server site and the client editor canvas render it identically.
-// Presentational by design — interactivity via `href` (anchor) or a thin client
-// wrapper later, never an `onClick` on the base component.
+// No 'use client': the component emits markup + classes with no client runtime of
+// its own, so the SSR site and the editor canvas render it identically. It accepts
+// an optional `onClick` that it simply forwards to the underlying element — passing
+// one (only legal from a client parent) doesn't change what the server/canvas emit,
+// since neither supplies one. Static CTAs stay zero-JS via `href`; richer behaviour
+// (a whole-card link with prefetch) rides on `asChild`.
 //
 // `asChild` merges the recipe classes onto a single child element instead of
 // emitting a <button>/<a> — the Radix Slot pattern, implemented locally (a
@@ -49,6 +51,13 @@ export interface ButtonProps {
   rel?: string;
   /** Native button type (ignored when `href` or `asChild` is set). Defaults to `button`. */
   type?: 'button' | 'submit' | 'reset';
+  /** Disable the control. On a `<button>` sets `disabled`; on an anchor sets
+   *  `aria-disabled`. */
+  disabled?: boolean;
+  /** Click handler, forwarded to the rendered `<button>`/`<a>`. Only legal from a
+   *  client parent; the SSR site and the canvas never pass one, so it doesn't
+   *  affect their output. Ignored when `asChild` is set (the child owns handlers). */
+  onClick?: React.MouseEventHandler<HTMLButtonElement & HTMLAnchorElement>;
   className?: string;
   style?: React.CSSProperties;
   id?: string;
@@ -75,6 +84,8 @@ export function Button(props: ButtonProps): React.ReactElement {
     target,
     rel,
     type = 'button',
+    disabled = false,
+    onClick,
     className,
     style,
     id,
@@ -107,7 +118,7 @@ export function Button(props: ButtonProps): React.ReactElement {
   if (href !== undefined) {
     return (
       <a
-        href={href}
+        href={disabled ? undefined : href}
         target={target}
         rel={rel}
         className={classes}
@@ -115,6 +126,8 @@ export function Button(props: ButtonProps): React.ReactElement {
         id={id}
         title={title}
         aria-label={ariaLabel}
+        aria-disabled={disabled || undefined}
+        onClick={onClick}
       >
         {children}
       </a>
@@ -124,11 +137,13 @@ export function Button(props: ButtonProps): React.ReactElement {
   return (
     <button
       type={type}
+      disabled={disabled}
       className={classes}
       style={style}
       id={id}
       title={title}
       aria-label={ariaLabel}
+      onClick={onClick}
     >
       {children}
     </button>

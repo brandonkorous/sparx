@@ -60,6 +60,7 @@ model Warehouse {
   transfersOut       InventoryTransfer[]    @relation("TransferFrom")
   transfersIn        InventoryTransfer[]    @relation("TransferTo")
   defaultForProducts Product[]              @relation("ProductDefaultWarehouse")
+  fleetHolds         B2bFleetHold[]
 
   @@unique([tenantId, code], map: "inventory_warehouses_tenant_code_unique")
   @@index([tenantId, isActive])

@@ -6,6 +6,8 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+import { SparxAlert, SparxButton } from '@sparx/site-ui';
+
 import { useCustomer } from '@/components/customer-provider';
 import { getOrders, type OrderSummary } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
@@ -40,9 +42,9 @@ export default function OrdersPage() {
       </h1>
 
       {error ? (
-        <div className="st-alert st-alert--error" role="alert">
+        <SparxAlert color="danger" role="alert">
           {error}
-        </div>
+        </SparxAlert>
       ) : orders === null ? (
         <div className="st-skeleton" style={{ height: 160 }} />
       ) : orders.length === 0 ? (
@@ -50,9 +52,9 @@ export default function OrdersPage() {
           <p className="st-muted" style={{ marginBottom: '1rem' }}>
             You haven’t placed any orders yet.
           </p>
-          <Link href="/products" className="st-btn st-btn--primary">
-            Start shopping
-          </Link>
+          <SparxButton asChild color="primary">
+            <Link href="/products">Start shopping</Link>
+          </SparxButton>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>

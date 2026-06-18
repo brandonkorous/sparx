@@ -7,6 +7,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { SparxButton } from '@sparx/site-ui';
+
 import { PageView } from '@/components/page-view';
 import { ProductCard } from '@/components/product-card';
 import { SectionRenderer } from '@/components/section-renderer';
@@ -106,12 +108,12 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
               Browse the full catalog, find exactly what fits, and check out in seconds.
             </p>
             <div className="st-hero__cta">
-              <Link href="/products" className="st-btn st-btn--primary st-btn--lg">
-                Shop all products
-              </Link>
-              <Link href="/collections" className="st-btn st-btn--secondary st-btn--lg">
-                Browse collections
-              </Link>
+              <SparxButton asChild color="primary" size="lg">
+                <Link href="/products">Shop all products</Link>
+              </SparxButton>
+              <SparxButton asChild color="neutral" variant="outline" size="lg">
+                <Link href="/collections">Browse collections</Link>
+              </SparxButton>
             </div>
           </div>
         </section>

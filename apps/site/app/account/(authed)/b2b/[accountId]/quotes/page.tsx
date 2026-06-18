@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 
+import { SparxAlert, SparxButton } from '@sparx/site-ui';
+
 import { useCustomer } from '@/components/customer-provider';
 import { getB2bQuotes, type B2bQuoteEntry } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
@@ -63,9 +65,9 @@ export default function B2bQuotesPage() {
       </div>
 
       {error ? (
-        <div className="st-alert st-alert--error" role="alert">
+        <SparxAlert color="danger" role="alert">
           {error}
-        </div>
+        </SparxAlert>
       ) : quotes === null ? (
         <div className="st-skeleton" style={{ height: 200 }} />
       ) : quotes.length === 0 ? (
@@ -107,25 +109,27 @@ export default function B2bQuotesPage() {
 
           {total > PAGE_SIZE && (
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
-              <button
+              <SparxButton
                 type="button"
-                className="st-btn st-btn--outline"
+                color="primary"
+                variant="outline"
                 disabled={skip === 0}
                 onClick={() => setSkip(Math.max(0, skip - PAGE_SIZE))}
               >
                 Previous
-              </button>
+              </SparxButton>
               <span className="st-muted" style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}>
                 {skip + 1}–{Math.min(skip + PAGE_SIZE, total)} of {total}
               </span>
-              <button
+              <SparxButton
                 type="button"
-                className="st-btn st-btn--outline"
+                color="primary"
+                variant="outline"
                 disabled={skip + PAGE_SIZE >= total}
                 onClick={() => setSkip(skip + PAGE_SIZE)}
               >
                 Next
-              </button>
+              </SparxButton>
             </div>
           )}
         </>

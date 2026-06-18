@@ -9,6 +9,8 @@
 // the form with that domain's categories. Vendor/tag facets need an
 // aggregation endpoint to enumerate values and land later.
 
+import { SparxButton, SparxInput, SparxSelect } from '@sparx/site-ui';
+
 import type { PublicFitmentCategory, PublicFitmentDomain } from '@/lib/commerce';
 
 export interface FacetValues {
@@ -50,8 +52,7 @@ export function FacetPanel({ action, domains, activeDomain, categories, values }
       <div className="st-facet">
         <h4>Price</h4>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <input
-            className="st-select"
+          <SparxInput
             type="number"
             name="minPrice"
             inputMode="numeric"
@@ -62,8 +63,7 @@ export function FacetPanel({ action, domains, activeDomain, categories, values }
             aria-label="Minimum price (dollars)"
           />
           <span className="st-muted">–</span>
-          <input
-            className="st-select"
+          <SparxInput
             type="number"
             name="maxPrice"
             inputMode="numeric"
@@ -104,13 +104,13 @@ export function FacetPanel({ action, domains, activeDomain, categories, values }
               <span className="st-muted" style={{ fontSize: '0.78rem' }}>
                 Type
               </span>
-              <select className="st-select" name="fitmentDomain" defaultValue={activeDomain.slug}>
+              <SparxSelect name="fitmentDomain" defaultValue={activeDomain.slug}>
                 {domains.map((d) => (
                   <option key={d.id} value={d.slug}>
                     {d.displayName}
                   </option>
                 ))}
-              </select>
+              </SparxSelect>
             </label>
           ) : null}
 
@@ -118,18 +118,14 @@ export function FacetPanel({ action, domains, activeDomain, categories, values }
             <span className="st-muted" style={{ fontSize: '0.78rem' }}>
               {categoryLabel}
             </span>
-            <select
-              className="st-select"
-              name="fitmentCategory"
-              defaultValue={values.fitmentCategory ?? ''}
-            >
+            <SparxSelect name="fitmentCategory" defaultValue={values.fitmentCategory ?? ''}>
               <option value="">Any {categoryLabel.toLowerCase()}</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.name}>
                   {c.name}
                 </option>
               ))}
-            </select>
+            </SparxSelect>
           </label>
 
           {rangeUnit ? (
@@ -151,12 +147,14 @@ export function FacetPanel({ action, domains, activeDomain, categories, values }
       ) : null}
 
       <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <button type="submit" className="st-btn st-btn--primary" style={{ flex: 1 }}>
+        <SparxButton type="submit" color="primary" style={{ flex: 1 }}>
           Apply
-        </button>
-        <a href={action} className="st-btn st-btn--ghost" aria-label="Clear filters">
-          Clear
-        </a>
+        </SparxButton>
+        <SparxButton asChild color="neutral" variant="ghost">
+          <a href={action} aria-label="Clear filters">
+            Clear
+          </a>
+        </SparxButton>
       </div>
     </form>
   );
@@ -184,36 +182,35 @@ function RangeWidget({ unit, value, label }: { unit: string; value?: string; lab
 
   if (unit === 'year') {
     return (
-      <select className="st-select" name="fitmentRangeValue" defaultValue={value ?? ''}>
+      <SparxSelect name="fitmentRangeValue" defaultValue={value ?? ''}>
         <option value="">Any year</option>
         {YEARS.map((y) => (
           <option key={y} value={y}>
             {y}
           </option>
         ))}
-      </select>
+      </SparxSelect>
     );
   }
 
   if (unit === 'us_shoe' || unit === 'eu_shoe') {
     const sizes = unit === 'us_shoe' ? US_SHOES : EU_SHOES;
     return (
-      <select className="st-select" name="fitmentRangeValue" defaultValue={value ?? ''}>
+      <SparxSelect name="fitmentRangeValue" defaultValue={value ?? ''}>
         <option value="">Any size</option>
         {sizes.map((s) => (
           <option key={s} value={s}>
             {s}
           </option>
         ))}
-      </select>
+      </SparxSelect>
     );
   }
 
   // Numeric units (weight, age, dimension) → number input with a unit suffix.
   return (
     <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-      <input
-        className="st-select"
+      <SparxInput
         type="number"
         name="fitmentRangeValue"
         inputMode="decimal"

@@ -91,6 +91,12 @@ model B2bAccountProductOverride {
   priceCents         Int?     @map("price_cents")
   discountPercentage Decimal? @map("discount_percentage") @db.Decimal(5, 2)
 
+  // Per-account purchasing limits (docs/100 P6d) — the minimum and maximum order
+  // quantity this account may buy of the variant. Surfaced in account-scoped
+  // availability + enforced when placing a fleet hold. Null = no limit.
+  minOrderQty Int? @map("min_order_qty")
+  maxOrderQty Int? @map("max_order_qty")
+
   notes     String?  @db.Text
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz

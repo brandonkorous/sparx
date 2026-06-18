@@ -8,6 +8,8 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
+import { SparxAlert, SparxButton, SparxInput } from '@sparx/site-ui';
+
 import { useCustomer } from '@/components/customer-provider';
 import { AccountError } from '@/lib/customer-client';
 
@@ -99,8 +101,7 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
           <div style={{ display: 'flex', gap: '0.75rem' }}>
             <label className="st-field" style={{ flex: 1 }}>
               <span>First name</span>
-              <input
-                className="st-input"
+              <SparxInput
                 autoComplete="given-name"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
@@ -108,8 +109,7 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
             </label>
             <label className="st-field" style={{ flex: 1 }}>
               <span>Last name</span>
-              <input
-                className="st-input"
+              <SparxInput
                 autoComplete="family-name"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
@@ -120,8 +120,7 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
 
         <label className="st-field">
           <span>Email</span>
-          <input
-            className="st-input"
+          <SparxInput
             type="email"
             required
             autoComplete="email"
@@ -132,8 +131,7 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
 
         <label className="st-field">
           <span>Password</span>
-          <input
-            className="st-input"
+          <SparxInput
             type="password"
             required
             minLength={mode === 'register' ? 8 : undefined}
@@ -157,12 +155,12 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
         </label>
 
         {error ? (
-          <div className="st-alert st-alert--error" role="alert">
+          <SparxAlert color="danger" role="alert">
             {error}
-          </div>
+          </SparxAlert>
         ) : null}
 
-        <button type="submit" className="st-btn st-btn--primary st-btn--lg" disabled={busy}>
+        <SparxButton type="submit" color="primary" size="lg" disabled={busy}>
           {busy
             ? mode === 'signin'
               ? 'Signing in…'
@@ -170,7 +168,7 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
             : mode === 'signin'
               ? 'Sign in'
               : 'Create account'}
-        </button>
+        </SparxButton>
       </form>
     </div>
   );

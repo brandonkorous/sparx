@@ -4,6 +4,8 @@
 
 import Link from 'next/link';
 
+import { SparxButton } from '@sparx/site-ui';
+
 export interface PaginationProps {
   basePath: string;
   currentParams: Record<string, string | string[] | undefined>;
@@ -48,9 +50,9 @@ export function Pagination({ basePath, currentParams, page, totalPages }: Pagina
       }}
     >
       {page > 1 ? (
-        <Link href={hrefFor(basePath, currentParams, page - 1)} className="st-btn st-btn--ghost">
-          ← Prev
-        </Link>
+        <SparxButton asChild color="neutral" variant="ghost">
+          <Link href={hrefFor(basePath, currentParams, page - 1)}>← Prev</Link>
+        </SparxButton>
       ) : null}
 
       {window.map((p, i) => {
@@ -59,22 +61,22 @@ export function Pagination({ basePath, currentParams, page, totalPages }: Pagina
           <span key={p} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
             {gap ? <span className="st-muted">…</span> : null}
             {p === page ? (
-              <span className="st-btn st-btn--primary" aria-current="page">
-                {p}
-              </span>
+              <SparxButton asChild color="primary">
+                <span aria-current="page">{p}</span>
+              </SparxButton>
             ) : (
-              <Link href={hrefFor(basePath, currentParams, p)} className="st-btn st-btn--ghost">
-                {p}
-              </Link>
+              <SparxButton asChild color="neutral" variant="ghost">
+                <Link href={hrefFor(basePath, currentParams, p)}>{p}</Link>
+              </SparxButton>
             )}
           </span>
         );
       })}
 
       {page < totalPages ? (
-        <Link href={hrefFor(basePath, currentParams, page + 1)} className="st-btn st-btn--ghost">
-          Next →
-        </Link>
+        <SparxButton asChild color="neutral" variant="ghost">
+          <Link href={hrefFor(basePath, currentParams, page + 1)}>Next →</Link>
+        </SparxButton>
       ) : null}
     </nav>
   );

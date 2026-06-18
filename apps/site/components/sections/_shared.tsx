@@ -36,19 +36,23 @@ export function SbLink({
   );
 }
 
-// A CTA's style maps to a storefront button variant — never a hand-built button
-// (brand rule). Unknown/missing style falls back to the primary solid button.
-const CTA_CLASS: Record<string, string> = {
-  solid: 'st-btn st-btn--primary',
-  light: 'st-btn st-btn--light',
-  dark: 'st-btn st-btn--dark',
-  ghost: 'st-btn st-btn--ghost',
-  link: 'st-btn st-btn--link',
+// A CTA's style maps to a SparxButton recipe — never a hand-built button (brand
+// rule). The "scrim" styles (light/dark/ghost) become `glass` compositions so a
+// CTA stays legible over arbitrary section media (docs/46): glass × surface =
+// the old light CTA, glass × neutral = the old dark CTA. Unknown/missing style
+// falls back to the primary solid button.
+const CTA_RECIPE: Record<string, { color: string; variant: TreatmentKey }> = {
+  solid: { color: 'primary', variant: 'solid' },
+  light: { color: 'surface', variant: 'glass' },
+  dark: { color: 'neutral', variant: 'glass' },
+  ghost: { color: 'surface', variant: 'glass' },
+  link: { color: 'primary', variant: 'link' },
 };
 
 /** A row of up to two CTA buttons. Empty/invalid CTAs are dropped; renders
  *  nothing when none remain. `size="lg"` enlarges them (hero); `layout="stacked"`
- *  stacks them vertically (the full-bleed "two stacked pills" look). */
+ *  stacks them vertically (the full-bleed "two stacked pills" look). The button
+ *  recipe rides on the routing-aware `SbLink` via `asChild`. */
 export function SbCtaRow({
   ctas,
   size,
@@ -66,10 +70,18 @@ export function SbCtaRow({
   return (
     <div className={rowCls}>
       {items.map((c, i) => {
-        const cls = [CTA_CLASS[c.style] ?? CTA_CLASS.solid, size === 'lg' ? 'st-btn--lg' : '']
-          .filter(Boolean)
-          .join(' ');
-        return <SbLink key={i} url={c.url} label={c.label} className={cls} />;
+        const recipe = CTA_RECIPE[c.style] ?? CTA_RECIPE.solid;
+        return (
+          <SparxButton
+            key={i}
+            asChild
+            color={recipe.color}
+            variant={recipe.variant}
+            size={size === 'lg' ? 'lg' : 'md'}
+          >
+            <SbLink url={c.url} label={c.label} />
+          </SparxButton>
+        );
       })}
     </div>
   );

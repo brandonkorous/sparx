@@ -6,6 +6,8 @@
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
+import { SparxSelect } from '@sparx/site-ui';
+
 const OPTIONS: { value: string; label: string }[] = [
   { value: 'relevance', label: 'Featured' },
   { value: 'newest', label: 'Newest' },
@@ -25,8 +27,7 @@ export function SortSelect({ value }: { value: string }) {
       <span className="st-muted" style={{ fontSize: '0.85rem' }}>
         Sort
       </span>
-      <select
-        className="st-select"
+      <SparxSelect
         value={value}
         onChange={(e) => {
           const next = new URLSearchParams(params.toString());
@@ -40,7 +41,7 @@ export function SortSelect({ value }: { value: string }) {
             {o.label}
           </option>
         ))}
-      </select>
+      </SparxSelect>
     </label>
   );
 }

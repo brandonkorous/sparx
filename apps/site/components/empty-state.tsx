@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 
+import { SparxButton } from '@sparx/site-ui';
+
 export interface EmptyStateProps {
   icon?: string;
   title: string;
@@ -22,9 +24,11 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
       </h3>
       {description ? <p style={{ margin: 0, maxWidth: '40ch' }}>{description}</p> : null}
       {action ? (
-        <Link href={action.href} className="st-btn st-btn--primary" style={{ marginTop: '0.5rem' }}>
-          {action.label}
-        </Link>
+        <SparxButton asChild color="primary">
+          <Link href={action.href} style={{ marginTop: '0.5rem' }}>
+            {action.label}
+          </Link>
+        </SparxButton>
       ) : null}
     </div>
   );

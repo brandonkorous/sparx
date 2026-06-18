@@ -8,6 +8,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+import { SparxAlert, SparxButton } from '@sparx/site-ui';
+
 import { useCustomer } from '@/components/customer-provider';
 import { useWishlist } from '@/components/wishlist-provider';
 import { getWishlist, type WishlistItem } from '@/lib/customer-client';
@@ -44,9 +46,9 @@ export default function WishlistPage() {
       </h1>
 
       {error ? (
-        <div className="st-alert st-alert--error" role="alert">
+        <SparxAlert color="danger" role="alert">
           {error}
-        </div>
+        </SparxAlert>
       ) : visible === null ? (
         <div className="st-skeleton" style={{ height: 160 }} />
       ) : visible.length === 0 ? (
@@ -54,9 +56,9 @@ export default function WishlistPage() {
           <p className="st-muted" style={{ marginBottom: '1rem' }}>
             You haven’t saved anything yet.
           </p>
-          <Link href="/products" className="st-btn st-btn--primary">
-            Browse products
-          </Link>
+          <SparxButton asChild color="primary">
+            <Link href="/products">Browse products</Link>
+          </SparxButton>
         </div>
       ) : (
         <div
@@ -87,13 +89,9 @@ export default function WishlistPage() {
                   </div>
                 </Link>
                 <div style={{ padding: '0 0.75rem 0.75rem' }}>
-                  <button
-                    type="button"
-                    className="st-btn st-btn--ghost"
-                    onClick={() => void remove(it.variantId)}
-                  >
+                  <SparxButton color="neutral" variant="ghost" onClick={() => void remove(it.variantId)}>
                     Remove
-                  </button>
+                  </SparxButton>
                 </div>
               </div>
             );

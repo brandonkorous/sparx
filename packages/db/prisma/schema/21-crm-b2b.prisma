@@ -56,6 +56,7 @@ model B2BAccount {
   contacts         B2bAccountContact[]
   approvalRules    PurchaseApprovalRule[]
   appointments     ServiceAppointment[]
+  fleetHolds       B2bFleetHold[]
 
   @@index([tenantId, status])
   @@index([tenantId, assignedRepId])

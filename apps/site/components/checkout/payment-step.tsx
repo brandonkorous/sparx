@@ -11,6 +11,8 @@ import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-
 import { loadStripe, type Stripe } from '@stripe/stripe-js';
 import { useEffect, useMemo, useState } from 'react';
 
+import { SparxAlert, SparxButton } from '@sparx/site-ui';
+
 import { formatMoney } from '@/lib/format';
 import {
   completeCheckout,
@@ -66,21 +68,19 @@ export function PaymentStep({
 
   if (!PUBLISHABLE_KEY) {
     return (
-      <div className="st-alert st-alert--error" role="alert">
+      <SparxAlert color="danger">
         Payments aren’t configured for this store yet (missing Stripe publishable key).
-      </div>
+      </SparxAlert>
     );
   }
 
   if (error) {
     return (
       <div className="st-form">
-        <div className="st-alert st-alert--error" role="alert">
-          {error}
-        </div>
-        <button type="button" className="st-btn st-btn--ghost" onClick={onBack}>
+        <SparxAlert color="danger">{error}</SparxAlert>
+        <SparxButton type="button" color="neutral" variant="ghost" onClick={onBack}>
           ← Back to shipping
-        </button>
+        </SparxButton>
       </div>
     );
   }
@@ -163,23 +163,20 @@ function PaymentInner({
     <form onSubmit={pay} className="st-form">
       <h2 className="st-h2">Payment</h2>
       <PaymentElement options={{ layout: 'tabs' }} />
-      {error ? (
-        <div className="st-alert st-alert--error" role="alert">
-          {error}
-        </div>
-      ) : null}
+      {error ? <SparxAlert color="danger">{error}</SparxAlert> : null}
       <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <button type="button" className="st-btn st-btn--ghost" onClick={onBack} disabled={busy}>
+        <SparxButton type="button" color="neutral" variant="ghost" onClick={onBack} disabled={busy}>
           ← Back
-        </button>
-        <button
+        </SparxButton>
+        <SparxButton
           type="submit"
-          className="st-btn st-btn--primary st-btn--lg"
+          color="primary"
+          size="lg"
           style={{ flex: 1 }}
           disabled={!stripe || busy}
         >
           {busy ? 'Processing…' : `Pay ${formatMoney(session.totals.totalCents, session.currency)}`}
-        </button>
+        </SparxButton>
       </div>
     </form>
   );
