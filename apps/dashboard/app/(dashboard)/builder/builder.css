@@ -2322,7 +2322,11 @@
   justify-content: center;
   gap: 6px;
   color: var(--color-text-tertiary);
-  border-radius: var(--bxc-radius-sm);
+  /* An image placeholder is a BOX, so it rounds to the box radius (parity with
+     the real `.st-img`, which uses --st-radius-box). Using the field radius
+     (--bxc-radius-sm → --st-radius-field) turned a square placeholder into a
+     full circle whenever a theme set field corners to a pill (9999px). */
+  border-radius: var(--bxc-radius);
 }
 .bx-ratio-wide {
   aspect-ratio: 16 / 10;
