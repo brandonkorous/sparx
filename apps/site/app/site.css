@@ -29,9 +29,7 @@
    it sooner would flip the winner and restyle the Builder-rendered pages. App-only
    chrome (commerce widgets, consent, `st-sb-*` bridges, `bx-*` canvas, `.st-tile`)
    has no site-ui counterpart and renders unopposed within this layer. */
-@layer st-legacy, theme, base, components, utilities;
-@layer st-legacy {
-  :root {
+:root {
     /* ── Token Model v2 fallbacks (docs/33-token-model-v2.md) ─────
      The injected per-tenant <style> (buildThemeCssV2) overrides these with the
      compiled theme. These are the UN-THEMED defaults so a tenant-less / pre-
@@ -3381,4 +3379,3 @@
     border-radius: var(--st-radius-box, 16px);
     overflow: hidden;
   }
-} /* end @layer st-legacy */
