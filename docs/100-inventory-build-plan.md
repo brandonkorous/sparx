@@ -1,6 +1,6 @@
 # sparx Platform — Inventory Product Build Plan
 
-**Version:** 1.10
+**Version:** 1.11
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-17
 
@@ -443,8 +443,28 @@ movements; reorder suggestion drafts a PO. All with commerce off.
    / detail with lifecycle bar + live-variance line entry + Match-expected + add/remove + Post-recounts
    armed-confirm); `Counts` manifest section + action. Emits `inventory.count.completed` on post. DB-backed
    tests in `test/integration/counts.test.ts` (4 cases; inventory suite 32/32).
-2. **Transfers UI** — surface the existing `transfer()` API with `/inventory/transfers`; model an
+2. **Transfers UI** — surface stock movement between warehouses with `/inventory/transfers`; model an
    **in-transit** location so a transfer is `transfer_out` at source now + `transfer_in` on arrival.
+   ✅ **DONE (P4b).** New `40-inventory-transfers.prisma` (`inventory_transfers` + `inventory_transfer_lines`,
+   migration `20260908000000_inventory_transfers`, canonical FORCE RLS + a `status` CHECK) plus an
+   `is_system` flag on `inventory_warehouses` marking the per-tenant **in-transit holding warehouse**
+   (provisioned lazily on first ship; `listWarehouses` excludes system warehouses so it never appears in
+   the pickers/list). A transfer is a document: lifecycle `draft → in_transit → received` (+ `cancelled`).
+   The editable phase (`@sparx/inventory` `inventory-transfers.ts`) composes the lines (variant + qty); the
+   lifecycle (`inventory-transfer-lifecycle.ts`) **ships** (each line writes `transfer_out` from source +
+   `transfer_in` to the in-transit warehouse — so total stock is conserved while units are in motion),
+   **receives** (in-transit → destination; a per-line receipt short of the shipped quantity writes the
+   shortfall off the in-transit level as a `loss`, so nothing is stranded), or **cancels** (a draft is
+   voided; an in-transit transfer's goods return to source). Every leg funnels through the ledger
+   (`applyMovement`, idempotency-keyed per leg+line), so `onHand == Σ(movements)` holds across source,
+   in-transit, and destination. API `/v1/inventory/transfers` (CRUD + `/lines` + `/ship` + `/receive` +
+   `/cancel`), `requireInventoryModule` (standalone-usable). Dashboard `/inventory/transfers` (status-filtered
+   list / create [route + items by SKU] / detail with the lifecycle bar [ship; cancel & return / delete draft
+   armed-confirm] + a lifecycle-aware lines panel [draft = editable; in_transit = receive form with per-line
+   received quantities; terminal = read-only with a "short" badge]); `Transfers` manifest section + action.
+   Emits `inventory.transfer.shipped` / `inventory.transfer.received`. Seed ships a draft MAIN → WEST-3PL the
+   user can ship + receive (the deploy-gate exercise). DB-backed tests in `test/integration/transfers.test.ts`
+   (4 cases; inventory suite 36/36).
 3. **Movement / audit-log viewer** — `/inventory/movements`: the `InventoryAdjustment` ledger, filter by
    variant/warehouse/reason/actor/date. This is the compliance surface docs/99 D5 flagged missing.
 4. **Lots/serials UI** — per-variant lot creation tab + serial list/status (models exist; no UI today).
@@ -455,8 +475,15 @@ warehouses through in-transit; movement viewer shows the full history; create a 
 > **P4a (Counts) ✅ DONE** — a standalone tenant can run a cycle or full count, enter quantities, review the
 > variance, and post (with an admin approval over the value threshold), correcting stock via auditable
 > `recount` movements that reconcile any mid-count drift. The count-vs-live race is handled by the ledger's
-> absolute `setOnHand`. **Next within P4:** **P4b** transfers UI + in-transit, **P4c** movement/audit-log
-> viewer (docs/99 D5), **P4d** lots/serials UI — each independent of P4a.
+> absolute `setOnHand`.
+>
+> **P4b (Transfers) ✅ DONE** — a standalone tenant can move stock between two warehouses through an
+> in-transit holding location: build a draft, ship (source → in-transit), and receive (in-transit →
+> destination), with total inventory conserved the whole way; a short receipt is written off in transit and
+> cancelling an in-transit transfer returns the goods to source. The in-transit warehouse is a per-tenant
+> system location (`is_system`), provisioned on first ship and hidden from the ordinary pickers/list.
+> **Next within P4:** **P4c** movement/audit-log viewer (docs/99 D5, read-only over `inventory_movements`),
+> **P4d** lots/serials UI — each independent of P4a/P4b.
 
 **Risks:** count-vs-live race (snapshot expected at count start, reconcile deltas at post) — **resolved**
 by the absolute `setOnHand` recount (delta computed against live on-hand under the row lock); approval

@@ -68,13 +68,13 @@ model InventoryCountLine {
   countId   String @map("count_id") @db.Uuid
   variantId String @map("variant_id") @db.Uuid
 
-  expectedQuantity Int  @map("expected_quantity")
-  countedQuantity  Int? @map("counted_quantity")
-  appliedDelta     Int? @map("applied_delta")
+  expectedQuantity Int     @map("expected_quantity")
+  countedQuantity  Int?    @map("counted_quantity")
+  appliedDelta     Int?    @map("applied_delta")
   // Soft pointer to the inventory_movements row this line wrote on post (no FK —
   // the ledger is append-only and never deleted under a count line).
-  movementId String? @map("movement_id") @db.Uuid
-  note       String? @db.Text
+  movementId       String? @map("movement_id") @db.Uuid
+  note             String? @db.Text
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
 

@@ -57,8 +57,8 @@ model Warehouse {
   purchaseOrders     PurchaseOrder[]
   goodsReceipts      GoodsReceipt[]
   counts             InventoryCount[]
-  transfersOut       InventoryTransfer[]   @relation("TransferFrom")
-  transfersIn        InventoryTransfer[]   @relation("TransferTo")
+  transfersOut       InventoryTransfer[]    @relation("TransferFrom")
+  transfersIn        InventoryTransfer[]    @relation("TransferTo")
   defaultForProducts Product[]              @relation("ProductDefaultWarehouse")
 
   @@unique([tenantId, code], map: "inventory_warehouses_tenant_code_unique")

@@ -47,7 +47,7 @@ model GoodsReceiptLine {
   lotNumber        String? @map("lot_number") @db.VarChar(63)
   // Soft pointer to the inventory_movements row this line wrote (no FK — the
   // ledger is append-only and never deleted under a receipt line).
-  movementId String? @map("movement_id") @db.Uuid
+  movementId       String? @map("movement_id") @db.Uuid
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
 
