@@ -195,16 +195,10 @@
     letter-spacing: -0.01em;
   }
 
-  .st-container {
-    max-width: var(--st-max);
-    margin-inline: auto;
-    padding-inline: var(--st-gutter);
-    width: 100%;
-    box-sizing: border-box;
-  }
-  .st-container--prose {
-    max-width: var(--st-max-prose);
-  }
+  /* `.st-container` (+ `--prose` and the `--sm/--md/--lg/--full` widths) now lives
+     in @sparx/site-ui (container.css): centered, capped at a readable default width
+     (Tailwind centered-wrapper pattern), `px-6` gutter. The storefront authors the
+     same class names; site-ui is the single owner. */
 
   .st-eyebrow {
     font-size: 0.72rem;
