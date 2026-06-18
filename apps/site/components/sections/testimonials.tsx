@@ -26,7 +26,7 @@ export function TestimonialsSection({
           <h2 className="st-h2">{config.heading}</h2>
         </div>
       ) : null}
-      <div className="st-grid" data-cols={config.columns}>
+      <div className={`st-grid st-grid--cols-${config.columns} st-grid--gap-lg`}>
         {items.map((t, i) => {
           const avatar = mediaUrl(t.avatarMediaId ?? null, ctx.tenantSlug);
           return (

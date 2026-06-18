@@ -127,7 +127,7 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
               View all →
             </Link>
           </div>
-          <div className="st-grid">
+          <div className="st-grid st-grid--auto">
             {collectionShelf.map((c) => {
               const hero = mediaUrl(c.heroMediaId, site.slug);
               return (
@@ -166,7 +166,7 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
               Shop all →
             </Link>
           </div>
-          <div className="st-grid">
+          <div className="st-grid st-grid--auto">
             {fresh.items.map((p) => (
               <ProductCard
                 key={p.id}

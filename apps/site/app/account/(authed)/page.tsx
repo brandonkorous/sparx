@@ -21,7 +21,7 @@ export default function AccountOverviewPage() {
       </p>
 
       <div
-        className="st-grid"
+        className="st-grid st-grid--auto"
         style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))' }}
       >
         <Link href="/products" className="st-card" style={{ padding: '1.25rem', display: 'block' }}>

@@ -64,7 +64,7 @@ export async function FeaturedProductsSection({
           <h2 className="st-h2">{config.heading}</h2>
         </div>
       ) : null}
-      <div className="st-grid" data-cols={config.columns}>
+      <div className={`st-grid st-grid--cols-${config.columns} st-grid--gap-lg`}>
         {products.map((p) => (
           <ProductCard
             key={p.id}

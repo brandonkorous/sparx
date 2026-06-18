@@ -501,12 +501,10 @@
     text-underline-offset: 3px;
   }
 
-  /* ── Product grid + card ───────────────────────────────────── */
-  .st-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: clamp(1rem, 2vw, 1.75rem);
-  }
+  /* ── Product card ──────────────────────────────────────────── */
+  /* `.st-grid` (auto-fill default + `--cols-N`) now lives in @sparx/site-ui
+     (grid.css): `.st-grid--auto` is the responsive card grid, `.st-grid--cols-N`
+     the fixed-count one. Storefront grids author those classes directly. */
   .st-card {
     display: flex;
     flex-direction: column;
@@ -1613,32 +1611,9 @@
    Section components composed by the Site Builder snapshot. All values are
    token-driven so tenant theme + light/dark overrides cascade in. */
 
-  /* Explicit column counts (featured-products, collection-grid, testimonials)
-   from the section config. Auto-fill remains the default for grids without a
-   data-cols attribute. */
-  .st-grid[data-cols='1'] {
-    grid-template-columns: 1fr;
-  }
-  .st-grid[data-cols='2'] {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .st-grid[data-cols='3'] {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .st-grid[data-cols='4'] {
-    grid-template-columns: repeat(4, 1fr);
-  }
-  @media (max-width: 860px) {
-    .st-grid[data-cols='3'],
-    .st-grid[data-cols='4'] {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  @media (max-width: 520px) {
-    .st-grid[data-cols] {
-      grid-template-columns: 1fr;
-    }
-  }
+  /* Column counts (featured-products, collection-grid, testimonials) now use
+     site-ui's `.st-grid--cols-N`; the legacy `.st-grid[data-cols]` rules moved
+     out with `.st-grid`. */
 
   /* Logo placement (header config). */
   .st-header__bar[data-logo='center'] {

@@ -9,6 +9,17 @@
   @apply grid;
 }
 
+/* Auto-fill product grid — the storefront's responsive card grid. Columns size
+   themselves to `--st-grid-min` (default 230px) so the column COUNT follows the
+   container width with NO media queries, paired with the card gutter. A preset
+   (columns + gap together) because "fill the row with cards" is one intent;
+   `--cols-N` stays the fixed-count primitive. An inline grid-template-columns
+   still overrides the min (e.g. the wishlist grid's 180px) while keeping the gap. */
+.st-grid--auto {
+  grid-template-columns: repeat(auto-fill, minmax(var(--st-grid-min, 230px), 1fr));
+  gap: clamp(1rem, 2vw, 1.75rem);
+}
+
 /* Gap scale — what xs…xl mean for a grid. */
 .st-grid--gap-xs {
   @apply gap-2;

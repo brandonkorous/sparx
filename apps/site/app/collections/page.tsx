@@ -41,7 +41,7 @@ export default async function CollectionListingPage() {
           action={{ label: 'Shop all products', href: '/products' }}
         />
       ) : (
-        <div className="st-grid">
+        <div className="st-grid st-grid--auto">
           {collections.map((c) => {
             const hero = mediaUrl(c.heroMediaId, site.slug);
             return (

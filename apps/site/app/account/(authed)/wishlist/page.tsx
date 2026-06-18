@@ -62,7 +62,7 @@ export default function WishlistPage() {
         </div>
       ) : (
         <div
-          className="st-grid"
+          className="st-grid st-grid--auto"
           style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}
         >
           {visible.map((it) => {

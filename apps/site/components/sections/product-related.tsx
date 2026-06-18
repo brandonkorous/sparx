@@ -20,7 +20,7 @@ export function ProductRelatedSection({
       <div className="st-section__head">
         <h2 className="st-h2">{config.heading}</h2>
       </div>
-      <div className="st-grid">
+      <div className="st-grid st-grid--auto">
         {items.map((p) => (
           <ProductCard
             key={p.id}
