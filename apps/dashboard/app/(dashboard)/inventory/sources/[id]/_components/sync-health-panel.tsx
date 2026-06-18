@@ -50,6 +50,11 @@ export function SyncHealthPanel({ health }: { health: SyncHealth }) {
               value={String(health.pendingUnmappedCount)}
               emphasis={health.pendingUnmappedCount > 0}
             />
+            <Tile
+              label="Stale mappings"
+              value={String(health.staleLinkCount)}
+              emphasis={health.staleLinkCount > 0}
+            />
           </Stack>
 
           {latestRun ? <LatestRun run={latestRun} /> : null}
@@ -114,6 +119,7 @@ function LatestRun({ run }: { run: SyncRunRow }) {
         <Metric label="Changed" value={run.rowsChanged} />
         <Metric label="Unchanged" value={run.rowsUnchanged} />
         <Metric label="Unmapped" value={run.rowsUnmatched} warn={run.rowsUnmatched > 0} />
+        <Metric label="Out-of-order" value={run.rowsStale} warn={run.rowsStale > 0} />
         <Metric label="Skipped" value={run.rowsSkipped} warn={run.rowsSkipped > 0} />
       </Stack>
       {run.error ? (

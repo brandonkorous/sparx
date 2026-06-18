@@ -28,6 +28,23 @@ export const CORNER_OPTIONS = [
   { key: 'pill', label: 'Pill', selector: '9999px', field: '9999px', box: '1.5rem' },
 ] as const;
 
+// Per-axis corner scale (daisyUI parity, docs/33 §3). Each of the THREE radius
+// tokens is dialed INDEPENDENTLY from this one shared scale, so an author can set
+// e.g. boxes = XL while fields stay Pill — instead of the bundled CORNER_OPTIONS
+// presets above (kept for back-compat). The key IS the CSS value (mirrors
+// BORDER_OPTIONS), so the control writes it straight onto the token. Every
+// site-ui component reads its matching `--st-radius-{box,field,selector}`, so a
+// change here cascades to all of them; per-node `rounded-*` classes still override.
+export const RADIUS_SCALE = [
+  { key: '0px', label: 'None' },
+  { key: '0.25rem', label: 'XS' },
+  { key: '0.5rem', label: 'Small' },
+  { key: '0.75rem', label: 'Medium' },
+  { key: '1rem', label: 'Large' },
+  { key: '1.5rem', label: 'XL' },
+  { key: '9999px', label: 'Pill' },
+] as const;
+
 export const BORDER_OPTIONS = [
   { key: '0px', label: 'None' },
   { key: '1px', label: 'Hairline' },

@@ -1,6 +1,6 @@
 # sparx Platform — Inventory Product Build Plan
 
-**Version:** 1.14
+**Version:** 1.16
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-17
 
@@ -537,12 +537,16 @@ gating ties into the roles model (`editor`/`admin`) — the `/approve` route req
    - **Tier C (CSV)** — harden the existing `services/inventory-worker/src/csv.ts`. ✅ **DONE (P5a)** —
      see the P5a callout below.
    - **Tier B (SaaS API)** — first cloud adapter (e.g. NetSuite/Cin7) to prove the abstraction.
+     ✅ **DONE (P5c)** — a generic config-driven HTTP-API pull, see the P5c callout below.
    - **Tier A (on-prem agent)** — outbound-HTTPS bridge for Fishbowl (Gillett); enrollment mints a
      tenant-scoped API key; `POST /v1/inventory/sources/:id/push` already exists as the ingress.
-2. **Conflict resolution** (docs/28 §6): external authoritative on `on_hand`; last-writer by
-   `source_synced_at`; unmapped-SKU review queue; stale-link alerting; one-source-per-variant.
-3. **Overselling guards:** per-location safety buffer; `inventory_policy=deny` for externally-linked
-   variants; UoM conversion (case↔each).
+2. **Conflict resolution** (docs/28 §6): external authoritative on `on_hand` ✅ (P5a reconcile);
+   unmapped-SKU review queue ✅ (P5a); **one-source-per-variant ✅ (P5b); stale-link alerting ✅ (P5b)**;
+   **last-writer by `source_synced_at` ✅ (P5c)** (Tier B rows carry per-row timestamps; an out-of-order
+   older row is dropped, not applied).
+3. **Overselling guards:** **per-location safety buffer ✅ (P5b)**; `inventory_policy=deny` for
+   externally-linked variants ✅ (the variant default is already `deny`); **UoM conversion (case↔each)
+   ✅ (P5b)**.
 4. Dashboard: `/inventory/connections` (pair source, choose sellable locations, safety buffer),
    `/inventory/connections/mapping` (auto + manual SKU map, unmapped queue), **sync-health** panel
    (last delta / last reconcile / mismatches / source online-offline — critical for Tier A agents).
@@ -572,6 +576,50 @@ reconciliation overwrites must still preserve in-flight `committed`.
 > (2 mappings, 3 pending unmapped, 1 run). **Still P5: Tier B (SaaS API), Tier A (Fishbowl bridge),
 > conflict resolution (one-source-per-variant, source_synced_at last-writer), oversell guards (safety
 > buffer, deny-policy, UoM).**
+
+> **P5b (conflict resolution + oversell guards) ✅ DONE.** The correctness layer that makes
+> externally-fed stock safe to sell against. **Conflict resolution (docs/28 §6):** one-source-per-variant
+> is enforced server-side — a variant already claimed by another source is rejected at link creation /
+> map (the new `createSourceLink` funnel both the links route and `mapUnmappedSku` route through);
+> **stale-link tracking** — every matched link is stamped `lastSeenAt` + un-stale'd on sync, and a
+> FULL-snapshot run (CSV; the worker passes `fullSnapshot: true`, a partial push doesn't) flags a
+> previously-seen-but-now-absent link `isStale`, surfaced as a "stale mappings" count in the sync-health
+> panel + a `stale` badge on the mapping row. **Oversell guards:** **UoM conversion** — a link carries
+> `externalUom`/`unitsPerExternal`, and `ingestFeed` multiplies the feed quantity before it reconciles
+> (a feed "5 cases" with ×12 → 60 each); **safety buffer** — `inventory_levels.safety_buffer` withholds
+> the last N units from the SELLABLE `available`, netted into `computeAvailability` (storefront buy-box),
+> the reserve **deny** check, and the allocator, so the source→sync lag can't oversell; `deny` is already
+> the variant policy default. New schema: link gains `external_uom`/`units_per_external`/`last_seen_at`/
+> `is_stale`, level gains `safety_buffer` (additive ALTER, migration `20260910000000_inventory_sync_controls`).
+> The mapping + unmapped-map forms gained UoM + buffer fields (shared `MappingControlsFields`). 4 new DB
+> tests (one-source reject, UoM ×, stale flag/clear, buffer nets availability + reserve); suite 52/52. Seed
+> ships a demo link by-the-case (×6) with a 3-unit buffer. **Still P5: Tier B (SaaS API), Tier A (Fishbowl
+> bridge); `source_synced_at` last-writer ordering lands with Tier B (it carries per-row timestamps).**
+
+> **P5c (Tier B — generic SaaS HTTP-API pull + last-writer ordering) ✅ DONE.** The first cloud adapter,
+> built generic so ONE config-driven path serves any JSON inventory API (NetSuite, Cin7, a 3PL portal)
+> with no per-vendor code — proving the framework abstraction. **The adapter** (`inventory-worker`
+> `src/adapters/http-api.ts`): a `type: 'api'` source's `config` declares the endpoint, auth (bearer token
+> or a custom header), the dot-path to the rows array (`itemsPath`), a dot-path per field
+> (`{sku,location,quantity,cost,syncedAt}Field`), cost unit (cents/dollars), and pagination (page-number
+> or cursor, capped at `maxPages`). It fetches, maps, paginates, and returns the SAME normalized
+> `FeedRow[]` that flow into `inventoryService.ingestFeed` — so matching, reconciliation, the unmapped
+> queue, stale tracking, and run bookkeeping are all shared with CSV/push (the worker dispatches on
+> `source.type`). **Last-writer ordering** (the deferred docs/28 §6 piece): an API row carries the
+> source's own observation time (`source_synced_at`); `ingestFeed` records the newest one applied per link
+> (`inventory_source_links.last_source_synced_at`) and DROPS any later row whose timestamp is older
+> (out-of-order delivery / a replayed snapshot) — newest-wins even within a single batch. Dropped rows
+> count as `rows_stale` on the run, surfaced as an "Out-of-order" metric in the sync-health breakdown.
+> **Config validation + secret handling:** the route validates an `api` config against `ApiSourceConfig`
+> (a bad mapping is a 400, not a silent sync failure), redacts the stored `apiKey` from every read (a
+> `hasApiKey` flag tells the form a key is set), and preserves the stored secret when an edit leaves the
+> key blank. **Connection form** gains a full API-config section (endpoint, auth, field mapping,
+> pagination). New schema: link `last_source_synced_at`, run `rows_stale` (additive ALTER, migration
+> `20260911000000_inventory_tier_b_sync`). 1 new DB test (out-of-order drop + newest-wins-in-batch) +
+> 8 adapter unit tests (mapping, auth, cost/timestamp coercion, page + cursor pagination, maxPages cap);
+> suite 53/53. Seed ships a demo `ERP API (NetSuite)` connection. **Still P5: Tier A (Fishbowl on-prem
+> bridge) — the `/sources/:id/push` ingress + ingest funnel already exist; the agent + key enrollment is
+> the remaining transport.**
 
 ---
 

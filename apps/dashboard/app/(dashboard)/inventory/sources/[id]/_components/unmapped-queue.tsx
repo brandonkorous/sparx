@@ -20,6 +20,12 @@ import {
 
 import { mapUnmappedSkuAction, ignoreUnmappedSkuAction } from '../../../_lib/sync-actions';
 import { VariantPicker, type PickedVariant } from './variant-picker';
+import {
+  MappingControlsFields,
+  controlsToBody,
+  EMPTY_CONTROLS,
+  type ControlsState,
+} from './mapping-controls';
 import { externalRef, formatDateTime, type UnmappedSkuRow, type WarehouseOption } from './types';
 
 // The unmapped-SKU review queue (docs/28 §6/§7) — external SKUs a feed reported
@@ -84,6 +90,7 @@ function UnmappedRow({
   const [mapping, setMapping] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [warehouseId, setWarehouseId] = React.useState(warehouses[0]?.id ?? '');
+  const [controls, setControls] = React.useState<ControlsState>(EMPTY_CONTROLS);
   const [variant, setVariant] = React.useState<PickedVariant | null>(
     row.suggestedVariantId
       ? {
@@ -108,6 +115,7 @@ function UnmappedRow({
       const result = await mapUnmappedSkuAction(sourceId, row.id, {
         variantId: variant.variantId,
         warehouseId,
+        ...controlsToBody(controls),
       });
       if (result.error) {
         setError(result.error);
@@ -186,6 +194,7 @@ function UnmappedRow({
               </NativeSelect>
             </Stack>
           </Stack>
+          <MappingControlsFields idPrefix={`u-${row.id}`} state={controls} onChange={setControls} />
           <Stack direction="row" gap={2} justify="end">
             <Button
               variant="ghost"

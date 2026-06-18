@@ -3,26 +3,28 @@
 //   GET    /v1/inventory/sources/:sourceId/links
 //   POST   /v1/inventory/sources/:sourceId/links
 //   DELETE /v1/inventory/sources/:sourceId/links/:id
+//
+// Creation goes through `inventoryService.createSourceLink`, which enforces the
+// docs/28 §6 conflict rules (one source per variant, no duplicate SKU/location) and
+// carries the P5b sync controls (UoM conversion + safety buffer). The list enriches
+// each link with its (variant, warehouse) level's safety buffer for the mapping UI.
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { withTenant } from '@sparx/db';
+import { inventoryService } from '@sparx/inventory';
+import { CreateSourceLinkInput } from '@sparx/commerce-schemas';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
-import { notFound, conflict } from '@sparx/api-core/errors';
+import { notFound } from '@sparx/api-core/errors';
 import { requireInventoryModule, toInventoryContext } from '../../../lib/inventory-context.js';
-
-const CreateLinkBody = z.object({
-  variantId: z.string().uuid(),
-  warehouseId: z.string().uuid(),
-  externalSku: z.string().min(1).max(255),
-  externalLocation: z.string().max(255).nullable().default(null),
-});
 
 const ListQuery = z.object({
   take: z.coerce.number().int().min(1).max(500).default(100),
   skip: z.coerce.number().int().min(0).default(0),
 });
+
+const levelKey = (variantId: string, warehouseId: string): string => `${variantId}|${warehouseId}`;
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const inventoryLinkRoutes: FastifyPluginAsync = async (app) => {
@@ -33,12 +35,13 @@ const inventoryLinkRoutes: FastifyPluginAsync = async (app) => {
     const { sourceId } = request.params as { sourceId: string };
     const q = ListQuery.parse(request.query);
 
-    const [links, total] = await withTenant({ tenantId }, async (tx) => {
+    const { links, total } = await withTenant({ tenantId }, async (tx) => {
       const source = await tx.inventorySource.findFirst({
         where: { id: sourceId, tenantId, deletedAt: null },
       });
       if (!source) throw notFound('Inventory source not found');
-      return Promise.all([
+
+      const [rows, count] = await Promise.all([
         tx.inventorySourceLink.findMany({
           where: { tenantId, sourceId },
           include: {
@@ -51,6 +54,24 @@ const inventoryLinkRoutes: FastifyPluginAsync = async (app) => {
         }),
         tx.inventorySourceLink.count({ where: { tenantId, sourceId } }),
       ]);
+
+      // Merge each (variant, warehouse) level's safety buffer (the enforcement home).
+      const keys = rows.map((l) => ({ variantId: l.variantId, warehouseId: l.warehouseId }));
+      const levels = keys.length
+        ? await tx.inventoryLevel.findMany({
+            where: { tenantId, OR: keys },
+            select: { variantId: true, warehouseId: true, safetyBuffer: true },
+          })
+        : [];
+      const bufferByKey = new Map(
+        levels.map((l) => [levelKey(l.variantId, l.warehouseId), l.safetyBuffer])
+      );
+
+      const enriched = rows.map((l) => ({
+        ...l,
+        safetyBuffer: bufferByKey.get(levelKey(l.variantId, l.warehouseId)) ?? 0,
+      }));
+      return { links: enriched, total: count };
     });
 
     return reply.send(paged(links, { total, skip: q.skip, per_page: q.take }));
@@ -59,33 +80,12 @@ const inventoryLinkRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/inventory/sources/:sourceId/links', async (request, reply) => {
     await requireInventoryModule(request);
     requireRole(request, 'admin');
-    const { tenantId } = toInventoryContext(request);
+    const ctx = toInventoryContext(request);
     const { sourceId } = request.params as { sourceId: string };
-    const body = CreateLinkBody.parse(request.body);
+    const body = CreateSourceLinkInput.parse(request.body);
 
-    const link = await withTenant({ tenantId }, async (tx) => {
-      const source = await tx.inventorySource.findFirst({
-        where: { id: sourceId, tenantId, deletedAt: null },
-      });
-      if (!source) throw notFound('Inventory source not found');
-
-      // Check unique constraint before hitting DB error
-      const existing = await tx.inventorySourceLink.findFirst({
-        where: {
-          tenantId,
-          sourceId,
-          externalSku: body.externalSku,
-          externalLocation: body.externalLocation,
-        },
-      });
-      if (existing) throw conflict('A link for this SKU/location already exists on this source');
-
-      return tx.inventorySourceLink.create({
-        data: { tenantId, sourceId, ...body },
-      });
-    });
-
-    return reply.status(201).send(ok(link));
+    const result = await inventoryService.createSourceLink(ctx, sourceId, body);
+    return reply.status(201).send(ok(result));
   });
 
   app.delete('/v1/inventory/sources/:sourceId/links/:id', async (request, reply) => {

@@ -27,247 +27,247 @@ const encoder = new TextEncoder();
 export const ACTIVE_PROPERTY_COOKIE = 'sparx_active_property';
 
 async function activePropertyHeader(): Promise<Record<string, string>> {
-    try {
-        const value = (await cookies()).get(ACTIVE_PROPERTY_COOKIE)?.value;
-        return value ? { 'x-sparx-property-id': value } : {};
-    } catch {
-        // Outside a request scope (shouldn't happen for these server-only calls).
-        return {};
-    }
+  try {
+    const value = (await cookies()).get(ACTIVE_PROPERTY_COOKIE)?.value;
+    return value ? { 'x-sparx-property-id': value } : {};
+  } catch {
+    // Outside a request scope (shouldn't happen for these server-only calls).
+    return {};
+  }
 }
 
 function getSecret(): Uint8Array {
-    const secret = process.env.SPARX_INTERNAL_JWT_SECRET;
-    if (!secret) {
-        throw new Error('SPARX_INTERNAL_JWT_SECRET is required to call api-rest.');
-    }
-    return encoder.encode(secret);
+  const secret = process.env.SPARX_INTERNAL_JWT_SECRET;
+  if (!secret) {
+    throw new Error('SPARX_INTERNAL_JWT_SECRET is required to call api-rest.');
+  }
+  return encoder.encode(secret);
 }
 
 async function signToken(session: SparxSession): Promise<string> {
-    const now = Math.floor(Date.now() / 1000);
-    return new SignJWT({
-        tid: session.user.tenantId,
-        role: session.user.role,
-        ev: session.user.emailVerified,
-    })
-        .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
-        .setSubject(session.user.id)
-        .setIssuedAt(now)
-        .setExpirationTime(now + 5 * 60)
-        .sign(getSecret());
+  const now = Math.floor(Date.now() / 1000);
+  return new SignJWT({
+    tid: session.user.tenantId,
+    role: session.user.role,
+    ev: session.user.emailVerified,
+  })
+    .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+    .setSubject(session.user.id)
+    .setIssuedAt(now)
+    .setExpirationTime(now + 5 * 60)
+    .sign(getSecret());
 }
 
 export interface ApiRestError extends Error {
-    code: string;
-    status: number;
-    details?: unknown;
-    requestId?: string;
+  code: string;
+  status: number;
+  details?: unknown;
+  requestId?: string;
 }
 
 function makeError(
-    status: number,
-    code: string,
-    message: string,
-    details?: unknown,
-    requestId?: string
+  status: number,
+  code: string,
+  message: string,
+  details?: unknown,
+  requestId?: string
 ): ApiRestError {
-    const err = new Error(message) as ApiRestError;
-    err.code = code;
-    err.status = status;
-    err.details = details;
-    err.requestId = requestId;
-    return err;
+  const err = new Error(message) as ApiRestError;
+  err.code = code;
+  err.status = status;
+  err.details = details;
+  err.requestId = requestId;
+  return err;
 }
 
 interface SuccessEnvelope<T> {
-    success: true;
-    data: T;
-    meta?: unknown;
+  success: true;
+  data: T;
+  meta?: unknown;
 }
 
 interface ErrorEnvelope {
-    success: false;
-    error: {
-        code: string;
-        message: string;
-        details?: unknown;
-        request_id?: string;
-    };
+  success: false;
+  error: {
+    code: string;
+    message: string;
+    details?: unknown;
+    request_id?: string;
+  };
 }
 
 export interface CallOptions {
-    ifMatch?: string;
+  ifMatch?: string;
 }
 
 export interface ResponseEnvelope<T> {
-    data: T;
-    etag: string | null;
+  data: T;
+  etag: string | null;
 }
 
 export interface PagedEnvelope<T> {
-    data: T;
-    meta: { per_page?: number; next_cursor?: string | null } & Record<string, unknown>;
-    etag: string | null;
+  data: T;
+  meta: { per_page?: number; next_cursor?: string | null } & Record<string, unknown>;
+  etag: string | null;
 }
 
 function describeFetchError(error: unknown): { message: string; rootCause?: string } {
-    if (error instanceof Error) {
-        const rootCause =
-            error.cause instanceof Error
-                ? error.cause.message
-                : typeof error.cause === 'string'
-                    ? error.cause
-                    : undefined;
-        return { message: error.message, rootCause };
-    }
-    return { message: String(error) };
+  if (error instanceof Error) {
+    const rootCause =
+      error.cause instanceof Error
+        ? error.cause.message
+        : typeof error.cause === 'string'
+          ? error.cause
+          : undefined;
+    return { message: error.message, rootCause };
+  }
+  return { message: String(error) };
 }
 
 async function fetchWithRetry(
-    target: string,
-    init: RequestInit,
-    attempts: number
+  target: string,
+  init: RequestInit,
+  attempts: number
 ): Promise<Response> {
-    let lastError: unknown;
-    for (let i = 1; i <= attempts; i++) {
-        try {
-            return await fetch(target, init);
-        } catch (error) {
-            lastError = error;
-            if (i < attempts) {
-                await new Promise((resolve) => setTimeout(resolve, 150 * i));
-            }
-        }
+  let lastError: unknown;
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      return await fetch(target, init);
+    } catch (error) {
+      lastError = error;
+      if (i < attempts) {
+        await new Promise((resolve) => setTimeout(resolve, 150 * i));
+      }
     }
-    throw lastError;
+  }
+  throw lastError;
 }
 
 async function call<T>(
-    session: SparxSession,
-    method: string,
-    path: string,
-    body?: unknown,
-    options: CallOptions = {}
+  session: SparxSession,
+  method: string,
+  path: string,
+  body?: unknown,
+  options: CallOptions = {}
 ): Promise<ResponseEnvelope<T> & { meta: unknown }> {
-    const token = await signToken(session);
-    const headers: Record<string, string> = {
-        authorization: `Bearer ${token}`,
-        // Forward the active-site selection so per-property builder routes scope to
-        // the chosen web property (harmless to every other route).
-        ...(await activePropertyHeader()),
-    };
-    if (body !== undefined) headers['content-type'] = 'application/json';
-    if (options.ifMatch) headers['if-match'] = options.ifMatch;
+  const token = await signToken(session);
+  const headers: Record<string, string> = {
+    authorization: `Bearer ${token}`,
+    // Forward the active-site selection so per-property builder routes scope to
+    // the chosen web property (harmless to every other route).
+    ...(await activePropertyHeader()),
+  };
+  if (body !== undefined) headers['content-type'] = 'application/json';
+  if (options.ifMatch) headers['if-match'] = options.ifMatch;
 
-    const target = `${BASE_URL}${path}`;
-    let res: Response;
-    try {
-        res = await fetchWithRetry(
-            target,
-            {
-                method,
-                headers,
-                body: body !== undefined ? JSON.stringify(body) : undefined,
-                cache: 'no-store',
-            },
-            method === 'GET' ? 2 : 1
-        );
-    } catch (error) {
-        const cause = describeFetchError(error);
-        throw makeError(503, 'UPSTREAM_FETCH_FAILED', `api-rest request failed: ${method} ${path}`, {
-            target,
-            cause: cause.message,
-            rootCause: cause.rootCause,
-        });
+  const target = `${BASE_URL}${path}`;
+  let res: Response;
+  try {
+    res = await fetchWithRetry(
+      target,
+      {
+        method,
+        headers,
+        body: body !== undefined ? JSON.stringify(body) : undefined,
+        cache: 'no-store',
+      },
+      method === 'GET' ? 2 : 1
+    );
+  } catch (error) {
+    const cause = describeFetchError(error);
+    throw makeError(503, 'UPSTREAM_FETCH_FAILED', `api-rest request failed: ${method} ${path}`, {
+      target,
+      cause: cause.message,
+      rootCause: cause.rootCause,
+    });
+  }
+
+  const etag = res.headers.get('etag');
+
+  if (res.status === 204) {
+    return { data: undefined as T, etag, meta: null };
+  }
+
+  const json = (await res.json()) as SuccessEnvelope<T> | ErrorEnvelope;
+
+  if (!res.ok) {
+    if ('error' in json) {
+      throw makeError(
+        res.status,
+        json.error.code,
+        `api-rest request failed: ${method} ${path} (${json.error.message})`,
+        json.error.details,
+        json.error.request_id
+      );
     }
-
-    const etag = res.headers.get('etag');
-
-    if (res.status === 204) {
-        return { data: undefined as T, etag, meta: null };
-    }
-
-    const json = (await res.json()) as SuccessEnvelope<T> | ErrorEnvelope;
-
-    if (!res.ok) {
-        if ('error' in json) {
-            throw makeError(
-                res.status,
-                json.error.code,
-                `api-rest request failed: ${method} ${path} (${json.error.message})`,
-                json.error.details,
-                json.error.request_id
-            );
-        }
-        throw makeError(res.status, 'UNKNOWN', `api-rest request failed: ${method} ${path}`);
-    }
-    const success = json as SuccessEnvelope<T>;
-    return { data: success.data, etag, meta: success.meta ?? null };
+    throw makeError(res.status, 'UNKNOWN', `api-rest request failed: ${method} ${path}`);
+  }
+  const success = json as SuccessEnvelope<T>;
+  return { data: success.data, etag, meta: success.meta ?? null };
 }
 
 async function withSession<T>(fn: (session: SparxSession) => Promise<T>): Promise<T> {
-    const session = await requireSession();
-    return fn(session);
+  const session = await requireSession();
+  return fn(session);
 }
 
 async function callRaw(session: SparxSession, method: string, path: string): Promise<Response> {
-    const token = await signToken(session);
-    const target = `${BASE_URL}${path}`;
-    try {
-        return await fetchWithRetry(
-            target,
-            {
-                method,
-                headers: {
-                    authorization: `Bearer ${token}`,
-                    ...(await activePropertyHeader()),
-                },
-                cache: 'no-store',
-            },
-            method === 'GET' ? 2 : 1
-        );
-    } catch (error) {
-        const cause = describeFetchError(error);
-        throw makeError(503, 'UPSTREAM_FETCH_FAILED', `api-rest request failed: ${method} ${path}`, {
-            target,
-            cause: cause.message,
-            rootCause: cause.rootCause,
-        });
-    }
+  const token = await signToken(session);
+  const target = `${BASE_URL}${path}`;
+  try {
+    return await fetchWithRetry(
+      target,
+      {
+        method,
+        headers: {
+          authorization: `Bearer ${token}`,
+          ...(await activePropertyHeader()),
+        },
+        cache: 'no-store',
+      },
+      method === 'GET' ? 2 : 1
+    );
+  } catch (error) {
+    const cause = describeFetchError(error);
+    throw makeError(503, 'UPSTREAM_FETCH_FAILED', `api-rest request failed: ${method} ${path}`, {
+      target,
+      cause: cause.message,
+      rootCause: cause.rootCause,
+    });
+  }
 }
 
 export const api = {
-    getRaw: async (path: string): Promise<Response> =>
-        withSession(async (s) => callRaw(s, 'GET', path)),
-    get: async <T>(path: string): Promise<T> =>
-        withSession(async (s) => (await call<T>(s, 'GET', path)).data),
-    getPaged: async <T>(path: string): Promise<PagedEnvelope<T>> =>
-        withSession(async (s) => {
-            const r = await call<T>(s, 'GET', path);
-            const meta = (r.meta ?? {}) as PagedEnvelope<T>['meta'];
-            return { data: r.data, meta, etag: r.etag };
-        }),
-    getWithEtag: async <T>(path: string): Promise<ResponseEnvelope<T>> =>
-        withSession(async (s) => {
-            const r = await call<T>(s, 'GET', path);
-            return { data: r.data, etag: r.etag };
-        }),
-    post: async <T>(path: string, body?: unknown): Promise<T> =>
-        withSession(async (s) => (await call<T>(s, 'POST', path, body)).data),
-    patch: async <T>(path: string, body?: unknown, options?: CallOptions): Promise<T> =>
-        withSession(async (s) => (await call<T>(s, 'PATCH', path, body, options)).data),
-    put: async <T>(path: string, body?: unknown): Promise<T> =>
-        withSession(async (s) => (await call<T>(s, 'PUT', path, body)).data),
-    patchWithEtag: async <T>(
-        path: string,
-        body?: unknown,
-        options?: CallOptions
-    ): Promise<ResponseEnvelope<T>> =>
-        withSession(async (s) => {
-            const r = await call<T>(s, 'PATCH', path, body, options);
-            return { data: r.data, etag: r.etag };
-        }),
-    delete: async <T>(path: string): Promise<T> =>
-        withSession(async (s) => (await call<T>(s, 'DELETE', path)).data),
+  getRaw: async (path: string): Promise<Response> =>
+    withSession(async (s) => callRaw(s, 'GET', path)),
+  get: async <T>(path: string): Promise<T> =>
+    withSession(async (s) => (await call<T>(s, 'GET', path)).data),
+  getPaged: async <T>(path: string): Promise<PagedEnvelope<T>> =>
+    withSession(async (s) => {
+      const r = await call<T>(s, 'GET', path);
+      const meta = (r.meta ?? {}) as PagedEnvelope<T>['meta'];
+      return { data: r.data, meta, etag: r.etag };
+    }),
+  getWithEtag: async <T>(path: string): Promise<ResponseEnvelope<T>> =>
+    withSession(async (s) => {
+      const r = await call<T>(s, 'GET', path);
+      return { data: r.data, etag: r.etag };
+    }),
+  post: async <T>(path: string, body?: unknown): Promise<T> =>
+    withSession(async (s) => (await call<T>(s, 'POST', path, body)).data),
+  patch: async <T>(path: string, body?: unknown, options?: CallOptions): Promise<T> =>
+    withSession(async (s) => (await call<T>(s, 'PATCH', path, body, options)).data),
+  put: async <T>(path: string, body?: unknown): Promise<T> =>
+    withSession(async (s) => (await call<T>(s, 'PUT', path, body)).data),
+  patchWithEtag: async <T>(
+    path: string,
+    body?: unknown,
+    options?: CallOptions
+  ): Promise<ResponseEnvelope<T>> =>
+    withSession(async (s) => {
+      const r = await call<T>(s, 'PATCH', path, body, options);
+      return { data: r.data, etag: r.etag };
+    }),
+  delete: async <T>(path: string): Promise<T> =>
+    withSession(async (s) => (await call<T>(s, 'DELETE', path)).data),
 };

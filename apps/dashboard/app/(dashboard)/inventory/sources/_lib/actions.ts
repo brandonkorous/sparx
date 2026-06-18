@@ -5,7 +5,7 @@ import { api } from '@/lib/api-rest-client';
 interface SourceBody {
   name: string;
   type?: string;
-  config: Record<string, string>;
+  config: Record<string, unknown>;
   syncIntervalSec: number;
   notes: string | null;
 }

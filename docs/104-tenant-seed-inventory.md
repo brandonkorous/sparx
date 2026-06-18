@@ -37,11 +37,11 @@ Seeding happens at three distinct moments, for three distinct reasons. Conflatin
 everything when the tenant is created") breaks the moment a tenant enables a module _later_ — it would
 never get that module's defaults.
 
-| Layer | Fires on | Scope | What it seeds | Status |
-| ----- | -------- | ----- | ------------- | ------ |
-| **L1 · Provisioning** | `tenant.created` | Tenant + primary site | Primary `Property`, `<slug>.sparx.zone` `Domain`, `SiteConfig`, brand shell, legal pages + footer placements, default consent | ✅ live (provisioning + `legal-seed-worker`) |
-| **L2 · Module activation** | `module.activated(<slug>)` | Per module, per tenant | Every **template-agnostic default** that module needs to not feel broken — default emails, system automations, CRM pipeline/segments, invoicing workflows/line-types, and the gaps below | ⚠️ partial (4 of 11 modules wired) |
-| **L3 · Blueprint install** | Template chosen at onboarding (or the fallback "Default" blueprint) | Per site | All **industry-specific content** — brand/theme, pages, navigation, catalog, content entries, custom content types, example records | ✅ live but **narrow** (manifest covers a subset) |
+| Layer                      | Fires on                                                            | Scope                  | What it seeds                                                                                                                                                                            | Status                                            |
+| -------------------------- | ------------------------------------------------------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| **L1 · Provisioning**      | `tenant.created`                                                    | Tenant + primary site  | Primary `Property`, `<slug>.sparx.zone` `Domain`, `SiteConfig`, brand shell, legal pages + footer placements, default consent                                                            | ✅ live (provisioning + `legal-seed-worker`)      |
+| **L2 · Module activation** | `module.activated(<slug>)`                                          | Per module, per tenant | Every **template-agnostic default** that module needs to not feel broken — default emails, system automations, CRM pipeline/segments, invoicing workflows/line-types, and the gaps below | ⚠️ partial (4 of 11 modules wired)                |
+| **L3 · Blueprint install** | Template chosen at onboarding (or the fallback "Default" blueprint) | Per site               | All **industry-specific content** — brand/theme, pages, navigation, catalog, content entries, custom content types, example records                                                      | ✅ live but **narrow** (manifest covers a subset) |
 
 **The base-blueprint question, resolved.** An early idea was "one base blueprint with everything built
 in, auto-installed on tenant create." We are **not** doing that, for two reasons:
@@ -117,98 +117,98 @@ Coverage: ✅ seeds today · ⚠️ partial · ❌ gap.
 
 ### 4.1 Foundation — Builder / Sitebuilder / Brand (L1 + L3)
 
-| Entity | Class | Coverage | Notes |
-| ------ | ----- | -------- | ----- |
-| `Property` (primary) + `SiteConfig` | 🟢 | ✅ | Provisioning (L1). |
-| `Domain` (`<slug>.sparx.zone`) | 🟢 | ✅ | Provisioning (L1). Custom/purchased domains are author-time. |
-| `TenantBrand` (colors, fonts, logos, tokens) | 🔵 (shell 🟢) | ⚠️ | Brand shell at L1; full identity from the blueprint. |
-| `SiteTheme` (saved theme) | 🔵 | ✅ L3 | Blueprint ships + applies its theme. |
-| `BuilderLayout` (header · Outlet · footer) | 🔵 (bare starter 🟢) | ✅ | Starter navbar/layout via the `site-chrome` factory; blueprint overrides. |
-| `BuilderPage` (home, about, contact, templates) | 🔵 | ✅ L3 | Blueprint only; bare tenant has just the starter. |
-| `BuilderComponent` / `Version` (saved sections) | 🔵 | ✅ L3 | Blueprint `components[]`. |
-| `BuilderArchetype` (platform section library) | 🟢 | ✅ | Lazy on first list. |
-| `PlatformComponent` catalog (global) | 🟢 | ✅ | Global seed, not per-tenant. |
+| Entity                                          | Class                | Coverage | Notes                                                                     |
+| ----------------------------------------------- | -------------------- | -------- | ------------------------------------------------------------------------- |
+| `Property` (primary) + `SiteConfig`             | 🟢                   | ✅       | Provisioning (L1).                                                        |
+| `Domain` (`<slug>.sparx.zone`)                  | 🟢                   | ✅       | Provisioning (L1). Custom/purchased domains are author-time.              |
+| `TenantBrand` (colors, fonts, logos, tokens)    | 🔵 (shell 🟢)        | ⚠️       | Brand shell at L1; full identity from the blueprint.                      |
+| `SiteTheme` (saved theme)                       | 🔵                   | ✅ L3    | Blueprint ships + applies its theme.                                      |
+| `BuilderLayout` (header · Outlet · footer)      | 🔵 (bare starter 🟢) | ✅       | Starter navbar/layout via the `site-chrome` factory; blueprint overrides. |
+| `BuilderPage` (home, about, contact, templates) | 🔵                   | ✅ L3    | Blueprint only; bare tenant has just the starter.                         |
+| `BuilderComponent` / `Version` (saved sections) | 🔵                   | ✅ L3    | Blueprint `components[]`.                                                 |
+| `BuilderArchetype` (platform section library)   | 🟢                   | ✅       | Lazy on first list.                                                       |
+| `PlatformComponent` catalog (global)            | 🟢                   | ✅       | Global seed, not per-tenant.                                              |
 
 ### 4.2 CMS (L3, tenant-scoped)
 
-| Entity | Class | Coverage | Notes |
-| ------ | ----- | -------- | ----- |
-| `ContentType` (built-ins: page, blog_post…) | 🟢 | ✅ | Seeded by migration (global base set). |
-| `ContentType` (custom, e.g. `service`, `location`) | 🔵 | ✅ L3 | Manifest `contentTypes[]`. |
-| `ContentEntry` (posts, service/landing pages) | 🔵 | ✅ L3 | Manifest `content[]`. |
-| `Taxonomy` + `TaxonomyTerm` | 🔵 | ❌ | **Manifest gap** — categories/tags not expressible yet. |
-| `Author` | 🔵 | ❌ | Manifest gap. |
-| `NavigationMenu` + `NavigationItem` (header/footer) | 🔵 (default 🟢) | ⚠️ | Starter default exists; blueprint nav is implied by layout, not declared. |
-| `Redirect`, `WebhookSubscription` | author | — | Author-time, post-launch. |
-| `MediaAsset` (uploads) | 🔵/author | ✅ L3 | Blueprint `assets[]`; otherwise uploads. |
-| Revisions, references, preview tokens, media variants | ⚪ | — | Generated. |
+| Entity                                                | Class           | Coverage | Notes                                                                     |
+| ----------------------------------------------------- | --------------- | -------- | ------------------------------------------------------------------------- |
+| `ContentType` (built-ins: page, blog_post…)           | 🟢              | ✅       | Seeded by migration (global base set).                                    |
+| `ContentType` (custom, e.g. `service`, `location`)    | 🔵              | ✅ L3    | Manifest `contentTypes[]`.                                                |
+| `ContentEntry` (posts, service/landing pages)         | 🔵              | ✅ L3    | Manifest `content[]`.                                                     |
+| `Taxonomy` + `TaxonomyTerm`                           | 🔵              | ❌       | **Manifest gap** — categories/tags not expressible yet.                   |
+| `Author`                                              | 🔵              | ❌       | Manifest gap.                                                             |
+| `NavigationMenu` + `NavigationItem` (header/footer)   | 🔵 (default 🟢) | ⚠️       | Starter default exists; blueprint nav is implied by layout, not declared. |
+| `Redirect`, `WebhookSubscription`                     | author          | —        | Author-time, post-launch.                                                 |
+| `MediaAsset` (uploads)                                | 🔵/author       | ✅ L3    | Blueprint `assets[]`; otherwise uploads.                                  |
+| Revisions, references, preview tokens, media variants | ⚪              | —        | Generated.                                                                |
 
 ### 4.3 Legal & consent (L1)
 
-| Entity | Class | Coverage | Notes |
-| ------ | ----- | -------- | ----- |
-| Legal pages (`ContentEntry`) + `SiteDocPlacement` | 🟢 | ✅ | `legal-seed-worker` on `tenant.created`. |
-| `ConsentSettings` | 🟢 | ⚠️ | Defaults to `off`; tenant configures GDPR/CCPA. |
-| `ConsentRecord`, `PlatformLegalAcceptance` | ⚪ | — | Runtime / sign-up. |
+| Entity                                            | Class | Coverage | Notes                                           |
+| ------------------------------------------------- | ----- | -------- | ----------------------------------------------- |
+| Legal pages (`ContentEntry`) + `SiteDocPlacement` | 🟢    | ✅       | `legal-seed-worker` on `tenant.created`.        |
+| `ConsentSettings`                                 | 🟢    | ⚠️       | Defaults to `off`; tenant configures GDPR/CCPA. |
+| `ConsentRecord`, `PlatformLegalAcceptance`        | ⚪    | —        | Runtime / sign-up.                              |
 
 ### 4.4 Commerce (L2 config gap + L3 content)
 
-| Entity | Class | Coverage | Notes |
-| ------ | ----- | -------- | ----- |
-| `ProductCategory`, `ProductCollection`, `Product`/`Variant`/`Option`/`Image` | 🔵 | ✅ L3 | The **only** commerce thing seeded today. |
-| `CommerceSiteSettings` (currency, locale, checkout, default warehouse) | 🟢 | ❌ | **L2 gap** — store config absent on activation. |
-| `ShippingZone` / `ShippingProfile` / `ShippingRate` | 🟢 | ❌ | **L2 gap** — no fallback rate = broken checkout. |
-| `TaxZone` / `TaxRate` / `TaxExemption` | 🟢 | ❌ | **L2 gap** — default zone or "via provider" stance. |
-| `PriceList` / `PriceListEntry` / `BulkPriceTier` / `MarkupRule` / `SurchargeRule` | 🔵 | ❌ | Manifest gap (industry pricing). |
-| `Discount` (promo codes) | 🔵 | ❌ | Manifest gap. |
-| `Bundle` / `ConfigurationTemplate` (+ options/rules/add-ons) | 🔵 | ❌ | Manifest gap. |
-| `FitmentDomain`/`Category`/`Item`/`Variant` + `ProductFitment` | 🔵 | ❌ | Manifest gap (vehicle/device/pet/apparel fitment). |
-| `ProviderInstallation` (Stripe/Shippo/TaxJar…) | author | — | Runtime connect (onboarding Payments step). |
-| Carts, checkouts, orders, payments, reviews, returns, gift cards | ⚪ | — | Never seeded (demo only). |
+| Entity                                                                            | Class  | Coverage | Notes                                               |
+| --------------------------------------------------------------------------------- | ------ | -------- | --------------------------------------------------- |
+| `ProductCategory`, `ProductCollection`, `Product`/`Variant`/`Option`/`Image`      | 🔵     | ✅ L3    | The **only** commerce thing seeded today.           |
+| `CommerceSiteSettings` (currency, locale, checkout, default warehouse)            | 🟢     | ❌       | **L2 gap** — store config absent on activation.     |
+| `ShippingZone` / `ShippingProfile` / `ShippingRate`                               | 🟢     | ❌       | **L2 gap** — no fallback rate = broken checkout.    |
+| `TaxZone` / `TaxRate` / `TaxExemption`                                            | 🟢     | ❌       | **L2 gap** — default zone or "via provider" stance. |
+| `PriceList` / `PriceListEntry` / `BulkPriceTier` / `MarkupRule` / `SurchargeRule` | 🔵     | ❌       | Manifest gap (industry pricing).                    |
+| `Discount` (promo codes)                                                          | 🔵     | ❌       | Manifest gap.                                       |
+| `Bundle` / `ConfigurationTemplate` (+ options/rules/add-ons)                      | 🔵     | ❌       | Manifest gap.                                       |
+| `FitmentDomain`/`Category`/`Item`/`Variant` + `ProductFitment`                    | 🔵     | ❌       | Manifest gap (vehicle/device/pet/apparel fitment).  |
+| `ProviderInstallation` (Stripe/Shippo/TaxJar…)                                    | author | —        | Runtime connect (onboarding Payments step).         |
+| Carts, checkouts, orders, payments, reviews, returns, gift cards                  | ⚪     | —        | Never seeded (demo only).                           |
 
 ### 4.5 CRM (L2 ✅)
 
-| Entity | Class | Coverage | Notes |
-| ------ | ----- | -------- | ----- |
-| `Pipeline` + `PipelineStage` (default sales pipeline) | 🟢 | ✅ | `bootstrapDefaultPipeline` on activation. |
-| `Segment` (built-in templates) | 🟢 | ✅ | `bootstrapBuiltInSegments`. |
-| `SavedView` (per surface) | 🟢 | ❌ | Minor L2 add (default views per list). |
-| `Customer` / `Deal` / `Task` examples | 🔵 demo | ❌ | Demo/optional blueprint examples. |
-| Activities, segment members, addresses, joins | ⚪ | — | Generated. |
+| Entity                                                | Class   | Coverage | Notes                                     |
+| ----------------------------------------------------- | ------- | -------- | ----------------------------------------- |
+| `Pipeline` + `PipelineStage` (default sales pipeline) | 🟢      | ✅       | `bootstrapDefaultPipeline` on activation. |
+| `Segment` (built-in templates)                        | 🟢      | ✅       | `bootstrapBuiltInSegments`.               |
+| `SavedView` (per surface)                             | 🟢      | ❌       | Minor L2 add (default views per list).    |
+| `Customer` / `Deal` / `Task` examples                 | 🔵 demo | ❌       | Demo/optional blueprint examples.         |
+| Activities, segment members, addresses, joins         | ⚪      | —        | Generated.                                |
 
 ### 4.6 Email + Automation (L2 ✅)
 
-| Entity | Class | Coverage | Notes |
-| ------ | ----- | -------- | ----- |
-| Default keyed `BuilderEmail` set (transactional + lifecycle) | 🟢 | ✅ | `provisionDefaultEmails` on `module.activated(email)` ([91](91-default-email-templates.md)). |
-| Starter marketing `BuilderEmail` templates | 🔵 | ✅ | Lazy on first `/builder/email`. |
-| `EmailSettings` (from-name/address, CAN-SPAM addr) | 🟢 | ⚠️ | Row exists; stays empty until configured — **do not fabricate a from-address**. |
-| `SendingDomain` | author | — | Mailgun provisioning, author-time. |
-| System `Automation` set (per-module: welcome, abandoned-cart, low-stock, dunning ladder, …) | 🟢 | ✅ | `seedSystemAutomations` per `module.activated` ([84](84-automation-build-log.md)); idempotent + daily reconcile. |
-| React-Email platform templates (reset/verify/welcome/renewal/chat) | 🟢 (code) | ✅ | Shipped in `@sparx/email`. |
-| `Broadcast`, `Suppression`, `EmailEvent`, `ScheduledSend`, `AutomationRun`/`Step`/`Version` | ⚪ | — | Runtime. |
+| Entity                                                                                      | Class     | Coverage | Notes                                                                                                            |
+| ------------------------------------------------------------------------------------------- | --------- | -------- | ---------------------------------------------------------------------------------------------------------------- |
+| Default keyed `BuilderEmail` set (transactional + lifecycle)                                | 🟢        | ✅       | `provisionDefaultEmails` on `module.activated(email)` ([91](91-default-email-templates.md)).                     |
+| Starter marketing `BuilderEmail` templates                                                  | 🔵        | ✅       | Lazy on first `/builder/email`.                                                                                  |
+| `EmailSettings` (from-name/address, CAN-SPAM addr)                                          | 🟢        | ⚠️       | Row exists; stays empty until configured — **do not fabricate a from-address**.                                  |
+| `SendingDomain`                                                                             | author    | —        | Mailgun provisioning, author-time.                                                                               |
+| System `Automation` set (per-module: welcome, abandoned-cart, low-stock, dunning ladder, …) | 🟢        | ✅       | `seedSystemAutomations` per `module.activated` ([84](84-automation-build-log.md)); idempotent + daily reconcile. |
+| React-Email platform templates (reset/verify/welcome/renewal/chat)                          | 🟢 (code) | ✅       | Shipped in `@sparx/email`.                                                                                       |
+| `Broadcast`, `Suppression`, `EmailEvent`, `ScheduledSend`, `AutomationRun`/`Step`/`Version` | ⚪        | —        | Runtime.                                                                                                         |
 
 ### 4.7 Inventory (L2 partial — see [100](100-inventory-build-plan.md))
 
-| Entity | Class | Coverage | Notes |
-| ------ | ----- | -------- | ----- |
-| In-transit system `Warehouse` (`isSystem`) | 🟢 | ✅ | Lazy on first transfer ship. |
-| Default operating `Warehouse` (a stock home) | 🟢 | ❌ | **L2 candidate** — one default warehouse on activation. |
-| `Supplier` + `SupplierVariant` | 🔵 demo | ⚠️ | Dev seed only; blueprint/import otherwise. |
-| `PurchaseOrder`/`GoodsReceipt`/`LotBatch`/`SerialUnit` | 🔵 demo | ⚠️ | Dev seed only. |
-| Levels, movements, counts, transfers, reservations, sources | ⚪ | — | Ledger / runtime. |
+| Entity                                                      | Class   | Coverage | Notes                                                   |
+| ----------------------------------------------------------- | ------- | -------- | ------------------------------------------------------- |
+| In-transit system `Warehouse` (`isSystem`)                  | 🟢      | ✅       | Lazy on first transfer ship.                            |
+| Default operating `Warehouse` (a stock home)                | 🟢      | ❌       | **L2 candidate** — one default warehouse on activation. |
+| `Supplier` + `SupplierVariant`                              | 🔵 demo | ⚠️       | Dev seed only; blueprint/import otherwise.              |
+| `PurchaseOrder`/`GoodsReceipt`/`LotBatch`/`SerialUnit`      | 🔵 demo | ⚠️       | Dev seed only.                                          |
+| Levels, movements, counts, transfers, reservations, sources | ⚪      | —        | Ledger / runtime.                                       |
 
 ### 4.8 B2B / Invoicing / Dropship / Chat
 
-| Entity | Class | Coverage | Notes |
-| ------ | ----- | -------- | ----- |
-| Invoicing: `DocumentWorkflow` + `DocumentStage`, `BillingDocumentLineType`, default `BillingDocumentTemplate` | 🟢 | ✅ | `bootstrapDefaultWorkflows` + `bootstrapDefaultLineTypes` on activation (corrects an earlier "no code" note — it **is** wired). Verify a default print template seeds. |
-| B2B: `PurchaseApprovalRule` (default, disabled) | 🟢 | ❌ | **L2 candidate** — a sane default rule, off by default. |
-| B2B: `B2bPricingTier`, `ServiceType` | 🔵 | ❌ | Wholesale tiers / service catalog are tenant/industry-specific (blueprint/author). |
-| B2B: `B2BAccount` / `B2bAccountContact` / overrides | 🔵 demo | ❌ | Demo/import. |
-| Dropship: `DropshipSupplier` + `DropshipSupplierProperty` | 🔵/author | ❌ | Connection = author-time; blueprint can preconfigure. |
-| Chat: `ChatQuickReply` (canned-reply bank) | 🟢 | ❌ | **L2 candidate** — small default set + widget config. |
-| B2B invoices/appointments, dropship orders, chat conversations/messages | ⚪ | — | Runtime. |
+| Entity                                                                                                        | Class     | Coverage | Notes                                                                                                                                                                  |
+| ------------------------------------------------------------------------------------------------------------- | --------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Invoicing: `DocumentWorkflow` + `DocumentStage`, `BillingDocumentLineType`, default `BillingDocumentTemplate` | 🟢        | ✅       | `bootstrapDefaultWorkflows` + `bootstrapDefaultLineTypes` on activation (corrects an earlier "no code" note — it **is** wired). Verify a default print template seeds. |
+| B2B: `PurchaseApprovalRule` (default, disabled)                                                               | 🟢        | ❌       | **L2 candidate** — a sane default rule, off by default.                                                                                                                |
+| B2B: `B2bPricingTier`, `ServiceType`                                                                          | 🔵        | ❌       | Wholesale tiers / service catalog are tenant/industry-specific (blueprint/author).                                                                                     |
+| B2B: `B2BAccount` / `B2bAccountContact` / overrides                                                           | 🔵 demo   | ❌       | Demo/import.                                                                                                                                                           |
+| Dropship: `DropshipSupplier` + `DropshipSupplierProperty`                                                     | 🔵/author | ❌       | Connection = author-time; blueprint can preconfigure.                                                                                                                  |
+| Chat: `ChatQuickReply` (canned-reply bank)                                                                    | 🟢        | ❌       | **L2 candidate** — small default set + widget config.                                                                                                                  |
+| B2B invoices/appointments, dropship orders, chat conversations/messages                                       | ⚪        | —        | Runtime.                                                                                                                                                               |
 
 ---
 
@@ -247,7 +247,7 @@ top-level section + one installer step each, in dependency order) to express the
 - Commerce: `priceLists[]`, `discounts[]`, `bundles[]`, `configurators[]`, `fitment{}`,
   `shippingOverrides[]` / `taxOverrides[]` for industries that need specifics.
 - CRM/B2B (optional demo): `crm{ pipelines?, exampleContacts?, exampleDeals? }`, `b2b{ tiers?,
-  accounts? }` — example records flagged demo, not default.
+accounts? }` — example records flagged demo, not default.
 
 ### 5.C — The "Default / Blank Business" blueprint (L3 fallback)
 

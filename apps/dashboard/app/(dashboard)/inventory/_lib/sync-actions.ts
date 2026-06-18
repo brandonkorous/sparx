@@ -7,7 +7,15 @@ import { api } from '@/lib/api-rest-client';
 // source's SKU mappings (links) directly. Each returns `{ error? }` so the client
 // panels can surface the friendly message; the caller refreshes on success.
 
-interface MapBody {
+// UoM conversion + oversell safety buffer a mapping can carry (P5b). Optional —
+// defaults are 1:1 UoM and no buffer.
+interface MappingControls {
+  externalUom?: string | null;
+  unitsPerExternal?: number;
+  safetyBuffer?: number;
+}
+
+interface MapBody extends MappingControls {
   variantId: string;
   warehouseId: string;
 }
@@ -37,7 +45,7 @@ export async function ignoreUnmappedSkuAction(
   }
 }
 
-interface CreateLinkBody {
+interface CreateLinkBody extends MappingControls {
   variantId: string;
   warehouseId: string;
   externalSku: string;

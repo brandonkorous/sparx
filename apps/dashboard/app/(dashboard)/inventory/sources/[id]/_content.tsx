@@ -41,7 +41,12 @@ export async function SourceDetailContent({ id }: { id: string }) {
     api.getPaged<WarehouseOption[]>(`/v1/inventory/locations?take=250`),
   ]);
 
-  const csvUrl = typeof source.config?.csvUrl === 'string' ? source.config.csvUrl : null;
+  const endpoint =
+    typeof source.config?.csvUrl === 'string'
+      ? source.config.csvUrl
+      : typeof source.config?.endpoint === 'string'
+        ? source.config.endpoint
+        : null;
 
   return (
     <Stack gap={6}>
@@ -62,10 +67,10 @@ export async function SourceDetailContent({ id }: { id: string }) {
           </Stack>
           <Text size="sm" variant="muted">
             {SOURCE_TYPE_LABEL[source.type] ?? source.type}
-            {csvUrl ? (
+            {endpoint ? (
               <>
                 {' · '}
-                <span className="font-mono">{csvUrl}</span>
+                <span className="font-mono">{endpoint}</span>
               </>
             ) : null}
           </Text>

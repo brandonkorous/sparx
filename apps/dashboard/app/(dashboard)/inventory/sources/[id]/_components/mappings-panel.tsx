@@ -21,6 +21,12 @@ import {
 
 import { createSourceLinkAction, removeSourceLinkAction } from '../../../_lib/sync-actions';
 import { VariantPicker, type PickedVariant } from './variant-picker';
+import {
+  MappingControlsFields,
+  controlsToBody,
+  EMPTY_CONTROLS,
+  type ControlsState,
+} from './mapping-controls';
 import { externalRef, type SourceLinkRow, type WarehouseOption } from './types';
 
 // SKU mapping view (docs/28 §7) — the links binding this source's external SKUs to
@@ -101,6 +107,11 @@ function MappingRow({ sourceId, link }: { sourceId: string; link: SourceLinkRow 
         <Text size="sm" className="font-mono">
           {externalRef(link.externalSku, link.externalLocation)}
         </Text>
+        {link.isStale ? (
+          <Badge color="danger" variant="soft" size="sm">
+            stale
+          </Badge>
+        ) : null}
         <Text size="xs" variant="muted">
           →
         </Text>
@@ -113,7 +124,18 @@ function MappingRow({ sourceId, link }: { sourceId: string; link: SourceLinkRow 
           </Text>
         </Stack>
       </Stack>
-      <Stack direction="row" align="center" gap={2}>
+      <Stack direction="row" align="center" gap={2} wrap justify="end">
+        {link.unitsPerExternal > 1 ? (
+          <Badge color="neutral" variant="outline" size="sm">
+            ×{link.unitsPerExternal}
+            {link.externalUom ? ` ${link.externalUom}` : ''}
+          </Badge>
+        ) : null}
+        {link.safetyBuffer > 0 ? (
+          <Badge color="info" variant="outline" size="sm">
+            buffer {link.safetyBuffer}
+          </Badge>
+        ) : null}
         {error ? (
           <Text size="xs" className="text-[var(--color-danger)]">
             {error}
@@ -141,6 +163,7 @@ function AddMappingForm({
   const [externalLocation, setExternalLocation] = React.useState('');
   const [warehouseId, setWarehouseId] = React.useState(warehouses[0]?.id ?? '');
   const [variant, setVariant] = React.useState<PickedVariant | null>(null);
+  const [controls, setControls] = React.useState<ControlsState>(EMPTY_CONTROLS);
 
   function add() {
     if (!externalSku.trim()) {
@@ -162,6 +185,7 @@ function AddMappingForm({
         warehouseId,
         externalSku: externalSku.trim(),
         externalLocation: externalLocation.trim() || null,
+        ...controlsToBody(controls),
       });
       if (result.error) {
         setError(result.error);
@@ -170,6 +194,7 @@ function AddMappingForm({
       setExternalSku('');
       setExternalLocation('');
       setVariant(null);
+      setControls(EMPTY_CONTROLS);
       router.refresh();
     });
   }
@@ -213,6 +238,9 @@ function AddMappingForm({
           </NativeSelect>
         </Stack>
       </Stack>
+
+      <MappingControlsFields idPrefix="add-link" state={controls} onChange={setControls} />
+
       <Stack direction="row" gap={3} wrap align="end" justify="between">
         <Stack gap={1} className="min-w-[16rem] flex-1">
           <Label>Map to item</Label>

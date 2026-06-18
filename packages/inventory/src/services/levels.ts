@@ -3,9 +3,9 @@
 // ever changes through the movement ledger (see ./ledger); this module owns
 // the read paths + the non-stock fields (reorder policy, cost basis surfacing).
 
-import { SetReorderPolicyInput } from '@sparx/commerce-schemas';
+import { SetReorderPolicyInput, SetSafetyBufferInput } from '@sparx/commerce-schemas';
 import { withTenant } from '@sparx/db';
-import type { Prisma } from '@sparx/db';
+import type { Prisma, TxClient } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
@@ -135,6 +135,53 @@ export async function setReorderPolicy(ctx: ServiceContext, rawInput: unknown): 
           leadTimeDays: input.leadTimeDays ?? null,
         },
       },
+    });
+  });
+}
+
+/**
+ * Set the oversell safety buffer for one (variant, warehouse) level — units
+ * withheld from the sellable `available` (docs/28 §5.3). Upserts the level so a
+ * buffer can be set before any stock exists. Tx-aware so the sync mapping can set
+ * it atomically with minting a link; the public `setSafetyBuffer` wraps it + audits.
+ */
+export async function setSafetyBufferOnTx(
+  tx: TxClient,
+  ctx: ServiceContext,
+  input: { variantId: string; warehouseId: string; safetyBuffer: number }
+): Promise<void> {
+  await ensureWarehouseActive(tx, input.warehouseId);
+  await ensureVariantExists(tx, input.variantId);
+
+  await tx.inventoryLevel.upsert({
+    where: {
+      variantId_warehouseId: { variantId: input.variantId, warehouseId: input.warehouseId },
+    },
+    create: {
+      tenantId: ctx.tenantId,
+      variantId: input.variantId,
+      warehouseId: input.warehouseId,
+      onHand: 0,
+      allocated: 0,
+      safetyBuffer: input.safetyBuffer,
+    },
+    update: { safetyBuffer: input.safetyBuffer },
+  });
+}
+
+export async function setSafetyBuffer(ctx: ServiceContext, rawInput: unknown): Promise<void> {
+  const input = SetSafetyBufferInput.parse(rawInput);
+  await withTenant(ctx, async (tx) => {
+    await setSafetyBufferOnTx(tx, ctx, input);
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'inventory.safety_buffer_set',
+      entityType: 'InventoryLevel',
+      entityId: input.variantId,
+      diff: { after: { warehouseId: input.warehouseId, safetyBuffer: input.safetyBuffer } },
     });
   });
 }

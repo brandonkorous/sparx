@@ -770,7 +770,7 @@ const FULL_PRODUCT_SELECT = {
       isDefault: true,
       inventoryPolicy: true,
       optionAssignments: { select: { optionValueId: true } },
-      inventoryLevels: { select: { onHand: true, allocated: true } },
+      inventoryLevels: { select: { onHand: true, allocated: true, safetyBuffer: true } },
     },
   },
   images: {

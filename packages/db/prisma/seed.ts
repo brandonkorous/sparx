@@ -1515,7 +1515,9 @@ async function seedDemoInventory(tenantId: string): Promise<void> {
           notes: 'Nightly on-hand export from the WMS (demo).',
         },
       });
-      for (const [sku, vid] of mappedSkus) {
+      for (const [i, [sku, vid]] of mappedSkus.entries()) {
+        // The first mapping demos the P5b sync controls: the feed reports this item
+        // by the case (×6), and a 3-unit safety buffer is withheld from sale.
         await tx.inventorySourceLink.create({
           data: {
             tenantId,
@@ -1523,8 +1525,15 @@ async function seedDemoInventory(tenantId: string): Promise<void> {
             variantId: vid,
             warehouseId: mainId,
             externalSku: `WMS-${sku}`,
+            ...(i === 0 ? { externalUom: 'case', unitsPerExternal: 6 } : {}),
           },
         });
+        if (i === 0) {
+          await tx.inventoryLevel.updateMany({
+            where: { tenantId, variantId: vid, warehouseId: mainId },
+            data: { safetyBuffer: 3 },
+          });
+        }
       }
       for (const ext of ['WMS-FLT-9001', 'WMS-BRK-2204', 'WMS-SEAL-118']) {
         await tx.inventoryUnmappedSku.create({
@@ -1548,6 +1557,38 @@ async function seedDemoInventory(tenantId: string): Promise<void> {
       });
       sourceCount = 1;
     }
+
+    // A second connection demonstrating Tier B (SaaS HTTP-API pull, docs/100 P5c):
+    // a declarative endpoint + bearer auth + JSON field mapping. Manual-only
+    // (syncIntervalSec 0) so the demo never reaches the placeholder endpoint; it
+    // renders a real API connection in the sources list + detail, and the stored
+    // secret is redacted by the API on read.
+    await tx.inventorySource.deleteMany({ where: { tenantId, name: 'ERP API (NetSuite)' } });
+    await tx.inventorySource.create({
+      data: {
+        tenantId,
+        name: 'ERP API (NetSuite)',
+        type: 'api',
+        config: {
+          endpoint: 'https://erp.example.com/api/v1/inventory',
+          authScheme: 'bearer',
+          apiKey: 'demo-token-do-not-use',
+          itemsPath: 'data.items',
+          skuField: 'sku',
+          quantityField: 'quantityAvailable',
+          locationField: 'location',
+          costField: 'unitCost',
+          costUnit: 'dollars',
+          syncedAtField: 'lastModified',
+          pageParam: 'page',
+          maxPages: 10,
+        },
+        status: 'active',
+        syncIntervalSec: 0,
+        notes: 'Generic HTTP-API pull (Tier B) — demo config; manual sync only.',
+      },
+    });
+    sourceCount += 1;
 
     const variantCount = variantIdBySku.size;
     console.log(

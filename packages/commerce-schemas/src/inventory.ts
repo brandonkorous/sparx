@@ -465,10 +465,93 @@ export type ReceiveTransferInput = z.infer<typeof ReceiveTransferInput>;
 export const SyncTrigger = z.enum(['manual', 'scheduled', 'push', 'api']);
 export type SyncTrigger = z.infer<typeof SyncTrigger>;
 
+// Per-mapping sync controls (P5b conflict resolution + oversell guards), all
+// optional — defaults are 1:1 UoM and no buffer:
+//   • externalUom / unitsPerExternal — the feed may report a pack UoM (a case of
+//     12) while the catalog sells "each"; the feed quantity is multiplied by
+//     unitsPerExternal before it reconciles the level.
+//   • safetyBuffer — units withheld from the SELLABLE available for the mapped
+//     (variant, warehouse) so the source→sync lag can't oversell. Stored on the
+//     level (the enforcement home).
+const externalUomField = z.string().max(30).nullable().optional();
+const unitsPerExternalField = z.number().int().positive().max(100_000).optional();
+const safetyBufferField = z.number().int().nonnegative().max(1_000_000).optional();
+
+// Create a source mapping (link). One source per variant is enforced server-side.
+export const CreateSourceLinkInput = z.object({
+  variantId: Uuid,
+  warehouseId: Uuid,
+  externalSku: z.string().min(1).max(255),
+  externalLocation: z.string().max(255).nullable().default(null),
+  externalUom: externalUomField,
+  unitsPerExternal: unitsPerExternalField,
+  safetyBuffer: safetyBufferField,
+});
+export type CreateSourceLinkInput = z.infer<typeof CreateSourceLinkInput>;
+
 // Resolve one unmapped external SKU by binding it to a (variant, warehouse): this
 // creates an InventorySourceLink (so the next sync matches it) and clears the row.
 export const MapUnmappedSkuInput = z.object({
   variantId: Uuid,
   warehouseId: Uuid,
+  externalUom: externalUomField,
+  unitsPerExternal: unitsPerExternalField,
+  safetyBuffer: safetyBufferField,
 });
 export type MapUnmappedSkuInput = z.infer<typeof MapUnmappedSkuInput>;
+
+// Set the oversell safety buffer for one (variant, warehouse) level directly.
+export const SetSafetyBufferInput = z.object({
+  variantId: Uuid,
+  warehouseId: Uuid,
+  safetyBuffer: z.number().int().nonnegative().max(1_000_000),
+});
+export type SetSafetyBufferInput = z.infer<typeof SetSafetyBufferInput>;
+
+// ─── External sync (P5c Tier B — generic SaaS HTTP-API pull) ──────────────────────
+//
+// A `type: 'api'` source pulls JSON over HTTPS and maps it onto the SAME ingest
+// funnel every tier writes through. The config is fully declarative so a single
+// adapter serves NetSuite, Cin7, a 3PL portal, etc. without per-vendor code:
+//
+//   • endpoint / auth — where to fetch + how to authenticate (bearer token or a
+//     custom header). The secret is stored server-side and redacted from reads.
+//   • itemsPath — dot-path to the array of stock rows in the response body
+//     ('' = the body itself is the array).
+//   • {sku,location,quantity,cost,syncedAt}Field — dot-paths to each value on a row.
+//     `syncedAtField` is the source's own observation time → drives last-writer
+//     ordering (an out-of-order older row is dropped, not applied).
+//   • costUnit — whether `costField` is already in cents or in major units (dollars).
+//   • pagination — page-number (`pageParam`) or cursor (`cursorPath`), capped at
+//     `maxPages` so a runaway feed can't loop forever.
+//
+// Stored as the source's opaque `config` JSON; validated on create/update.
+export const ApiSourceConfig = z
+  .object({
+    endpoint: z.string().url().max(2048),
+    authScheme: z.enum(['none', 'bearer', 'header']).default('none'),
+    // The token / key. Redacted from API responses; preserved on update when the
+    // edit form leaves it blank.
+    apiKey: z.string().max(4096).optional(),
+    // Header name carrying the key when authScheme = 'header' (e.g. 'X-API-Key').
+    headerName: z.string().max(128).optional(),
+    itemsPath: z.string().max(255).default(''),
+    skuField: z.string().min(1).max(128),
+    locationField: z.string().max(128).optional(),
+    quantityField: z.string().min(1).max(128),
+    costField: z.string().max(128).optional(),
+    costUnit: z.enum(['cents', 'dollars']).default('cents'),
+    syncedAtField: z.string().max(128).optional(),
+    pageParam: z.string().max(64).optional(),
+    cursorPath: z.string().max(255).optional(),
+    maxPages: z.number().int().min(1).max(100).default(1),
+  })
+  .refine((c) => c.authScheme === 'none' || (c.apiKey ?? '').length > 0, {
+    message: 'An API key is required for the selected auth scheme',
+    path: ['apiKey'],
+  })
+  .refine((c) => c.authScheme !== 'header' || (c.headerName ?? '').length > 0, {
+    message: 'A header name is required for header auth',
+    path: ['headerName'],
+  });
+export type ApiSourceConfig = z.infer<typeof ApiSourceConfig>;

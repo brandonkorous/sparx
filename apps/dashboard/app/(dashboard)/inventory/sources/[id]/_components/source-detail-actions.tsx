@@ -65,7 +65,7 @@ export function SourceDetailActions({ source }: { source: SourceSummary }) {
     id: source.id,
     name: source.name,
     type: source.type,
-    config: (source.config ?? {}) as Record<string, string>,
+    config: source.config ?? {},
     syncIntervalSec: source.syncIntervalSec,
     notes: source.notes,
   };

@@ -57,6 +57,26 @@ model InventorySourceLink {
   externalSku      String  @map("external_sku") @db.VarChar(255)
   externalLocation String? @map("external_location") @db.VarChar(255)
 
+  // Unit-of-measure conversion (docs/28 §6): a feed may report in a pack UoM (e.g.
+  // a case of 12) while the catalog sells "each". The feed quantity is multiplied
+  // by `unitsPerExternal` before it reconciles the level; `externalUom` is the
+  // human label for that pack. Default 1 = 1:1, no conversion.
+  externalUom      String? @map("external_uom") @db.VarChar(30)
+  unitsPerExternal Int     @default(1) @map("units_per_external")
+
+  // Stale-link tracking (docs/28 §6): `lastSeenAt` is stamped each time a feed row
+  // matches this link; on a full-snapshot sync a link whose external SKU is ABSENT
+  // is flagged `isStale` (its external part likely vanished) for the health alert.
+  lastSeenAt DateTime? @map("last_seen_at") @db.Timestamptz
+  isStale    Boolean   @default(false) @map("is_stale")
+
+  // Last-writer ordering (docs/28 §6, Tier B/A): when a feed row carries the
+  // source's own observation timestamp (`source_synced_at`), we record the newest
+  // one applied here. A later row whose timestamp is OLDER (out-of-order delivery /
+  // a replayed snapshot) is dropped rather than clobbering a fresher value. CSV
+  // feeds carry no per-row timestamp, so this stays null and ordering is skipped.
+  lastSourceSyncedAt DateTime? @map("last_source_synced_at") @db.Timestamptz
+
   // active | disabled
   status    String   @default("active") @db.VarChar(20)
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
@@ -94,6 +114,9 @@ model InventorySyncRun {
   rowsUnchanged Int @default(0) @map("rows_unchanged")
   rowsUnmatched Int @default(0) @map("rows_unmatched")
   rowsSkipped   Int @default(0) @map("rows_skipped")
+  // Matched rows dropped as out-of-order by last-writer ordering (an older
+  // source_synced_at than the value already applied to that link) — Tier B/A.
+  rowsStale     Int @default(0) @map("rows_stale")
 
   error      String?   @db.Text
   startedAt  DateTime  @default(now()) @map("started_at") @db.Timestamptz

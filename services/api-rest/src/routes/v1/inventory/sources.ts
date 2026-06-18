@@ -13,12 +13,46 @@ import { z } from 'zod';
 import type { Prisma } from '@prisma/client';
 import { withTenant } from '@sparx/db';
 import { inventoryService } from '@sparx/inventory';
+import { ApiSourceConfig } from '@sparx/commerce-schemas';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { notFound } from '@sparx/api-core/errors';
 import { publishEvent, createPublisher, type PublisherLogger } from '@sparx/events';
 import { requireInventoryModule, toInventoryContext } from '../../../lib/inventory-context.js';
 import { env } from '../../../env.js';
+
+type SourceRecord = Prisma.InventorySourceGetPayload<Record<string, never>>;
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+/** Strip the stored API secret from a source before it leaves the server; surface a
+ *  `hasApiKey` flag so the edit form knows a key is set without ever seeing it. */
+function redactSource(source: SourceRecord): SourceRecord {
+  const cfg = asRecord(source.config);
+  if (!('apiKey' in cfg)) return source;
+  const clone: Record<string, unknown> = { ...cfg, hasApiKey: true };
+  delete clone.apiKey;
+  return { ...source, config: clone as Prisma.JsonObject };
+}
+
+/** Validate + normalize an `api` source's config, preserving a previously-stored
+ *  secret when the incoming config leaves `apiKey` blank (the edit form omits it). */
+function normalizeApiConfig(
+  incoming: Record<string, unknown>,
+  existing?: unknown
+): ApiSourceConfig {
+  const existingCfg = asRecord(existing);
+  const merged: Record<string, unknown> = { ...existingCfg, ...incoming };
+  if (!incoming.apiKey && typeof existingCfg.apiKey === 'string') {
+    merged.apiKey = existingCfg.apiKey;
+  }
+  delete merged.hasApiKey;
+  return ApiSourceConfig.parse(merged);
+}
 
 const pubLogger: PublisherLogger = {
   info: (obj, msg) => console.info(msg ?? '', obj),
@@ -84,7 +118,7 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
       ]);
     });
 
-    return reply.send(paged(sources, { total, skip: q.skip, per_page: q.take }));
+    return reply.send(paged(sources.map(redactSource), { total, skip: q.skip, per_page: q.take }));
   });
 
   // ── Create ───────────────────────────────────────────────────────────────────
@@ -94,10 +128,13 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'admin');
     const { tenantId, userId } = toInventoryContext(request);
     const body = CreateSourceBody.parse(request.body);
+    // An `api` source's config is validated + normalized against the declarative
+    // pull schema; a bad mapping is a 400 here rather than a silent sync failure.
+    const config = body.type === 'api' ? normalizeApiConfig(body.config) : body.config;
 
     const source = await withTenant({ tenantId }, async (tx) => {
       return tx.inventorySource.create({
-        data: { tenantId, ...body, config: body.config as Prisma.InputJsonValue },
+        data: { tenantId, ...body, config: config as Prisma.InputJsonValue },
       });
     });
 
@@ -110,7 +147,7 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
       pubLogger
     );
 
-    return reply.status(201).send(ok(source));
+    return reply.status(201).send(ok(redactSource(source)));
   });
 
   // ── Get one ──────────────────────────────────────────────────────────────────
@@ -126,7 +163,7 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
     });
 
     if (!source) throw notFound('Inventory source not found');
-    return reply.send(ok(source));
+    return reply.send(ok(redactSource(source)));
   });
 
   // ── Update ───────────────────────────────────────────────────────────────────
@@ -144,17 +181,25 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
       });
       if (!existing) throw notFound('Inventory source not found');
       const { config: rawConfig, ...restBody } = body;
+      // For an `api` source, re-validate the (merged) config and keep the stored
+      // secret when the edit form leaves the key blank; csv configs pass through.
+      const config =
+        rawConfig === undefined
+          ? undefined
+          : existing.type === 'api'
+            ? normalizeApiConfig(rawConfig, existing.config)
+            : rawConfig;
       return tx.inventorySource.update({
         where: { id },
         data: {
           ...restBody,
-          ...(rawConfig !== undefined ? { config: rawConfig as Prisma.InputJsonValue } : {}),
+          ...(config !== undefined ? { config: config as Prisma.InputJsonValue } : {}),
           updatedAt: new Date(),
         },
       });
     });
 
-    return reply.send(ok(source));
+    return reply.send(ok(redactSource(source)));
   });
 
   // ── Delete (soft) ─────────────────────────────────────────────────────────────

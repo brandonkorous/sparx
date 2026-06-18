@@ -79,6 +79,12 @@ model InventoryLevel {
   onHand    Int @default(0) @map("on_hand")
   allocated Int @default(0) @map("allocated")
 
+  // Oversell guard (docs/28 §5.3): units withheld from the SELLABLE `available`
+  // (don't expose the last N units online) — a cushion against the lag between a
+  // physical change at an external source and the next sync reaching us. Nets into
+  // reserve's deny check, the allocator, and `computeAvailability`. 0 = no buffer.
+  safetyBuffer Int @default(0) @map("safety_buffer")
+
   reorderPoint    Int? @map("reorder_point")
   reorderQuantity Int? @map("reorder_quantity")
   leadTimeDays    Int? @map("lead_time_days")

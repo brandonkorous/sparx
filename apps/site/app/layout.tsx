@@ -142,6 +142,34 @@ function buildThemeCss(
   });
 }
 
+// ── Brand web fonts ──────────────────────────────────────────────────────────
+//
+// The compiled theme sets `--st-font-heading` / `--st-font-body` to the tenant's
+// brand families (e.g. 'Quicksand', 'Nunito'), but the families themselves must
+// be LOADED or the browser silently falls back to Geist. Build a single Google
+// Fonts stylesheet for whatever the tenant chose, skipping the bundled fallbacks
+// (Geist/Inter/system) which need no network load. Sourced from the compiled
+// snapshot (the source of truth) with the legacy theme columns as a backstop.
+const BUNDLED_FONTS = new Set([
+  'Geist',
+  'Geist Mono',
+  'Inter',
+  'system-ui',
+  'ui-sans-serif',
+  'sans-serif',
+  '-apple-system',
+]);
+
+function brandFontHref(families: (string | null | undefined)[]): string | null {
+  const uniq = Array.from(
+    new Set(families.map((f) => (f ?? '').trim()).filter((f) => f && !BUNDLED_FONTS.has(f)))
+  );
+  if (uniq.length === 0) return null;
+  return `https://fonts.googleapis.com/css2?${uniq
+    .map((f) => `family=${f.replace(/ /g, '+')}:wght@400;500;600;700;800`)
+    .join('&')}&display=swap`;
+}
+
 // Inline, before-paint script that resolves data-theme for policies that can't
 // be decided at SSR time (auto = prefers-color-scheme, toggle = cookie). Fixed
 // policies (light-only / dark-only) are set on <html> server-side and need no
@@ -241,6 +269,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const themePreset = (site?.settings as { theme?: { preset?: string } } | undefined)?.theme
     ?.preset;
   const themeCss = buildThemeCss(snapshot, site?.theme ?? null, themePreset);
+
+  // The tenant's brand fonts to load (compiled snapshot first, theme columns as a
+  // backstop). Without this the storefront renders every theme in the Geist fallback.
+  const fontHref = brandFontHref([
+    snapshot?.compiledV2?.shared.fontHeading,
+    snapshot?.compiledV2?.shared.fontBody,
+    site?.theme?.fontHeading,
+    site?.theme?.fontBody,
+  ]);
 
   // Appearance policy → initial data-theme + whether the no-flash script runs.
   const policy = snapshot?.appearancePolicy ?? 'light-only';
@@ -389,6 +426,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       className={`${GeistSans.variable} ${GeistMono.variable}`}
     >
       <head>
+        {fontHref ? (
+          <>
+            <link rel="preconnect" href="https://fonts.googleapis.com" />
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+            <link rel="stylesheet" href={fontHref} />
+          </>
+        ) : null}
         {themeCss ? <style dangerouslySetInnerHTML={{ __html: themeCss }} /> : null}
         {surfaceCss ? (
           <style data-surface-tenant dangerouslySetInnerHTML={{ __html: surfaceCss }} />

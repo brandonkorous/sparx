@@ -3,22 +3,22 @@ import type { BindingCatalog, BuilderLayoutDto, BuilderPageDto } from '@sparx/bu
 import { buildThemeCssV2, compileThemeForTenant } from '@sparx/site-themes';
 
 import {
-    getBrand,
-    getConfig,
-    getSitePreviewData,
-    getTenant,
-    listSavedThemes,
-    resolveMediaUrl,
+  getBrand,
+  getConfig,
+  getSitePreviewData,
+  getTenant,
+  listSavedThemes,
+  resolveMediaUrl,
 } from '../_brand/lib/api';
 import { applyBrandOverride } from '../_brand/lib/site-brand';
 import { propertyOrigin } from '../_brand/lib/property';
 import { getActiveProperty } from '@/lib/sites';
 import {
-    getBindingCatalog,
-    listArchetypes,
-    listComponentsFull,
-    listLayouts,
-    listPages,
+  getBindingCatalog,
+  listArchetypes,
+  listComponentsFull,
+  listLayouts,
+  listPages,
 } from '../_lib/api';
 import type { BrandDto, SiteConfigDto, SiteDto, SitePreviewConfig } from '../_brand/lib/types';
 import { StudioApp } from '../_builder/studio-app';
@@ -38,41 +38,41 @@ import '@sparx/site-ui/styles.canvas.css';
 // the Outlet on mount.
 
 export const metadata: Metadata = {
-    title: 'Builder · Studio',
+  title: 'Builder · Studio',
 };
 
 const FALLBACK_TENANT = {
-    id: '',
-    name: 'Workspace',
-    slug: '',
+  id: '',
+  name: 'Workspace',
+  slug: '',
 } as const;
 
 const FALLBACK_BRAND: BrandDto = {
-    tenantId: '',
-    businessName: 'Workspace',
-    tagline: null,
-    logoLightMediaId: null,
-    logoDarkMediaId: null,
-    faviconMediaId: null,
-    colorPrimary: null,
-    colorPrimaryForeground: null,
-    colorAccent: null,
-    colorAccentForeground: null,
-    colorSecondary: null,
-    colorSecondaryForeground: null,
-    fontHeading: null,
-    fontBody: null,
-    tokens: null,
+  tenantId: '',
+  businessName: 'Workspace',
+  tagline: null,
+  logoLightMediaId: null,
+  logoDarkMediaId: null,
+  faviconMediaId: null,
+  colorPrimary: null,
+  colorPrimaryForeground: null,
+  colorAccent: null,
+  colorAccentForeground: null,
+  colorSecondary: null,
+  colorSecondaryForeground: null,
+  fontHeading: null,
+  fontBody: null,
+  tokens: null,
 };
 
 const FALLBACK_CONFIG: SiteConfigDto = {
-    tenantId: '',
-    themeKey: 'default',
-    appearancePolicy: 'auto',
-    draftSettings: {},
-    publishedVersionId: null,
-    createdAt: '',
-    updatedAt: '',
+  tenantId: '',
+  themeKey: 'default',
+  appearancePolicy: 'auto',
+  draftSettings: {},
+  publishedVersionId: null,
+  createdAt: '',
+  updatedAt: '',
 };
 
 // The server-compiled tenant theme scoped to `.bx-canvas` — first-paint brand for
@@ -80,149 +80,149 @@ const FALLBACK_CONFIG: SiteConfigDto = {
 // (base, or base+override for a non-primary site) so a non-primary site previews
 // in ITS brand. Defensive: '' on a failed read (the canvas falls back to studio brand).
 function canvasThemeCss(brand: BrandDto, config: SiteConfigDto): string {
-    try {
-        const compiled = compileThemeForTenant({
-            themeKey: config.themeKey,
-            brand,
-            presentation: config.draftSettings.presentation ?? null,
-        });
-        return buildThemeCssV2(compiled, { rootSelector: '.bx-canvas' });
-    } catch {
-        return '';
-    }
+  try {
+    const compiled = compileThemeForTenant({
+      themeKey: config.themeKey,
+      brand,
+      presentation: config.draftSettings.presentation ?? null,
+    });
+    return buildThemeCssV2(compiled, { rootSelector: '.bx-canvas' });
+  } catch {
+    return '';
+  }
 }
 
 async function loadLayouts(): Promise<BuilderLayoutDto[]> {
-    try {
-        return await listLayouts();
-    } catch {
-        return [];
-    }
+  try {
+    return await listLayouts();
+  } catch {
+    return [];
+  }
 }
 
 async function loadPages(): Promise<BuilderPageDto[]> {
-    try {
-        return await listPages();
-    } catch {
-        return [];
-    }
+  try {
+    return await listPages();
+  } catch {
+    return [];
+  }
 }
 
 async function loadCatalog(): Promise<BindingCatalog> {
-    try {
-        return await getBindingCatalog();
-    } catch {
-        return { sources: [] };
-    }
+  try {
+    return await getBindingCatalog();
+  } catch {
+    return { sources: [] };
+  }
 }
 
 interface BuilderStudioRouteProps {
-    searchParams: Promise<Record<string, string | string[] | undefined>>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 export default async function BuilderStudioRoute({ searchParams }: BuilderStudioRouteProps) {
-    const [
-        sp,
-        baseBrand,
-        config,
-        savedThemes,
-        activeProperty,
-        tenant,
-        layouts,
-        pages,
-        pageCatalog,
-        components,
-        archetypes,
-    ] = await Promise.all([
-        searchParams,
-        getBrand().catch(() => FALLBACK_BRAND),
-        getConfig().catch(() => FALLBACK_CONFIG),
-        listSavedThemes(),
-        getActiveProperty().catch(() => null),
-        getTenant().catch(() => FALLBACK_TENANT),
-        loadLayouts(),
-        loadPages(),
-        loadCatalog(),
-        listComponentsFull(),
-        listArchetypes(),
-    ]);
+  const [
+    sp,
+    baseBrand,
+    config,
+    savedThemes,
+    activeProperty,
+    tenant,
+    layouts,
+    pages,
+    pageCatalog,
+    components,
+    archetypes,
+  ] = await Promise.all([
+    searchParams,
+    getBrand().catch(() => FALLBACK_BRAND),
+    getConfig().catch(() => FALLBACK_CONFIG),
+    listSavedThemes(),
+    getActiveProperty().catch(() => null),
+    getTenant().catch(() => FALLBACK_TENANT),
+    loadLayouts(),
+    loadPages(),
+    loadCatalog(),
+    listComponentsFull(),
+    listArchetypes(),
+  ]);
 
-    const initialPageId = typeof sp.page === 'string' ? sp.page : undefined;
-    // The cutover redirects /builder/brand → ?zone=theme and /builder/site →
-    // ?zone=layout (docs/builder/07 §2.2); the studio opens on that zone.
-    const initialZone = sp.zone === 'theme' || sp.zone === 'layout' ? sp.zone : undefined;
+  const initialPageId = typeof sp.page === 'string' ? sp.page : undefined;
+  // The cutover redirects /builder/brand → ?zone=theme and /builder/site →
+  // ?zone=layout (docs/builder/07 §2.2); the studio opens on that zone.
+  const initialZone = sp.zone === 'theme' || sp.zone === 'layout' ? sp.zone : undefined;
 
-    // The brand the studio authors: the tenant base for the primary site, else the
-    // base with this site's override applied (so a non-primary site shows ITS look).
-    const isPrimary = activeProperty?.isPrimary ?? true;
-    const effectiveBrand = isPrimary
-        ? baseBrand
-        : applyBrandOverride(baseBrand, activeProperty?.brandOverride);
+  // The brand the studio authors: the tenant base for the primary site, else the
+  // base with this site's override applied (so a non-primary site shows ITS look).
+  const isPrimary = activeProperty?.isPrimary ?? true;
+  const effectiveBrand = isPrimary
+    ? baseBrand
+    : applyBrandOverride(baseBrand, activeProperty?.brandOverride);
 
-    const [logoLight, logoDark, favicon] = await Promise.all([
-        resolveMediaUrl(effectiveBrand.logoLightMediaId),
-        resolveMediaUrl(effectiveBrand.logoDarkMediaId),
-        resolveMediaUrl(effectiveBrand.faviconMediaId),
-    ]);
+  const [logoLight, logoDark, favicon] = await Promise.all([
+    resolveMediaUrl(effectiveBrand.logoLightMediaId),
+    resolveMediaUrl(effectiveBrand.logoDarkMediaId),
+    resolveMediaUrl(effectiveBrand.faviconMediaId),
+  ]);
 
-    // The active site's per-site socials (docs/49) — stored on the Property settings.
-    const settingsSocials =
-        activeProperty &&
-            typeof activeProperty.settings === 'object' &&
-            activeProperty.settings !== null &&
-            Array.isArray((activeProperty.settings as { socials?: unknown }).socials)
-            ? ((activeProperty.settings as { socials?: { platform: string; url: string }[] }).socials ??
-                [])
-            : [];
-    const site: SiteDto = {
-        id: activeProperty?.id ?? '',
-        name: activeProperty?.name ?? baseBrand.businessName ?? '',
-        isPrimary,
-        socials: settingsSocials,
-    };
+  // The active site's per-site socials (docs/49) — stored on the Property settings.
+  const settingsSocials =
+    activeProperty &&
+    typeof activeProperty.settings === 'object' &&
+    activeProperty.settings !== null &&
+    Array.isArray((activeProperty.settings as { socials?: unknown }).socials)
+      ? ((activeProperty.settings as { socials?: { platform: string; url: string }[] }).socials ??
+        [])
+      : [];
+  const site: SiteDto = {
+    id: activeProperty?.id ?? '',
+    name: activeProperty?.name ?? baseBrand.businessName ?? '',
+    isPrimary,
+    socials: settingsSocials,
+  };
 
-    const siteOrigin = tenant.slug ? propertyOrigin(tenant.slug, activeProperty) : undefined;
-    const sitePreviewConfig: SitePreviewConfig = {
-        origin: propertyOrigin(tenant.slug, activeProperty),
-        tenantSlug: tenant.slug,
-        propertySlug: activeProperty?.slug ?? null,
-    };
-    const sitePreview = await getSitePreviewData(activeProperty?.slug);
-    const themeCss = canvasThemeCss(effectiveBrand, config);
+  const siteOrigin = tenant.slug ? propertyOrigin(tenant.slug, activeProperty) : undefined;
+  const sitePreviewConfig: SitePreviewConfig = {
+    origin: propertyOrigin(tenant.slug, activeProperty),
+    tenantSlug: tenant.slug,
+    propertySlug: activeProperty?.slug ?? null,
+  };
+  const sitePreview = await getSitePreviewData(activeProperty?.slug);
+  const themeCss = canvasThemeCss(effectiveBrand, config);
 
-    return (
-        <>
-            {themeCss ? <style dangerouslySetInnerHTML={{ __html: themeCss }} /> : null}
-            {/* Key on the active site id so switching sites (the breadcrumb switcher does a
+  return (
+    <>
+      {themeCss ? <style dangerouslySetInnerHTML={{ __html: themeCss }} /> : null}
+      {/* Key on the active site id so switching sites (the breadcrumb switcher does a
           soft router.refresh()) REMOUNTS the studio with the new site's identity —
           its layouts, pages, AND the Theme form. Without it, the client useState
           initializers keep the prior site's catalog/brand even though the server
           passes fresh props (docs/49 per-site brand; matches the retired brand editor). */}
-            <StudioApp
-                key={site.id || 'no-site'}
-                site={{
-                    initialLayouts: layouts,
-                    initialPages: pages,
-                    pageCatalog,
-                    components,
-                    archetypes,
-                    siteOrigin,
-                    sitePreview,
-                    initialPageId,
-                    initialZone,
-                    tenantSlug: tenant.slug,
-                    previewPropertySlug: activeProperty?.slug,
-                    theme: {
-                        brand: effectiveBrand,
-                        baseBrand,
-                        site,
-                        config,
-                        savedThemes,
-                        media: { logoLight, logoDark, favicon },
-                        sitePreview: sitePreviewConfig,
-                    },
-                }}
-            />
-        </>
-    );
+      <StudioApp
+        key={site.id || 'no-site'}
+        site={{
+          initialLayouts: layouts,
+          initialPages: pages,
+          pageCatalog,
+          components,
+          archetypes,
+          siteOrigin,
+          sitePreview,
+          initialPageId,
+          initialZone,
+          tenantSlug: tenant.slug,
+          previewPropertySlug: activeProperty?.slug,
+          theme: {
+            brand: effectiveBrand,
+            baseBrand,
+            site,
+            config,
+            savedThemes,
+            media: { logoLight, logoDark, favicon },
+            sitePreview: sitePreviewConfig,
+          },
+        }}
+      />
+    </>
+  );
 }

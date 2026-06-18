@@ -14,12 +14,19 @@ import {
   SelectValue,
 } from '@sparx/ui';
 import { createSource, updateSource } from '../_lib/actions';
+import {
+  SourceApiFields,
+  EMPTY_API_CONFIG,
+  apiConfigFromSource,
+  apiConfigToBody,
+  type ApiConfigState,
+} from './source-api-fields';
 
 interface Source {
   id: string;
   name: string;
   type: string;
-  config: Record<string, string>;
+  config: Record<string, unknown>;
   syncIntervalSec: number;
   notes: string | null;
 }
@@ -47,7 +54,13 @@ const INTERVAL_OPTIONS = [
 export function SourceForm({ source, onSuccess, onCancel }: Props) {
   const [name, setName] = useState(source?.name ?? '');
   const [type, setType] = useState(source?.type ?? 'csv');
-  const [csvUrl, setCsvUrl] = useState(source?.config?.csvUrl ?? '');
+  const [csvUrl, setCsvUrl] = useState(
+    typeof source?.config?.csvUrl === 'string' ? source.config.csvUrl : ''
+  );
+  const [apiConfig, setApiConfig] = useState<ApiConfigState>(
+    source?.type === 'api' ? apiConfigFromSource(source.config) : EMPTY_API_CONFIG
+  );
+  const hasApiKey = source?.config?.hasApiKey === true;
   const [interval, setInterval] = useState(String(source?.syncIntervalSec ?? 0));
   const [notes, setNotes] = useState(source?.notes ?? '');
 
@@ -64,11 +77,22 @@ export function SourceForm({ source, onSuccess, onCancel }: Props) {
       setError('CSV feed URL is required.');
       return;
     }
+    if (type === 'api') {
+      if (!apiConfig.endpoint.trim()) {
+        setError('API endpoint is required.');
+        return;
+      }
+      if (!apiConfig.skuField.trim() || !apiConfig.quantityField.trim()) {
+        setError('SKU field and Quantity field are required.');
+        return;
+      }
+    }
 
     setSubmitting(true);
     setError(null);
     try {
-      const config: Record<string, string> = type === 'csv' ? { csvUrl: csvUrl.trim() } : {};
+      const config: Record<string, unknown> =
+        type === 'csv' ? { csvUrl: csvUrl.trim() } : apiConfigToBody(apiConfig);
 
       const body = {
         name: name.trim(),
@@ -144,6 +168,10 @@ export function SourceForm({ source, onSuccess, onCancel }: Props) {
               <span className="font-mono">location</span>.
             </Text>
           </Stack>
+        )}
+
+        {type === 'api' && (
+          <SourceApiFields value={apiConfig} onChange={setApiConfig} hasApiKey={hasApiKey} />
         )}
 
         <Stack gap={2}>

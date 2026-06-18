@@ -18,6 +18,7 @@ import { inventoryService } from '@sparx/inventory';
 import type { FeedRow } from '@sparx/inventory';
 import { publishEvent, createPublisher, type PublisherLogger } from '@sparx/events';
 import { parseCsvInventory } from '../csv.js';
+import { fetchApiRows } from '../adapters/http-api.js';
 import { env } from '../env.js';
 
 const pubLogger: PublisherLogger = {
@@ -56,16 +57,17 @@ export async function handleSyncStarted(payload: SyncStartedPayload, log: Logger
   try {
     let summary: { rowsTotal: number; rowsChanged: number; rowsUnmatched: number } | null = null;
 
-    if (source.type === 'csv') {
-      const cfg =
-        typeof source.config === 'object' && source.config !== null && !Array.isArray(source.config)
-          ? (source.config as Record<string, unknown>)
-          : {};
-      const rows = await fetchCsvRows(sourceId, cfg, log);
+    const cfg = asConfig(source.config);
+    const rows = await fetchFeedRows(source.type, sourceId, cfg, log);
+
+    if (rows !== null) {
       const result = await inventoryService.ingestFeed(ctx, {
         source: { id: source.id, name: source.name },
         rows,
         trigger: payload.trigger ?? 'manual',
+        // A full pull (CSV export or a complete API page-through) is the source's
+        // entire stock list, so a mapped link that's absent can be flagged stale.
+        fullSnapshot: true,
       });
       summary = {
         rowsTotal: result.rowsTotal,
@@ -108,6 +110,32 @@ export async function handleSyncStarted(payload: SyncStartedPayload, log: Logger
     ).catch(() => undefined);
 
     throw err;
+  }
+}
+
+/** Normalize a source's opaque JSON config into a plain record. */
+function asConfig(config: unknown): Record<string, unknown> {
+  return typeof config === 'object' && config !== null && !Array.isArray(config)
+    ? (config as Record<string, unknown>)
+    : {};
+}
+
+/** Pick the adapter by source type and fetch its feed. Returns null for an
+ *  unsupported type (the caller logs + skips). Each tier produces the same
+ *  normalized FeedRow[] — only the transport differs (docs/28). */
+async function fetchFeedRows(
+  type: string,
+  sourceId: string,
+  config: Record<string, unknown>,
+  log: Logger
+): Promise<FeedRow[] | null> {
+  switch (type) {
+    case 'csv':
+      return fetchCsvRows(sourceId, config, log);
+    case 'api':
+      return fetchApiRows(sourceId, config, log);
+    default:
+      return null;
   }
 }
 

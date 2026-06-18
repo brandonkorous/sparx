@@ -27,6 +27,7 @@ export interface SyncRunRow {
   rowsUnchanged: number;
   rowsUnmatched: number;
   rowsSkipped: number;
+  rowsStale: number;
   error: string | null;
   startedAt: string;
   finishedAt: string | null;
@@ -40,6 +41,7 @@ export interface SyncHealth {
   recentRuns: SyncRunRow[];
   pendingUnmappedCount: number;
   activeLinkCount: number;
+  staleLinkCount: number;
 }
 
 export interface UnmappedSkuRow {
@@ -61,8 +63,20 @@ export interface SourceLinkRow {
   externalSku: string;
   externalLocation: string | null;
   status: string;
+  externalUom: string | null;
+  unitsPerExternal: number;
+  safetyBuffer: number;
+  isStale: boolean;
+  lastSeenAt: string | null;
   variant: { id: string; sku: string; title: string | null } | null;
   warehouse: { id: string; name: string; code: string } | null;
+}
+
+/** Controls a mapping carries — UoM conversion + the oversell safety buffer. */
+export interface MappingControls {
+  externalUom?: string | null;
+  unitsPerExternal?: number;
+  safetyBuffer?: number;
 }
 
 export interface WarehouseOption {

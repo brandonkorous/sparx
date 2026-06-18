@@ -14,6 +14,8 @@
 export interface AvailabilityLevel {
   onHand: number;
   allocated: number;
+  /** Units withheld from sale at this level (docs/28 §5.3 oversell guard). 0 when absent. */
+  safetyBuffer?: number;
 }
 
 export interface VariantAvailability {
@@ -36,7 +38,10 @@ export function computeAvailability(
   if (!opts.inventoryActive) {
     return { available: null, inStock: true, tracked: false };
   }
-  const available = levels.reduce((sum, l) => sum + Math.max(0, l.onHand - l.allocated), 0);
+  const available = levels.reduce(
+    (sum, l) => sum + Math.max(0, l.onHand - l.allocated - (l.safetyBuffer ?? 0)),
+    0
+  );
   return {
     available,
     inStock: available > 0 || inventoryPolicy !== 'deny',

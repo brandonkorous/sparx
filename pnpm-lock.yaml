@@ -2338,6 +2338,9 @@ importers:
       '@prisma/client':
         specifier: ^6.19.3
         version: 6.19.3(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3)
+      '@sparx/commerce-schemas':
+        specifier: workspace:*
+        version: link:../../packages/commerce-schemas
       '@sparx/db':
         specifier: workspace:*
         version: link:../../packages/db

@@ -21,6 +21,7 @@ export {
   levelsForVariant,
   levelsForWarehouse,
   setReorderPolicy,
+  setSafetyBuffer,
   listLowStock,
 } from './levels';
 export type { InventoryLevelRow, LowStockRow } from './levels';
@@ -73,6 +74,7 @@ export {
   listSyncRuns,
   getSyncHealth,
   listUnmappedSkus,
+  createSourceLink,
   mapUnmappedSku,
   ignoreUnmappedSku,
 } from './sync-runs';

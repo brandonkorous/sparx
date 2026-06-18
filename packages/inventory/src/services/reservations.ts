@@ -33,6 +33,7 @@ export interface ReservationResult {
 interface LockedLevel {
   on_hand: number;
   allocated: number;
+  safety_buffer: number;
 }
 
 /**
@@ -73,7 +74,7 @@ export async function reserveOnTx(
     ON CONFLICT (variant_id, warehouse_id) DO NOTHING
   `;
   const locked = await tx.$queryRaw<LockedLevel[]>`
-    SELECT on_hand, allocated
+    SELECT on_hand, allocated, safety_buffer
     FROM inventory_levels
     WHERE variant_id = ${input.variantId}::uuid AND warehouse_id = ${warehouseId}::uuid
     FOR UPDATE
@@ -83,7 +84,9 @@ export async function reserveOnTx(
     throw new InventoryValidationError('Inventory level not found while reserving stock');
   }
 
-  const available = current.on_hand - current.allocated;
+  // Net the safety buffer (docs/28 §5.3): the last N units are withheld from sale,
+  // so a `deny` variant can't be reserved into the buffer.
+  const available = current.on_hand - current.allocated - current.safety_buffer;
   if (available < input.quantity && variant.inventoryPolicy === 'deny') {
     throw new InventoryOutOfStockError(input.variantId, input.quantity, Math.max(0, available));
   }
@@ -296,12 +299,16 @@ export async function pickWarehouseFor(
     return list.includes(channel);
   });
 
-  // Available stock for this variant across the candidate warehouses.
+  // Available stock for this variant across the candidate warehouses, net of each
+  // level's safety buffer (the allocator won't pick a warehouse it can only fill
+  // by dipping into the withheld buffer).
   const levels = await tx.inventoryLevel.findMany({
     where: { variantId: input.variantId, warehouseId: { in: candidates.map((w) => w.id) } },
-    select: { warehouseId: true, onHand: true, allocated: true },
+    select: { warehouseId: true, onHand: true, allocated: true, safetyBuffer: true },
   });
-  const availableBy = new Map(levels.map((l) => [l.warehouseId, l.onHand - l.allocated]));
+  const availableBy = new Map(
+    levels.map((l) => [l.warehouseId, l.onHand - l.allocated - l.safetyBuffer])
+  );
   const canFulfill = (id: string): boolean => (availableBy.get(id) ?? 0) >= input.quantity;
 
   // (a) channel-default warehouse that can fulfill, richest first.

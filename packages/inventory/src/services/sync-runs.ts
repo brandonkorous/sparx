@@ -12,11 +12,13 @@
 // tenants' rows in tests (defense-in-depth; prod is fine via `sparx_app`).
 
 import { withTenant } from '@sparx/db';
-import type { Prisma } from '@sparx/db';
-import type { MapUnmappedSkuInput } from '@sparx/commerce-schemas';
+import type { Prisma, TxClient } from '@sparx/db';
+import type { CreateSourceLinkInput, MapUnmappedSkuInput } from '@sparx/commerce-schemas';
 
 import { InventoryConflictError, InventoryNotFoundError } from '../errors';
 import type { ServiceContext } from '../errors';
+
+import { setSafetyBufferOnTx } from './levels';
 
 export interface SyncRunRow {
   id: string;
@@ -28,6 +30,7 @@ export interface SyncRunRow {
   rowsUnchanged: number;
   rowsUnmatched: number;
   rowsSkipped: number;
+  rowsStale: number;
   error: string | null;
   startedAt: string;
   finishedAt: string | null;
@@ -57,6 +60,8 @@ export interface SyncHealth {
   recentRuns: SyncRunRow[];
   pendingUnmappedCount: number;
   activeLinkCount: number;
+  /** Active links whose external SKU stopped appearing in full-snapshot syncs. */
+  staleLinkCount: number;
 }
 
 export interface ListSyncRunsFilter {
@@ -85,6 +90,7 @@ function serializeRun(r: RunRecord): SyncRunRow {
     rowsUnchanged: r.rowsUnchanged,
     rowsUnmatched: r.rowsUnmatched,
     rowsSkipped: r.rowsSkipped,
+    rowsStale: r.rowsStale,
     error: r.error,
     startedAt: r.startedAt.toISOString(),
     finishedAt: r.finishedAt ? r.finishedAt.toISOString() : null,
@@ -120,7 +126,7 @@ export async function getSyncHealth(ctx: ServiceContext, sourceId: string): Prom
     });
     if (!source) throw new InventoryNotFoundError('InventorySource', sourceId);
 
-    const [recent, pendingUnmappedCount, activeLinkCount] = await Promise.all([
+    const [recent, pendingUnmappedCount, activeLinkCount, staleLinkCount] = await Promise.all([
       tx.inventorySyncRun.findMany({
         where: { tenantId: ctx.tenantId, sourceId },
         orderBy: { startedAt: 'desc' },
@@ -131,6 +137,9 @@ export async function getSyncHealth(ctx: ServiceContext, sourceId: string): Prom
       }),
       tx.inventorySourceLink.count({
         where: { tenantId: ctx.tenantId, sourceId, status: 'active' },
+      }),
+      tx.inventorySourceLink.count({
+        where: { tenantId: ctx.tenantId, sourceId, status: 'active', isStale: true },
       }),
     ]);
 
@@ -143,6 +152,7 @@ export async function getSyncHealth(ctx: ServiceContext, sourceId: string): Prom
       recentRuns,
       pendingUnmappedCount,
       activeLinkCount,
+      staleLinkCount,
     };
   });
 }
@@ -200,6 +210,121 @@ export async function listUnmappedSkus(
   });
 }
 
+interface CreateLinkData {
+  sourceId: string;
+  variantId: string;
+  warehouseId: string;
+  externalSku: string;
+  externalLocation: string | null;
+  externalUom?: string | null;
+  unitsPerExternal?: number;
+  safetyBuffer?: number;
+}
+
+/**
+ * Mint a source mapping (link) inside an existing tx. Enforces the conflict rules
+ * (docs/28 §6): the source must exist, the variant/warehouse must exist, ONE source
+ * per variant (a variant already claimed by a different source is rejected), and no
+ * duplicate (external SKU, location) on the source. UoM fields land on the link; a
+ * provided safety buffer is written to the (variant, warehouse) level.
+ */
+async function createSourceLinkOnTx(
+  tx: TxClient,
+  ctx: ServiceContext,
+  data: CreateLinkData
+): Promise<{ linkId: string }> {
+  const source = await tx.inventorySource.findFirst({
+    where: { id: data.sourceId, tenantId: ctx.tenantId, deletedAt: null },
+    select: { id: true },
+  });
+  if (!source) throw new InventoryNotFoundError('InventorySource', data.sourceId);
+
+  const variant = await tx.productVariant.findFirst({
+    where: { id: data.variantId, tenantId: ctx.tenantId },
+    select: { id: true },
+  });
+  if (!variant) throw new InventoryNotFoundError('ProductVariant', data.variantId);
+  const warehouse = await tx.warehouse.findFirst({
+    where: { id: data.warehouseId, tenantId: ctx.tenantId, deletedAt: null },
+    select: { id: true },
+  });
+  if (!warehouse) throw new InventoryNotFoundError('Warehouse', data.warehouseId);
+
+  // One source per variant — a variant already linked from a DIFFERENT source can't
+  // be claimed here (the same source may map it across warehouses).
+  const claimedElsewhere = await tx.inventorySourceLink.findFirst({
+    where: {
+      tenantId: ctx.tenantId,
+      variantId: data.variantId,
+      status: 'active',
+      sourceId: { not: data.sourceId },
+    },
+    select: { id: true },
+  });
+  if (claimedElsewhere) {
+    throw new InventoryConflictError(
+      'This item is already linked to another inventory source — one source per item.'
+    );
+  }
+
+  const dup = await tx.inventorySourceLink.findFirst({
+    where: {
+      tenantId: ctx.tenantId,
+      sourceId: data.sourceId,
+      externalSku: data.externalSku,
+      externalLocation: data.externalLocation,
+    },
+    select: { id: true },
+  });
+  if (dup) {
+    throw new InventoryConflictError('A link already exists for this SKU/location on this source');
+  }
+
+  const link = await tx.inventorySourceLink.create({
+    data: {
+      tenantId: ctx.tenantId,
+      sourceId: data.sourceId,
+      variantId: data.variantId,
+      warehouseId: data.warehouseId,
+      externalSku: data.externalSku,
+      externalLocation: data.externalLocation,
+      ...(data.externalUom !== undefined ? { externalUom: data.externalUom } : {}),
+      ...(data.unitsPerExternal !== undefined ? { unitsPerExternal: data.unitsPerExternal } : {}),
+    },
+    select: { id: true },
+  });
+
+  if (data.safetyBuffer !== undefined) {
+    await setSafetyBufferOnTx(tx, ctx, {
+      variantId: data.variantId,
+      warehouseId: data.warehouseId,
+      safetyBuffer: data.safetyBuffer,
+    });
+  }
+
+  return { linkId: link.id };
+}
+
+/** Create a source mapping by hand (the SKU-mappings panel + the links route). */
+export async function createSourceLink(
+  ctx: ServiceContext,
+  sourceId: string,
+  input: CreateSourceLinkInput
+): Promise<{ linkId: string }> {
+  return withTenant(ctx, (tx) =>
+    createSourceLinkOnTx(tx, ctx, {
+      sourceId,
+      variantId: input.variantId,
+      warehouseId: input.warehouseId,
+      externalSku: input.externalSku,
+      externalLocation: input.externalLocation,
+      externalUom: input.externalUom ?? null,
+      unitsPerExternal: input.unitsPerExternal,
+      safetyBuffer: input.safetyBuffer,
+    })
+  );
+}
+
 /** Bind an unmapped external SKU to a (variant, warehouse): mints an
  *  InventorySourceLink (so the next sync matches it) and clears the queue row. */
 export async function mapUnmappedSku(
@@ -213,45 +338,18 @@ export async function mapUnmappedSku(
     });
     if (!unmapped) throw new InventoryNotFoundError('InventoryUnmappedSku', unmappedId);
 
-    const variant = await tx.productVariant.findFirst({
-      where: { id: input.variantId, tenantId: ctx.tenantId },
-      select: { id: true },
-    });
-    if (!variant) throw new InventoryNotFoundError('ProductVariant', input.variantId);
-    const warehouse = await tx.warehouse.findFirst({
-      where: { id: input.warehouseId, tenantId: ctx.tenantId, deletedAt: null },
-      select: { id: true },
-    });
-    if (!warehouse) throw new InventoryNotFoundError('Warehouse', input.warehouseId);
-
-    const dup = await tx.inventorySourceLink.findFirst({
-      where: {
-        tenantId: ctx.tenantId,
-        sourceId: unmapped.sourceId,
-        externalSku: unmapped.externalSku,
-        externalLocation: unmapped.externalLocation,
-      },
-      select: { id: true },
-    });
-    if (dup) {
-      throw new InventoryConflictError(
-        'A link already exists for this SKU/location on this source'
-      );
-    }
-
-    const link = await tx.inventorySourceLink.create({
-      data: {
-        tenantId: ctx.tenantId,
-        sourceId: unmapped.sourceId,
-        variantId: input.variantId,
-        warehouseId: input.warehouseId,
-        externalSku: unmapped.externalSku,
-        externalLocation: unmapped.externalLocation,
-      },
-      select: { id: true },
+    const result = await createSourceLinkOnTx(tx, ctx, {
+      sourceId: unmapped.sourceId,
+      variantId: input.variantId,
+      warehouseId: input.warehouseId,
+      externalSku: unmapped.externalSku,
+      externalLocation: unmapped.externalLocation,
+      externalUom: input.externalUom ?? null,
+      unitsPerExternal: input.unitsPerExternal,
+      safetyBuffer: input.safetyBuffer,
     });
     await tx.inventoryUnmappedSku.delete({ where: { id: unmapped.id } });
-    return { linkId: link.id };
+    return result;
   });
 }
 

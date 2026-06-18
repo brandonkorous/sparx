@@ -29,11 +29,10 @@ import type { AppearancePolicy } from '../lib/types';
 import { contrastRatio, rateContrast } from '../lib/brand-preview';
 import {
   BORDER_OPTIONS,
-  CORNER_OPTIONS,
   DEPTH_OPTIONS,
+  RADIUS_SCALE,
   SIZE_OPTIONS,
   SPACING_OPTIONS,
-  cornerKeyOf,
   sizeKeyOf,
   type BrandTokens,
 } from '../lib/brand-feel';
@@ -227,25 +226,29 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
   );
 
   // ── Brand shape/rhythm/effect knobs (map preset keys ↔ token doc) ──────────
-  const cornerKey = cornerKeyOf(tokens) || INHERIT;
+  // Corners are dialed per-axis (daisyUI parity): boxes / fields / selectors each
+  // own a radius token, so the value IS the token value (no preset round-trip).
+  const boxKey = tokens.shape?.radiusBox ?? INHERIT;
+  const fieldKey = tokens.shape?.radiusField ?? INHERIT;
+  const selectorKey = tokens.shape?.radiusSelector ?? INHERIT;
   const borderKey = tokens.shape?.borderWidth ?? INHERIT;
   const spacingKey = tokens.rhythm?.spaceBase ?? INHERIT;
   const sizeKey = sizeKeyOf(tokens) || INHERIT;
   const depthKey = tokens.effect?.depth != null ? String(tokens.effect.depth) : INHERIT;
 
-  const setCorner = (key: string) =>
-    setTokens((t) => {
-      const o = CORNER_OPTIONS.find((c) => c.key === key);
-      const borderWidth = t.shape?.borderWidth;
-      return {
-        ...t,
-        shape: o
-          ? { ...t.shape, radiusSelector: o.selector, radiusField: o.field, radiusBox: o.box }
-          : borderWidth != null
-            ? { borderWidth }
-            : undefined,
-      };
-    });
+  // One radius axis → its token; "Auto" (INHERIT) clears just that axis and leaves
+  // the other shape knobs intact (mirrors setBorder).
+  const setRadius =
+    (axis: 'radiusBox' | 'radiusField' | 'radiusSelector') => (key: string) =>
+      setTokens((t) => {
+        const next = { ...t.shape };
+        if (key === INHERIT) delete next[axis];
+        else next[axis] = key;
+        return { ...t, shape: Object.keys(next).length ? next : undefined };
+      });
+  const setBox = setRadius('radiusBox');
+  const setField = setRadius('radiusField');
+  const setSelector = setRadius('radiusSelector');
   const setBorder = (key: string) =>
     setTokens((t) => {
       const next = { ...t.shape };
@@ -444,12 +447,31 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
           visible and one tap away — no dropdowns. "Auto" clears the brand
           override and follows the theme preset. */}
       <Section title="Shape & feel">
+        {/* Corners, daisyUI-style: three independent radius tokens. Every site-ui
+            component reads its matching --st-radius-* token, so each control
+            cascades site-wide; per-node `rounded-*` still overrides. */}
         <Segmented
-          label="Corners"
-          help="Roundness of buttons, inputs, and cards."
-          value={cornerKey}
-          options={CORNER_OPTIONS}
-          onChange={setCorner}
+          label="Box corners"
+          help="Cards, modals, alerts, media."
+          value={boxKey}
+          options={RADIUS_SCALE}
+          onChange={setBox}
+          includeAuto
+        />
+        <Segmented
+          label="Field corners"
+          help="Buttons, inputs, selects, tabs."
+          value={fieldKey}
+          options={RADIUS_SCALE}
+          onChange={setField}
+          includeAuto
+        />
+        <Segmented
+          label="Selector corners"
+          help="Checkboxes, toggles, badges."
+          value={selectorKey}
+          options={RADIUS_SCALE}
+          onChange={setSelector}
           includeAuto
         />
         <Segmented

@@ -17,6 +17,7 @@
   "dependencies": {
     "@google-cloud/pubsub": "^5.3.0",
     "@prisma/client": "^6.19.3",
+    "@sparx/commerce-schemas": "workspace:*",
     "@sparx/db": "workspace:*",
     "@sparx/events": "workspace:*",
     "@sparx/inventory": "workspace:*",

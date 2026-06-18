@@ -31,7 +31,7 @@ export interface BoxStyle {
   backgroundWidth?: 'full' | 'contained';
   /** Does the CONTENT span full width or sit in the centered `max-w-site` column. */
   contentWidth?: 'full' | 'contained';
-  surface?: 'none' | 'subtle' | 'muted' | 'inverse' | 'brand';
+  surface?: 'none' | 'subtle' | 'muted' | 'inverse' | 'brand' | 'accent' | 'secondary';
   padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
   /** Text alignment of the block's content. */
   align?: 'start' | 'center' | 'end';
@@ -108,6 +108,8 @@ const SURFACE_CLASS: Record<NonNullable<BoxStyle['surface']>, string> = {
   muted: 'bg-base-300',
   inverse: 'bg-neutral text-neutral-content',
   brand: 'bg-primary text-primary-content',
+  accent: 'bg-accent text-accent-content',
+  secondary: 'bg-secondary text-secondary-content',
 };
 
 // Section heights as viewport fractions (arbitrary values are allowed by the
@@ -265,6 +267,10 @@ const LEGACY_BUTTON_STYLE_CLASS: Record<string, string> = {
   dark: 'st-c-neutral st-v-glass',
   glass: 'st-c-surface st-v-glass',
   link: 'st-c-primary st-v-link',
+  // The accent/secondary brand roles (parity with the editor's Background control
+  // + the recipe color set): a solid berry/secondary CTA the seed vocabulary can name.
+  accent: 'st-c-accent st-v-solid',
+  secondary: 'st-c-secondary st-v-solid',
 };
 
 /** The class-first recipe class for a legacy Button `style` value (default
