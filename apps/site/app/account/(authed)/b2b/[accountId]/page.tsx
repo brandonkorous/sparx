@@ -7,12 +7,11 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 
-import { SparxAlert, SparxBadge, SparxButton } from '@sparx/site-ui';
+import { SparxAlert, SparxButton } from '@sparx/site-ui';
 
 import { useCustomer } from '@/components/customer-provider';
 import { getB2bSummary, type B2bPortalSummary } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
-import { statusColor } from '@/lib/status-badge';
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -63,9 +62,9 @@ export default function B2bAccountPage() {
           </p>
         </div>
         {account.status !== 'active' && (
-          <SparxBadge color={statusColor(account.status)}>
+          <span className="st-badge" data-status={account.status}>
             {account.status.replace('_', ' ')}
-          </SparxBadge>
+          </span>
         )}
       </div>
 
@@ -132,9 +131,9 @@ export default function B2bAccountPage() {
           <Link href={`/account/b2b/${accountId}/invoices`}>
             Invoices
             {invoiceSummary.unpaidCount + invoiceSummary.overdueCount > 0 && (
-              <SparxBadge color="danger" style={{ marginLeft: '0.5rem' }}>
+              <span className="st-badge st-badge--danger" style={{ marginLeft: '0.5rem' }}>
                 {invoiceSummary.unpaidCount + invoiceSummary.overdueCount}
-              </SparxBadge>
+              </span>
             )}
           </Link>
         </SparxButton>
@@ -175,7 +174,9 @@ export default function B2bAccountPage() {
                   </span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <SparxBadge color={statusColor(o.status)}>{o.status}</SparxBadge>
+                  <span className="st-badge" data-status={o.status}>
+                    {o.status}
+                  </span>
                   <strong>{formatMoney(o.totalCents, o.currency)}</strong>
                 </div>
               </div>

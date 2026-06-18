@@ -50,6 +50,11 @@ import {
   type PublishedSnapshot,
 } from '@/lib/site';
 
+// MUST be first: declares the cascade-layer order so `st-legacy` (the legacy
+// site.css defaults) ranks BENEATH site-ui's `components` layer. Without this,
+// unlayered/late-registered legacy rules shadow site-ui and silently break every
+// themeable control. See layers.css.
+import './layers.css';
 import './globals.css';
 import './site.css';
 // The custom-section template primitives (st-tpl-*), shared with the dashboard

@@ -1,5 +1,5 @@
 // Product tile for the PLP, collections, search, and "related" rails.
-// Token-driven via the .st-tile classes in site.css so tenant theme
+// Token-driven via the .st-card classes in site.css so tenant theme
 // overrides flow through automatically.
 
 import Image from 'next/image';
@@ -30,12 +30,10 @@ export function ProductCard({
     product.compareAtCents > product.priceMinCents;
 
   return (
-    <Link href={`/products/${product.handle}`} className="st-tile">
-      <div className="st-tile__media">
-        {onSale ? <span className="st-tile__badge st-tile__badge--sale">Sale</span> : null}
-        {!product.inStock ? (
-          <span className="st-tile__badge st-tile__badge--out">Sold out</span>
-        ) : null}
+    <Link href={`/products/${product.handle}`} className="st-card">
+      <div className="st-card__media">
+        {onSale ? <span className="st-badge st-badge--sale">Sale</span> : null}
+        {!product.inStock ? <span className="st-badge st-badge--out">Sold out</span> : null}
         {img ? (
           <Image
             src={img}
@@ -45,14 +43,14 @@ export function ProductCard({
             style={{ objectFit: 'cover' }}
           />
         ) : (
-          <div className="st-tile__media st-tile__media--empty" aria-hidden="true">
+          <div className="st-card__media st-card__media--empty" aria-hidden="true">
             <span style={{ fontSize: '2rem' }}>◳</span>
           </div>
         )}
       </div>
-      <div className="st-tile__body">
-        {product.vendor ? <span className="st-tile__vendor">{product.vendor}</span> : null}
-        <span className="st-tile__title">{product.title}</span>
+      <div className="st-card__body">
+        {product.vendor ? <span className="st-card__vendor">{product.vendor}</span> : null}
+        <span className="st-card__title">{product.title}</span>
         {product.reviewCount > 0 && product.averageRating != null ? (
           <RatingStars rating={product.averageRating} count={product.reviewCount} compact />
         ) : null}
@@ -84,10 +82,10 @@ function PriceLine({
   const range = formatPriceRange(min, max, currency, locale);
   if (!range) return null;
   return (
-    <span className="st-tile__price">
+    <span className="st-card__price">
       {range}
       {compareAt != null ? (
-        <span className="st-tile__compare">{formatMoney(compareAt, currency, locale)}</span>
+        <span className="st-card__compare">{formatMoney(compareAt, currency, locale)}</span>
       ) : null}
     </span>
   );

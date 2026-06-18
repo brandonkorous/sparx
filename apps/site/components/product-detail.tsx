@@ -178,7 +178,7 @@ export function ProductDetail({
               style={{ objectFit: 'cover' }}
             />
           ) : (
-            <div className="st-tile__media--empty" style={{ height: '100%' }} aria-hidden="true">
+            <div className="st-card__media--empty" style={{ height: '100%' }} aria-hidden="true">
               <span style={{ fontSize: '3rem' }}>◳</span>
             </div>
           )}
@@ -211,7 +211,7 @@ export function ProductDetail({
 
       {/* Info */}
       <div className="st-pdp__info">
-        {product.vendor ? <span className="st-tile__vendor">{product.vendor}</span> : null}
+        {product.vendor ? <span className="st-card__vendor">{product.vendor}</span> : null}
         <h1 className="st-h1" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.25rem)' }}>
           {product.title}
         </h1>
@@ -221,7 +221,7 @@ export function ProductDetail({
             ? formatMoney(priceCents, currency, locale)
             : formatPriceRange(product.priceMinCents, product.priceMaxCents, currency, locale)}
           {onSale ? (
-            <span className="st-tile__compare" style={{ fontSize: '1rem' }}>
+            <span className="st-card__compare" style={{ fontSize: '1rem' }}>
               {formatMoney(compareAt, currency, locale)}
             </span>
           ) : null}

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 
-import { SparxAlert, SparxBadge, SparxButton } from '@sparx/site-ui';
+import { SparxAlert, SparxButton } from '@sparx/site-ui';
 
 import { useCustomer } from '@/components/customer-provider';
 import {
@@ -14,7 +14,6 @@ import {
   cancelB2bAppointment,
   type B2bAppointmentEntry,
 } from '@/lib/customer-client';
-import { statusColor } from '@/lib/status-badge';
 
 const PAGE_SIZE = 20;
 
@@ -148,9 +147,9 @@ export default function B2bAppointmentsPage() {
                       flexShrink: 0,
                     }}
                   >
-                    <SparxBadge color={statusColor(a.status)}>
+                    <span className="st-badge" data-status={a.status}>
                       {STATUS_LABEL[a.status] ?? a.status}
-                    </SparxBadge>
+                    </span>
                     {canCancel && (
                       <SparxButton
                         type="button"

@@ -6,12 +6,11 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 
-import { SparxAlert, SparxBadge, SparxButton } from '@sparx/site-ui';
+import { SparxAlert, SparxButton } from '@sparx/site-ui';
 
 import { useCustomer } from '@/components/customer-provider';
 import { getB2bOrders, type B2bOrderEntry } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
-import { statusColor } from '@/lib/status-badge';
 
 const PAGE_SIZE = 20;
 
@@ -92,7 +91,9 @@ export default function B2bOrdersPage() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <SparxBadge color={statusColor(o.status)}>{o.status}</SparxBadge>
+                  <span className="st-badge" data-status={o.status}>
+                    {o.status}
+                  </span>
                   <strong style={{ whiteSpace: 'nowrap' }}>
                     {formatMoney(o.totalCents, o.currency)}
                   </strong>
