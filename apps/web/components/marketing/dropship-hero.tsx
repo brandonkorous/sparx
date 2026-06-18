@@ -25,12 +25,7 @@ const MONO = 'var(--font-mono)';
 export function DropshipHero() {
   const lede =
     'Connect a supplier, import their catalog, set a markup rule. When an order comes in, sparx routes it to the right supplier automatically, pulls back tracking, and emails the customer — all without you touching a box. Sell without holding inventory, on a real platform where suppliers, products, and orders live in one place.';
-  const chips = [
-    'supplier connectors',
-    'auto order routing',
-    'margin rules',
-    'tracking sync',
-  ];
+  const chips = ['supplier connectors', 'auto order routing', 'margin rules', 'tracking sync'];
   return (
     <section
       style={{
@@ -132,138 +127,157 @@ function RoutedOrderCard({ business }: { business: ExampleBusiness }) {
         overflow: 'hidden',
       }}
     >
+      <RoutedHeader d={d} customerName={customer.name} />
+      <RoutedProfit d={d} />
+      <RoutedTracking d={d} />
+    </div>
+  );
+}
+
+type D = ExampleBusiness['dropship'];
+
+function RoutedHeader({ d, customerName }: { d: D; customerName: string }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '16px 20px',
+        borderBottom: '1px solid var(--color-border-default)',
+      }}
+    >
+      <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <Dot color={M.color} size={9} />
+        <span>
+          <span style={{ fontFamily: SANS, fontWeight: 500, fontSize: '14px' }}>
+            {d.routed.number}
+          </span>
+          <br />
+          <span style={{ fontFamily: SANS, fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
+            {customerName} · routed to {d.supplier}
+          </span>
+        </span>
+      </span>
+      <span
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '7px',
+          padding: '5px 11px',
+          borderRadius: '9999px',
+          backgroundColor: M.tint,
+          color: M.text,
+          fontFamily: SANS,
+          fontSize: '12px',
+          fontWeight: 500,
+          flexShrink: 0,
+        }}
+      >
+        <Dot color={M.color} size={6} /> {d.routed.status}
+      </span>
+    </div>
+  );
+}
+
+function RoutedProfit({ d }: { d: D }) {
+  const cells: [string, string][] = [
+    [d.routed.revenue, 'revenue'],
+    [d.routed.cost, 'supplier cost'],
+    [d.routed.profit, 'your profit'],
+  ];
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        borderBottom: '1px solid var(--color-border-default)',
+      }}
+    >
+      {cells.map(([v, l], i) => (
+        <div
+          key={l}
+          style={{
+            padding: '14px 16px',
+            borderLeft: i === 0 ? 'none' : '1px solid var(--color-bg-subtle)',
+          }}
+        >
+          <div
+            style={{
+              fontFamily: SANS,
+              fontWeight: 500,
+              fontSize: '17px',
+              letterSpacing: '-0.01em',
+              color: i === 2 ? M.text : 'var(--color-text-primary)',
+            }}
+          >
+            {v}
+          </div>
+          <div
+            style={{
+              fontFamily: MONO,
+              fontSize: '11px',
+              color: 'var(--color-text-tertiary)',
+              marginTop: '2px',
+            }}
+          >
+            {l}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function RoutedTracking({ d }: { d: D }) {
+  return (
+    <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '16px 20px',
-          borderBottom: '1px solid var(--color-border-default)',
+          gap: '10px',
+          padding: '12px 14px',
+          backgroundColor: 'var(--color-bg-page)',
+          border: '1px solid var(--color-border-default)',
+          borderRadius: '10px',
         }}
       >
-        <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Dot color={M.color} size={9} />
-          <span>
-            <span style={{ fontFamily: SANS, fontWeight: 500, fontSize: '14px' }}>
-              {d.routed.number}
-            </span>
-            <br />
-            <span style={{ fontFamily: SANS, fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
-              {customer.name} · routed to {d.supplier}
-            </span>
+        <TruckIcon size={16} color={M.text} />
+        <span style={{ minWidth: 0 }}>
+          <span
+            style={{
+              display: 'block',
+              fontFamily: SANS,
+              fontSize: '13px',
+              fontWeight: 500,
+              color: 'var(--color-text-primary)',
+            }}
+          >
+            {d.routed.carrier}
+          </span>
+          <span style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
+            {d.routed.tracking}
           </span>
         </span>
         <span
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '7px',
-            padding: '5px 11px',
-            borderRadius: '9999px',
-            backgroundColor: M.tint,
-            color: M.text,
+            marginLeft: 'auto',
             fontFamily: SANS,
-            fontSize: '12px',
+            fontSize: '11.5px',
             fontWeight: 500,
+            color: M.text,
             flexShrink: 0,
           }}
         >
-          <Dot color={M.color} size={6} /> {d.routed.status}
+          sent to customer
         </span>
       </div>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          borderBottom: '1px solid var(--color-border-default)',
-        }}
-      >
-        {(
-          [
-            [d.routed.revenue, 'revenue'],
-            [d.routed.cost, 'supplier cost'],
-            [d.routed.profit, 'your profit'],
-          ] as [string, string][]
-        ).map(([v, l], i) => (
-          <div
-            key={l}
-            style={{
-              padding: '14px 16px',
-              borderLeft: i === 0 ? 'none' : '1px solid var(--color-bg-subtle)',
-            }}
-          >
-            <div
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '17px',
-                letterSpacing: '-0.01em',
-                color: i === 2 ? M.text : 'var(--color-text-primary)',
-              }}
-            >
-              {v}
-            </div>
-            <div
-              style={{
-                fontFamily: MONO,
-                fontSize: '11px',
-                color: 'var(--color-text-tertiary)',
-                marginTop: '2px',
-              }}
-            >
-              {l}
-            </div>
-          </div>
-        ))}
-      </div>
-      <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            padding: '12px 14px',
-            backgroundColor: 'var(--color-bg-page)',
-            border: '1px solid var(--color-border-default)',
-            borderRadius: '10px',
-          }}
-        >
-          <TruckIcon size={16} color={M.text} />
-          <span style={{ minWidth: 0 }}>
-            <span
-              style={{
-                display: 'block',
-                fontFamily: SANS,
-                fontSize: '13px',
-                fontWeight: 500,
-                color: 'var(--color-text-primary)',
-              }}
-            >
-              {d.routed.carrier}
-            </span>
-            <span style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
-              {d.routed.tracking}
-            </span>
-          </span>
-          <span
-            style={{
-              marginLeft: 'auto',
-              fontFamily: SANS,
-              fontSize: '11.5px',
-              fontWeight: 500,
-              color: M.text,
-              flexShrink: 0,
-            }}
-          >
-            sent to customer
-          </span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
-          <Dot color={M.color} size={6} />
-          <span style={{ fontFamily: MONO, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}>
-            {d.connection} · {d.rule} · no inventory held
-          </span>
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+        <Dot color={M.color} size={6} />
+        <span style={{ fontFamily: MONO, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}>
+          {d.connection} · {d.rule} · no inventory held
+        </span>
       </div>
     </div>
   );

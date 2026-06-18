@@ -12,12 +12,7 @@ import {
   Text,
 } from '@sparx/ui';
 
-import {
-  formatDate,
-  transferStatus,
-  warehouseLabel,
-  type InventoryTransferRow,
-} from './types';
+import { formatDate, transferStatus, warehouseLabel, type InventoryTransferRow } from './types';
 
 // Client wrapper for the transfer list. SelectionList takes render functions
 // (columns/card) that can't cross the server→client boundary, so the server page

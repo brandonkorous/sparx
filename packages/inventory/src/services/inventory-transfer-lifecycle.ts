@@ -223,7 +223,10 @@ export async function cancelInventoryTransfer(
   const events = await withTenant(ctx, async (tx) => {
     const transfer = await loadTransfer(tx, transferId);
     if (transfer.status === 'received' || transfer.status === 'cancelled') {
-      throw new InventoryConflictError(`Cannot cancel a transfer while ${transfer.status}`, 'status');
+      throw new InventoryConflictError(
+        `Cannot cancel a transfer while ${transfer.status}`,
+        'status'
+      );
     }
 
     const legs: LegEvent[] = [];
@@ -320,7 +323,13 @@ async function levelMap(
   const variantIds = lines.map((l) => l.variantId);
   const levels = await tx.inventoryLevel.findMany({
     where: { warehouseId, variantId: { in: variantIds } },
-    select: { variantId: true, onHand: true, allocated: true, avgCostCents: true, unitCostCents: true },
+    select: {
+      variantId: true,
+      onHand: true,
+      allocated: true,
+      avgCostCents: true,
+      unitCostCents: true,
+    },
   });
   const map = new Map<string, LevelInfo>();
   for (const l of levels) {
@@ -348,9 +357,10 @@ function assertOverrideLines(overrides: Map<string, number>, lines: TransferLine
   const valid = new Set(lines.map((l) => l.id));
   for (const lineId of overrides.keys()) {
     if (!valid.has(lineId)) {
-      throw new InventoryValidationError('Received quantity references a line not on this transfer', [
-        { field: 'lines', message: `unknown line ${lineId}` },
-      ]);
+      throw new InventoryValidationError(
+        'Received quantity references a line not on this transfer',
+        [{ field: 'lines', message: `unknown line ${lineId}` }]
+      );
     }
   }
 }

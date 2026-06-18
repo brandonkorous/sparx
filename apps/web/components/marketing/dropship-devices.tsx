@@ -365,7 +365,9 @@ function ShippingEmail({ business }: { business: ExampleBusiness }) {
         </span>
       </div>
       <div style={{ padding: '22px' }}>
-        <div style={{ fontFamily: SANS, fontWeight: 500, fontSize: '16px', letterSpacing: '-0.01em' }}>
+        <div
+          style={{ fontFamily: SANS, fontWeight: 500, fontSize: '16px', letterSpacing: '-0.01em' }}
+        >
           Your {name} order has shipped
         </div>
         <p
@@ -404,7 +406,9 @@ function ShippingEmail({ business }: { business: ExampleBusiness }) {
             >
               {d.routed.carrier}
             </span>
-            <span style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
+            <span
+              style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}
+            >
               {d.routed.tracking}
             </span>
           </span>

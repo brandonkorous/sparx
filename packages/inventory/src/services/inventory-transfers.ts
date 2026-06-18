@@ -42,10 +42,7 @@ export async function listInventoryTransfers(
       // A warehouse filter matches either leg — stock leaving or arriving here.
       ...(filter.warehouseId
         ? {
-            OR: [
-              { fromWarehouseId: filter.warehouseId },
-              { toWarehouseId: filter.warehouseId },
-            ],
+            OR: [{ fromWarehouseId: filter.warehouseId }, { toWarehouseId: filter.warehouseId }],
           }
         : {}),
     };
@@ -104,7 +101,10 @@ async function createOnce(
   return withTenant(ctx, async (tx) => {
     await ensureWarehouseActive(tx, input.fromWarehouseId);
     await ensureWarehouseActive(tx, input.toWarehouseId);
-    await assertVariantsExist(tx, input.lines.map((l) => l.variantId));
+    await assertVariantsExist(
+      tx,
+      input.lines.map((l) => l.variantId)
+    );
 
     const number = await nextTransferNumber(tx, ctx.tenantId);
     const transfer = await tx.inventoryTransfer.create({

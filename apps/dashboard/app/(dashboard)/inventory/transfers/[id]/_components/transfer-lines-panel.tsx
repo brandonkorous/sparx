@@ -361,7 +361,10 @@ function AddLineRow({ id, disabled }: { id: string; disabled: boolean }) {
         setBusy(false);
         return;
       }
-      const result = await addTransferLineAction(id, { variantId: lookup.data.variantId, quantity });
+      const result = await addTransferLineAction(id, {
+        variantId: lookup.data.variantId,
+        quantity,
+      });
       if (!result.ok) {
         setError(result.error.message);
         setBusy(false);

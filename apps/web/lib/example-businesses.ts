@@ -194,7 +194,14 @@ export interface ExampleDropship {
   /** a synced catalog product priced for this store: the supplier `cost`, the
    *  `sell` price after the rule, the `margin` (= sell − cost), and `marginPct`
    *  (≈ margin ÷ sell). Proves the markup math. */
-  pricing: { item: string; sku: string; cost: string; sell: string; margin: string; marginPct: string };
+  pricing: {
+    item: string;
+    sku: string;
+    cost: string;
+    sell: string;
+    margin: string;
+    marginPct: string;
+  };
   /** live stock pulled from the supplier on sync — a count for stocked suppliers,
    *  or 'unlimited' for POD (made-to-order). */
   stock: string;

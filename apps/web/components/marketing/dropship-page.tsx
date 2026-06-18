@@ -1,6 +1,14 @@
 import type { ReactNode } from 'react';
 import { Button } from '@sparx/ui';
-import { Container, Display, Dot, getModuleColor, Section, SectionHeader, Spark } from './primitives';
+import {
+  Container,
+  Display,
+  Dot,
+  getModuleColor,
+  Section,
+  SectionHeader,
+  Spark,
+} from './primitives';
 import { DropshipHero } from './dropship-hero';
 import { DropshipConnect, DropshipMargin } from './dropship-sections';
 import { DropshipRouting, DropshipInventory, DropshipTracking } from './dropship-devices';
@@ -323,7 +331,9 @@ function DropshipPricing() {
             >
               $29
             </span>
-            <span style={{ fontFamily: SANS, fontSize: '16px', color: 'var(--color-text-tertiary)' }}>
+            <span
+              style={{ fontFamily: SANS, fontSize: '16px', color: 'var(--color-text-tertiary)' }}
+            >
               /mo
             </span>
           </div>
@@ -339,8 +349,8 @@ function DropshipPricing() {
           >
             A flat $29/mo — supplier connectors, catalog and inventory sync, markup rules, automated
             order routing, and tracking sync. No per-order dropship fee and no reseller cut; you
-            connect to your own supplier accounts directly. Works alongside Commerce, which runs your
-            catalog and checkout. Start free for 14 days; no card to begin.
+            connect to your own supplier accounts directly. Works alongside Commerce, which runs
+            your catalog and checkout. Start free for 14 days; no card to begin.
           </p>
         </div>
         <div className="mkt-cluster" style={{ gap: '12px' }}>

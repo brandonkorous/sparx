@@ -109,7 +109,9 @@ function VendorPicker() {
             <span style={{ display: 'block', fontFamily: SANS, fontSize: '14px', fontWeight: 500 }}>
               {v.name}
             </span>
-            <span style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
+            <span
+              style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}
+            >
               {v.tag}
             </span>
           </span>
@@ -174,7 +176,9 @@ function SyncedProductPanel({ business }: { business: ExampleBusiness }) {
           <span style={{ display: 'block', fontFamily: SANS, fontWeight: 500, fontSize: '16px' }}>
             {d.pricing.item}
           </span>
-          <span style={{ fontFamily: MONO, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}>
+          <span
+            style={{ fontFamily: MONO, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}
+          >
             {d.pricing.sku} · imported draft
           </span>
         </span>
@@ -216,7 +220,9 @@ function SyncedProductPanel({ business }: { business: ExampleBusiness }) {
         ))}
         <div style={{ display: 'flex', alignItems: 'center', gap: '9px', paddingTop: '14px' }}>
           <Dot color={M.color} size={6} />
-          <span style={{ fontFamily: MONO, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}>
+          <span
+            style={{ fontFamily: MONO, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}
+          >
             review &amp; publish — price tracks the supplier&rsquo;s cost
           </span>
         </div>
@@ -279,7 +285,10 @@ function MarginRow({ business }: { business: ExampleBusiness }) {
   const { dropship: d } = business;
   return (
     <div className="mkt-margin-row">
-      <span className="mkt-margin-item" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <span
+        className="mkt-margin-item"
+        style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
+      >
         <span
           style={{
             width: 34,
@@ -307,7 +316,12 @@ function MarginRow({ business }: { business: ExampleBusiness }) {
       </span>
       <span
         className="mkt-margin-cell"
-        style={{ fontFamily: SANS, fontSize: '15px', fontWeight: 500, color: 'var(--color-text-primary)' }}
+        style={{
+          fontFamily: SANS,
+          fontSize: '15px',
+          fontWeight: 500,
+          color: 'var(--color-text-primary)',
+        }}
       >
         {d.pricing.sell}
       </span>
@@ -315,7 +329,14 @@ function MarginRow({ business }: { business: ExampleBusiness }) {
         <span style={{ fontFamily: SANS, fontSize: '14px', fontWeight: 500, color: M.text }}>
           {d.pricing.margin}
         </span>
-        <span style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)', marginLeft: '8px' }}>
+        <span
+          style={{
+            fontFamily: MONO,
+            fontSize: '11px',
+            color: 'var(--color-text-tertiary)',
+            marginLeft: '8px',
+          }}
+        >
           {d.pricing.marginPct}
         </span>
       </span>

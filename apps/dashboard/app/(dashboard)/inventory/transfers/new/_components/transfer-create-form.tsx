@@ -48,9 +48,7 @@ export function TransferCreateForm({ warehouses }: { warehouses: WarehouseOption
   const [lines, setLines] = React.useState<PickedLine[]>([]);
 
   function addLine(line: PickedLine) {
-    setLines((prev) =>
-      prev.some((p) => p.variantId === line.variantId) ? prev : [...prev, line]
-    );
+    setLines((prev) => (prev.some((p) => p.variantId === line.variantId) ? prev : [...prev, line]));
   }
   function removeLine(variantId: string) {
     setLines((prev) => prev.filter((p) => p.variantId !== variantId));
@@ -122,7 +120,11 @@ export function TransferCreateForm({ warehouses }: { warehouses: WarehouseOption
               <ArrowRight className="mb-2 h-5 w-5 shrink-0 text-[var(--color-text-muted)]" />
               <Stack gap={1} className="min-w-[14rem] flex-1">
                 <Label htmlFor="toWarehouse">To</Label>
-                <NativeSelect id="toWarehouse" value={toId} onChange={(e) => setToId(e.target.value)}>
+                <NativeSelect
+                  id="toWarehouse"
+                  value={toId}
+                  onChange={(e) => setToId(e.target.value)}
+                >
                   {warehouses.map((w) => (
                     <option key={w.id} value={w.id}>
                       {w.name} ({w.code})
@@ -144,7 +146,13 @@ export function TransferCreateForm({ warehouses }: { warehouses: WarehouseOption
         </CardContent>
       </Card>
 
-      <LinePicker lines={lines} onAdd={addLine} onRemove={removeLine} onQty={setQuantity} busy={pending} />
+      <LinePicker
+        lines={lines}
+        onAdd={addLine}
+        onRemove={removeLine}
+        onQty={setQuantity}
+        busy={pending}
+      />
 
       <Stack direction="row" gap={2} align="center" justify="between" className="mt-6 w-full">
         {error && (
@@ -224,7 +232,9 @@ function LinePicker({
                       min={1}
                       value={l.quantity}
                       aria-label="Quantity"
-                      onChange={(e) => onQty(l.variantId, Math.max(1, Math.round(Number(e.target.value))))}
+                      onChange={(e) =>
+                        onQty(l.variantId, Math.max(1, Math.round(Number(e.target.value))))
+                      }
                     />
                   </Stack>
                   <Button
@@ -246,13 +256,7 @@ function LinePicker({
   );
 }
 
-function SkuAddRow({
-  onAdd,
-  disabled,
-}: {
-  onAdd: (line: PickedLine) => void;
-  disabled?: boolean;
-}) {
+function SkuAddRow({ onAdd, disabled }: { onAdd: (line: PickedLine) => void; disabled?: boolean }) {
   const [value, setValue] = React.useState('');
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);

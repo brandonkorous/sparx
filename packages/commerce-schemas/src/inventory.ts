@@ -404,12 +404,7 @@ export type EnterCountsInput = z.infer<typeof EnterCountsInput>;
 // `TransferInventoryInput` above stays the programmatic instant-move path; this is
 // the document-driven two-phase flow.
 
-export const InventoryTransferStatus = z.enum([
-  'draft',
-  'in_transit',
-  'received',
-  'cancelled',
-]);
+export const InventoryTransferStatus = z.enum(['draft', 'in_transit', 'received', 'cancelled']);
 export type InventoryTransferStatus = z.infer<typeof InventoryTransferStatus>;
 
 // One line on a transfer: a variant + the quantity to move.
