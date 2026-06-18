@@ -336,7 +336,7 @@ export function BuilderAddToCart({ label }: { label?: string }) {
   return (
     <button
       type="button"
-      className="st-btn st-btn--primary st-btn--lg"
+      className="st-btn st-c-primary st-v-solid st-btn--sz-lg"
       style={{ minWidth: '200px' }}
       disabled={!f.resolvedVariant || !f.inStock || f.adding}
       onClick={() => void f.addToCart()}
@@ -423,7 +423,7 @@ function BuyBoxInner() {
       <div className="st-pdp__price">
         {moneyOf(f.priceCents, f.product.currency)}
         {f.onSale && f.compareAtCents != null ? (
-          <span className="st-card__compare" style={{ fontSize: '1rem' }}>
+          <span className="st-tile__compare" style={{ fontSize: '1rem' }}>
             {moneyOf(f.compareAtCents, f.product.currency)}
           </span>
         ) : null}
