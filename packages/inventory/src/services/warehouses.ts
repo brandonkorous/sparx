@@ -242,6 +242,62 @@ export async function archiveWarehouse(ctx: ServiceContext, warehouseId: string)
   await indexInventoryEntity(ctx, 'warehouse', warehouseId, 'delete');
 }
 
+// ─── Activation default (docs/104 L2) ─────────────────────────────────
+//
+// On `module.activated(inventory)` — and when inventory rides free with
+// Commerce/B2B — a tenant needs at least one stock-holding location, or stock
+// has nowhere to live and the allocator has nothing to resolve to. Find-or-
+// create by "any non-system operating warehouse exists" (NOT by a fixed code):
+// a tenant that renamed/replaced the default keeps their own, and only a tenant
+// with zero locations gets `MAIN` seeded. Idempotent + kept on deactivate
+// (docs/104 R1–R4). `tenantId` is scoped explicitly (not just RLS) because the
+// local superuser bypasses RLS — a tenant-wide scan would otherwise see other
+// tenants' warehouses and wrongly skip seeding (the reorder-engine precedent).
+export async function bootstrapDefaultWarehouse(
+  ctx: ServiceContext
+): Promise<{ id: string; created: boolean }> {
+  const result = await withTenant(ctx, async (tx) => {
+    const existing = await tx.warehouse.findFirst({
+      where: { tenantId: ctx.tenantId, isSystem: false, deletedAt: null },
+      select: { id: true },
+    });
+    if (existing) return { id: existing.id, created: false };
+
+    const warehouse = await tx.warehouse.create({
+      data: {
+        tenantId: ctx.tenantId,
+        name: 'Main Warehouse',
+        code: 'MAIN',
+        type: 'owned',
+        country: 'US',
+        defaultForChannel: ['storefront'],
+      },
+      select: { id: true },
+    });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: 'system',
+      action: 'inventory.warehouse.bootstrapped',
+      entityType: 'Warehouse',
+      entityId: warehouse.id,
+      diff: { after: { code: 'MAIN', name: 'Main Warehouse' } },
+    });
+    return { id: warehouse.id, created: true };
+  });
+
+  // Index best-effort — a search hiccup must never fail module activation.
+  if (result.created) {
+    try {
+      await indexInventoryEntity(ctx, 'warehouse', result.id);
+    } catch {
+      // The warehouse is created; it indexes on the next update / reindex pass.
+    }
+  }
+  return result;
+}
+
 export function serializeWarehouse(w: Warehouse): WarehouseRow {
   return {
     id: w.id,

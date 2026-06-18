@@ -383,6 +383,59 @@ export async function deleteRate(ctx: ServiceContext, id: string): Promise<void>
   });
 }
 
+// ─── Activation default (docs/104 L2) ─────────────────────────────────
+//
+// On `module.activated(commerce)`, seed a fallback shipping setup so checkout
+// can quote a rate before the tenant connects a carrier or configures zones —
+// otherwise an enabled store can add to cart but never complete an order. One
+// "Everywhere" zone (empty `countries` = unconstrained, matches every address),
+// one "Standard" profile, one flat rate. Find-or-create by "the tenant has any
+// zone": a tenant that configured shipping is never touched. `tenantId` is
+// scoped explicitly (not just RLS) since the local superuser bypasses RLS.
+export async function bootstrapDefaults(ctx: ServiceContext): Promise<{ created: boolean }> {
+  return withTenant(ctx, async (tx) => {
+    const zoneCount = await tx.shippingZone.count({ where: { tenantId: ctx.tenantId } });
+    if (zoneCount > 0) return { created: false };
+
+    const zone = await tx.shippingZone.create({
+      data: {
+        tenantId: ctx.tenantId,
+        name: 'Everywhere',
+        priority: 0,
+        targeting: { countries: [], regions: [], postalCodeRanges: [] },
+      },
+      select: { id: true },
+    });
+    const profile = await tx.shippingProfile.create({
+      data: { tenantId: ctx.tenantId, name: 'Standard' },
+      select: { id: true },
+    });
+    await tx.shippingRate.create({
+      data: {
+        tenantId: ctx.tenantId,
+        zoneId: zone.id,
+        profileId: profile.id,
+        name: 'Standard Shipping',
+        type: 'flat',
+        amountCents: 500,
+        currency: 'USD',
+        estimatedDeliveryDays: 5,
+      },
+    });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: 'system',
+      action: 'commerce.shipping.bootstrapped',
+      entityType: 'ShippingZone',
+      entityId: zone.id,
+      diff: { after: { zone: 'Everywhere', rate: 'Standard Shipping', amountCents: 500 } },
+    });
+    return { created: true };
+  });
+}
+
 // ─── Real-time rate shopping ─────────────────────────────────────────
 //
 // Real-time provider integration is wired through the provider

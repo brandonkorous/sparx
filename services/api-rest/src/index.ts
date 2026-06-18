@@ -11,6 +11,10 @@ import {
   registerEmailProvisioningConsumer,
   startEmailProvisioningReconcileLoop,
 } from './lib/email-provisioning.js';
+import {
+  registerModuleProvisioningConsumer,
+  startModuleProvisioningReconcileLoop,
+} from './lib/module-provisioning.js';
 import { env } from './env.js';
 import { startScheduledPublishLoop } from './lib/scheduled-publish.js';
 import { startSitebuilderPublishLoop } from './lib/sitebuilder-publish.js';
@@ -48,6 +52,14 @@ async function main(): Promise<void> {
   // never depends on @sparx/builder; subscribes to the same in-process bus.
   registerEmailProvisioningConsumer();
 
+  // The remaining module activation defaults (docs/104 §5.A): on `module.activated`
+  // for commerce / inventory / b2b / chat, seed each module's template-agnostic
+  // defaults (commerce site settings + fallback shipping, a default warehouse,
+  // a default inactive B2B approval rule, a chat quick-reply bank). Kept here, not
+  // in any one domain package, so the dependency graph stays acyclic; subscribes
+  // to the same in-process bus.
+  registerModuleProvisioningConsumer();
+
   // Wrap the CRM publisher so every publishCrmEvent() also enqueues a
   // WebhookDelivery row per matching tenant subscription. Pre-warm the
   // DB connection so the first event doesn't pay startup latency.
@@ -81,6 +93,11 @@ async function main(): Promise<void> {
   // Singleton across pods via its own advisory lock — see lib/email-provisioning.ts.
   const stopEmailProvisioningReconcile = startEmailProvisioningReconcileLoop(app.log);
 
+  // Background pass that back-fills the commerce/inventory/b2b/chat activation
+  // defaults for any tenant that missed `module.activated` (docs/104 §5.A).
+  // Singleton across pods via its own advisory lock — see lib/module-provisioning.ts.
+  const stopModuleProvisioningReconcile = startModuleProvisioningReconcileLoop(app.log);
+
   // Live Chat WebSocket server (docs/56, docs/69 A-2). Attaches socket.io to the
   // Fastify HTTP server at /ws/chat; uses the Redis adapter when REDIS_URL is
   // set (multi-replica fan-out) and the in-memory adapter otherwise.
@@ -93,6 +110,7 @@ async function main(): Promise<void> {
     stopWebhookDelivery();
     stopEmailDispatch();
     stopEmailProvisioningReconcile();
+    stopModuleProvisioningReconcile();
     void chatWs.close().catch((err: unknown) => {
       app.log.error({ err }, 'chat websocket close failed');
     });

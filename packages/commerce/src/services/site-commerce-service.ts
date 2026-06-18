@@ -144,6 +144,62 @@ export async function updateSettings(
   });
 }
 
+// ─── Activation default (docs/104 L2) ─────────────────────────────────
+//
+// On `module.activated(commerce)`, materialize the PRIMARY site's commerce
+// settings row so the Commerce → Settings surface is populated (and currency /
+// checkout policy have an explicit home rather than relying on the read-time
+// code-default fallback). The default fulfillment origin is linked to the
+// tenant's default warehouse when one exists (inventory rides free with
+// commerce, so its `bootstrapDefaultWarehouse` has typically already run). Find-
+// or-create by (tenant, primary property): a tenant that edited its settings
+// keeps them. `tenantId` is scoped explicitly (not just RLS) since the local
+// superuser bypasses RLS.
+export async function bootstrapDefaults(ctx: ServiceContext): Promise<{ created: boolean }> {
+  return withTenant(ctx, async (tx) => {
+    const primary = await tx.property.findFirst({
+      where: { tenantId: ctx.tenantId, isPrimary: true },
+      select: { id: true },
+    });
+    if (!primary) return { created: false };
+
+    const existing = await tx.commerceSiteSettings.findUnique({
+      where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId: primary.id } },
+      select: { propertyId: true },
+    });
+    if (existing) return { created: false };
+
+    // Link the default fulfillment origin to the tenant's default operating
+    // warehouse if one already exists; otherwise null (resolved at checkout).
+    const warehouse = await tx.warehouse.findFirst({
+      where: { tenantId: ctx.tenantId, isSystem: false, deletedAt: null },
+      orderBy: { createdAt: 'asc' },
+      select: { id: true },
+    });
+
+    // All other columns carry schema-level defaults (currency USD, locale
+    // en-US, channels ['storefront'], abandonment 120m, …).
+    await tx.commerceSiteSettings.create({
+      data: {
+        tenantId: ctx.tenantId,
+        propertyId: primary.id,
+        defaultWarehouseId: warehouse?.id ?? null,
+      },
+    });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: 'system',
+      action: 'commerce.site.settings.bootstrapped',
+      entityType: 'CommerceSiteSettings',
+      entityId: primary.id,
+      diff: { after: { defaultWarehouseId: warehouse?.id ?? null } },
+    });
+    return { created: true };
+  });
+}
+
 // Presentation-only theme overrides, per web PROPERTY (docs/49 Phase 6) — each
 // site keeps its own write-through theme row. Brand identity (primary/accent
 // colour, typography, logo, favicon) is owned by the tenant-level brand
