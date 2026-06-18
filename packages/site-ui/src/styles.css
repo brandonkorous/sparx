@@ -45,6 +45,8 @@
 @import './styles/dock.css' layer(components);
 @import './styles/editorial-section.css' layer(components);
 @import './styles/faq.css' layer(components);
+@import './styles/lightbox.css' layer(components);
+@import './styles/toc.css' layer(components);
 @import './styles/drawer.css' layer(components);
 @import './styles/dropdown-menu.css' layer(components);
 @import './styles/embed-frame.css' layer(components);

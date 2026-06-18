@@ -527,6 +527,9 @@ importers:
       '@sparx/events':
         specifier: workspace:*
         version: link:../events
+      '@sparx/inventory':
+        specifier: workspace:*
+        version: link:../inventory
       zod:
         specifier: ^4.4.3
         version: 4.4.3

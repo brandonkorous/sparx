@@ -118,6 +118,77 @@ export type {
 export { listGoodsReceipts, getGoodsReceipt, createGoodsReceipt } from './goods-receipts';
 export type { GoodsReceiptRow, GoodsReceiptLineRow, GoodsReceiptDetail } from './goods-receipts';
 
+// ─── Reorder engine (P3d supply path) ─────────────────────────────────
+// Low stock → reorder suggestions → draft PO to the preferred supplier. Manual
+// (buyer-selected) + auto (the inventory.low automation action calls
+// `autoDraftReorder` on the engine's transaction).
+export {
+  listReorderSuggestions,
+  draftReorderPurchaseOrders,
+  autoDraftReorder,
+  suggestedReorderQty,
+} from './reorder';
+export type {
+  ReorderFilter,
+  ReorderSuggestions,
+  ReorderGroup,
+  ReorderSuggestionLine,
+  UnsuppliedSuggestion,
+  DraftReorderResult,
+  DraftedPurchaseOrder,
+  AutoDraftResult,
+  AutoDraftOutcome,
+} from './reorder';
+
+// ─── Inventory counts (P4 corrections) ────────────────────────────────
+// A counting session reconciles recorded stock against a physical count; on post
+// each line writes a `recount` movement (absolute setOnHand). Variance value over
+// the per-count threshold gates the post behind an admin approval.
+export {
+  listInventoryCounts,
+  getInventoryCount,
+  createInventoryCount,
+  addCountLine,
+  removeCountLine,
+  enterCounts,
+} from './inventory-counts';
+export {
+  submitInventoryCount,
+  approveInventoryCount,
+  postInventoryCount,
+  cancelInventoryCount,
+} from './inventory-count-lifecycle';
+export type {
+  InventoryCountRow,
+  InventoryCountLineRow,
+  InventoryCountDetail,
+} from './inventory-count-shared';
+
+// ─── Inventory transfers (P4 corrections) ─────────────────────────────
+// Move stock between warehouses through a system in-transit holding location so
+// total stock is conserved while in motion. Draft (compose lines) → ship
+// (source → in-transit) → receive (in-transit → destination); cancel returns an
+// in-transit transfer's goods to source. Every leg routes through the ledger.
+export {
+  listInventoryTransfers,
+  getInventoryTransfer,
+  createInventoryTransfer,
+  addTransferLine,
+  updateTransferLine,
+  removeTransferLine,
+  deleteInventoryTransfer,
+} from './inventory-transfers';
+export {
+  shipInventoryTransfer,
+  receiveInventoryTransfer,
+  cancelInventoryTransfer,
+} from './inventory-transfer-lifecycle';
+export type {
+  InventoryTransferRow,
+  InventoryTransferLineRow,
+  InventoryTransferDetail,
+} from './inventory-transfer-shared';
+
 // ─── Movement ledger primitive ────────────────────────────────────────
 // Exposed for callers composing a movement inside their OWN tenant transaction
 // (e.g. an order service decrementing stock atomically with the order insert).

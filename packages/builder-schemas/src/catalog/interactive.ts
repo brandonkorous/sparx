@@ -205,6 +205,61 @@ const tabPanel = (body: string, closed: boolean) =>
     'panel'
   );
 
+// A billing-period toggle button — `part(_, 'tab')` so the tabs behavior reveals its
+// index-matched price panel; `data-[active=true]:` styles the selected period.
+const pricingTab = (label: string) =>
+  part(
+    el(
+      'button',
+      'rounded-full px-5 py-2 text-sm font-medium text-base-content/70 transition-colors data-[active=true]:bg-base-100 data-[active=true]:text-base-content data-[active=true]:shadow-sm',
+      { text: label, attrs: { type: 'button' } }
+    ),
+    'tab'
+  );
+
+// One pricing tier card — name, a big price with its cadence, and a CTA.
+const priceTier = (name: string, price: string, cadence: string) =>
+  el('div', 'flex flex-1 flex-col gap-4 rounded-box border border-base-200 bg-base-100 p-6', {
+    children: [
+      atom('Heading', 'text-lg font-semibold text-base-content', { level: 'h3', text: name }),
+      el('div', 'flex items-baseline gap-1', {
+        children: [
+          el('span', 'text-4xl font-bold tracking-tight text-base-content', { text: price }),
+          el('span', 'text-sm text-base-content/60', { text: cadence }),
+        ],
+      }),
+      atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md', { label: 'Choose plan' }),
+    ],
+  });
+
+// One price PANEL (the three tiers for a billing period) — `part(_, 'panel')`,
+// index-matched to its tab. The annual panel ships hidden until its tab is clicked.
+const pricePanel = (closed: boolean, prices: [string, string, string], cadence: string) =>
+  part(
+    el('div', 'grid grid-cols-1 gap-6 @2xl:grid-cols-3', {
+      attrs: closed ? { hidden: true } : {},
+      children: [
+        priceTier('Starter', prices[0], cadence),
+        priceTier('Growth', prices[1], cadence),
+        priceTier('Scale', prices[2], cadence),
+      ],
+    }),
+    'panel'
+  );
+
+// One animated stat — the number is `part(_, 'item')` so the counter behavior reads
+// it and counts up to it; the label sits beside it, untouched by the animation.
+const statCount = (value: string, label: string) =>
+  el('div', 'flex flex-col items-center gap-1', {
+    children: [
+      part(
+        el('div', 'text-4xl font-bold tracking-tight text-primary @2xl:text-5xl', { text: value }),
+        'item'
+      ),
+      el('div', 'text-sm text-base-content/70', { text: label }),
+    ],
+  });
+
 // ── Entries ────────────────────────────────────────────────────────────────────
 
 export const INTERACTIVE_CATALOG: PlatformCatalogEntry[] = [
@@ -682,6 +737,77 @@ export const INTERACTIVE_CATALOG: PlatformCatalogEntry[] = [
         ],
       }),
       { type: 'menu' }
+    ),
+  }),
+
+  // ── Pricing toggle — Monthly/Annual tabs swap the whole price set ─────────────
+  entry({
+    key: 'pricing_toggle',
+    name: 'Pricing toggle',
+    category: 'marketing',
+    kind: 'comprehensive',
+    icon: 'badge-dollar-sign',
+    description:
+      'A pricing section with Monthly / Annual tabs that swap the whole price set. The inactive panel ships hidden; the canvas shows both for editing.',
+    surfaces: ['page', 'site'],
+    tags: ['pricing', 'plans', 'toggle', 'monthly', 'annual', 'tabs', 'marketing'],
+    tree: behave(
+      el('section', 'w-full px-4 py-16', {
+        name: 'Pricing toggle',
+        children: [
+          el('div', 'mx-auto max-w-5xl', {
+            children: [
+              atom(
+                'Heading',
+                'mb-6 text-center text-3xl font-bold tracking-tight text-base-content',
+                { level: 'h2', text: 'Simple, honest pricing' }
+              ),
+              el('div', 'mb-8 flex justify-center', {
+                children: [
+                  el('div', 'inline-flex items-center gap-1 rounded-full bg-base-200 p-1', {
+                    name: 'Billing period',
+                    attrs: { role: 'tablist' },
+                    children: [pricingTab('Monthly'), pricingTab('Annual')],
+                  }),
+                ],
+              }),
+              pricePanel(false, ['$12', '$29', '$79'], '/mo'),
+              pricePanel(true, ['$9', '$23', '$63'], '/mo billed yearly'),
+            ],
+          }),
+        ],
+      }),
+      { type: 'tabs' }
+    ),
+  }),
+
+  // ── Animated stats — headline numbers that count up when scrolled into view ───
+  entry({
+    key: 'stats_counter',
+    name: 'Animated stats',
+    category: 'marketing',
+    kind: 'comprehensive',
+    icon: 'trending-up',
+    description:
+      'A band of headline numbers that count up from zero when they scroll into view. The canvas shows the final figures; the live site animates them.',
+    surfaces: ['page', 'site'],
+    tags: ['stats', 'counter', 'numbers', 'metrics', 'proof', 'animated', 'marketing'],
+    tree: behave(
+      el('section', 'w-full px-4 py-16', {
+        name: 'Animated stats',
+        children: [
+          el('div', 'mx-auto grid max-w-5xl grid-cols-2 gap-8 text-center @2xl:grid-cols-4', {
+            name: 'Stats',
+            children: [
+              statCount('10,000+', 'Orders shipped'),
+              statCount('98%', 'Would recommend'),
+              statCount('45', 'Countries served'),
+              statCount('4.9', 'Average rating'),
+            ],
+          }),
+        ],
+      }),
+      { type: 'counter' }
     ),
   }),
 ];

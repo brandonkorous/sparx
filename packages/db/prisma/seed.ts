@@ -11,6 +11,7 @@ import { PrismaClient, type Prisma } from '@prisma/client';
 import { hashPassword } from 'better-auth/crypto';
 import { listBlueprints, type Blueprint } from '@sparx/blueprints';
 import { LEGAL_TEMPLATES, legalEntryBody } from '@sparx/legal-templates';
+import { PLATFORM_CATALOG } from '@sparx/builder-schemas';
 
 const prisma = new PrismaClient();
 
@@ -1462,13 +1463,76 @@ async function seedDemoInventory(tenantId: string): Promise<void> {
       }
     }
 
+    // ── Transfers (P4): a draft MAIN → WEST-3PL the user can ship + receive ───
+    // A draft moves no stock, so it can't break the Σ(movements) == on_hand
+    // invariant; shipping/receiving it in the UI is the deploy-gate exercise.
+    // Lines reference two fast movers that have MAIN stock so the draft ships.
+    await tx.inventoryTransfer.deleteMany({ where: { tenantId } });
+    const westId = whByCode.get('WEST-3PL')!;
+    const shippable = await tx.inventoryLevel.findMany({
+      where: { warehouseId: mainId, onHand: { gte: 5 } },
+      select: { variantId: true },
+      orderBy: { onHand: 'desc' },
+      take: 2,
+    });
+    let transferCount = 0;
+    if (shippable.length > 0 && westId !== mainId) {
+      const transfer = await tx.inventoryTransfer.create({
+        data: {
+          tenantId,
+          number: 'TRF-000001',
+          fromWarehouseId: mainId,
+          toWarehouseId: westId,
+          status: 'draft',
+          note: 'Rebalance fast movers to the West Coast 3PL',
+        },
+      });
+      for (const lvl of shippable) {
+        await tx.inventoryTransferLine.create({
+          data: { tenantId, transferId: transfer.id, variantId: lvl.variantId, quantity: 5 },
+        });
+      }
+      transferCount = 1;
+    }
+
     const variantCount = variantIdBySku.size;
     console.log(
       `Seeded demo inventory: ${DEMO_PRODUCTS.length} products / ${variantCount} variants across ` +
         `${DEMO_WAREHOUSES.length} warehouses, with ledger movements + ${DEMO_LOTS.length} lots, ` +
-        `${DEMO_SUPPLIERS.length} suppliers + ${poDefs.length} purchase orders + ${receiptSeq} receipt.`
+        `${DEMO_SUPPLIERS.length} suppliers + ${poDefs.length} purchase orders + ${receiptSeq} receipt` +
+        ` + ${transferCount} transfer.`
     );
   });
+}
+
+// The platform COMPONENT catalog (docs/98 §5) — the GLOBAL platform_components table
+// (no tenant_id). The published library IS the data-as-code PLATFORM_CATALOG, so the
+// seed mirrors every entry in as a `published` row: this is what the
+// `/v1/platform/catalog/*` API serves and what a future admin app lists. Idempotent
+// upsert by key; descriptions are clamped to the column's 280-char bound. Authored by
+// the reserved `system` id (the seed predates any real platform user). Stays in sync
+// with the static catalog automatically — new catalog entries seed with no change here.
+async function seedPlatformCatalog(): Promise<void> {
+  for (const e of PLATFORM_CATALOG) {
+    const data = {
+      name: e.name,
+      category: e.category,
+      kind: e.kind,
+      icon: e.icon,
+      description: e.description.slice(0, 280),
+      surfaces: e.surfaces,
+      tree: e.tree as unknown as Prisma.InputJsonValue,
+      tags: e.tags ?? [],
+      status: 'published' as const,
+      visibility: 'public' as const,
+    };
+    await prisma.platformComponent.upsert({
+      where: { key: e.key },
+      update: data,
+      create: { key: e.key, authorId: 'system', ...data },
+    });
+  }
+  console.log(`[seed] platform component catalog: ${PLATFORM_CATALOG.length} entries published`);
 }
 
 async function main(): Promise<void> {
@@ -1605,6 +1669,16 @@ async function main(): Promise<void> {
   } catch (err) {
     console.warn(
       `[seed] marketplace catalog seed skipped: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
+
+  // Platform component catalog (docs/98 §5) — global platform data, independent of
+  // any tenant. Wrapped so a catalog hiccup never blocks the rest of the seed.
+  try {
+    await seedPlatformCatalog();
+  } catch (err) {
+    console.warn(
+      `[seed] platform catalog seed skipped: ${err instanceof Error ? err.message : String(err)}`
     );
   }
 

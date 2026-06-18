@@ -111,6 +111,38 @@ export interface PagedEnvelope<T> {
   etag: string | null;
 }
 
+function describeFetchError(error: unknown): { message: string; rootCause?: string } {
+  if (error instanceof Error) {
+    const rootCause =
+      error.cause instanceof Error
+        ? error.cause.message
+        : typeof error.cause === 'string'
+          ? error.cause
+          : undefined;
+    return { message: error.message, rootCause };
+  }
+  return { message: String(error) };
+}
+
+async function fetchWithRetry(
+  target: string,
+  init: RequestInit,
+  attempts: number
+): Promise<Response> {
+  let lastError: unknown;
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      return await fetch(target, init);
+    } catch (error) {
+      lastError = error;
+      if (i < attempts) {
+        await new Promise((resolve) => setTimeout(resolve, 150 * i));
+      }
+    }
+  }
+  throw lastError;
+}
+
 async function call<T>(
   session: SparxSession,
   method: string,
@@ -128,12 +160,27 @@ async function call<T>(
   if (body !== undefined) headers['content-type'] = 'application/json';
   if (options.ifMatch) headers['if-match'] = options.ifMatch;
 
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method,
-    headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-    cache: 'no-store',
-  });
+  const target = `${BASE_URL}${path}`;
+  let res: Response;
+  try {
+    res = await fetchWithRetry(
+      target,
+      {
+        method,
+        headers,
+        body: body !== undefined ? JSON.stringify(body) : undefined,
+        cache: 'no-store',
+      },
+      method === 'GET' ? 2 : 1
+    );
+  } catch (error) {
+    const cause = describeFetchError(error);
+    throw makeError(503, 'UPSTREAM_FETCH_FAILED', `api-rest request failed: ${method} ${path}`, {
+      target,
+      cause: cause.message,
+      rootCause: cause.rootCause,
+    });
+  }
 
   const etag = res.headers.get('etag');
 
@@ -166,15 +213,28 @@ async function withSession<T>(fn: (session: SparxSession) => Promise<T>): Promis
 
 async function callRaw(session: SparxSession, method: string, path: string): Promise<Response> {
   const token = await signToken(session);
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method,
-    headers: {
-      authorization: `Bearer ${token}`,
-      ...(await activePropertyHeader()),
-    },
-    cache: 'no-store',
-  });
-  return res;
+  const target = `${BASE_URL}${path}`;
+  try {
+    return await fetchWithRetry(
+      target,
+      {
+        method,
+        headers: {
+          authorization: `Bearer ${token}`,
+          ...(await activePropertyHeader()),
+        },
+        cache: 'no-store',
+      },
+      method === 'GET' ? 2 : 1
+    );
+  } catch (error) {
+    const cause = describeFetchError(error);
+    throw makeError(503, 'UPSTREAM_FETCH_FAILED', `api-rest request failed: ${method} ${path}`, {
+      target,
+      cause: cause.message,
+      rootCause: cause.rootCause,
+    });
+  }
 }
 
 export const api = {

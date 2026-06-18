@@ -33,11 +33,40 @@ const socialDot = (name: string, label: string) =>
     { attrs: { href: '#', ariaLabel: label }, children: [atom('Icon', 'h-4 w-4', { name })] }
   );
 
-// A comparison-table check / dash cell — present vs. absent for a plan.
-const cellYes = () =>
-  el('td', 'border-b border-base-200 px-4 py-3 text-center text-success', { text: '✓' });
-const cellNo = () =>
-  el('td', 'border-b border-base-200 px-4 py-3 text-center text-base-content/30', { text: '—' });
+// A comparison-table check / dash cell — present vs. absent for a plan. The cell
+// chrome (padding, row borders) comes from the st-table class on the <table>, so
+// these carry only alignment + the semantic color.
+const cellYes = () => el('td', 'text-center text-success', { text: '✓' });
+const cellNo = () => el('td', 'text-center text-base-content/30', { text: '—' });
+
+// A bento-mosaic cell — a padded tile; `span` widens it on a wide container, `tone`
+// sets its surface (a colored cell carries its own -content text for the children).
+const bentoCell = (span: string, tone: string, title: string, body: string) =>
+  el('div', `flex min-h-44 flex-col justify-end gap-2 rounded-box p-6 ${tone} ${span}`, {
+    children: [
+      atom('Heading', 'text-lg font-semibold', { level: 'h3', text: title }),
+      atom('Text', 'text-sm opacity-80', { variant: 'body', text: body }),
+    ],
+  });
+
+// One numbered "how it works" step — a badge, a heading, and a line of copy.
+const stepItem = (n: string, title: string, body: string) =>
+  el('div', 'flex flex-col items-center gap-3 text-center', {
+    children: [
+      el(
+        'div',
+        'flex h-12 w-12 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-content',
+        { text: n }
+      ),
+      atom('Heading', 'text-lg font-semibold text-base-content', { level: 'h3', text: title }),
+      atom('Text', 'text-sm text-base-content/70', { variant: 'body', text: body }),
+    ],
+  });
+
+// One masonry gallery image — `break-inside-avoid` keeps a photo whole across the
+// CSS columns; the natural ratio varies per tile so the wall reads as masonry.
+const galleryImage = (ratio: 'wide' | 'square' | 'portrait') =>
+  atom('Image', 'mb-4 w-full break-inside-avoid rounded-box', { ratio, alt: 'Gallery image' });
 
 export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
   // ── CTA band — accent full-width call to action ───────────────────────────────
@@ -837,24 +866,22 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                 text: 'Compare every plan',
               }
             ),
-            el('div', 'overflow-x-auto rounded-box border border-base-200', {
+            el('div', 'st-table-wrap rounded-box border border-base-200', {
               children: [
-                el('table', 'w-full min-w-lg border-collapse text-sm', {
+                el('table', 'st-table st-table--sz-md min-w-lg', {
                   children: [
                     el('thead', '', {
                       children: [
                         el('tr', 'bg-base-200', {
                           children: [
-                            el('th', 'px-4 py-3 text-left font-semibold text-base-content', {
+                            el('th', 'text-left font-semibold text-base-content', {
                               text: 'Feature',
                             }),
-                            el('th', 'px-4 py-3 text-center font-semibold text-base-content', {
+                            el('th', 'text-center font-semibold text-base-content', {
                               text: 'Starter',
                             }),
-                            el('th', 'px-4 py-3 text-center font-semibold text-primary', {
-                              text: 'Pro',
-                            }),
-                            el('th', 'px-4 py-3 text-center font-semibold text-base-content', {
+                            el('th', 'text-center font-semibold text-primary', { text: 'Pro' }),
+                            el('th', 'text-center font-semibold text-base-content', {
                               text: 'Enterprise',
                             }),
                           ],
@@ -865,41 +892,15 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                       children: [
                         el('tr', '', {
                           children: [
-                            el(
-                              'td',
-                              'border-b border-base-200 px-4 py-3 font-medium text-base-content',
-                              {
-                                text: 'Published sites',
-                              }
-                            ),
-                            el(
-                              'td',
-                              'border-b border-base-200 px-4 py-3 text-center text-base-content/70',
-                              { text: '1' }
-                            ),
-                            el(
-                              'td',
-                              'border-b border-base-200 px-4 py-3 text-center text-base-content/70',
-                              { text: '5' }
-                            ),
-                            el(
-                              'td',
-                              'border-b border-base-200 px-4 py-3 text-center text-base-content/70',
-                              {
-                                text: 'Unlimited',
-                              }
-                            ),
+                            el('td', 'font-medium text-base-content', { text: 'Published sites' }),
+                            el('td', 'text-center text-base-content/70', { text: '1' }),
+                            el('td', 'text-center text-base-content/70', { text: '5' }),
+                            el('td', 'text-center text-base-content/70', { text: 'Unlimited' }),
                           ],
                         }),
                         el('tr', '', {
                           children: [
-                            el(
-                              'td',
-                              'border-b border-base-200 px-4 py-3 font-medium text-base-content',
-                              {
-                                text: 'Custom domain',
-                              }
-                            ),
+                            el('td', 'font-medium text-base-content', { text: 'Custom domain' }),
                             cellNo(),
                             cellYes(),
                             cellYes(),
@@ -907,40 +908,30 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                         }),
                         el('tr', '', {
                           children: [
-                            el(
-                              'td',
-                              'border-b border-base-200 px-4 py-3 font-medium text-base-content',
-                              {
-                                text: 'Abandoned-cart recovery',
-                              }
-                            ),
-                            cellNo(),
-                            cellYes(),
-                            cellYes(),
-                          ],
-                        }),
-                        el('tr', '', {
-                          children: [
-                            el(
-                              'td',
-                              'border-b border-base-200 px-4 py-3 font-medium text-base-content',
-                              {
-                                text: 'Wholesale & net terms',
-                              }
-                            ),
-                            cellNo(),
-                            cellNo(),
-                            cellYes(),
-                          ],
-                        }),
-                        el('tr', '', {
-                          children: [
-                            el('td', 'px-4 py-3 font-medium text-base-content', {
-                              text: 'SSO & audit logs',
+                            el('td', 'font-medium text-base-content', {
+                              text: 'Abandoned-cart recovery',
                             }),
-                            el('td', 'px-4 py-3 text-center text-base-content/30', { text: '—' }),
-                            el('td', 'px-4 py-3 text-center text-base-content/30', { text: '—' }),
-                            el('td', 'px-4 py-3 text-center text-success', { text: '✓' }),
+                            cellNo(),
+                            cellYes(),
+                            cellYes(),
+                          ],
+                        }),
+                        el('tr', '', {
+                          children: [
+                            el('td', 'font-medium text-base-content', {
+                              text: 'Wholesale & net terms',
+                            }),
+                            cellNo(),
+                            cellNo(),
+                            cellYes(),
+                          ],
+                        }),
+                        el('tr', '', {
+                          children: [
+                            el('td', 'font-medium text-base-content', { text: 'SSO & audit logs' }),
+                            cellNo(),
+                            cellNo(),
+                            cellYes(),
                           ],
                         }),
                       ],
@@ -1038,6 +1029,340 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                 }),
               ],
             }),
+          ],
+        }),
+      ],
+    }),
+  }),
+
+  // ── Bento grid — an asymmetric feature mosaic ─────────────────────────────────
+  entry({
+    key: 'bento_grid',
+    name: 'Bento grid',
+    category: 'marketing',
+    kind: 'comprehensive',
+    icon: 'layout-dashboard',
+    description:
+      'An asymmetric mosaic of feature tiles — wide and standard cells in a balanced grid that collapses to one column on a narrow container.',
+    surfaces: ['page', 'site'],
+    tags: ['bento', 'mosaic', 'features', 'grid', 'highlights', 'marketing'],
+    tree: el('section', 'w-full px-4 py-16', {
+      name: 'Bento grid',
+      children: [
+        el('div', 'mx-auto max-w-6xl', {
+          children: [
+            atom('Heading', 'mb-8 text-3xl font-bold tracking-tight text-base-content', {
+              level: 'h2',
+              text: 'Everything in one place',
+            }),
+            el('div', 'grid grid-cols-1 gap-4 @xl:grid-cols-3', {
+              name: 'Tiles',
+              children: [
+                bentoCell(
+                  '@xl:col-span-2',
+                  'bg-primary text-primary-content',
+                  'Build once, publish everywhere',
+                  'Pages, posts, and products share one canvas — design a section and reuse it across every site you run.'
+                ),
+                bentoCell(
+                  '',
+                  'bg-base-200 text-base-content',
+                  'Fast by default',
+                  'Static-rendered and image-optimized out of the box.'
+                ),
+                bentoCell(
+                  '',
+                  'bg-base-200 text-base-content',
+                  'Yours to own',
+                  'Export your work anytime — no lock-in, no surprises.'
+                ),
+                bentoCell(
+                  '@xl:col-span-2',
+                  'bg-neutral text-neutral-content',
+                  'Grows with you',
+                  'Turn on commerce, email, or a CRM the day you need it — the rest stays out of your way.'
+                ),
+              ],
+            }),
+          ],
+        }),
+      ],
+    }),
+  }),
+
+  // ── Video hero — a centered pitch above an embedded video ─────────────────────
+  entry({
+    key: 'video_hero',
+    name: 'Video hero',
+    category: 'marketing',
+    kind: 'common',
+    icon: 'circle-play',
+    description:
+      'A centered headline and call-to-action above a framed video embed — paste a video URL into the frame to bring it to life.',
+    surfaces: ['page', 'site'],
+    tags: ['video', 'hero', 'embed', 'demo', 'media', 'marketing'],
+    tree: el('section', 'w-full px-4 py-20', {
+      name: 'Video hero',
+      children: [
+        el('div', 'mx-auto flex max-w-3xl flex-col items-center gap-6 text-center', {
+          children: [
+            atom('Heading', 'text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl', {
+              level: 'h2',
+              text: 'See it in motion',
+            }),
+            atom('Text', 'text-lg text-base-content/70', {
+              variant: 'body',
+              text: 'A two-minute look at how it all fits together — from a blank canvas to a published, polished site.',
+            }),
+            atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-lg', { label: 'Start free' }),
+          ],
+        }),
+        el('div', 'mx-auto mt-10 w-full max-w-4xl overflow-hidden rounded-box shadow-lg', {
+          name: 'Video frame',
+          children: [atom('Video', 'w-full', { ratio: 'wide', url: '' })],
+        }),
+      ],
+    }),
+  }),
+
+  // ── How it works — three numbered steps ───────────────────────────────────────
+  entry({
+    key: 'process_steps',
+    name: 'How it works',
+    category: 'marketing',
+    kind: 'common',
+    icon: 'list-ordered',
+    description:
+      'A three-step “how it works” row — a numbered badge, heading, and a line of copy each, side by side and stacking on narrow containers.',
+    surfaces: ['page', 'site'],
+    tags: ['steps', 'process', 'how it works', 'onboarding', 'guide', 'marketing'],
+    tree: el('section', 'w-full px-4 py-16', {
+      name: 'How it works',
+      children: [
+        el('div', 'mx-auto max-w-5xl', {
+          children: [
+            atom(
+              'Heading',
+              'mb-10 text-center text-3xl font-bold tracking-tight text-base-content',
+              { level: 'h2', text: 'Up and running in three steps' }
+            ),
+            el('div', 'grid grid-cols-1 gap-10 @2xl:grid-cols-3', {
+              name: 'Steps',
+              children: [
+                stepItem(
+                  '1',
+                  'Create your space',
+                  'Sign up and name your site — you are in the editor in under a minute.'
+                ),
+                stepItem(
+                  '2',
+                  'Add your content',
+                  'Drop in sections, write your words, and connect products or posts.'
+                ),
+                stepItem(
+                  '3',
+                  'Publish and grow',
+                  'Go live on your domain, then turn on what you need as you scale.'
+                ),
+              ],
+            }),
+          ],
+        }),
+      ],
+    }),
+  }),
+
+  // ── Masonry gallery — a multi-column image wall ───────────────────────────────
+  entry({
+    key: 'gallery_masonry',
+    name: 'Masonry gallery',
+    category: 'marketing',
+    kind: 'common',
+    icon: 'images',
+    description:
+      'A multi-column image wall where photos keep their natural proportions — a portfolio or lookbook that reflows from one to three columns.',
+    surfaces: ['page', 'site'],
+    tags: ['gallery', 'masonry', 'portfolio', 'photos', 'lookbook', 'grid', 'marketing'],
+    tree: el('section', 'w-full px-4 py-16', {
+      name: 'Masonry gallery',
+      children: [
+        el('div', 'mx-auto max-w-5xl', {
+          children: [
+            atom('Heading', 'mb-8 text-3xl font-bold tracking-tight text-base-content', {
+              level: 'h2',
+              text: 'Selected work',
+            }),
+            el('div', 'columns-1 gap-4 @xl:columns-2 @3xl:columns-3', {
+              name: 'Photos',
+              children: [
+                galleryImage('portrait'),
+                galleryImage('square'),
+                galleryImage('wide'),
+                galleryImage('square'),
+                galleryImage('portrait'),
+                galleryImage('wide'),
+              ],
+            }),
+          ],
+        }),
+      ],
+    }),
+  }),
+
+  // ── Contact section — details + map beside a working form ─────────────────────
+  entry({
+    key: 'contact_section',
+    name: 'Contact section',
+    category: 'marketing',
+    kind: 'comprehensive',
+    icon: 'mail',
+    description:
+      'A two-column contact section — your details and a map beside a contact form with name, email, and message fields.',
+    surfaces: ['page', 'site'],
+    tags: ['contact', 'form', 'map', 'get in touch', 'support', 'marketing'],
+    tree: el('section', 'w-full px-4 py-16', {
+      name: 'Contact section',
+      children: [
+        el('div', 'mx-auto grid max-w-6xl grid-cols-1 gap-10 @3xl:grid-cols-2', {
+          children: [
+            el('div', 'flex flex-col gap-4', {
+              name: 'Details',
+              children: [
+                atom('Heading', 'text-3xl font-bold tracking-tight text-base-content', {
+                  level: 'h2',
+                  text: 'Get in touch',
+                }),
+                atom('Text', 'text-base text-base-content/70', {
+                  variant: 'body',
+                  text: 'Questions, partnerships, or press — send a note and we will get back to you within a day.',
+                }),
+                el('div', 'mt-1 flex flex-col gap-1 text-sm text-base-content/80', {
+                  children: [
+                    el('p', '', {
+                      children: [
+                        el('span', 'font-medium text-base-content', { text: 'Email — ' }),
+                        el('span', '', { text: 'hello@example.com' }),
+                      ],
+                    }),
+                    el('p', '', {
+                      children: [
+                        el('span', 'font-medium text-base-content', { text: 'Phone — ' }),
+                        el('span', '', { text: '(555) 010-0142' }),
+                      ],
+                    }),
+                  ],
+                }),
+                atom('Map', 'mt-3 w-full rounded-box', {
+                  ratio: 'wide',
+                  query: 'San Francisco, CA',
+                }),
+              ],
+            }),
+            el('form', 'flex flex-col gap-4 rounded-box border border-base-200 bg-base-100 p-6', {
+              name: 'Contact form',
+              children: [
+                atom('Field', 'w-full', { label: 'Name' }, [
+                  atom('Input', 'st-c-primary st-fv-outline', {
+                    type: 'text',
+                    name: 'name',
+                    placeholder: 'Jordan Avery',
+                  }),
+                ]),
+                atom('Field', 'w-full', { label: 'Email' }, [
+                  atom('Input', 'st-c-primary st-fv-outline', {
+                    type: 'email',
+                    name: 'email',
+                    placeholder: 'you@example.com',
+                  }),
+                ]),
+                atom('Field', 'w-full', { label: 'Message' }, [
+                  atom('Textarea', 'st-c-primary st-fv-outline', {
+                    name: 'message',
+                    placeholder: 'How can we help?',
+                  }),
+                ]),
+                atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md', {
+                  label: 'Send message',
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    }),
+  }),
+
+  // ── Sale countdown bar — a promo strip with a countdown + shop link ───────────
+  entry({
+    key: 'sale_countdown_bar',
+    name: 'Sale countdown',
+    category: 'marketing',
+    kind: 'comprehensive',
+    icon: 'timer',
+    description:
+      'A slim promo strip pairing a sale message with a countdown and a shop button. Set the remaining time on the countdown.',
+    surfaces: ['page', 'site'],
+    tags: ['sale', 'countdown', 'promo', 'timer', 'urgency', 'banner', 'marketing'],
+    tree: el('section', 'w-full bg-primary px-4 py-3 text-primary-content', {
+      name: 'Sale countdown',
+      children: [
+        el(
+          'div',
+          'mx-auto flex max-w-5xl flex-col items-center justify-center gap-3 text-center @2xl:flex-row @2xl:justify-between @2xl:text-left',
+          {
+            children: [
+              el('span', 'text-sm font-semibold', {
+                text: 'Summer sale — up to 40% off everything',
+              }),
+              el('div', 'flex items-center gap-4', {
+                children: [
+                  atom('Countdown', 'text-primary-content', {
+                    days: 2,
+                    hours: 14,
+                    minutes: 30,
+                    seconds: 0,
+                  }),
+                  el('a', 'st-btn st-c-neutral st-v-solid st-btn--sz-sm', {
+                    text: 'Shop the sale',
+                    attrs: { href: '/products' },
+                  }),
+                ],
+              }),
+            ],
+          }
+        ),
+      ],
+    }),
+  }),
+
+  // ── Lightbox gallery — a photo grid that opens a full-screen viewer ───────────
+  entry({
+    key: 'gallery_lightbox',
+    name: 'Lightbox gallery',
+    category: 'marketing',
+    kind: 'comprehensive',
+    icon: 'images',
+    description:
+      'A photo grid where clicking an image opens a full-screen viewer with next/previous and keyboard nav. The canvas shows the grid; the live site opens the overlay.',
+    surfaces: ['page', 'site'],
+    tags: ['gallery', 'lightbox', 'photos', 'portfolio', 'images', 'viewer', 'marketing'],
+    tree: el('section', 'w-full px-4 py-16', {
+      name: 'Lightbox gallery',
+      children: [
+        el('div', 'mx-auto max-w-5xl', {
+          children: [
+            atom('Heading', 'mb-8 text-3xl font-bold tracking-tight text-base-content', {
+              level: 'h2',
+              text: 'Gallery',
+            }),
+            atom('Lightbox', 'grid grid-cols-2 gap-3 @xl:grid-cols-3', {}, [
+              atom('Image', 'w-full rounded-box', { ratio: 'square', alt: 'Gallery image 1' }),
+              atom('Image', 'w-full rounded-box', { ratio: 'square', alt: 'Gallery image 2' }),
+              atom('Image', 'w-full rounded-box', { ratio: 'square', alt: 'Gallery image 3' }),
+              atom('Image', 'w-full rounded-box', { ratio: 'square', alt: 'Gallery image 4' }),
+              atom('Image', 'w-full rounded-box', { ratio: 'square', alt: 'Gallery image 5' }),
+              atom('Image', 'w-full rounded-box', { ratio: 'square', alt: 'Gallery image 6' }),
+            ]),
           ],
         }),
       ],

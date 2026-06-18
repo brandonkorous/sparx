@@ -77,6 +77,7 @@ import {
   type BuilderProduct,
 } from './commerce';
 import { BuilderDialog } from './dialog';
+import { BuilderLightbox } from './lightbox';
 import { BuilderIcon } from './icon';
 import { renderSiteUiAtom } from './site-atoms';
 import { SignupForm } from './signup';
@@ -197,6 +198,7 @@ const CLASS_ON_LEAF: ReadonlySet<string> = new Set([
   'Toast',
   'FAB',
   'Dialog',
+  'Lightbox',
 ]);
 
 /** Does this leaf type style its own element with node.class (so the host should
@@ -769,6 +771,15 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
         >
           {children}
         </BuilderDialog>
+      );
+    }
+
+    case 'Lightbox': {
+      if (email) return <>{children}</>;
+      return (
+        <BuilderLightbox leafClass={leafClass} edit={edit}>
+          {children}
+        </BuilderLightbox>
       );
     }
 

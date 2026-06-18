@@ -1,0 +1,67 @@
+// Inventory transfers (docs/100 P4) — move stock between warehouses through an
+// in-transit holding location. A transfer is composed as a `draft` (one or more
+// variant lines), `shipped` (each line writes `transfer_out` from the source plus
+// `transfer_in` to the tenant's system in-transit warehouse — so total stock is
+// conserved while units are in motion), then `received` (in-transit → destination).
+// Cancelling an in-transit transfer returns the goods to source. Every leg funnels
+// through the movement ledger, so `onHand == Σ(movements.delta)` holds across all
+// three locations. Both tables are tenant-scoped (FORCE RLS).
+
+model InventoryTransfer {
+  id              String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String  @map("tenant_id") @db.Uuid
+  number          String  @db.VarChar(20)
+  fromWarehouseId String  @map("from_warehouse_id") @db.Uuid
+  toWarehouseId   String  @map("to_warehouse_id") @db.Uuid
+  status          String  @default("draft") @db.VarChar(12) // draft | in_transit | received | cancelled
+  note            String? @db.Text
+
+  shippedAt   DateTime? @map("shipped_at") @db.Timestamptz
+  shippedBy   String?   @map("shipped_by") @db.VarChar(127)
+  receivedAt  DateTime? @map("received_at") @db.Timestamptz
+  receivedBy  String?   @map("received_by") @db.VarChar(127)
+  cancelledAt DateTime? @map("cancelled_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant        Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  fromWarehouse Warehouse               @relation("TransferFrom", fields: [fromWarehouseId], references: [id], onDelete: Cascade)
+  toWarehouse   Warehouse               @relation("TransferTo", fields: [toWarehouseId], references: [id], onDelete: Cascade)
+  lines         InventoryTransferLine[]
+
+  @@unique([tenantId, number], map: "inventory_transfers_tenant_number_unique")
+  @@index([tenantId, status])
+  @@index([tenantId, fromWarehouseId])
+  @@index([tenantId, toWarehouseId])
+  @@map("inventory_transfers")
+}
+
+model InventoryTransferLine {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  transferId String @map("transfer_id") @db.Uuid
+  variantId  String @map("variant_id") @db.Uuid
+
+  // quantity = requested/shipped units; receivedQuantity is set on receive and may
+  // be short (the shortfall is written off the in-transit level as a `loss`).
+  quantity         Int
+  receivedQuantity Int? @map("received_quantity")
+
+  // Soft pointers to the source `transfer_out` (ship) and destination `transfer_in`
+  // (receive) movements — the ledger is the authority, these are for display.
+  shipMovementId    String? @map("ship_movement_id") @db.Uuid
+  receiveMovementId String? @map("receive_movement_id") @db.Uuid
+  note              String? @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  transfer InventoryTransfer @relation(fields: [transferId], references: [id], onDelete: Cascade)
+  variant  ProductVariant    @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@unique([transferId, variantId], map: "inventory_transfer_lines_transfer_variant_unique")
+  @@index([tenantId, transferId])
+  @@index([tenantId, variantId])
+  @@map("inventory_transfer_lines")
+}

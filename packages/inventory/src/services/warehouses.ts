@@ -36,12 +36,15 @@ export interface WarehouseRow {
 
 export async function listWarehouses(
   ctx: ServiceContext,
-  filter: { includeInactive?: boolean; take?: number; skip?: number } = {}
+  filter: { includeInactive?: boolean; includeSystem?: boolean; take?: number; skip?: number } = {}
 ): Promise<{ items: WarehouseRow[]; total: number }> {
   return withTenant(ctx, async (tx) => {
     const where = {
       deletedAt: null,
       ...(filter.includeInactive ? {} : { isActive: true }),
+      // The in-transit holding location is a system warehouse — keep it out of the
+      // ordinary list/pickers unless a caller explicitly opts in.
+      ...(filter.includeSystem ? {} : { isSystem: false }),
     };
     const [rows, total] = await Promise.all([
       tx.warehouse.findMany({
@@ -205,6 +208,9 @@ export async function archiveWarehouse(ctx: ServiceContext, warehouseId: string)
       where: { id: warehouseId, deletedAt: null },
     });
     if (!before) throw new InventoryNotFoundError('Warehouse', warehouseId);
+    if (before.isSystem) {
+      throw new InventoryValidationError('The in-transit location is managed by the platform');
+    }
 
     const activeStock = await tx.inventoryLevel.findFirst({
       where: { warehouseId, onHand: { gt: 0 } },

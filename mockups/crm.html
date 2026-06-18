@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>sparx — CRM</title>
+    <!--
+      /crm marketing page — CRM is the CUSTOMER SPINE of sparx. The thesis: the
+      whole page is one customer, seen through every lens. Because everything
+      runs on one database, a single record carries live signals from every
+      module with nothing to sync — "the records never disagree because there's
+      only one."
+
+      Devices, top to bottom (each a real structural argument, varied; cyan is a
+      SIGNAL — source dots, stage markers, the spark — never flood fill):
+        1. HERO (cyan tint) ........ split copy + the UNIFIED CUSTOMER RECORD card:
+           one person, five module-colored signals (commerce/email/b2b/crm/ai),
+           the marquee device. Rotates through verticals.
+        2. ONE-RECORD PROOF ........ "no sync" — before (N tools trading webhooks)
+           vs after (one record). Connector/ledger device.
+        3. ACTIVITY TIMELINE ....... a real append-only feed, module-colored
+           markers, beside the auto-logged-event vocabulary.
+        4. SEGMENTS ................ a live segment DEFINITION (field/op/value
+           predicate rows) → the matching-customer count it resolves to.
+        5. PIPELINE ................ a deal-stage board (Lead → Closed Won) with
+           weighted forecast — a horizontal rail that collapses.
+        6. AUTOMATION .............. trigger → action rows (when X, do Y).
+        7. CAPABILITY GRID ......... tasks, dedupe, reports, contact roles, MCP.
+        8. PROOF (dark) ............ one-database stat row.
+        9. PRICING ................. $49/mo flat, no tiers, 0.3% commerce fee fact.
+       10. FAQ ..................... index + spread (page-specific).
+       11. CTA (dark) .............. final.
+
+      Grounded in docs/11 (CRM PRD), docs/17 (billing: CRM $49/mo flat, 14-day
+      trial, +CRM steps the commerce fee to 0.3%), and the REAL dashboard CRM
+      surfaces (customer record stats, activity event types, segment rule fields,
+      pipeline kanban + forecast). CRM cyan #06B6D4.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --crm: #06b6d4;
+        --crm-text: #0e7490;
+        --crm-tint: #ecfeff;
+        --commerce: #f97316;
+        --commerce-text: #c2410c;
+        --email: #0ea5e9;
+        --email-text: #0369a1;
+        --b2b: #475569;
+        --ai: #ec4899;
+        --ai-text: #9d174d;
+        --builder: #6366f1;
+        --ink: #0a0a0a;
+        --primary: #0a0a0a;
+        --secondary: #52525b;
+        --tertiary: #71717a;
+        --border: #e5e5e5;
+        --subtle: #f4f4f5;
+        --page: #fafafa;
+        --surface: #ffffff;
+        --sans: 'Geist', system-ui, -apple-system, sans-serif;
+        --mono: 'Geist Mono', ui-monospace, monospace;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body {
+        font-family: var(--sans);
+        color: var(--ink);
+        background: var(--page);
+        -webkit-font-smoothing: antialiased;
+      }
+      a { color: inherit; text-decoration: none; }
+      .wrap { max-width: 1280px; margin: 0 auto; width: 100%; }
+      .pad { padding-left: clamp(20px, 5vw, 64px); padding-right: clamp(20px, 5vw, 64px); }
+      .sec { padding-top: clamp(64px, 9vw, 128px); padding-bottom: clamp(64px, 9vw, 128px); }
+      .sec-surface { background: var(--surface); border-top: 1px solid var(--border); }
+      .sec-dark { background: #0a0a0a; border-top: 1px solid #1a1a1a; }
+
+      /* nav */
+      .nav { position: sticky; top: 0; z-index: 50; background: rgba(250,250,250,0.85);
+             backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+      .nav-in { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+      .wordmark { font-weight: 500; font-size: 20px; letter-spacing: -0.03em; }
+      .wordmark .x { color: var(--builder); }
+      .nav-links { display: flex; gap: 24px; align-items: center; }
+      .nav-links a { font-size: 14px; color: var(--secondary); }
+
+      /* buttons */
+      .btn { display: inline-flex; align-items: center; gap: 8px; font-family: inherit;
+             font-weight: 500; font-size: 16px; border: none; border-radius: 10px;
+             cursor: pointer; padding: 13px 22px; transition: transform .15s ease, background .15s ease; }
+      .btn-dark { background: var(--ink); color: #fff; }
+      .btn-dark:hover { transform: translateY(-2px); }
+      .btn-out { background: var(--surface); color: var(--primary); border: 1px solid var(--border); }
+      .btn-out:hover { border-color: #c4c4cc; }
+      .btn-crm { background: var(--crm); color: #fff; }
+      .btn-xl { font-size: 18px; padding: 16px 28px; }
+      .btn-sm { font-size: 13px; padding: 8px 14px; border-radius: 8px; }
+
+      /* display headings */
+      .disp { font-weight: 500; letter-spacing: -0.035em; line-height: 0.95; margin: 0; }
+      .disp-hero { font-size: clamp(40px, 7vw, 84px); line-height: clamp(38px, 6.6vw, 80px); }
+      .disp-sec { font-size: clamp(30px, 4vw, 46px); line-height: 1.05; letter-spacing: -0.025em; }
+      .spark { color: var(--crm); }
+      .spark-w { color: var(--crm); }
+      .lede { font-size: 18px; line-height: 30px; color: var(--secondary); max-width: 640px; margin: 0; }
+      .head-block { display: flex; flex-direction: column; gap: 22px; align-items: flex-start; }
+
+      .chip-row { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; padding: 0; margin: 26px 0 0; }
+      .chip { display: inline-flex; align-items: center; gap: 8px; padding: 7px 13px;
+              background: var(--surface); border: 1px solid var(--border); border-radius: 9999px;
+              font-family: var(--mono); font-size: 12px; color: var(--secondary); }
+      .dot { display: inline-block; border-radius: 9999px; flex-shrink: 0; }
+
+      /* hero */
+      .hero { background: var(--crm-tint); padding-top: clamp(48px, 8vw, 88px); padding-bottom: clamp(64px, 9vw, 120px); }
+      .hero-grid { display: flex; gap: clamp(40px, 6vw, 72px); align-items: center; }
+      .hero-col { flex: 1; min-width: 0; }
+      .cluster { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 32px; }
+
+      /* unified record card */
+      .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+              box-shadow: 0 14px 40px rgba(15,15,20,0.06); overflow: hidden; }
+      .rec-head { display: flex; align-items: center; gap: 13px; padding: 18px 20px; border-bottom: 1px solid var(--border); }
+      .av { width: 42px; height: 42px; border-radius: 9999px; background: var(--crm-tint);
+            border: 1.5px solid var(--crm); flex-shrink: 0; display: flex; align-items: center;
+            justify-content: center; font-weight: 500; color: var(--crm-text); font-size: 15px; }
+      .rec-nm { font-weight: 500; font-size: 16px; }
+      .rec-mt { font-size: 12px; color: var(--tertiary); font-family: var(--mono); }
+      .rec-stats { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--border); }
+      .rec-stat { padding: 14px 20px; border-left: 1px solid var(--subtle); }
+      .rec-stat:first-child { border-left: none; }
+      .rec-stat .v { font-weight: 500; font-size: 18px; letter-spacing: -0.01em; }
+      .rec-stat .l { font-size: 11px; color: var(--tertiary); margin-top: 2px; font-family: var(--mono); }
+      .rec-sig { padding: 6px 20px 12px; }
+      .rec-sig-h { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase;
+                   color: var(--tertiary); padding: 12px 0 6px; }
+      .rrow { display: flex; align-items: center; gap: 11px; padding: 10px 0; border-top: 1px solid var(--subtle); font-size: 13.5px; }
+      .rrow:first-of-type { border-top: none; }
+      .rrow .src { margin-left: auto; font-family: var(--mono); font-size: 10.5px; color: var(--tertiary);
+                   padding: 3px 8px; border: 1px solid var(--border); border-radius: 9999px; }
+
+      /* one-record proof: before vs after */
+      .ba-grid { display: grid; grid-template-columns: 1fr 80px 1fr; align-items: center; gap: 0; margin-top: 52px; }
+      .ba-panel { border: 1px solid var(--border); border-radius: 16px; background: var(--surface); overflow: hidden; }
+      .ba-before { opacity: 0.92; }
+      .ba-h { display: flex; align-items: center; gap: 9px; padding: 15px 20px; border-bottom: 1px solid var(--border);
+              font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--tertiary); }
+      .ba-tool { display: flex; align-items: center; gap: 11px; padding: 13px 20px; border-top: 1px solid var(--subtle); font-size: 13.5px; color: var(--secondary); }
+      .ba-tool:first-of-type { border-top: none; }
+      .ba-tool .webhook { margin-left: auto; font-family: var(--mono); font-size: 10.5px; color: #b45309; }
+      .ba-after-body { padding: 18px 20px; }
+      .ba-after .line { display: flex; align-items: center; gap: 11px; padding: 9px 0; font-size: 13.5px; }
+      .ba-arrow { display: flex; align-items: center; justify-content: center; }
+      .ba-arrow svg { color: var(--crm); }
+
+      /* timeline */
+      .tl-grid { display: grid; grid-template-columns: minmax(0,1fr) 320px; gap: 40px; align-items: start; margin-top: 52px; }
+      .tl { position: relative; padding-left: 8px; }
+      .tl-item { position: relative; padding: 0 0 22px 34px; }
+      .tl-item:last-child { padding-bottom: 0; }
+      .tl-line { position: absolute; left: 10px; top: 24px; bottom: 0; width: 1.5px; background: var(--border); }
+      .tl-item:last-child .tl-line { display: none; }
+      .tl-mark { position: absolute; left: 0; top: 2px; width: 22px; height: 22px; border-radius: 9999px;
+                 display: flex; align-items: center; justify-content: center; color: #fff; }
+      .tl-title { font-weight: 500; font-size: 14.5px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+      .tl-badge { font-family: var(--mono); font-size: 10.5px; color: var(--tertiary); padding: 2px 7px;
+                  border: 1px solid var(--border); border-radius: 9999px; }
+      .tl-desc { font-size: 13px; color: var(--secondary); margin: 4px 0 0; }
+      .tl-time { font-family: var(--mono); font-size: 11px; color: var(--tertiary); margin-top: 4px; }
+      .tl-side .pin { display: flex; gap: 12px; padding: 16px 18px; background: var(--page);
+                      border: 1px solid var(--border); border-left: 3px solid var(--crm); border-radius: 12px; margin-bottom: 14px; }
+      .tl-side .pin h4 { margin: 0 0 4px; font-size: 14px; font-weight: 500; }
+      .tl-side .pin p { margin: 0; font-size: 12.5px; line-height: 19px; color: var(--secondary); }
+
+      /* segments */
+      .seg-grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 24px; align-items: stretch; margin-top: 52px; }
+      .seg-def { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--crm);
+                 border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+      .seg-h { display: flex; align-items: center; gap: 9px; padding: 14px 20px; border-bottom: 1px solid var(--border); }
+      .seg-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--crm-text); }
+      .pred { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 13px 20px; border-bottom: 1px solid var(--subtle); }
+      .pred-join { font-family: var(--mono); font-size: 11px; color: var(--crm-text); padding: 3px 9px;
+                   background: var(--crm-tint); border-radius: 6px; }
+      .pp { font-size: 13.5px; padding: 5px 10px; border: 1px solid var(--border); border-radius: 7px; background: var(--page); }
+      .pp-field { font-weight: 500; }
+      .pp-op { color: var(--tertiary); font-family: var(--mono); font-size: 12px; }
+      .seg-foot { display: flex; align-items: center; gap: 9px; padding: 14px 20px; margin-top: auto;
+                  background: var(--page); border-top: 1px solid var(--border); font-family: var(--mono); font-size: 11.5px; color: var(--tertiary); }
+      .seg-match { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+      .seg-count { padding: 24px 22px 18px; }
+      .seg-count .big { font-size: 52px; font-weight: 500; letter-spacing: -0.03em; line-height: 1; color: var(--crm-text); }
+      .seg-count .sub { font-size: 13px; color: var(--secondary); margin-top: 8px; }
+      .seg-cust { display: flex; align-items: center; gap: 11px; padding: 12px 22px; border-top: 1px solid var(--subtle); }
+      .seg-cust .sav { width: 28px; height: 28px; border-radius: 9999px; background: var(--subtle); flex-shrink: 0; }
+      .seg-cust .nm { font-size: 13.5px; font-weight: 500; }
+      .seg-cust .meta { font-size: 11.5px; color: var(--tertiary); }
+      .seg-cust .amt { margin-left: auto; font-size: 13px; color: var(--secondary); font-family: var(--mono); }
+
+      /* pipeline */
+      .pipe { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--border);
+              border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-top: 52px; }
+      .pipe-col { background: var(--surface); padding: 16px 14px; min-height: 220px; display: flex; flex-direction: column; gap: 11px; }
+      .pipe-head { display: flex; align-items: center; justify-content: space-between; }
+      .pipe-stage { font-size: 12.5px; font-weight: 500; display: flex; align-items: center; gap: 7px; }
+      .pipe-n { font-family: var(--mono); font-size: 11px; color: var(--tertiary); }
+      .deal { border: 1px solid var(--border); border-radius: 9px; padding: 11px; background: var(--page); }
+      .deal .t { font-size: 12.5px; font-weight: 500; line-height: 1.3; }
+      .deal .v { font-family: var(--mono); font-size: 11px; color: var(--secondary); margin-top: 6px; display: flex; justify-content: space-between; }
+      .deal .prob { font-size: 10px; color: var(--crm-text); }
+      .pipe-foot { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 22px; padding: 18px 22px;
+                   background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+      .pipe-foot .stat .n { font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
+      .pipe-foot .stat .l { font-size: 12px; color: var(--tertiary); margin-top: 2px; }
+
+      /* automation */
+      .auto-grid { display: flex; flex-direction: column; gap: 14px; margin-top: 52px; }
+      .auto-row { display: grid; grid-template-columns: 1fr 56px 1fr; align-items: center;
+                  background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+      .auto-when { padding: 20px 24px; }
+      .auto-then { padding: 20px 24px; background: var(--page); border-left: 1px solid var(--border); }
+      .auto-tag { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--tertiary); }
+      .auto-txt { font-size: 14.5px; font-weight: 500; margin-top: 7px; display: flex; align-items: center; gap: 9px; }
+      .auto-arrow { display: flex; align-items: center; justify-content: center; color: var(--crm); }
+
+      /* capability grid */
+      .cap-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 52px; }
+      .cap { display: flex; flex-direction: column; gap: 12px; padding: 26px; background: var(--page);
+             border: 1px solid var(--border); border-radius: 12px; min-height: 172px; }
+      .cap-ic { width: 32px; height: 32px; border-radius: 8px; background: var(--crm-tint);
+                display: flex; align-items: center; justify-content: center; }
+      .cap h3 { margin: 0; font-size: 17px; font-weight: 500; letter-spacing: -0.01em; }
+      .cap p { margin: 0; font-size: 13.5px; line-height: 21px; color: var(--secondary); }
+
+      /* dark proof */
+      .proof-head { max-width: 760px; }
+      .proof-row { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 56px; }
+      .proof-stat { padding-left: 32px; border-left: 1px solid #262626; }
+      .proof-stat:first-child { padding-left: 0; border-left: none; }
+      .proof-stat .n { font-weight: 500; font-size: clamp(36px, 5vw, 54px); letter-spacing: -0.03em; color: #fff; line-height: 1; }
+      .proof-stat .l { margin-top: 12px; font-size: 14.5px; line-height: 22px; color: #a1a1aa; }
+
+      /* pricing */
+      .price { display: flex; align-items: center; justify-content: space-between; gap: 32px;
+               padding: 40px; background: var(--surface); border: 1px solid var(--border);
+               border-top: 3px solid var(--crm); border-radius: 14px; }
+      .price-amt { display: flex; align-items: baseline; gap: 6px; }
+      .price-amt .n { font-weight: 500; font-size: 56px; letter-spacing: -0.025em; }
+      .price-amt .p { font-size: 16px; color: var(--tertiary); }
+      .price p { font-size: 14px; line-height: 22px; color: var(--secondary); margin: 12px 0 0; max-width: 640px; }
+
+      /* faq */
+      .faq-spread { display: flex; gap: 40px; align-items: flex-start; margin-top: 56px; }
+      .faq-rail { width: 340px; flex-shrink: 0; display: flex; flex-direction: column; gap: 4px; }
+      .faq-q { text-align: left; background: none; border: none; cursor: pointer; font-family: inherit;
+               font-size: 15px; color: var(--secondary); padding: 12px 14px; border-radius: 9px; display: flex; gap: 10px; align-items: baseline; }
+      .faq-q.active { background: var(--surface); color: var(--primary); font-weight: 500; border: 1px solid var(--border); }
+      .faq-q .qd { color: var(--crm); }
+      .faq-panel { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 32px; min-height: 180px; }
+      .faq-panel h3 { margin: 0 0 14px; font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
+      .faq-panel p { margin: 0; font-size: 15.5px; line-height: 26px; color: var(--secondary); }
+
+      /* cta */
+      .cta-in { display: flex; flex-direction: column; gap: 36px; align-items: flex-start; }
+      .cta .disp { color: #fff; }
+
+      footer { background: #0a0a0a; padding: 40px 0; border-top: 1px solid #1a1a1a; }
+      .foot-in { display: flex; align-items: center; justify-content: space-between; }
+      .foot-in .wordmark { color: #fff; }
+      .foot-dots { display: flex; gap: 7px; }
+      .foot-dots span { width: 9px; height: 9px; border-radius: 9999px; }
+      .legal { font-size: 12px; color: #71717a; }
+
+      @media (max-width: 1024px) {
+        .hero-grid { flex-direction: column; align-items: stretch; }
+        .tl-grid { grid-template-columns: 1fr; }
+        .ba-grid { grid-template-columns: 1fr; }
+        .ba-arrow { height: 44px; }
+        .ba-arrow svg { transform: rotate(90deg); }
+        .pipe { grid-template-columns: repeat(2, 1fr); }
+        .cap-grid { grid-template-columns: repeat(2, 1fr); }
+        .faq-spread { flex-direction: column; }
+        .faq-rail { width: 100%; }
+        .seg-grid { grid-template-columns: 1fr; }
+      }
+      @media (max-width: 768px) {
+        .seg-grid { grid-template-columns: 1fr; }
+        .price { flex-direction: column; align-items: flex-start; }
+        .proof-row { grid-template-columns: repeat(2, 1fr); gap: 28px 0; }
+        .proof-stat:nth-child(odd) { padding-left: 0; border-left: none; }
+        .auto-row { grid-template-columns: 1fr; }
+        .auto-then { border-left: none; border-top: 1px solid var(--border); }
+        .auto-arrow { transform: rotate(90deg); padding: 8px 0; }
+      }
+      @media (max-width: 640px) {
+        .pipe { grid-template-columns: 1fr; }
+        .cap-grid { grid-template-columns: 1fr; }
+        .rec-stats { grid-template-columns: 1fr 1fr; }
+        .nav-links { display: none; }
+        .foot-in { flex-direction: column; gap: 16px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .btn { transition: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- nav -->
+    <nav class="nav">
+      <div class="wrap pad nav-in">
+        <span class="wordmark">spar<span class="x">x</span></span>
+        <div class="nav-links">
+          <a href="#">Modules</a><a href="#">Pricing</a><a href="#">Docs</a>
+          <button class="btn btn-dark btn-sm">Start free</button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero pad">
+      <div class="wrap hero-grid">
+        <div class="hero-col">
+          <h1 class="disp disp-hero">One customer, every signal<span class="spark">.</span></h1>
+          <p class="lede" style="margin-top:28px;">
+            sparx CRM is the customer spine — profiles, activity, segments, pipeline, and automation,
+            all sitting on the same database as your orders, emails, and quotes. No sync, no Zapier,
+            no &ldquo;which system is right?&rdquo; The record is the record.
+          </p>
+          <div class="cluster">
+            <button class="btn btn-dark">Activate CRM &rarr;</button>
+            <button class="btn btn-out">See a customer record</button>
+          </div>
+          <ul class="chip-row">
+            <li class="chip"><span class="dot" style="width:6px;height:6px;background:var(--crm)"></span>one record, every module</li>
+            <li class="chip"><span class="dot" style="width:6px;height:6px;background:var(--crm)"></span>live segments</li>
+            <li class="chip"><span class="dot" style="width:6px;height:6px;background:var(--crm)"></span>pipeline + forecast</li>
+            <li class="chip"><span class="dot" style="width:6px;height:6px;background:var(--crm)"></span>no sync, ever</li>
+          </ul>
+        </div>
+        <div class="hero-col">
+          <!-- UNIFIED CUSTOMER RECORD -->
+          <div class="card">
+            <div class="rec-head">
+              <span class="av">DR</span>
+              <div>
+                <div class="rec-nm">Dana Ruiz</div>
+                <div class="rec-mt">retail · one record · 5 live signals</div>
+              </div>
+              <span class="dot" style="margin-left:auto;width:9px;height:9px;background:var(--crm)"></span>
+            </div>
+            <div class="rec-stats">
+              <div class="rec-stat"><div class="v">$1,847</div><div class="l">total spent</div></div>
+              <div class="rec-stat"><div class="v">6</div><div class="l">orders</div></div>
+              <div class="rec-stat"><div class="v">$308</div><div class="l">avg order</div></div>
+            </div>
+            <div class="rec-sig">
+              <div class="rec-sig-h">activity · from every module</div>
+              <div class="rrow"><span class="dot" style="width:8px;height:8px;background:var(--commerce)"></span>Order #1042 placed — $539.38<span class="src">commerce</span></div>
+              <div class="rrow"><span class="dot" style="width:8px;height:8px;background:var(--email)"></span>Opened &ldquo;Spring restock&rdquo; email<span class="src">email</span></div>
+              <div class="rrow"><span class="dot" style="width:8px;height:8px;background:var(--crm)"></span>In segment: high-value, loyal<span class="src">crm</span></div>
+              <div class="rrow"><span class="dot" style="width:8px;height:8px;background:var(--ai)"></span>Asked the AI for a reorder quote<span class="src">mcp</span></div>
+              <div class="rrow"><span class="dot" style="width:8px;height:8px;background:var(--builder)"></span>Logged in to the storefront<span class="src">builder</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ONE-RECORD PROOF: before vs after -->
+    <section class="sec pad">
+      <div class="wrap">
+        <div class="head-block">
+          <h2 class="disp disp-sec">The records never disagree, because there&rsquo;s only one<span class="spark">.</span></h2>
+          <p class="lede">Most CRMs are a second copy of your customer — stitched to your store with webhooks
+            that drift, dedupe rules that fight, and a 3am sync that broke. sparx CRM isn&rsquo;t a copy.
+            It reads the same rows the order does.</p>
+        </div>
+        <div class="ba-grid">
+          <div class="ba-panel ba-before">
+            <div class="ba-h"><span class="dot" style="width:8px;height:8px;background:#b45309"></span>the usual stack</div>
+            <div class="ba-tool"><span class="dot" style="width:8px;height:8px;background:var(--commerce)"></span>Store platform — the order<span class="webhook">webhook ↻</span></div>
+            <div class="ba-tool"><span class="dot" style="width:8px;height:8px;background:var(--crm)"></span>Bolt-on CRM — a copy of the customer<span class="webhook">webhook ↻</span></div>
+            <div class="ba-tool"><span class="dot" style="width:8px;height:8px;background:var(--email)"></span>Email tool — its own list<span class="webhook">sync ↻</span></div>
+            <div class="ba-tool"><span class="dot" style="width:8px;height:8px;background:var(--b2b)"></span>Spreadsheet — the &ldquo;real&rdquo; numbers<span class="webhook">manual</span></div>
+          </div>
+          <div class="ba-arrow">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </div>
+          <div class="ba-panel">
+            <div class="ba-h"><span class="dot" style="width:8px;height:8px;background:var(--crm)"></span>sparx · one database</div>
+            <div class="ba-after-body">
+              <div class="ba-after">
+                <div class="line"><span class="av" style="width:30px;height:30px;font-size:11px;">DR</span><strong style="font-weight:500;">Dana Ruiz</strong></div>
+              </div>
+              <div class="rrow" style="border-top:1px solid var(--subtle);margin-top:8px;"><span class="dot" style="width:8px;height:8px;background:var(--commerce)"></span>orders &amp; spend<span class="src">live</span></div>
+              <div class="rrow"><span class="dot" style="width:8px;height:8px;background:var(--email)"></span>email engagement<span class="src">live</span></div>
+              <div class="rrow"><span class="dot" style="width:8px;height:8px;background:var(--crm)"></span>segments &amp; pipeline<span class="src">live</span></div>
+              <div class="rrow"><span class="dot" style="width:8px;height:8px;background:var(--ai)"></span>AI conversations<span class="src">live</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACTIVITY TIMELINE -->
+    <section class="sec sec-surface pad">
+      <div class="wrap">
+        <div class="head-block">
+          <h2 class="disp disp-sec">Every interaction, in order, logged for you<span class="spark">.</span></h2>
+          <p class="lede">The activity feed is append-only and auto-populated. Orders, shipments, email opens,
+            quotes, invoices, logins — written the moment they happen, from whatever module did them. Add a
+            call, a note, or a meeting by hand; corrections appear as new entries, never overwrites.</p>
+        </div>
+        <div class="tl-grid">
+          <div class="tl">
+            <div class="tl-item">
+              <span class="tl-line"></span>
+              <span class="tl-mark" style="background:var(--commerce)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 16h2a2 2 0 0 0 2-2V7l-4-4H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h2"/><circle cx="9" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg></span>
+              <div class="tl-title">Order placed <span class="tl-badge">system</span></div>
+              <p class="tl-desc">Order #1042 · $539.38 · paid with Apple Pay</p>
+              <div class="tl-time">today · 9:14 AM</div>
+            </div>
+            <div class="tl-item">
+              <span class="tl-line"></span>
+              <span class="tl-mark" style="background:var(--email)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg></span>
+              <div class="tl-title">Email opened <span class="tl-badge">system</span></div>
+              <p class="tl-desc">&ldquo;Spring restock is here&rdquo; · clicked through to the new arrivals</p>
+              <div class="tl-time">yesterday · 6:02 PM</div>
+            </div>
+            <div class="tl-item">
+              <span class="tl-line"></span>
+              <span class="tl-mark" style="background:var(--crm)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+              <div class="tl-title">Call logged <span class="tl-badge">staff · Maya</span></div>
+              <p class="tl-desc">Walked through the bedding-set sizes — wants to reorder for a guest room.</p>
+              <div class="tl-time">2 days ago · 11:40 AM</div>
+            </div>
+            <div class="tl-item">
+              <span class="tl-line"></span>
+              <span class="tl-mark" style="background:var(--ai)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></span>
+              <div class="tl-title">Asked the AI for a quote <span class="tl-badge">mcp</span></div>
+              <p class="tl-desc">&ldquo;What would two more bedding sets cost with my usual discount?&rdquo;</p>
+              <div class="tl-time">3 days ago · 8:21 PM</div>
+            </div>
+            <div class="tl-item">
+              <span class="tl-line"></span>
+              <span class="tl-mark" style="background:var(--commerce)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+              <div class="tl-title">Order delivered <span class="tl-badge">system</span></div>
+              <p class="tl-desc">Order #1031 marked delivered by the carrier</p>
+              <div class="tl-time">last week</div>
+            </div>
+          </div>
+          <div class="tl-side">
+            <div class="pin"><div><h4>Auto-logged, every module</h4><p>Orders, shipments, email opens and clicks, quotes, invoices, logins — written by the system as events fire.</p></div></div>
+            <div class="pin"><div><h4>Add yours by hand</h4><p>Notes, calls with duration, meetings, and tasks with a due date and an assigned rep.</p></div></div>
+            <div class="pin"><div><h4>Append-only &amp; auditable</h4><p>Nothing is ever overwritten. An edit lands as a new entry marked &ldquo;Edited,&rdquo; so the history stays honest.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEGMENTS -->
+    <section class="sec pad">
+      <div class="wrap">
+        <div class="head-block">
+          <h2 class="disp disp-sec">Define the audience, watch it fill<span class="spark">.</span></h2>
+          <p class="lede">Build a segment from any field on the record — lifetime spend, days since last order, email
+            engagement, B2B pricing tier. It updates itself as customers cross the line, and syncs straight to an
+            Email broadcast. No list to export, ever.</p>
+        </div>
+        <div class="seg-grid">
+          <div class="seg-def">
+            <div class="seg-h"><span class="dot" style="width:8px;height:8px;background:var(--crm)"></span><span class="seg-tag">segment · win-back at-risk</span></div>
+            <div class="pred">
+              <span class="pp"><span class="pp-field">Lifetime spend</span> <span class="pp-op">is at least</span> $500</span>
+            </div>
+            <div class="pred">
+              <span class="pred-join">AND</span>
+              <span class="pp"><span class="pp-field">Days since last order</span> <span class="pp-op">is greater than</span> 90</span>
+            </div>
+            <div class="pred">
+              <span class="pred-join">AND</span>
+              <span class="pp"><span class="pp-field">Order count</span> <span class="pp-op">is at least</span> 4</span>
+            </div>
+            <div class="pred">
+              <span class="pred-join">AND NOT</span>
+              <span class="pp"><span class="pp-field">Do-not-contact</span> <span class="pp-op">is</span> true</span>
+            </div>
+            <div class="seg-foot"><span class="dot" style="width:6px;height:6px;background:var(--crm)"></span>recomputed live · synced to Email</div>
+          </div>
+          <div class="seg-match">
+            <div class="seg-count">
+              <div class="big">218</div>
+              <div class="sub">customers match right now — auto-added the moment they cross the line, removed when they reorder.</div>
+            </div>
+            <div class="seg-cust"><span class="sav"></span><div><div class="nm">Marcus Lee</div><div class="meta">12 orders · last 104 days ago</div></div><span class="amt">$3,240</span></div>
+            <div class="seg-cust"><span class="sav"></span><div><div class="nm">Priya Nair</div><div class="meta">6 orders · last 96 days ago</div></div><span class="amt">$880</span></div>
+            <div class="seg-cust"><span class="sav"></span><div><div class="nm">Reyes Fabrication</div><div class="meta">9 orders · last 121 days ago</div></div><span class="amt">$5,110</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PIPELINE -->
+    <section class="sec sec-surface pad">
+      <div class="wrap">
+        <div class="head-block">
+          <h2 class="disp disp-sec">A pipeline that already knows your orders<span class="spark">.</span></h2>
+          <p class="lede">Deals move Lead → Qualified → Proposal → Negotiation → Closed, on a board you drag, a list
+            you sort, or a forecast weighted by probability. Each deal links to the customer&rsquo;s real quotes and
+            orders — so &ldquo;quote sent → accepted → invoice paid&rdquo; lives on one card.</p>
+        </div>
+        <div class="pipe">
+          <div class="pipe-col">
+            <div class="pipe-head"><span class="pipe-stage"><span class="dot" style="width:8px;height:8px;background:var(--crm);opacity:.4"></span>Lead</span><span class="pipe-n">3</span></div>
+            <div class="deal"><div class="t">North Loop wholesale</div><div class="v"><span>$4,200</span><span class="prob">20%</span></div></div>
+            <div class="deal"><div class="t">Hudson farm CSA</div><div class="v"><span>$1,800</span><span class="prob">20%</span></div></div>
+          </div>
+          <div class="pipe-col">
+            <div class="pipe-head"><span class="pipe-stage"><span class="dot" style="width:8px;height:8px;background:var(--crm);opacity:.6"></span>Qualified</span><span class="pipe-n">2</span></div>
+            <div class="deal"><div class="t">Atlas reorder contract</div><div class="v"><span>$12,400</span><span class="prob">40%</span></div></div>
+          </div>
+          <div class="pipe-col">
+            <div class="pipe-head"><span class="pipe-stage"><span class="dot" style="width:8px;height:8px;background:var(--crm);opacity:.8"></span>Proposal</span><span class="pipe-n">2</span></div>
+            <div class="deal"><div class="t">Waggle retail expansion</div><div class="v"><span>$6,900</span><span class="prob">60%</span></div></div>
+          </div>
+          <div class="pipe-col">
+            <div class="pipe-head"><span class="pipe-stage"><span class="dot" style="width:8px;height:8px;background:var(--crm)"></span>Negotiation</span><span class="pipe-n">1</span></div>
+            <div class="deal"><div class="t">Reyes fleet account</div><div class="v"><span>$18,000</span><span class="prob">75%</span></div></div>
+          </div>
+          <div class="pipe-col">
+            <div class="pipe-head"><span class="pipe-stage"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--crm-text)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Closed Won</span><span class="pipe-n">4</span></div>
+            <div class="deal" style="border-color:var(--crm)"><div class="t">Flax &amp; Fern bulk</div><div class="v"><span>$9,300</span><span class="prob">won</span></div></div>
+          </div>
+        </div>
+        <div class="pipe-foot">
+          <div class="stat"><div class="n">$24,180</div><div class="l">weighted pipeline value</div></div>
+          <div class="stat"><div class="n">8</div><div class="l">open deals across 5 stages</div></div>
+          <div class="stat"><div class="n">$9,300</div><div class="l">closed-won this month</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- AUTOMATION -->
+    <section class="sec pad">
+      <div class="wrap">
+        <div class="head-block">
+          <h2 class="disp disp-sec">When something changes, do the next thing<span class="spark">.</span></h2>
+          <p class="lede">CRM shares triggers with the email automation engine. Pick the signal, pick the action —
+            send an email, assign a rep, create a task, fire a webhook. No code, and it runs off the same events the
+            timeline already records.</p>
+        </div>
+        <div class="auto-grid">
+          <div class="auto-row">
+            <div class="auto-when"><div class="auto-tag">when</div><div class="auto-txt"><span class="dot" style="width:8px;height:8px;background:var(--crm)"></span>no order in 90 days</div></div>
+            <div class="auto-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+            <div class="auto-then"><div class="auto-tag">then</div><div class="auto-txt"><span class="dot" style="width:8px;height:8px;background:var(--email)"></span>send the win-back email</div></div>
+          </div>
+          <div class="auto-row">
+            <div class="auto-when"><div class="auto-tag">when</div><div class="auto-txt"><span class="dot" style="width:8px;height:8px;background:var(--crm)"></span>lifetime spend crosses $5,000</div></div>
+            <div class="auto-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+            <div class="auto-then"><div class="auto-tag">then</div><div class="auto-txt"><span class="dot" style="width:8px;height:8px;background:var(--crm)"></span>assign to a senior rep · tag VIP</div></div>
+          </div>
+          <div class="auto-row">
+            <div class="auto-when"><div class="auto-tag">when</div><div class="auto-txt"><span class="dot" style="width:8px;height:8px;background:var(--crm)"></span>deal moves to Proposal</div></div>
+            <div class="auto-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+            <div class="auto-then"><div class="auto-tag">then</div><div class="auto-txt"><span class="dot" style="width:8px;height:8px;background:var(--email)"></span>send the proposal template</div></div>
+          </div>
+          <div class="auto-row">
+            <div class="auto-when"><div class="auto-tag">when</div><div class="auto-txt"><span class="dot" style="width:8px;height:8px;background:var(--b2b)"></span>credit utilization over 80%</div></div>
+            <div class="auto-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+            <div class="auto-then"><div class="auto-tag">then</div><div class="auto-txt"><span class="dot" style="width:8px;height:8px;background:var(--crm)"></span>create a task for the assigned rep</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CAPABILITY GRID -->
+    <section class="sec sec-surface pad">
+      <div class="wrap">
+        <div class="head-block">
+          <h2 class="disp disp-sec">Everything a sales and support team needs<span class="spark">.</span></h2>
+          <p class="lede">The record and the pipeline are the spine — these are the parts that make a day&rsquo;s work
+            actually move.</p>
+        </div>
+        <div class="cap-grid">
+          <div class="cap"><span class="cap-ic"><span class="dot" style="width:9px;height:9px;background:var(--crm)"></span></span><h3>Tasks &amp; reminders</h3><p>Title, due date, priority, assignee — surfaced on the record, the deal, and a personal task list. Overdue tasks email the rep.</p></div>
+          <div class="cap"><span class="cap-ic"><span class="dot" style="width:9px;height:9px;background:var(--crm)"></span></span><h3>Contact roles</h3><p>One person can be a retail customer, a B2B buyer, and a sales prospect at once — with tags, addresses, and a preferred contact method.</p></div>
+          <div class="cap"><span class="cap-ic"><span class="dot" style="width:9px;height:9px;background:var(--crm)"></span></span><h3>Dedupe &amp; merge</h3><p>Duplicate detection on email, a guided merge that keeps both activity feeds, and a bulk tool that surfaces likely matches.</p></div>
+          <div class="cap"><span class="cap-ic"><span class="dot" style="width:9px;height:9px;background:var(--crm)"></span></span><h3>Reports that reconcile</h3><p>Pipeline value by stage, win/loss by rep, deal cycle length, lifetime-value distribution, churn risk — off live data, not an export.</p></div>
+          <div class="cap"><span class="cap-ic"><span class="dot" style="width:9px;height:9px;background:var(--crm)"></span></span><h3>B2B on the same record</h3><p>Account membership, pricing tier, credit limit and utilization, and net terms ride along on the customer when B2B is on.</p></div>
+          <div class="cap"><span class="cap-ic"><span class="dot" style="width:9px;height:9px;background:var(--ai)"></span></span><h3>Ask it in plain English</h3><p>&ldquo;Top 10 customers by lifetime value,&rdquo; &ldquo;deals closing this month,&rdquo; &ldquo;assign all at-risk to Sarah&rdquo; — over MCP, from the chat you already use.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DARK PROOF -->
+    <section class="sec sec-dark pad">
+      <div class="wrap">
+        <div class="proof-head">
+          <h2 class="disp disp-sec" style="color:#fff">One customer, one truth, zero glue<span class="spark-w">.</span></h2>
+          <p class="lede" style="color:#a1a1aa;max-width:640px;">Because the CRM reads the same database as orders, content,
+            and email, the numbers reconcile by default. There&rsquo;s nothing to sync — so there&rsquo;s nothing to
+            drift, dedupe, or argue with.</p>
+        </div>
+        <div class="proof-row">
+          <div class="proof-stat"><div class="n">1</div><div class="l">database under customers, orders, and email — nothing to sync</div></div>
+          <div class="proof-stat"><div class="n">0</div><div class="l">webhooks to babysit · no Zapier between you and your data</div></div>
+          <div class="proof-stat"><div class="n">0.3%</div><div class="l">commerce transaction fee once CRM is on — it pays for itself</div></div>
+          <div class="proof-stat"><div class="n">$0</div><div class="l">to export — full JSON or SQL from the dashboard, no ticket</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section class="sec pad">
+      <div class="wrap">
+        <div class="price">
+          <div>
+            <div class="price-amt"><span class="n">$49</span><span class="p">/mo</span></div>
+            <p>A flat $49/mo — profiles, activity, segments, pipeline, tasks, and automation, with no tiers, no per-seat
+              charge, and no per-contact metering. It sits on the same database as your orders and content, so switch it
+              on alongside whatever you already run. Adding CRM also steps your Commerce transaction fee down to 0.3%.
+              Start free for 14 days; no card to begin.</p>
+          </div>
+          <div class="cluster" style="margin-top:0;">
+            <button class="btn btn-out">See all plans &rarr;</button>
+            <button class="btn btn-dark">Activate CRM</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="sec pad">
+      <div class="wrap">
+        <div class="head-block">
+          <h2 class="disp disp-sec">CRM questions<span class="spark">.</span></h2>
+          <p class="lede">How it connects, what it costs, and what it does for a team — answered straight. Still deciding?
+            Read the CRM docs or start the 14-day trial.</p>
+        </div>
+        <div class="faq-spread">
+          <div class="faq-rail">
+            <button class="faq-q active"><span class="qd">?</span>How is this different from a bolt-on CRM?</button>
+            <button class="faq-q"><span class="qd">?</span>How much does sparx CRM cost?</button>
+            <button class="faq-q"><span class="qd">?</span>Do I need Commerce to use CRM?</button>
+            <button class="faq-q"><span class="qd">?</span>How do segments work?</button>
+            <button class="faq-q"><span class="qd">?</span>Can I import my existing contacts and deals?</button>
+            <button class="faq-q"><span class="qd">?</span>Is it built for a sales team?</button>
+          </div>
+          <div class="faq-panel">
+            <h3>How is this different from a bolt-on CRM?</h3>
+            <p>A bolt-on CRM keeps its own copy of your customer and trades webhooks with your store to stay
+              roughly in sync. sparx CRM has no copy: it reads the same database as orders, email, and quotes,
+              so the customer record is always current and never disagrees with itself. There is nothing to
+              integrate, sync, or dedupe between systems.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="sec sec-dark cta pad">
+      <div class="wrap cta-in">
+        <h2 class="disp disp-hero">Know every customer cold<span class="spark-w">.</span></h2>
+        <p class="lede" style="color:#a1a1aa;">Turn CRM on and your customers arrive with their whole history already attached —
+          orders, emails, quotes, conversations. No migration weekend, no contract; switch it off the day you
+          stop, and your data stays yours.</p>
+        <div class="cluster" style="margin-top:0;">
+          <button class="btn btn-crm btn-xl">Activate CRM &rarr;</button>
+          <button class="btn btn-xl" style="background:transparent;border:1px solid #2a2a2a;color:#fff;">See a customer record</button>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap pad foot-in">
+        <span class="wordmark">spar<span class="x">x</span></span>
+        <div class="foot-dots">
+          <span style="background:#6366f1"></span><span style="background:#f97316"></span><span style="background:#14b8a6"></span><span style="background:#06b6d4"></span><span style="background:#0ea5e9"></span><span style="background:#475569"></span><span style="background:#ec4899"></span><span style="background:#10b981"></span>
+        </div>
+        <span class="legal">© 2026 WizeWorks · sparx.works</span>
+      </div>
+    </footer>
+  </body>
+</html>

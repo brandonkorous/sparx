@@ -1,6 +1,6 @@
 # sparx Platform — Inventory Product Build Plan
 
-**Version:** 1.8
+**Version:** 1.11
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-17
 
@@ -388,9 +388,14 @@ expected arrival, line cost), `GoodsReceipt` + `GoodsReceiptLine` (receive again
    PO detail; `Receiving` manifest section. Seed: a partial demo receipt (PO-000002 → `partial`, Σ-invariant
    verified 0 mismatches). DB-backed tests in `test/integration/goods-receipts.test.ts` (3 cases; inventory
    suite 25/25).
-4. **Reorder engine** — items at/below `reorderPoint` produce reorder suggestions (the "Reorder watch"
-   already lists them); one click drafts a PO to the preferred supplier; lead-time → expected arrival.
-   Wire to the existing `inventory.low` event + automation so suggestions can auto-draft.
+4. **Reorder engine** — items at/below `reorderPoint` produce reorder suggestions grouped by (supplier,
+   warehouse) with a suggested quantity (the configured reorder qty, else top-up to the point, floored at
+   the supplier minimum) + an `onOrder` figure so nothing already inbound is re-ordered; one click drafts a
+   PO per group to the preferred supplier (`suppliersForVariant`), lead-time → expected arrival. Manual via
+   `/inventory/reorder` (`POST /v1/inventory/reorder/draft`); **auto** via the `inventory.draft_reorder_po`
+   automation action on the `inventory.low` event — find-or-appends into one open draft per (supplier,
+   warehouse) so repeated lows converge, never spam. The auto seed `INVENTORY_AUTO_REORDER` ships **paused**
+   (opt-in). Items with no supplier link surface separately (link a supplier first).
 5. Dashboard: `/inventory/suppliers`, `/inventory/purchase-orders` (+ detail), `/inventory/receiving`.
    The mockup's "Incoming POs" + "Receive stock" become real.
 6. API: `/v1/inventory/suppliers`, `/purchase-orders`, `/receipts` (CRUD + lifecycle actions).
@@ -398,13 +403,14 @@ expected arrival, line cost), `GoodsReceipt` + `GoodsReceiptLine` (receive again
 **Deploy gate:** create supplier → draft PO → receive (partial then full) → `onHand` rises via `receive`
 movements; reorder suggestion drafts a PO. All with commerce off.
 
-> **P3 in progress.** P3a (suppliers + per-variant purchasing links), **P3b (PurchaseOrder lifecycle +
-> lines + document)**, and **P3c (Receiving — goods receipts → `receive` movements → moving-average,
-> partials, lot-on-receipt, PO advancing to partial/received)** are ✅ DONE — a standalone tenant can record
-> vendors, draft/submit/print purchase orders, and receive goods into stock today. Last sub-increment:
-> **P3d** reorder engine (items at/below `reorderPoint` → one-click draft PO to the preferred supplier via
-> `suppliersForVariant`, lead-time → expected arrival, wired to the existing `inventory.low` event +
-> automation). It builds on the supplier + PO models and is independently deployable.
+> **Phase 3 COMPLETE ✅.** P3a (suppliers + per-variant purchasing links), **P3b (PurchaseOrder lifecycle +
+> lines + document)**, **P3c (Receiving — goods receipts → `receive` movements → moving-average, partials,
+> lot-on-receipt, PO advancing to partial/received)**, and **P3d (Reorder engine — low → grouped
+> suggestions → draft PO to the preferred supplier, manual + the opt-in `inventory.low` auto-draft action)**
+> are all ✅ DONE. A standalone tenant can now run the whole inbound + replenishment workflow: record
+> vendors, see what's low, draft/submit/print purchase orders, receive goods into stock, and let auto-reorder
+> draft replenishment POs — all with commerce off. Next: **P4** (counts/transfers/audit UI), independent of
+> P3.
 
 **Risks:** PO↔receipt partial-quantity accounting; receipts update the moving-average `avgCostCents`
 (§2.3) — guard divide-by-zero when `onHand` is 0 (seed the average from the receipt cost).
@@ -419,9 +425,46 @@ movements; reorder suggestion drafts a PO. All with commerce off.
 
 1. **Counts** — `InventoryCount` + `InventoryCountLine` (cycle subset or full physical); capture
    expected vs counted, compute variance, **approval over a threshold**, post `recount` movements.
-   Dashboard `/inventory/counts`.
-2. **Transfers UI** — surface the existing `transfer()` API with `/inventory/transfers`; model an
+   Dashboard `/inventory/counts`. ✅ **DONE (P4a).** New `39-inventory-counts.prisma`
+   (`inventory_counts` + `inventory_count_lines`, migration `20260907000000_inventory_counts`, canonical
+   FORCE RLS + `type`/`status` CHECKs); a count is scoped to one warehouse and snapshots `expectedQuantity`
+   = on-hand at line creation. Lifecycle `counting → review → [approved] → posted` (+ `cancelled`): the
+   editable phase (`@sparx/inventory` `inventory-counts.ts`) creates the session (a `full` count snapshots
+   every level in the warehouse, a `cycle` count the chosen variants), adds/removes lines, and records
+   counted quantities; the lifecycle (`inventory-count-lifecycle.ts`) submits for review (freezing
+   `varianceValueCents` = Σ |Δ|·cost and `requiresApproval` when it clears the per-count
+   `approvalThresholdCents`, default $50), approves (admin sign-off, over-threshold only), posts, or
+   cancels. **Post applies one `recount` movement per line through the ledger as an absolute `setOnHand`** —
+   the corrective delta is computed against LIVE on-hand inside the row lock, so a sale that landed
+   mid-count is reconciled, not lost (the line records both the count-time `variance` and the actual
+   `appliedDelta`); idempotency-keyed `count:<lineId>`. API `/v1/inventory/counts` (CRUD + `/lines` +
+   `/entries` + `/submit` + `/approve` [admin] + `/post` + `/cancel`), `requireInventoryModule`
+   (standalone-usable). Dashboard `/inventory/counts` (status-filtered list / create [cycle by SKU or full]
+   / detail with lifecycle bar + live-variance line entry + Match-expected + add/remove + Post-recounts
+   armed-confirm); `Counts` manifest section + action. Emits `inventory.count.completed` on post. DB-backed
+   tests in `test/integration/counts.test.ts` (4 cases; inventory suite 32/32).
+2. **Transfers UI** — surface stock movement between warehouses with `/inventory/transfers`; model an
    **in-transit** location so a transfer is `transfer_out` at source now + `transfer_in` on arrival.
+   ✅ **DONE (P4b).** New `40-inventory-transfers.prisma` (`inventory_transfers` + `inventory_transfer_lines`,
+   migration `20260908000000_inventory_transfers`, canonical FORCE RLS + a `status` CHECK) plus an
+   `is_system` flag on `inventory_warehouses` marking the per-tenant **in-transit holding warehouse**
+   (provisioned lazily on first ship; `listWarehouses` excludes system warehouses so it never appears in
+   the pickers/list). A transfer is a document: lifecycle `draft → in_transit → received` (+ `cancelled`).
+   The editable phase (`@sparx/inventory` `inventory-transfers.ts`) composes the lines (variant + qty); the
+   lifecycle (`inventory-transfer-lifecycle.ts`) **ships** (each line writes `transfer_out` from source +
+   `transfer_in` to the in-transit warehouse — so total stock is conserved while units are in motion),
+   **receives** (in-transit → destination; a per-line receipt short of the shipped quantity writes the
+   shortfall off the in-transit level as a `loss`, so nothing is stranded), or **cancels** (a draft is
+   voided; an in-transit transfer's goods return to source). Every leg funnels through the ledger
+   (`applyMovement`, idempotency-keyed per leg+line), so `onHand == Σ(movements)` holds across source,
+   in-transit, and destination. API `/v1/inventory/transfers` (CRUD + `/lines` + `/ship` + `/receive` +
+   `/cancel`), `requireInventoryModule` (standalone-usable). Dashboard `/inventory/transfers` (status-filtered
+   list / create [route + items by SKU] / detail with the lifecycle bar [ship; cancel & return / delete draft
+   armed-confirm] + a lifecycle-aware lines panel [draft = editable; in_transit = receive form with per-line
+   received quantities; terminal = read-only with a "short" badge]); `Transfers` manifest section + action.
+   Emits `inventory.transfer.shipped` / `inventory.transfer.received`. Seed ships a draft MAIN → WEST-3PL the
+   user can ship + receive (the deploy-gate exercise). DB-backed tests in `test/integration/transfers.test.ts`
+   (4 cases; inventory suite 36/36).
 3. **Movement / audit-log viewer** — `/inventory/movements`: the `InventoryAdjustment` ledger, filter by
    variant/warehouse/reason/actor/date. This is the compliance surface docs/99 D5 flagged missing.
 4. **Lots/serials UI** — per-variant lot creation tab + serial list/status (models exist; no UI today).
@@ -429,8 +472,22 @@ movements; reorder suggestion drafts a PO. All with commerce off.
 **Deploy gate:** run a cycle count with a variance → approval → `recount` movement; transfer between two
 warehouses through in-transit; movement viewer shows the full history; create a lot + serials in UI.
 
-**Risks:** count-vs-live race (snapshot expected at count start, reconcile deltas at post); approval
-gating ties into the roles model (`editor`/`admin`).
+> **P4a (Counts) ✅ DONE** — a standalone tenant can run a cycle or full count, enter quantities, review the
+> variance, and post (with an admin approval over the value threshold), correcting stock via auditable
+> `recount` movements that reconcile any mid-count drift. The count-vs-live race is handled by the ledger's
+> absolute `setOnHand`.
+>
+> **P4b (Transfers) ✅ DONE** — a standalone tenant can move stock between two warehouses through an
+> in-transit holding location: build a draft, ship (source → in-transit), and receive (in-transit →
+> destination), with total inventory conserved the whole way; a short receipt is written off in transit and
+> cancelling an in-transit transfer returns the goods to source. The in-transit warehouse is a per-tenant
+> system location (`is_system`), provisioned on first ship and hidden from the ordinary pickers/list.
+> **Next within P4:** **P4c** movement/audit-log viewer (docs/99 D5, read-only over `inventory_movements`),
+> **P4d** lots/serials UI — each independent of P4a/P4b.
+
+**Risks:** count-vs-live race (snapshot expected at count start, reconcile deltas at post) — **resolved**
+by the absolute `setOnHand` recount (delta computed against live on-hand under the row lock); approval
+gating ties into the roles model (`editor`/`admin`) — the `/approve` route requires `admin`.
 
 ---
 

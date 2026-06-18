@@ -23,6 +23,8 @@ import { LAYOUT_CATALOG } from './layout';
 import { MARKETING_CATALOG } from './marketing';
 import { MOCKUP_CATALOG } from './mockup';
 import { INTERACTIVE_CATALOG } from './interactive';
+import { CONTENT_CATALOG } from './content';
+import { COMMERCE_CATALOG } from './commerce';
 import { EMAIL_CATALOG } from './email';
 
 // Public surface — the taxonomy + entry types only. The authoring helpers
@@ -58,6 +60,12 @@ export const PLATFORM_CATALOG: PlatformCatalogEntry[] = [
   ...MARKETING_CATALOG,
   ...MOCKUP_CATALOG,
   ...INTERACTIVE_CATALOG,
+  // Content composites (docs/103 Tier 1b) — record-display blocks that bind the
+  // spine for publishing (a content entry pin / a cms.<type> post repeater).
+  ...CONTENT_CATALOG,
+  // Commerce composites (docs/103 Tier 1a) — the shoppable catalog that binds the
+  // spine (product pin / collection repeater / add-to-cart action).
+  ...COMMERCE_CATALOG,
   // Email-surface blocks (surfaces: ['email']) — grouped into the email palette by
   // catalogGroupsForSurface, invisible to page/site.
   ...EMAIL_CATALOG,

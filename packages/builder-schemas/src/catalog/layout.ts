@@ -547,4 +547,84 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
       ],
     }),
   }),
+
+  // ── Coming soon — a full-bleed launch page with email capture ─────────────────
+  entry({
+    key: 'coming_soon',
+    name: 'Coming soon',
+    category: 'layout',
+    kind: 'comprehensive',
+    icon: 'rocket',
+    description:
+      'A centered launch (or maintenance) page — a headline, a line of reassurance, and an email-capture row so visitors can be notified when you go live.',
+    surfaces: ['page', 'site'],
+    tags: ['coming soon', 'launch', 'maintenance', 'waitlist', 'placeholder', 'layout'],
+    tree: el(
+      'section',
+      'flex w-full flex-col items-center justify-center gap-6 px-4 py-32 text-center',
+      {
+        name: 'Coming soon',
+        children: [
+          atom('Badge', 'st-c-primary st-v-soft', { label: 'Launching soon' }),
+          atom(
+            'Heading',
+            'max-w-2xl text-4xl font-bold tracking-tight text-base-content @2xl:text-6xl',
+            { level: 'h1', text: 'Something good is on the way' }
+          ),
+          atom('Text', 'max-w-xl text-lg text-base-content/70', {
+            variant: 'body',
+            text: 'We are putting the finishing touches on it. Leave your email and we will tell you the moment it goes live.',
+          }),
+          el('form', 'mt-4 flex w-full max-w-md flex-col gap-3 @md:flex-row', {
+            name: 'Notify form',
+            children: [
+              atom('Input', 'st-c-primary st-fv-outline w-full', {
+                type: 'email',
+                name: 'email',
+                placeholder: 'you@example.com',
+              }),
+              atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md shrink-0', {
+                label: 'Notify me',
+              }),
+            ],
+          }),
+        ],
+      }
+    ),
+  }),
+
+  // ── 404 — a friendly not-found page ───────────────────────────────────────────
+  entry({
+    key: 'error_404',
+    name: '404 page',
+    category: 'layout',
+    kind: 'common',
+    icon: 'circle-help',
+    description:
+      'A centered not-found page — a big 404, a friendly explanation, and a button back to the home page.',
+    surfaces: ['page', 'site'],
+    tags: ['404', 'not found', 'error', 'missing', 'layout'],
+    tree: el(
+      'section',
+      'flex w-full flex-col items-center justify-center gap-4 px-4 py-32 text-center',
+      {
+        name: '404',
+        children: [
+          el('p', 'text-6xl font-bold tracking-tight text-primary @2xl:text-8xl', { text: '404' }),
+          atom('Heading', 'text-2xl font-bold text-base-content', {
+            level: 'h1',
+            text: 'This page wandered off',
+          }),
+          atom('Text', 'max-w-md text-base text-base-content/70', {
+            variant: 'body',
+            text: 'The link may be broken, or the page may have moved. Let us get you back on track.',
+          }),
+          el('a', 'st-btn st-c-primary st-v-solid st-btn--sz-md mt-2', {
+            text: 'Back to home',
+            attrs: { href: '/' },
+          }),
+        ],
+      }
+    ),
+  }),
 ];

@@ -318,3 +318,130 @@ export const CreateGoodsReceiptInput = z.object({
   lines: z.array(ReceiveLineInput).min(1).max(500),
 });
 export type CreateGoodsReceiptInput = z.infer<typeof CreateGoodsReceiptInput>;
+
+// ─── Reorder engine (P3d) ─────────────────────────────────────────────────────
+//
+// Items at/below their reorder point become reorder suggestions; the buyer picks
+// the lines to act on and the engine drafts one purchase order per (supplier,
+// warehouse) group — line cost defaults from the (supplier, variant) link. Each
+// line carries the explicit supplier the suggestion resolved to (the preferred
+// link) so the draft is deterministic; `quantity` is the buyer-confirmed order qty.
+
+export const DraftReorderLineInput = z.object({
+  variantId: Uuid,
+  warehouseId: Uuid,
+  supplierId: Uuid,
+  quantity: z.number().int().positive(),
+});
+export type DraftReorderLineInput = z.infer<typeof DraftReorderLineInput>;
+
+export const DraftReorderInput = z.object({
+  lines: z.array(DraftReorderLineInput).min(1).max(500),
+});
+export type DraftReorderInput = z.infer<typeof DraftReorderInput>;
+
+// ─── Inventory counts (P4) ──────────────────────────────────────────────────────
+//
+// A counting session reconciles recorded stock against a physical count, scoped to
+// one warehouse: a `cycle` count covers a chosen subset of variants, a `full` count
+// every level in the warehouse. Each line snapshots the expected on-hand at count
+// start; the counter enters the counted quantity; on post a `recount` movement
+// reconciles the level to the counted value (an absolute set, immune to a mid-count
+// sale). Variance VALUE over the per-count threshold gates the post behind an admin
+// approval (the roles model — docs/100 P4).
+
+export const InventoryCountType = z.enum(['cycle', 'full']);
+export type InventoryCountType = z.infer<typeof InventoryCountType>;
+
+export const InventoryCountStatus = z.enum([
+  'counting',
+  'review',
+  'approved',
+  'posted',
+  'cancelled',
+]);
+export type InventoryCountStatus = z.infer<typeof InventoryCountStatus>;
+
+// Create a count. For `full`, `variantIds` is ignored — every level in the
+// warehouse is snapshotted. For `cycle`, the listed variants seed the lines (more
+// can be added while counting). `approvalThresholdCents` overrides the default
+// ($50) above which the post needs an admin sign-off.
+export const CreateInventoryCountInput = z.object({
+  warehouseId: Uuid,
+  type: InventoryCountType,
+  variantIds: z.array(Uuid).max(5000).optional(),
+  approvalThresholdCents: z.number().int().nonnegative().optional(),
+  note: z.string().max(2000).optional(),
+});
+export type CreateInventoryCountInput = z.infer<typeof CreateInventoryCountInput>;
+
+// Add one more variant to a counting session (snapshots its expected on-hand).
+export const AddCountLineInput = z.object({
+  variantId: Uuid,
+});
+export type AddCountLineInput = z.infer<typeof AddCountLineInput>;
+
+// Record counted quantities for one or more lines (editable while `counting`).
+export const CountEntryInput = z.object({
+  lineId: Uuid,
+  countedQuantity: z.number().int().nonnegative(),
+  note: z.string().max(2000).optional(),
+});
+export type CountEntryInput = z.infer<typeof CountEntryInput>;
+
+export const EnterCountsInput = z.object({
+  entries: z.array(CountEntryInput).min(1).max(5000),
+});
+export type EnterCountsInput = z.infer<typeof EnterCountsInput>;
+
+// ─── Inventory transfers (P4) ─────────────────────────────────────────────────────
+//
+// Move stock between two warehouses through an in-transit holding location. A
+// transfer is composed as a `draft` (one or more variant lines), `shipped` (each
+// line leaves the source and lands in the system in-transit warehouse — so total
+// stock is conserved while in motion), then `received` (in-transit → destination).
+// Cancelling an in-transit transfer returns the goods to source. The single-shot
+// `TransferInventoryInput` above stays the programmatic instant-move path; this is
+// the document-driven two-phase flow.
+
+export const InventoryTransferStatus = z.enum(['draft', 'in_transit', 'received', 'cancelled']);
+export type InventoryTransferStatus = z.infer<typeof InventoryTransferStatus>;
+
+// One line on a transfer: a variant + the quantity to move.
+export const TransferLineInput = z.object({
+  variantId: Uuid,
+  quantity: z.number().int().positive(),
+});
+export type TransferLineInput = z.infer<typeof TransferLineInput>;
+
+export const CreateInventoryTransferInput = z.object({
+  fromWarehouseId: Uuid,
+  toWarehouseId: Uuid,
+  note: z.string().max(2000).optional(),
+  lines: z.array(TransferLineInput).max(500).default([]),
+});
+export type CreateInventoryTransferInput = z.infer<typeof CreateInventoryTransferInput>;
+
+// Add a line to a draft transfer (one variant; re-adding the same variant is a
+// conflict — edit the existing line's quantity instead).
+export const AddTransferLineInput = TransferLineInput;
+export type AddTransferLineInput = z.infer<typeof AddTransferLineInput>;
+
+export const UpdateTransferLineInput = z.object({
+  quantity: z.number().int().positive(),
+});
+export type UpdateTransferLineInput = z.infer<typeof UpdateTransferLineInput>;
+
+// Receive an in-transit transfer. Lines are optional per-line overrides — any line
+// not listed receives its full shipped quantity; a `receivedQuantity` short of the
+// shipped amount writes the shortfall off the in-transit level as a `loss`.
+export const ReceiveTransferLineInput = z.object({
+  lineId: Uuid,
+  receivedQuantity: z.number().int().nonnegative(),
+});
+export type ReceiveTransferLineInput = z.infer<typeof ReceiveTransferLineInput>;
+
+export const ReceiveTransferInput = z.object({
+  lines: z.array(ReceiveTransferLineInput).max(500).optional(),
+});
+export type ReceiveTransferInput = z.infer<typeof ReceiveTransferInput>;

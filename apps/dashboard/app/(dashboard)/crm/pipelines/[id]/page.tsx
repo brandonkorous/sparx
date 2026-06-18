@@ -68,13 +68,36 @@ export default async function PipelineDetailPage({ params, searchParams }: PageP
   try {
     pipeline = await api.get<Pipeline>(`/v1/crm/pipelines/${id}`);
   } catch (err) {
-    if ((err as ApiRestError).code === 'NOT_FOUND') notFound();
+    const apiError = err as ApiRestError;
+    if (apiError.code === 'NOT_FOUND') notFound();
+    if (apiError.code === 'UPSTREAM_FETCH_FAILED') {
+      console.error('CRM pipeline fetch failed', {
+        pipelineId: id,
+        details: apiError.details,
+        requestId: apiError.requestId,
+      });
+      return (
+        <Container size="full" className="px-6">
+          <Stack gap={6} className="py-8">
+            <PageHeader
+              title="Pipeline temporarily unavailable"
+              description="We couldn't load this pipeline right now. Please refresh or try again in a moment."
+              actions={
+                <Button asChild variant="outline">
+                  <Link href="/crm/pipelines">Back to pipelines</Link>
+                </Button>
+              }
+            />
+          </Stack>
+        </Container>
+      );
+    }
     throw err;
   }
 
-  const { data: deals } = await api.getPaged<PipelineDeal[]>(
-    `/v1/crm/deals?pipeline_id=${pipeline.id}&take=250`
-  );
+  const { data: deals } = await api
+    .getPaged<PipelineDeal[]>(`/v1/crm/deals?pipeline_id=${pipeline.id}&take=250`)
+    .catch(() => ({ data: [] as PipelineDeal[], meta: {}, etag: null }));
   const dealCounts = pipeline.stages.map((stage) => ({
     stageId: stage.id,
     count: deals.filter((d) => d.stageId === stage.id).length,

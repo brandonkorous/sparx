@@ -269,7 +269,7 @@ export default async function InventoryPage() {
                 <Link href="/inventory/sources">Sources</Link>
               </Button>
               <Button asChild color="module" leftIcon={<Plus className="h-4 w-4" />}>
-                <Link href="/inventory/sources">Receive stock</Link>
+                <Link href="/inventory/receiving">Receive stock</Link>
               </Button>
             </>
           }
@@ -320,7 +320,7 @@ export default async function InventoryPage() {
             label="Out of stock"
             tone="danger"
           >
-            <Link href="/inventory/sources" />
+            <Link href="/inventory/reorder" />
           </ActionTile>
           <ActionTile
             asChild
@@ -329,7 +329,7 @@ export default async function InventoryPage() {
             label="Low stock"
             tone="warning"
           >
-            <Link href="/inventory/sources" />
+            <Link href="/inventory/reorder" />
           </ActionTile>
           <ActionTile
             asChild
@@ -347,7 +347,7 @@ export default async function InventoryPage() {
             label="Incoming POs"
             tone="module"
           >
-            <Link href="/inventory/sources" />
+            <Link href="/inventory/purchase-orders" />
           </ActionTile>
         </ActionQueue>
 
@@ -420,7 +420,7 @@ export default async function InventoryPage() {
           description={`Available at or below ${summary?.lowStockThreshold ?? 5} units · across all locations`}
           right={
             hasLowOut ? (
-              <CardLink href="/inventory/sources">All stock</CardLink>
+              <CardLink href="/inventory/reorder">Reorder</CardLink>
             ) : (
               <SampleBadge reason="no-data" />
             )
@@ -513,7 +513,7 @@ export default async function InventoryPage() {
               />
             ))}
             <Button asChild variant="outline" size="sm" className="mt-4 w-full">
-              <Link href="/inventory/sources">Create purchase order</Link>
+              <Link href="/inventory/purchase-orders/new">Create purchase order</Link>
             </Button>
           </OverviewCard>
 

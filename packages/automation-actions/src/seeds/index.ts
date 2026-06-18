@@ -47,6 +47,7 @@ import {
   INVOICING_REMINDER_3D,
 } from './invoicing.js';
 import { CHAT_NO_RESPONSE_ALERT, CHAT_SATISFACTION_SURVEY } from './chat.js';
+import { INVENTORY_AUTO_REORDER } from './inventory.js';
 
 /** A seed plus the module whose activation installs it. `module: null` ⇒ always
  *  seeded (platform-level, no owning module). */
@@ -57,9 +58,10 @@ export interface SystemAutomationSeed {
 
 /**
  * Every platform-seeded system automation, grouped by owning module — the full
- * catalog (docs/90 §3b). 23 seeds: the no-email defaults (tags, tasks, notes,
- * internal staff alerts) + the locked B2B dunning + the 13 email-sending defaults
- * that reference a provisioned Builder-email template by `key`. An email seed
+ * catalog (docs/90 §3b). 24 seeds: the no-email defaults (tags, tasks, notes,
+ * internal staff alerts, the paused inventory auto-reorder) + the locked B2B
+ * dunning + the 13 email-sending defaults that reference a provisioned
+ * Builder-email template by `key`. An email seed
  * installs on its OWNING module's activation (a commerce tenant gets abandoned-cart
  * the moment commerce is on); its send is then gated by the `email.send_campaign`
  * action's `module: 'email'` gate until the email module is active (docs/90 §4 —
@@ -95,6 +97,8 @@ export const SYSTEM_AUTOMATIONS: readonly SystemAutomationSeed[] = [
   // Chat
   { module: 'chat', spec: CHAT_NO_RESPONSE_ALERT },
   { module: 'chat', spec: CHAT_SATISFACTION_SURVEY },
+  // Inventory — auto-reorder ships paused (opt-in).
+  { module: 'inventory', spec: INVENTORY_AUTO_REORDER },
 ];
 
 /**

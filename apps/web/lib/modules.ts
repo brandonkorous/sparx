@@ -249,38 +249,38 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
     headlineSecondary: 'and marketing',
     title: 'sparx Email — Transactional and marketing.',
     description:
-      'Self-hosted Postal on sparx.email. Your domain, your reputation. No SendGrid markup.',
-    lede: 'Self-hosted Postal on sparx.email. Your sending domain, your reputation, SPF/DKIM/DMARC auto-configured. No per-email markup, no $0.0008 nickel-and-dime.',
+      'Transactional + marketing email on your own domain. SPF, DKIM, and DMARC auto-configured; no per-email markup. $29/mo.',
+    lede: 'Transactional and marketing email, sent from your own domain and your reputation. Every message is triggered by a real platform event, rendered on-brand, and authenticated with SPF, DKIM, and DMARC the moment your domain verifies. No per-email markup.',
     features: [
       {
         number: '01',
         title: 'Transactional out of the box.',
-        body: 'Order confirmations, password resets, RFQ replies — wired into every module. Templates editable, brandable.',
+        body: 'Order confirmations, shipping updates, password resets, quote replies — triggered by platform events and wired into every module. Templates editable, brandable.',
       },
       {
         number: '02',
-        title: 'Marketing campaigns.',
-        body: 'Drag-drop or HTML. A/B test subject lines and content. Sync segments live from CRM — no list export ever again.',
+        title: 'Marketing broadcasts.',
+        body: 'Compose, preview against a real customer, send or schedule. Target live CRM segments — no list export, ever — and watch opens and clicks roll in.',
       },
       {
         number: '03',
         title: 'Your domain, your reputation.',
-        body: 'Sending from mail.yourstore.com, not noreply@sparx-email-broadcast.com. Deliverability is yours.',
+        body: 'Sends from orders@yourbrand.com once your domain verifies, not a shared blast domain. Until then, mail goes out on the shared sparx domain so you are never blocked.',
       },
       {
         number: '04',
         title: 'DKIM, SPF, DMARC.',
-        body: 'Auto-provisioned with your custom domain. We add the DNS records, monitor failures, alert on reputation drops.',
+        body: 'Auto-configured with your sending domain. sparx adds the DNS records, polls for verification, monitors failures, and alerts on reputation drops.',
       },
       {
         number: '05',
         title: 'No per-email pricing.',
-        body: 'Send 10K or 1M emails a month — same $29/mo. We host the SMTP infrastructure on Postal. No SendGrid bill.',
+        body: 'Send 10K or 1M emails a month — same $29/mo. One flat price, no per-email fees and no contact-tier surcharges.',
       },
       {
         number: '06',
         title: 'Open, click, bounce events.',
-        body: 'Tracked into CRM, available via webhook and MCP. Your AI can see who opened what.',
+        body: 'Tracked back onto the customer record in the CRM, available via webhook and MCP. Your AI can see who opened what.',
       },
     ],
     pricing: {
@@ -296,12 +296,12 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
     slug: 'b2b',
     module: 'b2b',
     label: 'B2B · Wholesale · Fleet',
-    headlinePrimary: 'Industrial-grade,',
-    headlineSecondary: 'out of the box',
-    title: 'sparx B2B — Wholesale, fleet, net terms.',
+    headlinePrimary: 'Wholesale,',
+    headlineSecondary: 'done right',
+    title: 'sparx B2B — Account pricing, net terms, RFQ.',
     description:
-      'Account-tier pricing, RFQ, purchase orders, fleet accounts, service scheduling. Built for industrial.',
-    lede: 'Shopify charges $2,400/mo for B2B and still doesn’t do net terms properly. sparx ships wholesale pricing, RFQ, purchase orders, fleet accounts, and service scheduling natively. $99/mo. Built for how industrial actually works.',
+      'Account-specific price lists, RFQ to quote, net terms and credit limits, bulk PO ordering, and fleet & service scheduling — wholesale layered on the same catalog and checkout as D2C.',
+    lede: 'Account-specific price lists, RFQ to quote, net terms and credit limits, bulk PO ordering, and fleet and service scheduling — wholesale that runs on the same catalog and checkout as your retail orders. Each buyer logs in to their negotiated price and their terms. $99/mo, layered on Commerce.',
     features: [
       {
         number: '01',
@@ -401,37 +401,37 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
     headlineSecondary: 'fulfillment',
     title: 'sparx Dropship — Suppliers, sync, fulfillment.',
     description: 'Catalog sync, margin math, automated order routing. Sell without inventory.',
-    lede: 'Catalog sync, margin math, automated order routing. Sell without holding inventory — but with a real platform underneath, not a Shopify app stacked on a Shopify app.',
+    lede: 'Connect a supplier, import their catalog, set a markup rule, and let orders route themselves. Sell without holding inventory — on a real platform underneath, where your suppliers, products, and orders all live in one place.',
     features: [
       {
         number: '01',
         title: 'Supplier connectors.',
-        body: 'Native integrations for major suppliers + a generic CSV/FTP/API import for the long tail. Hourly sync, conflict resolution included.',
+        body: 'Connect Printify, Printful, DSers, or Spocket by API, or import any supplier by CSV feed. Validated on connect, scheduled sync, several suppliers at once.',
       },
       {
         number: '02',
         title: 'Margin math.',
-        body: 'Set per-supplier markup rules (flat, percentage, tiered). sparx maintains your retail price as supplier costs change.',
+        body: 'Set a per-supplier pricing rule — percentage markup, multiplier, flat markup, or a target margin. sparx prices imported products automatically as supplier costs change.',
       },
       {
         number: '03',
         title: 'Automated routing.',
-        body: 'Order comes in → routed to the right supplier instantly. Multi-supplier orders split correctly with one customer-facing tracking.',
+        body: 'An order comes in and routes to the right supplier instantly. Multi-supplier orders split into a fulfillment group per supplier, with one customer-facing tracking.',
       },
       {
         number: '04',
         title: 'Inventory sync.',
-        body: 'Real-time stock levels from supplier. Out-of-stock products auto-hidden, back-in-stock auto-relisted.',
+        body: 'Live stock levels pulled from the supplier; out-of-stock combos grey out and a discontinued product is flagged. Print-on-demand suppliers are made-to-order, so stock is unlimited.',
       },
       {
         number: '05',
         title: 'Tracking & fulfillment.',
-        body: 'Supplier sends tracking, sparx forwards to customer via sparx Email with your branding.',
+        body: 'The supplier returns tracking, sparx forwards it to the customer via sparx Email with your branding, and logs the shipment on the customer record.',
       },
       {
         number: '06',
-        title: 'No middleman markup.',
-        body: 'You connect directly to your suppliers. sparx takes $29/mo flat — no per-order sparx fee, no Oberlo-style cut.',
+        title: 'No per-order cut.',
+        body: 'You connect directly to your own suppliers. sparx is a flat $29/mo — no per-order dropship fee and no reseller markup between you and your supplier.',
       },
     ],
     pricing: {
@@ -439,7 +439,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       period: '/mo',
       modifier: '+',
       bundleNote:
-        'A flat $29/mo, layered on Commerce. Supplier sync, margin rules, and automated routing — sell without holding inventory, on one bill with everything else.',
+        'A flat $29/mo. Connect a supplier, import the catalog, set a markup rule, and route orders automatically — sell without holding inventory. Works alongside Commerce, so imported products land in your catalog and your orders route back to the supplier, all on one bill.',
     },
   },
 };

@@ -1,0 +1,89 @@
+// Inventory corrections — Counts (docs/100 P4). A counting session reconciles
+// recorded stock against a physical count: cycle counts a chosen subset, a full
+// count covers every level in the warehouse. Each line snapshots the expected
+// on-hand at count start, captures the counted quantity, and — when posted —
+// writes a `recount` movement through the ledger (an absolute `setOnHand`, so the
+// corrective delta is computed against LIVE on-hand inside the row lock, immune to
+// a sale landing mid-count). Variance value over a per-count threshold gates the
+// post behind an admin approval. Owned by @sparx/inventory; standalone-usable.
+
+model InventoryCount {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // Per-tenant human identifier (CNT-000001). Monotonic, gap-prone on deletes;
+  // the (tenant_id, number) unique constraint is the collision backstop.
+  number      String @db.VarChar(20)
+  warehouseId String @map("warehouse_id") @db.Uuid
+
+  // cycle | full — a CHECK constraint pins the vocabulary at the DB level.
+  type String @db.VarChar(12)
+
+  // counting | review | approved | posted | cancelled. A CHECK pins it. counting
+  // is editable; review freezes the variance + the approval requirement; approved
+  // is the admin sign-off when over threshold; posted has applied the recounts;
+  // cancelled is terminal with nothing applied.
+  status String @default("counting") @db.VarChar(12)
+
+  note String? @db.Text
+
+  // Approval gate: when the absolute variance VALUE (Σ |Δ|·cost) computed at review
+  // exceeds the threshold, the post requires an admin approval. Threshold is per
+  // count (defaulted on create); requiresApproval + varianceValueCents are frozen
+  // when the count is submitted for review.
+  approvalThresholdCents Int     @default(5000) @map("approval_threshold_cents")
+  requiresApproval       Boolean @default(false) @map("requires_approval")
+  varianceValueCents     Int     @default(0) @map("variance_value_cents")
+
+  // Lifecycle stamps. startedAt at creation; countedAt on submit-for-review;
+  // approvedAt/approvedBy on sign-off; postedAt when the recounts are applied.
+  startedAt  DateTime  @default(now()) @map("started_at") @db.Timestamptz
+  countedAt  DateTime? @map("counted_at") @db.Timestamptz
+  approvedAt DateTime? @map("approved_at") @db.Timestamptz
+  approvedBy String?   @map("approved_by") @db.VarChar(127)
+  postedAt   DateTime? @map("posted_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant    Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  warehouse Warehouse            @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  lines     InventoryCountLine[]
+
+  @@unique([tenantId, number], map: "inventory_counts_tenant_number_unique")
+  @@index([tenantId, status])
+  @@index([tenantId, warehouseId])
+  @@map("inventory_counts")
+}
+
+// One counted variant on a count. expectedQuantity is the on-hand snapshot at line
+// creation (count start); countedQuantity is null until entered. On post, appliedDelta
+// records the actual corrective delta the ledger applied (counted − LIVE on-hand,
+// which may differ from counted − expected if stock moved mid-count) and movementId
+// soft-points at the `recount` ledger row.
+
+model InventoryCountLine {
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String @map("tenant_id") @db.Uuid
+  countId   String @map("count_id") @db.Uuid
+  variantId String @map("variant_id") @db.Uuid
+
+  expectedQuantity Int     @map("expected_quantity")
+  countedQuantity  Int?    @map("counted_quantity")
+  appliedDelta     Int?    @map("applied_delta")
+  // Soft pointer to the inventory_movements row this line wrote on post (no FK —
+  // the ledger is append-only and never deleted under a count line).
+  movementId       String? @map("movement_id") @db.Uuid
+  note             String? @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant  Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  count   InventoryCount @relation(fields: [countId], references: [id], onDelete: Cascade)
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@unique([countId, variantId], map: "inventory_count_lines_count_variant_unique")
+  @@index([tenantId, countId])
+  @@index([tenantId, variantId])
+  @@map("inventory_count_lines")
+}

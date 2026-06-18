@@ -96,62 +96,75 @@ async function createOnce(
   ctx: ServiceContext,
   input: CreatePurchaseOrderInput
 ): Promise<PurchaseOrderDetail> {
-  return withTenant(ctx, async (tx) => {
-    const supplier = await tx.supplier.findFirst({
-      where: { id: input.supplierId, deletedAt: null },
-      select: { id: true, paymentTerms: true },
-    });
-    if (!supplier) throw new InventoryNotFoundError('Supplier', input.supplierId);
-    const warehouse = await tx.warehouse.findFirst({
-      where: { id: input.warehouseId, deletedAt: null },
-      select: { id: true },
-    });
-    if (!warehouse) throw new InventoryNotFoundError('Warehouse', input.warehouseId);
+  return withTenant(ctx, (tx) => createPurchaseOrderOnTx(tx, ctx, input));
+}
 
-    const lineData = await Promise.all(
-      input.lines.map((line) => resolveLineData(tx, input.supplierId, line))
-    );
-
-    const number = await nextPurchaseOrderNumber(tx, ctx.tenantId);
-    const po = await tx.purchaseOrder.create({
-      data: {
-        tenantId: ctx.tenantId,
-        number,
-        status: 'draft',
-        supplierId: input.supplierId,
-        warehouseId: input.warehouseId,
-        currency: input.currency,
-        paymentTerms: input.paymentTerms ?? supplier.paymentTerms ?? null,
-        reference: input.reference ?? null,
-        expectedArrivalAt: input.expectedArrivalAt ? new Date(input.expectedArrivalAt) : null,
-        shippingCents: input.shippingCents,
-        notes: input.notes ?? null,
-      },
-      select: { id: true, number: true },
-    });
-
-    if (lineData.length > 0) {
-      await tx.purchaseOrderLine.createMany({
-        data: lineData.map((d) => ({ tenantId: ctx.tenantId, purchaseOrderId: po.id, ...d })),
-      });
-    }
-    await recomputeTotals(tx, po.id);
-
-    await writeAuditLog({
-      tx,
-      tenantId: ctx.tenantId,
-      actorId: ctx.userId ?? null,
-      actorType: ctx.userId ? 'user' : 'system',
-      action: 'inventory.purchase_order.created',
-      entityType: 'PurchaseOrder',
-      entityId: po.id,
-      diff: {
-        after: { number: po.number, supplierId: input.supplierId, lineCount: lineData.length },
-      },
-    });
-
-    return loadPurchaseOrderDetail(tx, po.id);
+/** The PO-creation core, on a caller-supplied transaction. Exposed so callers
+ *  that already own a tenant tx (the reorder engine drafting inside the
+ *  automation run's transaction) create a PO without nesting `withTenant`. The
+ *  number-collision retry lives in `createPurchaseOrder` (whole-tx), so a caller
+ *  on a shared tx that hits the (tenant, number) unique constraint surfaces the
+ *  P2002 for its own delivery layer to retry — single-supplier auto-draft is
+ *  low-contention, so a lost race here is rare. */
+export async function createPurchaseOrderOnTx(
+  tx: TxClient,
+  ctx: ServiceContext,
+  input: CreatePurchaseOrderInput
+): Promise<PurchaseOrderDetail> {
+  const supplier = await tx.supplier.findFirst({
+    where: { id: input.supplierId, deletedAt: null },
+    select: { id: true, paymentTerms: true },
   });
+  if (!supplier) throw new InventoryNotFoundError('Supplier', input.supplierId);
+  const warehouse = await tx.warehouse.findFirst({
+    where: { id: input.warehouseId, deletedAt: null },
+    select: { id: true },
+  });
+  if (!warehouse) throw new InventoryNotFoundError('Warehouse', input.warehouseId);
+
+  const lineData = await Promise.all(
+    input.lines.map((line) => resolveLineData(tx, input.supplierId, line))
+  );
+
+  const number = await nextPurchaseOrderNumber(tx, ctx.tenantId);
+  const po = await tx.purchaseOrder.create({
+    data: {
+      tenantId: ctx.tenantId,
+      number,
+      status: 'draft',
+      supplierId: input.supplierId,
+      warehouseId: input.warehouseId,
+      currency: input.currency,
+      paymentTerms: input.paymentTerms ?? supplier.paymentTerms ?? null,
+      reference: input.reference ?? null,
+      expectedArrivalAt: input.expectedArrivalAt ? new Date(input.expectedArrivalAt) : null,
+      shippingCents: input.shippingCents,
+      notes: input.notes ?? null,
+    },
+    select: { id: true, number: true },
+  });
+
+  if (lineData.length > 0) {
+    await tx.purchaseOrderLine.createMany({
+      data: lineData.map((d) => ({ tenantId: ctx.tenantId, purchaseOrderId: po.id, ...d })),
+    });
+  }
+  await recomputeTotals(tx, po.id);
+
+  await writeAuditLog({
+    tx,
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId ?? null,
+    actorType: ctx.userId ? 'user' : 'system',
+    action: 'inventory.purchase_order.created',
+    entityType: 'PurchaseOrder',
+    entityId: po.id,
+    diff: {
+      after: { number: po.number, supplierId: input.supplierId, lineCount: lineData.length },
+    },
+  });
+
+  return loadPurchaseOrderDetail(tx, po.id);
 }
 
 export async function updatePurchaseOrder(
@@ -242,6 +255,12 @@ function assertNoDuplicateVariants(lines: PurchaseOrderLineInput[]): void {
 
 function isUniqueViolation(err: unknown): boolean {
   return err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002';
+}
+
+/** Shared with the reorder engine, which retries its whole-batch draft on a lost
+ *  PO-number race the same way `createPurchaseOrder` does. */
+export function isReorderUniqueViolation(err: unknown): boolean {
+  return isUniqueViolation(err);
 }
 
 // Re-exported so a single `from './purchase-orders'` import pulls the helpers a

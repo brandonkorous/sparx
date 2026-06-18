@@ -468,16 +468,19 @@
   }
 }
 
-/* Checkout browser frame (flex 1) beside the annotation-pin column. */
+/* Checkout browser frame (flex 1) beside the annotation-pin column.
+   minmax(0, …) lets the frame track shrink below its content's intrinsic
+   width so a long URL / wide product surface never forces page overflow on
+   narrow viewports. */
 .mkt-frame-grid {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: minmax(0, 1fr) 320px;
   gap: 40px;
   align-items: start;
 }
 @media (max-width: 1024px) {
   .mkt-frame-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -489,6 +492,264 @@
 @media (max-width: 768px) {
   .mkt-checkout {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ── CMS: SEO audit (score panel + checklist) ────────────────────
+   Structural device for the /cms page — a fixed-width score panel beside
+   the flexible audit checklist, stacking to one column on tablet down.
+   Surface/colors come from inline CSS-var styles in cms-sections.tsx;
+   this class only does layout. */
+.mkt-seo-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .mkt-seo-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* ── CRM: segment grid, pipeline rail, automation rows ───────────
+   Structural devices for the /crm page. The segment grid puts the rule
+   definition beside the matching-customer panel (stacks on tablet); the
+   pipeline is a 5-stage deal rail that collapses 5→2→1; the automation row
+   is a when → arrow → then triptych whose arrow rotates and panels stack on
+   mobile. Surface/colors come from inline CSS-var styles in the CRM section
+   components; these classes only do layout. */
+
+.mkt-seg-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 24px;
+  align-items: stretch;
+}
+@media (max-width: 1024px) {
+  .mkt-seg-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mkt-pipeline-5 {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background-color: var(--color-border-default);
+  border: 1px solid var(--color-border-default);
+  border-radius: 14px;
+  overflow: hidden;
+}
+@media (max-width: 1024px) {
+  .mkt-pipeline-5 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .mkt-pipeline-5 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mkt-auto-row {
+  display: grid;
+  grid-template-columns: 1fr 56px 1fr;
+  align-items: stretch;
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.mkt-auto-then {
+  border-left: 1px solid var(--color-border-default);
+}
+.mkt-auto-arrow svg {
+  display: block;
+}
+@media (max-width: 768px) {
+  .mkt-auto-row {
+    grid-template-columns: 1fr;
+  }
+  .mkt-auto-then {
+    border-left: none;
+    border-top: 1px solid var(--color-border-default);
+  }
+  .mkt-auto-arrow {
+    transform: rotate(90deg);
+  }
+}
+
+/* ── B2B: account price list + RFQ→quote frame ───────────────────
+   Structural devices for the /b2b page. The price-list device puts the
+   account card beside the same-SKU "list vs account price" panel (stacks on
+   tablet); the price-list rows are a 4-column grid (item · list · account ·
+   you save) that collapses to a stacked card on mobile. Surface/colors come
+   from inline CSS-var styles in b2b-sections.tsx; these classes only do
+   layout. */
+
+.mkt-b2b-split {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .mkt-b2b-split {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+.mkt-pricerow {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 15px 22px;
+}
+.mkt-pricerow-head {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  gap: 16px;
+  padding: 13px 22px;
+}
+@media (max-width: 640px) {
+  .mkt-pricerow-head {
+    display: none;
+  }
+  .mkt-pricerow {
+    grid-template-columns: 1fr auto;
+    gap: 4px 12px;
+    padding: 16px 18px;
+  }
+  .mkt-pricerow-item {
+    grid-column: 1 / -1;
+  }
+  .mkt-pricerow-cell {
+    text-align: right;
+  }
+}
+
+/* ── DROPSHIP: supplier-connect split, margin rows ───────────────
+   Structural devices for the /dropship page. The connect split puts the
+   supplier-picker rail beside the synced-catalog panel (stacks on tablet);
+   the margin row is a 4-column ledger (cost → markup rule → sell price →
+   margin) that collapses to a stacked card on mobile. The routed-order flow
+   reuses the shared `.mkt-pipeline` rail. Surface/colors come from inline
+   CSS-var styles in dropship-sections.tsx; these classes only do layout. */
+
+.mkt-ds-split {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .mkt-ds-split {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+.mkt-margin-row {
+  display: grid;
+  grid-template-columns: 1.6fr 1.1fr 1fr 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 15px 22px;
+}
+.mkt-margin-head {
+  display: grid;
+  grid-template-columns: 1.6fr 1.1fr 1fr 1fr;
+  gap: 16px;
+  padding: 13px 22px;
+}
+@media (max-width: 640px) {
+  .mkt-margin-head {
+    display: none;
+  }
+  .mkt-margin-row {
+    grid-template-columns: 1fr auto;
+    gap: 4px 12px;
+    padding: 16px 18px;
+  }
+  .mkt-margin-item {
+    grid-column: 1 / -1;
+  }
+  .mkt-margin-cell {
+    text-align: right;
+  }
+}
+
+/* EMAIL: deliverability split, broadcast stats, automation rows ─
+   Structural devices for the /email page. The deliverability split puts the
+   sender-health checklist beside the auto-configured DNS panel (stacks on
+   tablet); the broadcast stat row is a 4-up that collapses 4→2→1; the
+   automation row is a when → arrow → then → status grid that stacks on mobile.
+   Surface/colors come from inline CSS-var styles in the email section
+   components; these classes only do layout. */
+
+.mkt-deliv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .mkt-deliv-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mkt-bstats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+.mkt-bstats > .mkt-bstat {
+  border-left: 1px solid var(--color-bg-subtle);
+}
+.mkt-bstats > .mkt-bstat:first-child {
+  border-left: none;
+}
+@media (max-width: 640px) {
+  .mkt-bstats {
+    grid-template-columns: 1fr 1fr;
+  }
+  .mkt-bstats > .mkt-bstat:nth-child(odd) {
+    border-left: none;
+  }
+  .mkt-bstats > .mkt-bstat:nth-child(n + 3) {
+    border-top: 1px solid var(--color-bg-subtle);
+  }
+}
+
+.mkt-auto-grid {
+  display: grid;
+  grid-template-columns: 210px 28px 1fr 132px;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 24px;
+  background-color: var(--color-bg-surface);
+}
+.mkt-auto-grid .mkt-auto-chev {
+  color: var(--color-text-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 768px) {
+  .mkt-auto-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 18px 20px;
+  }
+  .mkt-auto-grid .mkt-auto-chev {
+    display: none;
+  }
+  .mkt-auto-grid .mkt-auto-badge {
+    justify-self: start;
   }
 }
 

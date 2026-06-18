@@ -29,7 +29,12 @@ const logger: PublisherLogger = {
 // requires (1) extending EventType in @sparx/events and (2) listing it here.
 export type InventoryTopic = Extract<
   EventType,
-  'inventory.adjusted' | 'inventory.low' | 'inventory.depleted'
+  | 'inventory.adjusted'
+  | 'inventory.low'
+  | 'inventory.depleted'
+  | 'inventory.count.completed'
+  | 'inventory.transfer.shipped'
+  | 'inventory.transfer.received'
 >;
 
 export interface InventoryEventInput<T = Record<string, unknown>> {

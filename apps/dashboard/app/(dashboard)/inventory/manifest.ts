@@ -7,7 +7,10 @@ import {
   Plus,
   Truck,
   ClipboardList,
+  ClipboardCheck,
   PackageCheck,
+  RefreshCw,
+  ArrowLeftRight,
 } from 'lucide-react';
 
 export const inventoryManifest: ModuleManifest = {
@@ -26,6 +29,9 @@ export const inventoryManifest: ModuleManifest = {
       href: '/inventory/purchase-orders',
     },
     { id: 'receiving', label: 'Receiving', icon: PackageCheck, href: '/inventory/receiving' },
+    { id: 'reorder', label: 'Reorder', icon: RefreshCw, href: '/inventory/reorder' },
+    { id: 'counts', label: 'Counts', icon: ClipboardCheck, href: '/inventory/counts' },
+    { id: 'transfers', label: 'Transfers', icon: ArrowLeftRight, href: '/inventory/transfers' },
     { id: 'lots', label: 'Lots & serials', icon: Layers, href: '/inventory/lots' },
     { id: 'sources', label: 'Sources', icon: Link2, href: '/inventory/sources' },
   ],
@@ -47,6 +53,18 @@ export const inventoryManifest: ModuleManifest = {
       label: 'New purchase order',
       icon: Plus,
       href: '/inventory/purchase-orders/new',
+    },
+    {
+      id: 'inventory.count.create',
+      label: 'New count',
+      icon: Plus,
+      href: '/inventory/counts/new',
+    },
+    {
+      id: 'inventory.transfer.create',
+      label: 'New transfer',
+      icon: Plus,
+      href: '/inventory/transfers/new',
     },
   ],
   entityTypes: [
