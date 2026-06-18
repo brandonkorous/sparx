@@ -188,10 +188,7 @@ export async function reconcileModuleProvisioning(
       try {
         await provisionSavedViewPresets(tenantId);
       } catch (err) {
-        logger.error(
-          { err, tenantId },
-          'module-provisioning-reconcile: saved-view presets failed'
-        );
+        logger.error({ err, tenantId }, 'module-provisioning-reconcile: saved-view presets failed');
       }
     }
 

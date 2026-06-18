@@ -33,7 +33,9 @@ export function ProductCard({
     <Link href={`/products/${product.handle}`} className="st-tile">
       <div className="st-tile__media">
         {onSale ? <span className="st-tile__badge st-tile__badge--sale">Sale</span> : null}
-        {!product.inStock ? <span className="st-tile__badge st-tile__badge--out">Sold out</span> : null}
+        {!product.inStock ? (
+          <span className="st-tile__badge st-tile__badge--out">Sold out</span>
+        ) : null}
         {img ? (
           <Image
             src={img}
