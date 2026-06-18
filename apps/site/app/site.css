@@ -506,32 +506,11 @@
      @sparx/site-ui (grid.css / card.css) — its single owner, so the cascade-layer
      race can't drift them. The storefront authors the same class names directly. */
 
-  /* ── Badges / pills ────────────────────────────────────────── */
-  /* An inline label/status pill (Featured, Default, order status, …). It does NOT
-     position itself — corner placement on a product tile is COMPOSED at the call
-     site with positioning utilities over the tile's relative media. A badge that
-     baked in `position: absolute` escaped its container and piled onto the page
-     corner wherever a site-ui inline badge was rendered (Builder pages). */
-  .st-badge {
-    display: inline-flex;
-    align-items: center;
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    padding: 0.3rem 0.55rem;
-    border-radius: var(--st-radius-selector);
-    background: var(--st-neutral);
-    color: var(--st-neutral-content);
-  }
-  .st-badge--sale {
-    background: var(--st-danger);
-    color: var(--st-danger-content);
-  }
-  .st-badge--out {
-    background: var(--st-bg-muted, #e4e4e7);
-    color: var(--st-text-secondary);
-  }
+  /* `.st-badge` (+ `--sale` / `--out`) now lives in @sparx/site-ui (badge.css): an
+     inline pill whose fill is the recipe (`.st-c-*` / `.st-v-*`) or, bare, a neutral
+     default; `--sale` / `--out` are the storefront status fills. Corner placement on
+     a product tile is still COMPOSED at the call site with positioning utilities
+     over the tile's relative media. */
 
   /* ── Rating ────────────────────────────────────────────────── */
   .st-rating {
