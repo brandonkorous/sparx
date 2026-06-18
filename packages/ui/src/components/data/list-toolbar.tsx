@@ -63,6 +63,10 @@ export interface ListToolbarProps {
    *  briefly on click for feedback. */
   onRefresh?: () => void;
 
+  /** Optional leading slot for a saved-views control, rendered first in the row.
+   *  Presentational-agnostic: the dashboard wrapper supplies the control. */
+  views?: React.ReactNode;
+
   className?: string;
 }
 
@@ -81,6 +85,7 @@ export function ListToolbar({
   view,
   onViewChange,
   onRefresh,
+  views,
   className,
 }: ListToolbarProps) {
   const activeChips = filters.filter((f) => f.value !== '');
@@ -88,6 +93,8 @@ export function ListToolbar({
   return (
     <div className={cn('mb-4 flex flex-col gap-2', className)}>
       <div role="search" className="flex flex-wrap items-center gap-2">
+        {views}
+
         {onSearchChange && (
           <div className="relative min-w-48 flex-1">
             <Search
