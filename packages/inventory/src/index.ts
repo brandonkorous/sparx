@@ -64,4 +64,12 @@ export type {
   SerialRow,
   ListLotsFilter,
   ListSerialsFilter,
+  FeedRow,
+  IngestFeedInput,
+  IngestFeedResult,
+  SyncRunRow,
+  UnmappedSkuRow,
+  SyncHealth,
+  ListSyncRunsFilter,
+  ListUnmappedFilter,
 } from './services/inventory-service';

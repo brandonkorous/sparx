@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import {
   SelectionList,
   type SelectionCard,
@@ -76,8 +78,17 @@ export function SourcesList({ sources, view }: SourcesListProps) {
     </Text>
   );
 
+  const nameLink = (s: InventorySource) => (
+    <Link
+      href={`/inventory/sources/${s.id}`}
+      className="text-sm font-medium hover:text-[var(--module-active)]"
+    >
+      {s.name}
+    </Link>
+  );
+
   const columns: SelectionColumn<InventorySource>[] = [
-    { header: 'Name', cell: (s) => <Text className="text-sm font-medium">{s.name}</Text> },
+    { header: 'Name', cell: nameLink },
     { header: 'Type', cell: typeText },
     { header: 'Status', cell: statusBadge },
     { header: 'Interval', cell: intervalText },
@@ -92,7 +103,7 @@ export function SourcesList({ sources, view }: SourcesListProps) {
   ];
 
   const card: SelectionCard<InventorySource> = {
-    title: (s) => <Text className="truncate text-sm font-medium">{s.name}</Text>,
+    title: nameLink,
     subtitle: typeText,
     badge: statusBadge,
     body: (s) => (

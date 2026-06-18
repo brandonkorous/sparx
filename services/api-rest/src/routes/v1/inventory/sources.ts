@@ -198,7 +198,7 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
       'inventory.source.sync_started',
       tenantId,
       userId,
-      { tenantId, sourceId: source.id, userId },
+      { tenantId, sourceId: source.id, userId, trigger: 'manual' },
       pubLogger
     );
 
@@ -208,10 +208,10 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
   // ── External push ─────────────────────────────────────────────────────────────
   //
   // Allows any external system (warehouse, ERP, bridge agent) authenticated with
-  // a tenant API key (sk_live_*) to POST stock levels directly. Rows are resolved
-  // against inventory_source_links and reconciled into the master inventory_levels
-  // through `reconcileStockLevel` (a corrective `sync` movement) — no worker
-  // round-trip. Identical SKU-resolution logic to the CSV worker.
+  // a tenant API key (sk_live_*) to POST stock levels directly. Rows go through
+  // `ingestFeed` — the SAME funnel the CSV worker uses — which matches each row to
+  // a link, reconciles matches into the master `inventory_levels` (a corrective
+  // `sync` movement), queues unmatched SKUs for review, and records the run.
 
   app.post('/v1/inventory/sources/:id/push', async (request, reply) => {
     await requireInventoryModule(request);
@@ -233,70 +233,14 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
       );
     }
 
-    interface LinkRecord {
-      id: string;
-      variantId: string;
-      warehouseId: string;
-      externalSku: string;
-      externalLocation: string | null;
-    }
-
-    const links = await withTenant({ tenantId }, async (tx) => {
-      return tx.inventorySourceLink.findMany({
-        where: { tenantId, sourceId: id, status: 'active' },
-        select: {
-          id: true,
-          variantId: true,
-          warehouseId: true,
-          externalSku: true,
-          externalLocation: true,
-        },
-      });
-    });
-
-    const linkMap = new Map<string, LinkRecord>();
-    for (const link of links) {
-      const key =
-        link.externalLocation !== null
-          ? `${link.externalSku}|${link.externalLocation}`
-          : link.externalSku;
-      linkMap.set(key, link);
-    }
-
-    let processed = 0;
-    let unmatched = 0;
-    let skipped = 0;
-
-    for (const row of rows) {
-      const exactKey = row.location !== undefined ? `${row.sku}|${row.location}` : row.sku;
-      const link = linkMap.get(exactKey) ?? linkMap.get(row.sku);
-
-      if (!link) {
-        unmatched++;
-        continue;
-      }
-
-      try {
-        await inventoryService.reconcileStockLevel(ctx, {
-          variantId: link.variantId,
-          warehouseId: link.warehouseId,
-          onHand: row.quantity,
-          source: source.name,
-        });
-        processed++;
-      } catch (err) {
-        // A single bad row (e.g. its warehouse was archived) must not fail the
-        // whole push — count it and keep going.
-        request.log.warn({ sourceId: id, sku: row.sku, err }, 'inventory push: row skipped');
-        skipped++;
-      }
-    }
-
-    await withTenant({ tenantId }, async (tx) => {
-      await tx.inventorySource.update({
-        where: { id },
-        data: { lastSyncAt: new Date(), status: 'active', updatedAt: new Date() },
-      });
+    const result = await inventoryService.ingestFeed(ctx, {
+      source: { id: source.id, name: source.name },
+      rows: rows.map((r) => ({
+        externalSku: r.sku,
+        externalLocation: r.location ?? null,
+        quantity: r.quantity,
+      })),
+      trigger: 'push',
     });
 
     await publishEvent(
@@ -304,11 +248,25 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
       'inventory.source.sync_completed',
       tenantId,
       userId,
-      { sourceId: id, syncedAt: new Date().toISOString(), via: 'push' },
+      {
+        sourceId: id,
+        syncedAt: new Date().toISOString(),
+        via: 'push',
+        rowsTotal: result.rowsTotal,
+        rowsChanged: result.rowsChanged,
+        rowsUnmatched: result.rowsUnmatched,
+      },
       pubLogger
     );
 
-    return reply.send(ok({ processed, unmatched, skipped }));
+    return reply.send(
+      ok({
+        processed: result.rowsChanged + result.rowsUnchanged,
+        unmatched: result.rowsUnmatched,
+        skipped: result.rowsSkipped,
+        runId: result.runId,
+      })
+    );
   });
 };
 

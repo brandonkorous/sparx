@@ -1,6 +1,6 @@
 # sparx Platform — Inventory Product Build Plan
 
-**Version:** 1.13
+**Version:** 1.14
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-17
 
@@ -534,7 +534,8 @@ gating ties into the roles model (`editor`/`admin`) — the `/approve` route req
 **Work:**
 
 1. **Adapters on the generic framework**, all writing the master ledger via `sync_reconcile`/`receive`:
-   - **Tier C (CSV)** — harden the existing `services/inventory-worker/src/csv.ts`.
+   - **Tier C (CSV)** — harden the existing `services/inventory-worker/src/csv.ts`. ✅ **DONE (P5a)** —
+     see the P5a callout below.
    - **Tier B (SaaS API)** — first cloud adapter (e.g. NetSuite/Cin7) to prove the abstraction.
    - **Tier A (on-prem agent)** — outbound-HTTPS bridge for Fishbowl (Gillett); enrollment mints a
      tenant-scoped API key; `POST /v1/inventory/sources/:id/push` already exists as the ingress.
@@ -551,6 +552,26 @@ conflict resolves per rules. Gillett Fishbowl validated against a real instance 
 
 **Risks:** Tier A connectivity is customer-environment-specific (validate Fishbowl edition first);
 reconciliation overwrites must still preserve in-flight `committed`.
+
+> **P5a (Tier C — CSV sync, hardened) ✅ DONE.** The existing CSV path worked but was lossy + opaque —
+> unmatched SKUs vanished into a log line and "sync health" was just a `lastSyncAt` timestamp. P5a turns
+> CSV into a trustworthy, usable connection: (1) **one ingest funnel** — `inventoryService.ingestFeed`
+> (packages/inventory `feed-ingest.ts`) is the single path BOTH the CSV worker and the
+> `/sources/:id/push` endpoint call (no more duplicated link-resolution logic); it matches rows to links,
+> reconciles matches through the ledger (corrective `sync` movement, Σ-invariant preserved), queues
+> unmatched SKUs, and records the run. (2) **Two new tables** (`inventory_sync_runs`,
+> `inventory_unmapped_skus`, FORCE-RLS) — every sync records full bookkeeping (matched / changed /
+> unchanged / unmatched / skipped), and every unmappable external SKU lands in a **review queue** (we
+> never auto-create products). (3) **Read + resolve service** (`sync-runs.ts`): `listSyncRuns`,
+> `getSyncHealth`, `listUnmappedSkus` (with a suggested variant when an external SKU matches one of ours),
+> `mapUnmappedSku` (mints a link + clears the row), `ignoreUnmappedSku`. (4) **API** (`sync.ts`):
+> `/sources/:id/{runs,health,unmapped}` + `/unmapped/:id/{map,ignore}`. (5) **Connection detail UI**
+> (`/inventory/sources/[id]`): a sync-health panel (last run breakdown + recent-runs table), the
+> unmapped-SKU review queue (map-to-suggested / map-by-SKU / ignore), and a SKU-mappings panel
+> (add/remove links) — the docs/28 §7 surface. 4 DB tests; suite 48/48. Seed ships a demo CSV connection
+> (2 mappings, 3 pending unmapped, 1 run). **Still P5: Tier B (SaaS API), Tier A (Fishbowl bridge),
+> conflict resolution (one-source-per-variant, source_synced_at last-writer), oversell guards (safety
+> buffer, deny-policy, UoM).**
 
 ---
 

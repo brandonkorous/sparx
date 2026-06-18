@@ -109,6 +109,43 @@
   --st-max-prose: 760px;
 }
 
+/* ── Tailwind palette → tenant tokens bridge ─────────────────────────────────
+   Builder-rendered trees (docs/44) emit Tailwind COLOR UTILITIES — `bg-primary`,
+   `text-primary-content`, `bg-neutral`, `bg-base-200/300` (box surfaces:
+   brand/inverse/subtle/muted). Those utilities read `--color-*`, which default to
+   the ADMIN `--sparx-*` palette (@sparx/ui/tokens.css). Without this bridge a
+   themed storefront shows the right colors on `st-*` recipe classes (buttons,
+   badges) but FALLS BACK to admin indigo on every box surface.
+
+   So remap the storefront's `--color-*` onto the tenant `--st-*` tokens the
+   per-tenant <style> overrides (lib/theme.ts) — the SAME mapping
+   @sparx/surface-compile applies to class-first authored utilities, here applied
+   to the base build so EVERY builder utility themes off the tenant. This :root is
+   unlayered and loads after @sparx/ui/tokens.css, so it wins. */
+:root {
+  --color-primary: var(--st-primary);
+  --color-primary-content: var(--st-primary-content);
+  --color-secondary: var(--st-secondary);
+  --color-secondary-content: var(--st-secondary-content);
+  --color-accent: var(--st-accent);
+  --color-accent-content: var(--st-accent-content);
+  --color-neutral: var(--st-neutral);
+  --color-neutral-content: var(--st-neutral-content);
+  --color-base-100: var(--st-base-100);
+  --color-base-200: var(--st-base-200);
+  --color-base-300: var(--st-base-300);
+  --color-base-content: var(--st-base-content);
+  --color-border: var(--st-border);
+  --color-info: var(--st-info);
+  --color-info-content: var(--st-info-content);
+  --color-success: var(--st-success);
+  --color-success-content: var(--st-success-content);
+  --color-warning: var(--st-warning);
+  --color-warning-content: var(--st-warning-content);
+  --color-danger: var(--st-danger);
+  --color-danger-content: var(--st-danger-content);
+}
+
 /* ── Base reset for storefront chrome ──────────────────────── */
 .st-body {
   margin: 0;

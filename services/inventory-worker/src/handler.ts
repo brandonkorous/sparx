@@ -1,5 +1,5 @@
 import type { Logger } from 'pino';
-import { handleSyncStarted } from './handlers/sync.js';
+import { handleSyncStarted, type SyncStartedPayload } from './handlers/sync.js';
 
 export interface SparxEvent {
   type: string;
@@ -27,10 +27,7 @@ export function parseEvent(message: PubSubMessage): SparxEvent | null {
 export async function handle(event: SparxEvent, log: Logger): Promise<void> {
   switch (event.type) {
     case 'inventory.source.sync_started':
-      await handleSyncStarted(
-        event.payload as { tenantId: string; sourceId: string; userId?: string | null },
-        log
-      );
+      await handleSyncStarted(event.payload as SyncStartedPayload, log);
       break;
     default:
       log.debug({ eventType: event.type }, 'inventory-worker: unhandled event type — acking');

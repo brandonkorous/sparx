@@ -1495,12 +1495,66 @@ async function seedDemoInventory(tenantId: string): Promise<void> {
       transferCount = 1;
     }
 
+    // ── External sync (P5 Tier C): a CSV connection with mappings + a queue ────
+    // A demo source so the sync-health panel, SKU mappings, and the unmapped-SKU
+    // review queue render real data. The illustrative run shows the feed agreeing
+    // on the two mapped items, with three external SKUs still awaiting mapping.
+    await tx.inventorySource.deleteMany({ where: { tenantId, name: 'Warehouse CSV feed' } });
+    const mappedSkus = [...variantIdBySku.entries()].slice(0, 2);
+    let sourceCount = 0;
+    if (mappedSkus.length > 0) {
+      const source = await tx.inventorySource.create({
+        data: {
+          tenantId,
+          name: 'Warehouse CSV feed',
+          type: 'csv',
+          config: { csvUrl: 'https://wms.example.com/exports/on-hand.csv' },
+          status: 'active',
+          syncIntervalSec: 3600,
+          lastSyncAt: new Date(),
+          notes: 'Nightly on-hand export from the WMS (demo).',
+        },
+      });
+      for (const [sku, vid] of mappedSkus) {
+        await tx.inventorySourceLink.create({
+          data: {
+            tenantId,
+            sourceId: source.id,
+            variantId: vid,
+            warehouseId: mainId,
+            externalSku: `WMS-${sku}`,
+          },
+        });
+      }
+      for (const ext of ['WMS-FLT-9001', 'WMS-BRK-2204', 'WMS-SEAL-118']) {
+        await tx.inventoryUnmappedSku.create({
+          data: { tenantId, sourceId: source.id, externalSku: ext, lastQuantity: 12, seenCount: 2 },
+        });
+      }
+      await tx.inventorySyncRun.create({
+        data: {
+          tenantId,
+          sourceId: source.id,
+          trigger: 'manual',
+          status: 'partial',
+          rowsTotal: mappedSkus.length + 3,
+          rowsMatched: mappedSkus.length,
+          rowsChanged: 0,
+          rowsUnchanged: mappedSkus.length,
+          rowsUnmatched: 3,
+          rowsSkipped: 0,
+          finishedAt: new Date(),
+        },
+      });
+      sourceCount = 1;
+    }
+
     const variantCount = variantIdBySku.size;
     console.log(
       `Seeded demo inventory: ${DEMO_PRODUCTS.length} products / ${variantCount} variants across ` +
         `${DEMO_WAREHOUSES.length} warehouses, with ledger movements + ${DEMO_LOTS.length} lots, ` +
         `${DEMO_SUPPLIERS.length} suppliers + ${poDefs.length} purchase orders + ${receiptSeq} receipt` +
-        ` + ${transferCount} transfer.`
+        ` + ${transferCount} transfer + ${sourceCount} sync source.`
     );
   });
 }

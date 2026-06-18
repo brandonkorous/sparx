@@ -62,6 +62,28 @@ export type { SellLine, CommittedSale } from './sell-path';
 export { reconcileStockLevel } from './sync';
 export type { ReconcileStockLevelInput } from './sync';
 
+// ─── Feed ingest funnel + sync-health (P5 Tier C) ─────────────────────
+// `ingestFeed` is the one path both the CSV worker and the `/sources/:id/push`
+// endpoint call: match feed rows to links, reconcile matches through the ledger,
+// queue unmatched SKUs for review, and record the run. The read side
+// (runs / health / unmapped queue + map/ignore) backs the connection detail page.
+export { ingestFeed } from './feed-ingest';
+export type { FeedRow, IngestFeedInput, IngestFeedResult } from './feed-ingest';
+export {
+  listSyncRuns,
+  getSyncHealth,
+  listUnmappedSkus,
+  mapUnmappedSku,
+  ignoreUnmappedSku,
+} from './sync-runs';
+export type {
+  SyncRunRow,
+  UnmappedSkuRow,
+  SyncHealth,
+  ListSyncRunsFilter,
+  ListUnmappedFilter,
+} from './sync-runs';
+
 // ─── Lot batches + serial units + recalls ─────────────────────────────
 export {
   createLotBatch,

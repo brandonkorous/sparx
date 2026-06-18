@@ -48,52 +48,52 @@ export default {
   assets: [
     {
       id: 'img-midnight-acai',
-      url: 'https://picsum.photos/seed/ffb-prod-acai/1000/1000',
+      url: 'https://loremflickr.com/1000/1000/acai,bowl?lock=72161',
       alt: 'Midnight Açaí',
     },
     {
       id: 'img-strawberry-fields',
-      url: 'https://picsum.photos/seed/ffb-prod-strawberry/1000/1000',
+      url: 'https://loremflickr.com/1000/1000/strawberry,smoothie?lock=56102',
       alt: 'Strawberry Fields',
     },
     {
       id: 'img-green-machine',
-      url: 'https://picsum.photos/seed/ffb-prod-green/1000/1000',
+      url: 'https://loremflickr.com/1000/1000/green,smoothie?lock=28782',
       alt: 'Green Machine',
     },
     {
       id: 'img-mango-sunrise',
-      url: 'https://picsum.photos/seed/ffb-prod-mango/1000/1000',
+      url: 'https://loremflickr.com/1000/1000/mango,smoothie?lock=72173',
       alt: 'Mango Sunrise',
     },
     {
       id: 'img-blue-recovery',
-      url: 'https://picsum.photos/seed/ffb-prod-blueberry/1000/1000',
+      url: 'https://loremflickr.com/1000/1000/blueberry,smoothie?lock=84775',
       alt: 'Blue Recovery',
     },
     {
       id: 'img-citrus-glow',
-      url: 'https://picsum.photos/seed/ffb-prod-citrus/1000/1000',
+      url: 'https://loremflickr.com/1000/1000/orange,juice?lock=23609',
       alt: 'Citrus Glow',
     },
     {
       id: 'img-coco-almond',
-      url: 'https://picsum.photos/seed/ffb-prod-coconut/1000/1000',
+      url: 'https://loremflickr.com/1000/1000/coconut,bowl?lock=10976',
       alt: 'Coco Almond',
     },
     {
       id: 'img-harvest-kale',
-      url: 'https://picsum.photos/seed/ffb-prod-kale/1000/1000',
+      url: 'https://loremflickr.com/1000/1000/kale,salad?lock=68486',
       alt: 'Harvest Kale',
     },
     {
       id: 'img-avocado-power',
-      url: 'https://picsum.photos/seed/ffb-prod-avocado/1000/1000',
+      url: 'https://loremflickr.com/1000/1000/avocado,salad?lock=19406',
       alt: 'Avocado Power',
     },
     {
       id: 'img-southwest-grain',
-      url: 'https://picsum.photos/seed/ffb-prod-southwest/1000/1000',
+      url: 'https://loremflickr.com/1000/1000/grain,bowl?lock=65767',
       alt: 'Southwest Grain',
     },
   ],
@@ -744,7 +744,7 @@ export default {
             type: 'Section',
             class: 'w-full flex items-center justify-center h-[75vh] text-white',
             props: {
-              bgImage: 'https://picsum.photos/seed/ffb-hero/2000/1200',
+              bgImage: 'https://loremflickr.com/2000/1200/acai,bowl?lock=98971',
               bgOverlay: 'dark',
             },
             name: 'Hero',
@@ -885,7 +885,7 @@ export default {
                     id: 'ffb-43',
                     type: 'Section',
                     props: {
-                      bgImage: 'https://picsum.photos/seed/ffb-care/1200/900',
+                      bgImage: 'https://loremflickr.com/1200/900/healthy,bowl?lock=46162',
                     },
                     class: 'min-h-[50vh] flex flex-col',
                   },
@@ -905,7 +905,7 @@ export default {
                 id: 'ffb-49',
                 type: 'Section',
                 props: {
-                  bgImage: 'https://picsum.photos/seed/ffb-love/1200/900',
+                  bgImage: 'https://loremflickr.com/1200/900/smoothie,bowl?lock=27859',
                 },
                 class: 'min-h-[50vh] flex flex-col',
               },
@@ -1126,7 +1126,7 @@ export default {
                         id: 'ffb-68',
                         type: 'Section',
                         props: {
-                          bgImage: 'https://picsum.photos/seed/ffb-acai/900/600',
+                          bgImage: 'https://loremflickr.com/900/600/acai,bowl?lock=87979',
                         },
                         class: 'min-h-[25vh] flex flex-col',
                       },
@@ -1207,7 +1207,7 @@ export default {
                         id: 'ffb-78',
                         type: 'Section',
                         props: {
-                          bgImage: 'https://picsum.photos/seed/ffb-strawberry/900/600',
+                          bgImage: 'https://loremflickr.com/900/600/strawberry,smoothie?lock=82160',
                         },
                         class: 'min-h-[25vh] flex flex-col',
                       },
@@ -1288,7 +1288,7 @@ export default {
                         id: 'ffb-88',
                         type: 'Section',
                         props: {
-                          bgImage: 'https://picsum.photos/seed/ffb-green/900/600',
+                          bgImage: 'https://loremflickr.com/900/600/green,smoothie?lock=19140',
                         },
                         class: 'min-h-[25vh] flex flex-col',
                       },
@@ -1369,7 +1369,7 @@ export default {
                         id: 'ffb-98',
                         type: 'Section',
                         props: {
-                          bgImage: 'https://picsum.photos/seed/ffb-kale/900/600',
+                          bgImage: 'https://loremflickr.com/900/600/kale,salad?lock=84304',
                         },
                         class: 'min-h-[25vh] flex flex-col',
                       },
@@ -1450,7 +1450,7 @@ export default {
                         id: 'ffb-108',
                         type: 'Section',
                         props: {
-                          bgImage: 'https://picsum.photos/seed/ffb-avocado/900/600',
+                          bgImage: 'https://loremflickr.com/900/600/avocado,salad?lock=53444',
                         },
                         class: 'min-h-[25vh] flex flex-col',
                       },
@@ -1531,7 +1531,7 @@ export default {
                         id: 'ffb-118',
                         type: 'Section',
                         props: {
-                          bgImage: 'https://picsum.photos/seed/ffb-southwest/900/600',
+                          bgImage: 'https://loremflickr.com/900/600/grain,bowl?lock=76285',
                         },
                         class: 'min-h-[25vh] flex flex-col',
                       },
@@ -2162,7 +2162,7 @@ export default {
             type: 'Section',
             class: 'w-full flex items-center justify-center min-h-[50vh] text-white',
             props: {
-              bgImage: 'https://picsum.photos/seed/ffb-story-hero/2000/1000',
+              bgImage: 'https://loremflickr.com/2000/1000/fresh,fruit?lock=90963',
               bgOverlay: 'dark',
             },
             name: 'Story hero',
@@ -2248,7 +2248,7 @@ export default {
                     id: 'ffb-197',
                     type: 'Section',
                     props: {
-                      bgImage: 'https://picsum.photos/seed/ffb-story-care/1200/900',
+                      bgImage: 'https://loremflickr.com/1200/900/farm,vegetables?lock=38154',
                     },
                     class: 'min-h-[50vh] flex flex-col',
                   },
@@ -2268,7 +2268,7 @@ export default {
                 id: 'ffb-203',
                 type: 'Section',
                 props: {
-                  bgImage: 'https://picsum.photos/seed/ffb-story-food/1200/900',
+                  bgImage: 'https://loremflickr.com/1200/900/healthy,food?lock=40887',
                 },
                 class: 'min-h-[50vh] flex flex-col',
               },
@@ -2611,7 +2611,7 @@ export default {
             type: 'Section',
             class: 'w-full flex items-center justify-center min-h-[50vh] text-white',
             props: {
-              bgImage: 'https://picsum.photos/seed/ffb-catering-hero/2000/1000',
+              bgImage: 'https://loremflickr.com/2000/1000/catering,food?lock=10441',
               bgOverlay: 'dark',
             },
             name: 'Catering hero',

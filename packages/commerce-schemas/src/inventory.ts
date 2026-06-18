@@ -453,3 +453,22 @@ export const ReceiveTransferInput = z.object({
   lines: z.array(ReceiveTransferLineInput).max(500).optional(),
 });
 export type ReceiveTransferInput = z.infer<typeof ReceiveTransferInput>;
+
+// ─── External sync (P5 Tier C) ──────────────────────────────────────────────────
+//
+// A source feed reports absolute on-hand per external SKU; the ingest funnel
+// resolves each row to an InventorySourceLink and reconciles the master level
+// through a corrective `sync` movement. Rows that resolve to no link land in the
+// unmapped-SKU review queue. `how` the run was initiated drives the sync-health
+// trigger badge; mapping an unmapped SKU mints a link to a (variant, warehouse).
+
+export const SyncTrigger = z.enum(['manual', 'scheduled', 'push', 'api']);
+export type SyncTrigger = z.infer<typeof SyncTrigger>;
+
+// Resolve one unmapped external SKU by binding it to a (variant, warehouse): this
+// creates an InventorySourceLink (so the next sync matches it) and clears the row.
+export const MapUnmappedSkuInput = z.object({
+  variantId: Uuid,
+  warehouseId: Uuid,
+});
+export type MapUnmappedSkuInput = z.infer<typeof MapUnmappedSkuInput>;

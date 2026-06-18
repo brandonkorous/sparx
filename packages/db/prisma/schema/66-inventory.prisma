@@ -33,8 +33,10 @@ model InventorySource {
   updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
 
-  tenant Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  links  InventorySourceLink[]
+  tenant       Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  links        InventorySourceLink[]
+  syncRuns     InventorySyncRun[]
+  unmappedSkus InventoryUnmappedSku[]
 
   @@index([tenantId, status])
   @@map("inventory_sources")
@@ -69,4 +71,70 @@ model InventorySourceLink {
   @@index([tenantId, sourceId])
   @@index([tenantId, variantId])
   @@map("inventory_source_links")
+}
+
+// One ingest run per feed fetch/push (docs/100 P5 Tier C). Records full
+// bookkeeping — how many rows resolved to a link, how many were a real correction
+// (`rowsChanged`) vs unchanged, how many had no link (`rowsUnmatched`, queued
+// below), how many errored — so the dashboard sync-health panel can answer "is
+// this source healthy, and what did the last sync actually do?". Append-only.
+model InventorySyncRun {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  sourceId String @map("source_id") @db.Uuid
+
+  // manual | scheduled | push | api — how this run was initiated.
+  trigger String @db.VarChar(20)
+  // success | partial | error
+  status  String @db.VarChar(20)
+
+  rowsTotal     Int @default(0) @map("rows_total")
+  rowsMatched   Int @default(0) @map("rows_matched")
+  rowsChanged   Int @default(0) @map("rows_changed")
+  rowsUnchanged Int @default(0) @map("rows_unchanged")
+  rowsUnmatched Int @default(0) @map("rows_unmatched")
+  rowsSkipped   Int @default(0) @map("rows_skipped")
+
+  error      String?   @db.Text
+  startedAt  DateTime  @default(now()) @map("started_at") @db.Timestamptz
+  finishedAt DateTime? @map("finished_at") @db.Timestamptz
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  source InventorySource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, sourceId, startedAt])
+  @@map("inventory_sync_runs")
+}
+
+// The tenant-facing review queue for external SKUs a feed reported that resolve
+// to NO InventorySourceLink (docs/28 §6/§7). We never auto-create products — the
+// tenant maps the SKU to a (variant, warehouse), which mints a link and resolves
+// (deletes) the row, or ignores it (kept so re-appearances don't re-surface).
+model InventoryUnmappedSku {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  sourceId String @map("source_id") @db.Uuid
+
+  externalSku      String  @map("external_sku") @db.VarChar(255)
+  externalLocation String? @map("external_location") @db.VarChar(255)
+
+  // Last on-hand the feed reported for this unmapped SKU.
+  lastQuantity Int    @map("last_quantity")
+  // How many sync runs have surfaced this SKU.
+  seenCount    Int    @default(1) @map("seen_count")
+  // pending | ignored (a mapped SKU is resolved → the row is deleted)
+  status       String @default("pending") @db.VarChar(20)
+
+  firstSeenAt DateTime @default(now()) @map("first_seen_at") @db.Timestamptz
+  lastSeenAt  DateTime @default(now()) @map("last_seen_at") @db.Timestamptz
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  source InventorySource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, sourceId, externalSku, externalLocation], map: "inventory_unmapped_sku_unique")
+  @@index([tenantId, sourceId, status])
+  @@map("inventory_unmapped_skus")
 }
