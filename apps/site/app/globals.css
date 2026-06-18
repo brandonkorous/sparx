@@ -4,16 +4,81 @@
 @source '../../../packages/ui/src/**/*.{ts,tsx}';
 
 @theme {
-  --color-primary: var(--sparx-primary);
+  /* Brand + base colors bridge to the tenant's compiled --st-x theme, so the
+     Tailwind utilities the Builder emits (bg-primary, bg-accent, bg-base-100,
+     text-primary-content, rounded-box) theme IDENTICALLY to the Builder canvas,
+     which bridges the same way via surface-compile. These previously pointed at
+     the dashboard defaults (--sparx-primary), so storefront utilities rendered
+     indigo/violet instead of the tenant palette — the Builder-vs-site gap. */
+  --color-base-100: var(--st-base-100);
+  --color-base-200: var(--st-base-200);
+  --color-base-300: var(--st-base-300);
+  --color-base-content: var(--st-base-content);
+  --color-primary: var(--st-primary);
+  --color-primary-content: var(--st-primary-content);
+  --color-secondary: var(--st-secondary);
+  --color-secondary-content: var(--st-secondary-content);
+  --color-accent: var(--st-accent);
+  --color-accent-content: var(--st-accent-content);
+  --color-neutral: var(--st-neutral);
+  --color-neutral-content: var(--st-neutral-content);
+  --color-info: var(--st-info);
+  --color-info-content: var(--st-info-content);
+  --color-success: var(--st-success);
+  --color-success-content: var(--st-success-content);
+  --color-warning: var(--st-warning);
+  --color-warning-content: var(--st-warning-content);
+  --color-danger: var(--st-danger);
+  --color-danger-content: var(--st-danger-content);
+  --color-highlight: var(--st-highlight);
+  --color-highlight-content: var(--st-highlight-content);
+  --color-border: var(--st-border);
+
+  /* Shape — rounded-box / rounded-field / rounded-selector track the tenant radii. */
+  --radius-box: var(--st-radius-box);
+  --radius-field: var(--st-radius-field);
+  --radius-selector: var(--st-radius-selector);
+
+  /* Storefront chrome aliases (hand-coded pages) + Next fonts, retained. */
   --color-foreground: var(--color-text-primary);
   --color-foreground-muted: var(--color-text-secondary);
   --color-page: var(--color-bg-page);
   --color-surface: var(--color-bg-surface);
   --color-subtle: var(--color-bg-subtle);
-  --color-border: var(--color-border-default);
 
+  --font-heading: var(--st-font-heading);
+  --font-body: var(--st-font-body);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
+}
+
+/* @sparx/ui/tokens.css sets the brand --color-* in an UNLAYERED :root (dashboard
+   indigo/violet), which beats Tailwind's LAYERED @theme above — so @theme alone
+   themes base-* (which @sparx/ui doesn't redefine) but loses on primary/accent.
+   Re-assert the full brand+base set onto the tenant --st-* theme here, unlayered
+   and AFTER that import, so storefront utilities match the Builder canvas. */
+:root {
+  --color-base-100: var(--st-base-100);
+  --color-base-200: var(--st-base-200);
+  --color-base-300: var(--st-base-300);
+  --color-base-content: var(--st-base-content);
+  --color-primary: var(--st-primary);
+  --color-primary-content: var(--st-primary-content);
+  --color-secondary: var(--st-secondary);
+  --color-secondary-content: var(--st-secondary-content);
+  --color-accent: var(--st-accent);
+  --color-accent-content: var(--st-accent-content);
+  --color-neutral: var(--st-neutral);
+  --color-neutral-content: var(--st-neutral-content);
+  --color-info: var(--st-info);
+  --color-info-content: var(--st-info-content);
+  --color-success: var(--st-success);
+  --color-success-content: var(--st-success-content);
+  --color-warning: var(--st-warning);
+  --color-warning-content: var(--st-warning-content);
+  --color-danger: var(--st-danger);
+  --color-danger-content: var(--st-danger-content);
+  --color-border: var(--st-border);
 }
 
 html {
