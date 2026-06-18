@@ -8,6 +8,7 @@ import {
   type ListToolbarView,
 } from '@sparx/ui';
 import { usePreferences } from './preferences-provider';
+import { SavedViewsMenu } from './saved-views-menu';
 
 // URL-sync wrapper around the presentational `@sparx/ui` ListToolbar (docs/34
 // §7.1). It owns all Next-router knowledge: every control writes its value into
@@ -50,6 +51,9 @@ export interface ListToolbarProps {
   enableRefresh?: boolean;
   /** Search debounce in ms. Default 250. */
   debounceMs?: number;
+  /** Show the saved-views control. Default true; auto-hidden when the list has
+   *  no view-defining params (nothing to save). */
+  enableSavedViews?: boolean;
 }
 
 export function ListToolbar({
@@ -63,6 +67,7 @@ export function ListToolbar({
   viewKey = 'view',
   enableRefresh = true,
   debounceMs = 250,
+  enableSavedViews = true,
 }: ListToolbarProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -105,8 +110,23 @@ export function ListToolbar({
   const view: ListToolbarView =
     (searchParams?.get(viewKey) as ListToolbarView | null) ?? prefs.defaultListView;
 
+  // Saved views snapshot the view-defining params for THIS list. Target = the
+  // route path, so every list gets the control with no per-list wiring; skip it
+  // only when there's nothing filterable to save (or an explicit opt-out).
+  const paramKeys = [
+    ...(searchable ? [searchKey] : []),
+    ...filters.map((f) => f.key),
+    ...(sortOptions ? [sortKey] : []),
+    ...(enableViewToggle ? [viewKey] : []),
+  ];
+  const savedViews =
+    enableSavedViews && paramKeys.length > 0 ? (
+      <SavedViewsMenu target={pathname} paramKeys={paramKeys} />
+    ) : undefined;
+
   return (
     <UiListToolbar
+      views={savedViews}
       searchValue={searchable ? search : undefined}
       onSearchChange={searchable ? onSearchChange : undefined}
       searchPlaceholder={searchPlaceholder}
