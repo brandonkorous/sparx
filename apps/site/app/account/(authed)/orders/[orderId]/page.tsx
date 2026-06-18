@@ -6,11 +6,12 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { SparxAlert, SparxButton } from '@sparx/site-ui';
+import { SparxAlert, SparxBadge, SparxButton } from '@sparx/site-ui';
 
 import { useCustomer } from '@/components/customer-provider';
 import { getOrder, AccountError, type OrderDetail } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
+import { statusColor } from '@/lib/status-badge';
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -90,9 +91,7 @@ export default function OrderDetailPage() {
         }}
       >
         <h1 className="st-h2">Order #{order.orderNumber}</h1>
-        <span className="st-badge" data-status={order.status}>
-          {order.status}
-        </span>
+        <SparxBadge color={statusColor(order.status)}>{order.status}</SparxBadge>
       </div>
       <p className="st-muted" style={{ marginBottom: '1.5rem' }}>
         Placed {formatDate(order.placedAt)} · {order.paymentStatus}

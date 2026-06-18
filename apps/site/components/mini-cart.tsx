@@ -89,13 +89,13 @@ export function MiniCart() {
                       <Link
                         href={`/products/${line.productHandle}`}
                         onClick={closeDrawer}
-                        className="st-card__title"
+                        className="st-tile__title"
                         style={{ textDecoration: 'none', color: 'inherit' }}
                       >
                         {line.title}
                       </Link>
                     ) : (
-                      <span className="st-card__title">{line.title}</span>
+                      <span className="st-tile__title">{line.title}</span>
                     )}
                     {line.variantTitle ? (
                       <span className="st-muted" style={{ fontSize: '0.82rem' }}>

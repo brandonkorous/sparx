@@ -1,6 +1,6 @@
 # Tenant Seed Inventory & the Three-Layer Seeding Model
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-17
 
@@ -153,28 +153,28 @@ Coverage: ✅ seeds today · ⚠️ partial · ❌ gap.
 
 ### 4.4 Commerce (L2 config gap + L3 content)
 
-| Entity                                                                            | Class  | Coverage | Notes                                               |
-| --------------------------------------------------------------------------------- | ------ | -------- | --------------------------------------------------- |
-| `ProductCategory`, `ProductCollection`, `Product`/`Variant`/`Option`/`Image`      | 🔵     | ✅ L3    | The **only** commerce thing seeded today.           |
-| `CommerceSiteSettings` (currency, locale, checkout, default warehouse)            | 🟢     | ✅       | `commerceSiteService.bootstrapDefaults` on `module.activated(commerce)` (#74). |
-| `ShippingZone` / `ShippingProfile` / `ShippingRate`                               | 🟢     | ✅       | `shippingService.bootstrapDefaults` — "Everywhere" zone + "Standard" profile + flat $5 fallback rate (#74). |
+| Entity                                                                            | Class  | Coverage | Notes                                                                                                                                                                                 |
+| --------------------------------------------------------------------------------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ProductCategory`, `ProductCollection`, `Product`/`Variant`/`Option`/`Image`      | 🔵     | ✅ L3    | The **only** commerce thing seeded today.                                                                                                                                             |
+| `CommerceSiteSettings` (currency, locale, checkout, default warehouse)            | 🟢     | ✅       | `commerceSiteService.bootstrapDefaults` on `module.activated(commerce)` (#74).                                                                                                        |
+| `ShippingZone` / `ShippingProfile` / `ShippingRate`                               | 🟢     | ✅       | `shippingService.bootstrapDefaults` — "Everywhere" zone + "Standard" profile + flat $5 fallback rate (#74).                                                                           |
 | `TaxZone` / `TaxRate` / `TaxExemption`                                            | 🟢     | ✅       | `taxService.bootstrapDefaults` — one **inactive** home-country nexus zone, no rates: surface wired, $0 collected until the merchant adds a rate + activates (or installs a provider). |
-| `PriceList` / `PriceListEntry` / `BulkPriceTier` / `MarkupRule` / `SurchargeRule` | 🔵     | ❌       | Manifest gap (industry pricing).                    |
-| `Discount` (promo codes)                                                          | 🔵     | ❌       | Manifest gap.                                       |
-| `Bundle` / `ConfigurationTemplate` (+ options/rules/add-ons)                      | 🔵     | ❌       | Manifest gap.                                       |
-| `FitmentDomain`/`Category`/`Item`/`Variant` + `ProductFitment`                    | 🔵     | ❌       | Manifest gap (vehicle/device/pet/apparel fitment).  |
-| `ProviderInstallation` (Stripe/Shippo/TaxJar…)                                    | author | —        | Runtime connect (onboarding Payments step).         |
-| Carts, checkouts, orders, payments, reviews, returns, gift cards                  | ⚪     | —        | Never seeded (demo only).                           |
+| `PriceList` / `PriceListEntry` / `BulkPriceTier` / `MarkupRule` / `SurchargeRule` | 🔵     | ❌       | Manifest gap (industry pricing).                                                                                                                                                      |
+| `Discount` (promo codes)                                                          | 🔵     | ❌       | Manifest gap.                                                                                                                                                                         |
+| `Bundle` / `ConfigurationTemplate` (+ options/rules/add-ons)                      | 🔵     | ❌       | Manifest gap.                                                                                                                                                                         |
+| `FitmentDomain`/`Category`/`Item`/`Variant` + `ProductFitment`                    | 🔵     | ❌       | Manifest gap (vehicle/device/pet/apparel fitment).                                                                                                                                    |
+| `ProviderInstallation` (Stripe/Shippo/TaxJar…)                                    | author | —        | Runtime connect (onboarding Payments step).                                                                                                                                           |
+| Carts, checkouts, orders, payments, reviews, returns, gift cards                  | ⚪     | —        | Never seeded (demo only).                                                                                                                                                             |
 
 ### 4.5 CRM (L2 ✅)
 
-| Entity                                                | Class   | Coverage | Notes                                     |
-| ----------------------------------------------------- | ------- | -------- | ----------------------------------------- |
-| `Pipeline` + `PipelineStage` (default sales pipeline) | 🟢      | ✅       | `bootstrapDefaultPipeline` on activation. |
-| `Segment` (built-in templates)                        | 🟢      | ✅       | `bootstrapBuiltInSegments`.               |
-| `SavedView` (per surface)                             | 🟢      | ❌       | Minor L2 add (default views per list).    |
-| `Customer` / `Deal` / `Task` examples                 | 🔵 demo | ❌       | Demo/optional blueprint examples.         |
-| Activities, segment members, addresses, joins         | ⚪      | —        | Generated.                                |
+| Entity                                                | Class   | Coverage | Notes                                                                                                                            |
+| ----------------------------------------------------- | ------- | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `Pipeline` + `PipelineStage` (default sales pipeline) | 🟢      | ✅       | `bootstrapDefaultPipeline` on activation.                                                                                        |
+| `Segment` (built-in templates)                        | 🟢      | ✅       | `bootstrapBuiltInSegments`.                                                                                                      |
+| `SavedView` (per surface)                             | 🟢      | ✅       | `bootstrapSavedViewPresets` — shared, non-default preset views per list; platform-wide (not CRM-only), seeded per owning module. |
+| `Customer` / `Deal` / `Task` examples                 | 🔵 demo | ❌       | Demo/optional blueprint examples.                                                                                                |
+| Activities, segment members, addresses, joins         | ⚪      | —        | Generated.                                                                                                                       |
 
 ### 4.6 Email + Automation (L2 ✅)
 
@@ -231,10 +231,18 @@ broken":
 2. **Inventory** — ✅ one default operating `Warehouse` (`MAIN`) so stock has a home.
 3. **Chat** — ✅ a starter `ChatQuickReply` bank (7 entries); widget greeting/hours live in chat settings.
 4. **B2B** — ✅ a default `PurchaseApprovalRule`, seeded **disabled** — approval surface wired but inert.
-5. **CRM** — default `SavedView`s per surface: **deferred** — `SavedView` has no API/UI consumer yet, so
-   seeding would be dead rows. Pipeline + segments already seed (§4.5).
+5. **Saved-view presets** (platform-wide, not CRM-only) — ✅ `bootstrapSavedViewPresets` seeds a
+   tenant-wide starter set of named list filters — the operational queues people live in (unfulfilled
+   orders, overdue invoices, abandoned carts, pending reviews, credit-hold accounts) — for every
+   preset-bearing module (commerce, crm, b2b, invoicing, cms). The earlier "deferred — no consumer"
+   note is resolved: the platform `SavedView` API + the shared ListToolbar **"Views"** control shipped
+   (#76), so these are live rows, not dead ones. Seeded **shared** (tenant-wide) and **never
+   `isDefault`** — a default auto-applies on open, so a seeded preset must be an opt-in click, not a
+   surprise filter — find-or-create by `(target, name)`, and **bundle-aware** (invoicing presets seed
+   for Commerce/B2B tenants whose `invoicing` flag is never written). Catalog +
+   seeder: `services/api-rest/src/lib/saved-view-presets.ts`.
 
-Seeders 1–4 are wired through `services/api-rest/src/lib/module-provisioning.ts` (the in-process
+Seeders 1–5 are wired through `services/api-rest/src/lib/module-provisioning.ts` (the in-process
 `module.activated` consumer + 6h reconcile, sibling of `email-provisioning.ts`). Reference
 implementations they copy: **CRM** (`packages/crm/src/consumers/module-activation.ts`), **Email**
 (`services/api-rest/src/lib/email-provisioning.ts`), **Automation**

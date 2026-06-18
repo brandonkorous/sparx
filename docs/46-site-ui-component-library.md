@@ -13,7 +13,7 @@ Last Updated: 2026-06-03
 > component (`<Button color variant size>`); the builder carries the same recipe tokens on `node.class`
 > and lifts them back into props via `recipeFromClass`
 > ([102](102-builder-component-library-audit.md)). For the authoring + per-tenant compile model, read
-> [61](61-utility-authoring-system.md). The two-render-path drift described below is the *historical*
+> [61](61-utility-authoring-system.md). The two-render-path drift described below is the _historical_
 > motivation; that unification has shipped.
 
 > The Builder composition model ([40](40-sitebuilder-composition-model.md)) walks a

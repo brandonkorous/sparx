@@ -6,11 +6,12 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 
-import { SparxAlert, SparxButton } from '@sparx/site-ui';
+import { SparxAlert, SparxBadge, SparxButton } from '@sparx/site-ui';
 
 import { useCustomer } from '@/components/customer-provider';
 import { getB2bInvoices, type B2bInvoiceEntry } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
+import { statusColor } from '@/lib/status-badge';
 
 const PAGE_SIZE = 20;
 
@@ -20,12 +21,6 @@ function formatDate(iso: string): string {
     month: 'short',
     day: 'numeric',
   });
-}
-
-function statusBadgeProps(status: string): { 'data-status': string } {
-  return {
-    'data-status': status === 'paid' ? 'success' : status === 'overdue' ? 'danger' : 'warning',
-  };
 }
 
 export default function B2bInvoicesPage() {
@@ -101,9 +96,7 @@ export default function B2bInvoicesPage() {
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <span className="st-badge" {...statusBadgeProps(inv.status)}>
-                      {inv.status}
-                    </span>
+                    <SparxBadge color={statusColor(inv.status)}>{inv.status}</SparxBadge>
                     <strong style={{ whiteSpace: 'nowrap' }}>
                       {formatMoney(inv.amountCents, 'USD')}
                     </strong>

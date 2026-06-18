@@ -6,11 +6,12 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 
-import { SparxAlert, SparxButton } from '@sparx/site-ui';
+import { SparxAlert, SparxBadge, SparxButton } from '@sparx/site-ui';
 
 import { useCustomer } from '@/components/customer-provider';
 import { getB2bQuotes, type B2bQuoteEntry } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
+import { statusColor } from '@/lib/status-badge';
 
 const PAGE_SIZE = 20;
 
@@ -21,13 +22,6 @@ function formatDate(iso: string | null): string {
     month: 'short',
     day: 'numeric',
   });
-}
-
-function quoteStatusProps(status: string): { 'data-status': string } {
-  if (status === 'accepted') return { 'data-status': 'success' };
-  if (status === 'rejected' || status === 'expired') return { 'data-status': 'danger' };
-  if (status === 'sent') return { 'data-status': 'warning' };
-  return { 'data-status': 'default' };
 }
 
 export default function B2bQuotesPage() {
@@ -96,9 +90,7 @@ export default function B2bQuotesPage() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span className="st-badge" {...quoteStatusProps(q.status)}>
-                    {q.status}
-                  </span>
+                  <SparxBadge color={statusColor(q.status)}>{q.status}</SparxBadge>
                   <strong style={{ whiteSpace: 'nowrap' }}>
                     {formatMoney(q.totalCents, q.currency)}
                   </strong>

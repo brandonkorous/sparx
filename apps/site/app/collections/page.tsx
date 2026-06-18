@@ -45,9 +45,9 @@ export default async function CollectionListingPage() {
           {collections.map((c) => {
             const hero = mediaUrl(c.heroMediaId, site.slug);
             return (
-              <Link key={c.id} href={`/collections/${c.handle}`} className="st-card">
-                <div className="st-card__media">
-                  {c.featured ? <span className="st-badge">Featured</span> : null}
+              <Link key={c.id} href={`/collections/${c.handle}`} className="st-tile">
+                <div className="st-tile__media">
+                  {c.featured ? <span className="st-tile__badge">Featured</span> : null}
                   {hero ? (
                     <Image
                       src={hero}
@@ -57,13 +57,13 @@ export default async function CollectionListingPage() {
                       style={{ objectFit: 'cover' }}
                     />
                   ) : (
-                    <div className="st-card__media st-card__media--empty" aria-hidden="true">
+                    <div className="st-tile__media st-tile__media--empty" aria-hidden="true">
                       <span style={{ fontSize: '2rem' }}>❖</span>
                     </div>
                   )}
                 </div>
-                <div className="st-card__body">
-                  <span className="st-card__title">{c.name}</span>
+                <div className="st-tile__body">
+                  <span className="st-tile__title">{c.name}</span>
                   {c.description ? <span className="st-muted">{c.description}</span> : null}
                 </div>
               </Link>

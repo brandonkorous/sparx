@@ -6,11 +6,12 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-import { SparxAlert, SparxButton } from '@sparx/site-ui';
+import { SparxAlert, SparxBadge, SparxButton } from '@sparx/site-ui';
 
 import { useCustomer } from '@/components/customer-provider';
 import { getOrders, type OrderSummary } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
+import { statusColor } from '@/lib/status-badge';
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -78,9 +79,7 @@ export default function OrdersPage() {
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <span className="st-badge" data-status={o.status}>
-                  {o.status}
-                </span>
+                <SparxBadge color={statusColor(o.status)}>{o.status}</SparxBadge>
                 <strong>{formatMoney(o.totalCents, o.currency)}</strong>
               </div>
             </Link>

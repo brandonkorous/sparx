@@ -8,10 +8,11 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { SparxAlert } from '@sparx/site-ui';
+import { SparxAlert, SparxBadge } from '@sparx/site-ui';
 
 import { useCustomer } from '@/components/customer-provider';
 import { getB2bAccounts, type B2bAccountEntry } from '@/lib/customer-client';
+import { statusColor } from '@/lib/status-badge';
 
 function statusLabel(status: string): string {
   switch (status) {
@@ -102,9 +103,7 @@ export default function B2bPortalPage() {
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <span className="st-badge" data-status={acct.status}>
-                {statusLabel(acct.status)}
-              </span>
+              <SparxBadge color={statusColor(acct.status)}>{statusLabel(acct.status)}</SparxBadge>
               <span className="st-muted" style={{ fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
                 ${acct.creditAvailable.toLocaleString()} available
               </span>

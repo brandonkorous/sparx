@@ -5,9 +5,9 @@ Author: Brandon Korous
 Last Updated: 2026-06-02
 
 > **⚠ Superseded by [61](61-utility-authoring-system.md) (2026-06-07).** This is the class-first
-> *proposal*; 61 is the **executed** model and wins on any disagreement. Two decisions below did **not**
+> _proposal_; 61 is the **executed** model and wins on any disagreement. Two decisions below did **not**
 > ship as written: (1) the `@sparx/site-ui` → `@sparx/surface` rename **never happened** — the component
-> library is still **`@sparx/site-ui`** (only the per-tenant *compile* package is `@sparx/surface-compile`);
+> library is still **`@sparx/site-ui`** (only the per-tenant _compile_ package is `@sparx/surface-compile`);
 > (2) the node's per-instance slot shipped as **`props`**, not `data`. **Current node shape:**
 > `{ id, type, class?, props, binding?, children? }`. The authoring surface also moved to Tailwind-native
 > utility tokens (not a curated dialect) — see 61.

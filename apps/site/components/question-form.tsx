@@ -69,12 +69,7 @@ export function QuestionForm({ tenantSlug, handle }: { tenantSlug: string; handl
       </label>
       <label className="st-field">
         <span>Your question</span>
-        <SparxTextarea
-          required
-          rows={3}
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-        />
+        <SparxTextarea required rows={3} value={body} onChange={(e) => setBody(e.target.value)} />
       </label>
       {error ? <SparxAlert color="danger">{error}</SparxAlert> : null}
       <div style={{ display: 'flex', gap: '0.75rem' }}>

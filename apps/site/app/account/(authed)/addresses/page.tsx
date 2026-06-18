@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { SparxAlert, SparxButton, SparxInput } from '@sparx/site-ui';
+import { SparxAlert, SparxBadge, SparxButton, SparxInput } from '@sparx/site-ui';
 
 import { useCustomer } from '@/components/customer-provider';
 import {
@@ -112,7 +112,7 @@ export default function AddressesPage() {
             >
               <div>
                 {a.label ? <strong>{a.label} </strong> : null}
-                {a.isDefault ? <span className="st-badge">Default</span> : null}
+                {a.isDefault ? <SparxBadge color="primary">Default</SparxBadge> : null}
                 <div className="st-muted" style={{ fontSize: '0.85rem', marginTop: '0.25rem' }}>
                   {formatAddress(a)}
                 </div>

@@ -6,7 +6,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { SparxButton } from '@sparx/site-ui';
+import { SparxBadge, SparxButton } from '@sparx/site-ui';
 
 import { formatMoney } from '@/lib/format';
 import { useCart } from './cart-provider';
@@ -64,13 +64,13 @@ export function CartView() {
               {line.productHandle ? (
                 <Link
                   href={`/products/${line.productHandle}`}
-                  className="st-card__title"
+                  className="st-tile__title"
                   style={{ textDecoration: 'none', color: 'inherit' }}
                 >
                   {line.title}
                 </Link>
               ) : (
-                <span className="st-card__title">{line.title}</span>
+                <span className="st-tile__title">{line.title}</span>
               )}
               {line.variantTitle ? (
                 <span className="st-muted" style={{ fontSize: '0.85rem' }}>
@@ -132,11 +132,7 @@ export function CartView() {
         {appliedDiscountCodes.length > 0 ? (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
             {appliedDiscountCodes.map((code) => (
-              <span
-                key={code}
-                className="st-badge"
-                style={{ position: 'static', display: 'inline-flex', gap: '0.4rem' }}
-              >
+              <SparxBadge key={code} color="neutral" variant="soft">
                 {code}
                 <button
                   type="button"
@@ -151,7 +147,7 @@ export function CartView() {
                 >
                   ×
                 </button>
-              </span>
+              </SparxBadge>
             ))}
           </div>
         ) : null}

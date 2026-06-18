@@ -89,7 +89,11 @@ export default function WishlistPage() {
                   </div>
                 </Link>
                 <div style={{ padding: '0 0.75rem 0.75rem' }}>
-                  <SparxButton color="neutral" variant="ghost" onClick={() => void remove(it.variantId)}>
+                  <SparxButton
+                    color="neutral"
+                    variant="ghost"
+                    onClick={() => void remove(it.variantId)}
+                  >
                     Remove
                   </SparxButton>
                 </div>

@@ -110,11 +110,7 @@ export function ReviewForm({ tenantSlug, handle }: { tenantSlug: string; handle:
       <div style={{ display: 'flex', gap: '0.75rem' }}>
         <label className="st-field" style={{ flex: 1 }}>
           <span>Name</span>
-          <SparxInput
-            required
-            value={authorName}
-            onChange={(e) => setAuthorName(e.target.value)}
-          />
+          <SparxInput required value={authorName} onChange={(e) => setAuthorName(e.target.value)} />
         </label>
         <label className="st-field" style={{ flex: 1 }}>
           <span>Email (optional)</span>
@@ -131,12 +127,7 @@ export function ReviewForm({ tenantSlug, handle }: { tenantSlug: string; handle:
       </label>
       <label className="st-field">
         <span>Review</span>
-        <SparxTextarea
-          required
-          rows={4}
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-        />
+        <SparxTextarea required rows={4} value={body} onChange={(e) => setBody(e.target.value)} />
       </label>
       {error ? (
         <SparxAlert color="danger" role="alert">
