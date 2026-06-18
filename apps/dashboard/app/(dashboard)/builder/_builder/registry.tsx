@@ -24,6 +24,9 @@ import {
   Grid2x2,
   Hash,
   Heading as HeadingIcon,
+  Heading1,
+  Heading2,
+  Heading3,
   Image as ImageIcon,
   Images,
   LayoutGrid,
@@ -131,7 +134,9 @@ export interface PropSpec {
     | 'icon'
     | 'richtext'
     | 'navlinks';
-  options?: { value: string; label: string }[];
+  /** A `buttongroup` option may carry an icon (e.g. the H1/H2/H3 heading-level
+   *  glyphs) — the Segmented control shows it alongside the label. */
+  options?: { value: string; label: string; icon?: LucideIcon }[];
   placeholder?: string;
 }
 
@@ -305,16 +310,19 @@ const DEFS: ComponentDef[] = [
     accepts: ['scalar'],
     props: [
       {
+        // `level` sets the semantic tag (h1/h2/h3) — what kind of header this is,
+        // not a font size. The H1/H2/H3 glyphs make that explicit; the words say
+        // what each is for. Drives SEO + the document outline + the default scale.
         key: 'level',
-        label: 'Size',
+        label: 'Header',
         control: 'buttongroup',
         options: [
-          { value: 'h1', label: 'Title' },
-          { value: 'h2', label: 'Heading' },
-          { value: 'h3', label: 'Sub' },
+          { value: 'h1', label: 'Title', icon: Heading1 },
+          { value: 'h2', label: 'Heading', icon: Heading2 },
+          { value: 'h3', label: 'Sub', icon: Heading3 },
         ],
       },
-      { key: 'text', label: 'Heading text', control: 'text', placeholder: 'Heading text' },
+      { key: 'text', label: 'Heading text', control: 'text', placeholder: 'Your heading here' },
     ],
     defaults: { props: { level: 'h2', text: 'Heading' } },
   },
@@ -1375,7 +1383,10 @@ function carriedText(props: Record<string, unknown>): string | undefined {
   return undefined;
 }
 
-function textPropKeyOf(def: ComponentDef): string | undefined {
+/** The node's primary text/content prop key (`text` / `label` / `value`) — the one
+ *  a data binding replaces. Used by the retype carry AND by the Content panel to
+ *  move that field under the "Type it in" source branch. */
+export function textPropKeyOf(def: ComponentDef): string | undefined {
   return def.props.find((p) => TEXT_PROP_KEYS.includes(p.key))?.key;
 }
 

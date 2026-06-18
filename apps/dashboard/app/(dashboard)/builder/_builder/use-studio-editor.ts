@@ -28,7 +28,7 @@
 // Outlet boundary, the same firewall the move router enforces.
 
 import * as React from 'react';
-import { useConfirm } from '@sparx/ui';
+import { toast, useConfirm } from '@sparx/ui';
 import {
   customKeyOf,
   makeCustomNode,
@@ -740,21 +740,30 @@ export function useStudioEditor({
     if (!selectedNode || !selection.id) return;
     const to = getDef(targetType);
     if (!to || targetType === selectedNode.type) return;
+    const from = getDef(selectedNode.type);
     const apply = () => mutateSelected((n) => retypeNode(n, targetType));
-    if (retypeDropsChildren(selectedNode, targetType)) {
-      const lost = countDescendants(selectedNode);
-      void (async () => {
-        const ok = await confirm({
-          title: `Change to ${to.label}?`,
-          description: `A ${to.label} can’t hold the ${lost} nested item${lost === 1 ? '' : 's'} inside this — ${lost === 1 ? 'it' : 'they'} will be removed. This can’t be undone.`,
-          confirmLabel: 'Change type',
-          tone: 'danger',
-        });
-        if (ok) apply();
-      })();
-    } else {
-      apply();
-    }
+    // Retype is quasi-destructive — it resets the block's settings to the target's
+    // defaults (only name / layout / binding / recipe + visible content carry
+    // across), and a leaf target also drops any nested blocks. Always confirm; the
+    // wording + tone escalate when children would be lost.
+    const dropsChildren = retypeDropsChildren(selectedNode, targetType);
+    const lost = dropsChildren ? countDescendants(selectedNode) : 0;
+    void (async () => {
+      const ok = await confirm({
+        title: `Change to ${to.label}?`,
+        description: dropsChildren
+          ? `A ${to.label} can’t hold the ${lost} nested block${lost === 1 ? '' : 's'} inside this — ${lost === 1 ? 'it' : 'they'} will be removed and its settings reset. This can’t be undone.`
+          : `Converts ${from ? `the ${from.label}` : 'this block'} to a ${to.label} and resets its settings to the new block’s defaults. Its content carries over where it fits.`,
+        confirmLabel: 'Change type',
+        tone: dropsChildren ? 'danger' : 'warning',
+      });
+      if (ok) {
+        apply();
+        toast.success(`Changed to ${to.label}.`);
+      } else {
+        toast(`Kept the ${from?.label ?? 'block'}.`);
+      }
+    })();
   };
 
   // ── Clipboard + duplicate + copy-styles (docs/builder/05 §2.5) ────────────────

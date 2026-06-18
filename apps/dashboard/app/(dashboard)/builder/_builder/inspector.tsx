@@ -20,7 +20,26 @@
 
 import * as React from 'react';
 import {
+  AlignCenter,
+  AlignCenterHorizontal,
+  AlignEndHorizontal,
+  AlignHorizontalDistributeCenter,
+  AlignHorizontalJustifyCenter,
+  AlignHorizontalJustifyEnd,
+  AlignHorizontalJustifyStart,
+  AlignHorizontalSpaceAround,
+  AlignHorizontalSpaceBetween,
+  AlignJustify,
+  AlignLeft,
+  AlignRight,
+  AlignStartHorizontal,
+  AlignVerticalJustifyCenter,
+  AlignVerticalJustifyEnd,
+  AlignVerticalJustifyStart,
+  AlignVerticalSpaceAround,
+  AlignVerticalSpaceBetween,
   Aperture,
+  Baseline,
   Box,
   Boxes,
   Check,
@@ -46,20 +65,36 @@ import {
   Pencil,
   Play,
   Plus,
+  Replace,
   Rocket,
   Search,
   Sparkles,
   SlidersHorizontal,
   Spline,
   Square,
+  StretchHorizontal,
+  StretchVertical,
   Table,
+  TextCursorInput,
   Trash2,
   Type,
   X,
   Zap,
   type LucideIcon,
 } from 'lucide-react';
-import { Input, NativeSelect, Switch, Textarea, cn, useConfirm } from '@sparx/ui';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+  Input,
+  NativeSelect,
+  Switch,
+  Textarea,
+  cn,
+  useConfirm,
+} from '@sparx/ui';
 import {
   REF_KEY,
   bindSlotKey,
@@ -98,7 +133,13 @@ import {
   dataConnectSummary,
   hasRecordOrActionBinding,
 } from './data-panel';
-import { compatibleRetypeTargets, getDef, type ComponentDef, type EditorSurface } from './registry';
+import {
+  compatibleRetypeTargets,
+  getDef,
+  textPropKeyOf,
+  type ComponentDef,
+  type EditorSurface,
+} from './registry';
 import { IconPicker } from './icon-picker';
 import { ProseControl } from './prose-control';
 import {
@@ -198,7 +239,6 @@ import {
   MOTION_ENTRANCES,
   MOTION_TRIGGERS,
   activeValue,
-  applyColorOpacity,
   applyValue,
   applyValueGroup,
   applyMotion,
@@ -208,16 +248,62 @@ import {
   lengthDisplay,
   lengthSuffix,
   radiusCornerControl,
-  readColorOpacity,
   readMotion,
   readValueGroup,
   type ClassControl,
   type MotionState,
   type StyleContext,
 } from './class-controls';
+import { ColorSwatchField, EmphasisSwatchField } from './color-swatch';
+import { IconChoiceField, PreviewTile, PreviewTileField } from './picker-fields';
 import { detectClassConflicts, resolveClassConflicts } from './class-conflicts';
 
 // ── Shared controls ──────────────────────────────────────────────────────────
+
+// Icon maps for the alignment IconChoiceFields (picker-fields.tsx). Keyed by the
+// control's option VALUE; a value with no icon falls back to its text label
+// (e.g. align-self 'auto', align-items 'baseline' when no clean glyph fits).
+const TEXT_ALIGN_ICONS: Record<string, LucideIcon> = {
+  left: AlignLeft,
+  center: AlignCenter,
+  right: AlignRight,
+  justify: AlignJustify,
+};
+const JUSTIFY_ICONS: Record<string, LucideIcon> = {
+  start: AlignHorizontalJustifyStart,
+  center: AlignHorizontalJustifyCenter,
+  end: AlignHorizontalJustifyEnd,
+  between: AlignHorizontalSpaceBetween,
+  around: AlignHorizontalSpaceAround,
+  evenly: AlignHorizontalDistributeCenter,
+};
+const ALIGN_ITEMS_ICONS: Record<string, LucideIcon> = {
+  start: AlignStartHorizontal,
+  center: AlignCenterHorizontal,
+  end: AlignEndHorizontal,
+  stretch: StretchVertical,
+  baseline: Baseline,
+};
+const JUSTIFY_ITEMS_ICONS: Record<string, LucideIcon> = {
+  start: AlignHorizontalJustifyStart,
+  center: AlignHorizontalJustifyCenter,
+  end: AlignHorizontalJustifyEnd,
+  stretch: StretchHorizontal,
+};
+const ALIGN_CONTENT_ICONS: Record<string, LucideIcon> = {
+  start: AlignVerticalJustifyStart,
+  center: AlignVerticalJustifyCenter,
+  end: AlignVerticalJustifyEnd,
+  between: AlignVerticalSpaceBetween,
+  around: AlignVerticalSpaceAround,
+  stretch: StretchVertical,
+};
+const ALIGN_SELF_ICONS: Record<string, LucideIcon> = {
+  start: AlignStartHorizontal,
+  center: AlignCenterHorizontal,
+  end: AlignEndHorizontal,
+  stretch: StretchVertical,
+};
 
 function Field({
   label,
@@ -243,23 +329,27 @@ function Segmented<T extends string>({
   onChange,
 }: {
   value: T;
-  options: { value: T; label: string }[];
+  options: { value: T; label: string; icon?: LucideIcon }[];
   onChange: (v: T) => void;
 }) {
   return (
     <div className="bx-seg" role="group">
-      {options.map((o) => (
-        <button
-          key={o.value}
-          type="button"
-          className="bx-seg__btn"
-          data-on={o.value === value}
-          aria-pressed={o.value === value}
-          onClick={() => onChange(o.value)}
-        >
-          {o.label}
-        </button>
-      ))}
+      {options.map((o) => {
+        const Icon = o.icon;
+        return (
+          <button
+            key={o.value}
+            type="button"
+            className="bx-seg__btn"
+            data-on={o.value === value}
+            aria-pressed={o.value === value}
+            onClick={() => onChange(o.value)}
+          >
+            {Icon ? <Icon className="bx-seg__ico" aria-hidden /> : null}
+            {o.label}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -571,39 +661,6 @@ function NavLinksControl({
 // same-kind targets valid on this surface; the current type sits at the top,
 // disabled. The editor's onRetype carries name / box / binding / recipe across and
 // confirms if the change would drop nested items (registry.retypeNode).
-function RetypeControl({
-  def,
-  surface,
-  onRetype,
-}: {
-  def: ComponentDef;
-  surface: EditorSurface;
-  onRetype: (targetType: string) => void;
-}) {
-  const targets = compatibleRetypeTargets(def, surface);
-  if (targets.length === 0) return null;
-  return (
-    <NativeSelect
-      size="sm"
-      className="bx-ins-retype"
-      aria-label="Change block type"
-      value={def.type}
-      onChange={(e) => {
-        if (e.target.value !== def.type) onRetype(e.target.value);
-      }}
-    >
-      <option value={def.type} disabled>
-        {def.label} — change to…
-      </option>
-      {targets.map((t) => (
-        <option key={t.type} value={t.type}>
-          {t.label}
-        </option>
-      ))}
-    </NativeSelect>
-  );
-}
-
 // One recipe-axis selector (Color / Variant / Size). Writing a value also
 // backfills the node's archetype base + defaults for any unset axis, so styling a
 // component authored before class-first (no `st-btn` base) doesn't collapse it to
@@ -737,7 +794,7 @@ function ColumnsField({
       ? 'auto-fill'
       : null;
   const fluid = kind !== null;
-  const mode = kind ?? current ?? '';
+  const fixed = !fluid && current && /^[1-6]$/.test(current) ? current : null;
   const minMatch = current ? /minmax\(([^,]+),\s*1fr\)/.exec(current) : null;
   const minSeed = minMatch ? minMatch[1]!.replace(/_/g, ' ') : '16rem';
   const [minText, setMinText] = React.useState(minSeed);
@@ -759,28 +816,45 @@ function ColumnsField({
   };
 
   return (
-    <div className="bx-field">
+    <div className="bx-field bx-swatchfield">
       <span className="bx-field__label">Columns</span>
-      <NativeSelect
-        size="sm"
-        value={mode}
-        onChange={(e) => {
-          const v = e.target.value;
-          if (v === 'auto-fit' || v === 'auto-fill') write(fluidSuffix(v, minText), prefix === '');
-          else write(v || null, false);
-        }}
-      >
-        <option value="">—</option>
-        <option value="auto-fit">Auto-fit (fluid)</option>
-        <option value="auto-fill">Auto-fill</option>
-        {[1, 2, 3, 4, 5, 6].map((n) => (
-          <option key={n} value={String(n)}>
-            {n}
-          </option>
+      <div className="bx-sw-grid" data-density="comfortable" role="group" aria-label="Columns">
+        <PreviewTile
+          label="Default"
+          selected={!fluid && !fixed}
+          onSelect={() => write(null, false)}
+          kind="columns"
+          value={null}
+        />
+        {['1', '2', '3', '4', '5', '6'].map((n) => (
+          <PreviewTile
+            key={n}
+            label={n}
+            selected={fixed === n}
+            onSelect={() => write(n, false)}
+            kind="columns"
+            value={n}
+          />
         ))}
-      </NativeSelect>
+        {/* Fluid = auto-fit/fill: as many columns of >= the min width as fit, wrapping. */}
+        <PreviewTile
+          label="Fluid"
+          selected={fluid}
+          onSelect={() => write(fluidSuffix(kind ?? 'auto-fit', minText), prefix === '')}
+          kind="columns"
+          value="fluid"
+        />
+      </div>
       {fluid ? (
         <>
+          <Segmented
+            value={kind ?? 'auto-fit'}
+            options={[
+              { value: 'auto-fit', label: 'Auto-fit' },
+              { value: 'auto-fill', label: 'Auto-fill' },
+            ]}
+            onChange={(v) => write(fluidSuffix(v, minText), prefix === '')}
+          />
           <Input
             size="sm"
             value={minText}
@@ -831,11 +905,6 @@ function FlexGridCard({
   const arrange = readArrangeAs(node.class, prefix);
   const commit = (c: string) => onClass(ensureArchetypeDefaults(c, def.defaults.class));
   const setArrange = (v: 'row' | 'stack' | 'grid') => commit(applyArrangeAs(node.class, v, prefix));
-  // Columns get the richer fluid control (below); gap/alignment are simple enums.
-  const detailControls = [GAP_CONTROL, JUSTIFY_CONTROL, ALIGN_ITEMS_CONTROL];
-  // Wrap is a flex concept; the grid-specific distribution controls only apply to
-  // a grid. The inspector reveals each by the node's current "Arrange as".
-  const gridControls = [GRID_FLOW_CONTROL, JUSTIFY_ITEMS_CONTROL, ALIGN_CONTENT_CONTROL];
   const isContainer = def.kind === 'container';
   return (
     <Card
@@ -852,16 +921,30 @@ function FlexGridCard({
             <Segmented value={arrange} options={ARRANGE_OPTIONS} onChange={setArrange} />
           </Field>
           {arrange === 'grid' ? <ColumnsField node={node} prefix={prefix} commit={commit} /> : null}
-          {detailControls.map((control) => (
-            <StyleControlField
-              key={control.id}
-              node={node}
-              def={def}
-              control={control}
-              prefix={prefix}
-              onClass={onClass}
-            />
-          ))}
+          {/* Gap stays a size enum; distribution/alignment become icon toolbars. */}
+          <StyleControlField
+            node={node}
+            def={def}
+            control={GAP_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+          <IconChoiceField
+            node={node}
+            archetype={def.defaults.class}
+            control={JUSTIFY_CONTROL}
+            ctx={prefix}
+            onClass={onClass}
+            icons={JUSTIFY_ICONS}
+          />
+          <IconChoiceField
+            node={node}
+            archetype={def.defaults.class}
+            control={ALIGN_ITEMS_CONTROL}
+            ctx={prefix}
+            onClass={onClass}
+            icons={ALIGN_ITEMS_ICONS}
+          />
           {arrange !== 'grid' ? (
             <StyleControlField
               node={node}
@@ -874,16 +957,29 @@ function FlexGridCard({
           {arrange === 'grid' ? (
             <Subgroup title="Grid detail">
               <GridRowsField node={node} prefix={prefix} commit={commit} />
-              {gridControls.map((control) => (
-                <StyleControlField
-                  key={control.id}
-                  node={node}
-                  def={def}
-                  control={control}
-                  prefix={prefix}
-                  onClass={onClass}
-                />
-              ))}
+              <StyleControlField
+                node={node}
+                def={def}
+                control={GRID_FLOW_CONTROL}
+                prefix={prefix}
+                onClass={onClass}
+              />
+              <IconChoiceField
+                node={node}
+                archetype={def.defaults.class}
+                control={JUSTIFY_ITEMS_CONTROL}
+                ctx={prefix}
+                onClass={onClass}
+                icons={JUSTIFY_ITEMS_ICONS}
+              />
+              <IconChoiceField
+                node={node}
+                archetype={def.defaults.class}
+                control={ALIGN_CONTENT_CONTROL}
+                ctx={prefix}
+                onClass={onClass}
+                icons={ALIGN_CONTENT_ICONS}
+              />
             </Subgroup>
           ) : null}
           <Subgroup title="Independent spacing">
@@ -946,12 +1042,13 @@ function FlexGridCard({
             commit={commit}
           />
         </div>
-        <StyleControlField
+        <IconChoiceField
           node={node}
-          def={def}
+          archetype={def.defaults.class}
           control={ALIGN_SELF_CONTROL}
-          prefix={prefix}
+          ctx={prefix}
           onClass={onClass}
+          icons={ALIGN_SELF_ICONS}
         />
       </Subgroup>
     </Card>
@@ -995,22 +1092,21 @@ function LayoutCard({
           onClass={onClass}
         />
       ) : null}
-      <div className="bx-row2">
-        <StyleControlField
-          node={node}
-          def={def}
-          control={OVERFLOW_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-        <StyleControlField
-          node={node}
-          def={def}
-          control={ASPECT_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-      </div>
+      <StyleControlField
+        node={node}
+        def={def}
+        control={OVERFLOW_CONTROL}
+        prefix={prefix}
+        onClass={onClass}
+      />
+      <PreviewTileField
+        node={node}
+        archetype={def.defaults.class}
+        control={ASPECT_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+        kind="aspect"
+      />
     </Card>
   );
 }
@@ -1544,7 +1640,10 @@ function useLayerContext(contexts: StyleContext[]): {
 // Tailwind alpha scale. Writes through applyColorOpacity so the slash round-trips
 // and the group stays single-token at its layer. Opacity is hidden until a color
 // is chosen (there's nothing to fade otherwise).
-const OPACITY_STEPS = [100, 90, 75, 50, 25, 10] as const;
+// Colour + opacity (background / text / border). The themed swatch grid — real
+// tenant colours, an opacity slider, and (for text) a live AA/AAA contrast badge —
+// replaces the old colour/opacity `<select>` pair. Writing is unchanged: the same
+// `applyColorOpacity` class-group writer, via ColorSwatchField's `withOpacity`.
 function ColorOpacityField({
   node,
   def,
@@ -1558,47 +1657,18 @@ function ColorOpacityField({
   ctx?: string;
   onClass: (value: string) => void;
 }) {
-  const state = readColorOpacity(node.class, control, ctx);
-  const commit = (value: string | null, opacity: number) =>
-    onClass(
-      ensureArchetypeDefaults(
-        applyColorOpacity(node.class, control, value, opacity, ctx),
-        def.defaults.class
-      )
-    );
+  const isText = control.id === TEXT_COLOR_CONTROL.id;
   return (
-    <div className="bx-field bx-coloropacity">
-      <span className="bx-field__label">{control.label}</span>
-      <div className="bx-coloropacity__row">
-        <NativeSelect
-          size="sm"
-          value={state.value ?? ''}
-          aria-label={control.label}
-          onChange={(e) => commit(e.target.value || null, state.opacity)}
-        >
-          <option value="">Default</option>
-          {control.options.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </NativeSelect>
-        {state.value ? (
-          <NativeSelect
-            size="sm"
-            aria-label={`${control.label} opacity`}
-            value={String(state.opacity)}
-            onChange={(e) => commit(state.value, Number(e.target.value))}
-          >
-            {OPACITY_STEPS.map((n) => (
-              <option key={n} value={n}>
-                {n === 100 ? 'Solid' : `${n}%`}
-              </option>
-            ))}
-          </NativeSelect>
-        ) : null}
-      </div>
-    </div>
+    <ColorSwatchField
+      node={node}
+      archetype={def.defaults.class}
+      control={control}
+      ctx={ctx}
+      onClass={onClass}
+      withOpacity
+      mode={isText ? 'text' : 'fill'}
+      showContrast={isText}
+    />
   );
 }
 
@@ -2270,28 +2340,29 @@ function BackgroundCard({
         />
         {hasGradient ? (
           <>
-            <div className="bx-row2">
-              <StyleControlField
-                node={node}
-                def={def}
-                control={GRADIENT_FROM_CONTROL}
-                prefix={prefix}
-                onClass={onClass}
-              />
-              <StyleControlField
-                node={node}
-                def={def}
-                control={GRADIENT_TO_CONTROL}
-                prefix={prefix}
-                onClass={onClass}
-              />
-            </div>
-            <StyleControlField
+            <ColorSwatchField
               node={node}
-              def={def}
-              control={GRADIENT_VIA_CONTROL}
-              prefix={prefix}
+              archetype={def.defaults.class}
+              control={GRADIENT_FROM_CONTROL}
+              ctx={prefix}
               onClass={onClass}
+              density="compact"
+            />
+            <ColorSwatchField
+              node={node}
+              archetype={def.defaults.class}
+              control={GRADIENT_VIA_CONTROL}
+              ctx={prefix}
+              onClass={onClass}
+              density="compact"
+            />
+            <ColorSwatchField
+              node={node}
+              archetype={def.defaults.class}
+              control={GRADIENT_TO_CONTROL}
+              ctx={prefix}
+              onClass={onClass}
+              density="compact"
             />
           </>
         ) : null}
@@ -2343,22 +2414,22 @@ function BordersCard({
   return (
     <Card icon={Square} title="Borders" summary={bordersSummary(node)} defaultOpen={false}>
       {selector}
-      <div className="bx-row2">
-        <StyleControlField
-          node={node}
-          def={def}
-          control={BORDER_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-        <StyleControlField
-          node={node}
-          def={def}
-          control={BORDER_STYLE_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-      </div>
+      <PreviewTileField
+        node={node}
+        archetype={def.defaults.class}
+        control={BORDER_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+        kind="border"
+      />
+      <PreviewTileField
+        node={node}
+        archetype={def.defaults.class}
+        control={BORDER_STYLE_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+        kind="borderStyle"
+      />
       <ColorOpacityField
         node={node}
         def={def}
@@ -2366,12 +2437,13 @@ function BordersCard({
         ctx={prefix}
         onClass={onClass}
       />
-      <StyleControlField
+      <PreviewTileField
         node={node}
-        def={def}
+        archetype={def.defaults.class}
         control={RADIUS_CONTROL}
-        prefix={prefix}
+        ctx={prefix}
         onClass={onClass}
+        kind="radius"
       />
       <Subgroup title="Per edge & corner">
         <QuadEnumField
@@ -2413,17 +2485,34 @@ function StyleCard({
   def: ComponentDef;
   onClass: (value: string) => void;
 }) {
+  // Both recipe axes render as visual swatch grids in real tenant colours: Colour
+  // previews each slot in the node's current Emphasis; Emphasis previews the node's
+  // current Colour in each treatment. They cross-preview, so the pair reads as one
+  // "here's exactly what it'll look like" surface — no dropdowns.
+  const emphasis = activeValue(node.class, VARIANT_CONTROL) ?? 'solid';
   return (
     <Card icon={Palette} title="Style" summary={styleSummary(node)}>
-      {STYLE_CONTROLS.map((control) => (
-        <StyleControlField
-          key={control.id}
-          node={node}
-          def={def}
-          control={control}
-          onClass={onClass}
-        />
-      ))}
+      {STYLE_CONTROLS.map((control) =>
+        control.id === VARIANT_CONTROL.id ? (
+          <EmphasisSwatchField
+            key={control.id}
+            node={node}
+            archetype={def.defaults.class}
+            control={control}
+            onClass={onClass}
+          />
+        ) : (
+          <ColorSwatchField
+            key={control.id}
+            node={node}
+            archetype={def.defaults.class}
+            control={control}
+            mode="recipe"
+            emphasisVariant={emphasis}
+            onClass={onClass}
+          />
+        )
+      )}
     </Card>
   );
 }
@@ -2448,38 +2537,38 @@ function EffectsCard({
     <Card icon={Sparkles} title="Effects" summary={effectsSummary(node)} defaultOpen={false}>
       {selector}
       <OpacitySlider node={node} ctx={prefix} commit={commit} />
-      <div className="bx-row2">
-        <StyleControlField
-          node={node}
-          def={def}
-          control={SHADOW_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-        <StyleControlField
-          node={node}
-          def={def}
-          control={SHADOW_COLOR_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-      </div>
-      <div className="bx-row2">
-        <StyleControlField
-          node={node}
-          def={def}
-          control={RING_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-        <StyleControlField
-          node={node}
-          def={def}
-          control={RING_COLOR_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-      </div>
+      <PreviewTileField
+        node={node}
+        archetype={def.defaults.class}
+        control={SHADOW_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+        kind="shadow"
+      />
+      <ColorSwatchField
+        node={node}
+        archetype={def.defaults.class}
+        control={SHADOW_COLOR_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+        density="compact"
+      />
+      <PreviewTileField
+        node={node}
+        archetype={def.defaults.class}
+        control={RING_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+        kind="ring"
+      />
+      <ColorSwatchField
+        node={node}
+        archetype={def.defaults.class}
+        control={RING_COLOR_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+        density="compact"
+      />
       <StyleControlField
         node={node}
         def={def}
@@ -2511,12 +2600,13 @@ function FiltersCard({
   return (
     <Card icon={Aperture} title="Filters" summary={filtersSummary(node)} defaultOpen={false}>
       {selector}
-      <StyleControlField
+      <PreviewTileField
         node={node}
-        def={def}
+        archetype={def.defaults.class}
         control={BLUR_CONTROL}
-        prefix={prefix}
+        ctx={prefix}
         onClass={onClass}
+        kind="blur"
       />
       <div className="bx-row2">
         <LengthField
@@ -2871,22 +2961,22 @@ function InteractivityCard({
           onClass={onClass}
         />
       </div>
-      <div className="bx-row2">
-        <StyleControlField
-          node={node}
-          def={def}
-          control={CARET_COLOR_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-        <StyleControlField
-          node={node}
-          def={def}
-          control={ACCENT_COLOR_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-      </div>
+      <ColorSwatchField
+        node={node}
+        archetype={def.defaults.class}
+        control={CARET_COLOR_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+        density="compact"
+      />
+      <ColorSwatchField
+        node={node}
+        archetype={def.defaults.class}
+        control={ACCENT_COLOR_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+        density="compact"
+      />
       <Subgroup title="Scrolling & touch">
         <div className="bx-row2">
           <StyleControlField
@@ -3085,54 +3175,54 @@ function TypographyCard({
   return (
     <Card icon={Type} title="Typography" summary={typographySummary(node)} defaultOpen={false}>
       {selector}
-      <div className="bx-row2">
-        <StyleControlField
-          node={node}
-          def={def}
-          control={FONT_FAMILY_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-        <StyleControlField
-          node={node}
-          def={def}
-          control={FONT_SIZE_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-      </div>
-      <div className="bx-row2">
-        <StyleControlField
-          node={node}
-          def={def}
-          control={FONT_WEIGHT_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-        <StyleControlField
-          node={node}
-          def={def}
-          control={LEADING_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-      </div>
-      <div className="bx-row2">
-        <StyleControlField
-          node={node}
-          def={def}
-          control={TEXT_ALIGN_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-        <StyleControlField
-          node={node}
-          def={def}
-          control={TRACKING_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-      </div>
+      <PreviewTileField
+        node={node}
+        archetype={def.defaults.class}
+        control={FONT_FAMILY_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+        kind="family"
+      />
+      <PreviewTileField
+        node={node}
+        archetype={def.defaults.class}
+        control={FONT_SIZE_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+        kind="size"
+      />
+      <PreviewTileField
+        node={node}
+        archetype={def.defaults.class}
+        control={FONT_WEIGHT_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+        kind="weight"
+      />
+      <IconChoiceField
+        node={node}
+        archetype={def.defaults.class}
+        control={TEXT_ALIGN_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+        icons={TEXT_ALIGN_ICONS}
+      />
+      <PreviewTileField
+        node={node}
+        archetype={def.defaults.class}
+        control={LEADING_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+        kind="leading"
+      />
+      <PreviewTileField
+        node={node}
+        archetype={def.defaults.class}
+        control={TRACKING_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+        kind="tracking"
+      />
       <div className="bx-row2">
         <StyleControlField
           node={node}
@@ -3149,22 +3239,21 @@ function TypographyCard({
           onClass={onClass}
         />
       </div>
-      <div className="bx-row2">
-        <StyleControlField
-          node={node}
-          def={def}
-          control={VERTICAL_ALIGN_CONTROL}
-          prefix={prefix}
-          onClass={onClass}
-        />
-        <ColorOpacityField
-          node={node}
-          def={def}
-          control={TEXT_COLOR_CONTROL}
-          ctx={prefix}
-          onClass={onClass}
-        />
-      </div>
+      <StyleControlField
+        node={node}
+        def={def}
+        control={VERTICAL_ALIGN_CONTROL}
+        prefix={prefix}
+        onClass={onClass}
+      />
+      {/* Full-width so the text-colour swatches size like the recipe Color grid. */}
+      <ColorOpacityField
+        node={node}
+        def={def}
+        control={TEXT_COLOR_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+      />
       <Subgroup title="Decoration">
         <div className="bx-row2">
           <StyleControlField
@@ -3420,6 +3509,7 @@ function DataSource({
   onAddField,
   onBind,
   slotEditor,
+  typeItIn,
 }: {
   node: BuilderNode;
   catalog: BindingCatalog;
@@ -3430,6 +3520,10 @@ function DataSource({
   /** Present only in the component editor — lets a node's data binding become an
    *  instance field (docs/53 4b). */
   slotEditor?: SlotEditor;
+  /** The node's typed-content field (e.g. the Heading text input) — shown in the
+   *  "Type it in" branch so it only appears when you're authoring it directly, not
+   *  when the content is pulled from data. */
+  typeItIn?: React.ReactNode;
 }) {
   const def = getDef(node.type)!;
   const path = node.binding?.path ?? '';
@@ -3474,7 +3568,7 @@ function DataSource({
 
   return (
     <div className="bx-source">
-      <span className="bx-field__label">{isContainer ? 'Repeat content' : 'Content'}</span>
+      <span className="bx-field__label">{isContainer ? 'Repeat content' : 'Source'}</span>
       <div className="bx-seg" role="group">
         <button
           type="button"
@@ -3547,12 +3641,19 @@ function DataSource({
             </button>
           ) : null}
         </div>
-      ) : (
+      ) : isContainer ? (
         <p className="bx-source__hint">
-          {isContainer
-            ? 'Shows the blocks inside once. Switch to “Repeat for each…” to repeat them for every product, post, or record.'
-            : 'Uses the content you type above. Switch to “Pull from your data” to show something live, like a product name or price.'}
+          Shows the blocks inside once. Switch to “Repeat for each…” to repeat them for every
+          product, post, or record.
         </p>
+      ) : (
+        <>
+          {typeItIn}
+          <p className="bx-source__hint">
+            Switch to “Pull from your data” to show something live instead, like a product name or
+            price.
+          </p>
+        </>
       )}
     </div>
   );
@@ -3588,6 +3689,8 @@ function PropsFields({
   onProp,
   slotEditor,
   tokens,
+  omitKey,
+  onlyKey,
 }: {
   node: BuilderNode;
   onProp: (key: string, value: unknown) => void;
@@ -3596,12 +3699,20 @@ function PropsFields({
   /** Merge tags for inline `{{` autocomplete (email surface only). Absent ⇒ plain
    *  text controls. */
   tokens?: MergeTag[];
+  /** Render every prop EXCEPT this key — used to keep the primary text/content prop
+   *  out of the structural list (it moves under the "Type it in" source branch). */
+  omitKey?: string;
+  /** Render ONLY this prop — the inverse, for the typed-content field itself. */
+  onlyKey?: string;
 }) {
   const def = getDef(node.type)!;
-  if (def.props.length === 0) return null;
+  const specs = def.props.filter((p) =>
+    onlyKey ? p.key === onlyKey : omitKey ? p.key !== omitKey : true
+  );
+  if (specs.length === 0) return null;
   return (
     <>
-      {def.props.map((spec) => {
+      {specs.map((spec) => {
         const value = node.props[spec.key];
         // A prop already wired to a field (component editor): show the link + an
         // unlink, instead of the literal control.
@@ -4560,10 +4671,8 @@ function TailwindSurface({
   if (email) {
     return (
       <>
-        {def.kind === 'container' ? (
-          <FlexGridCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
-        ) : null}
-        <SpacingCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+        {/* Same appearance-first order as the web surface: Typography → Background →
+            Borders, then the email-honored layout (container arrangement + spacing). */}
         <TypographyCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
         <BackgroundCard
           node={node}
@@ -4573,20 +4682,17 @@ function TailwindSurface({
           onProp={onProp}
         />
         <BordersCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+        {def.kind === 'container' ? (
+          <FlexGridCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+        ) : null}
+        <SpacingCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
       </>
     );
   }
   return (
     <>
-      {/* Layout — display / overflow / aspect (Tailwind: Layout). */}
-      <LayoutCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
-      {/* Flexbox & Grid — how children arrange + how this block sits as a child. */}
-      <FlexGridCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
-      {/* Spacing — padding / margin. */}
-      <SpacingCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
-      {/* Sizing — width / height / min / max. */}
-      <SizeCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
-      {/* Typography. */}
+      {/* Appearance first, sitting right under Style (how it LOOKS): Typography →
+          Background → Borders — the everyday skin, before the structural cards. */}
       <TypographyCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
       {/* Backgrounds — fill / gradient / image. */}
       <BackgroundCard
@@ -4598,6 +4704,15 @@ function TailwindSurface({
       />
       {/* Borders. */}
       <BordersCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+      {/* Layout family (how it's ARRANGED): display/overflow/aspect, child
+          arrangement, then spacing + size. */}
+      <LayoutCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+      {/* Flexbox & Grid — how children arrange + how this block sits as a child. */}
+      <FlexGridCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+      {/* Spacing — padding / margin. */}
+      <SpacingCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+      {/* Sizing — width / height / min / max. */}
+      <SizeCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
       {/* Effects — opacity / shadow / ring / blend. */}
       <EffectsCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
       {/* Filters — blur / brightness / … / backdrop family. */}
@@ -4726,37 +4841,124 @@ function MultiSelectPanel({
 
 /** The copy/paste-styles row in the single-node header (docs/builder/05 §2.5) —
  *  lift a block's full class and drop it onto another. */
-function StyleClipRow({
+// The selected block's toolbar — ONE compact row replacing the old stacked header
+// (full-width name field + change-type dropdown + two full-width save-as buttons +
+// copy/paste row, which ate space for occasional actions). Identity on the left:
+// the tinted type icon + an inline-editable name that shows the TYPE as its
+// placeholder when unnamed (focus reveals it's a field). The actions are quiet icon
+// buttons on the right: change type (a menu of compatible types), save as component
+// / brand section, and copy / paste styles.
+function InspectorToolbar({
+  node,
+  def,
+  surface,
+  onName,
+  onRetype,
+  onSaveAsComponent,
+  onSaveAsArchetype,
   onCopyStyles,
   onPasteStyles,
   canPasteStyles,
 }: {
+  node: BuilderNode;
+  def: ComponentDef;
+  surface: EditorSurface;
+  onName: (name: string) => void;
+  onRetype: (targetType: string) => void;
+  onSaveAsComponent?: (node: BuilderNode) => void;
+  onSaveAsArchetype?: (node: BuilderNode) => void;
   onCopyStyles?: () => void;
   onPasteStyles?: () => void;
   canPasteStyles?: boolean;
 }) {
-  if (!onCopyStyles) return null;
+  const Icon = def.icon;
+  const targets = compatibleRetypeTargets(def, surface);
   return (
-    <div className="bx-ins-styleclip">
-      <button
-        type="button"
-        className="bx-ins-styleclip__btn"
-        onClick={onCopyStyles}
-        title="Copy this block’s styles"
-      >
-        <Copy aria-hidden /> Copy styles
-      </button>
-      {canPasteStyles && onPasteStyles ? (
-        <button
-          type="button"
-          className="bx-ins-styleclip__btn"
-          onClick={onPasteStyles}
-          title="Paste the copied styles onto this block"
-        >
-          <ClipboardPaste aria-hidden /> Paste styles
-        </button>
-      ) : null}
-    </div>
+    <header className="bx-ins-bar">
+      <span className="bx-ins-bar__icon" title={def.label}>
+        <Icon aria-hidden />
+      </span>
+      {/* The title IS the rename field: shows the name, or the type as a muted
+          placeholder when unnamed; focus reveals it's editable. */}
+      <input
+        className="bx-ins-bar__name"
+        value={node.name ?? ''}
+        placeholder={def.label}
+        aria-label="Block name"
+        onChange={(e) => onName(e.target.value)}
+      />
+      <div className="bx-ins-bar__acts">
+        {targets.length > 0 ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="bx-ins-bar__act"
+                title="Change block type"
+                aria-label="Change block type"
+              >
+                <Replace aria-hidden />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Change to…</DropdownMenuLabel>
+              {targets.map((t) => {
+                const TargetIcon = t.icon;
+                return (
+                  <DropdownMenuItem key={t.type} onSelect={() => onRetype(t.type)}>
+                    <TargetIcon size={15} aria-hidden /> {t.label}
+                  </DropdownMenuItem>
+                );
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null}
+        {onSaveAsComponent ? (
+          <button
+            type="button"
+            className="bx-ins-bar__act"
+            title="Save as a reusable component"
+            aria-label="Save as component"
+            onClick={() => onSaveAsComponent(node)}
+          >
+            <Boxes aria-hidden />
+          </button>
+        ) : null}
+        {onSaveAsArchetype ? (
+          <button
+            type="button"
+            className="bx-ins-bar__act"
+            title="Save as a reusable brand section"
+            aria-label="Save as brand section"
+            onClick={() => onSaveAsArchetype(node)}
+          >
+            <Sparkles aria-hidden />
+          </button>
+        ) : null}
+        {onCopyStyles ? (
+          <button
+            type="button"
+            className="bx-ins-bar__act"
+            title="Copy this block’s styles"
+            aria-label="Copy styles"
+            onClick={onCopyStyles}
+          >
+            <Copy aria-hidden />
+          </button>
+        ) : null}
+        {canPasteStyles && onPasteStyles ? (
+          <button
+            type="button"
+            className="bx-ins-bar__act"
+            title="Paste the copied styles onto this block"
+            aria-label="Paste styles"
+            onClick={onPasteStyles}
+          >
+            <ClipboardPaste aria-hidden />
+          </button>
+        ) : null}
+      </div>
+    </header>
   );
 }
 
@@ -4827,8 +5029,15 @@ export function Inspector({
   const def = getDef(node.type);
   if (!def) return null;
 
-  const TypeIcon = def.icon;
   const hasContent = def.props.length > 0 || def.bindable;
+  // The source toggle (Type it in / Pull from your data) shows when the block can
+  // bind AND isn't already owned by a record/action binding (Pillar 7). When it
+  // does, the typed-content field (Heading text / Button label / …) moves INTO the
+  // "Type it in" branch — so it's hidden while pulling from data — and the
+  // structural props (header level, link, …) stay above. `contentKey` is that
+  // primary text prop; undefined ⇒ render every prop normally (no split).
+  const showsSource = def.bindable && !hasRecordOrActionBinding(node);
+  const contentKey = showsSource ? textPropKeyOf(def) : undefined;
   // The responsive/state layers a card may target. Email collapses to base only —
   // mail clients strip `hover:`/`@md:`/`dark:` variants, so offering them would
   // silently no-op (docs/builder/04 §2.3). The SAME full card set renders on
@@ -4841,71 +5050,34 @@ export function Inspector({
   // edits to the SAME node preserve them.
   return (
     <div className="bx-inspector" key={node.id}>
-      {/* Selecting a node replaces the page/site settings panel; this returns to
-          it without leaving the editor (the canvas's click-empty / Esc are easy
-          to miss when the page fills the canvas). */}
-      <button type="button" className="bx-ins-back" onClick={onBack}>
-        <ChevronLeft aria-hidden />
-        {surface === 'site'
-          ? 'Site settings'
-          : surface === 'email'
-            ? 'Email settings'
-            : 'Page settings'}
-      </button>
-      <header className="bx-ins-head">
-        <div className="bx-ins-head__row">
-          <span className="bx-ins-head__icon">
-            <TypeIcon aria-hidden />
-          </span>
-          <div className="bx-ins-head__titles">
-            <h3>{def.label}</h3>
-            <span className="bx-ins-head__sub">
-              {def.kind === 'container' ? 'Holds other blocks' : 'A single element'}
-            </span>
-          </div>
-        </div>
-        <Input
-          value={node.name ?? ''}
-          placeholder={`${def.label} name`}
-          onChange={(e) => onName(e.target.value)}
-        />
-        <RetypeControl def={def} surface={surface} onRetype={onRetype} />
-        {onSaveAsComponent ? (
-          <button
-            type="button"
-            className="bx-ins-saveas"
-            onClick={() => onSaveAsComponent(node)}
-            title="Turn this block into a reusable component"
-          >
-            <Boxes aria-hidden /> Save as component
-          </button>
-        ) : null}
-        {onSaveAsArchetype ? (
-          <button
-            type="button"
-            className="bx-ins-saveas"
-            onClick={() => onSaveAsArchetype(node)}
-            title="Save this section as a reusable brand section (a stamp template)"
-          >
-            <Sparkles aria-hidden /> Save as brand section
-          </button>
-        ) : null}
-        <StyleClipRow
-          onCopyStyles={onCopyStyles}
-          onPasteStyles={onPasteStyles}
-          canPasteStyles={canPasteStyles}
-        />
-      </header>
+      <InspectorToolbar
+        node={node}
+        def={def}
+        surface={surface}
+        onName={onName}
+        onRetype={onRetype}
+        onSaveAsComponent={onSaveAsComponent}
+        onSaveAsArchetype={onSaveAsArchetype}
+        onCopyStyles={onCopyStyles}
+        onPasteStyles={onPasteStyles}
+        canPasteStyles={canPasteStyles}
+      />
 
       <div className="bx-ins-stack">
-        {/* Content first — what the block SAYS and where it comes from. */}
+        {/* Content first — what the block SAYS and where it comes from. The
+            structural props (header level, link, …) sit up top; the typed-content
+            field moves under the "Type it in" source branch (so it's hidden while
+            pulling from data — no more always-visible-but-ignored input). */}
         {hasContent ? (
-          <Card icon={Type} title="Content" summary={contentSummary(node, def)}>
-            <PropsFields node={node} onProp={onProp} slotEditor={slotEditor} tokens={tokens} />
-            {/* The field picker is hidden while a product pin / collection source /
-                action owns the binding (docs/98 Pillar 7) — one binding per node, set
-                in the Data card below. */}
-            {!hasRecordOrActionBinding(node) ? (
+          <Card icon={TextCursorInput} title="Content" summary={contentSummary(node, def)}>
+            <PropsFields
+              node={node}
+              onProp={onProp}
+              slotEditor={slotEditor}
+              tokens={tokens}
+              omitKey={contentKey}
+            />
+            {showsSource ? (
               <DataSource
                 node={node}
                 catalog={catalog}
@@ -4914,6 +5086,17 @@ export function Inspector({
                 onAddField={onAddField}
                 onBind={onBind}
                 slotEditor={slotEditor}
+                typeItIn={
+                  contentKey ? (
+                    <PropsFields
+                      node={node}
+                      onProp={onProp}
+                      slotEditor={slotEditor}
+                      tokens={tokens}
+                      onlyKey={contentKey}
+                    />
+                  ) : undefined
+                }
               />
             ) : null}
           </Card>

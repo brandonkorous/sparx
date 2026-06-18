@@ -5,7 +5,7 @@
 
 export default {
   key: 'farm-fresh-bowls',
-  version: '1.0.0',
+  version: '1.0.1',
   name: 'Farm Fresh Bowls',
   summary:
     'A warm, organic storefront for a fresh-food brand — açaí bowls, smoothies and salads with a full menu, a brand story, locations, catering, and a welcome email. A ready-to-edit retail starter.',
@@ -468,7 +468,7 @@ export default {
   layout: {
     name: 'Farm Fresh layout',
     tree: {
-      id: 'ffb-29',
+      id: 'ffb-31',
       type: 'Section',
       props: {},
       class: 'w-full flex flex-col',
@@ -501,93 +501,102 @@ export default {
           ],
         },
         {
-          id: 'ffb-6',
+          id: 'ffb-7',
           type: 'Section',
           props: {},
-          class: 'w-full mx-auto w-full max-w-site flex flex-row justify-between items-center p-6',
+          class: 'w-full flex flex-col sticky top-0 z-30 bg-base-100 border-b border-base-300',
           name: 'Header',
           children: [
             {
-              id: 'ffb-3',
-              type: 'Wordmark',
+              id: 'ffb-6',
+              type: 'Section',
               props: {},
-              binding: {
-                path: 'site.identity',
-              },
-            },
-            {
-              id: 'ffb-4',
-              type: 'NavMenu',
-              props: {
-                orientation: 'row',
-                links: [
-                  {
-                    label: 'Home',
-                    href: '/',
+              class:
+                'w-full mx-auto w-full max-w-site flex flex-row justify-between items-center p-6',
+              children: [
+                {
+                  id: 'ffb-3',
+                  type: 'Wordmark',
+                  props: {},
+                  binding: {
+                    path: 'site.identity',
                   },
-                  {
-                    label: 'Menu',
+                },
+                {
+                  id: 'ffb-4',
+                  type: 'NavMenu',
+                  props: {
+                    orientation: 'row',
+                    links: [
+                      {
+                        label: 'Home',
+                        href: '/',
+                      },
+                      {
+                        label: 'Menu',
+                        href: '/menu',
+                      },
+                      {
+                        label: 'Our Story',
+                        href: '/story',
+                      },
+                      {
+                        label: 'Locations',
+                        href: '/locations',
+                      },
+                      {
+                        label: 'Catering',
+                        href: '/catering',
+                      },
+                    ],
+                  },
+                },
+                {
+                  id: 'ffb-5',
+                  type: 'Button',
+                  props: {
+                    label: 'Order Online',
                     href: '/menu',
                   },
-                  {
-                    label: 'Our Story',
-                    href: '/story',
-                  },
-                  {
-                    label: 'Locations',
-                    href: '/locations',
-                  },
-                  {
-                    label: 'Catering',
-                    href: '/catering',
-                  },
-                ],
-              },
-            },
-            {
-              id: 'ffb-5',
-              type: 'Button',
-              props: {
-                label: 'Order Online',
-                href: '/menu',
-              },
-              class: 'st-btn st-c-accent st-v-solid st-btn--sz-md',
+                  class: 'st-btn st-c-accent st-v-solid st-btn--sz-md',
+                },
+              ],
             },
           ],
         },
         {
-          id: 'ffb-7',
+          id: 'ffb-8',
           type: 'Outlet',
           props: {},
           class: 'w-full',
         },
         {
-          id: 'ffb-28',
+          id: 'ffb-30',
           type: 'Section',
           class: 'w-full bg-neutral text-neutral-content',
           props: {},
           name: 'Footer',
           children: [
             {
-              id: 'ffb-28__c',
+              id: 'ffb-30__c',
               type: 'Stack',
               class: 'mx-auto w-full max-w-site flex flex-col gap-6 items-start p-8 @3xl:p-16',
               props: {},
               children: [
                 {
-                  id: 'ffb-26',
+                  id: 'ffb-27',
                   type: 'Section',
                   props: {},
                   class: 'grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-4 gap-6',
                   children: [
                     {
-                      id: 'ffb-10',
+                      id: 'ffb-11',
                       type: 'Stack',
                       props: {},
                       class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start',
                       children: [
                         {
-                          id: 'ffb-8',
+                          id: 'ffb-9',
                           type: 'Wordmark',
                           props: {},
                           binding: {
@@ -595,7 +604,7 @@ export default {
                           },
                         },
                         {
-                          id: 'ffb-9',
+                          id: 'ffb-10',
                           type: 'Text',
                           props: {
                             variant: 'body',
@@ -605,21 +614,22 @@ export default {
                       ],
                     },
                     {
-                      id: 'ffb-15',
+                      id: 'ffb-16',
                       type: 'Stack',
                       props: {},
                       class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start',
                       children: [
                         {
-                          id: 'ffb-11',
+                          id: 'ffb-12',
                           type: 'Heading',
                           props: {
                             level: 'h3',
                             text: 'Contact',
                           },
+                          class: 'text-xs font-bold uppercase tracking-widest text-[#7FA85B]',
                         },
                         {
-                          id: 'ffb-12',
+                          id: 'ffb-13',
                           type: 'Text',
                           props: {
                             variant: 'body',
@@ -627,7 +637,7 @@ export default {
                           },
                         },
                         {
-                          id: 'ffb-13',
+                          id: 'ffb-14',
                           type: 'Text',
                           props: {
                             variant: 'body',
@@ -635,7 +645,7 @@ export default {
                           },
                         },
                         {
-                          id: 'ffb-14',
+                          id: 'ffb-15',
                           type: 'Text',
                           props: {
                             variant: 'body',
@@ -645,21 +655,22 @@ export default {
                       ],
                     },
                     {
-                      id: 'ffb-20',
+                      id: 'ffb-21',
                       type: 'Stack',
                       props: {},
                       class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start',
                       children: [
                         {
-                          id: 'ffb-16',
+                          id: 'ffb-17',
                           type: 'Heading',
                           props: {
                             level: 'h3',
                             text: 'Hours',
                           },
+                          class: 'text-xs font-bold uppercase tracking-widest text-[#7FA85B]',
                         },
                         {
-                          id: 'ffb-17',
+                          id: 'ffb-18',
                           type: 'Text',
                           props: {
                             variant: 'body',
@@ -667,7 +678,7 @@ export default {
                           },
                         },
                         {
-                          id: 'ffb-18',
+                          id: 'ffb-19',
                           type: 'Text',
                           props: {
                             variant: 'body',
@@ -675,7 +686,7 @@ export default {
                           },
                         },
                         {
-                          id: 'ffb-19',
+                          id: 'ffb-20',
                           type: 'Text',
                           props: {
                             variant: 'body',
@@ -685,21 +696,22 @@ export default {
                       ],
                     },
                     {
-                      id: 'ffb-25',
+                      id: 'ffb-26',
                       type: 'Stack',
                       props: {},
                       class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start',
                       children: [
                         {
-                          id: 'ffb-21',
+                          id: 'ffb-22',
                           type: 'Heading',
                           props: {
                             level: 'h3',
                             text: 'Stay in the loop',
                           },
+                          class: 'text-xs font-bold uppercase tracking-widest text-[#7FA85B]',
                         },
                         {
-                          id: 'ffb-22',
+                          id: 'ffb-23',
                           type: 'Text',
                           props: {
                             variant: 'body',
@@ -707,14 +719,14 @@ export default {
                           },
                         },
                         {
-                          id: 'ffb-23',
+                          id: 'ffb-24',
                           type: 'Signup',
                           props: {
                             cta: 'Join',
                           },
                         },
                         {
-                          id: 'ffb-24',
+                          id: 'ffb-25',
                           type: 'SocialLinks',
                           props: {},
                           binding: {
@@ -726,12 +738,20 @@ export default {
                   ],
                 },
                 {
-                  id: 'ffb-27',
-                  type: 'Text',
-                  props: {
-                    variant: 'meta',
-                    text: '© Farm Fresh Bowls',
-                  },
+                  id: 'ffb-29',
+                  type: 'Section',
+                  props: {},
+                  class: 'w-full flex flex-col items-center text-center',
+                  children: [
+                    {
+                      id: 'ffb-28',
+                      type: 'Text',
+                      props: {
+                        variant: 'meta',
+                        text: '© 2026 Farm Fresh Bowls. All rights reserved.',
+                      },
+                    },
+                  ],
                 },
               ],
             },
@@ -746,14 +766,14 @@ export default {
       name: 'Home',
       kind: 'singleton',
       tree: {
-        id: 'ffb-239',
+        id: 'ffb-243',
         type: 'Section',
         props: {},
         class: 'w-full flex flex-col',
         name: 'Home',
         children: [
           {
-            id: 'ffb-37',
+            id: 'ffb-39',
             type: 'Section',
             props: {},
             class:
@@ -761,14 +781,14 @@ export default {
             name: 'Hero',
             children: [
               {
-                id: 'ffb-36',
+                id: 'ffb-38',
                 type: 'Section',
                 props: {},
                 class:
                   'rounded-box bg-accent text-accent-content min-h-[50vh] flex flex-col gap-4 justify-center items-center p-8 @3xl:p-16 text-center w-full max-w-2xl rounded-box shadow-lg',
                 children: [
                   {
-                    id: 'ffb-30',
+                    id: 'ffb-32',
                     type: 'Heading',
                     props: {
                       level: 'h2',
@@ -777,7 +797,7 @@ export default {
                     class: 'text-center',
                   },
                   {
-                    id: 'ffb-31',
+                    id: 'ffb-33',
                     type: 'Heading',
                     props: {
                       level: 'h1',
@@ -787,7 +807,7 @@ export default {
                     class: 'text-center',
                   },
                   {
-                    id: 'ffb-32',
+                    id: 'ffb-34',
                     type: 'Text',
                     props: {
                       variant: 'body',
@@ -796,14 +816,14 @@ export default {
                     class: 'text-center',
                   },
                   {
-                    id: 'ffb-35',
+                    id: 'ffb-37',
                     type: 'Stack',
                     props: {},
                     class:
                       'mx-auto w-full max-w-site flex flex-col @3xl:flex-row gap-2 justify-center',
                     children: [
                       {
-                        id: 'ffb-33',
+                        id: 'ffb-35',
                         type: 'Button',
                         props: {
                           label: 'Order Online',
@@ -812,7 +832,7 @@ export default {
                         class: 'st-btn st-c-secondary st-v-solid st-btn--sz-md',
                       },
                       {
-                        id: 'ffb-34',
+                        id: 'ffb-36',
                         type: 'Button',
                         props: {
                           label: 'See the Menu',
@@ -827,7 +847,7 @@ export default {
             ],
           },
           {
-            id: 'ffb-39',
+            id: 'ffb-41',
             type: 'Section',
             props: {},
             class:
@@ -835,7 +855,7 @@ export default {
             name: 'Quote',
             children: [
               {
-                id: 'ffb-38',
+                id: 'ffb-40',
                 type: 'Heading',
                 props: {
                   level: 'h2',
@@ -846,36 +866,43 @@ export default {
             ],
           },
           {
-            id: 'ffb-47',
+            id: 'ffb-50',
             type: 'Section',
             class: 'w-full bg-base-200',
             props: {},
             name: 'We really do care',
             children: [
               {
-                id: 'ffb-47__c',
+                id: 'ffb-50__c',
                 type: 'Stack',
                 class:
                   'mx-auto w-full max-w-site grid grid-cols-1 @3xl:grid-cols-2 gap-6 items-center p-8 @3xl:p-16',
                 props: {},
                 children: [
                   {
-                    id: 'ffb-44',
+                    id: 'ffb-47',
                     type: 'Stack',
                     props: {},
                     class:
                       'mx-auto w-full max-w-site flex flex-col gap-4 justify-center items-start',
                     children: [
                       {
-                        id: 'ffb-40',
+                        id: 'ffb-42',
+                        type: 'Section',
+                        props: {},
+                        class: 'mx-auto w-full max-w-site h-[3px] w-16 rounded-full bg-accent',
+                      },
+                      {
+                        id: 'ffb-43',
                         type: 'Heading',
                         props: {
                           level: 'h2',
-                          text: 'We really do care',
+                          text: 'We Really Do Care',
                         },
+                        class: 'text-4xl @3xl:text-5xl font-bold leading-tight text-accent',
                       },
                       {
-                        id: 'ffb-41',
+                        id: 'ffb-44',
                         type: 'Text',
                         props: {
                           variant: 'body',
@@ -883,7 +910,7 @@ export default {
                         },
                       },
                       {
-                        id: 'ffb-42',
+                        id: 'ffb-45',
                         type: 'Text',
                         props: {
                           variant: 'body',
@@ -891,10 +918,10 @@ export default {
                         },
                       },
                       {
-                        id: 'ffb-43',
+                        id: 'ffb-46',
                         type: 'Button',
                         props: {
-                          label: 'Explore the bowls',
+                          label: 'Explore the Bowls',
                           href: '/menu',
                         },
                         class: 'st-btn st-c-primary st-v-solid st-btn--sz-md',
@@ -902,14 +929,14 @@ export default {
                     ],
                   },
                   {
-                    id: 'ffb-46',
+                    id: 'ffb-49',
                     type: 'Section',
                     props: {},
                     class:
                       'rounded-box bg-accent text-accent-content min-h-[50vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                     children: [
                       {
-                        id: 'ffb-45',
+                        id: 'ffb-48',
                         type: 'Heading',
                         props: {
                           level: 'h1',
@@ -925,7 +952,7 @@ export default {
             ],
           },
           {
-            id: 'ffb-54',
+            id: 'ffb-58',
             type: 'Section',
             props: {},
             class:
@@ -933,14 +960,14 @@ export default {
             name: 'We love for you to',
             children: [
               {
-                id: 'ffb-53',
+                id: 'ffb-57',
                 type: 'Section',
                 props: {},
                 class:
                   'rounded-box bg-base-200 min-h-[50vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                 children: [
                   {
-                    id: 'ffb-52',
+                    id: 'ffb-56',
                     type: 'Heading',
                     props: {
                       level: 'h1',
@@ -952,21 +979,28 @@ export default {
                 ],
               },
               {
-                id: 'ffb-51',
+                id: 'ffb-55',
                 type: 'Stack',
                 props: {},
                 class: 'mx-auto w-full max-w-site flex flex-col gap-4 justify-center items-start',
                 children: [
                   {
-                    id: 'ffb-48',
+                    id: 'ffb-51',
+                    type: 'Section',
+                    props: {},
+                    class: 'mx-auto w-full max-w-site h-[3px] w-16 rounded-full bg-primary',
+                  },
+                  {
+                    id: 'ffb-52',
                     type: 'Heading',
                     props: {
                       level: 'h2',
-                      text: 'We love for you to…',
+                      text: 'We Love For You To',
                     },
+                    class: 'text-4xl @3xl:text-5xl font-bold leading-tight text-primary',
                   },
                   {
-                    id: 'ffb-49',
+                    id: 'ffb-53',
                     type: 'Text',
                     props: {
                       variant: 'body',
@@ -974,7 +1008,7 @@ export default {
                     },
                   },
                   {
-                    id: 'ffb-50',
+                    id: 'ffb-54',
                     type: 'Text',
                     props: {
                       variant: 'body',
@@ -986,7 +1020,7 @@ export default {
             ],
           },
           {
-            id: 'ffb-67',
+            id: 'ffb-71',
             type: 'Section',
             props: {},
             class:
@@ -994,14 +1028,14 @@ export default {
             name: 'Values',
             children: [
               {
-                id: 'ffb-57',
+                id: 'ffb-61',
                 type: 'Card',
                 props: {},
                 class:
                   'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
                 children: [
                   {
-                    id: 'ffb-55',
+                    id: 'ffb-59',
                     type: 'Heading',
                     props: {
                       level: 'h3',
@@ -1010,7 +1044,7 @@ export default {
                     class: 'text-center',
                   },
                   {
-                    id: 'ffb-56',
+                    id: 'ffb-60',
                     type: 'Text',
                     props: {
                       variant: 'meta',
@@ -1021,14 +1055,14 @@ export default {
                 ],
               },
               {
-                id: 'ffb-60',
+                id: 'ffb-64',
                 type: 'Card',
                 props: {},
                 class:
                   'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
                 children: [
                   {
-                    id: 'ffb-58',
+                    id: 'ffb-62',
                     type: 'Heading',
                     props: {
                       level: 'h3',
@@ -1037,7 +1071,7 @@ export default {
                     class: 'text-center',
                   },
                   {
-                    id: 'ffb-59',
+                    id: 'ffb-63',
                     type: 'Text',
                     props: {
                       variant: 'meta',
@@ -1048,14 +1082,14 @@ export default {
                 ],
               },
               {
-                id: 'ffb-63',
+                id: 'ffb-67',
                 type: 'Card',
                 props: {},
                 class:
                   'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
                 children: [
                   {
-                    id: 'ffb-61',
+                    id: 'ffb-65',
                     type: 'Heading',
                     props: {
                       level: 'h3',
@@ -1064,7 +1098,7 @@ export default {
                     class: 'text-center',
                   },
                   {
-                    id: 'ffb-62',
+                    id: 'ffb-66',
                     type: 'Text',
                     props: {
                       variant: 'meta',
@@ -1075,14 +1109,14 @@ export default {
                 ],
               },
               {
-                id: 'ffb-66',
+                id: 'ffb-70',
                 type: 'Card',
                 props: {},
                 class:
                   'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
                 children: [
                   {
-                    id: 'ffb-64',
+                    id: 'ffb-68',
                     type: 'Heading',
                     props: {
                       level: 'h3',
@@ -1091,7 +1125,7 @@ export default {
                     class: 'text-center',
                   },
                   {
-                    id: 'ffb-65',
+                    id: 'ffb-69',
                     type: 'Text',
                     props: {
                       variant: 'meta',
@@ -1104,7 +1138,7 @@ export default {
             ],
           },
           {
-            id: 'ffb-180',
+            id: 'ffb-184',
             type: 'Section',
             props: {},
             class:
@@ -1112,20 +1146,20 @@ export default {
             name: 'Menu',
             children: [
               {
-                id: 'ffb-71',
+                id: 'ffb-75',
                 type: 'Stack',
                 props: {},
                 class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
                 children: [
                   {
-                    id: 'ffb-68',
+                    id: 'ffb-72',
                     type: 'Badge',
                     props: {
                       label: '🥗 Our Menu',
                     },
                   },
                   {
-                    id: 'ffb-69',
+                    id: 'ffb-73',
                     type: 'Heading',
                     props: {
                       level: 'h2',
@@ -1134,7 +1168,7 @@ export default {
                     class: 'text-center',
                   },
                   {
-                    id: 'ffb-70',
+                    id: 'ffb-74',
                     type: 'Text',
                     props: {
                       variant: 'body',
@@ -1145,14 +1179,14 @@ export default {
                 ],
               },
               {
-                id: 'ffb-107',
+                id: 'ffb-111',
                 type: 'Stack',
                 props: {},
                 class: 'w-full flex flex-col gap-4 items-start',
                 name: 'Açaí & Smoothie Bowls',
                 children: [
                   {
-                    id: 'ffb-72',
+                    id: 'ffb-76',
                     type: 'Heading',
                     props: {
                       level: 'h3',
@@ -1160,27 +1194,27 @@ export default {
                     },
                   },
                   {
-                    id: 'ffb-106',
+                    id: 'ffb-110',
                     type: 'Section',
                     props: {},
                     class: 'w-full grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-3 gap-6',
                     children: [
                       {
-                        id: 'ffb-83',
+                        id: 'ffb-87',
                         type: 'Card',
                         props: {},
                         class:
-                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden',
+                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300',
                         children: [
                           {
-                            id: 'ffb-74',
+                            id: 'ffb-78',
                             type: 'Section',
                             props: {},
                             class:
                               'w-full bg-accent text-accent-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                             children: [
                               {
-                                id: 'ffb-73',
+                                id: 'ffb-77',
                                 type: 'Heading',
                                 props: {
                                   level: 'h1',
@@ -1192,21 +1226,21 @@ export default {
                             ],
                           },
                           {
-                            id: 'ffb-82',
+                            id: 'ffb-86',
                             type: 'Stack',
                             props: {},
                             class:
                               'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 @3xl:p-10',
                             children: [
                               {
-                                id: 'ffb-77',
+                                id: 'ffb-81',
                                 type: 'Stack',
                                 props: {},
                                 class:
                                   'mx-auto w-full max-w-site flex flex-col @3xl:flex-row justify-between items-center',
                                 children: [
                                   {
-                                    id: 'ffb-75',
+                                    id: 'ffb-79',
                                     type: 'Heading',
                                     props: {
                                       level: 'h3',
@@ -1214,7 +1248,7 @@ export default {
                                     },
                                   },
                                   {
-                                    id: 'ffb-76',
+                                    id: 'ffb-80',
                                     type: 'Text',
                                     props: {
                                       variant: 'body',
@@ -1224,7 +1258,7 @@ export default {
                                 ],
                               },
                               {
-                                id: 'ffb-78',
+                                id: 'ffb-82',
                                 type: 'Text',
                                 props: {
                                   variant: 'body',
@@ -1232,21 +1266,21 @@ export default {
                                 },
                               },
                               {
-                                id: 'ffb-81',
+                                id: 'ffb-85',
                                 type: 'Stack',
                                 props: {},
                                 class:
                                   'mx-auto w-full max-w-site flex flex-col @3xl:flex-row flex-wrap gap-2',
                                 children: [
                                   {
-                                    id: 'ffb-79',
+                                    id: 'ffb-83',
                                     type: 'Badge',
                                     props: {
                                       label: 'Vegan',
                                     },
                                   },
                                   {
-                                    id: 'ffb-80',
+                                    id: 'ffb-84',
                                     type: 'Badge',
                                     props: {
                                       label: 'Antioxidant',
@@ -1259,21 +1293,21 @@ export default {
                         ],
                       },
                       {
-                        id: 'ffb-94',
+                        id: 'ffb-98',
                         type: 'Card',
                         props: {},
                         class:
-                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden',
+                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300',
                         children: [
                           {
-                            id: 'ffb-85',
+                            id: 'ffb-89',
                             type: 'Section',
                             props: {},
                             class:
                               'w-full bg-accent text-accent-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                             children: [
                               {
-                                id: 'ffb-84',
+                                id: 'ffb-88',
                                 type: 'Heading',
                                 props: {
                                   level: 'h1',
@@ -1285,21 +1319,21 @@ export default {
                             ],
                           },
                           {
-                            id: 'ffb-93',
+                            id: 'ffb-97',
                             type: 'Stack',
                             props: {},
                             class:
                               'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 @3xl:p-10',
                             children: [
                               {
-                                id: 'ffb-88',
+                                id: 'ffb-92',
                                 type: 'Stack',
                                 props: {},
                                 class:
                                   'mx-auto w-full max-w-site flex flex-col @3xl:flex-row justify-between items-center',
                                 children: [
                                   {
-                                    id: 'ffb-86',
+                                    id: 'ffb-90',
                                     type: 'Heading',
                                     props: {
                                       level: 'h3',
@@ -1307,7 +1341,7 @@ export default {
                                     },
                                   },
                                   {
-                                    id: 'ffb-87',
+                                    id: 'ffb-91',
                                     type: 'Text',
                                     props: {
                                       variant: 'body',
@@ -1317,7 +1351,7 @@ export default {
                                 ],
                               },
                               {
-                                id: 'ffb-89',
+                                id: 'ffb-93',
                                 type: 'Text',
                                 props: {
                                   variant: 'body',
@@ -1325,21 +1359,21 @@ export default {
                                 },
                               },
                               {
-                                id: 'ffb-92',
+                                id: 'ffb-96',
                                 type: 'Stack',
                                 props: {},
                                 class:
                                   'mx-auto w-full max-w-site flex flex-col @3xl:flex-row flex-wrap gap-2',
                                 children: [
                                   {
-                                    id: 'ffb-90',
+                                    id: 'ffb-94',
                                     type: 'Badge',
                                     props: {
                                       label: 'Gluten-Free',
                                     },
                                   },
                                   {
-                                    id: 'ffb-91',
+                                    id: 'ffb-95',
                                     type: 'Badge',
                                     props: {
                                       label: 'Local',
@@ -1352,21 +1386,21 @@ export default {
                         ],
                       },
                       {
-                        id: 'ffb-105',
+                        id: 'ffb-109',
                         type: 'Card',
                         props: {},
                         class:
-                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden',
+                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300',
                         children: [
                           {
-                            id: 'ffb-96',
+                            id: 'ffb-100',
                             type: 'Section',
                             props: {},
                             class:
                               'w-full bg-primary text-primary-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                             children: [
                               {
-                                id: 'ffb-95',
+                                id: 'ffb-99',
                                 type: 'Heading',
                                 props: {
                                   level: 'h1',
@@ -1378,21 +1412,21 @@ export default {
                             ],
                           },
                           {
-                            id: 'ffb-104',
+                            id: 'ffb-108',
                             type: 'Stack',
                             props: {},
                             class:
                               'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 @3xl:p-10',
                             children: [
                               {
-                                id: 'ffb-99',
+                                id: 'ffb-103',
                                 type: 'Stack',
                                 props: {},
                                 class:
                                   'mx-auto w-full max-w-site flex flex-col @3xl:flex-row justify-between items-center',
                                 children: [
                                   {
-                                    id: 'ffb-97',
+                                    id: 'ffb-101',
                                     type: 'Heading',
                                     props: {
                                       level: 'h3',
@@ -1400,7 +1434,7 @@ export default {
                                     },
                                   },
                                   {
-                                    id: 'ffb-98',
+                                    id: 'ffb-102',
                                     type: 'Text',
                                     props: {
                                       variant: 'body',
@@ -1410,7 +1444,7 @@ export default {
                                 ],
                               },
                               {
-                                id: 'ffb-100',
+                                id: 'ffb-104',
                                 type: 'Text',
                                 props: {
                                   variant: 'body',
@@ -1418,21 +1452,21 @@ export default {
                                 },
                               },
                               {
-                                id: 'ffb-103',
+                                id: 'ffb-107',
                                 type: 'Stack',
                                 props: {},
                                 class:
                                   'mx-auto w-full max-w-site flex flex-col @3xl:flex-row flex-wrap gap-2',
                                 children: [
                                   {
-                                    id: 'ffb-101',
+                                    id: 'ffb-105',
                                     type: 'Badge',
                                     props: {
                                       label: 'Detox',
                                     },
                                   },
                                   {
-                                    id: 'ffb-102',
+                                    id: 'ffb-106',
                                     type: 'Badge',
                                     props: {
                                       label: 'Vegan',
@@ -1449,14 +1483,14 @@ export default {
                 ],
               },
               {
-                id: 'ffb-142',
+                id: 'ffb-146',
                 type: 'Stack',
                 props: {},
                 class: 'w-full flex flex-col gap-4 items-start',
                 name: 'Cold-Pressed Smoothies',
                 children: [
                   {
-                    id: 'ffb-108',
+                    id: 'ffb-112',
                     type: 'Heading',
                     props: {
                       level: 'h3',
@@ -1464,27 +1498,27 @@ export default {
                     },
                   },
                   {
-                    id: 'ffb-141',
+                    id: 'ffb-145',
                     type: 'Section',
                     props: {},
                     class: 'w-full grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-4 gap-6',
                     children: [
                       {
-                        id: 'ffb-116',
+                        id: 'ffb-120',
                         type: 'Card',
                         props: {},
                         class:
-                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden',
+                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300',
                         children: [
                           {
-                            id: 'ffb-110',
+                            id: 'ffb-114',
                             type: 'Section',
                             props: {},
                             class:
                               'w-full bg-secondary text-secondary-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                             children: [
                               {
-                                id: 'ffb-109',
+                                id: 'ffb-113',
                                 type: 'Heading',
                                 props: {
                                   level: 'h1',
@@ -1496,21 +1530,21 @@ export default {
                             ],
                           },
                           {
-                            id: 'ffb-115',
+                            id: 'ffb-119',
                             type: 'Stack',
                             props: {},
                             class:
                               'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 @3xl:p-10',
                             children: [
                               {
-                                id: 'ffb-113',
+                                id: 'ffb-117',
                                 type: 'Stack',
                                 props: {},
                                 class:
                                   'mx-auto w-full max-w-site flex flex-col @3xl:flex-row justify-between items-center',
                                 children: [
                                   {
-                                    id: 'ffb-111',
+                                    id: 'ffb-115',
                                     type: 'Heading',
                                     props: {
                                       level: 'h3',
@@ -1518,7 +1552,7 @@ export default {
                                     },
                                   },
                                   {
-                                    id: 'ffb-112',
+                                    id: 'ffb-116',
                                     type: 'Text',
                                     props: {
                                       variant: 'body',
@@ -1528,7 +1562,7 @@ export default {
                                 ],
                               },
                               {
-                                id: 'ffb-114',
+                                id: 'ffb-118',
                                 type: 'Text',
                                 props: {
                                   variant: 'body',
@@ -1540,21 +1574,21 @@ export default {
                         ],
                       },
                       {
-                        id: 'ffb-124',
+                        id: 'ffb-128',
                         type: 'Card',
                         props: {},
                         class:
-                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden',
+                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300',
                         children: [
                           {
-                            id: 'ffb-118',
+                            id: 'ffb-122',
                             type: 'Section',
                             props: {},
                             class:
                               'w-full bg-base-200 min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                             children: [
                               {
-                                id: 'ffb-117',
+                                id: 'ffb-121',
                                 type: 'Heading',
                                 props: {
                                   level: 'h1',
@@ -1566,21 +1600,21 @@ export default {
                             ],
                           },
                           {
-                            id: 'ffb-123',
+                            id: 'ffb-127',
                             type: 'Stack',
                             props: {},
                             class:
                               'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 @3xl:p-10',
                             children: [
                               {
-                                id: 'ffb-121',
+                                id: 'ffb-125',
                                 type: 'Stack',
                                 props: {},
                                 class:
                                   'mx-auto w-full max-w-site flex flex-col @3xl:flex-row justify-between items-center',
                                 children: [
                                   {
-                                    id: 'ffb-119',
+                                    id: 'ffb-123',
                                     type: 'Heading',
                                     props: {
                                       level: 'h3',
@@ -1588,7 +1622,7 @@ export default {
                                     },
                                   },
                                   {
-                                    id: 'ffb-120',
+                                    id: 'ffb-124',
                                     type: 'Text',
                                     props: {
                                       variant: 'body',
@@ -1598,7 +1632,7 @@ export default {
                                 ],
                               },
                               {
-                                id: 'ffb-122',
+                                id: 'ffb-126',
                                 type: 'Text',
                                 props: {
                                   variant: 'body',
@@ -1610,21 +1644,21 @@ export default {
                         ],
                       },
                       {
-                        id: 'ffb-132',
+                        id: 'ffb-136',
                         type: 'Card',
                         props: {},
                         class:
-                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden',
+                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300',
                         children: [
                           {
-                            id: 'ffb-126',
+                            id: 'ffb-130',
                             type: 'Section',
                             props: {},
                             class:
                               'w-full bg-secondary text-secondary-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                             children: [
                               {
-                                id: 'ffb-125',
+                                id: 'ffb-129',
                                 type: 'Heading',
                                 props: {
                                   level: 'h1',
@@ -1636,21 +1670,21 @@ export default {
                             ],
                           },
                           {
-                            id: 'ffb-131',
+                            id: 'ffb-135',
                             type: 'Stack',
                             props: {},
                             class:
                               'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 @3xl:p-10',
                             children: [
                               {
-                                id: 'ffb-129',
+                                id: 'ffb-133',
                                 type: 'Stack',
                                 props: {},
                                 class:
                                   'mx-auto w-full max-w-site flex flex-col @3xl:flex-row justify-between items-center',
                                 children: [
                                   {
-                                    id: 'ffb-127',
+                                    id: 'ffb-131',
                                     type: 'Heading',
                                     props: {
                                       level: 'h3',
@@ -1658,7 +1692,7 @@ export default {
                                     },
                                   },
                                   {
-                                    id: 'ffb-128',
+                                    id: 'ffb-132',
                                     type: 'Text',
                                     props: {
                                       variant: 'body',
@@ -1668,7 +1702,7 @@ export default {
                                 ],
                               },
                               {
-                                id: 'ffb-130',
+                                id: 'ffb-134',
                                 type: 'Text',
                                 props: {
                                   variant: 'body',
@@ -1680,21 +1714,21 @@ export default {
                         ],
                       },
                       {
-                        id: 'ffb-140',
+                        id: 'ffb-144',
                         type: 'Card',
                         props: {},
                         class:
-                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden',
+                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300',
                         children: [
                           {
-                            id: 'ffb-134',
+                            id: 'ffb-138',
                             type: 'Section',
                             props: {},
                             class:
                               'w-full bg-base-200 min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                             children: [
                               {
-                                id: 'ffb-133',
+                                id: 'ffb-137',
                                 type: 'Heading',
                                 props: {
                                   level: 'h1',
@@ -1706,21 +1740,21 @@ export default {
                             ],
                           },
                           {
-                            id: 'ffb-139',
+                            id: 'ffb-143',
                             type: 'Stack',
                             props: {},
                             class:
                               'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 @3xl:p-10',
                             children: [
                               {
-                                id: 'ffb-137',
+                                id: 'ffb-141',
                                 type: 'Stack',
                                 props: {},
                                 class:
                                   'mx-auto w-full max-w-site flex flex-col @3xl:flex-row justify-between items-center',
                                 children: [
                                   {
-                                    id: 'ffb-135',
+                                    id: 'ffb-139',
                                     type: 'Heading',
                                     props: {
                                       level: 'h3',
@@ -1728,7 +1762,7 @@ export default {
                                     },
                                   },
                                   {
-                                    id: 'ffb-136',
+                                    id: 'ffb-140',
                                     type: 'Text',
                                     props: {
                                       variant: 'body',
@@ -1738,7 +1772,7 @@ export default {
                                 ],
                               },
                               {
-                                id: 'ffb-138',
+                                id: 'ffb-142',
                                 type: 'Text',
                                 props: {
                                   variant: 'body',
@@ -1754,14 +1788,14 @@ export default {
                 ],
               },
               {
-                id: 'ffb-178',
+                id: 'ffb-182',
                 type: 'Stack',
                 props: {},
                 class: 'w-full flex flex-col gap-4 items-start',
                 name: 'Salads & Grain Bowls',
                 children: [
                   {
-                    id: 'ffb-143',
+                    id: 'ffb-147',
                     type: 'Heading',
                     props: {
                       level: 'h3',
@@ -1769,27 +1803,27 @@ export default {
                     },
                   },
                   {
-                    id: 'ffb-177',
+                    id: 'ffb-181',
                     type: 'Section',
                     props: {},
                     class: 'w-full grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-3 gap-6',
                     children: [
                       {
-                        id: 'ffb-154',
+                        id: 'ffb-158',
                         type: 'Card',
                         props: {},
                         class:
-                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden',
+                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300',
                         children: [
                           {
-                            id: 'ffb-145',
+                            id: 'ffb-149',
                             type: 'Section',
                             props: {},
                             class:
                               'w-full bg-primary text-primary-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                             children: [
                               {
-                                id: 'ffb-144',
+                                id: 'ffb-148',
                                 type: 'Heading',
                                 props: {
                                   level: 'h1',
@@ -1801,21 +1835,21 @@ export default {
                             ],
                           },
                           {
-                            id: 'ffb-153',
+                            id: 'ffb-157',
                             type: 'Stack',
                             props: {},
                             class:
                               'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 @3xl:p-10',
                             children: [
                               {
-                                id: 'ffb-148',
+                                id: 'ffb-152',
                                 type: 'Stack',
                                 props: {},
                                 class:
                                   'mx-auto w-full max-w-site flex flex-col @3xl:flex-row justify-between items-center',
                                 children: [
                                   {
-                                    id: 'ffb-146',
+                                    id: 'ffb-150',
                                     type: 'Heading',
                                     props: {
                                       level: 'h3',
@@ -1823,7 +1857,7 @@ export default {
                                     },
                                   },
                                   {
-                                    id: 'ffb-147',
+                                    id: 'ffb-151',
                                     type: 'Text',
                                     props: {
                                       variant: 'body',
@@ -1833,7 +1867,7 @@ export default {
                                 ],
                               },
                               {
-                                id: 'ffb-149',
+                                id: 'ffb-153',
                                 type: 'Text',
                                 props: {
                                   variant: 'body',
@@ -1841,21 +1875,21 @@ export default {
                                 },
                               },
                               {
-                                id: 'ffb-152',
+                                id: 'ffb-156',
                                 type: 'Stack',
                                 props: {},
                                 class:
                                   'mx-auto w-full max-w-site flex flex-col @3xl:flex-row flex-wrap gap-2',
                                 children: [
                                   {
-                                    id: 'ffb-150',
+                                    id: 'ffb-154',
                                     type: 'Badge',
                                     props: {
                                       label: 'High-Protein',
                                     },
                                   },
                                   {
-                                    id: 'ffb-151',
+                                    id: 'ffb-155',
                                     type: 'Badge',
                                     props: {
                                       label: 'Seasonal',
@@ -1868,21 +1902,21 @@ export default {
                         ],
                       },
                       {
-                        id: 'ffb-165',
+                        id: 'ffb-169',
                         type: 'Card',
                         props: {},
                         class:
-                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden',
+                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300',
                         children: [
                           {
-                            id: 'ffb-156',
+                            id: 'ffb-160',
                             type: 'Section',
                             props: {},
                             class:
                               'w-full bg-primary text-primary-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                             children: [
                               {
-                                id: 'ffb-155',
+                                id: 'ffb-159',
                                 type: 'Heading',
                                 props: {
                                   level: 'h1',
@@ -1894,21 +1928,21 @@ export default {
                             ],
                           },
                           {
-                            id: 'ffb-164',
+                            id: 'ffb-168',
                             type: 'Stack',
                             props: {},
                             class:
                               'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 @3xl:p-10',
                             children: [
                               {
-                                id: 'ffb-159',
+                                id: 'ffb-163',
                                 type: 'Stack',
                                 props: {},
                                 class:
                                   'mx-auto w-full max-w-site flex flex-col @3xl:flex-row justify-between items-center',
                                 children: [
                                   {
-                                    id: 'ffb-157',
+                                    id: 'ffb-161',
                                     type: 'Heading',
                                     props: {
                                       level: 'h3',
@@ -1916,7 +1950,7 @@ export default {
                                     },
                                   },
                                   {
-                                    id: 'ffb-158',
+                                    id: 'ffb-162',
                                     type: 'Text',
                                     props: {
                                       variant: 'body',
@@ -1926,7 +1960,7 @@ export default {
                                 ],
                               },
                               {
-                                id: 'ffb-160',
+                                id: 'ffb-164',
                                 type: 'Text',
                                 props: {
                                   variant: 'body',
@@ -1934,21 +1968,21 @@ export default {
                                 },
                               },
                               {
-                                id: 'ffb-163',
+                                id: 'ffb-167',
                                 type: 'Stack',
                                 props: {},
                                 class:
                                   'mx-auto w-full max-w-site flex flex-col @3xl:flex-row flex-wrap gap-2',
                                 children: [
                                   {
-                                    id: 'ffb-161',
+                                    id: 'ffb-165',
                                     type: 'Badge',
                                     props: {
                                       label: 'Vegan',
                                     },
                                   },
                                   {
-                                    id: 'ffb-162',
+                                    id: 'ffb-166',
                                     type: 'Badge',
                                     props: {
                                       label: 'Filling',
@@ -1961,21 +1995,21 @@ export default {
                         ],
                       },
                       {
-                        id: 'ffb-176',
+                        id: 'ffb-180',
                         type: 'Card',
                         props: {},
                         class:
-                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden',
+                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300',
                         children: [
                           {
-                            id: 'ffb-167',
+                            id: 'ffb-171',
                             type: 'Section',
                             props: {},
                             class:
                               'w-full bg-secondary text-secondary-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                             children: [
                               {
-                                id: 'ffb-166',
+                                id: 'ffb-170',
                                 type: 'Heading',
                                 props: {
                                   level: 'h1',
@@ -1987,21 +2021,21 @@ export default {
                             ],
                           },
                           {
-                            id: 'ffb-175',
+                            id: 'ffb-179',
                             type: 'Stack',
                             props: {},
                             class:
                               'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 @3xl:p-10',
                             children: [
                               {
-                                id: 'ffb-170',
+                                id: 'ffb-174',
                                 type: 'Stack',
                                 props: {},
                                 class:
                                   'mx-auto w-full max-w-site flex flex-col @3xl:flex-row justify-between items-center',
                                 children: [
                                   {
-                                    id: 'ffb-168',
+                                    id: 'ffb-172',
                                     type: 'Heading',
                                     props: {
                                       level: 'h3',
@@ -2009,7 +2043,7 @@ export default {
                                     },
                                   },
                                   {
-                                    id: 'ffb-169',
+                                    id: 'ffb-173',
                                     type: 'Text',
                                     props: {
                                       variant: 'body',
@@ -2019,7 +2053,7 @@ export default {
                                 ],
                               },
                               {
-                                id: 'ffb-171',
+                                id: 'ffb-175',
                                 type: 'Text',
                                 props: {
                                   variant: 'body',
@@ -2027,21 +2061,21 @@ export default {
                                 },
                               },
                               {
-                                id: 'ffb-174',
+                                id: 'ffb-178',
                                 type: 'Stack',
                                 props: {},
                                 class:
                                   'mx-auto w-full max-w-site flex flex-col @3xl:flex-row flex-wrap gap-2',
                                 children: [
                                   {
-                                    id: 'ffb-172',
+                                    id: 'ffb-176',
                                     type: 'Badge',
                                     props: {
                                       label: 'Hearty',
                                     },
                                   },
                                   {
-                                    id: 'ffb-173',
+                                    id: 'ffb-177',
                                     type: 'Badge',
                                     props: {
                                       label: 'Local',
@@ -2058,7 +2092,7 @@ export default {
                 ],
               },
               {
-                id: 'ffb-179',
+                id: 'ffb-183',
                 type: 'Button',
                 props: {
                   label: 'Order the full menu',
@@ -2069,21 +2103,21 @@ export default {
             ],
           },
           {
-            id: 'ffb-192',
+            id: 'ffb-196',
             type: 'Section',
             class: 'w-full bg-neutral text-neutral-content',
             props: {},
             name: 'How it works',
             children: [
               {
-                id: 'ffb-192__c',
+                id: 'ffb-196__c',
                 type: 'Stack',
                 class:
                   'mx-auto w-full max-w-site flex flex-col gap-6 items-center p-8 @3xl:p-16 text-center',
                 props: {},
                 children: [
                   {
-                    id: 'ffb-181',
+                    id: 'ffb-185',
                     type: 'Heading',
                     props: {
                       level: 'h2',
@@ -2092,20 +2126,20 @@ export default {
                     class: 'text-center',
                   },
                   {
-                    id: 'ffb-191',
+                    id: 'ffb-195',
                     type: 'Section',
                     props: {},
                     class: 'grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-3 gap-6',
                     children: [
                       {
-                        id: 'ffb-184',
+                        id: 'ffb-188',
                         type: 'Stack',
                         props: {},
                         class:
                           'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
                         children: [
                           {
-                            id: 'ffb-182',
+                            id: 'ffb-186',
                             type: 'Heading',
                             props: {
                               level: 'h3',
@@ -2114,7 +2148,7 @@ export default {
                             class: 'text-center',
                           },
                           {
-                            id: 'ffb-183',
+                            id: 'ffb-187',
                             type: 'Text',
                             props: {
                               variant: 'body',
@@ -2125,14 +2159,14 @@ export default {
                         ],
                       },
                       {
-                        id: 'ffb-187',
+                        id: 'ffb-191',
                         type: 'Stack',
                         props: {},
                         class:
                           'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
                         children: [
                           {
-                            id: 'ffb-185',
+                            id: 'ffb-189',
                             type: 'Heading',
                             props: {
                               level: 'h3',
@@ -2141,7 +2175,7 @@ export default {
                             class: 'text-center',
                           },
                           {
-                            id: 'ffb-186',
+                            id: 'ffb-190',
                             type: 'Text',
                             props: {
                               variant: 'body',
@@ -2152,14 +2186,14 @@ export default {
                         ],
                       },
                       {
-                        id: 'ffb-190',
+                        id: 'ffb-194',
                         type: 'Stack',
                         props: {},
                         class:
                           'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
                         children: [
                           {
-                            id: 'ffb-188',
+                            id: 'ffb-192',
                             type: 'Heading',
                             props: {
                               level: 'h3',
@@ -2168,7 +2202,7 @@ export default {
                             class: 'text-center',
                           },
                           {
-                            id: 'ffb-189',
+                            id: 'ffb-193',
                             type: 'Text',
                             props: {
                               variant: 'body',
@@ -2185,7 +2219,7 @@ export default {
             ],
           },
           {
-            id: 'ffb-209',
+            id: 'ffb-213',
             type: 'Section',
             props: {},
             class:
@@ -2193,7 +2227,7 @@ export default {
             name: 'Locations',
             children: [
               {
-                id: 'ffb-193',
+                id: 'ffb-197',
                 type: 'Heading',
                 props: {
                   level: 'h2',
@@ -2202,20 +2236,20 @@ export default {
                 class: 'text-center',
               },
               {
-                id: 'ffb-208',
+                id: 'ffb-212',
                 type: 'Section',
                 props: {},
                 class: 'grid grid-cols-1 @3xl:grid-cols-2 gap-6',
                 children: [
                   {
-                    id: 'ffb-200',
+                    id: 'ffb-204',
                     type: 'Card',
                     props: {},
                     class:
-                      'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10',
+                      'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10 bg-white shadow-lg border border-base-300',
                     children: [
                       {
-                        id: 'ffb-194',
+                        id: 'ffb-198',
                         type: 'Heading',
                         props: {
                           level: 'h3',
@@ -2223,7 +2257,7 @@ export default {
                         },
                       },
                       {
-                        id: 'ffb-195',
+                        id: 'ffb-199',
                         type: 'Text',
                         props: {
                           variant: 'body',
@@ -2231,7 +2265,7 @@ export default {
                         },
                       },
                       {
-                        id: 'ffb-196',
+                        id: 'ffb-200',
                         type: 'Text',
                         props: {
                           variant: 'meta',
@@ -2239,13 +2273,13 @@ export default {
                         },
                       },
                       {
-                        id: 'ffb-199',
+                        id: 'ffb-203',
                         type: 'Stack',
                         props: {},
                         class: 'mx-auto w-full max-w-site flex flex-col @3xl:flex-row gap-2',
                         children: [
                           {
-                            id: 'ffb-197',
+                            id: 'ffb-201',
                             type: 'Button',
                             props: {
                               label: 'Order Pickup',
@@ -2254,7 +2288,7 @@ export default {
                             class: 'st-btn st-c-primary st-v-solid st-btn--sz-md',
                           },
                           {
-                            id: 'ffb-198',
+                            id: 'ffb-202',
                             type: 'Button',
                             props: {
                               label: 'Directions',
@@ -2267,14 +2301,14 @@ export default {
                     ],
                   },
                   {
-                    id: 'ffb-207',
+                    id: 'ffb-211',
                     type: 'Card',
                     props: {},
                     class:
-                      'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10',
+                      'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10 bg-white shadow-lg border border-base-300',
                     children: [
                       {
-                        id: 'ffb-201',
+                        id: 'ffb-205',
                         type: 'Heading',
                         props: {
                           level: 'h3',
@@ -2282,7 +2316,7 @@ export default {
                         },
                       },
                       {
-                        id: 'ffb-202',
+                        id: 'ffb-206',
                         type: 'Text',
                         props: {
                           variant: 'body',
@@ -2290,7 +2324,7 @@ export default {
                         },
                       },
                       {
-                        id: 'ffb-203',
+                        id: 'ffb-207',
                         type: 'Text',
                         props: {
                           variant: 'meta',
@@ -2298,13 +2332,13 @@ export default {
                         },
                       },
                       {
-                        id: 'ffb-206',
+                        id: 'ffb-210',
                         type: 'Stack',
                         props: {},
                         class: 'mx-auto w-full max-w-site flex flex-col @3xl:flex-row gap-2',
                         children: [
                           {
-                            id: 'ffb-204',
+                            id: 'ffb-208',
                             type: 'Button',
                             props: {
                               label: 'Order Pickup',
@@ -2313,7 +2347,7 @@ export default {
                             class: 'st-btn st-c-primary st-v-solid st-btn--sz-md',
                           },
                           {
-                            id: 'ffb-205',
+                            id: 'ffb-209',
                             type: 'Button',
                             props: {
                               label: 'Directions',
@@ -2330,21 +2364,21 @@ export default {
             ],
           },
           {
-            id: 'ffb-224',
+            id: 'ffb-228',
             type: 'Section',
             class: 'w-full bg-base-200',
             props: {},
             name: 'Testimonials',
             children: [
               {
-                id: 'ffb-224__c',
+                id: 'ffb-228__c',
                 type: 'Stack',
                 class:
                   'mx-auto w-full max-w-site flex flex-col gap-6 items-center p-8 @3xl:p-16 text-center',
                 props: {},
                 children: [
                   {
-                    id: 'ffb-210',
+                    id: 'ffb-214',
                     type: 'Heading',
                     props: {
                       level: 'h2',
@@ -2353,50 +2387,17 @@ export default {
                     class: 'text-center',
                   },
                   {
-                    id: 'ffb-223',
+                    id: 'ffb-227',
                     type: 'Section',
                     props: {},
                     class: 'grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-3 gap-6',
                     children: [
                       {
-                        id: 'ffb-214',
-                        type: 'Card',
-                        props: {},
-                        class:
-                          'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10',
-                        children: [
-                          {
-                            id: 'ffb-211',
-                            type: 'Text',
-                            props: {
-                              variant: 'body',
-                              text: '★★★★★',
-                            },
-                          },
-                          {
-                            id: 'ffb-212',
-                            type: 'Text',
-                            props: {
-                              variant: 'body',
-                              text: '“The Midnight Açaí is my morning ritual now. You can actually taste how fresh everything is.”',
-                            },
-                          },
-                          {
-                            id: 'ffb-213',
-                            type: 'Text',
-                            props: {
-                              variant: 'meta',
-                              text: 'Maya R. · Riverside',
-                            },
-                          },
-                        ],
-                      },
-                      {
                         id: 'ffb-218',
                         type: 'Card',
                         props: {},
                         class:
-                          'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10',
+                          'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10 bg-white shadow-lg border border-base-300',
                         children: [
                           {
                             id: 'ffb-215',
@@ -2411,7 +2412,7 @@ export default {
                             type: 'Text',
                             props: {
                               variant: 'body',
-                              text: '“Finally a place where I trust every ingredient. The team knows their farmers by name.”',
+                              text: '“The Midnight Açaí is my morning ritual now. You can actually taste how fresh everything is.”',
                             },
                           },
                           {
@@ -2419,7 +2420,7 @@ export default {
                             type: 'Text',
                             props: {
                               variant: 'meta',
-                              text: 'Daniel K. · Downtown',
+                              text: 'Maya R. · Riverside',
                             },
                           },
                         ],
@@ -2429,7 +2430,7 @@ export default {
                         type: 'Card',
                         props: {},
                         class:
-                          'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10',
+                          'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10 bg-white shadow-lg border border-base-300',
                         children: [
                           {
                             id: 'ffb-219',
@@ -2444,11 +2445,44 @@ export default {
                             type: 'Text',
                             props: {
                               variant: 'body',
-                              text: '“Balanced, filling, and genuinely delicious. Gets me through marathon training weeks.”',
+                              text: '“Finally a place where I trust every ingredient. The team knows their farmers by name.”',
                             },
                           },
                           {
                             id: 'ffb-221',
+                            type: 'Text',
+                            props: {
+                              variant: 'meta',
+                              text: 'Daniel K. · Downtown',
+                            },
+                          },
+                        ],
+                      },
+                      {
+                        id: 'ffb-226',
+                        type: 'Card',
+                        props: {},
+                        class:
+                          'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10 bg-white shadow-lg border border-base-300',
+                        children: [
+                          {
+                            id: 'ffb-223',
+                            type: 'Text',
+                            props: {
+                              variant: 'body',
+                              text: '★★★★★',
+                            },
+                          },
+                          {
+                            id: 'ffb-224',
+                            type: 'Text',
+                            props: {
+                              variant: 'body',
+                              text: '“Balanced, filling, and genuinely delicious. Gets me through marathon training weeks.”',
+                            },
+                          },
+                          {
+                            id: 'ffb-225',
                             type: 'Text',
                             props: {
                               variant: 'meta',
@@ -2464,7 +2498,7 @@ export default {
             ],
           },
           {
-            id: 'ffb-233',
+            id: 'ffb-237',
             type: 'Section',
             props: {},
             class:
@@ -2472,14 +2506,14 @@ export default {
             name: 'Catering & gifts',
             children: [
               {
-                id: 'ffb-228',
+                id: 'ffb-232',
                 type: 'Card',
                 props: {},
                 class:
                   'mx-auto w-full max-w-site rounded-box bg-primary text-primary-content flex flex-col gap-4 justify-between items-start p-8 @3xl:p-16',
                 children: [
                   {
-                    id: 'ffb-225',
+                    id: 'ffb-229',
                     type: 'Heading',
                     props: {
                       level: 'h3',
@@ -2487,7 +2521,7 @@ export default {
                     },
                   },
                   {
-                    id: 'ffb-226',
+                    id: 'ffb-230',
                     type: 'Text',
                     props: {
                       variant: 'body',
@@ -2495,7 +2529,7 @@ export default {
                     },
                   },
                   {
-                    id: 'ffb-227',
+                    id: 'ffb-231',
                     type: 'Button',
                     props: {
                       label: 'Plan an event',
@@ -2506,14 +2540,14 @@ export default {
                 ],
               },
               {
-                id: 'ffb-232',
+                id: 'ffb-236',
                 type: 'Card',
                 props: {},
                 class:
                   'mx-auto w-full max-w-site rounded-box bg-secondary text-secondary-content flex flex-col gap-4 justify-between items-start p-8 @3xl:p-16',
                 children: [
                   {
-                    id: 'ffb-229',
+                    id: 'ffb-233',
                     type: 'Heading',
                     props: {
                       level: 'h3',
@@ -2521,7 +2555,7 @@ export default {
                     },
                   },
                   {
-                    id: 'ffb-230',
+                    id: 'ffb-234',
                     type: 'Text',
                     props: {
                       variant: 'body',
@@ -2529,7 +2563,7 @@ export default {
                     },
                   },
                   {
-                    id: 'ffb-231',
+                    id: 'ffb-235',
                     type: 'Button',
                     props: {
                       label: 'Buy a gift card',
@@ -2542,21 +2576,21 @@ export default {
             ],
           },
           {
-            id: 'ffb-238',
+            id: 'ffb-242',
             type: 'Section',
             class: 'w-full bg-accent text-accent-content',
             props: {},
             name: 'Order',
             children: [
               {
-                id: 'ffb-238__c',
+                id: 'ffb-242__c',
                 type: 'Stack',
                 class:
                   'mx-auto w-full max-w-site flex flex-col gap-4 justify-center items-center p-8 @3xl:p-16 text-center',
                 props: {},
                 children: [
                   {
-                    id: 'ffb-234',
+                    id: 'ffb-238',
                     type: 'Heading',
                     props: {
                       level: 'h2',
@@ -2565,7 +2599,7 @@ export default {
                     class: 'text-center',
                   },
                   {
-                    id: 'ffb-235',
+                    id: 'ffb-239',
                     type: 'Text',
                     props: {
                       variant: 'body',
@@ -2574,7 +2608,7 @@ export default {
                     class: 'text-center',
                   },
                   {
-                    id: 'ffb-236',
+                    id: 'ffb-240',
                     type: 'Button',
                     props: {
                       label: 'Start an order',
@@ -2583,7 +2617,7 @@ export default {
                     class: 'st-btn st-c-surface st-v-glass st-btn--sz-md',
                   },
                   {
-                    id: 'ffb-237',
+                    id: 'ffb-241',
                     type: 'Signup',
                     props: {
                       cta: 'Sign up',
@@ -2604,14 +2638,14 @@ export default {
       kind: 'singleton',
       slug: 'story',
       tree: {
-        id: 'ffb-270',
+        id: 'ffb-276',
         type: 'Section',
         props: {},
         class: 'w-full flex flex-col',
         name: 'Story',
         children: [
           {
-            id: 'ffb-242',
+            id: 'ffb-246',
             type: 'Section',
             class:
               'w-full flex items-center justify-center bg-primary text-primary-content min-h-[50vh]',
@@ -2619,14 +2653,14 @@ export default {
             name: 'Story hero',
             children: [
               {
-                id: 'ffb-242__c',
+                id: 'ffb-246__c',
                 type: 'Stack',
                 class:
                   'mx-auto w-full max-w-site flex flex-col gap-2 justify-center items-center p-8 @3xl:p-16 text-center',
                 props: {},
                 children: [
                   {
-                    id: 'ffb-240',
+                    id: 'ffb-244',
                     type: 'Heading',
                     props: {
                       level: 'h1',
@@ -2636,7 +2670,7 @@ export default {
                     class: 'text-center',
                   },
                   {
-                    id: 'ffb-241',
+                    id: 'ffb-245',
                     type: 'Text',
                     props: {
                       variant: 'body',
@@ -2649,36 +2683,43 @@ export default {
             ],
           },
           {
-            id: 'ffb-249',
+            id: 'ffb-254',
             type: 'Section',
             class: 'w-full bg-base-200',
             props: {},
             name: 'We really do care',
             children: [
               {
-                id: 'ffb-249__c',
+                id: 'ffb-254__c',
                 type: 'Stack',
                 class:
                   'mx-auto w-full max-w-site grid grid-cols-1 @3xl:grid-cols-2 gap-6 items-center p-8 @3xl:p-16',
                 props: {},
                 children: [
                   {
-                    id: 'ffb-246',
+                    id: 'ffb-251',
                     type: 'Stack',
                     props: {},
                     class:
                       'mx-auto w-full max-w-site flex flex-col gap-4 justify-center items-start',
                     children: [
                       {
-                        id: 'ffb-243',
+                        id: 'ffb-247',
+                        type: 'Section',
+                        props: {},
+                        class: 'mx-auto w-full max-w-site h-[3px] w-16 rounded-full bg-accent',
+                      },
+                      {
+                        id: 'ffb-248',
                         type: 'Heading',
                         props: {
                           level: 'h2',
                           text: 'We really do care',
                         },
+                        class: 'text-4xl @3xl:text-5xl font-bold leading-tight text-accent',
                       },
                       {
-                        id: 'ffb-244',
+                        id: 'ffb-249',
                         type: 'Text',
                         props: {
                           variant: 'body',
@@ -2686,7 +2727,7 @@ export default {
                         },
                       },
                       {
-                        id: 'ffb-245',
+                        id: 'ffb-250',
                         type: 'Text',
                         props: {
                           variant: 'body',
@@ -2696,14 +2737,14 @@ export default {
                     ],
                   },
                   {
-                    id: 'ffb-248',
+                    id: 'ffb-253',
                     type: 'Section',
                     props: {},
                     class:
                       'rounded-box bg-primary text-primary-content min-h-[50vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                     children: [
                       {
-                        id: 'ffb-247',
+                        id: 'ffb-252',
                         type: 'Heading',
                         props: {
                           level: 'h1',
@@ -2719,7 +2760,7 @@ export default {
             ],
           },
           {
-            id: 'ffb-256',
+            id: 'ffb-262',
             type: 'Section',
             props: {},
             class:
@@ -2727,14 +2768,14 @@ export default {
             name: 'Food that loves you back',
             children: [
               {
-                id: 'ffb-255',
+                id: 'ffb-261',
                 type: 'Section',
                 props: {},
                 class:
                   'rounded-box bg-base-200 min-h-[50vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                 children: [
                   {
-                    id: 'ffb-254',
+                    id: 'ffb-260',
                     type: 'Heading',
                     props: {
                       level: 'h1',
@@ -2746,21 +2787,28 @@ export default {
                 ],
               },
               {
-                id: 'ffb-253',
+                id: 'ffb-259',
                 type: 'Stack',
                 props: {},
                 class: 'mx-auto w-full max-w-site flex flex-col gap-4 justify-center items-start',
                 children: [
                   {
-                    id: 'ffb-250',
+                    id: 'ffb-255',
+                    type: 'Section',
+                    props: {},
+                    class: 'mx-auto w-full max-w-site h-[3px] w-16 rounded-full bg-accent',
+                  },
+                  {
+                    id: 'ffb-256',
                     type: 'Heading',
                     props: {
                       level: 'h2',
                       text: 'Food that loves you back',
                     },
+                    class: 'text-4xl @3xl:text-5xl font-bold leading-tight text-accent',
                   },
                   {
-                    id: 'ffb-251',
+                    id: 'ffb-257',
                     type: 'Text',
                     props: {
                       variant: 'body',
@@ -2768,7 +2816,7 @@ export default {
                     },
                   },
                   {
-                    id: 'ffb-252',
+                    id: 'ffb-258',
                     type: 'Text',
                     props: {
                       variant: 'body',
@@ -2780,67 +2828,13 @@ export default {
             ],
           },
           {
-            id: 'ffb-269',
+            id: 'ffb-275',
             type: 'Section',
             props: {},
             class:
               'w-full mx-auto w-full max-w-site grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-4 gap-6 p-8 @3xl:p-16',
             name: 'Values',
             children: [
-              {
-                id: 'ffb-259',
-                type: 'Card',
-                props: {},
-                class:
-                  'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
-                children: [
-                  {
-                    id: 'ffb-257',
-                    type: 'Heading',
-                    props: {
-                      level: 'h3',
-                      text: '🌾  Locally Sourced',
-                    },
-                    class: 'text-center',
-                  },
-                  {
-                    id: 'ffb-258',
-                    type: 'Text',
-                    props: {
-                      variant: 'meta',
-                      text: 'From farms within 60 miles',
-                    },
-                    class: 'text-center',
-                  },
-                ],
-              },
-              {
-                id: 'ffb-262',
-                type: 'Card',
-                props: {},
-                class:
-                  'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
-                children: [
-                  {
-                    id: 'ffb-260',
-                    type: 'Heading',
-                    props: {
-                      level: 'h3',
-                      text: '🚫  No Preservatives',
-                    },
-                    class: 'text-center',
-                  },
-                  {
-                    id: 'ffb-261',
-                    type: 'Text',
-                    props: {
-                      variant: 'meta',
-                      text: 'Nothing artificial, ever',
-                    },
-                    class: 'text-center',
-                  },
-                ],
-              },
               {
                 id: 'ffb-265',
                 type: 'Card',
@@ -2853,7 +2847,7 @@ export default {
                     type: 'Heading',
                     props: {
                       level: 'h3',
-                      text: '⚖️  Balanced Macros',
+                      text: '🌾  Locally Sourced',
                     },
                     class: 'text-center',
                   },
@@ -2862,7 +2856,7 @@ export default {
                     type: 'Text',
                     props: {
                       variant: 'meta',
-                      text: 'Portioned by nutritionists',
+                      text: 'From farms within 60 miles',
                     },
                     class: 'text-center',
                   },
@@ -2880,12 +2874,66 @@ export default {
                     type: 'Heading',
                     props: {
                       level: 'h3',
-                      text: '♻️  Eco Packaging',
+                      text: '🚫  No Preservatives',
                     },
                     class: 'text-center',
                   },
                   {
                     id: 'ffb-267',
+                    type: 'Text',
+                    props: {
+                      variant: 'meta',
+                      text: 'Nothing artificial, ever',
+                    },
+                    class: 'text-center',
+                  },
+                ],
+              },
+              {
+                id: 'ffb-271',
+                type: 'Card',
+                props: {},
+                class:
+                  'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
+                children: [
+                  {
+                    id: 'ffb-269',
+                    type: 'Heading',
+                    props: {
+                      level: 'h3',
+                      text: '⚖️  Balanced Macros',
+                    },
+                    class: 'text-center',
+                  },
+                  {
+                    id: 'ffb-270',
+                    type: 'Text',
+                    props: {
+                      variant: 'meta',
+                      text: 'Portioned by nutritionists',
+                    },
+                    class: 'text-center',
+                  },
+                ],
+              },
+              {
+                id: 'ffb-274',
+                type: 'Card',
+                props: {},
+                class:
+                  'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
+                children: [
+                  {
+                    id: 'ffb-272',
+                    type: 'Heading',
+                    props: {
+                      level: 'h3',
+                      text: '♻️  Eco Packaging',
+                    },
+                    class: 'text-center',
+                  },
+                  {
+                    id: 'ffb-273',
                     type: 'Text',
                     props: {
                       variant: 'meta',
@@ -2906,14 +2954,14 @@ export default {
       kind: 'singleton',
       slug: 'locations',
       tree: {
-        id: 'ffb-288',
+        id: 'ffb-294',
         type: 'Section',
         props: {},
         class: 'w-full flex flex-col',
         name: 'Locations',
         children: [
           {
-            id: 'ffb-273',
+            id: 'ffb-279',
             type: 'Section',
             props: {},
             class:
@@ -2921,7 +2969,7 @@ export default {
             name: 'Locations intro',
             children: [
               {
-                id: 'ffb-271',
+                id: 'ffb-277',
                 type: 'Heading',
                 props: {
                   level: 'h1',
@@ -2930,7 +2978,7 @@ export default {
                 class: 'text-center',
               },
               {
-                id: 'ffb-272',
+                id: 'ffb-278',
                 type: 'Text',
                 props: {
                   variant: 'body',
@@ -2941,7 +2989,7 @@ export default {
             ],
           },
           {
-            id: 'ffb-280',
+            id: 'ffb-286',
             type: 'Section',
             props: {},
             class:
@@ -2949,13 +2997,13 @@ export default {
             name: 'Riverside Market',
             children: [
               {
-                id: 'ffb-278',
+                id: 'ffb-284',
                 type: 'Stack',
                 props: {},
                 class: 'mx-auto w-full max-w-site flex flex-col gap-2 justify-center items-start',
                 children: [
                   {
-                    id: 'ffb-274',
+                    id: 'ffb-280',
                     type: 'Heading',
                     props: {
                       level: 'h2',
@@ -2963,7 +3011,7 @@ export default {
                     },
                   },
                   {
-                    id: 'ffb-275',
+                    id: 'ffb-281',
                     type: 'Text',
                     props: {
                       variant: 'body',
@@ -2971,7 +3019,7 @@ export default {
                     },
                   },
                   {
-                    id: 'ffb-276',
+                    id: 'ffb-282',
                     type: 'Text',
                     props: {
                       variant: 'meta',
@@ -2979,7 +3027,7 @@ export default {
                     },
                   },
                   {
-                    id: 'ffb-277',
+                    id: 'ffb-283',
                     type: 'Button',
                     props: {
                       label: 'Order Pickup',
@@ -2990,7 +3038,7 @@ export default {
                 ],
               },
               {
-                id: 'ffb-279',
+                id: 'ffb-285',
                 type: 'Map',
                 props: {
                   query: '214 Orchard Lane, Riverside, CA 92501',
@@ -2999,7 +3047,7 @@ export default {
             ],
           },
           {
-            id: 'ffb-287',
+            id: 'ffb-293',
             type: 'Section',
             props: {},
             class:
@@ -3007,13 +3055,13 @@ export default {
             name: 'Downtown Commons',
             children: [
               {
-                id: 'ffb-285',
+                id: 'ffb-291',
                 type: 'Stack',
                 props: {},
                 class: 'mx-auto w-full max-w-site flex flex-col gap-2 justify-center items-start',
                 children: [
                   {
-                    id: 'ffb-281',
+                    id: 'ffb-287',
                     type: 'Heading',
                     props: {
                       level: 'h2',
@@ -3021,7 +3069,7 @@ export default {
                     },
                   },
                   {
-                    id: 'ffb-282',
+                    id: 'ffb-288',
                     type: 'Text',
                     props: {
                       variant: 'body',
@@ -3029,7 +3077,7 @@ export default {
                     },
                   },
                   {
-                    id: 'ffb-283',
+                    id: 'ffb-289',
                     type: 'Text',
                     props: {
                       variant: 'meta',
@@ -3037,7 +3085,7 @@ export default {
                     },
                   },
                   {
-                    id: 'ffb-284',
+                    id: 'ffb-290',
                     type: 'Button',
                     props: {
                       label: 'Order Pickup',
@@ -3048,7 +3096,7 @@ export default {
                 ],
               },
               {
-                id: 'ffb-286',
+                id: 'ffb-292',
                 type: 'Map',
                 props: {
                   query: '88 Maple Street, Suite B, Riverside, CA 92507',
@@ -3065,14 +3113,14 @@ export default {
       kind: 'singleton',
       slug: 'catering',
       tree: {
-        id: 'ffb-306',
+        id: 'ffb-312',
         type: 'Section',
         props: {},
         class: 'w-full flex flex-col',
         name: 'Catering',
         children: [
           {
-            id: 'ffb-291',
+            id: 'ffb-297',
             type: 'Section',
             class:
               'w-full flex items-center justify-center bg-primary text-primary-content min-h-[50vh]',
@@ -3080,14 +3128,14 @@ export default {
             name: 'Catering hero',
             children: [
               {
-                id: 'ffb-291__c',
+                id: 'ffb-297__c',
                 type: 'Stack',
                 class:
                   'mx-auto w-full max-w-site flex flex-col gap-2 justify-center items-center p-8 @3xl:p-16 text-center',
                 props: {},
                 children: [
                   {
-                    id: 'ffb-289',
+                    id: 'ffb-295',
                     type: 'Heading',
                     props: {
                       level: 'h1',
@@ -3097,7 +3145,7 @@ export default {
                     class: 'text-center',
                   },
                   {
-                    id: 'ffb-290',
+                    id: 'ffb-296',
                     type: 'Text',
                     props: {
                       variant: 'body',
@@ -3110,67 +3158,13 @@ export default {
             ],
           },
           {
-            id: 'ffb-301',
+            id: 'ffb-307',
             type: 'Section',
             props: {},
             class:
               'w-full mx-auto w-full max-w-site grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-3 gap-6 p-8 @3xl:p-16',
             name: 'Catering options',
             children: [
-              {
-                id: 'ffb-294',
-                type: 'Card',
-                props: {},
-                class:
-                  'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
-                children: [
-                  {
-                    id: 'ffb-292',
-                    type: 'Heading',
-                    props: {
-                      level: 'h3',
-                      text: '🥣  Bowl bars',
-                    },
-                    class: 'text-center',
-                  },
-                  {
-                    id: 'ffb-293',
-                    type: 'Text',
-                    props: {
-                      variant: 'meta',
-                      text: 'Build-your-own açaí & smoothie stations for any crowd.',
-                    },
-                    class: 'text-center',
-                  },
-                ],
-              },
-              {
-                id: 'ffb-297',
-                type: 'Card',
-                props: {},
-                class:
-                  'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
-                children: [
-                  {
-                    id: 'ffb-295',
-                    type: 'Heading',
-                    props: {
-                      level: 'h3',
-                      text: '🥗  Grain platters',
-                    },
-                    class: 'text-center',
-                  },
-                  {
-                    id: 'ffb-296',
-                    type: 'Text',
-                    props: {
-                      variant: 'meta',
-                      text: 'Seasonal salad and grain platters, portioned and labeled.',
-                    },
-                    class: 'text-center',
-                  },
-                ],
-              },
               {
                 id: 'ffb-300',
                 type: 'Card',
@@ -3183,12 +3177,66 @@ export default {
                     type: 'Heading',
                     props: {
                       level: 'h3',
-                      text: '🚲  On-time delivery',
+                      text: '🥣  Bowl bars',
                     },
                     class: 'text-center',
                   },
                   {
                     id: 'ffb-299',
+                    type: 'Text',
+                    props: {
+                      variant: 'meta',
+                      text: 'Build-your-own açaí & smoothie stations for any crowd.',
+                    },
+                    class: 'text-center',
+                  },
+                ],
+              },
+              {
+                id: 'ffb-303',
+                type: 'Card',
+                props: {},
+                class:
+                  'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
+                children: [
+                  {
+                    id: 'ffb-301',
+                    type: 'Heading',
+                    props: {
+                      level: 'h3',
+                      text: '🥗  Grain platters',
+                    },
+                    class: 'text-center',
+                  },
+                  {
+                    id: 'ffb-302',
+                    type: 'Text',
+                    props: {
+                      variant: 'meta',
+                      text: 'Seasonal salad and grain platters, portioned and labeled.',
+                    },
+                    class: 'text-center',
+                  },
+                ],
+              },
+              {
+                id: 'ffb-306',
+                type: 'Card',
+                props: {},
+                class:
+                  'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
+                children: [
+                  {
+                    id: 'ffb-304',
+                    type: 'Heading',
+                    props: {
+                      level: 'h3',
+                      text: '🚲  On-time delivery',
+                    },
+                    class: 'text-center',
+                  },
+                  {
+                    id: 'ffb-305',
                     type: 'Text',
                     props: {
                       variant: 'meta',
@@ -3201,21 +3249,21 @@ export default {
             ],
           },
           {
-            id: 'ffb-305',
+            id: 'ffb-311',
             type: 'Section',
             class: 'w-full bg-primary text-primary-content',
             props: {},
             name: 'Catering CTA',
             children: [
               {
-                id: 'ffb-305__c',
+                id: 'ffb-311__c',
                 type: 'Stack',
                 class:
                   'mx-auto w-full max-w-site flex flex-col gap-4 justify-center items-center p-8 @3xl:p-16 text-center',
                 props: {},
                 children: [
                   {
-                    id: 'ffb-302',
+                    id: 'ffb-308',
                     type: 'Heading',
                     props: {
                       level: 'h2',
@@ -3224,7 +3272,7 @@ export default {
                     class: 'text-center',
                   },
                   {
-                    id: 'ffb-303',
+                    id: 'ffb-309',
                     type: 'Text',
                     props: {
                       variant: 'body',
@@ -3233,7 +3281,7 @@ export default {
                     class: 'text-center',
                   },
                   {
-                    id: 'ffb-304',
+                    id: 'ffb-310',
                     type: 'Signup',
                     props: {
                       cta: 'Request a quote',
@@ -3253,7 +3301,7 @@ export default {
       recordType: 'commerce.product',
       isDefault: true,
       tree: {
-        id: 'ffb-312',
+        id: 'ffb-318',
         type: 'Section',
         props: {},
         class:
@@ -3261,7 +3309,7 @@ export default {
         name: 'Product',
         children: [
           {
-            id: 'ffb-307',
+            id: 'ffb-313',
             type: 'Image',
             props: {
               ratio: 'square',
@@ -3272,13 +3320,13 @@ export default {
             },
           },
           {
-            id: 'ffb-311',
+            id: 'ffb-317',
             type: 'Stack',
             props: {},
             class: 'mx-auto w-full max-w-site flex flex-col gap-4 items-start',
             children: [
               {
-                id: 'ffb-308',
+                id: 'ffb-314',
                 type: 'Heading',
                 props: {
                   level: 'h1',
@@ -3288,7 +3336,7 @@ export default {
                 },
               },
               {
-                id: 'ffb-309',
+                id: 'ffb-315',
                 type: 'Prose',
                 props: {},
                 binding: {
@@ -3296,7 +3344,7 @@ export default {
                 },
               },
               {
-                id: 'ffb-310',
+                id: 'ffb-316',
                 type: 'BuyBox',
                 props: {},
                 binding: {
@@ -3314,28 +3362,28 @@ export default {
       recordType: 'cms.blog_post',
       isDefault: true,
       tree: {
-        id: 'ffb-317',
+        id: 'ffb-323',
         type: 'Section',
         props: {},
         class: 'w-full flex flex-col',
         name: 'Post',
         children: [
           {
-            id: 'ffb-314',
+            id: 'ffb-320',
             type: 'Section',
             class: 'w-full bg-base-200',
             props: {},
             name: 'Post header',
             children: [
               {
-                id: 'ffb-314__c',
+                id: 'ffb-320__c',
                 type: 'Stack',
                 class:
                   'mx-auto w-full max-w-site flex flex-col gap-2 justify-center items-center p-8 @3xl:p-16 text-center',
                 props: {},
                 children: [
                   {
-                    id: 'ffb-313',
+                    id: 'ffb-319',
                     type: 'Heading',
                     props: {
                       level: 'h1',
@@ -3350,14 +3398,14 @@ export default {
             ],
           },
           {
-            id: 'ffb-316',
+            id: 'ffb-322',
             type: 'Section',
             props: {},
             class: 'w-full mx-auto w-full max-w-site flex flex-col gap-4 p-6 @3xl:p-10',
             name: 'Post body',
             children: [
               {
-                id: 'ffb-315',
+                id: 'ffb-321',
                 type: 'Prose',
                 props: {},
                 binding: {
@@ -3376,14 +3424,14 @@ export default {
       subject: 'Welcome to Farm Fresh Bowls',
       preheader: 'Fresh menus, new flavors, and the occasional treat.',
       tree: {
-        id: 'ffb-323',
+        id: 'ffb-329',
         type: 'Section',
         props: {},
         class: 'flex flex-col gap-4',
         name: 'Email body',
         children: [
           {
-            id: 'ffb-318',
+            id: 'ffb-324',
             type: 'email_wordmark',
             props: {
               treatment: 'lockup',
@@ -3392,7 +3440,7 @@ export default {
             },
           },
           {
-            id: 'ffb-319',
+            id: 'ffb-325',
             type: 'Heading',
             props: {
               level: 'h1',
@@ -3400,7 +3448,7 @@ export default {
             },
           },
           {
-            id: 'ffb-320',
+            id: 'ffb-326',
             type: 'Text',
             props: {
               variant: 'body',
@@ -3408,7 +3456,7 @@ export default {
             },
           },
           {
-            id: 'ffb-321',
+            id: 'ffb-327',
             type: 'Button',
             props: {
               label: 'Start an order',
@@ -3417,7 +3465,7 @@ export default {
             class: 'st-btn st-c-primary st-v-solid st-btn--sz-md',
           },
           {
-            id: 'ffb-322',
+            id: 'ffb-328',
             type: 'Text',
             props: {
               variant: 'meta',

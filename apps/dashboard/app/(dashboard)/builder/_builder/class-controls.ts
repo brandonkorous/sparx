@@ -282,16 +282,37 @@ export const BORDER_STYLE_CONTROL: ClassControl = {
   ],
 };
 
+// The full named colour palette (the recipe COLOR_KEYS minus the page-`surface`
+// slot, which has no meaningful `bg-/text-/border-` utility). Every colour control
+// composes this so they all offer the SAME swatches as the recipe Color axis,
+// from ONE list — add a palette colour here and every control gains it. Each token
+// resolves to a tenant `--st-*` via @sparx/surface-compile.
+const NAMED_PALETTE = [
+  'primary',
+  'secondary',
+  'accent',
+  'neutral',
+  'info',
+  'success',
+  'warning',
+  'danger',
+  'highlight',
+] as const;
+
+/** The named-palette options for a colour utility prefix (`bg`, `text`, `border`,
+ *  `ring`, `shadow`, `caret`, `accent`). */
+function paletteOptions(util: string): ClassOption[] {
+  return NAMED_PALETTE.map((k) => ({ value: k, label: cap(k), token: `${util}-${k}` }));
+}
+
 // Border color — TOKEN colors only (arbitrary hex is blocked by the allowlist).
+// The neutral page-border `subtle` (base-300) plus the full named palette.
 export const BORDER_COLOR_CONTROL: ClassControl = {
   id: 'borderColor',
   label: 'Border color',
   options: [
     { value: 'subtle', label: 'Subtle', token: 'border-base-300' },
-    { value: 'primary', label: 'Primary', token: 'border-primary' },
-    { value: 'secondary', label: 'Secondary', token: 'border-secondary' },
-    { value: 'accent', label: 'Accent', token: 'border-accent' },
-    { value: 'neutral', label: 'Neutral', token: 'border-neutral' },
+    ...paletteOptions('border'),
   ],
 };
 
@@ -303,6 +324,9 @@ export const BORDER_COLOR_CONTROL: ClassControl = {
 // per-instance re-skinning) and driven through the same single-token group model
 // as every other control — so the context selector re-prefixes them for free.
 
+// Background — the full named palette (the page-surface neutrals + every recipe
+// COLOR_KEYS slot), so an object can be filled with any theme colour. Every token
+// resolves to a tenant `--st-*` via @sparx/surface-compile.
 export const BACKGROUND_CONTROL: ClassControl = {
   id: 'bg',
   label: 'Background',
@@ -311,21 +335,18 @@ export const BACKGROUND_CONTROL: ClassControl = {
     { value: 'page', label: 'Page', token: 'bg-base-100' },
     { value: 'subtle', label: 'Subtle', token: 'bg-base-200' },
     { value: 'muted', label: 'Muted', token: 'bg-base-300' },
-    { value: 'primary', label: 'Primary', token: 'bg-primary' },
-    { value: 'secondary', label: 'Secondary', token: 'bg-secondary' },
-    { value: 'accent', label: 'Accent', token: 'bg-accent' },
-    { value: 'neutral', label: 'Neutral', token: 'bg-neutral' },
+    ...paletteOptions('bg'),
   ],
 };
 
+// Text colour — the full named palette (mirrors the recipe COLOR_KEYS), then the
+// contrast helpers for text sitting ON a coloured fill. No explicit base-content
+// option: the empty "Default" already inherits the base text colour.
 export const TEXT_COLOR_CONTROL: ClassControl = {
   id: 'textColor',
   label: 'Text color',
-  // No explicit base-content option — the control's empty "Default" already
-  // inherits the base text color (an explicit `text-base-content` would just
-  // duplicate it as a second "Default" entry). These are the overrides.
   options: [
-    { value: 'primary', label: 'Primary', token: 'text-primary' },
+    ...paletteOptions('text'),
     { value: 'on-primary', label: 'On primary', token: 'text-primary-content' },
     { value: 'on-neutral', label: 'On dark', token: 'text-neutral-content' },
     { value: 'white', label: 'White', token: 'text-white' },
@@ -1042,12 +1063,7 @@ export const BG_REPEAT_CONTROL: ClassControl = {
 export const SHADOW_COLOR_CONTROL: ClassControl = {
   id: 'shadowColor',
   label: 'Shadow color',
-  options: [
-    { value: 'primary', label: 'Primary', token: 'shadow-primary' },
-    { value: 'accent', label: 'Accent', token: 'shadow-accent' },
-    { value: 'neutral', label: 'Neutral', token: 'shadow-neutral' },
-    { value: 'black', label: 'Black', token: 'shadow-black' },
-  ],
+  options: [...paletteOptions('shadow'), { value: 'black', label: 'Black', token: 'shadow-black' }],
 };
 
 export const RING_CONTROL: ClassControl = {
@@ -1065,10 +1081,8 @@ export const RING_COLOR_CONTROL: ClassControl = {
   id: 'ringColor',
   label: 'Ring color',
   options: [
-    { value: 'primary', label: 'Primary', token: 'ring-primary' },
-    { value: 'accent', label: 'Accent', token: 'ring-accent' },
-    { value: 'neutral', label: 'Neutral', token: 'ring-neutral' },
     { value: 'subtle', label: 'Subtle', token: 'ring-base-300' },
+    ...paletteOptions('ring'),
   ],
 };
 
@@ -1603,20 +1617,11 @@ export const WILL_CHANGE_CONTROL: ClassControl = {
 export const CARET_COLOR_CONTROL: ClassControl = {
   id: 'caretColor',
   label: 'Cursor color',
-  options: [
-    { value: 'primary', label: 'Primary', token: 'caret-primary' },
-    { value: 'accent', label: 'Accent', token: 'caret-accent' },
-    { value: 'neutral', label: 'Neutral', token: 'caret-neutral' },
-  ],
+  options: paletteOptions('caret'),
 };
 
 export const ACCENT_COLOR_CONTROL: ClassControl = {
   id: 'accentColor',
   label: 'Accent color',
-  options: [
-    { value: 'primary', label: 'Primary', token: 'accent-primary' },
-    { value: 'secondary', label: 'Secondary', token: 'accent-secondary' },
-    { value: 'accent', label: 'Accent', token: 'accent-accent' },
-    { value: 'neutral', label: 'Neutral', token: 'accent-neutral' },
-  ],
+  options: paletteOptions('accent'),
 };
