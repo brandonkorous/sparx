@@ -30,6 +30,35 @@ export type { InventoryLevelRow, LowStockRow } from './levels';
 // ─── Stock mutations (manual adjust + transfer) ───────────────────────
 export { adjust, transfer } from './movements';
 
+// ─── Documented public API (docs/06 §7 — P6a) ────────────────────────
+// The headless contract surface: a cross-warehouse enriched level list, a
+// single-level count update (absolute set or signed delta), and a bulk
+// adjustment (CSV/JSON) that isolates each row in its own transaction. All
+// writes route through the `applyMovement` ledger funnel.
+export { listInventory, updateLevelCount, bulkAdjust } from './public-api';
+export type {
+  PublicInventoryRow,
+  ListInventoryFilter,
+  LevelCountResult,
+  BulkAdjustResult,
+  BulkAdjustResultRow,
+} from './public-api';
+
+// ─── Analytics / reporting (docs/100 P6b, docs/09 §8) ─────────────────
+// Valuation, turnover / days-inventory-outstanding, aging + dead-stock, and
+// reorder analysis (velocity → days-of-cover → projected stockout) over the
+// master model + ledger. Shared by the REST reports route and the MCP supply tools.
+export { inventoryValuation, turnoverReport, agingReport, reorderAnalysis } from './analytics';
+export type {
+  InventoryValuationReport,
+  TurnoverReport,
+  AgingReport,
+  AgingBucket,
+  DeadStockItem,
+  ReorderAnalysisReport,
+  ReorderAnalysisRow,
+} from './analytics';
+
 // ─── Movement / audit-log read path (P4 corrections) ──────────────────
 // A filterable, paginated view over the append-only `inventory_movements`
 // ledger — the compliance surface answering who moved stock, when, why, how much.
@@ -86,6 +115,18 @@ export type {
   ListSyncRunsFilter,
   ListUnmappedFilter,
 } from './sync-runs';
+
+// ─── Tier A bridge agent enrollment (P5d) ─────────────────────────────
+// An `agent` source is fed by an outbound-HTTPS bridge the tenant installs;
+// pairing mints a tenant-scoped API key (in the route) and records a reference
+// here. `touchAgent` is the liveness bump every push + heartbeat calls.
+export {
+  recordAgentEnrollment,
+  clearAgentEnrollment,
+  touchAgent,
+  AGENT_ONLINE_GRACE_MS,
+} from './agent-enrollment';
+export type { AgentEnrollmentState } from './agent-enrollment';
 
 // ─── Lot batches + serial units + recalls ─────────────────────────────
 export {

@@ -59,10 +59,24 @@ export const SPACING_OPTIONS = [
 ] as const;
 
 // Control size → field (inputs/buttons) + selector (pills/toggles) heights.
+// LEGACY combined preset (kept for back-compat); the live controls now dial
+// `--st-size-field` / `--st-size-selector` independently from SIZE_SCALE below.
 export const SIZE_OPTIONS = [
   { key: 'sm', label: 'Small', field: '2.25rem', selector: '1.75rem' },
   { key: 'md', label: 'Default', field: '2.5rem', selector: '2rem' },
   { key: 'lg', label: 'Large', field: '2.75rem', selector: '2.25rem' },
+] as const;
+
+// Per-group control-SIZE base unit (daisyUI parity, docs/33 §3). Field components
+// (button/input/select/tab) and selector components (checkbox/toggle/badge) each
+// multiply their own base unit, dialed independently. 0.25rem = the default that
+// reproduces every component's stock size; the steps scale it 75%…125%.
+export const SIZE_SCALE = [
+  { key: '0.1875rem', label: 'XS' },
+  { key: '0.21875rem', label: 'Small' },
+  { key: '0.25rem', label: 'Default' },
+  { key: '0.28125rem', label: 'Large' },
+  { key: '0.3125rem', label: 'XL' },
 ] as const;
 
 export const DEPTH_OPTIONS = [

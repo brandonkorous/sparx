@@ -4,7 +4,6 @@
 import { z } from 'zod';
 
 import {
-  AdjustInventoryInput,
   ApproveReturnInput,
   BulkUpdateProductStatusInput,
   CancelSubscriptionInput,
@@ -19,7 +18,6 @@ import {
 
 import {
   discountService,
-  inventoryService,
   markupService,
   productService,
   returnService,
@@ -28,15 +26,6 @@ import {
   surchargeService,
 } from '../services';
 import type { AnyMcpTool, McpToolDefinition } from './registry';
-
-const updateInventory: McpToolDefinition = {
-  name: 'update_inventory',
-  description: 'Adjust on-hand quantity for a variant at a warehouse.',
-  scope: 'write:commerce',
-  confirmation: true,
-  input: AdjustInventoryInput,
-  run: (ctx, input) => inventoryService.adjust(ctx, input),
-};
 
 const publishProduct: McpToolDefinition = {
   name: 'publish_product',
@@ -152,7 +141,6 @@ const setSurcharge: McpToolDefinition = {
 };
 
 export const writeTools: AnyMcpTool[] = [
-  updateInventory,
   publishProduct,
   archiveProduct,
   bulkUpdateProductStatus,

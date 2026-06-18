@@ -40,24 +40,24 @@
   opacity: 0.6;
 }
 
-/* Size axis. */
+/* Size axis — a checkbox is a selector: its box derives from the
+   `--st-size-selector` base unit. At 0.25rem these reproduce the prior sizes. */
+.st-checkbox {
+  width: calc(var(--st-size-selector, 0.25rem) * var(--st-checkbox-n, 5));
+  height: calc(var(--st-size-selector, 0.25rem) * var(--st-checkbox-n, 5));
+}
 .st-checkbox--sz-xs {
-  width: 0.85rem;
-  height: 0.85rem;
+  --st-checkbox-n: 3.4;
 }
 .st-checkbox--sz-sm {
-  width: 1rem;
-  height: 1rem;
+  --st-checkbox-n: 4;
 }
 .st-checkbox--sz-md {
-  width: 1.25rem;
-  height: 1.25rem;
+  --st-checkbox-n: 5;
 }
 .st-checkbox--sz-lg {
-  width: 1.5rem;
-  height: 1.5rem;
+  --st-checkbox-n: 6;
 }
 .st-checkbox--sz-xl {
-  width: 1.85rem;
-  height: 1.85rem;
+  --st-checkbox-n: 7.4;
 }

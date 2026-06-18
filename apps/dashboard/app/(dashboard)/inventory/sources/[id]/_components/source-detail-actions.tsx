@@ -78,14 +78,16 @@ export function SourceDetailActions({ source }: { source: SourceSummary }) {
             {error}
           </Text>
         ) : null}
-        <Button
-          color="module"
-          onClick={triggerSync}
-          disabled={syncing}
-          leftIcon={<RefreshCw className="size-4" />}
-        >
-          {syncing ? 'Syncing…' : 'Sync now'}
-        </Button>
+        {source.type !== 'agent' ? (
+          <Button
+            color="module"
+            onClick={triggerSync}
+            disabled={syncing}
+            leftIcon={<RefreshCw className="size-4" />}
+          >
+            {syncing ? 'Syncing…' : 'Sync now'}
+          </Button>
+        ) : null}
         <Button
           color="neutral"
           variant="soft"

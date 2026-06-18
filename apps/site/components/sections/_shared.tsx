@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 
+import { SparxButton, type TreatmentKey } from '@sparx/site-ui';
 import type { Cta } from '@sparx/sitebuilder-schemas';
 
 /** True for an absolute external URL; internal links start with "/". */

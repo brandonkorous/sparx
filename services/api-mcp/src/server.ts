@@ -28,6 +28,10 @@ const SERVER_INFO = { name: 'sparx-mcp', version: '1.0.0' } as const;
 const MODULE_BY_SCOPE: Record<string, ModuleSlug> = {
   'read:invoicing': 'invoicing',
   'write:invoicing': 'invoicing',
+  // Inventory is a first-class module (docs/100 §4.0) — its tools refuse when the
+  // tenant doesn't have it active (standalone-usable; reachable even without commerce).
+  'read:inventory': 'inventory',
+  'write:inventory': 'inventory',
 };
 
 export function buildServerForRequest(auth: McpAuthContext): McpServer {

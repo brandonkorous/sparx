@@ -11,6 +11,12 @@
 // Presentational by design — interactivity via `href` (anchor) or a thin client
 // wrapper later, never an `onClick` on the base component.
 //
+// `asChild` merges the recipe classes onto a single child element instead of
+// emitting a <button>/<a> — the Radix Slot pattern, implemented locally (a
+// className-merging cloneElement, RSC-safe, no extra dependency). This is how a
+// framework `<Link>` (Next.js) keeps client routing + prefetch while still
+// reading as a typed `<Button>` at the call site.
+//
 // The old dark/glass scrim CTAs are now compositions: Order Now = `glass` ×
 // `neutral`, Learn More = `glass` × `surface`.
 
@@ -33,11 +39,15 @@ export interface ButtonProps {
   variant?: TreatmentKey;
   /** Size. Defaults to `md`. */
   size?: SizeKey;
-  /** When set, renders an `<a href>`; otherwise a native `<button>`. */
+  /** Merge the recipe classes onto the single child element instead of rendering
+   *  a `<button>`/`<a>`. Use to style a framework `<Link>`: keeps its routing /
+   *  prefetch while wearing the Button recipe (`<Button asChild><Link …/></Button>`). */
+  asChild?: boolean;
+  /** When set (and not `asChild`), renders an `<a href>`; otherwise a native `<button>`. */
   href?: string;
   target?: React.HTMLAttributeAnchorTarget;
   rel?: string;
-  /** Native button type (ignored when `href` is set). Defaults to `button`. */
+  /** Native button type (ignored when `href` or `asChild` is set). Defaults to `button`. */
   type?: 'button' | 'submit' | 'reset';
   className?: string;
   style?: React.CSSProperties;
@@ -60,6 +70,7 @@ export function Button(props: ButtonProps): React.ReactElement {
     color = 'primary',
     variant = 'solid',
     size = 'md',
+    asChild = false,
     href,
     target,
     rel,
@@ -78,6 +89,20 @@ export function Button(props: ButtonProps): React.ReactElement {
     SIZE_CLASS[size],
     className
   );
+
+  // asChild: clone the single child, merging the recipe classes (and style) onto
+  // it. Lets `<Button asChild><Link href>…</Link></Button>` keep the Link's
+  // routing while wearing the Button recipe. The child owns its own href/onClick.
+  if (asChild) {
+    const child = React.Children.only(children) as React.ReactElement<{
+      className?: string;
+      style?: React.CSSProperties;
+    }>;
+    return React.cloneElement(child, {
+      className: cx(classes, child.props.className),
+      style: style ? { ...style, ...child.props.style } : child.props.style,
+    });
+  }
 
   if (href !== undefined) {
     return (

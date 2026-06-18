@@ -1,10 +1,10 @@
 # sparx Platform — Third-Party Inventory Sync
 
-**Version:** 0.2 (design notes — not yet scheduled)
+**Version:** 0.3 (mostly built — see status)
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-17
 
-> **Status: backlog / thinking doc.** This captures the problem and a proposed shape so it isn't forgotten. Nothing here is built. This is a **generic** inventory-sync framework: an external system of record (ERP / WMS / inventory app) owns stock, and sparx mirrors it. The first concrete driver is **Gillett Diesel Service**, whose parts inventory lives in **Fishbowl** on-premise — but Fishbowl is one _adapter_ among many (NetSuite, QuickBooks Commerce, Cin7/DEAR, Katana, Finale, SOS, Acumatica, plain CSV…). Design for the abstraction; validate it against a real instance of whichever system the first tenant runs before committing to an adapter's details.
+> **Status: BUILT (Phase 5 of [docs/100](100-inventory-build-plan.md)).** This started as a thinking doc; the framework is now implemented as part of the first-class Inventory product. All three connectivity tiers write the one master ledger through one ingest funnel (`inventoryService.ingestFeed`): **Tier C** (CSV file pull, P5a), **Tier B** (generic SaaS HTTP-API pull, `@sparx/inventory-worker` `adapters/http-api.ts`, P5c), and **Tier A** (on-prem bridge agent `@sparx/inventory-bridge` + pairing/heartbeat, P5d). The §6 conflict rules are enforced — external-wins reconcile, the unmapped-SKU review queue, one-source-per-variant, stale-link alerting, UoM conversion, per-location safety buffer, and last-writer-by-`source_synced_at`. The §4 data model landed unified onto the `inventory_*` master tables (not the standalone `stock_*` sketch below — see docs/100 P1c). **Still open:** the §5.2 **outbound** sale-write (`two_way`, sparx → ERP depletion) is deferred (one-directional mirror for v1); and the **Fishbowl-native** reader (its LAN JSON API / MySQL DB) awaits a real Gillett instance per §8 — the agent ships with the universal file-export reader meanwhile. This is a **generic** framework: Fishbowl is one _adapter_ among many (NetSuite, Cin7/DEAR, Katana, Finale, plain CSV…). The SQL sketches in §4 are the original design notes; the shipped schema is in [packages/db/prisma/schema](../packages/db/prisma/schema) (`34-commerce-inventory`, `66-inventory`).
 
 ---
 

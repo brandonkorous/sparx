@@ -284,3 +284,37 @@ export { Browser, type BrowserProps } from './components/browser';
 export { Code, CodeLine, type CodeProps, type CodeLineProps } from './components/code';
 export { Phone, type PhoneProps } from './components/phone';
 export { Window, type WindowProps } from './components/window';
+
+// ── Sparx* call-site aliases ───────────────────────────────
+// The same components, re-exported under a `Sparx`-prefixed name. Hand-coded
+// `apps/site` pages import these so a design-system element reads as unmistakably
+// "the sparx object" at the JSX call site (`<SparxButton color="primary">`),
+// distinct from a raw `<button>` or a one-off. No new behaviour — pure aliases of
+// the components above; pick either name (the unprefixed export still works).
+export { Button as SparxButton } from './components/button';
+export {
+  Card as SparxCard,
+  CardBody as SparxCardBody,
+  CardTitle as SparxCardTitle,
+  CardActions as SparxCardActions,
+} from './components/card';
+export { Input as SparxInput } from './components/input';
+export { Textarea as SparxTextarea } from './components/textarea';
+export { NativeSelect as SparxSelect } from './components/native-select';
+export { Checkbox as SparxCheckbox } from './components/checkbox';
+export { Radio as SparxRadio, RadioGroup as SparxRadioGroup } from './components/radio';
+export { Switch as SparxSwitch } from './components/switch';
+export { Label as SparxLabel } from './components/label';
+export { Badge as SparxBadge } from './components/badge';
+export { Tag as SparxTag } from './components/tag';
+export {
+  Alert as SparxAlert,
+  AlertIcon as SparxAlertIcon,
+  AlertTitle as SparxAlertTitle,
+  AlertBody as SparxAlertBody,
+} from './components/alert';
+export { Link as SparxLink } from './components/link';
+export { Divider as SparxDivider } from './components/divider';
+export { Stat as SparxStat } from './components/stat';
+export { Table as SparxTable } from './components/table';
+export { Skeleton as SparxSkeleton } from './components/skeleton';

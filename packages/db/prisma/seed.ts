@@ -1590,6 +1590,44 @@ async function seedDemoInventory(tenantId: string): Promise<void> {
     });
     sourceCount += 1;
 
+    // A third connection demonstrating Tier A (on-prem bridge agent, docs/100 P5d):
+    // a LAN-only ERP (Fishbowl archetype) fed by the sparx Inventory Bridge over
+    // outbound HTTPS. Seeded paired + online (a real api_keys row + a fresh
+    // agentLastSeenAt) so the agent panel renders an "Online" agent.
+    await tx.inventorySource.deleteMany({
+      where: { tenantId, name: 'Fishbowl bridge (warehouse)' },
+    });
+    await tx.apiKey.deleteMany({
+      where: { tenantId, name: 'Bridge: Fishbowl bridge (warehouse)' },
+    });
+    const bridgeKey = await tx.apiKey.create({
+      data: {
+        tenantId,
+        name: 'Bridge: Fishbowl bridge (warehouse)',
+        keyPrefix: 'sk_live_demo0001',
+        keyHash: 'demo-seed-not-a-real-hash',
+        scopes: ['inventory:push'],
+      },
+    });
+    await tx.inventorySource.create({
+      data: {
+        tenantId,
+        name: 'Fishbowl bridge (warehouse)',
+        type: 'agent',
+        config: {},
+        status: 'active',
+        syncIntervalSec: 300,
+        apiKeyId: bridgeKey.id,
+        apiKeyPrefix: bridgeKey.keyPrefix,
+        enrolledAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+        agentLastSeenAt: new Date(),
+        agentVersion: '0.1.0',
+        lastSyncAt: new Date(),
+        notes: 'On-prem bridge for the LAN-only ERP (Tier A demo).',
+      },
+    });
+    sourceCount += 1;
+
     const variantCount = variantIdBySku.size;
     console.log(
       `Seeded demo inventory: ${DEMO_PRODUCTS.length} products / ${variantCount} variants across ` +

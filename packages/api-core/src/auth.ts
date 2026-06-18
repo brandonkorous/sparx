@@ -54,6 +54,13 @@ export interface AuthContext {
    * tenant). Read by `requireVerifiedEmail`.
    */
   emailVerified: boolean;
+  /**
+   * The scopes granted to an API-key actor (e.g. `read:inventory`,
+   * `write:inventory`), exactly as the dashboard issued them. Empty for `user`
+   * (JWT) actors — staff are gated by `role`, not per-key scopes. Enforced by
+   * `requireScope` on the documented public API surface (docs/06 §7).
+   */
+  scopes: string[];
 }
 
 interface InternalJwtPayload {
@@ -121,11 +128,13 @@ export function createAuthPlugin(options: AuthPluginOptions): FastifyPluginAsync
           actorId: apiKey.actorId,
           actorType: 'api',
           // API keys ship with a fixed editor role; finer-grained scopes are
-          // surfaced in `apiKey.scopes` and enforced at the route handler.
+          // surfaced in `apiKey.scopes` and enforced at the route handler via
+          // `requireScope`.
           role: 'editor',
           // An issued key implies an established tenant, so API actors are never
           // email-gated (requireVerifiedEmail also short-circuits non-user actors).
           emailVerified: true,
+          scopes: apiKey.scopes,
         };
         return;
       }
@@ -147,6 +156,8 @@ export function createAuthPlugin(options: AuthPluginOptions): FastifyPluginAsync
         actorType: 'user',
         role: payload.role,
         emailVerified: payload.ev ?? false,
+        // Staff JWTs carry no per-key scopes — they're gated by `role`.
+        scopes: [],
       };
     });
   };
@@ -176,6 +187,21 @@ export function requireRole(request: FastifyRequest, min: StaffRole): AuthContex
   const auth = requireAuth(request);
   if (ROLE_ORDER[auth.role] < ROLE_ORDER[min]) {
     throw forbidden(`Requires ${min} role or higher.`);
+  }
+  return auth;
+}
+
+/**
+ * Enforce an API-key scope on the documented public API surface (docs/06 §7,
+ * docs/07 §5.2). `user` (JWT/dashboard) actors bypass — staff are gated by
+ * `role`, and scopes are a per-API-key concept. An `api` actor must carry the
+ * exact scope its key was issued with, else FORBIDDEN. Pair with `requireRole`
+ * (the role gate still applies to both actor types).
+ */
+export function requireScope(request: FastifyRequest, scope: string): AuthContext {
+  const auth = requireAuth(request);
+  if (auth.actorType === 'api' && !auth.scopes.includes(scope)) {
+    throw forbidden(`API key is missing the required scope "${scope}".`);
   }
   return auth;
 }

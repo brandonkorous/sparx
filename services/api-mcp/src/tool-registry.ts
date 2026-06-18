@@ -5,6 +5,7 @@
 import type { z } from 'zod';
 import { crmMcpTools, invoicingMcpTools } from '@sparx/crm';
 import { commerceMcpTools } from '@sparx/commerce';
+import { inventoryMcpTools } from '@sparx/inventory/mcp';
 import { sitebuilderMcpTools } from '@sparx/sitebuilder';
 import { builderMcpTools } from '@sparx/builder/mcp';
 import { emailMcpTools } from '@sparx/email-platform';
@@ -28,6 +29,9 @@ export interface AnyMcpTool {
 export const ALL_MCP_TOOLS: AnyMcpTool[] = [
   ...(crmMcpTools as unknown as AnyMcpTool[]),
   ...(commerceMcpTools as unknown as AnyMcpTool[]),
+  // Inventory (docs/100 P6c) — own read:inventory / write:inventory scopes;
+  // additionally gated on the `inventory` module flag in server.ts (MODULE_BY_SCOPE).
+  ...(inventoryMcpTools as unknown as AnyMcpTool[]),
   ...(sitebuilderMcpTools as unknown as AnyMcpTool[]),
   ...(builderMcpTools as unknown as AnyMcpTool[]),
   ...(emailMcpTools as unknown as AnyMcpTool[]),
@@ -46,6 +50,7 @@ const WRITE_SCOPES: ReadonlySet<string> = new Set([
   'write:crm_bulk',
   'write:commerce',
   'write:commerce_bulk',
+  'write:inventory',
   'write:builder',
   'write:email',
   'write:email_bulk',

@@ -65,16 +65,23 @@ const PushRow = z.object({
   sku: z.string().min(1).max(255),
   location: z.string().max(255).optional(),
   quantity: z.number().int().min(0),
+  // The source's own observation time for this row (Tier A/B) → last-writer
+  // ordering. Optional: a feed without per-row timestamps just skips the guard.
+  synced_at: z.string().datetime().optional(),
 });
 
 const PushBody = z.object({
   rows: z.array(PushRow).min(1).max(10_000),
+  // 'snapshot' = a FULL stock list (the agent's periodic reconcile) → enables
+  // stale-link detection; 'delta' = a partial batch of changes. Default delta so
+  // an existing caller is unaffected.
+  mode: z.enum(['snapshot', 'delta']).default('delta'),
 });
 
 const CreateSourceBody = z.object({
   name: z.string().min(1).max(255),
-  // csv | api (api = generic HTTP-API based; only csv implemented in Ph2)
-  type: z.enum(['csv', 'api']),
+  // csv (Tier C file pull) | api (Tier B SaaS pull) | agent (Tier A on-prem push)
+  type: z.enum(['csv', 'api', 'agent']),
   config: z.record(z.string(), z.unknown()).default({}),
   syncIntervalSec: z.number().int().min(0).max(86400).default(0),
   notes: z.string().max(2000).nullable().default(null),
@@ -264,13 +271,17 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
     const ctx = toInventoryContext(request);
     const { tenantId, userId } = ctx;
     const { id } = request.params as { id: string };
-    const { rows } = PushBody.parse(request.body);
+    const { rows, mode } = PushBody.parse(request.body);
 
     const source = await withTenant({ tenantId }, async (tx) => {
       const s = await tx.inventorySource.findFirst({ where: { id, tenantId, deletedAt: null } });
       if (!s) throw notFound('Inventory source not found');
       return s;
     });
+
+    // The agent reached us — bump liveness so the online/offline indicator is fresh,
+    // even when the source is paused or the batch is empty of changes.
+    if (source.type === 'agent') await inventoryService.touchAgent(ctx, id);
 
     if (source.status === 'paused') {
       return reply.send(
@@ -284,8 +295,12 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
         externalSku: r.sku,
         externalLocation: r.location ?? null,
         quantity: r.quantity,
+        sourceSyncedAt: r.synced_at ?? null,
       })),
       trigger: 'push',
+      // A full snapshot is the agent's periodic reconcile → flag mappings that
+      // dropped out of the feed stale; a delta batch never does.
+      fullSnapshot: mode === 'snapshot',
     });
 
     await publishEvent(

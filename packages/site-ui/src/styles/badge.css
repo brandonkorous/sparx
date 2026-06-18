@@ -5,21 +5,39 @@
 .st-badge {
   @apply inline-flex items-center justify-center gap-1 rounded-full leading-none font-medium whitespace-nowrap;
   font-family: var(--st-font-body, inherit);
+  /* A badge is a selector (daisyUI): size derives from `--st-size-selector`. At the
+     0.25rem base these multipliers reproduce the prior px-/py-/text- scale exactly. */
+  --st-badge-px: 2.5;
+  --st-badge-py: 1;
+  --st-badge-fs: 3;
+  padding: calc(var(--st-size-selector, 0.25rem) * var(--st-badge-py))
+    calc(var(--st-size-selector, 0.25rem) * var(--st-badge-px));
+  font-size: calc(var(--st-size-selector, 0.25rem) * var(--st-badge-fs));
 }
 
-/* Size axis — what xs…xl mean for a badge. */
+/* Size axis — what xs…xl mean for a badge (multipliers on --st-size-selector). */
 .st-badge--sz-xs {
-  @apply px-1.5 py-0.5 text-[0.625rem];
+  --st-badge-px: 1.5;
+  --st-badge-py: 0.5;
+  --st-badge-fs: 2.5;
 }
 .st-badge--sz-sm {
-  @apply px-2 py-0.5 text-xs;
+  --st-badge-px: 2;
+  --st-badge-py: 0.5;
+  --st-badge-fs: 3;
 }
 .st-badge--sz-md {
-  @apply px-2.5 py-1 text-xs;
+  --st-badge-px: 2.5;
+  --st-badge-py: 1;
+  --st-badge-fs: 3;
 }
 .st-badge--sz-lg {
-  @apply px-3 py-1 text-sm;
+  --st-badge-px: 3;
+  --st-badge-py: 1;
+  --st-badge-fs: 3.5;
 }
 .st-badge--sz-xl {
-  @apply px-3.5 py-1.5 text-base;
+  --st-badge-px: 3.5;
+  --st-badge-py: 1.5;
+  --st-badge-fs: 4;
 }

@@ -19,6 +19,7 @@ import { InventoryConflictError, InventoryNotFoundError } from '../errors';
 import type { ServiceContext } from '../errors';
 
 import { setSafetyBufferOnTx } from './levels';
+import { AGENT_ONLINE_GRACE_MS } from './agent-enrollment';
 
 export interface SyncRunRow {
   id: string;
@@ -54,6 +55,7 @@ export interface UnmappedSkuRow {
 
 export interface SyncHealth {
   sourceId: string;
+  type: string;
   status: string;
   lastSyncAt: string | null;
   latestRun: SyncRunRow | null;
@@ -62,6 +64,17 @@ export interface SyncHealth {
   activeLinkCount: number;
   /** Active links whose external SKU stopped appearing in full-snapshot syncs. */
   staleLinkCount: number;
+  // ── Tier A bridge agent (docs/100 P5d) — present for `agent` sources ──────────
+  /** True once a bridge key has been minted for this source. */
+  agentEnrolled: boolean;
+  /** The visible `sk_live_xxxx` prefix of the paired key (never the full secret). */
+  apiKeyPrefix: string | null;
+  enrolledAt: string | null;
+  /** Last push OR heartbeat from the agent — drives `agentOnline`. */
+  agentLastSeenAt: string | null;
+  agentVersion: string | null;
+  /** The agent checked in within the liveness grace window. */
+  agentOnline: boolean;
 }
 
 export interface ListSyncRunsFilter {
@@ -122,7 +135,17 @@ export async function getSyncHealth(ctx: ServiceContext, sourceId: string): Prom
   return withTenant(ctx, async (tx) => {
     const source = await tx.inventorySource.findFirst({
       where: { id: sourceId, tenantId: ctx.tenantId, deletedAt: null },
-      select: { id: true, status: true, lastSyncAt: true },
+      select: {
+        id: true,
+        type: true,
+        status: true,
+        lastSyncAt: true,
+        apiKeyId: true,
+        apiKeyPrefix: true,
+        enrolledAt: true,
+        agentLastSeenAt: true,
+        agentVersion: true,
+      },
     });
     if (!source) throw new InventoryNotFoundError('InventorySource', sourceId);
 
@@ -144,8 +167,12 @@ export async function getSyncHealth(ctx: ServiceContext, sourceId: string): Prom
     ]);
 
     const recentRuns = recent.map(serializeRun);
+    const agentOnline =
+      source.agentLastSeenAt !== null &&
+      Date.now() - source.agentLastSeenAt.getTime() < AGENT_ONLINE_GRACE_MS;
     return {
       sourceId: source.id,
+      type: source.type,
       status: source.status,
       lastSyncAt: source.lastSyncAt ? source.lastSyncAt.toISOString() : null,
       latestRun: recentRuns[0] ?? null,
@@ -153,6 +180,12 @@ export async function getSyncHealth(ctx: ServiceContext, sourceId: string): Prom
       pendingUnmappedCount,
       activeLinkCount,
       staleLinkCount,
+      agentEnrolled: source.apiKeyId !== null,
+      apiKeyPrefix: source.apiKeyPrefix,
+      enrolledAt: source.enrolledAt ? source.enrolledAt.toISOString() : null,
+      agentLastSeenAt: source.agentLastSeenAt ? source.agentLastSeenAt.toISOString() : null,
+      agentVersion: source.agentVersion,
+      agentOnline,
     };
   });
 }

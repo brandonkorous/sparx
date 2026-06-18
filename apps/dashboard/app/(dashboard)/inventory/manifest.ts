@@ -12,6 +12,7 @@ import {
   RefreshCw,
   ArrowLeftRight,
   History,
+  BarChart3,
 } from 'lucide-react';
 
 export const inventoryManifest: ModuleManifest = {
@@ -35,6 +36,7 @@ export const inventoryManifest: ModuleManifest = {
     { id: 'transfers', label: 'Transfers', icon: ArrowLeftRight, href: '/inventory/transfers' },
     { id: 'movements', label: 'Movements', icon: History, href: '/inventory/movements' },
     { id: 'lots', label: 'Lots & serials', icon: Layers, href: '/inventory/lots' },
+    { id: 'reports', label: 'Reports', icon: BarChart3, href: '/inventory/reports' },
     { id: 'sources', label: 'Sources', icon: Link2, href: '/inventory/sources' },
   ],
   actions: [

@@ -31,9 +31,8 @@ import {
   BORDER_OPTIONS,
   DEPTH_OPTIONS,
   RADIUS_SCALE,
-  SIZE_OPTIONS,
+  SIZE_SCALE,
   SPACING_OPTIONS,
-  sizeKeyOf,
   type BrandTokens,
 } from '../lib/brand-feel';
 import { BrandImageField } from './brand-image-field';
@@ -233,19 +232,20 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
   const selectorKey = tokens.shape?.radiusSelector ?? INHERIT;
   const borderKey = tokens.shape?.borderWidth ?? INHERIT;
   const spacingKey = tokens.rhythm?.spaceBase ?? INHERIT;
-  const sizeKey = sizeKeyOf(tokens) || INHERIT;
+  // Sizes are dialed per-group too (daisyUI parity): field vs selector base unit.
+  const fieldSizeKey = tokens.rhythm?.sizeField ?? INHERIT;
+  const selectorSizeKey = tokens.rhythm?.sizeSelector ?? INHERIT;
   const depthKey = tokens.effect?.depth != null ? String(tokens.effect.depth) : INHERIT;
 
   // One radius axis → its token; "Auto" (INHERIT) clears just that axis and leaves
   // the other shape knobs intact (mirrors setBorder).
-  const setRadius =
-    (axis: 'radiusBox' | 'radiusField' | 'radiusSelector') => (key: string) =>
-      setTokens((t) => {
-        const next = { ...t.shape };
-        if (key === INHERIT) delete next[axis];
-        else next[axis] = key;
-        return { ...t, shape: Object.keys(next).length ? next : undefined };
-      });
+  const setRadius = (axis: 'radiusBox' | 'radiusField' | 'radiusSelector') => (key: string) =>
+    setTokens((t) => {
+      const next = { ...t.shape };
+      if (key === INHERIT) delete next[axis];
+      else next[axis] = key;
+      return { ...t, shape: Object.keys(next).length ? next : undefined };
+    });
   const setBox = setRadius('radiusBox');
   const setField = setRadius('radiusField');
   const setSelector = setRadius('radiusSelector');
@@ -263,19 +263,17 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
       else next.spaceBase = key;
       return { ...t, rhythm: Object.keys(next).length ? next : undefined };
     });
-  const setSize = (key: string) =>
+  // One size axis → its base-unit token; "Auto" clears just that axis (mirrors
+  // setSpacing). Every field/selector component multiplies its own base unit.
+  const setSizeAxis = (axis: 'sizeField' | 'sizeSelector') => (key: string) =>
     setTokens((t) => {
-      const o = SIZE_OPTIONS.find((s) => s.key === key);
       const next = { ...t.rhythm };
-      if (o) {
-        next.sizeField = o.field;
-        next.sizeSelector = o.selector;
-      } else {
-        delete next.sizeField;
-        delete next.sizeSelector;
-      }
+      if (key === INHERIT) delete next[axis];
+      else next[axis] = key;
       return { ...t, rhythm: Object.keys(next).length ? next : undefined };
     });
+  const setFieldSize = setSizeAxis('sizeField');
+  const setSelectorSize = setSizeAxis('sizeSelector');
   const setDepth = (key: string) =>
     setTokens((t) => ({ ...t, effect: key === INHERIT ? undefined : { depth: Number(key) } }));
 
@@ -489,11 +487,24 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
           onChange={setSpacing}
           includeAuto
         />
+        {/* Sizes, daisyUI-style: independent field / selector base units. Field
+            components (button/input/select/tab) and selector components
+            (checkbox/toggle/badge) each multiply their own; per-element `--sz-*`
+            classes still set relative steps on top. */}
         <Segmented
-          label="Control size"
-          value={sizeKey}
-          options={SIZE_OPTIONS}
-          onChange={setSize}
+          label="Field size"
+          help="Buttons, inputs, selects, tabs."
+          value={fieldSizeKey}
+          options={SIZE_SCALE}
+          onChange={setFieldSize}
+          includeAuto
+        />
+        <Segmented
+          label="Selector size"
+          help="Checkboxes, toggles, badges."
+          value={selectorSizeKey}
+          options={SIZE_SCALE}
+          onChange={setSelectorSize}
           includeAuto
         />
         <Segmented

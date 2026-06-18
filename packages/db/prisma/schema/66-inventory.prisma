@@ -19,7 +19,7 @@ model InventorySource {
   id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId        String    @map("tenant_id") @db.Uuid
   name            String    @db.VarChar(255)
-  // csv | api | shopify | wms | manual
+  // csv (Tier C file pull) | api (Tier B SaaS pull) | agent (Tier A on-prem push)
   type            String    @db.VarChar(30)
   // Credentials/endpoint bag (URL, API key, etc.) — stored server-side.
   config          Json      @default("{}")
@@ -29,9 +29,23 @@ model InventorySource {
   // Sync interval hint in seconds (0 = manual only).
   syncIntervalSec Int       @default(0) @map("sync_interval_sec")
   notes           String?   @db.Text
-  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz
-  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
+
+  // Tier A on-prem bridge enrollment (docs/28 §3, docs/100 P5d). An `agent` source
+  // is fed by an outbound-HTTPS bridge the tenant installs on their network;
+  // pairing mints a tenant-scoped API key (`api_keys`) the agent authenticates
+  // with. We keep a reference (id + visible prefix) so the connection can show
+  // "paired" + rotate/revoke the key. `agentLastSeenAt` is bumped on every push
+  // AND every heartbeat → it drives the online/offline indicator (a Tier-A agent
+  // WILL go offline; surface it loudly rather than serve stale stock).
+  apiKeyId        String?   @map("api_key_id") @db.Uuid
+  apiKeyPrefix    String?   @map("api_key_prefix") @db.VarChar(16)
+  enrolledAt      DateTime? @map("enrolled_at") @db.Timestamptz
+  agentLastSeenAt DateTime? @map("agent_last_seen_at") @db.Timestamptz
+  agentVersion    String?   @map("agent_version") @db.VarChar(50)
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
 
   tenant       Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   links        InventorySourceLink[]

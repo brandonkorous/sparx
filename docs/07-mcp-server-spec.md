@@ -1,8 +1,8 @@
 # WizeWorks Platform — MCP Server Specification
 
-**Version:** 1.2  
+**Version:** 1.3  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-06-07
+**Last Updated:** 2026-06-17
 
 ---
 
@@ -48,14 +48,26 @@ The MCP server runs as a dedicated Kubernetes deployment. Access is gated by the
 | `add_crm_note`           | Add a note to a customer record                 |
 | `get_pipeline`           | Current deals in CRM pipeline                   |
 
-### Products & Inventory
+### Products
 
-| Tool                      | Description                                |
-| ------------------------- | ------------------------------------------ |
-| `get_products`            | List products with filters                 |
-| `get_low_inventory`       | Products below reorder threshold           |
-| `get_product_performance` | Sales data per product                     |
-| `update_inventory`        | Adjust inventory count (with confirmation) |
+| Tool                      | Description                |
+| ------------------------- | -------------------------- |
+| `get_products`            | List products with filters |
+| `get_product_performance` | Sales data per product     |
+
+### Inventory (Inventory module)
+
+The supply-loop surface — scoped `read:inventory` / `write:inventory`, gated on the
+`inventory` module (reachable standalone, without commerce). Write tools confirm.
+
+| Tool                      | Scope             | Description                                       |
+| ------------------------- | ----------------- | ------------------------------------------------- |
+| `get_low_inventory`       | `read:inventory`  | Variants at or below their reorder point          |
+| `get_inventory_valuation` | `read:inventory`  | On-hand units + value at cost and retail          |
+| `suggest_reorders`        | `read:inventory`  | Reorder suggestions grouped by preferred supplier |
+| `update_inventory`        | `write:inventory` | Adjust on-hand for a variant (AI-attributed)      |
+| `create_purchase_order`   | `write:inventory` | Draft a PO to a supplier with line items          |
+| `receive_stock`           | `write:inventory` | Receive stock against a submitted PO              |
 
 ### Dropship
 
@@ -142,9 +154,13 @@ Best performing product: Bosch Injector Set at $12,400."
 ```
 read:orders         read:customers      read:products
 read:analytics      read:crm            read:email_stats
-write:crm_notes     write:order_status  write:inventory
-write:email_send    write:inventory
+read:inventory      write:inventory     write:crm_notes
+write:order_status  write:email_send
 ```
+
+The `inventory` tools carry their own `read:inventory` / `write:inventory` scopes and
+are additionally gated on the `inventory` module flag — they refuse when the module
+is off, so a commerce-only tenant without Inventory active sees no inventory tools.
 
 Write tools require explicit scope grants and always include confirmation steps.
 

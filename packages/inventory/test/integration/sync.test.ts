@@ -29,6 +29,11 @@ import {
   listUnmappedSkus,
   mapUnmappedSku,
 } from '../../src/services/sync-runs.js';
+import {
+  recordAgentEnrollment,
+  touchAgent,
+  clearAgentEnrollment,
+} from '../../src/services/agent-enrollment.js';
 import { InventoryConflictError, InventoryOutOfStockError } from '../../src/errors.js';
 import { createInventoryFixture, createTestTenant, dropTestTenant } from '../helpers.js';
 
@@ -385,6 +390,59 @@ describe('inventory external sync', () => {
     });
     expect(r4.rowsStale).toBe(1);
     expect(await onHand()).toBe(30);
+  });
+
+  it('records, refreshes online/offline, rotates, and clears bridge enrollment', async () => {
+    const source = await newSource();
+
+    // Pristine: not paired, offline.
+    let health = await getSyncHealth(ctx(), source.id);
+    expect(health.agentEnrolled).toBe(false);
+    expect(health.agentOnline).toBe(false);
+
+    // Enroll → recorded; a fresh pairing hasn't been seen yet → offline.
+    const key1 = crypto.randomUUID();
+    const first = await recordAgentEnrollment(ctx(), source.id, {
+      apiKeyId: key1,
+      apiKeyPrefix: 'sk_live_aaaa1111',
+    });
+    expect(first.previousApiKeyId).toBeNull();
+    health = await getSyncHealth(ctx(), source.id);
+    expect(health.agentEnrolled).toBe(true);
+    expect(health.apiKeyPrefix).toBe('sk_live_aaaa1111');
+    expect(health.agentOnline).toBe(false);
+
+    // Heartbeat → online + version recorded.
+    await touchAgent(ctx(), source.id, { agentVersion: '0.1.0' });
+    health = await getSyncHealth(ctx(), source.id);
+    expect(health.agentOnline).toBe(true);
+    expect(health.agentVersion).toBe('0.1.0');
+    expect(health.agentLastSeenAt).not.toBeNull();
+
+    // A stale last-seen (older than the grace window) reads offline.
+    await withTenant(ctx(), (tx) =>
+      tx.inventorySource.update({
+        where: { id: source.id },
+        data: { agentLastSeenAt: new Date(Date.now() - 60 * 60 * 1000) },
+      })
+    );
+    expect((await getSyncHealth(ctx(), source.id)).agentOnline).toBe(false);
+
+    // Rotate → returns the previous key id to revoke + resets liveness.
+    const key2 = crypto.randomUUID();
+    const rotated = await recordAgentEnrollment(ctx(), source.id, {
+      apiKeyId: key2,
+      apiKeyPrefix: 'sk_live_bbbb2222',
+    });
+    expect(rotated.previousApiKeyId).toBe(key1);
+    health = await getSyncHealth(ctx(), source.id);
+    expect(health.apiKeyPrefix).toBe('sk_live_bbbb2222');
+    expect(health.agentOnline).toBe(false);
+
+    // Clear → returns the current key id; enrollment gone.
+    const cleared = await clearAgentEnrollment(ctx(), source.id);
+    expect(cleared.previousApiKeyId).toBe(key2);
+    expect((await getSyncHealth(ctx(), source.id)).agentEnrolled).toBe(false);
   });
 
   it('nets the safety buffer into availability + the reserve deny check', async () => {

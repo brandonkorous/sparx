@@ -1,8 +1,8 @@
 # WizeWorks Platform — API Specification
 
-**Version:** 1.0.1  
+**Version:** 1.1.0  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-17
 
 ---
 
@@ -297,12 +297,78 @@ DELETE /v1/carts/:id/discounts    Remove discount
 
 ### Inventory
 
+The documented, contract-stable inventory surface (implemented in
+`services/api-rest/src/routes/v1/inventory/api.ts`, backed by `@sparx/inventory`).
+Part of the **Inventory module** — gated on the `inventory` flag (a disabled
+module returns `404 MODULE_DISABLED`), so it is reachable whether the tenant runs
+Inventory standalone (WMS-lite) or alongside commerce. Every write routes through
+the movement ledger (`applyMovement`): concurrency-safe, idempotent, attributed.
+
 ```
-GET    /v1/inventory              List inventory levels
-PATCH  /v1/inventory/:variant_id  Update inventory count
-POST   /v1/inventory/adjustments  Bulk inventory adjustment
-GET    /v1/inventory/alerts       Low stock alerts
+GET    /v1/inventory              List inventory levels        (read:inventory)
+PATCH  /v1/inventory/:variant_id  Update count at a warehouse  (write:inventory)
+POST   /v1/inventory/adjustments  Bulk adjustment (JSON/CSV)   (write:inventory)
+GET    /v1/inventory/alerts       Low-stock alerts             (read:inventory)
 ```
+
+**Scopes.** A programmatic API key (`Authorization: Bearer sk_live_…`) must carry
+the listed scope; a missing scope is `403 FORBIDDEN`. Dashboard (JWT) callers
+bypass the scope check — staff are gated by role (`viewer` reads, `editor` writes).
+
+**`GET /v1/inventory`** — cross-warehouse, enriched, paginated. Query params
+(snake_case): `warehouse_id` (uuid), `q` (matches SKU or product title,
+case-insensitive), `take` (1–200, default 50), `skip`. Returns a `paged`
+envelope; each row:
+
+```jsonc
+{
+  "variantId": "…",
+  "sku": "PA-ALPHA",
+  "productId": "…",
+  "productTitle": "Alpha Pump",
+  "warehouseId": "…",
+  "warehouseCode": "MAIN",
+  "warehouseName": "Main Warehouse",
+  "onHand": 40,
+  "allocated": 0,
+  "available": 40,
+  "reorderPoint": 10,
+  "reorderQuantity": 50,
+  "avgCostCents": 1234,
+  "updatedAt": "2026-06-17T00:00:00.000Z",
+}
+```
+
+**`PATCH /v1/inventory/:variant_id`** — set or adjust one (variant, warehouse)
+level. JSON body (camelCase, matching the service schema); supply **exactly one**
+of `onHand` / `delta`:
+
+```jsonc
+{ "warehouseId": "…", "onHand": 30 }          // absolute set (corrective delta under lock)
+{ "warehouseId": "…", "delta": -5, "reason": "damage", "note": "…",
+  "idempotencyKey": "…" }                      // signed movement
+```
+
+Returns `{ variantId, warehouseId, onHand, available, appliedDelta, deduped }`.
+`reason` is one of the movement reasons (default `manual`); an absolute set that
+matches the current on-hand is an idempotent no-op (`deduped: true`).
+
+**`POST /v1/inventory/adjustments`** — bulk apply (≤1000 rows). Each row resolves
+the variant by `sku` **or** `variantId` and carries `warehouseId` + exactly one of
+`onHand` / `delta` (+ optional `reason`, `note`). Each row runs in its own
+transaction, so one bad row never rolls back the batch.
+
+- `Content-Type: application/json` → `{ "adjustments": [ {…}, … ] }`
+- `Content-Type: text/csv` → header row + lines; columns
+  `sku|variant_id, warehouse_id, on_hand|delta, reason?, note?`.
+
+Returns `{ applied, skipped, failed, results: [ { index, sku, variantId,
+warehouseId, status: "applied"|"skipped"|"error", onHand?, available?,
+appliedDelta?, error? } ] }`.
+
+**`GET /v1/inventory/alerts`** — variants at or below their reorder point. Query:
+`warehouse_id` (uuid), `take` (1–250). Returns the low-stock rows (SKU, title,
+warehouse, available, reorder point + quantity, lead time).
 
 ### CRM Pipeline
 

@@ -12,6 +12,14 @@
   border-radius: var(--st-radius-field, 0.5rem);
   color: var(--st-base-content, #23211c);
   font-family: var(--st-font-body, inherit);
+  /* Size derives from the `--st-size-field` base unit (default = md); at 0.25rem
+     these multipliers reproduce the prior px-/py-/text- scale exactly. */
+  --st-input-px: 3;
+  --st-input-py: 2;
+  --st-input-fs: 4;
+  padding: calc(var(--st-size-field, 0.25rem) * var(--st-input-py))
+    calc(var(--st-size-field, 0.25rem) * var(--st-input-px));
+  font-size: calc(var(--st-size-field, 0.25rem) * var(--st-input-fs));
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease,
@@ -67,17 +75,27 @@
 
 /* Size axis. */
 .st-input--sz-xs {
-  @apply px-2 py-1 text-xs;
+  --st-input-px: 2;
+  --st-input-py: 1;
+  --st-input-fs: 3;
 }
 .st-input--sz-sm {
-  @apply px-2.5 py-1.5 text-sm;
+  --st-input-px: 2.5;
+  --st-input-py: 1.5;
+  --st-input-fs: 3.5;
 }
 .st-input--sz-md {
-  @apply px-3 py-2 text-base;
+  --st-input-px: 3;
+  --st-input-py: 2;
+  --st-input-fs: 4;
 }
 .st-input--sz-lg {
-  @apply px-3.5 py-2.5 text-lg;
+  --st-input-px: 3.5;
+  --st-input-py: 2.5;
+  --st-input-fs: 4.5;
 }
 .st-input--sz-xl {
-  @apply px-4 py-3 text-xl;
+  --st-input-px: 4;
+  --st-input-py: 3;
+  --st-input-fs: 5;
 }

@@ -7,7 +7,6 @@ import { z } from 'zod';
 import { MarkupScope } from '@sparx/commerce-schemas';
 
 import {
-  inventoryService,
   productService,
   reportingService,
   reviewService,
@@ -48,18 +47,6 @@ const getProduct: McpToolDefinition = {
   confirmation: false,
   input: z.object({ productId: z.string().uuid() }),
   run: (ctx, input) => productService.get(ctx, (input as { productId: string }).productId),
-};
-
-const getLowInventory: McpToolDefinition = {
-  name: 'get_low_inventory',
-  description: 'List variants below their reorder point, optionally scoped to a warehouse.',
-  scope: 'read:commerce',
-  confirmation: false,
-  input: z.object({
-    warehouseId: z.string().uuid().optional(),
-    take: z.number().int().min(1).max(100).default(50),
-  }),
-  run: (ctx, input) => inventoryService.listLowStock(ctx, input as Record<string, unknown>),
 };
 
 const getRevenueSummary: McpToolDefinition = {
@@ -134,15 +121,6 @@ const getSubscriptionStats: McpToolDefinition = {
   input: DateRange,
   run: (ctx, input) =>
     reportingService.subscriptionMetrics(ctx, input as { from: string; to: string }),
-};
-
-const getInventoryValuation: McpToolDefinition = {
-  name: 'get_inventory_valuation',
-  description: 'Snapshot of inventory units + cost + retail valuation.',
-  scope: 'read:commerce',
-  confirmation: false,
-  input: z.object({}),
-  run: (ctx) => reportingService.inventoryValuation(ctx),
 };
 
 const getReviewsPendingModeration: McpToolDefinition = {
@@ -264,14 +242,12 @@ const previewMarkup: McpToolDefinition = {
 export const readTools: AnyMcpTool[] = [
   getProducts,
   getProduct,
-  getLowInventory,
   getRevenueSummary,
   getTopProducts,
   getTopCustomers,
   getConversionFunnel,
   getAbandonedCarts,
   getSubscriptionStats,
-  getInventoryValuation,
   getReviewsPendingModeration,
   getSubscriptionsForCustomer,
   searchFitment,

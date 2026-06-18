@@ -83,6 +83,18 @@ export function isSeedContainer(type: string): boolean {
   return CONTAINER_TYPES.has(type);
 }
 
+// Box-radius default: in sparx a "card" isn't just the `Card` type — any SURFACED
+// container (a Stack/Section styled as a panel) is treated as a card. So a `Card`,
+// OR any surfaced container that isn't a full-bleed band, carries the box radius
+// (`rounded-box` → `--st-radius-box`), and the theme's Box-corners control reaches
+// ALL of them uniformly. Full-bleed surfaced strips (the order/announcement/
+// how-it-works bands) stay edge-to-edge. A per-node `rounded-*` class still wins.
+function typeShapeClass(type: string, box: BoxStyle | undefined): string {
+  if (box?.backgroundWidth === 'full') return '';
+  const surfaced = Boolean(box?.surface) && box?.surface !== 'none';
+  return type === 'Card' || surfaced ? 'rounded-box' : '';
+}
+
 // ── Background props (a dynamic background image is DATA, not a class) ──────────
 
 /** The node props a background carries — read by the renderers to paint a photo
@@ -246,6 +258,7 @@ export function boxLayoutClass(
   return cx(
     fullBleed ? 'w-full' : '',
     contained ? 'mx-auto w-full max-w-site' : '',
+    typeShapeClass(type, box),
     bandClasses(box),
     contentClasses(box, layout, isContainer)
   );
@@ -352,7 +365,7 @@ export function seedNode(id: string, type: string, opts: SeedNodeOpts = {}): Bui
     const outer: BuilderNode = {
       id,
       type,
-      class: cx('w-full', centered, band, opts.cls),
+      class: cx('w-full', centered, typeShapeClass(type, box), band, opts.cls),
       props,
     };
     if (name) outer.name = name;
@@ -365,6 +378,7 @@ export function seedNode(id: string, type: string, opts: SeedNodeOpts = {}): Bui
   let cls = cx(
     fullBleed ? 'w-full' : '',
     isContainer && contained ? 'mx-auto w-full max-w-site' : '',
+    typeShapeClass(type, box),
     band,
     contentClasses(box, layout, isContainer),
     opts.cls

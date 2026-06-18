@@ -4,6 +4,18 @@ Version: 1.5
 Author: Brandon Korous
 Last Updated: 2026-06-03
 
+> **Status — current & authoritative for the `st-*` component vocabulary.** This library is **live**;
+> the §7 "migration on hold" is **done** (executed in [61](61-utility-authoring-system.md)). The
+> four-axis recipe is the styling contract for every component:
+> `st-c-{color}` (color role) × `st-v-{variant}` (treatment) × `st-{component}--sz-{size}` (size).
+> (The code types call the treatment axis `TreatmentKey` / `treatmentVariants`; the class + UI term is
+> `variant` — same axis.) **One recipe, two front doors:** hand-coded `apps/site` pages use the typed
+> component (`<Button color variant size>`); the builder carries the same recipe tokens on `node.class`
+> and lifts them back into props via `recipeFromClass`
+> ([102](102-builder-component-library-audit.md)). For the authoring + per-tenant compile model, read
+> [61](61-utility-authoring-system.md). The two-render-path drift described below is the *historical*
+> motivation; that unification has shipped.
+
 > The Builder composition model ([40](40-sitebuilder-composition-model.md)) walks a
 > node tree; the site render path ([44](archive/44-builder-site-render.md)) turns a
 > published tree into live markup; the editor canvas previews the same tree inside the

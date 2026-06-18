@@ -50,15 +50,20 @@ import {
   type PublishedSnapshot,
 } from '@/lib/site';
 
+// MUST be first: declares the cascade-layer order so `st-legacy` (the legacy
+// site.css defaults) ranks BENEATH site-ui's `components` layer. Without this,
+// unlayered/late-registered legacy rules shadow site-ui and silently break every
+// themeable control. See layers.css.
+import './layers.css';
 import './globals.css';
 import './site.css';
 // The custom-section template primitives (st-tpl-*), shared with the dashboard
 // Section Studio preview so both render identically (docs/38 Phase C).
 import '@sparx/section-template-react/section-template.css';
 // The Surface component library (docs/46/47): the tenant-themed `st-*` component
-// + recipe classes that authored `node.class` strings resolve against. Loaded
-// LAST so it owns the `st-*` component vocabulary (supersedes the legacy
-// component rules in site.css). Plain compiled CSS — no preflight, --st-* keyed.
+// + recipe classes that authored `node.class` strings resolve against. It owns
+// the `st-*` component vocabulary via `@layer components`, which outranks
+// `@layer st-legacy` (see layers.css). Plain compiled CSS — no preflight.
 import '@sparx/site-ui/styles.css';
 
 const FOOTER_YEAR = 2026; // static so SSR output stays deterministic/cacheable

@@ -45,19 +45,20 @@
   opacity: 0.6;
 }
 
-/* Size axis — sets the shared internal height. */
+/* Size axis — the internal height derives from the `--st-size-selector` base unit
+   (a switch is a selector). At the 0.25rem base these reproduce the prior heights. */
 .st-switch--sz-xs {
-  --h: 0.9rem;
+  --h: calc(var(--st-size-selector, 0.25rem) * 3.6);
 }
 .st-switch--sz-sm {
-  --h: 1.1rem;
+  --h: calc(var(--st-size-selector, 0.25rem) * 4.4);
 }
 .st-switch--sz-md {
-  --h: 1.25rem;
+  --h: calc(var(--st-size-selector, 0.25rem) * 5);
 }
 .st-switch--sz-lg {
-  --h: 1.6rem;
+  --h: calc(var(--st-size-selector, 0.25rem) * 6.4);
 }
 .st-switch--sz-xl {
-  --h: 2rem;
+  --h: calc(var(--st-size-selector, 0.25rem) * 8);
 }

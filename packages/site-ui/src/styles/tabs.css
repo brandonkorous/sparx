@@ -11,7 +11,10 @@
   gap: 0.25rem;
 }
 .st-tabs__tab {
-  @apply inline-flex cursor-pointer items-center gap-2 px-4 py-2 font-medium;
+  @apply inline-flex cursor-pointer items-center gap-2 font-medium;
+  /* A tab is a field: padding derives from the `--st-size-field` base unit
+     (0.25rem base reproduces the prior px-4 py-2). */
+  padding: calc(var(--st-size-field, 0.25rem) * 2) calc(var(--st-size-field, 0.25rem) * 4);
   background: transparent;
   border: 0;
   color: var(

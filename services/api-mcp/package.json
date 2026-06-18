@@ -27,6 +27,7 @@
     "@sparx/db": "workspace:*",
     "@sparx/events": "workspace:*",
     "@sparx/godaddy": "workspace:*",
+    "@sparx/inventory": "workspace:*",
     "@sparx/email-platform": "workspace:*",
     "@sparx/search": "workspace:*",
     "@sparx/sitebuilder": "workspace:*",

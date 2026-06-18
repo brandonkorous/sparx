@@ -35,6 +35,7 @@ export interface SyncRunRow {
 
 export interface SyncHealth {
   sourceId: string;
+  type: string;
   status: string;
   lastSyncAt: string | null;
   latestRun: SyncRunRow | null;
@@ -42,6 +43,13 @@ export interface SyncHealth {
   pendingUnmappedCount: number;
   activeLinkCount: number;
   staleLinkCount: number;
+  // Tier A bridge agent (docs/100 P5d) — populated for `agent` sources.
+  agentEnrolled: boolean;
+  apiKeyPrefix: string | null;
+  enrolledAt: string | null;
+  agentLastSeenAt: string | null;
+  agentVersion: string | null;
+  agentOnline: boolean;
 }
 
 export interface UnmappedSkuRow {
@@ -90,6 +98,7 @@ export interface WarehouseOption {
 export const SOURCE_TYPE_LABEL: Record<string, string> = {
   csv: 'CSV feed',
   api: 'API',
+  agent: 'On-prem bridge agent',
 };
 
 export function sourceStatusColor(status: string): BadgeColor {

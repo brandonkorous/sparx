@@ -9,6 +9,16 @@
   @apply inline-flex cursor-pointer items-center justify-center gap-2 border-0 text-center leading-tight font-semibold no-underline transition duration-150 ease-in-out;
   border-radius: var(--st-radius-field, 0.5rem);
   font-family: var(--st-font-body, inherit);
+  /* Size derives from the tenant `--st-size-field` base unit (daisyUI model): each
+     size class sets unitless multipliers, default = md. At the 0.25rem base these
+     reproduce the prior px-/py-/text- scale exactly, so the global Field-size
+     control scales every button while per-size classes stay relative. */
+  --st-btn-px: 6;
+  --st-btn-py: 3;
+  --st-btn-fs: 4;
+  padding: calc(var(--st-size-field, 0.25rem) * var(--st-btn-py))
+    calc(var(--st-size-field, 0.25rem) * var(--st-btn-px));
+  font-size: calc(var(--st-size-field, 0.25rem) * var(--st-btn-fs));
 }
 
 .st-btn:focus-visible {
@@ -24,17 +34,27 @@
 /* Size axis — what the shared xs…xl steps mean for a button. `md` keeps the
  * site CTA proportions. */
 .st-btn--sz-xs {
-  @apply px-3 py-1.5 text-xs;
+  --st-btn-px: 3;
+  --st-btn-py: 1.5;
+  --st-btn-fs: 3;
 }
 .st-btn--sz-sm {
-  @apply px-4 py-2 text-sm;
+  --st-btn-px: 4;
+  --st-btn-py: 2;
+  --st-btn-fs: 3.5;
 }
 .st-btn--sz-md {
-  @apply px-6 py-3 text-base;
+  --st-btn-px: 6;
+  --st-btn-py: 3;
+  --st-btn-fs: 4;
 }
 .st-btn--sz-lg {
-  @apply px-8 py-[0.85rem] text-lg;
+  --st-btn-px: 8;
+  --st-btn-py: 3.4;
+  --st-btn-fs: 4.5;
 }
 .st-btn--sz-xl {
-  @apply px-10 py-4 text-xl;
+  --st-btn-px: 10;
+  --st-btn-py: 4;
+  --st-btn-fs: 5;
 }

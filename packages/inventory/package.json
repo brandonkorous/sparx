@@ -12,6 +12,10 @@
     "./services": {
       "types": "./src/services/index.ts",
       "default": "./src/services/index.ts"
+    },
+    "./mcp": {
+      "types": "./src/mcp/index.ts",
+      "default": "./src/mcp/index.ts"
     }
   },
   "files": [
@@ -27,7 +31,8 @@
   "dependencies": {
     "@sparx/commerce-schemas": "workspace:*",
     "@sparx/db": "workspace:*",
-    "@sparx/events": "workspace:*"
+    "@sparx/events": "workspace:*",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",

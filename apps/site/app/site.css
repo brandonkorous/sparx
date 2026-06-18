@@ -8,6 +8,19 @@
    from @sparx/ui/tokens.css, imported before this file.
    ────────────────────────────────────────────────────────────── */
 
+/* Every storefront-default rule below lives in the LOWEST cascade layer so the
+   @sparx/site-ui component library (compiled into `@layer components`)
+   authoritatively owns the shared `st-*` component vocabulary
+   (button/input/card/badge/select/…). Without this, site.css's UNLAYERED rules
+   beat site-ui's LAYERED rules regardless of import order — the cascade-layer
+   bug that silently shadowed every themeable control (size/radius/border/color).
+   The order statement pins `st-legacy` beneath site-ui's layers no matter how
+   the bundler concatenates the imports. App-specific chrome (commerce widgets,
+   consent, `st-sb-*` builder bridges, `bx-*` canvas) has no site-ui counterpart,
+   so it still renders unopposed within this layer; compound overrides that set
+   layout-only props on a shared class also survive (site-ui doesn't set those). */
+@layer st-legacy, theme, base, components, utilities;
+@layer st-legacy {
 :root {
   /* ── Token Model v2 fallbacks (docs/33-token-model-v2.md) ─────
      The injected per-tenant <style> (buildThemeCssV2) overrides these with the
@@ -74,8 +87,12 @@
   --st-space-10: calc(var(--st-space-base) * 10);
   --st-space-12: calc(var(--st-space-base) * 12);
   --st-space-16: calc(var(--st-space-base) * 16);
-  --st-size-field: 2.75rem;
-  --st-size-selector: 2rem;
+  /* Base UNIT for the daisyUI-style control-size model (docs/33 §3): field and
+     selector components multiply this (e.g. button padding = unit × N). 0.25rem
+     reproduces every component's stock size. NOT a literal height — app rules
+     that need a fixed field/selector height multiply it (see .st-qty/.st-chip). */
+  --st-size-field: 0.25rem;
+  --st-size-selector: 0.25rem;
 
   /* Effect — depth scales the shadow alphas */
   --st-depth: 1;
@@ -791,7 +808,9 @@
   font: inherit;
   font-size: 0.88rem;
   padding: 0.55rem 0.95rem;
-  min-height: var(--st-size-selector);
+  /* A chip is a selector: its height tracks the selector base unit (× 8 = 2rem
+     at the 0.25rem default), so the Selector-size control scales it. */
+  min-height: calc(var(--st-size-selector, 0.25rem) * 8);
   border-radius: var(--st-radius-selector);
   border: var(--st-border-width) solid var(--st-border-strong);
   background: var(--st-surface);
@@ -884,7 +903,9 @@
 }
 .st-qty button {
   width: 40px;
-  height: var(--st-size-field);
+  /* The qty stepper is a field: height tracks the field base unit (× 11 =
+     2.75rem at the 0.25rem default), so the Field-size control scales it. */
+  height: calc(var(--st-size-field, 0.25rem) * 11);
   border: none;
   background: var(--st-surface);
   color: var(--st-text);
@@ -897,7 +918,7 @@
 }
 .st-qty input {
   width: 44px;
-  height: var(--st-size-field);
+  height: calc(var(--st-size-field, 0.25rem) * 11);
   border: none;
   border-inline: var(--st-border-width) solid var(--st-border);
   text-align: center;
@@ -3505,3 +3526,4 @@ html.st-reveal-ready [data-section-type='hero'] .st-sb-hero__inner > *:nth-child
   border-radius: var(--st-radius-box, 16px);
   overflow: hidden;
 }
+} /* end @layer st-legacy */

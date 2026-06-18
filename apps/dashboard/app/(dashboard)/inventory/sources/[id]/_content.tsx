@@ -9,6 +9,7 @@ import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { SyncHealthPanel } from './_components/sync-health-panel';
 import { UnmappedQueue } from './_components/unmapped-queue';
 import { MappingsPanel } from './_components/mappings-panel';
+import { AgentPanel } from './_components/agent-panel';
 import { SourceDetailActions } from './_components/source-detail-actions';
 import {
   SOURCE_TYPE_LABEL,
@@ -78,6 +79,7 @@ export async function SourceDetailContent({ id }: { id: string }) {
         <SourceDetailActions source={source} />
       </Stack>
 
+      {source.type === 'agent' ? <AgentPanel sourceId={id} health={health} /> : null}
       <SyncHealthPanel health={health} />
       <UnmappedQueue sourceId={id} rows={unmapped.data} warehouses={warehouses.data} />
       <MappingsPanel sourceId={id} links={links.data} warehouses={warehouses.data} />

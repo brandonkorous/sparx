@@ -40,6 +40,7 @@ interface Props {
 const TYPE_OPTIONS = [
   { value: 'csv', label: 'CSV Feed' },
   { value: 'api', label: 'API (generic HTTP)' },
+  { value: 'agent', label: 'On-prem bridge agent (Tier A)' },
 ];
 
 const INTERVAL_OPTIONS = [
@@ -92,7 +93,11 @@ export function SourceForm({ source, onSuccess, onCancel }: Props) {
     setError(null);
     try {
       const config: Record<string, unknown> =
-        type === 'csv' ? { csvUrl: csvUrl.trim() } : apiConfigToBody(apiConfig);
+        type === 'csv'
+          ? { csvUrl: csvUrl.trim() }
+          : type === 'api'
+            ? apiConfigToBody(apiConfig)
+            : {}; // agent: no pull config — it pushes; pair it after creating
 
       const body = {
         name: name.trim(),
@@ -172,6 +177,22 @@ export function SourceForm({ source, onSuccess, onCancel }: Props) {
 
         {type === 'api' && (
           <SourceApiFields value={apiConfig} onChange={setApiConfig} hasApiKey={hasApiKey} />
+        )}
+
+        {type === 'agent' && (
+          <Stack
+            gap={2}
+            className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-3 py-3"
+          >
+            <Text size="sm" className="font-medium">
+              On-prem bridge agent
+            </Text>
+            <Text size="xs" className="text-[var(--color-muted-foreground)]">
+              For an ERP whose API only lives on your local network (e.g. Fishbowl). After creating
+              this source, open it and choose <span className="font-medium">Pair agent</span> to
+              mint a key, then install the sparx Inventory Bridge on a machine on your network.
+            </Text>
+          </Stack>
         )}
 
         <Stack gap={2}>

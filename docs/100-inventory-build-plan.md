@@ -1,6 +1,6 @@
 # sparx Platform — Inventory Product Build Plan
 
-**Version:** 1.16
+**Version:** 1.20
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-17
 
@@ -540,6 +540,9 @@ gating ties into the roles model (`editor`/`admin`) — the `/approve` route req
      ✅ **DONE (P5c)** — a generic config-driven HTTP-API pull, see the P5c callout below.
    - **Tier A (on-prem agent)** — outbound-HTTPS bridge for Fishbowl (Gillett); enrollment mints a
      tenant-scoped API key; `POST /v1/inventory/sources/:id/push` already exists as the ingress.
+     ✅ **DONE (P5d)** — the `@sparx/inventory-bridge` agent + pairing/heartbeat, see the P5d callout
+     below. The Fishbowl-NATIVE reader stays gated on a real instance (docs/28 §8); the agent ships with
+     the universal file (CSV/JSON export) reader.
 2. **Conflict resolution** (docs/28 §6): external authoritative on `on_hand` ✅ (P5a reconcile);
    unmapped-SKU review queue ✅ (P5a); **one-source-per-variant ✅ (P5b); stale-link alerting ✅ (P5b)**;
    **last-writer by `source_synced_at` ✅ (P5c)** (Tier B rows carry per-row timestamps; an out-of-order
@@ -547,12 +550,14 @@ gating ties into the roles model (`editor`/`admin`) — the `/approve` route req
 3. **Overselling guards:** **per-location safety buffer ✅ (P5b)**; `inventory_policy=deny` for
    externally-linked variants ✅ (the variant default is already `deny`); **UoM conversion (case↔each)
    ✅ (P5b)**.
-4. Dashboard: `/inventory/connections` (pair source, choose sellable locations, safety buffer),
-   `/inventory/connections/mapping` (auto + manual SKU map, unmapped queue), **sync-health** panel
-   (last delta / last reconcile / mismatches / source online-offline — critical for Tier A agents).
+4. Dashboard: connection detail (pair source, SKU map + unmapped queue, safety buffer) ✅ (P5a/b/c),
+   **sync-health** panel (deltas / unmapped / stale / out-of-order, and **source online-offline** for
+   Tier A agents ✅ P5d).
 
-**Deploy gate:** CSV source imports → master updates via ledger; sync-health shows deltas; a deliberate
-conflict resolves per rules. Gillett Fishbowl validated against a real instance (docs/28 §8 pre-build).
+**Deploy gate:** CSV / API / agent sources import → master updates via ledger ✅; sync-health shows
+deltas + agent online/offline ✅; deliberate conflicts resolve per rules ✅ (one-source, last-writer,
+buffer). Gillett Fishbowl validated against a real instance remains the per-tenant §8 pre-build gate
+before the Fishbowl-native reader ships (the file-export path works against any on-prem ERP today).
 
 **Risks:** Tier A connectivity is customer-environment-specific (validate Fishbowl edition first);
 reconciliation overwrites must still preserve in-flight `committed`.
@@ -621,6 +626,32 @@ reconciliation overwrites must still preserve in-flight `committed`.
 > bridge) — the `/sources/:id/push` ingress + ingest funnel already exist; the agent + key enrollment is
 > the remaining transport.**
 
+> **P5d (Tier A — on-prem bridge agent) ✅ DONE. PHASE 5 COMPLETE.** The hardest connectivity tier: a
+> LAN-only ERP (Fishbowl is the archetype) whose API never faces the internet. The integration is
+> **outbound from the tenant's side** — a small agent they install on their network. **Server side** (the
+> ingress was already built in P5a — `/sources/:id/push` + the ingest funnel): a new `agent` source type
+> (Tier A, push-only — the worker never pulls it); **pairing** mints a tenant-scoped API key via
+> `@sparx/auth` (`POST /sources/:id/enroll`, returned ONCE, re-enroll rotates + revokes the old key),
+> recorded on the source (id + visible prefix); **`POST …/revoke-agent`** unpairs; **`POST …/heartbeat`**
+> (authenticated by the agent's own key) bumps liveness. The push endpoint now accepts a per-row
+> `synced_at` (→ last-writer ordering, P5c) and a `mode: snapshot|delta` (a snapshot is the agent's full
+> reconcile → flags stale mappings), and bumps agent liveness. `getSyncHealth` derives **online/offline**
+> from `agent_last_seen_at` within a 5-min grace — surfaced loudly in the connection's **Bridge agent
+> panel** (pair / rotate / unpair, the show-once key + install snippet, online/offline + last-seen +
+> version). The minted secret is never returned again (only the prefix). **The agent** — a new standalone
+> package `@sparx/inventory-bridge` (`services/inventory-bridge`, zero `@sparx` deps, shipped to the
+> tenant): config (zod env), a retrying push client (snapshot + heartbeat, exp-backoff, fatal on 4xx), a
+> reconcile loop (snapshot on `SYNC_INTERVAL`, heartbeat on `HEARTBEAT_INTERVAL`), and a **pluggable
+> reader** — a working **file reader** (CSV/JSON export, mtime = `synced_at`) as the universal production
+> path, with the **Fishbowl-native reader gated on a real instance** (docs/28 §8). New schema: source
+> `api_key_id`/`api_key_prefix`/`enrolled_at`/`agent_last_seen_at`/`agent_version` (additive ALTER,
+> migration `20260912000000_inventory_agent_enrollment`). 1 new inventory DB test (enroll → heartbeat
+> online → stale offline → rotate → unpair) + 7 bridge unit tests (push shaping/auth/retry, file CSV/JSON
+> parse); inventory suite 54/54, bridge 7/7. Seed ships a paired+online demo `Fishbowl bridge` agent.
+> **Phase 5 (External sync) is COMPLETE** — Tier C / B / A all write the one ledger through the one ingest
+> funnel; only the Fishbowl-native reader awaits a real Gillett instance (§8). Next: **Phase 6** (documented
+> API + reporting + MCP supply tools + B2B).
+
 ---
 
 ### Phase 6 — API contract + reporting + MCP + B2B
@@ -641,6 +672,59 @@ reconciliation overwrites must still preserve in-flight `committed`.
 
 **Deploy gate:** documented endpoints pass contract tests; reports + export verified; MCP supply tools
 exercised; a B2B account sees account-scoped availability.
+
+> **P6a DONE — Documented public API (docs/06 §7).** ✅ The four canonical endpoints external
+> integrators code against, distinct from the dashboard-shaped routes: `GET /v1/inventory` (cross-warehouse
+> enriched + paginated + `q` search), `PATCH /v1/inventory/:variant_id` (set an absolute on-hand OR a signed
+> delta), `POST /v1/inventory/adjustments` (bulk JSON **or** `text/csv`, ≤1000 rows, each row isolated in
+> its own tx so one failure can't roll back the batch), `GET /v1/inventory/alerts` (low-stock). New service
+> `@sparx/inventory` `public-api.ts` (`listInventory` / `updateLevelCount` / `bulkAdjust`) — every write
+> through the `applyMovement` ledger funnel; SKU resolution + broad-scan reads explicitly tenant-scoped
+> (superuser-bypasses-RLS precedent). **Per-API-key scope enforcement** landed in `@sparx/api-core`:
+> `AuthContext.scopes` (lifted from the verified key) + a `requireScope(request, scope)` helper — an `api`
+> actor must carry `read:inventory` / `write:inventory` (`403 FORBIDDEN` otherwise); JWT/dashboard actors
+> bypass (gated by role). docs/06 §7 reconciled to the implemented shape (spec ↔ routes agree). Tests: 3
+> new inventory service tests (list/paginate/search, set-vs-delta, bulk SKU-resolve + isolation) → suite
+> **57/57**; 6 new api-rest HTTP **contract** tests (scope reject/allow, PATCH set, bulk JSON, JWT bypass,
+> MODULE_DISABLED). typecheck clean (api-core / commerce-schemas / inventory / api-rest); lint 0 errors.
+
+> **P6b DONE — Reporting (docs/09 §8).** ✅ The analytical lens over the master model + ledger, in a new
+> `@sparx/inventory` `analytics.ts` (shared by REST **and** the P6c MCP tools): `inventoryValuation`
+> (units + cost/retail), `turnoverReport` (COGS over a window / average inventory value → inventory turns +
+> **DIO**; average inventory from the daily valuation snapshots, falling back to current valuation),
+> `agingReport` (on-hand value bucketed by days-since-last-sale 0-30/31-60/61-90/90+/never + the
+> highest-value **dead-stock** list), and `reorderAnalysis` (per low-stock item: sales **velocity** over a
+> window → **days-of-cover** → **projected stockout**, suggested qty, preferred supplier — via LEFT JOIN
+> LATERAL). All raw SQL, explicitly `tenant_id`-scoped (superuser-bypasses-RLS precedent). **REST**: new
+> `analytics-reports.ts` route (`/v1/inventory/reports/{valuation,turnover,aging,reorder-analysis}`) — each
+> supports **`?format=csv`** export (text/csv attachment) alongside the JSON envelope; viewer-gated. **CSV/
+> JSON export** is the deploy-gate item. **Dashboard**: new `/inventory/reports` page (Reports nav section)
+> — turnover/DIO KPI tiles, aging buckets + dead-stock table, reorder-analysis table, each with a
+> client-side **Export CSV** (server action → `api.getRaw` → Blob download, token stays server-side). Tests:
+> 4 inventory service tests (valuation, turnover/DIO over a window with **backdated** sale movements, aging
+> buckets + dead-stock, reorder velocity/cover/supplier) → suite **61/61**; 2 api-rest contract tests
+> (turnover JSON, reorder-analysis CSV header). typecheck clean (inventory / api-rest / dashboard); lint 0
+> errors (warn-only max-lines on the cohesive analytics SQL bodies).
+
+> **P6c DONE — MCP supply tools (docs/07).** ✅ Inventory gets its OWN first-class MCP surface (per §4.0): a
+> new `@sparx/inventory/mcp` registry (mirrors commerce/crm) with `read:inventory` / `write:inventory`
+> scopes. Six tools — the supply loop the AI runs end-to-end: **read** `get_low_inventory`,
+> `get_inventory_valuation`, `suggest_reorders`; **write** (confirmation) `update_inventory` (forces
+> `actorType:'ai'` → ledger attributes it to the agent), `create_purchase_order`, `receive_stock`. MCP tool
+> names are GLOBAL across modules, so the three pre-existing inventory tools were **moved OUT of commerce's
+> registry** into inventory's (their scope flips commerce→inventory — pre-launch, architecturally correct;
+> `get_inventory_valuation` now reads the inventory package's valuation). **api-mcp wiring**: the two scopes
+> added to the McpScope union + `DEFAULT_SCOPES_BY_ROLE` (owner/admin/editor write, viewer read) +
+> `WRITE_SCOPES`; `inventoryMcpTools` registered in `ALL_MCP_TOOLS`; **`MODULE_BY_SCOPE`** gates both on the
+> `inventory` module (refuses when off — standalone-safe). New deps: `@sparx/inventory` (api-mcp) + `zod`
+> (inventory package). **Latent bug fixed**: `listLowStock` relied on RLS only — under the superuser-local
+> role it leaked other tenants' rows; added explicit `l.tenant_id = ctx.tenantId` (reorder/movement-log/
+> analytics precedent). Tests: 5 api-mcp tests (`inventory-tools.test.ts`: globally-unique names [SDK-
+> > collision guard], inventory scopes, not-under-commerce-scope, dispatch with module+scope, module-off
+> refusal); inventory **61/61**, commerce **7/7** (tool removal clean). docs/07 → v1.3. typecheck clean
+> (inventory / commerce / api-mcp); lint 0 errors. (Pre-existing, unrelated: api-mcp `smoke.test.ts`
+> `get_customers` fails locally — CRM `customerService.list` has the same superuser-RLS-leak vs the seeded
+> demo DB; out of inventory scope, flagged not fixed.)
 
 ---
 

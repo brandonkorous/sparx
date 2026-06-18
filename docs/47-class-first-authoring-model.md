@@ -4,6 +4,14 @@ Version: 1.1
 Author: Brandon Korous
 Last Updated: 2026-06-02
 
+> **⚠ Superseded by [61](61-utility-authoring-system.md) (2026-06-07).** This is the class-first
+> *proposal*; 61 is the **executed** model and wins on any disagreement. Two decisions below did **not**
+> ship as written: (1) the `@sparx/site-ui` → `@sparx/surface` rename **never happened** — the component
+> library is still **`@sparx/site-ui`** (only the per-tenant *compile* package is `@sparx/surface-compile`);
+> (2) the node's per-instance slot shipped as **`props`**, not `data`. **Current node shape:**
+> `{ id, type, class?, props, binding?, children? }`. The authoring surface also moved to Tailwind-native
+> utility tokens (not a curated dialect) — see 61.
+
 > The composition model ([40](40-sitebuilder-composition-model.md)) makes a website a tree of
 > nodes, each carrying a **box base** of presentation props. `@sparx/site-ui`
 > ([46](46-site-ui-component-library.md)) already moved leaf _treatment_ into shared,

@@ -224,7 +224,8 @@ export async function listLowStock(
       JOIN inventory_warehouses w ON w.id = l.warehouse_id
       JOIN commerce_product_variants v ON v.id = l.variant_id
       JOIN commerce_products p ON p.id = v.product_id
-      WHERE l.reorder_point IS NOT NULL
+      WHERE l.tenant_id = ${ctx.tenantId}::uuid
+        AND l.reorder_point IS NOT NULL
         AND l.on_hand - l.allocated <= l.reorder_point
         AND (${warehouseFilter}::uuid IS NULL OR l.warehouse_id = ${warehouseFilter}::uuid)
         AND w.deleted_at IS NULL

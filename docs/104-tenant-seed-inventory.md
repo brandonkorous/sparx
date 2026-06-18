@@ -156,9 +156,9 @@ Coverage: ✅ seeds today · ⚠️ partial · ❌ gap.
 | Entity                                                                            | Class  | Coverage | Notes                                               |
 | --------------------------------------------------------------------------------- | ------ | -------- | --------------------------------------------------- |
 | `ProductCategory`, `ProductCollection`, `Product`/`Variant`/`Option`/`Image`      | 🔵     | ✅ L3    | The **only** commerce thing seeded today.           |
-| `CommerceSiteSettings` (currency, locale, checkout, default warehouse)            | 🟢     | ❌       | **L2 gap** — store config absent on activation.     |
-| `ShippingZone` / `ShippingProfile` / `ShippingRate`                               | 🟢     | ❌       | **L2 gap** — no fallback rate = broken checkout.    |
-| `TaxZone` / `TaxRate` / `TaxExemption`                                            | 🟢     | ❌       | **L2 gap** — default zone or "via provider" stance. |
+| `CommerceSiteSettings` (currency, locale, checkout, default warehouse)            | 🟢     | ✅       | `commerceSiteService.bootstrapDefaults` on `module.activated(commerce)` (#74). |
+| `ShippingZone` / `ShippingProfile` / `ShippingRate`                               | 🟢     | ✅       | `shippingService.bootstrapDefaults` — "Everywhere" zone + "Standard" profile + flat $5 fallback rate (#74). |
+| `TaxZone` / `TaxRate` / `TaxExemption`                                            | 🟢     | ✅       | `taxService.bootstrapDefaults` — one **inactive** home-country nexus zone, no rates: surface wired, $0 collected until the merchant adds a rate + activates (or installs a provider). |
 | `PriceList` / `PriceListEntry` / `BulkPriceTier` / `MarkupRule` / `SurchargeRule` | 🔵     | ❌       | Manifest gap (industry pricing).                    |
 | `Discount` (promo codes)                                                          | 🔵     | ❌       | Manifest gap.                                       |
 | `Bundle` / `ConfigurationTemplate` (+ options/rules/add-ons)                      | 🔵     | ❌       | Manifest gap.                                       |
@@ -223,18 +223,21 @@ by natural key**, **kept on deactivate** (R1–R3), with a daily reconcile/backf
 automation + email reconcile pattern). Priority order = "what makes a freshly-enabled module feel
 broken":
 
-1. **Commerce** — `CommerceSiteSettings` (currency/locale/checkout defaults), one fallback
-   `ShippingZone` + flat `ShippingRate`, a `TaxZone`/`TaxRate` scaffold (or an explicit "tax via
-   provider" default), default return-policy + review-moderation settings. _Without this, enabling
-   Commerce yields a catalog that can't check out._
-2. **Inventory** — one default operating `Warehouse` so stock has a home (in-transit already lazy).
-3. **Chat** — a small `ChatQuickReply` bank + widget defaults (greeting, business hours, routing).
-4. **B2B** — a default `PurchaseApprovalRule` (seeded **disabled**), so the approval surface is wired
-   but inert until configured.
-5. **CRM** — add default `SavedView`s per surface (pipeline/segments already done).
+1. **Commerce** — ✅ `CommerceSiteSettings` (currency/locale/checkout + default warehouse link), one
+   fallback `ShippingZone` + "Standard" profile + flat `ShippingRate`, and an **inactive** home
+   `TaxZone` (no rates — the explicit "$0 until nexus / via provider" default) all seed on
+   `module.activated(commerce)` (#74 + tax follow-up). _Return-policy + review-moderation have no
+   config table — moderation is per-record at the service layer, so there is nothing to seed._
+2. **Inventory** — ✅ one default operating `Warehouse` (`MAIN`) so stock has a home.
+3. **Chat** — ✅ a starter `ChatQuickReply` bank (7 entries); widget greeting/hours live in chat settings.
+4. **B2B** — ✅ a default `PurchaseApprovalRule`, seeded **disabled** — approval surface wired but inert.
+5. **CRM** — default `SavedView`s per surface: **deferred** — `SavedView` has no API/UI consumer yet, so
+   seeding would be dead rows. Pipeline + segments already seed (§4.5).
 
-Already done (reference implementations to copy): **CRM** (`packages/crm/src/consumers/module-activation.ts`),
-**Email** (`services/api-rest/src/lib/email-provisioning.ts`), **Automation**
+Seeders 1–4 are wired through `services/api-rest/src/lib/module-provisioning.ts` (the in-process
+`module.activated` consumer + 6h reconcile, sibling of `email-provisioning.ts`). Reference
+implementations they copy: **CRM** (`packages/crm/src/consumers/module-activation.ts`), **Email**
+(`services/api-rest/src/lib/email-provisioning.ts`), **Automation**
 (`packages/automation-actions/src/seeds/`), **Invoicing** (same CRM consumer file).
 
 ### 5.B — Blueprint manifest extensions (L3 industry content)

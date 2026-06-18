@@ -4,6 +4,12 @@
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-01
 
+> **Node shape superseded by [61](61-utility-authoring-system.md) §4 (2026-06-07).** The composition
+> model here — website = recursive tree, typed data binding — still stands and is foundational. But the
+> per-node `{ type, box, layout?, props, children? }` shape is **retired**: the freeform `box`/`layout`
+> objects are deleted and all styling lives on a `class` string. **Current node shape:**
+> `{ id, type, class?, props, binding?, children? }`.
+
 ---
 
 ## 1. Purpose & relationship to docs 36 / 37 / 38

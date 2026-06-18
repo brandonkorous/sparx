@@ -31,6 +31,8 @@ export type McpScope =
   | 'read:commerce'
   | 'write:commerce'
   | 'write:commerce_bulk'
+  | 'read:inventory'
+  | 'write:inventory'
   | 'read:builder'
   | 'write:builder'
   | 'read:email'
@@ -69,6 +71,8 @@ const DEFAULT_SCOPES_BY_ROLE: Record<StaffRole, McpScope[]> = {
     'read:commerce',
     'write:commerce',
     'write:commerce_bulk',
+    'read:inventory',
+    'write:inventory',
     'read:builder',
     'write:builder',
     'read:email',
@@ -89,6 +93,8 @@ const DEFAULT_SCOPES_BY_ROLE: Record<StaffRole, McpScope[]> = {
     'read:commerce',
     'write:commerce',
     'write:commerce_bulk',
+    'read:inventory',
+    'write:inventory',
     'read:builder',
     'write:builder',
     'read:email',
@@ -107,6 +113,8 @@ const DEFAULT_SCOPES_BY_ROLE: Record<StaffRole, McpScope[]> = {
     'write:crm',
     'read:commerce',
     'write:commerce',
+    'read:inventory',
+    'write:inventory',
     'read:builder',
     'write:builder',
     'read:email',
@@ -121,6 +129,7 @@ const DEFAULT_SCOPES_BY_ROLE: Record<StaffRole, McpScope[]> = {
   viewer: [
     'read:crm',
     'read:commerce',
+    'read:inventory',
     'read:builder',
     'read:email',
     'read:search',

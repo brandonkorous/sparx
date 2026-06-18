@@ -109,6 +109,57 @@ export const TransferInventoryInput = z.object({
 });
 export type TransferInventoryInput = z.infer<typeof TransferInventoryInput>;
 
+// ─── Documented public API (docs/06 §7) ──────────────────────────────
+//
+// The headless contract surface external integrators code against, distinct
+// from the dashboard-shaped routes. A count update names a single level
+// (variant × warehouse) and EITHER sets an absolute on-hand OR applies a signed
+// delta — never both (a corrective `setOnHand` reconciles under the row lock so
+// it can't race a concurrent sale; a delta is an ordinary signed movement).
+
+export const UpdateInventoryCountInput = z
+  .object({
+    warehouseId: Uuid,
+    onHand: z.number().int().nonnegative().optional(),
+    delta: z.number().int().optional(),
+    reason: InventoryAdjustReason.default('manual'),
+    note: z.string().max(2000).optional(),
+    // Makes a retried PATCH apply exactly once on a delta update.
+    idempotencyKey: z.string().max(127).optional(),
+  })
+  .refine((v) => (v.onHand === undefined) !== (v.delta === undefined), {
+    message: 'Provide exactly one of `onHand` (absolute) or `delta` (signed).',
+    path: ['onHand'],
+  });
+export type UpdateInventoryCountInput = z.infer<typeof UpdateInventoryCountInput>;
+
+// One row of a bulk adjustment (JSON array or a parsed CSV line). Resolves the
+// variant by `sku` (the natural key in a spreadsheet export) OR `variantId`.
+export const BulkAdjustmentRow = z
+  .object({
+    sku: z.string().min(1).max(255).optional(),
+    variantId: Uuid.optional(),
+    warehouseId: Uuid,
+    onHand: z.number().int().nonnegative().optional(),
+    delta: z.number().int().optional(),
+    reason: InventoryAdjustReason.default('manual'),
+    note: z.string().max(2000).optional(),
+  })
+  .refine((v) => (v.sku === undefined) !== (v.variantId === undefined), {
+    message: 'Provide exactly one of `sku` or `variantId`.',
+    path: ['sku'],
+  })
+  .refine((v) => (v.onHand === undefined) !== (v.delta === undefined), {
+    message: 'Provide exactly one of `onHand` (absolute) or `delta` (signed).',
+    path: ['onHand'],
+  });
+export type BulkAdjustmentRow = z.infer<typeof BulkAdjustmentRow>;
+
+export const BulkAdjustmentInput = z.object({
+  adjustments: z.array(BulkAdjustmentRow).min(1).max(1000),
+});
+export type BulkAdjustmentInput = z.infer<typeof BulkAdjustmentInput>;
+
 // ─── Reservations ─────────────────────────────────────────────────────
 //
 // Cart reservations are soft (30-minute TTL); order reservations are hard

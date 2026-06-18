@@ -765,7 +765,7 @@ export default {
                 type: 'Section',
                 props: {},
                 class:
-                  'bg-accent text-accent-content min-h-[50vh] flex flex-col gap-4 justify-center items-center p-8 @3xl:p-16 text-center w-full max-w-2xl rounded-box shadow-lg',
+                  'rounded-box bg-accent text-accent-content min-h-[50vh] flex flex-col gap-4 justify-center items-center p-8 @3xl:p-16 text-center w-full max-w-2xl rounded-box shadow-lg',
                 children: [
                   {
                     id: 'ffb-30',
@@ -906,7 +906,7 @@ export default {
                     type: 'Section',
                     props: {},
                     class:
-                      'bg-accent text-accent-content min-h-[50vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center rounded-box overflow-hidden',
+                      'rounded-box bg-accent text-accent-content min-h-[50vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                     children: [
                       {
                         id: 'ffb-45',
@@ -937,7 +937,7 @@ export default {
                 type: 'Section',
                 props: {},
                 class:
-                  'bg-base-200 min-h-[50vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center rounded-box overflow-hidden',
+                  'rounded-box bg-base-200 min-h-[50vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                 children: [
                   {
                     id: 'ffb-52',
@@ -998,7 +998,7 @@ export default {
                 type: 'Card',
                 props: {},
                 class:
-                  'mx-auto w-full max-w-site bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
+                  'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
                 children: [
                   {
                     id: 'ffb-55',
@@ -1025,7 +1025,7 @@ export default {
                 type: 'Card',
                 props: {},
                 class:
-                  'mx-auto w-full max-w-site bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
+                  'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
                 children: [
                   {
                     id: 'ffb-58',
@@ -1052,7 +1052,7 @@ export default {
                 type: 'Card',
                 props: {},
                 class:
-                  'mx-auto w-full max-w-site bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
+                  'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
                 children: [
                   {
                     id: 'ffb-61',
@@ -1079,7 +1079,7 @@ export default {
                 type: 'Card',
                 props: {},
                 class:
-                  'mx-auto w-full max-w-site bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
+                  'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
                 children: [
                   {
                     id: 'ffb-64',
@@ -1169,14 +1169,15 @@ export default {
                         id: 'ffb-83',
                         type: 'Card',
                         props: {},
-                        class: 'mx-auto w-full max-w-site flex flex-col overflow-hidden',
+                        class:
+                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden',
                         children: [
                           {
                             id: 'ffb-74',
                             type: 'Section',
                             props: {},
                             class:
-                              'bg-accent text-accent-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
+                              'w-full bg-accent text-accent-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                             children: [
                               {
                                 id: 'ffb-73',
@@ -1261,14 +1262,15 @@ export default {
                         id: 'ffb-94',
                         type: 'Card',
                         props: {},
-                        class: 'mx-auto w-full max-w-site flex flex-col overflow-hidden',
+                        class:
+                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden',
                         children: [
                           {
                             id: 'ffb-85',
                             type: 'Section',
                             props: {},
                             class:
-                              'bg-accent text-accent-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
+                              'w-full bg-accent text-accent-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                             children: [
                               {
                                 id: 'ffb-84',
@@ -1353,14 +1355,15 @@ export default {
                         id: 'ffb-105',
                         type: 'Card',
                         props: {},
-                        class: 'mx-auto w-full max-w-site flex flex-col overflow-hidden',
+                        class:
+                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden',
                         children: [
                           {
                             id: 'ffb-96',
                             type: 'Section',
                             props: {},
                             class:
-                              'bg-primary text-primary-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
+                              'w-full bg-primary text-primary-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                             children: [
                               {
                                 id: 'ffb-95',
@@ -1470,14 +1473,15 @@ export default {
                         id: 'ffb-116',
                         type: 'Card',
                         props: {},
-                        class: 'mx-auto w-full max-w-site flex flex-col overflow-hidden',
+                        class:
+                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden',
                         children: [
                           {
                             id: 'ffb-110',
                             type: 'Section',
                             props: {},
                             class:
-                              'bg-secondary text-secondary-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
+                              'w-full bg-secondary text-secondary-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                             children: [
                               {
                                 id: 'ffb-109',
@@ -1539,14 +1543,15 @@ export default {
                         id: 'ffb-124',
                         type: 'Card',
                         props: {},
-                        class: 'mx-auto w-full max-w-site flex flex-col overflow-hidden',
+                        class:
+                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden',
                         children: [
                           {
                             id: 'ffb-118',
                             type: 'Section',
                             props: {},
                             class:
-                              'bg-base-200 min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
+                              'w-full bg-base-200 min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                             children: [
                               {
                                 id: 'ffb-117',
@@ -1608,14 +1613,15 @@ export default {
                         id: 'ffb-132',
                         type: 'Card',
                         props: {},
-                        class: 'mx-auto w-full max-w-site flex flex-col overflow-hidden',
+                        class:
+                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden',
                         children: [
                           {
                             id: 'ffb-126',
                             type: 'Section',
                             props: {},
                             class:
-                              'bg-secondary text-secondary-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
+                              'w-full bg-secondary text-secondary-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                             children: [
                               {
                                 id: 'ffb-125',
@@ -1677,14 +1683,15 @@ export default {
                         id: 'ffb-140',
                         type: 'Card',
                         props: {},
-                        class: 'mx-auto w-full max-w-site flex flex-col overflow-hidden',
+                        class:
+                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden',
                         children: [
                           {
                             id: 'ffb-134',
                             type: 'Section',
                             props: {},
                             class:
-                              'bg-base-200 min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
+                              'w-full bg-base-200 min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                             children: [
                               {
                                 id: 'ffb-133',
@@ -1771,14 +1778,15 @@ export default {
                         id: 'ffb-154',
                         type: 'Card',
                         props: {},
-                        class: 'mx-auto w-full max-w-site flex flex-col overflow-hidden',
+                        class:
+                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden',
                         children: [
                           {
                             id: 'ffb-145',
                             type: 'Section',
                             props: {},
                             class:
-                              'bg-primary text-primary-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
+                              'w-full bg-primary text-primary-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                             children: [
                               {
                                 id: 'ffb-144',
@@ -1863,14 +1871,15 @@ export default {
                         id: 'ffb-165',
                         type: 'Card',
                         props: {},
-                        class: 'mx-auto w-full max-w-site flex flex-col overflow-hidden',
+                        class:
+                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden',
                         children: [
                           {
                             id: 'ffb-156',
                             type: 'Section',
                             props: {},
                             class:
-                              'bg-primary text-primary-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
+                              'w-full bg-primary text-primary-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                             children: [
                               {
                                 id: 'ffb-155',
@@ -1955,14 +1964,15 @@ export default {
                         id: 'ffb-176',
                         type: 'Card',
                         props: {},
-                        class: 'mx-auto w-full max-w-site flex flex-col overflow-hidden',
+                        class:
+                          'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden',
                         children: [
                           {
                             id: 'ffb-167',
                             type: 'Section',
                             props: {},
                             class:
-                              'bg-secondary text-secondary-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
+                              'w-full bg-secondary text-secondary-content min-h-[25vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                             children: [
                               {
                                 id: 'ffb-166',
@@ -2202,7 +2212,7 @@ export default {
                     type: 'Card',
                     props: {},
                     class:
-                      'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 @3xl:p-10',
+                      'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10',
                     children: [
                       {
                         id: 'ffb-194',
@@ -2261,7 +2271,7 @@ export default {
                     type: 'Card',
                     props: {},
                     class:
-                      'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 @3xl:p-10',
+                      'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10',
                     children: [
                       {
                         id: 'ffb-201',
@@ -2353,7 +2363,7 @@ export default {
                         type: 'Card',
                         props: {},
                         class:
-                          'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 @3xl:p-10',
+                          'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10',
                         children: [
                           {
                             id: 'ffb-211',
@@ -2386,7 +2396,7 @@ export default {
                         type: 'Card',
                         props: {},
                         class:
-                          'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 @3xl:p-10',
+                          'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10',
                         children: [
                           {
                             id: 'ffb-215',
@@ -2419,7 +2429,7 @@ export default {
                         type: 'Card',
                         props: {},
                         class:
-                          'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 @3xl:p-10',
+                          'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10',
                         children: [
                           {
                             id: 'ffb-219',
@@ -2466,7 +2476,7 @@ export default {
                 type: 'Card',
                 props: {},
                 class:
-                  'mx-auto w-full max-w-site bg-primary text-primary-content flex flex-col gap-4 justify-between items-start p-8 @3xl:p-16',
+                  'mx-auto w-full max-w-site rounded-box bg-primary text-primary-content flex flex-col gap-4 justify-between items-start p-8 @3xl:p-16',
                 children: [
                   {
                     id: 'ffb-225',
@@ -2500,7 +2510,7 @@ export default {
                 type: 'Card',
                 props: {},
                 class:
-                  'mx-auto w-full max-w-site bg-secondary text-secondary-content flex flex-col gap-4 justify-between items-start p-8 @3xl:p-16',
+                  'mx-auto w-full max-w-site rounded-box bg-secondary text-secondary-content flex flex-col gap-4 justify-between items-start p-8 @3xl:p-16',
                 children: [
                   {
                     id: 'ffb-229',
@@ -2690,7 +2700,7 @@ export default {
                     type: 'Section',
                     props: {},
                     class:
-                      'bg-primary text-primary-content min-h-[50vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center rounded-box overflow-hidden',
+                      'rounded-box bg-primary text-primary-content min-h-[50vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                     children: [
                       {
                         id: 'ffb-247',
@@ -2721,7 +2731,7 @@ export default {
                 type: 'Section',
                 props: {},
                 class:
-                  'bg-base-200 min-h-[50vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center rounded-box overflow-hidden',
+                  'rounded-box bg-base-200 min-h-[50vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
                 children: [
                   {
                     id: 'ffb-254',
@@ -2782,7 +2792,7 @@ export default {
                 type: 'Card',
                 props: {},
                 class:
-                  'mx-auto w-full max-w-site bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
+                  'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
                 children: [
                   {
                     id: 'ffb-257',
@@ -2809,7 +2819,7 @@ export default {
                 type: 'Card',
                 props: {},
                 class:
-                  'mx-auto w-full max-w-site bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
+                  'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
                 children: [
                   {
                     id: 'ffb-260',
@@ -2836,7 +2846,7 @@ export default {
                 type: 'Card',
                 props: {},
                 class:
-                  'mx-auto w-full max-w-site bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
+                  'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
                 children: [
                   {
                     id: 'ffb-263',
@@ -2863,7 +2873,7 @@ export default {
                 type: 'Card',
                 props: {},
                 class:
-                  'mx-auto w-full max-w-site bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
+                  'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
                 children: [
                   {
                     id: 'ffb-266',
@@ -3112,7 +3122,7 @@ export default {
                 type: 'Card',
                 props: {},
                 class:
-                  'mx-auto w-full max-w-site bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
+                  'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
                 children: [
                   {
                     id: 'ffb-292',
@@ -3139,7 +3149,7 @@ export default {
                 type: 'Card',
                 props: {},
                 class:
-                  'mx-auto w-full max-w-site bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
+                  'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
                 children: [
                   {
                     id: 'ffb-295',
@@ -3166,7 +3176,7 @@ export default {
                 type: 'Card',
                 props: {},
                 class:
-                  'mx-auto w-full max-w-site bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
+                  'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
                 children: [
                   {
                     id: 'ffb-298',
