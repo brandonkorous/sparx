@@ -8,6 +8,11 @@
   @apply w-full bg-cover bg-center;
   background-color: var(--c-bg, transparent);
   color: var(--c-fg, inherit);
+  /* Default vertical rhythm so a BARE `.st-section` (a storefront page composes
+     `.st-container.st-section` with content directly, no `__inner`) isn't cramped.
+     The Section component always passes a `--pad-*` modifier (default lg), which
+     overrides this, so Builder sections are unaffected. */
+  padding-block: clamp(2.5rem, 5vw, 4rem);
 }
 
 .st-section__inner {

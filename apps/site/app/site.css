@@ -19,7 +19,7 @@
    consent, `st-sb-*` builder bridges, `bx-*` canvas) has no site-ui counterpart,
    so it still renders unopposed within this layer; compound overrides that set
    layout-only props on a shared class also survive (site-ui doesn't set those). */
-@layer st-legacy, theme, base, components, utilities;
+@layer theme, base, st-legacy, components, utilities;
 @layer st-legacy {
   :root {
     /* ── Token Model v2 fallbacks (docs/33-token-model-v2.md) ─────
@@ -440,13 +440,16 @@
   }
 
   /* ── Hero ──────────────────────────────────────────────────── */
-  .st-hero {
-    position: relative;
-    display: grid;
+  /* `.st-hero` ROOT is owned by @sparx/site-ui (hero.css). The home-fallback hero
+     composes `.st-hero.st-hero--align-center > .st-hero__content.st-hero__lede`;
+     `.st-hero__lede` is the app-only centered stack (gap + generous hero padding),
+     and the title / sub / cta below are its app-only content styles. */
+  .st-hero__lede {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 1.5rem;
     padding-block: clamp(3.5rem, 8vw, 7rem);
-    text-align: center;
-    place-items: center;
   }
   .st-hero__title {
     font-family: var(--st-font-heading);
@@ -473,9 +476,8 @@
   }
 
   /* ── Section heading row ───────────────────────────────────── */
-  .st-section {
-    padding-block: clamp(2.5rem, 5vw, 4rem);
-  }
+  /* `.st-section` ROOT (incl. its default vertical padding) is owned by
+     @sparx/site-ui (section.css). These stay the app-only section heading parts. */
   .st-section__head {
     display: flex;
     align-items: flex-end;

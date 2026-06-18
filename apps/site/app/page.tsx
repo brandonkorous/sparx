@@ -101,19 +101,21 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
 
       {!cmsHome ? (
         <section className="st-container">
-          <div className="st-hero">
-            <span className="st-eyebrow">Welcome to {site.name}</span>
-            <h1 className="st-hero__title">Gear built to perform, priced to move.</h1>
-            <p className="st-hero__sub">
-              Browse the full catalog, find exactly what fits, and check out in seconds.
-            </p>
-            <div className="st-hero__cta">
-              <SparxButton asChild color="primary" size="lg">
-                <Link href="/products">Shop all products</Link>
-              </SparxButton>
-              <SparxButton asChild color="neutral" variant="outline" size="lg">
-                <Link href="/collections">Browse collections</Link>
-              </SparxButton>
+          <div className="st-hero st-hero--align-center">
+            <div className="st-hero__content st-hero__lede">
+              <span className="st-eyebrow">Welcome to {site.name}</span>
+              <h1 className="st-hero__title">Gear built to perform, priced to move.</h1>
+              <p className="st-hero__sub">
+                Browse the full catalog, find exactly what fits, and check out in seconds.
+              </p>
+              <div className="st-hero__cta">
+                <SparxButton asChild color="primary" size="lg">
+                  <Link href="/products">Shop all products</Link>
+                </SparxButton>
+                <SparxButton asChild color="neutral" variant="outline" size="lg">
+                  <Link href="/collections">Browse collections</Link>
+                </SparxButton>
+              </div>
             </div>
           </div>
         </section>
