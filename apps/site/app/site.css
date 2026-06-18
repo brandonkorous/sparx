@@ -1366,48 +1366,10 @@
     border-color: var(--st-primary);
     background: color-mix(in srgb, var(--st-primary) 6%, transparent);
   }
-  .st-steps {
-    display: flex;
-    gap: 1.5rem;
-    list-style: none;
-    padding: 0;
-    margin: 0 0 1.5rem;
-    flex-wrap: wrap;
-  }
-  .st-steps__item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-    color: var(--st-text-muted);
-  }
-  .st-steps__item[data-state='current'] {
-    color: var(--st-text);
-    font-weight: 600;
-  }
-  .st-steps__item[data-state='done'] {
-    color: var(--st-text-secondary);
-  }
-  .st-steps__dot {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    font-size: 0.8rem;
-    font-weight: 700;
-    background: var(--st-bg-subtle);
-    color: var(--st-text-muted);
-  }
-  .st-steps__item[data-state='current'] .st-steps__dot {
-    background: var(--st-primary);
-    color: var(--st-on-primary);
-  }
-  .st-steps__item[data-state='done'] .st-steps__dot {
-    background: var(--st-success);
-    color: #fff;
-  }
+  /* `.st-steps` / `.st-step` now belong to @sparx/site-ui (the Steps/Step
+   components, docs/46 §3.6) — a real list of steps with counter markers and
+   complete/active/upcoming states. The checkout indicator renders <Steps>, so the
+   legacy `.st-steps__item`/`.st-steps__dot` duplicates were removed from here. */
 
   /* Sister-site recognition notice (docs/58 D6) — a dismissible accent bar across
    the top of the frame, shown once after a cross-site sign-in/registration. */

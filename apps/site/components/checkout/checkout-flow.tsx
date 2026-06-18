@@ -7,7 +7,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
-import { SparxAlert, SparxButton, SparxInput } from '@sparx/site-ui';
+import { SparxAlert, SparxButton, SparxInput, Steps } from '@sparx/site-ui';
 
 import { formatMoney } from '@/lib/format';
 import {
@@ -262,18 +262,17 @@ function StepIndicator({ step }: { step: Step }) {
   const order: Step[] = ['contact', 'shipping', 'payment', 'done'];
   const currentIdx = order.indexOf(step);
   return (
-    <ol className="st-steps">
-      {steps.map((s, i) => {
+    <Steps style={{ marginBottom: '1.5rem' }}>
+      {steps.map((s) => {
         const idx = order.indexOf(s.key);
-        const state = idx < currentIdx ? 'done' : idx === currentIdx ? 'current' : 'todo';
+        const state = idx < currentIdx ? 'complete' : idx === currentIdx ? 'active' : 'upcoming';
         return (
-          <li key={s.key} className="st-steps__item" data-state={state}>
-            <span className="st-steps__dot">{state === 'done' ? '✓' : i + 1}</span>
+          <Steps.Step key={s.key} state={state} icon={state === 'complete' ? '✓' : undefined}>
             {s.label}
-          </li>
+          </Steps.Step>
         );
       })}
-    </ol>
+    </Steps>
   );
 }
 
