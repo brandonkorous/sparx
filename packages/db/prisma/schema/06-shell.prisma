@@ -42,3 +42,30 @@ model UserRecent {
   @@index([userId, tenantId, lastVisitedAt(sort: Desc)])
   @@map("user_recents")
 }
+
+// Saved views — a PLATFORM list-persistence primitive (not CRM-specific). Every
+// dashboard list is URL-query-string driven (search/filters/sort/view live in
+// the query params; the server component re-reads them and refetches). A saved
+// view is therefore just a named snapshot of those params for one list surface,
+// re-applied by navigating to `?<params>`. `target` is the list identity — the
+// route path or a `module.surface` key (e.g. "/crm/deals", "commerce.products").
+// `config` is opaque JSON the shared ListToolbar interprets (today: the saved
+// query params). `ownerUserId` null = shared with the whole tenant; `isDefault`
+// marks the view a list opens on when it has no params. Seeded per
+// `module.activated(<slug>)` so each module ships starter views for its surfaces.
+model SavedView {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String   @map("tenant_id") @db.Uuid
+  ownerUserId String?  @map("owner_user_id") @db.Uuid
+  target      String   @db.VarChar(63) // list identity: route path or module.surface key
+  name        String   @db.VarChar(120)
+  config      Json     @default("{}")
+  isDefault   Boolean  @default(false) @map("is_default")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, target, ownerUserId])
+  @@map("saved_views")
+}
