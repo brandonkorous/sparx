@@ -9,7 +9,7 @@ import 'server-only';
 import type { BindingCatalog, BuilderNode, FieldSchema } from '@sparx/builder-schemas';
 
 import type { SitePreviewData } from '../_builder/binding-catalog';
-import { getBindingCatalog, listPages } from './api';
+import { getActiveLayout, getBindingCatalog, listPages } from './api';
 import { canvasThemeCss } from './canvas-theme';
 import { getBrand, getConfig, getSitePreviewData, getTenant } from '../_brand/lib/api';
 import { applyBrandOverride } from '../_brand/lib/site-brand';
@@ -19,6 +19,10 @@ import { getActiveProperty } from '@/lib/sites';
 export interface RecordPreviewBundle {
   /** The collection template tree the record renders through. */
   tree: BuilderNode;
+  /** The active site layout (header / outlet / footer). The record is framed inside
+   *  it at the Outlet, so the preview is the FULL page the storefront ships, not the
+   *  content block alone. Null when there's no active layout. */
+  chrome: BuilderNode | null;
   catalog: BindingCatalog;
   /** The record source's fields (kinds), for shaping the live body + the bridge. */
   fields: FieldSchema[];
@@ -39,14 +43,16 @@ export async function loadRecordPreviewBundle(opts: {
   templateId: string;
 }): Promise<RecordPreviewBundle | null> {
   try {
-    const [catalog, pages, baseBrand, config, activeProperty, tenant] = await Promise.all([
-      getBindingCatalog(),
-      listPages(),
-      getBrand(),
-      getConfig(),
-      getActiveProperty().catch(() => null),
-      getTenant(),
-    ]);
+    const [catalog, pages, baseBrand, config, activeProperty, tenant, activeLayout] =
+      await Promise.all([
+        getBindingCatalog(),
+        listPages(),
+        getBrand(),
+        getConfig(),
+        getActiveProperty().catch(() => null),
+        getTenant(),
+        getActiveLayout().catch(() => null),
+      ]);
 
     const page = pages.find((p) => p.id === opts.templateId);
     if (!page?.tree) return null;
@@ -66,6 +72,7 @@ export async function loadRecordPreviewBundle(opts: {
 
     return {
       tree: page.tree,
+      chrome: activeLayout?.tree ?? null,
       catalog,
       fields: source?.fields ?? [],
       themeCss: canvasThemeCss(effectiveBrand, config),

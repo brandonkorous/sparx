@@ -364,8 +364,8 @@ export function EditEntryForm({
       <Stack gap={6}>
         <Card variant="module">
           <CardHeader>
-            <Stack direction="row" align="center" justify="between">
-              <Stack direction="row" align="center" gap={2}>
+            <Stack direction="row" align="center" justify="between" wrap gap={3}>
+              <Stack direction="row" align="center" gap={2} wrap>
                 <Heading level={3}>Status</Heading>
                 <Badge color={status === 'published' ? 'success' : 'outline'}>{status}</Badge>
                 <AutosaveIndicator
@@ -384,7 +384,7 @@ export function EditEntryForm({
                   }}
                 />
               </Stack>
-              <Stack direction="row" align="center" gap={2}>
+              <Stack direction="row" align="center" gap={2} wrap>
                 {routable && (
                   <PreviewButton
                     entryId={id}

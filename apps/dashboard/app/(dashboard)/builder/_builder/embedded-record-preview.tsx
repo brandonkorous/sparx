@@ -31,6 +31,10 @@ import { buildNodeFieldMaps, buildRecordPreviewData, fieldKeySet } from './recor
 export interface EmbeddedRecordPreviewProps {
   /** The collection template the entry renders through (the chosen/default page). */
   tree: BuilderNode;
+  /** The active site layout (header / outlet / footer). When set, the template is
+   *  framed inside it — the FULL page the storefront ships — rendered as a locked
+   *  backdrop so only the content (at the Outlet) drives the click-to-edit bridge. */
+  chrome?: BuilderNode | null;
   catalog: BindingCatalog;
   /** The content type key — the record source the template binds (`<typeKey>.*`). */
   typeKey: string;
@@ -51,6 +55,7 @@ export interface EmbeddedRecordPreviewProps {
 
 export function EmbeddedRecordPreview({
   tree,
+  chrome,
   catalog,
   typeKey,
   body,
@@ -86,6 +91,7 @@ export function EmbeddedRecordPreview({
   return (
     <Canvas
       tree={tree}
+      chrome={chrome ?? null}
       data={data}
       catalog={catalog}
       device={device}

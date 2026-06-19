@@ -181,6 +181,7 @@ export function EntryEditorWorkspace({ form, preview }: EntryEditorWorkspaceProp
       <div className="h-[78vh] overflow-hidden rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
         <EmbeddedRecordPreview
           tree={preview.tree}
+          chrome={preview.chrome}
           catalog={preview.catalog}
           typeKey={preview.typeKey}
           body={body}
