@@ -40,7 +40,7 @@ export default {
           type: 'Card',
           props: {},
           class:
-            'mx-auto w-full max-w-site rounded-box flex flex-col @3xl:flex-row overflow-hidden bg-white shadow-lg border border-base-300',
+            'mx-auto w-full max-w-site rounded-box flex flex-col @3xl:flex-row overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
           children: [
             {
               id: 'ffb-212',
@@ -129,7 +129,7 @@ export default {
           type: 'Card',
           props: {},
           class:
-            'mx-auto w-full max-w-site rounded-box flex flex-col @3xl:flex-row overflow-hidden bg-white shadow-lg border border-base-300',
+            'mx-auto w-full max-w-site rounded-box flex flex-col @3xl:flex-row overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
           children: [
             {
               id: 'ffb-222',

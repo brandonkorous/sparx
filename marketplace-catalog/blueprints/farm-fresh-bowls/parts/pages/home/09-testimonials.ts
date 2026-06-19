@@ -35,7 +35,7 @@ export default {
               type: 'Card',
               props: {},
               class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10 bg-white shadow-lg border border-base-300',
+                'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10 bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
                   id: 'ffb-234',
@@ -106,7 +106,7 @@ export default {
               type: 'Card',
               props: {},
               class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10 bg-white shadow-lg border border-base-300',
+                'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10 bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
                   id: 'ffb-242',
@@ -177,7 +177,7 @@ export default {
               type: 'Card',
               props: {},
               class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10 bg-white shadow-lg border border-base-300',
+                'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10 bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
                   id: 'ffb-250',

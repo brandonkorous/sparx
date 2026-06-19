@@ -111,7 +111,7 @@ export default {
               type: 'Card',
               props: {},
               class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300',
+                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
                   id: 'ffb-86',
@@ -205,7 +205,7 @@ export default {
               type: 'Card',
               props: {},
               class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300',
+                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
                   id: 'ffb-97',
@@ -299,7 +299,7 @@ export default {
               type: 'Card',
               props: {},
               class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300',
+                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
                   id: 'ffb-108',
@@ -419,7 +419,7 @@ export default {
               type: 'Card',
               props: {},
               class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300',
+                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
                   id: 'ffb-122',
@@ -490,7 +490,7 @@ export default {
               type: 'Card',
               props: {},
               class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300',
+                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
                   id: 'ffb-130',
@@ -561,7 +561,7 @@ export default {
               type: 'Card',
               props: {},
               class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300',
+                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
                   id: 'ffb-138',
@@ -632,7 +632,7 @@ export default {
               type: 'Card',
               props: {},
               class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300',
+                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
                   id: 'ffb-146',
@@ -729,7 +729,7 @@ export default {
               type: 'Card',
               props: {},
               class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300',
+                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
                   id: 'ffb-157',
@@ -823,7 +823,7 @@ export default {
               type: 'Card',
               props: {},
               class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300',
+                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
                   id: 'ffb-168',
@@ -917,7 +917,7 @@ export default {
               type: 'Card',
               props: {},
               class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300',
+                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
                   id: 'ffb-179',

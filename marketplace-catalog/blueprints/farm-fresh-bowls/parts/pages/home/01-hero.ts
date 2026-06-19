@@ -15,7 +15,7 @@ export default {
       type: 'Section',
       props: {},
       class:
-        'rounded-box bg-accent text-accent-content flex flex-col gap-4 justify-center items-center p-8 @3xl:p-16 text-center w-full max-w-2xl rounded-box shadow-lg',
+        'rounded-box bg-accent text-accent-content flex flex-col gap-4 justify-center items-center p-8 @3xl:p-16 text-center w-fit rounded-box shadow-lg',
       children: [
         {
           id: 'ffb-32',

@@ -14,7 +14,7 @@ export default {
       type: 'Card',
       props: {},
       class:
-        'mx-auto w-full max-w-site rounded-box bg-primary text-primary-content flex flex-col gap-4 justify-between items-start p-9',
+        'mx-auto w-full max-w-site rounded-box bg-primary text-primary-content flex flex-col gap-4 justify-between items-start p-9 st-hover--lift',
       children: [
         {
           id: 'ffb-260',
@@ -48,7 +48,7 @@ export default {
       type: 'Card',
       props: {},
       class:
-        'mx-auto w-full max-w-site rounded-box bg-secondary text-secondary-content flex flex-col gap-4 justify-between items-start p-9',
+        'mx-auto w-full max-w-site rounded-box bg-secondary text-secondary-content flex flex-col gap-4 justify-between items-start p-9 st-hover--lift',
       children: [
         {
           id: 'ffb-264',

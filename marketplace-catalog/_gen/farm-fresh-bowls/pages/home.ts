@@ -51,7 +51,10 @@ export function homeTree(): BuilderNode {
         layout: { direction: 'stack', gap: 'none', alignItems: 'center', justify: 'center' },
         children: [
           node('Section', {
-            cls: 'w-full max-w-2xl rounded-box shadow-lg',
+            // The berry hero card sizes to its CONTENT (w-fit, no max-width) so it
+            // hugs the heading/buttons instead of stretching to a fixed 2xl column —
+            // it renders tighter and reads as a centered block, not a wide band.
+            cls: 'w-fit rounded-box shadow-lg',
             box: { surface: 'accent', padding: 'xl', align: 'center', contentWidth: 'full' },
             layout: { direction: 'stack', gap: 'md', alignItems: 'center', justify: 'center' },
             children: [
@@ -231,7 +234,7 @@ export function homeTree(): BuilderNode {
         layout: { direction: 'grid', columns: 2, gap: 'lg' },
         children: [
           node('Card', {
-            cls: 'p-9',
+            cls: 'p-9 st-hover--lift',
             box: { surface: 'brand', padding: 'none' },
             layout: { direction: 'stack', gap: 'md', alignItems: 'start', justify: 'between' },
             children: [
@@ -246,7 +249,7 @@ export function homeTree(): BuilderNode {
             ],
           }),
           node('Card', {
-            cls: 'p-9',
+            cls: 'p-9 st-hover--lift',
             box: { surface: 'secondary', padding: 'none' },
             layout: { direction: 'stack', gap: 'md', alignItems: 'start', justify: 'between' },
             children: [

@@ -19,7 +19,13 @@ export const BODY = '#54513F'; // base-content (body copy)
 // shadow + hairline border (the page itself is cream/base-100, so a bare card
 // would melt into it — the white + shadow is what makes a card read as a card).
 // The 28px corner already comes from the Card type's `rounded-box`.
-export const CARD_CLS = 'bg-white shadow-lg border border-base-300';
+//
+// `st-hover--lift` is the platform hover-effect token (surface-compile/motion.ts):
+// the card rises + deepens its shadow on hover, matching the mockup's `.card:hover`.
+// It is the platform primitive — reduced-motion aware on its own — NOT a hand-rolled
+// `hover:-translate-y-1`, so every blueprint card animates the same way and a tenant
+// can re-pick the effect from the inspector's Hover control.
+export const CARD_CLS = 'bg-white shadow-lg border border-base-300 st-hover--lift';
 
 // ── Manifest brand + theme ──────────────────────────────────────────────────────
 
