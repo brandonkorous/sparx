@@ -696,8 +696,8 @@ const contentHandler: KindHandler = {
       typeKey: row.typeKey,
       slug: row.slug,
       status: row.status,
-      body: (row.body ?? {}),
-      seo: (row.seoJson ?? {}),
+      body: row.body ?? {},
+      seo: row.seoJson ?? {},
     });
   },
   async writeMerged(env, artifact, merged) {
@@ -706,7 +706,7 @@ const contentHandler: KindHandler = {
     await withTenant(env.ctx, async (tx) => {
       const type = await resolveType(tx, merged.typeKey as string);
       const schema = parseTypeSchema(type);
-      const body = validateAndNormalizeBody(schema, (merged.body ?? {}));
+      const body = validateAndNormalizeBody(schema, merged.body ?? {});
       const seo = (merged.seo ?? {}) as Record<string, unknown>;
       const status = (merged.status as string) ?? 'draft';
       await tx.contentEntry.update({
