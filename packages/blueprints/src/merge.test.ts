@@ -2,12 +2,12 @@ import { describe, expect, it } from 'vitest';
 
 import { canonicalEqual, mergeByKey, mergeTree, mergeValue, resolverFrom } from './merge';
 
-type N = {
+interface N {
   id: string;
   type: string;
   props: Record<string, unknown>;
   children?: N[];
-};
+}
 const node = (
   id: string,
   type: string,
@@ -154,7 +154,7 @@ describe('mergeTree — node-keyed builder-tree merge', () => {
       node('a', 'Heading', { text: 'Welcome' }),
       node('b', 'Text', { text: 'New body' }),
     ]);
-    const r = mergeTree(base as never, current as never, incoming as never);
+    const r = mergeTree(base, current, incoming);
     const merged = r.merged as N;
     expect(merged.children?.find((c) => c.id === 'a')?.props.text).toBe('Howdy'); // tenant kept
     expect(merged.children?.find((c) => c.id === 'b')?.props.text).toBe('New body'); // author applied
@@ -170,7 +170,7 @@ describe('mergeTree — node-keyed builder-tree merge', () => {
       node('a', 'Heading', { text: 'Greetings' }),
       node('b', 'Text', { text: 'Body' }),
     ]);
-    const r = mergeTree(base as never, current as never, incoming as never);
+    const r = mergeTree(base, current, incoming);
     const merged = r.merged as N;
     expect(merged.children?.find((c) => c.id === 'a')?.props.text).toBe('Howdy'); // tenant wins
     expect(r.changes.filter((c) => c.type === 'conflict')).toHaveLength(1);
@@ -183,7 +183,7 @@ describe('mergeTree — node-keyed builder-tree merge', () => {
       node('b', 'Text', { text: 'Body' }),
       node('c', 'Button', { label: 'Shop' }),
     ]);
-    const r = mergeTree(base as never, current as never, incoming as never);
+    const r = mergeTree(base, current, incoming);
     const merged = r.merged as N;
     expect(merged.children?.map((c) => c.id)).toEqual(['a', 'b', 'c']);
     expect(r.changes).toHaveLength(1);
@@ -195,7 +195,7 @@ describe('mergeTree — node-keyed builder-tree merge', () => {
     const incoming = node('root', 'Section', { pad: 4 }, [
       node('a', 'Heading', { text: 'Welcome' }),
     ]);
-    const r = mergeTree(base as never, current as never, incoming as never);
+    const r = mergeTree(base, current, incoming);
     const merged = r.merged as N;
     expect(merged.children?.map((c) => c.id)).toEqual(['a']); // b removed
   });
@@ -208,7 +208,7 @@ describe('mergeTree — node-keyed builder-tree merge', () => {
     const incoming = node('root', 'Section', { pad: 4 }, [
       node('a', 'Heading', { text: 'Welcome' }),
     ]);
-    const r = mergeTree(base as never, current as never, incoming as never);
+    const r = mergeTree(base, current, incoming);
     const merged = r.merged as N;
     expect(merged.children?.find((c) => c.id === 'b')?.props.text).toBe('My custom body'); // kept
   });
