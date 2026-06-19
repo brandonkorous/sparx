@@ -91,7 +91,7 @@ export function PreviewButton({
         loading={pending}
         aria-label={recentlyCopied ? 'Preview link copied' : 'Copy preview link'}
       >
-        {recentlyCopied ? 'Copied' : 'Preview link'}
+        {recentlyCopied ? 'Copied' : 'Preview'}
       </Button>
       {manualCopyUrl && (
         <Text size="xs" variant="muted" aria-live="polite">

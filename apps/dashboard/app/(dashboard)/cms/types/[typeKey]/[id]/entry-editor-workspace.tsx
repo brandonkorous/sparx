@@ -166,7 +166,9 @@ export function EntryEditorWorkspace({ form, preview }: EntryEditorWorkspaceProp
       ref={formHostRef}
       onFocusCapture={onFormFocus}
       className={cn(
-        'min-w-0',
+        // The form pane scrolls on its own so the preview stays put — the editor
+        // fills the content area instead of scrolling the whole page (a builder).
+        'min-h-0 min-w-0 overflow-y-auto',
         view === 'preview' && 'hidden',
         view === 'split' && 'hidden lg:block lg:w-[440px] lg:flex-none',
         view === 'form' && 'w-full flex-1'
@@ -177,8 +179,8 @@ export function EntryEditorWorkspace({ form, preview }: EntryEditorWorkspaceProp
   );
 
   const previewPane = (
-    <div className={cn('min-w-0 flex-1', view === 'form' && 'hidden', 'lg:sticky lg:top-4')}>
-      <div className="h-[78vh] overflow-hidden rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
+    <div className={cn('min-h-0 min-w-0 flex-1', view === 'form' && 'hidden')}>
+      <div className="h-full overflow-hidden rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
         <EmbeddedRecordPreview
           tree={preview.tree}
           chrome={preview.chrome}
@@ -203,8 +205,8 @@ export function EntryEditorWorkspace({ form, preview }: EntryEditorWorkspaceProp
           paints in the merchant's brand (parity with /builder/studio). */}
       {preview.themeCss ? <style dangerouslySetInnerHTML={{ __html: preview.themeCss }} /> : null}
 
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between gap-3 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2">
+      <div className="flex h-full min-h-0 flex-col gap-4">
+        <div className="flex shrink-0 items-center justify-between gap-3 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2">
           <Segmented
             value={view}
             onChange={setView}
@@ -234,7 +236,7 @@ export function EntryEditorWorkspace({ form, preview }: EntryEditorWorkspaceProp
           </div>
         </div>
 
-        <div className="flex items-start gap-6">
+        <div className="flex min-h-0 flex-1 gap-6">
           {formPane}
           {previewPane}
         </div>

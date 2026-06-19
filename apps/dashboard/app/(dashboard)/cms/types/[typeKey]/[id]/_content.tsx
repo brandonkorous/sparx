@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { Badge, Heading, Stack, Text } from '@sparx/ui';
+import { Badge, Container, Heading, Stack, Text } from '@sparx/ui';
 import type { FieldDef } from '@sparx/cms-schemas';
 import type { BuilderTemplateOption } from '@sparx/builder-schemas';
 
@@ -160,22 +160,51 @@ export async function ContentEntryDetailContent({
     initialPropertyIds: entry.propertyIds ?? [],
   };
 
-  return (
-    <Stack gap={6}>
-      <Stack gap={2}>
-        <Stack direction="row" align="center" gap={2}>
-          <Heading level={1}>{title || `Untitled ${lowerType}`}</Heading>
-          <Badge color="module">{lowerType}</Badge>
-          <Badge color={entry.status === 'published' ? 'success' : 'outline'}>{entry.status}</Badge>
-        </Stack>
-        {entry.slug && (
-          <Text size="sm" variant="muted">
-            <code>/{entry.slug}</code>
-          </Text>
-        )}
+  const heading = (
+    <Stack gap={2}>
+      <Stack direction="row" align="center" gap={2}>
+        <Heading level={1}>{title || `Untitled ${lowerType}`}</Heading>
+        <Badge color="module">{lowerType}</Badge>
+        <Badge color={entry.status === 'published' ? 'success' : 'outline'}>{entry.status}</Badge>
       </Stack>
-
-      <EntryEditorWorkspace form={formProps} preview={preview} />
+      {entry.slug && (
+        <Text size="sm" variant="muted">
+          <code>/{entry.slug}</code>
+        </Text>
+      )}
     </Stack>
+  );
+
+  // Full-page WITH a live preview: the editor IS a builder, so it fills the content
+  // area edge-to-edge (docs/51 §6) — a compact heading bar over a workspace that
+  // owns the remaining height (its panes scroll internally, not the page). The
+  // explicit viewport height (shell = h-12 header over the scroll area) sidesteps
+  // the CMS ModuleProvider's broken `h-full` percentage chain.
+  if (preview) {
+    return (
+      <div className="flex h-[calc(100dvh-3rem)] min-h-0 flex-col gap-4 px-6 py-4">
+        <div className="shrink-0">{heading}</div>
+        <div className="min-h-0 flex-1">
+          <EntryEditorWorkspace form={formProps} preview={preview} />
+        </div>
+      </div>
+    );
+  }
+
+  // No live preview: the original stacked editor. The full-page route wraps it in
+  // the width-constrained Container + padding the drawer (which also mounts this,
+  // with previewEnabled=false) already provides for itself.
+  const stacked = (
+    <Stack gap={6}>
+      {heading}
+      <EntryEditorWorkspace form={formProps} preview={null} />
+    </Stack>
+  );
+  return previewEnabled ? (
+    <Container size="xl">
+      <Stack className="py-10">{stacked}</Stack>
+    </Container>
+  ) : (
+    stacked
   );
 }
