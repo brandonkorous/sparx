@@ -42,6 +42,9 @@ export default [
           },
         ],
       },
+      featuredImage: {
+        $asset: 'img-blog-sourcing-within-60-miles',
+      },
     },
   },
   {
@@ -82,6 +85,9 @@ export default [
             ],
           },
         ],
+      },
+      featuredImage: {
+        $asset: 'img-blog-eating-with-the-seasons',
       },
     },
   },

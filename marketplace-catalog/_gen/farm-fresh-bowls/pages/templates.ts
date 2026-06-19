@@ -40,8 +40,15 @@ export function postTemplate(): BuilderNode {
       }),
       node('Section', {
         box: { name: 'Post body', padding: 'lg', backgroundWidth: 'full', contentWidth: 'contained' },
-        layout: { direction: 'stack', gap: 'md' },
-        children: [node('Prose', { bind: 'blog_post.body' })],
+        layout: { direction: 'stack', gap: 'lg' },
+        children: [
+          node('Image', {
+            cls: 'w-full rounded-box',
+            bind: 'blog_post.featuredImage',
+            props: { ratio: 'wide', alt: 'Cover' },
+          }),
+          node('Prose', { bind: 'blog_post.body' }),
+        ],
       }),
     ],
   });

@@ -1,14 +1,18 @@
-// Farm Fresh generator — CMS content (the two seeded blog posts). Spread into
-// the manifest's `content` array. No node() calls here (CMS bodies are ProseMirror
-// docs via `doc()`), so this evaluates before any tree is built.
+// Farm Fresh generator — CMS content (the two seeded blog posts) + their featured
+// images. No node() calls here (CMS bodies are ProseMirror docs via `doc()`), so this
+// evaluates before any tree is built. Each post carries a self-contained data-URI cover
+// image (the same brand-emoji `photoSvg` the catalog uses) referenced by `{ $asset }`,
+// so the `blog_post.featuredImage` binding in the post template resolves to a real
+// image — the tenant swaps it for real photography post-install.
 
 import { doc } from './_kit';
+import { photoSvg } from './media';
 
-export const content = [
+/** The seeded posts, each with the `seed` that picks its cover emoji/colour. */
+const POSTS = [
   {
-    typeKey: 'blog_post',
     slug: 'sourcing-within-60-miles',
-    status: 'draft' as const,
+    seed: 'story-care',
     body: {
       title: 'Why we source within 60 miles',
       excerpt: 'Fresher produce, a smaller footprint, and farmers we know by name.',
@@ -20,9 +24,8 @@ export const content = [
     },
   },
   {
-    typeKey: 'blog_post',
     slug: 'eating-with-the-seasons',
-    status: 'draft' as const,
+    seed: 'strawberry',
     body: {
       title: 'Eating with the seasons',
       excerpt: 'How our menu shifts with what the farms are picking.',
@@ -33,4 +36,24 @@ export const content = [
       ),
     },
   },
-];
+] as const;
+
+/** Featured-image assets (one per post) — self-contained data-URI covers, spread into
+ *  the manifest's `assets` alongside the product + brand assets. */
+export const blogImageAssets = POSTS.map((p) => ({
+  id: `img-blog-${p.slug}`,
+  url: photoSvg(p.seed),
+  alt: p.body.title,
+}));
+
+export const content = POSTS.map((p) => ({
+  typeKey: 'blog_post',
+  slug: p.slug,
+  status: 'draft' as const,
+  body: {
+    ...p.body,
+    // `{ $asset }` resolves to the installed MediaAsset id, then validates as the
+    // image field's media id (resolveAssetRefs → validateAndNormalizeBody).
+    featuredImage: { $asset: `img-blog-${p.slug}` },
+  },
+}));

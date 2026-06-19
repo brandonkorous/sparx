@@ -3,14 +3,14 @@
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
 export default {
-  id: 'ffb-347',
+  id: 'ffb-348',
   type: 'Section',
   props: {},
   class: 'flex flex-col gap-4',
   name: 'Email body',
   children: [
     {
-      id: 'ffb-342',
+      id: 'ffb-343',
       type: 'email_wordmark',
       props: {
         treatment: 'lockup',
@@ -19,7 +19,7 @@ export default {
       },
     },
     {
-      id: 'ffb-343',
+      id: 'ffb-344',
       type: 'Heading',
       props: {
         level: 'h1',
@@ -27,7 +27,7 @@ export default {
       },
     },
     {
-      id: 'ffb-344',
+      id: 'ffb-345',
       type: 'Text',
       props: {
         variant: 'body',
@@ -35,7 +35,7 @@ export default {
       },
     },
     {
-      id: 'ffb-345',
+      id: 'ffb-346',
       type: 'Button',
       props: {
         label: 'Start an order',
@@ -44,7 +44,7 @@ export default {
       class: 'st-btn st-c-primary st-v-solid st-btn--sz-md',
     },
     {
-      id: 'ffb-346',
+      id: 'ffb-347',
       type: 'Text',
       props: {
         variant: 'meta',

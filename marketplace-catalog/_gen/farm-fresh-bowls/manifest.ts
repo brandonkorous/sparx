@@ -11,7 +11,7 @@
 import { brand, theme } from './theme';
 import { assets, commerce } from './commerce';
 import { brandAssets } from './logo';
-import { content } from './cms';
+import { content, blogImageAssets } from './cms';
 import { layoutTree } from './layout';
 import { homeTree } from './pages/home';
 import { menuTree } from './pages/menu';
@@ -23,7 +23,7 @@ import { welcomeEmail } from './email';
 
 export const manifest = {
   key: 'farm-fresh-bowls',
-  version: '1.0.15',
+  version: '1.0.16',
   name: 'Farm Fresh',
   summary:
     'A warm, organic storefront for a fresh-food brand — açaí bowls, smoothies and salads with a full menu, a brand story, locations, catering, and a welcome email. A ready-to-edit retail starter.',
@@ -34,8 +34,9 @@ export const manifest = {
 
   theme,
 
-  // Product imagery + the brand logo/favicon (both self-contained SVG data URIs).
-  assets: [...assets, ...brandAssets],
+  // Product imagery, blog covers, and the brand logo/favicon (all self-contained SVG
+  // data URIs).
+  assets: [...assets, ...blogImageAssets, ...brandAssets],
 
   content,
 
