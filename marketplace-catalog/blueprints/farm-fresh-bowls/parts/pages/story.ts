@@ -68,12 +68,9 @@ export default {
               children: [
                 {
                   id: 'ffb-279',
-                  type: 'Text',
-                  props: {
-                    variant: 'body',
-                    text: '',
-                  },
-                  class: 'block h-[3px] w-16 rounded-full bg-accent',
+                  type: 'Divider',
+                  props: {},
+                  class: 'block h-[3px] w-16 rounded-full border-0 bg-accent',
                 },
                 {
                   id: 'ffb-280',
@@ -160,12 +157,9 @@ export default {
           children: [
             {
               id: 'ffb-287',
-              type: 'Text',
-              props: {
-                variant: 'body',
-                text: '',
-              },
-              class: 'block h-[3px] w-16 rounded-full bg-accent',
+              type: 'Divider',
+              props: {},
+              class: 'block h-[3px] w-16 rounded-full border-0 bg-accent',
             },
             {
               id: 'ffb-288',

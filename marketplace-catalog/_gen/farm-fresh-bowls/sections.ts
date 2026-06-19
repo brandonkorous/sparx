@@ -49,14 +49,14 @@ export function splitBand(opts: {
     box: { padding: 'none' },
     layout: { direction: 'stack', gap: 'md', alignItems: 'start', justify: 'center' },
     children: [
-      // Accent hairline (mockup `.hairline`): a short 3px brand-colored rule. A LEAF
-      // (Text), not a Section — an empty Section renders as a "drop a block here"
-      // placeholder in the builder canvas (an empty container is a drop-zone). A leaf
-      // renders its own box, so the bar shows with no rogue empty-section.
-      node('Text', {
-        cls: `block h-[3px] w-16 rounded-full bg-${accent}`,
-        props: { variant: 'body', text: '' },
-      }),
+      // Accent hairline (mockup `.hairline`): a short 3px brand-colored rule. This is
+      // a Divider — the catalog's rule primitive — NOT a Section or a Text. An empty
+      // Section renders the builder's "drop a block here" placeholder (an empty
+      // container is a drop-zone); an empty Text renders the "Some text" author
+      // placeholder. A Divider is a content-less <hr> that wears node.class and shows
+      // neither. `border-0` drops `st-divider`'s default 1px hairline border so the bar
+      // is a pure 3px accent fill.
+      node('Divider', { cls: `block h-[3px] w-16 rounded-full border-0 bg-${accent}` }),
       node('Heading', {
         cls: `text-4xl @3xl:text-5xl font-bold leading-tight text-${accent}`,
         props: { level: 'h2', text: opts.heading },

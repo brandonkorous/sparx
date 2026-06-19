@@ -37,12 +37,9 @@ export default {
       children: [
         {
           id: 'ffb-51',
-          type: 'Text',
-          props: {
-            variant: 'body',
-            text: '',
-          },
-          class: 'block h-[3px] w-16 rounded-full bg-primary',
+          type: 'Divider',
+          props: {},
+          class: 'block h-[3px] w-16 rounded-full border-0 bg-primary',
         },
         {
           id: 'ffb-52',
