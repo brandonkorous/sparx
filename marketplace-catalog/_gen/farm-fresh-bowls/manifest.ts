@@ -1,0 +1,96 @@
+// Farm Fresh Bowls generator — assembles the full blueprint manifest from the section
+// modules. This is the ONE place the tree builders are invoked, so it owns the shared
+// node-id ordering: ids advance in `node()` call order (CLAUDE.md), and that order is
+// fixed by the property order below — `layout.tree` first, then `pages` (Home, Our
+// Story, Locations, Catering, Product, Blog Post), then `emails` (Welcome). Reorder a
+// property and every downstream id shifts, so KEEP this order stable across edits.
+//
+// `brand`, `theme`, `assets`, `content`, `commerce` are pure data imported above — they
+// contain no node() calls, so no ids are minted until `layout.tree` evaluates.
+
+import { brand, theme } from './theme';
+import { assets, commerce } from './commerce';
+import { content } from './cms';
+import { layoutTree } from './layout';
+import { homeTree } from './pages/home';
+import { storyTree } from './pages/story';
+import { locationsTree } from './pages/locations';
+import { cateringTree } from './pages/catering';
+import { productTemplate, postTemplate } from './pages/templates';
+import { welcomeEmail } from './email';
+
+export const manifest = {
+  key: 'farm-fresh-bowls',
+  version: '1.0.1',
+  name: 'Farm Fresh Bowls',
+  summary:
+    'A warm, organic storefront for a fresh-food brand — açaí bowls, smoothies and salads with a full menu, a brand story, locations, catering, and a welcome email. A ready-to-edit retail starter.',
+  vertical: 'retail',
+  requiresModules: ['builder', 'commerce', 'cms', 'email'],
+
+  brand,
+
+  theme,
+
+  assets,
+
+  content,
+
+  commerce,
+
+  layout: { name: 'Farm Fresh layout', tree: layoutTree(), makeActive: true },
+
+  pages: [
+    {
+      name: 'Home',
+      kind: 'singleton' as const,
+      tree: homeTree(),
+      seoTitle: 'Farm Fresh Bowls — Here to deliver health',
+      seoDescription: 'Balanced, nutritious bowls made with local ingredients — açaí bowls, smoothies and salads.',
+    },
+    {
+      name: 'Our Story',
+      kind: 'singleton' as const,
+      slug: 'story',
+      tree: storyTree(),
+      seoTitle: 'Our Story — Farm Fresh Bowls',
+    },
+    {
+      name: 'Locations',
+      kind: 'singleton' as const,
+      slug: 'locations',
+      tree: locationsTree(),
+      seoTitle: 'Locations — Farm Fresh Bowls',
+    },
+    {
+      name: 'Catering',
+      kind: 'singleton' as const,
+      slug: 'catering',
+      tree: cateringTree(),
+      seoTitle: 'Catering & Events — Farm Fresh Bowls',
+    },
+    {
+      name: 'Product',
+      kind: 'collection' as const,
+      recordType: 'commerce.product',
+      isDefault: true,
+      tree: productTemplate(),
+    },
+    {
+      name: 'Blog Post',
+      kind: 'collection' as const,
+      recordType: 'cms.blog_post',
+      isDefault: true,
+      tree: postTemplate(),
+    },
+  ],
+
+  emails: [
+    {
+      name: 'Welcome',
+      subject: 'Welcome to Farm Fresh Bowls',
+      preheader: 'Fresh menus, new flavors, and the occasional treat.',
+      tree: welcomeEmail(),
+    },
+  ],
+};

@@ -49,8 +49,9 @@ pnpm-debug.log*
 postal-*.png
 
 # Marketplace bundle-authoring scratch (docs/85 — regenerated on demand)
+# NOTE: _gen/ is TRACKED — it's the authored SOURCE that emits the committed blueprint
+# bundles (the generator a developer hand-edits), not scratch. _src/_assets are raw inputs.
 marketplace-catalog/_src/
-marketplace-catalog/_gen/
 marketplace-catalog/_assets/
 apps/dashboard/_marketplace-assets.mjs
 

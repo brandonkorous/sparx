@@ -1,6 +1,6 @@
 // Farm Fresh Bowls — Catering page (GENERATED payload part, docs/85). Pure data, no imports.
 // Safe to hand-edit for a quick tweak; re-running the generator overwrites it. The
-// authoring source of truth is marketplace-catalog/_gen/gen-farm-fresh-bowls.ts.
+// authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
 export default {
   id: 'ffb-312',

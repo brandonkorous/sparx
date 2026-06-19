@@ -1,6 +1,6 @@
 // Farm Fresh Bowls — Home page (GENERATED payload part, docs/85). Pure data, no imports.
 // Safe to hand-edit for a quick tweak; re-running the generator overwrites it. The
-// authoring source of truth is marketplace-catalog/_gen/gen-farm-fresh-bowls.ts.
+// authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
 import page_home_0 from './home/01-hero';
 import page_home_1 from './home/02-quote';

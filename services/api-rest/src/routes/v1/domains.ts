@@ -424,7 +424,12 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     //    never billed for a domain they didn't get.
     let orderId: string;
     try {
-      ({ orderId } = await registrar.purchaseDomain(host, input.years, input.contact, input.privacy));
+      ({ orderId } = await registrar.purchaseDomain(
+        host,
+        input.years,
+        input.contact,
+        input.privacy
+      ));
     } catch (err) {
       await refundDomainCharge(paymentIntentId).catch(() => undefined);
       throw err;

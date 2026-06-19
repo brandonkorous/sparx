@@ -11,11 +11,15 @@ per-section files (`parts/pages/home/01-hero.ts` …). Each part is pure data wi
 relative imports only (no `@sparx/*`), so the ingest's dynamic-import stays self-
 contained and a human can edit one scoped file instead of a 3,000-line wall.
 
-> **Source of truth is the generator**, not the emitted bundle:
-> [`marketplace-catalog/_gen/gen-farm-fresh-bowls.ts`](../../_gen/gen-farm-fresh-bowls.ts).
-> Edit it (friendly `node({box,layout})` vocabulary), then re-run:
+> **Source of truth is the generator**, not the emitted bundle. The generator is itself
+> a module folder (not a single wall): [`marketplace-catalog/_gen/farm-fresh-bowls/`](../../_gen/farm-fresh-bowls/)
+> — `_kit` (the shared `node()` helper + id counter), `theme`, `media`, `sections`,
+> `layout`, `pages/*`, `email`, `manifest` (assembles + owns the node-id order), `emit`
+> (writes the multi-file payload) — run via the thin entry
+> [`_gen/gen-farm-fresh-bowls.ts`](../../_gen/gen-farm-fresh-bowls.ts). Edit a module
+> (friendly `node({box,layout})` vocabulary), then re-run:
 > `pnpm --filter @sparx/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-farm-fresh-bowls.ts"`
-> then `npx prettier --write marketplace-catalog/blueprints/farm-fresh-bowls/**/*.ts`.
+> then `npx prettier --write "marketplace-catalog/blueprints/farm-fresh-bowls/**/*.ts"`.
 > A part is safe to hand-edit for a quick tweak, but the generator overwrites it.
 
 **What it provisions** (all as draft):

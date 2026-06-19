@@ -1,6 +1,14 @@
 // Minimal GoDaddy API subset for the domain-worker: DNS configuration retry
 // and the sparx DNS record set builder. Only configureDNS and buildSparxDnsRecords
-// are needed here — the full client lives in services/api-rest/src/lib/godaddy.ts.
+// are needed here — the full client lives in the @sparx/godaddy package.
+//
+// NOTE: this is a standalone copy that has NOT yet been migrated to the
+// @sparx/registrar `RegistrarClient` contract (unlike api-rest / api-mcp), and
+// its record set has drifted from the contract's (Mailgun SPF + p=none DMARC
+// here vs _spf.sparx.email + p=quarantine in @sparx/registrar). Before name.com
+// goes live this worker must move onto the contract too — otherwise a DNS-config
+// retry for a name.com-registered domain would still call GoDaddy. Reconciling
+// the two record sets is part of that follow-up.
 
 import { env } from './env.js';
 
