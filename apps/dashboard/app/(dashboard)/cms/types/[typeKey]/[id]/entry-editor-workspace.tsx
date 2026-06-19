@@ -179,7 +179,12 @@ export function EntryEditorWorkspace({ form, preview }: EntryEditorWorkspaceProp
       className={cn(
         // The form pane scrolls on its own so the preview stays put — the editor
         // fills the content area instead of scrolling the whole page (a builder).
-        'min-h-0 min-w-0 overflow-y-auto',
+        // `relative` makes the pane the containing block for its absolutely-
+        // positioned descendants — notably Radix Select's visually-hidden native
+        // <select> (e.g. the SEO robots field). Without it those escape the pane's
+        // clip and get placed at the trigger's deep document Y, inflating
+        // html.scrollHeight and giving the whole page a phantom scroll.
+        'relative min-h-0 min-w-0 overflow-y-auto',
         effectiveView === 'preview' && 'hidden',
         // Split is desktop-only (effectiveView coerces it away below lg), so the form
         // takes a fixed side column there; full width when it's the sole pane.
