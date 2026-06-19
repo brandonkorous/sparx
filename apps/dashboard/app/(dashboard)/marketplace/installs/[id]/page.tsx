@@ -9,6 +9,7 @@ import { LayoutTemplate } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
 import {
   Badge,
+  Button,
   Card,
   CardContent,
   CardHeader,
@@ -59,10 +60,17 @@ export default async function InstallReviewPage({ params }: { params: Promise<{ 
     .catch(() => null);
   if (!install) notFound();
   const summary = await api
-    .get<{ name: string }>(`/v1/blueprints/${encodeURIComponent(install.blueprint_key)}`)
+    .get<{
+      name: string;
+      version: string;
+    }>(`/v1/blueprints/${encodeURIComponent(install.blueprint_key)}`)
     .catch(() => null);
   const name = summary?.name ?? install.blueprint_key;
   const isLive = install.status === 'live';
+  // Version drift (docs/55 §6): the catalog moved ahead of what's installed → offer
+  // a non-destructive Update (it keeps the tenant's edits).
+  const latestVersion = summary?.version;
+  const updateAvailable = Boolean(latestVersion && latestVersion !== install.blueprint_version);
 
   const a = install.artifacts;
   // Deep-link each artifact into its editor. Per-id routes where they exist
@@ -135,6 +143,16 @@ export default async function InstallReviewPage({ params }: { params: Promise<{ 
             status={install.status}
             canManage={canManage}
           />
+          {updateAvailable ? (
+            <>
+              <Badge color="warning" variant="soft">
+                v{latestVersion} available
+              </Badge>
+              <Button color="primary" variant="soft" asChild>
+                <Link href={`/marketplace/installs/${install.id}/update`}>Review update</Link>
+              </Button>
+            </>
+          ) : null}
         </Stack>
 
         {groups.length === 0 ? (

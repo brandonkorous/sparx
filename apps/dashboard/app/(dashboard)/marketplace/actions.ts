@@ -117,3 +117,32 @@ export async function deleteBlueprintAction(
     return { ok: false, error: { message: e.message ?? 'Delete failed.' } };
   }
 }
+
+// Apply a blueprint UPDATE (docs/55 §6): three-way merges the latest version onto
+// the install, keeping every tenant edit by default. `takeTheirs` is the list of
+// conflict ids (`${kind}:${naturalKey}#${path}`) the tenant chose to take from the
+// blueprint instead. Non-destructive — confirm-gated in the UI.
+export async function applyUpdateAction(
+  installId: string,
+  takeTheirs: string[]
+): Promise<
+  ActionResult<{ fromVersion: string; toVersion: string; applied: number; conflicts: number }>
+> {
+  try {
+    const data = await api.post<{
+      fromVersion: string;
+      toVersion: string;
+      applied: number;
+      conflicts: number;
+    }>(`/v1/blueprints/installs/${encodeURIComponent(installId)}/update`, {
+      take_theirs: takeTheirs,
+    });
+    revalidatePath('/marketplace');
+    revalidatePath('/builder/blueprints');
+    revalidatePath(`/marketplace/installs/${installId}`);
+    return { ok: true, data };
+  } catch (err) {
+    const e = err as ApiRestError;
+    return { ok: false, error: { message: e.message ?? 'Update failed.' } };
+  }
+}
