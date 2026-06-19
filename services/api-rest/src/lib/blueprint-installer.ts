@@ -288,6 +288,69 @@ async function linkProductRelations(
   });
 }
 
+/** Re-link a REUSED product's images to the CURRENT media assets. A reused product
+ *  keeps the `VariantImage` rows from a PRIOR install, but a reset HARD-deletes the
+ *  media assets those rows point at and this install re-creates them with FRESH ids —
+ *  so the stored `mediaAssetId` 404s on the storefront (the card renders its alt, no
+ *  photo). Surgical + reconcile-safe: drop only the image rows whose asset no longer
+ *  exists (the dangling ones), then add the blueprint's images against the freshly
+ *  installed assets, idempotently (skip an asset the product already shows). A
+ *  tenant's own valid product images are left untouched. `images` is pre-resolved to
+ *  live `mediaAssetId`s + the reused product's variant ids. */
+async function relinkProductImages(
+  ctx: ReconcileCtx,
+  productId: string,
+  images: Array<{
+    mediaAssetId: string;
+    variantId?: string;
+    position?: number;
+    alt?: string;
+    isPrimary?: boolean;
+  }>
+): Promise<void> {
+  // Drop dangling image rows (mediaAssetId points at an asset a prior reset removed).
+  await withTenant(ctx, async (tx) => {
+    const rows = await tx.variantImage.findMany({
+      where: { productId },
+      select: { id: true, mediaAssetId: true },
+    });
+    if (rows.length === 0) return;
+    const assetIds = [...new Set(rows.map((r) => r.mediaAssetId))];
+    const alive = new Set(
+      (
+        await tx.mediaAsset.findMany({ where: { id: { in: assetIds } }, select: { id: true } })
+      ).map((a) => a.id)
+    );
+    const staleIds = rows.filter((r) => !alive.has(r.mediaAssetId)).map((r) => r.id);
+    if (staleIds.length > 0) {
+      await tx.variantImageOptionValue.deleteMany({ where: { variantImageId: { in: staleIds } } });
+      await tx.variantImage.deleteMany({ where: { id: { in: staleIds } } });
+    }
+  });
+  // Add the blueprint's images, skipping any the product already shows (idempotent).
+  for (const img of images) {
+    const existing = await withTenant(ctx, (tx) =>
+      tx.variantImage.findFirst({
+        where: { productId, mediaAssetId: img.mediaAssetId },
+        select: { id: true },
+      })
+    );
+    const id =
+      existing?.id ??
+      (
+        await variantService.addImage(ctx, {
+          productId,
+          variantId: img.variantId,
+          mediaAssetId: img.mediaAssetId,
+          position: img.position,
+          alt: img.alt,
+          optionValueIds: [],
+        })
+      ).id;
+    if (img.isPrimary) await variantService.setPrimaryImage(ctx, id);
+  }
+}
+
 // ── install ─────────────────────────────────────────────────────────────────────
 
 /** Already-installed guard. Returns the existing row (any status) or null. */
@@ -623,7 +686,11 @@ export async function installBlueprint(
         // product are intentionally not added (leave the existing product untouched).
         const reusedId = await reuseOrRestoreProduct(ctx, p.handle);
         if (reusedId) {
-          for (const v of p.variants) await reuseOrRestoreVariant(ctx, v.sku);
+          const skuToVariant = new Map<string, string>();
+          for (const v of p.variants) {
+            const vid = await reuseOrRestoreVariant(ctx, v.sku);
+            if (vid) skuToVariant.set(v.sku, vid);
+          }
           // Wire the reused product into the blueprint's categories/collections + site
           // so the bound grids actually render it (additive — see linkProductRelations).
           const categoryIds = p.categoryHandles
@@ -633,6 +700,21 @@ export async function installBlueprint(
             .map((h) => collMap.get(h))
             .filter((x): x is string => !!x);
           await linkProductRelations(ctx, reusedId, categoryIds, collectionIds, propertyId);
+          // Re-link images to the CURRENT assets: a reused product's stored image rows
+          // point at assets a prior reset deleted, so the storefront 404s the photo.
+          const reuseImages: Parameters<typeof relinkProductImages>[2] = [];
+          for (const img of p.images) {
+            const mediaAssetId = asset(img.assetId);
+            if (!mediaAssetId) continue;
+            reuseImages.push({
+              mediaAssetId,
+              variantId: img.variantSku ? skuToVariant.get(img.variantSku) : undefined,
+              position: img.position,
+              alt: img.alt,
+              isPrimary: img.isPrimary,
+            });
+          }
+          await relinkProductImages(ctx, reusedId, reuseImages);
           result.products.push({ handle: p.handle, id: reusedId });
           continue;
         }
