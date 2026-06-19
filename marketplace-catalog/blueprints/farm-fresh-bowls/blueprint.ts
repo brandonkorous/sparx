@@ -17,7 +17,7 @@ import email_welcome from './parts/emails/welcome';
 
 export default {
   key: 'farm-fresh-bowls',
-  version: '1.0.1',
+  version: '1.0.2',
   name: 'Farm Fresh Bowls',
   summary:
     'A warm, organic storefront for a fresh-food brand — açaí bowls, smoothies and salads with a full menu, a brand story, locations, catering, and a welcome email. A ready-to-edit retail starter.',
@@ -36,6 +36,24 @@ export default {
       heading: 'Quicksand',
       body: 'Nunito',
     },
+    socials: [
+      {
+        platform: 'instagram',
+        url: 'https://instagram.com/farmfreshbowls',
+      },
+      {
+        platform: 'facebook',
+        url: 'https://facebook.com/farmfreshbowls',
+      },
+      {
+        platform: 'x',
+        url: 'https://x.com/farmfreshbowls',
+      },
+      {
+        platform: 'tiktok',
+        url: 'https://tiktok.com/@farmfreshbowls',
+      },
+    ],
   },
   theme: {
     name: 'Farm Fresh',

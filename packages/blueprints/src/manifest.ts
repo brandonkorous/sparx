@@ -114,6 +114,19 @@ export const BrandDecl = z.object({
   logoLightAssetId: ManifestId.optional(),
   logoDarkAssetId: ManifestId.optional(),
   faviconAssetId: ManifestId.optional(),
+  // Example social links the install seeds into the site's per-site links
+  // (Property.settings.socials) so the footer's SocialLinks renders out of the box.
+  // Placeholder handles the tenant swaps post-install (like the placeholder imagery);
+  // the installer only seeds them when the site has none, never clobbering edits.
+  socials: z
+    .array(
+      z.object({
+        platform: z.string().min(1).max(40),
+        url: z.string().min(1).max(500),
+      })
+    )
+    .max(12)
+    .optional(),
 });
 export type BrandDecl = z.infer<typeof BrandDecl>;
 

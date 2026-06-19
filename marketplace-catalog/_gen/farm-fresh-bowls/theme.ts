@@ -33,6 +33,15 @@ export const brand = {
     secondary: MANGO,
   },
   fonts: { heading: 'Quicksand', body: 'Nunito' },
+  // Example social handles the install seeds into the site's per-site links so the
+  // footer's SocialLinks renders icons out of the box (the tenant swaps these, like
+  // the placeholder imagery). Platform keys map to brand icons in @sparx/site-ui.
+  socials: [
+    { platform: 'instagram', url: 'https://instagram.com/farmfreshbowls' },
+    { platform: 'facebook', url: 'https://facebook.com/farmfreshbowls' },
+    { platform: 'x', url: 'https://x.com/farmfreshbowls' },
+    { platform: 'tiktok', url: 'https://tiktok.com/@farmfreshbowls' },
+  ],
 };
 
 export const theme = {

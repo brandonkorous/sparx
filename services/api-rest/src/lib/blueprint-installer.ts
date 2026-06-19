@@ -213,13 +213,13 @@ export async function installBlueprint(
     // (docs/49 §3): the primary writes the tenant-wide brand; a SECONDARY site
     // writes its own per-property `brand_override`, so installing onto one site
     // never rebrands its siblings.
-    const isPrimary = await withTenant(ctx, async (tx) => {
-      const prop = await tx.property.findUnique({
+    const prop = await withTenant(ctx, (tx) =>
+      tx.property.findUnique({
         where: { id: propertyId },
-        select: { isPrimary: true },
-      });
-      return prop?.isPrimary ?? true;
-    });
+        select: { isPrimary: true, name: true, settings: true },
+      })
+    );
+    const isPrimary = prop?.isPrimary ?? true;
 
     // 3. Brand identity
     const b = blueprint.brand;
@@ -268,6 +268,36 @@ export async function installBlueprint(
           data: { brandOverride: override },
         })
       );
+    }
+
+    // 3b. Site name + social links on the TARGET property (docs/49). The customer-
+    // facing site name is Property.name (storefront chrome/title/OG read it), seeded
+    // from the tenant name at provisioning — so brand it from the blueprint ONLY when
+    // it's still the seed placeholder 'Default'/empty, never clobbering a name the
+    // merchant already chose (mirrors db:backfill:property-name). Seed the per-site
+    // social links the footer's SocialLinks renders, but only when the site has none
+    // (placeholder handles the tenant swaps post-install, like the placeholder imagery).
+    {
+      const update: Prisma.PropertyUpdateInput = {};
+      const currentName = (prop?.name ?? '').trim();
+      if (currentName === '' || currentName === 'Default') update.name = b.businessName;
+
+      const seedSocials = b.socials ?? [];
+      const settings =
+        prop?.settings && typeof prop.settings === 'object' && !Array.isArray(prop.settings)
+          ? (prop.settings as Record<string, unknown>)
+          : {};
+      const existingSocials = (settings as { socials?: unknown }).socials;
+      const hasSocials = Array.isArray(existingSocials) && existingSocials.length > 0;
+      if (seedSocials.length > 0 && !hasSocials) {
+        update.settings = { ...settings, socials: seedSocials };
+      }
+
+      if (Object.keys(update).length > 0) {
+        await withTenant(ctx, (tx) =>
+          tx.property.update({ where: { id: propertyId }, data: update })
+        );
+      }
     }
 
     // 4. Theme — create the shipped SiteTheme, apply it (working draft), and apply
