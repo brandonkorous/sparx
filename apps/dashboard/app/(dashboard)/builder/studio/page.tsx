@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import type { BindingCatalog, BuilderLayoutDto, BuilderPageDto } from '@sparx/builder-schemas';
-import { buildThemeCssV2, compileThemeForTenant } from '@sparx/site-themes';
 
 import {
   getBrand,
@@ -20,6 +19,7 @@ import {
   listLayouts,
   listPages,
 } from '../_lib/api';
+import { canvasThemeCss } from '../_lib/canvas-theme';
 import type { BrandDto, SiteConfigDto, SiteDto, SitePreviewConfig } from '../_brand/lib/types';
 import { StudioApp } from '../_builder/studio-app';
 import '../builder.css';
@@ -74,23 +74,6 @@ const FALLBACK_CONFIG: SiteConfigDto = {
   createdAt: '',
   updatedAt: '',
 };
-
-// The server-compiled tenant theme scoped to `.bx-canvas` — first-paint brand for
-// the canvas, before the live Theme panel takes over. Uses the EFFECTIVE brand
-// (base, or base+override for a non-primary site) so a non-primary site previews
-// in ITS brand. Defensive: '' on a failed read (the canvas falls back to studio brand).
-function canvasThemeCss(brand: BrandDto, config: SiteConfigDto): string {
-  try {
-    const compiled = compileThemeForTenant({
-      themeKey: config.themeKey,
-      brand,
-      presentation: config.draftSettings.presentation ?? null,
-    });
-    return buildThemeCssV2(compiled, { rootSelector: '.bx-canvas' });
-  } catch {
-    return '';
-  }
-}
 
 async function loadLayouts(): Promise<BuilderLayoutDto[]> {
   try {

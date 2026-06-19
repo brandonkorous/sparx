@@ -1,0 +1,1879 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>sparx · CMS content editor — live preview mockup</title>
+    <!--
+  MOCKUP — CMS content authoring with live, click-to-edit preview.
+  Concept: schema-driven field form (left) + the entry rendered through its
+  bound builder layout (right), linked bidirectionally. Reuses the shipped
+  builder renderer + mapCmsContentType() binding. Tokens mirror @sparx/ui.
+  Try: type in Title/Excerpt → preview updates · click anything in the
+  preview → its field focuses · top-right toggles Form/Split/Preview + device.
+-->
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+
+      :root {
+        --bg-page: #fafafa;
+        --surface: #ffffff;
+        --subtle: #f4f4f5;
+        --muted: #e4e4e7;
+        --border: #e5e5e5;
+        --border-strong: #d4d4d8;
+        --text: #0a0a0a;
+        --text-2: #52525b;
+        --text-3: #a1a1aa;
+        --primary: #6366f1;
+        --cms: #14b8a6;
+        --cms-tint: #f0fdfa;
+        --cms-text: #0f766e;
+        --cms-strong: #0d9488;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --r-sm: 4px;
+        --r-md: 6px;
+        --r-lg: 8px;
+        --r-xl: 12px;
+        --r-2xl: 16px;
+        --sh-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --sh-md: 0 2px 8px 0 rgb(0 0 0 / 0.08);
+        --sh-lg: 0 8px 30px -6px rgb(0 0 0 / 0.14);
+        --sans: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
+        --mono: 'Geist Mono', 'JetBrains Mono', monospace;
+        --serif: 'Lora', 'Georgia', serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        font-family: var(--sans);
+        color: var(--text);
+        background: var(--bg-page);
+        font-size: 14px;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+      svg {
+        display: block;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+      }
+      ::selection {
+        background: var(--cms-tint);
+        color: var(--cms-text);
+      }
+
+      /* ───────────────────────── shell ───────────────────────── */
+      .app {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* module rail (decorative) */
+      .shell {
+        display: flex;
+        flex: 1;
+        min-height: 0;
+      }
+      .rail {
+        width: 208px;
+        flex: none;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 14px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .rail .mod {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 8px 12px;
+      }
+      .rail .mod .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 99px;
+        background: var(--cms);
+      }
+      .rail .mod .lbl {
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-3);
+        font-weight: 500;
+      }
+      .rail .mod .name {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text);
+        margin-left: -4px;
+      }
+      .nav-i {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        height: 32px;
+        padding: 0 8px;
+        border-radius: var(--r-md);
+        color: var(--text-2);
+        font-size: 13px;
+        text-decoration: none;
+      }
+      .nav-i svg {
+        width: 16px;
+        height: 16px;
+        color: var(--text-3);
+      }
+      .nav-i:hover {
+        background: var(--subtle);
+      }
+      .nav-i.active {
+        background: var(--cms-tint);
+        color: var(--cms-text);
+        font-weight: 500;
+      }
+      .nav-i.active svg {
+        color: var(--cms);
+      }
+
+      .work {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        min-height: 0;
+      }
+
+      /* breadcrumb */
+      .crumbs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 44px;
+        flex: none;
+        padding: 0 16px;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text-2);
+        font-size: 13px;
+      }
+      .crumbs a {
+        color: var(--text-2);
+        text-decoration: none;
+      }
+      .crumbs a:hover {
+        color: var(--text);
+      }
+      .crumbs .sep {
+        color: var(--text-3);
+      }
+      .crumbs .here {
+        color: var(--text);
+        font-weight: 500;
+      }
+      .crumbs .spacer {
+        flex: 1;
+      }
+      .crumbs .icbtn {
+        width: 28px;
+        height: 28px;
+        display: grid;
+        place-items: center;
+        border-radius: var(--r-md);
+        color: var(--text-3);
+      }
+      .crumbs .icbtn:hover {
+        background: var(--subtle);
+        color: var(--text-2);
+      }
+
+      /* action bar */
+      .actionbar {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex: none;
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface);
+      }
+      .back {
+        width: 32px;
+        height: 32px;
+        flex: none;
+        display: grid;
+        place-items: center;
+        border-radius: var(--r-md);
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text-2);
+      }
+      .back:hover {
+        background: var(--subtle);
+      }
+      .tile {
+        width: 34px;
+        height: 34px;
+        flex: none;
+        border-radius: var(--r-lg);
+        background: var(--cms-tint);
+        color: var(--cms);
+        display: grid;
+        place-items: center;
+      }
+      .tile svg {
+        width: 18px;
+        height: 18px;
+      }
+      .titlewrap {
+        min-width: 0;
+      }
+      .titlewrap h1 {
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 1.25;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .titlewrap .sub {
+        font-size: 12px;
+        color: var(--text-3);
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .titlewrap .sub b {
+        color: var(--text-2);
+        font-weight: 500;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 22px;
+        padding: 0 9px;
+        border-radius: 99px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+      }
+      .badge .d {
+        width: 6px;
+        height: 6px;
+        border-radius: 99px;
+      }
+      .badge.draft {
+        background: var(--subtle);
+        color: var(--text-2);
+      }
+      .badge.draft .d {
+        background: var(--text-3);
+      }
+      .badge.pub {
+        background: #ecfdf5;
+        color: #047857;
+      }
+      .badge.pub .d {
+        background: var(--success);
+      }
+
+      .saved {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--text-3);
+      }
+      .saved svg {
+        width: 13px;
+        height: 13px;
+        color: var(--success);
+      }
+
+      .grow {
+        flex: 1;
+      }
+
+      /* segmented control */
+      .seg {
+        display: inline-flex;
+        background: var(--subtle);
+        border-radius: var(--r-md);
+        padding: 3px;
+        gap: 2px;
+      }
+      .seg button {
+        border: 0;
+        background: transparent;
+        color: var(--text-2);
+        font-size: 12.5px;
+        font-weight: 500;
+        height: 28px;
+        padding: 0 12px;
+        border-radius: var(--r-sm);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .seg button svg {
+        width: 14px;
+        height: 14px;
+      }
+      .seg button:hover {
+        color: var(--text);
+      }
+      .seg button.on {
+        background: var(--surface);
+        color: var(--text);
+        box-shadow: var(--sh-sm);
+      }
+      .seg.icons button {
+        padding: 0 8px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        height: 34px;
+        padding: 0 14px;
+        border-radius: var(--r-md);
+        font-size: 13px;
+        font-weight: 500;
+        border: 1px solid transparent;
+        white-space: nowrap;
+      }
+      .btn svg {
+        width: 15px;
+        height: 15px;
+      }
+      .btn.ghost {
+        background: transparent;
+        border-color: var(--border);
+        color: var(--text-2);
+      }
+      .btn.ghost:hover {
+        background: var(--subtle);
+        color: var(--text);
+      }
+      .btn.primary {
+        background: var(--cms);
+        color: #fff;
+      }
+      .btn.primary:hover {
+        background: var(--cms-strong);
+      }
+      .btn.split {
+        padding-right: 8px;
+      }
+      .btn.split .cv {
+        margin-left: 2px;
+        padding-left: 8px;
+        border-left: 1px solid rgb(255 255 255 / 0.25);
+        height: 34px;
+        display: flex;
+        align-items: center;
+      }
+
+      /* ───────────────────────── editor body ───────────────────────── */
+      .editor {
+        flex: 1;
+        display: flex;
+        min-height: 0;
+        min-width: 0;
+      }
+      .editor[data-view='form'] .stage {
+        display: none;
+      }
+      .editor[data-view='form'] .formpane {
+        flex: 1;
+        max-width: none;
+      }
+      .editor[data-view='preview'] .formpane {
+        display: none;
+      }
+
+      /* form pane */
+      .formpane {
+        width: 440px;
+        flex: none;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        overflow-y: auto;
+      }
+      .formpane::-webkit-scrollbar {
+        width: 10px;
+      }
+      .formpane::-webkit-scrollbar-thumb {
+        background: var(--muted);
+        border-radius: 99px;
+        border: 3px solid var(--surface);
+      }
+
+      .group {
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--border);
+      }
+      .group:last-child {
+        border-bottom: 0;
+      }
+      .group > h2 {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-3);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+      .group > h2 .ln {
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+
+      .field {
+        margin-bottom: 15px;
+      }
+      .field:last-child {
+        margin-bottom: 0;
+      }
+      .field > label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        margin-bottom: 6px;
+        color: var(--text);
+      }
+      .field .req {
+        color: var(--cms);
+        font-size: 12px;
+      }
+      .field .hint {
+        font-size: 11.5px;
+        color: var(--text-3);
+        margin-top: 5px;
+        line-height: 1.45;
+      }
+      .field .hint code {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--text-2);
+        background: var(--subtle);
+        padding: 1px 4px;
+        border-radius: 4px;
+      }
+
+      .input,
+      .textarea,
+      .selectish {
+        width: 100%;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        border-radius: var(--r-md);
+        font-family: inherit;
+        font-size: 13.5px;
+        color: var(--text);
+        padding: 0 11px;
+        height: 36px;
+        transition:
+          border-color 0.12s,
+          box-shadow 0.12s;
+      }
+      .textarea {
+        height: auto;
+        padding: 9px 11px;
+        line-height: 1.5;
+        resize: vertical;
+        min-height: 64px;
+      }
+      .input::placeholder,
+      .textarea::placeholder {
+        color: var(--text-3);
+      }
+      .input:hover,
+      .textarea:hover,
+      .selectish:hover {
+        border-color: var(--border-strong);
+      }
+      .input:focus,
+      .textarea:focus,
+      .selectish:focus {
+        outline: 0;
+        border-color: var(--cms);
+        box-shadow: 0 0 0 3px rgb(20 184 166 / 0.15);
+      }
+
+      .selectish {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+      }
+      .selectish svg {
+        width: 15px;
+        height: 15px;
+        color: var(--text-3);
+      }
+
+      .slug {
+        display: flex;
+        align-items: center;
+        border: 1px solid var(--border);
+        border-radius: var(--r-md);
+        overflow: hidden;
+        height: 36px;
+      }
+      .slug .pre {
+        padding: 0 4px 0 11px;
+        color: var(--text-3);
+        font-size: 13px;
+        font-family: var(--mono);
+        background: var(--subtle);
+        height: 100%;
+        display: flex;
+        align-items: center;
+        border-right: 1px solid var(--border);
+      }
+      .slug input {
+        border: 0;
+        flex: 1;
+        height: 100%;
+        padding: 0 11px;
+        font-family: var(--mono);
+        font-size: 13px;
+        color: var(--text-2);
+      }
+      .slug input:focus {
+        outline: 0;
+      }
+
+      /* rich text */
+      .rt {
+        border: 1px solid var(--border);
+        border-radius: var(--r-md);
+        overflow: hidden;
+      }
+      .rt .tb {
+        display: flex;
+        align-items: center;
+        gap: 1px;
+        padding: 5px 6px;
+        border-bottom: 1px solid var(--border);
+        background: var(--subtle);
+      }
+      .rt .tb button {
+        width: 28px;
+        height: 28px;
+        border: 0;
+        background: transparent;
+        border-radius: var(--r-sm);
+        color: var(--text-2);
+        display: grid;
+        place-items: center;
+        font-weight: 600;
+        font-size: 13px;
+      }
+      .rt .tb button:hover {
+        background: var(--surface);
+        color: var(--text);
+      }
+      .rt .tb .div {
+        width: 1px;
+        height: 16px;
+        background: var(--border);
+        margin: 0 4px;
+      }
+      .rt .body {
+        padding: 11px;
+        min-height: 96px;
+        font-size: 13.5px;
+        line-height: 1.6;
+        color: var(--text);
+      }
+      .rt .body p {
+        margin-bottom: 8px;
+      }
+      .rt .body p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* asset */
+      .asset {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .asset .thumb {
+        width: 104px;
+        height: 74px;
+        flex: none;
+        border-radius: var(--r-md);
+        border: 1px solid var(--border);
+        background: radial-gradient(
+          120% 130% at 20% 10%,
+          #fde68a 0%,
+          #fca5a5 38%,
+          #f0837b 60%,
+          #c2748f 100%
+        );
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+      }
+      .asset .thumb::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, transparent 50%, rgb(0 0 0 / 0.18));
+      }
+      .asset .meta {
+        flex: 1;
+        min-width: 0;
+      }
+      .asset .meta .fn {
+        font-size: 13px;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .asset .meta .fm {
+        font-size: 11.5px;
+        color: var(--text-3);
+        margin-top: 2px;
+      }
+      .asset .meta .row {
+        display: flex;
+        gap: 6px;
+        margin-top: 9px;
+      }
+      .minibtn {
+        height: 28px;
+        padding: 0 10px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        border-radius: var(--r-md);
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-2);
+      }
+      .minibtn:hover {
+        background: var(--subtle);
+        color: var(--text);
+      }
+      .minibtn.danger:hover {
+        color: var(--danger);
+        border-color: #fecaca;
+      }
+
+      /* reference chip */
+      .refchip {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        border: 1px solid var(--border);
+        border-radius: var(--r-md);
+        padding: 6px 8px;
+      }
+      .refchip .av {
+        width: 28px;
+        height: 28px;
+        border-radius: 99px;
+        flex: none;
+        background: linear-gradient(135deg, #5eead4, #2dd4bf);
+        display: grid;
+        place-items: center;
+        color: #0f766e;
+        font-weight: 600;
+        font-size: 12px;
+      }
+      .refchip .nm {
+        font-size: 13px;
+        font-weight: 500;
+        flex: 1;
+      }
+      .refchip .nm small {
+        display: block;
+        font-weight: 400;
+        color: var(--text-3);
+        font-size: 11px;
+      }
+      .refchip .x {
+        width: 24px;
+        height: 24px;
+        border-radius: var(--r-sm);
+        color: var(--text-3);
+        display: grid;
+        place-items: center;
+      }
+      .refchip .x:hover {
+        background: var(--subtle);
+        color: var(--text-2);
+      }
+
+      /* enum pills */
+      .pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 28px;
+        padding: 0 6px 0 11px;
+        border-radius: 99px;
+        background: var(--cms-tint);
+        color: var(--cms-text);
+        font-size: 12.5px;
+        font-weight: 500;
+      }
+      .pill .x {
+        width: 18px;
+        height: 18px;
+        border-radius: 99px;
+        display: grid;
+        place-items: center;
+        color: var(--cms);
+        opacity: 0.7;
+      }
+      .pill .x:hover {
+        opacity: 1;
+        background: rgb(13 148 136 / 0.12);
+      }
+      .pill.add {
+        background: transparent;
+        border: 1px dashed var(--border-strong);
+        color: var(--text-3);
+        padding: 0 11px;
+      }
+      .pill.add:hover {
+        border-color: var(--cms);
+        color: var(--cms-text);
+      }
+
+      /* switch */
+      .switchrow {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--r-md);
+      }
+      .switchrow .t {
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .switchrow .t small {
+        display: block;
+        font-weight: 400;
+        color: var(--text-3);
+        font-size: 11.5px;
+        margin-top: 2px;
+      }
+      .sw {
+        width: 38px;
+        height: 22px;
+        border-radius: 99px;
+        background: var(--cms);
+        position: relative;
+        flex: none;
+        border: 0;
+      }
+      .sw::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 18px;
+        height: 18px;
+        border-radius: 99px;
+        background: #fff;
+        box-shadow: var(--sh-sm);
+        transition: left 0.15s;
+      }
+      .sw[aria-checked='false'] {
+        background: var(--muted);
+      }
+      .sw[aria-checked='false']::after {
+        left: 18px;
+      }
+
+      .twocol {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      /* form ↔ preview link highlight */
+      .field.is-linked > label {
+        color: var(--cms-text);
+      }
+      .field.is-linked .input,
+      .field.is-linked .textarea,
+      .field.is-linked .rt,
+      .field.is-linked .asset .thumb {
+        border-color: var(--cms);
+        box-shadow: 0 0 0 3px rgb(20 184 166 / 0.15);
+      }
+
+      /* ───────────────────────── preview stage ───────────────────────── */
+      .stage {
+        flex: 1;
+        min-width: 0;
+        background: #f1f1f3;
+        display: flex;
+        flex-direction: column;
+        background-image: radial-gradient(var(--border) 1px, transparent 1px);
+        background-size: 22px 22px;
+      }
+      .stagebar {
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 9px 16px;
+        border-bottom: 1px solid var(--border);
+        background: rgb(255 255 255 / 0.7);
+        backdrop-filter: blur(6px);
+      }
+      .stagebar .lbl {
+        font-size: 12px;
+        color: var(--text-3);
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .stagebar .lbl b {
+        color: var(--text-2);
+        font-weight: 500;
+      }
+      .layoutpick {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        height: 28px;
+        padding: 0 10px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        border-radius: var(--r-md);
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-2);
+      }
+      .layoutpick svg {
+        width: 13px;
+        height: 13px;
+        color: var(--cms);
+      }
+      .layoutpick .cv {
+        width: 13px;
+        height: 13px;
+        color: var(--text-3);
+      }
+      .layoutpick:hover {
+        border-color: var(--border-strong);
+      }
+
+      .stagescroll {
+        flex: 1;
+        overflow: auto;
+        padding: 26px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+      }
+
+      .frame {
+        width: 100%;
+        max-width: 920px;
+        background: var(--surface);
+        border-radius: var(--r-xl);
+        box-shadow: var(--sh-lg);
+        overflow: hidden;
+        transition: max-width 0.28s ease;
+      }
+      .stage[data-device='tablet'] .frame {
+        max-width: 760px;
+      }
+      .stage[data-device='mobile'] .frame {
+        max-width: 380px;
+      }
+
+      .browser {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        height: 38px;
+        padding: 0 14px;
+        background: var(--subtle);
+        border-bottom: 1px solid var(--border);
+      }
+      .browser .dots {
+        display: flex;
+        gap: 6px;
+      }
+      .browser .dots i {
+        width: 10px;
+        height: 10px;
+        border-radius: 99px;
+        background: var(--muted);
+      }
+      .browser .url {
+        flex: 1;
+        height: 24px;
+        border-radius: 99px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 0 11px;
+        font-size: 11.5px;
+        color: var(--text-2);
+        font-family: var(--mono);
+      }
+      .browser .url svg {
+        width: 11px;
+        height: 11px;
+        color: var(--success);
+      }
+      .browser .url b {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      /* the rendered article (preview of entry through builder layout) */
+      .doc {
+        font-family: var(--serif);
+      }
+      .editable {
+        position: relative;
+        cursor: pointer;
+        border-radius: 6px;
+        transition:
+          box-shadow 0.1s,
+          background 0.1s;
+      }
+      .editable:hover {
+        box-shadow: 0 0 0 2px rgb(20 184 166 / 0.35);
+      }
+      .editable.is-linked {
+        box-shadow: 0 0 0 2px var(--cms);
+      }
+      .editable .tag {
+        position: absolute;
+        top: -10px;
+        left: 8px;
+        height: 20px;
+        padding: 0 8px;
+        border-radius: 99px;
+        background: var(--cms);
+        color: #fff;
+        font-family: var(--sans);
+        font-size: 10.5px;
+        font-weight: 500;
+        display: none;
+        align-items: center;
+        gap: 5px;
+        letter-spacing: 0.01em;
+        box-shadow: var(--sh-md);
+        white-space: nowrap;
+      }
+      .editable .tag svg {
+        width: 10px;
+        height: 10px;
+      }
+      .editable:hover .tag,
+      .editable.is-linked .tag {
+        display: inline-flex;
+      }
+
+      .hero {
+        height: 300px;
+        position: relative;
+        background: radial-gradient(
+          130% 120% at 18% 8%,
+          #fde68a 0%,
+          #fca5a5 36%,
+          #f0837b 58%,
+          #b86b8f 100%
+        );
+      }
+      .stage[data-device='mobile'] .hero {
+        height: 200px;
+      }
+      .hero::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, transparent 40%, rgb(35 12 24 / 0.42));
+      }
+      .hero .herometa {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 24px 30px;
+        z-index: 2;
+      }
+      .stage[data-device='mobile'] .hero .herometa {
+        padding: 16px 18px;
+      }
+      .catpill {
+        font-family: var(--sans);
+        display: inline-flex;
+        align-items: center;
+        height: 24px;
+        padding: 0 11px;
+        border-radius: 99px;
+        background: rgb(255 255 255 / 0.92);
+        color: var(--cms-text);
+        font-size: 11.5px;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      .article {
+        padding: 30px 64px 52px;
+      }
+      .stage[data-device='tablet'] .article {
+        padding: 28px 44px 46px;
+      }
+      .stage[data-device='mobile'] .article {
+        padding: 20px 20px 36px;
+      }
+
+      .doc h1 {
+        font-family: var(--serif);
+        font-weight: 600;
+        font-size: 38px;
+        line-height: 1.12;
+        letter-spacing: -0.012em;
+        color: #fff;
+        text-shadow: 0 1px 18px rgb(0 0 0 / 0.25);
+        max-width: 18ch;
+      }
+      .stage[data-device='mobile'] .doc h1 {
+        font-size: 26px;
+      }
+
+      .byline {
+        font-family: var(--sans);
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        margin: -6px 0 22px;
+        padding-top: 22px;
+      }
+      .byline .av {
+        width: 38px;
+        height: 38px;
+        border-radius: 99px;
+        background: linear-gradient(135deg, #5eead4, #2dd4bf);
+        display: grid;
+        place-items: center;
+        color: #0f766e;
+        font-weight: 600;
+        font-size: 14px;
+        flex: none;
+      }
+      .byline .who {
+        font-size: 13.5px;
+        font-weight: 500;
+        color: var(--text);
+      }
+      .byline .who small {
+        display: block;
+        color: var(--text-3);
+        font-weight: 400;
+        font-size: 12px;
+        margin-top: 1px;
+      }
+
+      .standfirst {
+        font-size: 20px;
+        line-height: 1.5;
+        color: var(--text-2);
+        font-style: italic;
+        margin-bottom: 24px;
+        border-left: 3px solid var(--cms);
+        padding-left: 18px;
+      }
+      .stage[data-device='mobile'] .standfirst {
+        font-size: 16px;
+      }
+
+      .prose p {
+        font-size: 17.5px;
+        line-height: 1.75;
+        color: #27272a;
+        margin-bottom: 18px;
+      }
+      .stage[data-device='mobile'] .prose p {
+        font-size: 15.5px;
+      }
+      .prose p .drop {
+        float: left;
+        font-size: 58px;
+        line-height: 0.82;
+        padding: 4px 10px 0 0;
+        font-weight: 600;
+        color: var(--cms-text);
+      }
+
+      .tags {
+        font-family: var(--sans);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 30px;
+        padding-top: 22px;
+        border-top: 1px solid var(--border);
+      }
+      .tags .t {
+        height: 28px;
+        padding: 0 12px;
+        border-radius: 99px;
+        background: var(--subtle);
+        color: var(--text-2);
+        font-size: 12.5px;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      /* coachmark */
+      .coach {
+        position: absolute;
+        right: 28px;
+        bottom: 22px;
+        z-index: 30;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--text);
+        color: #fff;
+        border-radius: 99px;
+        padding: 9px 14px 9px 13px;
+        font-size: 12.5px;
+        box-shadow: var(--sh-lg);
+        animation: rise 0.4s ease both 0.3s;
+      }
+      .coach svg {
+        width: 15px;
+        height: 15px;
+        color: #5eead4;
+      }
+      .coach button {
+        margin-left: 4px;
+        border: 0;
+        background: rgb(255 255 255 / 0.15);
+        color: #fff;
+        width: 20px;
+        height: 20px;
+        border-radius: 99px;
+        font-size: 12px;
+        line-height: 1;
+      }
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      /* device control only meaningful when preview visible */
+      .editor[data-view='form'] ~ * .devseg,
+      .devseg.hide {
+        display: none;
+      }
+
+      /* ───────────────────────── responsive: editor collapses to tabs ───────────────────────── */
+      @media (max-width: 1080px) {
+        .rail {
+          display: none;
+        }
+        .formpane {
+          width: 100%;
+        }
+        .editor {
+          position: relative;
+        }
+        /* single pane at a time; "split" behaves like preview */
+        .editor[data-view='split'] .formpane {
+          display: none;
+        }
+        .editor[data-view='split'] .stage {
+          display: flex;
+        }
+      }
+      @media (max-width: 1080px) {
+        .seg .splitlabel {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <!-- breadcrumb -->
+      <div class="crumbs">
+        <a href="#">Farm Fresh Bowls</a><span class="sep">/</span> <a href="#">Content</a
+        ><span class="sep">/</span> <a href="#">Blog post</a><span class="sep">/</span>
+        <span class="here">Spring Harvest</span>
+        <span class="spacer"></span>
+        <button class="icbtn" title="History">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 8v4l3 2" />
+            <circle cx="12" cy="12" r="9" />
+          </svg>
+        </button>
+        <button class="icbtn" title="More">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="5" cy="12" r="1.6" />
+            <circle cx="12" cy="12" r="1.6" />
+            <circle cx="19" cy="12" r="1.6" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="shell">
+        <!-- module rail -->
+        <aside class="rail">
+          <div class="mod">
+            <span class="dot"></span>
+            <div>
+              <div class="lbl">Module</div>
+              <div class="name">Content</div>
+            </div>
+          </div>
+          <a class="nav-i" href="#"
+            ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" rx="1.5" />
+              <rect x="14" y="3" width="7" height="7" rx="1.5" />
+              <rect x="3" y="14" width="7" height="7" rx="1.5" />
+              <rect x="14" y="14" width="7" height="7" rx="1.5" /></svg
+            >Overview</a
+          >
+          <a class="nav-i active" href="#"
+            ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16v16H4z" />
+              <path d="M8 8h8M8 12h8M8 16h5" /></svg
+            >All content</a
+          >
+          <a class="nav-i" href="#"
+            ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 7h18M3 12h18M3 17h18" /></svg
+            >Content types</a
+          >
+          <a class="nav-i" href="#"
+            ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="14" rx="2" />
+              <path d="m3 14 5-5 4 4 3-3 6 6" /></svg
+            >Media</a
+          >
+          <a class="nav-i" href="#"
+            ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="8" r="3" />
+              <path d="M3 20c0-3 3-5 6-5s6 2 6 5" />
+              <path d="M17 8h4M17 12h4" /></svg
+            >Authors</a
+          >
+          <a class="nav-i" href="#"
+            ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 3 4 7v6c0 4 3.5 7 8 8 4.5-1 8-4 8-8V7z" /></svg
+            >SEO</a
+          >
+        </aside>
+
+        <div class="work">
+          <!-- action bar -->
+          <div class="actionbar">
+            <button class="back" title="Back to all content">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </button>
+            <span class="tile">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 3h9l5 5v13H5z" />
+                <path d="M14 3v5h5" />
+                <path d="M9 13h6M9 17h6" />
+              </svg>
+            </span>
+            <div class="titlewrap">
+              <h1>Spring Harvest: six bowls built around what's in season</h1>
+              <div class="sub">
+                <b>Blog post</b><span>·</span><span>Farm Fresh Bowls</span><span>·</span
+                ><span class="badge draft"><span class="d"></span>Draft</span>
+              </div>
+            </div>
+
+            <div class="grow"></div>
+
+            <span class="saved">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="m5 13 4 4L19 7" /></svg
+              >Saved
+            </span>
+
+            <!-- view toggle -->
+            <div class="seg" role="tablist" aria-label="View">
+              <button data-set-view="form">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 5h16M4 10h16M4 15h10M4 20h7" /></svg
+                >Form
+              </button>
+              <button class="on" data-set-view="split">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="16" rx="2" />
+                  <path d="M12 4v16" /></svg
+                ><span class="splitlabel">Split</span>
+              </button>
+              <button data-set-view="preview">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z" />
+                  <circle cx="12" cy="12" r="3" /></svg
+                >Preview
+              </button>
+            </div>
+
+            <!-- device toggle -->
+            <div class="seg icons devseg" aria-label="Device">
+              <button class="on" data-device="desktop" title="Desktop">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="4" width="20" height="13" rx="2" />
+                  <path d="M8 21h8M12 17v4" />
+                </svg>
+              </button>
+              <button data-device="tablet" title="Tablet">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="5" y="3" width="14" height="18" rx="2" />
+                  <path d="M11 18h2" />
+                </svg>
+              </button>
+              <button data-device="mobile" title="Mobile">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="7" y="3" width="10" height="18" rx="2" />
+                  <path d="M11 18h2" />
+                </svg>
+              </button>
+            </div>
+
+            <button class="btn ghost">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 3h6v6" />
+                <path d="M10 14 21 3" />
+                <path d="M21 14v7H3V3h7" /></svg
+              >Open
+            </button>
+            <button class="btn primary split">
+              Publish<span class="cv"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  width="14"
+                  height="14"
+                >
+                  <path d="m6 9 6 6 6-6" /></svg
+              ></span>
+            </button>
+          </div>
+
+          <!-- editor body -->
+          <div class="editor" data-view="split" id="editor">
+            <!-- ───── form pane ───── -->
+            <section class="formpane" id="formpane">
+              <div class="group">
+                <h2>Content <span class="ln"></span></h2>
+
+                <div class="field" data-field-card="title">
+                  <label>Title <span class="req">*</span></label>
+                  <input
+                    class="input"
+                    data-bind="title"
+                    value="Spring Harvest: six bowls built around what's in season"
+                  />
+                </div>
+
+                <div class="field">
+                  <label>Slug <span class="req">*</span></label>
+                  <div class="slug">
+                    <span class="pre">/blog/</span
+                    ><input data-bind="slug" value="spring-harvest-seasonal-bowls" />
+                  </div>
+                  <div class="hint">
+                    Auto-derived from Title. Final URL:
+                    <code>farmfreshbowls.com/blog/spring-harvest-seasonal-bowls</code>
+                  </div>
+                </div>
+
+                <div class="field" data-field-card="excerpt">
+                  <label>Excerpt</label>
+                  <textarea class="textarea" data-bind="excerpt" rows="3">
+When the markets turn over, so does the menu. Here's how we rebuild the bowl line around six ingredients at their seasonal peak.</textarea
+                  >
+                  <div class="hint">
+                    Shown as the standfirst on the article and in listing cards.
+                  </div>
+                </div>
+
+                <div class="field" data-field-card="body">
+                  <label>Body <span class="req">*</span></label>
+                  <div class="rt">
+                    <div class="tb">
+                      <button title="Bold">B</button>
+                      <button title="Italic" style="font-style: italic; font-weight: 500">I</button>
+                      <button title="Heading">H</button>
+                      <span class="div"></span>
+                      <button title="List">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          width="15"
+                          height="15"
+                        >
+                          <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+                        </svg>
+                      </button>
+                      <button title="Quote">"</button>
+                      <button title="Link">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          width="14"
+                          height="14"
+                        >
+                          <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1" />
+                          <path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" />
+                        </svg>
+                      </button>
+                      <button title="Image">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          width="15"
+                          height="15"
+                        >
+                          <rect x="3" y="3" width="18" height="18" rx="2" />
+                          <circle cx="9" cy="9" r="2" />
+                          <path d="m21 15-5-5L5 21" />
+                        </svg>
+                      </button>
+                    </div>
+                    <div class="body">
+                      <p data-bind="body">
+                        Spring is the easiest season to cook for and the hardest to plan. Everything
+                        is good for three weeks and then it's gone, so the line has to move with the
+                        market instead of fighting it.
+                      </p>
+                      <p>
+                        We started with peas and worked outward — favas, then radishes, then the
+                        first soft herbs — and let each bowl carry exactly one ingredient at its
+                        peak.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="group">
+                <h2>Media <span class="ln"></span></h2>
+                <div class="field" data-field-card="hero">
+                  <label>Featured image</label>
+                  <div class="asset">
+                    <div class="thumb" data-open="hero"></div>
+                    <div class="meta">
+                      <div class="fn">spring-harvest-hero.jpg</div>
+                      <div class="fm">2400 × 1600 · 412 KB</div>
+                      <div class="row">
+                        <button class="minibtn">Replace</button>
+                        <button class="minibtn">Alt text</button>
+                        <button class="minibtn danger">Remove</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="group">
+                <h2>Details <span class="ln"></span></h2>
+
+                <div class="field" data-field-card="author">
+                  <label>Author</label>
+                  <div class="refchip">
+                    <span class="av">ML</span>
+                    <span class="nm"
+                      >Mara Lee<small>Head of Kitchen · references → Author</small></span
+                    >
+                    <button class="x">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        width="13"
+                        height="13"
+                      >
+                        <path d="M18 6 6 18M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="field" data-field-card="tags">
+                  <label>Categories</label>
+                  <div class="pills">
+                    <span class="pill"
+                      >Recipes<button class="x">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2.2"
+                          width="11"
+                          height="11"
+                        >
+                          <path d="M18 6 6 18M6 6l12 12" />
+                        </svg></button
+                    ></span>
+                    <span class="pill"
+                      >Seasonal<button class="x">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2.2"
+                          width="11"
+                          height="11"
+                        >
+                          <path d="M18 6 6 18M6 6l12 12" />
+                        </svg></button
+                    ></span>
+                    <button class="pill add">+ Add</button>
+                  </div>
+                </div>
+
+                <div class="twocol">
+                  <div class="field" style="margin-bottom: 0">
+                    <label>Publish date</label>
+                    <div class="selectish">
+                      Apr 12, 2026
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" />
+                        <path d="M16 2v4M8 2v4M3 10h18" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="field" style="margin-bottom: 0">
+                    <label>Reading time</label>
+                    <div class="selectish">
+                      5 min
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M12 8v4l3 2" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="field" style="margin: 15px 0 0">
+                  <div class="switchrow">
+                    <div class="t">
+                      Feature on homepage<small>Pins this post to the featured slot</small>
+                    </div>
+                    <button class="sw" aria-checked="true"></button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="group">
+                <h2>SEO &amp; social <span class="ln"></span></h2>
+                <div class="field">
+                  <label>Meta title</label>
+                  <input
+                    class="input"
+                    value="Spring Harvest — 6 seasonal bowls | Farm Fresh Bowls"
+                  />
+                  <div class="hint">58 / 60 characters · looks good</div>
+                </div>
+                <div class="field" style="margin-bottom: 0">
+                  <label>Meta description</label>
+                  <textarea class="textarea" rows="2">
+Six spring bowls built around peak-season produce, from peas to soft herbs — with notes on how to build each one at home.</textarea
+                  >
+                </div>
+              </div>
+            </section>
+
+            <!-- ───── live preview stage ───── -->
+            <section class="stage" id="stage" data-device="desktop">
+              <div class="stagebar">
+                <span class="lbl">Live preview · rendered through</span>
+                <button class="layoutpick">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="6" rx="1.5" />
+                    <rect x="3" y="11" width="11" height="10" rx="1.5" />
+                    <rect x="16" y="11" width="5" height="10" rx="1.5" />
+                  </svg>
+                  Editorial article
+                  <svg
+                    class="cv"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </button>
+                <div class="grow" style="flex: 1"></div>
+                <span class="lbl"><b>Edit</b> in the form, or click any element →</span>
+              </div>
+
+              <div class="stagescroll">
+                <div class="frame">
+                  <div class="browser">
+                    <div class="dots"><i></i><i></i><i></i></div>
+                    <div class="url">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <rect x="5" y="11" width="14" height="9" rx="2" />
+                        <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                      </svg>
+                      <span
+                        ><b>farmfreshbowls.com</b>/blog/<span data-field="slug"
+                          >spring-harvest-seasonal-bowls</span
+                        ></span
+                      >
+                    </div>
+                  </div>
+
+                  <article class="doc">
+                    <div class="hero editable" data-edits="hero">
+                      <span class="tag"
+                        ><svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2.4"
+                        >
+                          <path d="M12 5v14M5 12h14" /></svg
+                        >Featured image</span
+                      >
+                      <div class="herometa">
+                        <span class="catpill" data-field="cat">Recipes</span>
+                        <h1 class="editable" data-edits="title">
+                          <span class="tag">Title</span
+                          ><span data-field="title"
+                            >Spring Harvest: six bowls built around what's in season</span
+                          >
+                        </h1>
+                      </div>
+                    </div>
+
+                    <div class="article">
+                      <div class="byline">
+                        <span class="av">ML</span>
+                        <span class="who" data-field="author"
+                          >Mara Lee<small
+                            ><span data-field="date">April 12, 2026</span> · 5 min read</small
+                          ></span
+                        >
+                      </div>
+
+                      <p class="standfirst editable" data-edits="excerpt">
+                        <span class="tag">Excerpt</span>
+                        <span data-field="excerpt"
+                          >When the markets turn over, so does the menu. Here's how we rebuild the
+                          bowl line around six ingredients at their seasonal peak.</span
+                        >
+                      </p>
+
+                      <div class="prose editable" data-edits="body">
+                        <span class="tag">Body</span>
+                        <p>
+                          <span class="drop">S</span
+                          ><span data-field="body"
+                            >pring is the easiest season to cook for and the hardest to plan.
+                            Everything is good for three weeks and then it's gone, so the line has
+                            to move with the market instead of fighting it.</span
+                          >
+                        </p>
+                        <p>
+                          We started with peas and worked outward — favas, then radishes, then the
+                          first soft herbs — and let each bowl carry exactly one ingredient at its
+                          peak.
+                        </p>
+                      </div>
+
+                      <div class="tags editable" data-edits="tags">
+                        <span class="tag">Categories</span>
+                        <span class="t">Recipes</span><span class="t">Seasonal</span>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="coach" id="coach">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m13 2-3 7h6l-3 7" />
+        <circle cx="12" cy="12" r="10" opacity=".3" />
+      </svg>
+      Type in a field, or click anything in the preview to jump to it.
+      <button id="coachx">✕</button>
+    </div>
+
+    <script>
+      const editor = document.getElementById('editor');
+      const stage = document.getElementById('stage');
+
+      /* view toggle (Form / Split / Preview) */
+      document.querySelectorAll('[data-set-view]').forEach((b) => {
+        b.addEventListener('click', () => {
+          editor.dataset.view = b.dataset.setView;
+          document
+            .querySelectorAll('[data-set-view]')
+            .forEach((x) => x.classList.toggle('on', x === b));
+        });
+      });
+
+      /* device toggle */
+      document.querySelectorAll('[data-device]').forEach((b) => {
+        b.addEventListener('click', () => {
+          stage.dataset.device = b.dataset.device;
+          document
+            .querySelectorAll('[data-device]')
+            .forEach((x) => x.classList.toggle('on', x === b));
+        });
+      });
+
+      /* two-way bind: typing in a field updates every preview node with the same key */
+      function sync(key, val) {
+        document.querySelectorAll('[data-field="' + key + '"]').forEach((n) => {
+          n.textContent = val;
+        });
+      }
+      document.querySelectorAll('[data-bind]').forEach((inp) => {
+        inp.addEventListener('input', () => {
+          const key = inp.dataset.bind;
+          if (key === 'slug') {
+            sync('slug', inp.value);
+            return;
+          }
+          sync(key, inp.value);
+          if (key === 'title') {
+            // keep slug feeling derived
+            const s = inp.value
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-|-$/g, '')
+              .slice(0, 48);
+            const slugInput = document.querySelector('[data-bind="slug"]');
+            if (slugInput) {
+              slugInput.value = s;
+              sync('slug', s);
+            }
+          }
+        });
+      });
+
+      /* click-to-edit bridge — preview element ↔ its field */
+      let linkTimer;
+      function linkTo(key) {
+        document.querySelectorAll('.is-linked').forEach((n) => n.classList.remove('is-linked'));
+        const card = document.querySelector('[data-field-card="' + key + '"]');
+        const node = document.querySelector('[data-edits="' + key + '"]');
+        if (card) {
+          card.classList.add('is-linked');
+          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const f = card.querySelector('[data-bind]');
+          if (f) {
+            setTimeout(() => f.focus({ preventScroll: true }), 200);
+          }
+        }
+        if (node) {
+          node.classList.add('is-linked');
+        }
+        clearTimeout(linkTimer);
+        linkTimer = setTimeout(() => {
+          document.querySelectorAll('.is-linked').forEach((n) => n.classList.remove('is-linked'));
+        }, 2200);
+      }
+      document.querySelectorAll('[data-edits]').forEach((node) => {
+        node.addEventListener('click', (e) => {
+          e.stopPropagation();
+          linkTo(node.dataset.edits);
+        });
+      });
+      /* focusing a field lights up its preview node */
+      document.querySelectorAll('[data-field-card]').forEach((card) => {
+        const key = card.dataset.fieldCard;
+        card.addEventListener('focusin', () => {
+          const node = document.querySelector('[data-edits="' + key + '"]');
+          if (node) {
+            document
+              .querySelectorAll('.editable.is-linked')
+              .forEach((n) => n.classList.remove('is-linked'));
+            node.classList.add('is-linked');
+          }
+        });
+      });
+
+      document
+        .getElementById('coachx')
+        .addEventListener('click', () => document.getElementById('coach').remove());
+      setTimeout(() => {
+        const c = document.getElementById('coach');
+        if (c) {
+          c.style.transition = 'opacity .4s';
+          c.style.opacity = '0';
+          setTimeout(() => c.remove(), 400);
+        }
+      }, 9000);
+    </script>
+  </body>
+</html>

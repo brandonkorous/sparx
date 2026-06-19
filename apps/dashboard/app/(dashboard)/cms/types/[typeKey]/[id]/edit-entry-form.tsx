@@ -116,6 +116,10 @@ export interface EditEntryFormProps {
   // appears once a tenant runs more than one property.
   sites: Property[];
   initialPropertyIds: string[];
+  /** Mirror every body change up to the editor workspace, so an embedded live
+   *  preview can re-render as you type (docs/51 §6). This component still OWNS +
+   *  autosaves the body; the workspace only observes it. Omitted ⇒ no preview. */
+  onBody?: (body: Record<string, unknown>) => void;
 }
 
 export function EditEntryForm({
@@ -136,6 +140,7 @@ export function EditEntryForm({
   currentTemplateId,
   sites,
   initialPropertyIds,
+  onBody,
 }: EditEntryFormProps) {
   const router = useRouter();
   const routable = Boolean(urlPattern);
@@ -448,7 +453,14 @@ export function EditEntryForm({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ContentEntryForm schema={schema} body={body} onBodyChange={setBody} />
+            <ContentEntryForm
+              schema={schema}
+              body={body}
+              onBodyChange={(next) => {
+                setBody(next);
+                onBody?.(next);
+              }}
+            />
           </CardContent>
         </Card>
 

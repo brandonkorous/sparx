@@ -122,14 +122,18 @@ export function ContentEntryForm({
   const fields = (
     <Stack gap={5}>
       {schema.fields.map((field) => (
-        <FieldRenderer
-          key={field.key}
-          field={field}
-          value={body[field.key]}
-          onChange={(next) => updateField(field.key, next)}
-          pathPrefix={field.key}
-          disabled={Boolean(disabled) || submitting}
-        />
+        // `data-cms-field` anchors the live-preview click-to-edit bridge (docs/51
+        // §6): clicking a bound node in the preview focuses this field, and focusing
+        // it highlights that node. Inert when there's no preview mounted.
+        <div key={field.key} data-cms-field={field.key}>
+          <FieldRenderer
+            field={field}
+            value={body[field.key]}
+            onChange={(next) => updateField(field.key, next)}
+            pathPrefix={field.key}
+            disabled={Boolean(disabled) || submitting}
+          />
+        </div>
       ))}
     </Stack>
   );

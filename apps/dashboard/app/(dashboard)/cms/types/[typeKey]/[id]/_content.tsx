@@ -5,7 +5,9 @@ import type { BuilderTemplateOption } from '@sparx/builder-schemas';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { listProperties, type Property } from '@/lib/sites';
-import { EditEntryForm } from './edit-entry-form';
+import { loadRecordPreviewBundle } from '../../../../builder/_lib/record-preview';
+import { type EditEntryFormProps } from './edit-entry-form';
+import { EntryEditorWorkspace, type EntryPreview } from './entry-editor-workspace';
 import { type SeoFields } from '../../../[id]/seo-panel';
 
 // Detail content for one content-type entry. Used by both:
@@ -44,9 +46,15 @@ interface ApiEntry {
 
 interface ContentEntryDetailContentProps {
   id: string;
+  /** Mount the embedded live preview (docs/51 §6). Only the full-page route opts
+   *  in; the dashboard shell's detail drawer stays form-only (too narrow to split). */
+  previewEnabled?: boolean;
 }
 
-export async function ContentEntryDetailContent({ id }: ContentEntryDetailContentProps) {
+export async function ContentEntryDetailContent({
+  id,
+  previewEnabled = false,
+}: ContentEntryDetailContentProps) {
   // The drawer token encodes `<typeKey>:<id>`; the full route passes a bare id.
   // Entry ids are UUIDs (no colons), so the segment after the last colon is the
   // id regardless of which caller invoked us.
@@ -107,6 +115,51 @@ export async function ContentEntryDetailContent({ id }: ContentEntryDetailConten
     templateOptions = null;
   }
 
+  // Live preview (docs/51 §6): render THIS entry through its collection template on
+  // the builder canvas. Only when the full-page route opts in AND the type has a
+  // template (else the editor stays form-only). The effective template is the
+  // entry's per-record override, else the type default, else the first option. The
+  // bundle is fail-soft — a null degrades to the plain form.
+  let preview: EntryPreview | null = null;
+  if (previewEnabled && templateOptions && templateOptions.length > 0) {
+    const effectiveTemplateId =
+      currentTemplateId ??
+      templateOptions.find((o) => o.isDefault)?.id ??
+      templateOptions[0]?.id ??
+      null;
+    if (effectiveTemplateId) {
+      const bundle = await loadRecordPreviewBundle({
+        sourceKey: type.key,
+        templateId: effectiveTemplateId,
+      });
+      if (bundle) {
+        const slugVal = entry.slug ?? '';
+        const path = type.url_pattern ? type.url_pattern.replace('{slug}', slugVal) : `/${slugVal}`;
+        preview = { ...bundle, typeKey: type.key, path, templateId: effectiveTemplateId };
+      }
+    }
+  }
+
+  const formProps: EditEntryFormProps = {
+    id: entry.id,
+    typeKey: type.key,
+    typeName: type.name,
+    urlPattern: type.url_pattern,
+    initialSlug: entry.slug ?? '',
+    schema: type.schema_json,
+    initialBody: entry.body,
+    initialSeo,
+    initialStatus: entry.status,
+    publishedAt: entry.published_at ? new Date(entry.published_at) : null,
+    scheduledAt: entry.scheduled_at ? new Date(entry.scheduled_at) : null,
+    initialEtag,
+    tenantSlug: tenant?.slug ?? null,
+    templateOptions,
+    currentTemplateId,
+    sites,
+    initialPropertyIds: entry.propertyIds ?? [],
+  };
+
   return (
     <Stack gap={6}>
       <Stack gap={2}>
@@ -122,25 +175,7 @@ export async function ContentEntryDetailContent({ id }: ContentEntryDetailConten
         )}
       </Stack>
 
-      <EditEntryForm
-        id={entry.id}
-        typeKey={type.key}
-        typeName={type.name}
-        urlPattern={type.url_pattern}
-        initialSlug={entry.slug ?? ''}
-        schema={type.schema_json}
-        initialBody={entry.body}
-        initialSeo={initialSeo}
-        initialStatus={entry.status}
-        publishedAt={entry.published_at ? new Date(entry.published_at) : null}
-        scheduledAt={entry.scheduled_at ? new Date(entry.scheduled_at) : null}
-        initialEtag={initialEtag}
-        tenantSlug={tenant?.slug ?? null}
-        templateOptions={templateOptions}
-        currentTemplateId={currentTemplateId}
-        sites={sites}
-        initialPropertyIds={entry.propertyIds ?? []}
-      />
+      <EntryEditorWorkspace form={formProps} preview={preview} />
     </Stack>
   );
 }

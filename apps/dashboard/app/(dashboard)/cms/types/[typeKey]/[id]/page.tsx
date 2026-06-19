@@ -17,7 +17,7 @@ export default async function EditEntryPage({ params }: PageProps) {
   return (
     <Container size="xl">
       <Stack gap={6} className="py-10">
-        <ContentEntryDetailContent id={id} />
+        <ContentEntryDetailContent id={id} previewEnabled />
       </Stack>
     </Container>
   );
