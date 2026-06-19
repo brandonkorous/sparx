@@ -19,7 +19,7 @@
 
 import { withTenant, type Prisma } from '@sparx/db';
 import { isAssetRef, type Blueprint } from '@sparx/blueprints';
-import type { BuilderNode } from '@sparx/builder-schemas';
+import { normalizeEmailTree, type BuilderNode } from '@sparx/builder-schemas';
 
 import { resolveBindingHandles, type InstallResult } from './blueprint-installer.js';
 
@@ -159,14 +159,21 @@ export function resolveBlueprintArtifacts(
     });
   }
 
-  // Emails (trees are not data-bound — stored verbatim).
+  // Emails (trees are not data-bound, but emailService.get normalizes on read, so
+  // the baseline must store the SAME normalized shape or an untouched email would
+  // falsely diff — docs/55 §7.2 parity).
   for (const e of blueprint.emails) {
     const refId = result.emails.find((x) => x.name === e.name)?.id ?? null;
     out.push({
       kind: 'email',
       naturalKey: e.name,
       refId,
-      content: compact({ name: e.name, subject: e.subject, preheader: e.preheader, tree: e.tree }),
+      content: compact({
+        name: e.name,
+        subject: e.subject,
+        preheader: e.preheader,
+        tree: normalizeEmailTree(e.tree),
+      }),
     });
   }
 

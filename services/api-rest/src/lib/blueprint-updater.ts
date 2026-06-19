@@ -18,7 +18,17 @@ import type { FastifyBaseLogger } from 'fastify';
 
 import { withTenant, type Prisma } from '@sparx/db';
 import { savedThemeService, publishService } from '@sparx/sitebuilder';
-import { mergeValue, resolverFrom, type Blueprint, type FieldChange } from '@sparx/blueprints';
+import { componentService, emailService, layoutService, pageService } from '@sparx/builder';
+import type { BuilderNode } from '@sparx/builder-schemas';
+import {
+  mergeTree,
+  mergeValue,
+  resolverFrom,
+  type Blueprint,
+  type ConflictSide,
+  type FieldChange,
+  type MergeResult,
+} from '@sparx/blueprints';
 
 import {
   captureBaselines,
@@ -99,11 +109,55 @@ interface KindHandler {
   extractCurrent(env: Env, artifact: ResolvedArtifact): Promise<Json | null>;
   /** Persist the merged content. */
   writeMerged(env: Env, artifact: ResolvedArtifact, merged: Json): Promise<void>;
+  /** Optional custom merge (tree kinds node-merge their `tree` field). Defaults to
+   *  the generic field merge. */
+  merge?(base: Json | undefined, current: Json, incoming: Json, resolve: Resolver): MergeResult;
 }
 
+type Resolver = (path: string) => ConflictSide;
+
+/** Drop only `undefined` (an unset optional == absent); an explicit `null` is a
+ *  real value (a slugless home page's `slug`, a theme's absent `brand`) and is
+ *  preserved so it matches the baseline. */
 function compact(obj: Json): Json {
   const out: Json = {};
-  for (const [k, v] of Object.entries(obj)) if (v !== undefined && v !== null) out[k] = v;
+  for (const [k, v] of Object.entries(obj)) if (v !== undefined) out[k] = v;
+  return out;
+}
+
+/** Tree-bearing artifacts: node-merge the `tree` field (docs/55 §7.2) and
+ *  field-merge every other (scalar) field, then recombine. */
+function mergeTreeArtifact(
+  base: Json | undefined,
+  current: Json,
+  incoming: Json,
+  resolve: Resolver
+): MergeResult {
+  const split = (
+    c: Json | undefined
+  ): { rest: Json | undefined; tree: BuilderNode | undefined } => {
+    if (!c) return { rest: undefined, tree: undefined };
+    const { tree, ...rest } = c;
+    return { rest, tree: tree as BuilderNode | undefined };
+  };
+  const b = split(base);
+  const cu = split(current);
+  const inc = split(incoming);
+  const restRes = mergeValue(b.rest, cu.rest, inc.rest, { resolve });
+  const treeRes = mergeTree(b.tree, cu.tree, inc.tree, { resolve }, 'tree');
+  const merged: Json = { ...(restRes.merged as Json) };
+  if (treeRes.merged !== undefined) merged.tree = treeRes.merged;
+  return {
+    merged,
+    changes: [...restRes.changes, ...treeRes.changes],
+    changed: restRes.changed || treeRes.changed,
+  };
+}
+
+/** Pass only the defined fields of a partial update through. */
+function definedOnly(obj: Json): Json {
+  const out: Json = {};
+  for (const [k, v] of Object.entries(obj)) if (v !== undefined) out[k] = v;
   return out;
 }
 
@@ -166,7 +220,7 @@ const themeHandler: KindHandler = {
     return {
       name: row.name,
       basePresetKey: row.basePresetKey,
-      presentation: (row.presentation ?? {}),
+      presentation: row.presentation ?? {},
       brand: (row.brand ?? null) as Json | null,
     };
   },
@@ -288,8 +342,142 @@ const brandHandler: KindHandler = {
   },
 };
 
+// ── tree handlers: layout · page · email · component (docs/55 §7.2) ─────────────
+
+const layoutHandler: KindHandler = {
+  kind: 'layout',
+  merge: mergeTreeArtifact,
+  async extractCurrent(env, artifact) {
+    if (!artifact.refId) return null;
+    const dto = await layoutService.get(env.propCtx, artifact.refId).catch(() => null);
+    if (!dto) return null;
+    return compact({ name: dto.name, tree: dto.tree });
+  },
+  async writeMerged(env, artifact, merged) {
+    if (!artifact.refId) return;
+    await layoutService.update(
+      env.propCtx,
+      artifact.refId,
+      definedOnly({ name: merged.name, tree: merged.tree })
+    );
+  },
+};
+
+const pageHandler: KindHandler = {
+  kind: 'page',
+  merge: mergeTreeArtifact,
+  async extractCurrent(env, artifact) {
+    if (!artifact.refId) return null;
+    const dto = await pageService.get(env.propCtx, artifact.refId).catch(() => null);
+    if (!dto) return null;
+    return compact({
+      name: dto.name,
+      kind: dto.kind,
+      recordType: dto.recordType,
+      slug: dto.slug,
+      tree: dto.tree,
+      seoTitle: dto.seoTitle ?? undefined,
+      seoDescription: dto.seoDescription ?? undefined,
+      canonical: dto.canonical ?? undefined,
+      ogImage: dto.ogImage ?? undefined,
+      noindex: dto.noindex ?? undefined,
+    });
+  },
+  async writeMerged(env, artifact, merged) {
+    if (!artifact.refId) return;
+    // kind/recordType/slug are page identity — never merge-written; only content + SEO.
+    await pageService.update(
+      env.propCtx,
+      artifact.refId,
+      definedOnly({
+        name: merged.name,
+        tree: merged.tree,
+        seoTitle: merged.seoTitle,
+        seoDescription: merged.seoDescription,
+        canonical: merged.canonical,
+        ogImage: merged.ogImage,
+        noindex: merged.noindex,
+      })
+    );
+  },
+};
+
+const emailHandler: KindHandler = {
+  kind: 'email',
+  merge: mergeTreeArtifact,
+  async extractCurrent(env, artifact) {
+    if (!artifact.refId) return null;
+    const dto = await emailService.get(env.ctx, artifact.refId).catch(() => null);
+    if (!dto) return null;
+    return compact({
+      name: dto.name,
+      subject: dto.subject ?? undefined,
+      preheader: dto.preheader ?? undefined,
+      tree: dto.tree,
+    });
+  },
+  async writeMerged(env, artifact, merged) {
+    if (!artifact.refId) return;
+    await emailService.update(
+      env.ctx,
+      artifact.refId,
+      definedOnly({
+        name: merged.name,
+        subject: merged.subject,
+        preheader: merged.preheader,
+        tree: merged.tree,
+      })
+    );
+  },
+};
+
+const componentHandler: KindHandler = {
+  kind: 'component',
+  merge: mergeTreeArtifact,
+  async extractCurrent(env, artifact) {
+    // Components correlate by KEY (the naturalKey); the service reads the LATEST version.
+    const dto = await componentService.get(env.ctx, artifact.naturalKey).catch(() => null);
+    if (!dto) return null;
+    return compact({
+      key: artifact.naturalKey,
+      name: dto.name,
+      group: dto.group,
+      icon: dto.icon,
+      description: dto.description ?? undefined,
+      surfaces: dto.surfaces,
+      tree: dto.tree,
+      propSpec: dto.propSpec,
+    });
+  },
+  async writeMerged(env, artifact, merged) {
+    // A tree/propSpec change creates a NEW component version (docs/53); placements
+    // stay pinned until the tenant re-pins via the component UI — we never auto-re-pin
+    // (docs/55 U2).
+    await componentService.update(
+      env.ctx,
+      artifact.naturalKey,
+      definedOnly({
+        name: merged.name,
+        group: merged.group,
+        icon: merged.icon,
+        description: merged.description,
+        surfaces: merged.surfaces,
+        tree: merged.tree,
+        propSpec: merged.propSpec,
+      })
+    );
+  },
+};
+
 /** Handler registry — kinds grow per slice (docs/55 §12). */
-const HANDLERS: KindHandler[] = [themeHandler, brandHandler];
+const HANDLERS: KindHandler[] = [
+  themeHandler,
+  brandHandler,
+  layoutHandler,
+  pageHandler,
+  emailHandler,
+  componentHandler,
+];
 const HANDLED_KINDS = new Set<ArtifactKind>(HANDLERS.map((h) => h.kind));
 
 // ── shared diff/merge pass ──────────────────────────────────────────────────────
@@ -362,7 +550,10 @@ async function processUpdate(
       for (const id of takeTheirs) {
         if (id.startsWith(`${key}#`)) localTake.add(id.slice(key.length + 1));
       }
-      const r = mergeValue(base.baseline, current, a.content, { resolve: resolverFrom(localTake) });
+      const resolve = resolverFrom(localTake);
+      const r = handler.merge
+        ? handler.merge(base.baseline, current, a.content, resolve)
+        : mergeValue(base.baseline, current, a.content, { resolve });
       const changes = r.changes.map((c) => ({ ...c, id: `${key}#${c.path}` }));
       const status: ArtifactDiff['status'] =
         changes.length === 0

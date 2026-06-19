@@ -1,6 +1,24 @@
 import { describe, expect, it } from 'vitest';
 
-import { canonicalEqual, mergeValue, resolverFrom } from './merge';
+import { canonicalEqual, mergeTree, mergeValue, resolverFrom } from './merge';
+
+type N = {
+  id: string;
+  type: string;
+  props: Record<string, unknown>;
+  children?: N[];
+};
+const node = (
+  id: string,
+  type: string,
+  props: Record<string, unknown> = {},
+  children?: N[]
+): N => ({
+  id,
+  type,
+  props,
+  ...(children ? { children } : {}),
+});
 
 describe('canonicalEqual', () => {
   it('is insensitive to key order and undefined-vs-absent', () => {
@@ -117,6 +135,82 @@ describe('mergeValue — nested objects (theme presentation / brand)', () => {
     expect(r.merged).toEqual({ color: { primary: '#999', accent: '#BBB' }, radius: { lg: 8 } });
     const byPath = Object.fromEntries(r.changes.map((c) => [c.path, c.taken]));
     expect(byPath).toEqual({ 'color.primary': 'theirs', 'color.accent': 'mine' });
+  });
+});
+
+describe('mergeTree — node-keyed builder-tree merge', () => {
+  const base = node('root', 'Section', { pad: 4 }, [
+    node('a', 'Heading', { text: 'Welcome' }),
+    node('b', 'Text', { text: 'Body' }),
+  ]);
+
+  it('applies independent edits to different nodes with no conflict', () => {
+    // tenant edited node a; author edited node b
+    const current = node('root', 'Section', { pad: 4 }, [
+      node('a', 'Heading', { text: 'Howdy' }),
+      node('b', 'Text', { text: 'Body' }),
+    ]);
+    const incoming = node('root', 'Section', { pad: 4 }, [
+      node('a', 'Heading', { text: 'Welcome' }),
+      node('b', 'Text', { text: 'New body' }),
+    ]);
+    const r = mergeTree(base as never, current as never, incoming as never);
+    const merged = r.merged as N;
+    expect(merged.children?.find((c) => c.id === 'a')?.props.text).toBe('Howdy'); // tenant kept
+    expect(merged.children?.find((c) => c.id === 'b')?.props.text).toBe('New body'); // author applied
+    expect(r.changes.every((c) => c.type === 'auto')).toBe(true);
+  });
+
+  it('conflicts when tenant and author edit the same node field (keeps tenant)', () => {
+    const current = node('root', 'Section', { pad: 4 }, [
+      node('a', 'Heading', { text: 'Howdy' }),
+      node('b', 'Text', { text: 'Body' }),
+    ]);
+    const incoming = node('root', 'Section', { pad: 4 }, [
+      node('a', 'Heading', { text: 'Greetings' }),
+      node('b', 'Text', { text: 'Body' }),
+    ]);
+    const r = mergeTree(base as never, current as never, incoming as never);
+    const merged = r.merged as N;
+    expect(merged.children?.find((c) => c.id === 'a')?.props.text).toBe('Howdy'); // tenant wins
+    expect(r.changes.filter((c) => c.type === 'conflict')).toHaveLength(1);
+  });
+
+  it('adds an author-added node', () => {
+    const current = base;
+    const incoming = node('root', 'Section', { pad: 4 }, [
+      node('a', 'Heading', { text: 'Welcome' }),
+      node('b', 'Text', { text: 'Body' }),
+      node('c', 'Button', { label: 'Shop' }),
+    ]);
+    const r = mergeTree(base as never, current as never, incoming as never);
+    const merged = r.merged as N;
+    expect(merged.children?.map((c) => c.id)).toEqual(['a', 'b', 'c']);
+    expect(r.changes).toHaveLength(1);
+    expect(r.changes[0]).toMatchObject({ type: 'auto', path: 'tree/c' });
+  });
+
+  it('removes a node the author dropped that the tenant never touched', () => {
+    const current = base; // tenant untouched
+    const incoming = node('root', 'Section', { pad: 4 }, [
+      node('a', 'Heading', { text: 'Welcome' }),
+    ]);
+    const r = mergeTree(base as never, current as never, incoming as never);
+    const merged = r.merged as N;
+    expect(merged.children?.map((c) => c.id)).toEqual(['a']); // b removed
+  });
+
+  it('KEEPS a node the author dropped if the tenant edited it (never lose work, U3)', () => {
+    const current = node('root', 'Section', { pad: 4 }, [
+      node('a', 'Heading', { text: 'Welcome' }),
+      node('b', 'Text', { text: 'My custom body' }), // tenant edited b
+    ]);
+    const incoming = node('root', 'Section', { pad: 4 }, [
+      node('a', 'Heading', { text: 'Welcome' }),
+    ]);
+    const r = mergeTree(base as never, current as never, incoming as never);
+    const merged = r.merged as N;
+    expect(merged.children?.find((c) => c.id === 'b')?.props.text).toBe('My custom body'); // kept
   });
 });
 

@@ -13,6 +13,8 @@
 //
 // Zod/DB/React-free: unit-testable in isolation and safe to import anywhere.
 
+import type { BuilderNode } from '@sparx/builder-schemas';
+
 export type ConflictSide = 'mine' | 'theirs';
 
 export interface FieldChange {
@@ -126,4 +128,163 @@ export function mergeValue(
 export function resolverFrom(takeTheirs: Iterable<string>): (path: string) => ConflictSide {
   const set = new Set(takeTheirs);
   return (path: string) => (set.has(path) ? 'theirs' : 'mine');
+}
+
+// ── builder-tree merge (docs/55 §7.2) ───────────────────────────────────────────
+//
+// Trees merge NODE-KEYED by `BuilderNode.id`. This is tractable because the
+// installer stamps manifest node ids unchanged and blueprint authors keep ids
+// stable across versions — so base/current/incoming share ids for corresponding
+// nodes. Each node's scalar/object fields (type, name, class, props, binding)
+// three-way-merge via mergeValue; children merge by id with order best-effort.
+
+const NODE_FIELDS = ['type', 'name', 'class', 'props', 'binding'] as const;
+
+function pickFields(n: BuilderNode | undefined): Record<string, unknown> | undefined {
+  if (!n) return undefined;
+  const rec = n as unknown as Record<string, unknown>;
+  const out: Record<string, unknown> = {};
+  for (const f of NODE_FIELDS) if (rec[f] !== undefined) out[f] = rec[f];
+  return out;
+}
+
+function indexById(nodes: BuilderNode[] | undefined): Map<string, BuilderNode> {
+  const m = new Map<string, BuilderNode>();
+  for (const n of nodes ?? []) m.set(n.id, n);
+  return m;
+}
+
+function mergeChildren(
+  base: BuilderNode[] | undefined,
+  current: BuilderNode[] | undefined,
+  incoming: BuilderNode[] | undefined,
+  opts: MergeOptions,
+  path: string
+): { merged: BuilderNode[]; changes: FieldChange[] } {
+  const baseM = indexById(base);
+  const curM = indexById(current);
+  const incM = indexById(incoming);
+  const incIds = (incoming ?? []).map((n) => n.id);
+  const changes: FieldChange[] = [];
+  const merged: BuilderNode[] = [];
+
+  // Walk the tenant's current order — the authoritative arrangement of what they have.
+  for (const child of current ?? []) {
+    const childPath = `${path}/${child.id}`;
+    const b = baseM.get(child.id);
+    const inc = incM.get(child.id);
+    if (!inc) {
+      // Author dropped this node. Untouched by the tenant ⇒ remove (auto); edited by
+      // the tenant ⇒ keep as an orphan, never lose their work (U3).
+      if (b && canonicalEqual(child, b)) {
+        changes.push({
+          path: childPath,
+          type: 'auto',
+          base: b,
+          mine: child,
+          theirs: undefined,
+          taken: 'theirs',
+        });
+        continue;
+      }
+      merged.push(child);
+      continue;
+    }
+    const r = mergeNode(b, child, inc, opts, childPath);
+    if (r.merged !== undefined) merged.push(r.merged as BuilderNode);
+    changes.push(...r.changes);
+  }
+
+  // Author-added nodes (in incoming, absent from base AND current). A node in base
+  // but not current was deleted by the tenant — stay deleted, don't resurrect.
+  for (const inc of incoming ?? []) {
+    if (curM.has(inc.id) || baseM.has(inc.id)) continue;
+    const childPath = `${path}/${inc.id}`;
+    changes.push({
+      path: childPath,
+      type: 'auto',
+      base: undefined,
+      mine: undefined,
+      theirs: inc,
+      taken: 'theirs',
+    });
+    // Best-effort position: just after the nearest preceding incoming sibling already placed.
+    const incIdx = incIds.indexOf(inc.id);
+    let insertAt = merged.length;
+    for (let i = incIdx - 1; i >= 0; i--) {
+      const mi = merged.findIndex((m) => m.id === incIds[i]);
+      if (mi >= 0) {
+        insertAt = mi + 1;
+        break;
+      }
+    }
+    merged.splice(insertAt, 0, inc);
+  }
+
+  return { merged, changes };
+}
+
+/** Three-way merge a single node (and its subtree) by id. base/incoming may be
+ *  absent (added/removed); `current` absent means the tenant deleted it. */
+function mergeNode(
+  base: BuilderNode | undefined,
+  current: BuilderNode | undefined,
+  incoming: BuilderNode | undefined,
+  opts: MergeOptions,
+  path: string
+): MergeResult {
+  if (!current) {
+    if (incoming && !base) {
+      return {
+        merged: incoming,
+        changes: [
+          {
+            path,
+            type: 'auto',
+            base: undefined,
+            mine: undefined,
+            theirs: incoming,
+            taken: 'theirs',
+          },
+        ],
+        changed: true,
+      };
+    }
+    return { merged: undefined, changes: [], changed: false }; // tenant-deleted, not resurrected
+  }
+  if (!incoming) {
+    if (base && canonicalEqual(current, base)) {
+      return {
+        merged: undefined,
+        changes: [{ path, type: 'auto', base, mine: current, theirs: undefined, taken: 'theirs' }],
+        changed: true,
+      };
+    }
+    return { merged: current, changes: [], changed: false }; // author removed, but tenant edited ⇒ keep
+  }
+  // All present — merge fields, then children.
+  const fieldRes = mergeValue(
+    pickFields(base),
+    pickFields(current),
+    pickFields(incoming),
+    opts,
+    path
+  );
+  const merged = { ...(fieldRes.merged as Record<string, unknown>), id: current.id } as BuilderNode;
+  const childRes = mergeChildren(base?.children, current.children, incoming.children, opts, path);
+  if (current.children !== undefined || childRes.merged.length > 0)
+    merged.children = childRes.merged;
+  const changes = [...fieldRes.changes, ...childRes.changes];
+  return { merged, changes, changed: !canonicalEqual(merged, current) };
+}
+
+/** Public entry: node-keyed three-way merge of a whole builder tree (docs/55 §7.2). */
+export function mergeTree(
+  base: BuilderNode | undefined,
+  current: BuilderNode | undefined,
+  incoming: BuilderNode | undefined,
+  opts: MergeOptions = {},
+  path = 'tree'
+): MergeResult {
+  return mergeNode(base, current, incoming, opts, path);
 }
