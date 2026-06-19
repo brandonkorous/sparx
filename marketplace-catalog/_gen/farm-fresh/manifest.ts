@@ -22,11 +22,11 @@ import { cateringTree } from './pages/catering';
 import { contactTree } from './pages/contact';
 import { journalTree } from './pages/journal';
 import { productTemplate, postTemplate } from './pages/templates';
-import { welcomeEmail } from './email';
+import { welcomeEmail, newsletterEmail } from './email';
 
 export const manifest = {
     key: 'farm-fresh',
-    version: '1.0.17',
+    version: '1.0.18',
     name: 'Farm Fresh',
     summary:
         'A warm, organic storefront for a fresh-food brand — açaí bowls, smoothies and salads with a full menu, a brand story, locations, catering, and a welcome email. A ready-to-edit retail starter.',
@@ -127,9 +127,15 @@ export const manifest = {
     emails: [
         {
             name: 'Welcome',
-            subject: 'Welcome to Farm Fresh',
-            preheader: 'Fresh menus, new flavors, and the occasional treat.',
+            subject: 'Welcome to {{site.name}} 🌱',
+            preheader: 'You’re on the list — seasonal menus, new flavors, and the occasional treat.',
             tree: welcomeEmail(),
+        },
+        {
+            name: 'Seasonal Newsletter',
+            subject: 'Fresh this week at {{site.name}}',
+            preheader: 'What’s in season at the counter — bowls, smoothies and grain bowls.',
+            tree: newsletterEmail(),
         },
     ],
 };

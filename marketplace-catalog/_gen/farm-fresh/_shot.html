@@ -1,0 +1,35 @@
+<!doctype html>
+<!-- Live landing-page capture frame for the Farm Fresh marketplace preview. The iframe
+     renders the real storefront home at 1600×1000 (desktop width); the #frame element is
+     screenshotted to media/preview.png. Not shipped — a regeneration helper in _gen. -->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      * { margin: 0; padding: 0; }
+      body { background: #fbf8f1; }
+      /* The capture box is 1600×900. The iframe inside is OVERSIZED (wider + taller)
+         so the storefront's right scrollbar and its bottom-left Next dev indicator
+         both fall outside the box and are clipped — a clean marketplace shot. */
+      #wrap {
+        width: 1600px;
+        height: 900px;
+        overflow: hidden;
+        position: relative;
+        background: #fbf8f1;
+      }
+      #frame {
+        width: 1620px;
+        height: 1120px;
+        border: 0;
+        display: block;
+        background: #fbf8f1;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wrap">
+      <iframe id="frame" src="http://localhost:3004/?tenant=e2e-store&cb=shot2"></iframe>
+    </div>
+  </body>
+</html>

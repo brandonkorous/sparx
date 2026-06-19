@@ -3,7 +3,7 @@
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh/.
 
 export default {
-  id: 'ffb-451',
+  id: 'ffb-455',
   type: 'Section',
   props: {},
   class: 'flex flex-col gap-4',
@@ -31,20 +31,51 @@ export default {
       type: 'Text',
       props: {
         variant: 'body',
-        text: 'Thanks for joining Farm Fresh. You’ll be first to hear about seasonal menus, new flavors, and the occasional treat.',
+        text: 'Hi {{customer.firstName ?? "there"}} — thanks for joining {{site.name}}. You’re on the list for seasonal menus, new flavors, and the occasional treat.',
       },
     },
     {
       id: 'ffb-449',
-      type: 'Button',
+      type: 'Text',
       props: {
-        label: 'Start an order',
-        href: '/menu',
+        variant: 'body',
+        text: 'Here’s what to expect:',
       },
-      class: 'st-btn st-c-primary st-v-solid st-btn--sz-md',
     },
     {
       id: 'ffb-450',
+      type: 'Text',
+      props: {
+        variant: 'body',
+        text: '🥣  First look at new bowls and seasonal specials.',
+      },
+    },
+    {
+      id: 'ffb-451',
+      type: 'Text',
+      props: {
+        variant: 'body',
+        text: '🌾  Stories from the farms we source within 60 miles.',
+      },
+    },
+    {
+      id: 'ffb-452',
+      type: 'Text',
+      props: {
+        variant: 'body',
+        text: '🎁  Member-only offers and the occasional surprise.',
+      },
+    },
+    {
+      id: 'ffb-453',
+      type: 'Button',
+      props: {
+        label: 'See this week’s menu',
+        href: '{{site.url}}',
+      },
+    },
+    {
+      id: 'ffb-454',
       type: 'Text',
       props: {
         variant: 'meta',
