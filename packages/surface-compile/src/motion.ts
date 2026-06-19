@@ -71,3 +71,52 @@ export const SCROLL_MOTION_CSS =
   'html.st-anim-ready .st-reveal-stagger > *,html.st-anim-ready .st-reveal-stagger--bold > *{opacity:0}' +
   staggerRules('', 80) +
   staggerRules('--bold', 140);
+
+// Hover-interaction effects (docs/61 §9 — the hover counterpart to scroll entrances).
+//
+// A named, one-click hover EFFECT library: the `st-hover--<token>` class a node wears
+// to animate a PERSISTENT :hover state (lift, grow, glow, …). This is distinct from the
+// entrance system's `hover:animate-<token>`, which fires a ONE-SHOT keyframe on
+// hover-IN; an effect is a state the element HOLDS while hovered and eases back on
+// hover-out — the card-lift idiom every mature page builder ships. Like the reveal
+// tokens these are NOT Tailwind utilities (the per-tenant compile emits nothing for
+// them), so their CSS ships ONCE in the render layer beside SCROLL_MOTION_CSS and
+// matches the class names verbatim — on the live site, the draft preview, AND the
+// editor canvas (all three pull the one RENDER_LAYER_CSS in surface-css-service).
+//
+// Reduced motion: a hover MOVEMENT (translate / scale / tilt) is gated on
+// `prefers-reduced-motion: no-preference`, so a reduced-motion visitor gets none of it;
+// a non-motion cue (shadow / brightness) stays, so hover still gives feedback. The
+// shared REDUCED_MOTION_CSS additionally flattens the transition, so that cue is
+// instant rather than animated. Brand-aware: the shadow tints off the tenant
+// `--st-neutral` / `--st-primary` root vars, so each tenant's hover reads on-brand.
+
+/** Hover-effect token → its human label. The single source of truth shared by the
+ *  render CSS below, the inspector's Hover-effect picker, and the Builder MCP
+ *  vocabulary, so all three name the SAME set. */
+export const HOVER_EFFECTS: { value: string; label: string }[] = [
+  { value: 'lift', label: 'Lift' },
+  { value: 'grow', label: 'Grow' },
+  { value: 'sink', label: 'Press' },
+  { value: 'glow', label: 'Glow' },
+  { value: 'brighten', label: 'Brighten' },
+  { value: 'tilt', label: 'Tilt' },
+];
+
+const HOVER_SELECTOR_ALL = HOVER_EFFECTS.map((e) => `.st-hover--${e.value}`).join(',');
+
+export const HOVER_MOTION_CSS =
+  // One shared transition for every effect element (transform + shadow + filter).
+  `${HOVER_SELECTOR_ALL}{transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}` +
+  // Non-motion :hover cues (shadow / brightness) — safe under reduced motion.
+  '.st-hover--lift:hover{box-shadow:0 24px 48px -20px color-mix(in oklab,var(--st-neutral,#1f2937) 32%,transparent)}' +
+  '.st-hover--sink:hover{box-shadow:0 6px 16px -10px color-mix(in oklab,var(--st-neutral,#1f2937) 36%,transparent)}' +
+  '.st-hover--glow:hover{box-shadow:0 0 0 1px color-mix(in oklab,var(--st-primary) 35%,transparent),0 18px 44px -16px color-mix(in oklab,var(--st-primary) 50%,transparent)}' +
+  '.st-hover--brighten:hover{filter:brightness(1.06)}' +
+  // Movement :hover cues (translate / scale / tilt) — only when motion is allowed.
+  '@media (prefers-reduced-motion:no-preference){' +
+  '.st-hover--lift:hover{transform:translateY(-4px)}' +
+  '.st-hover--grow:hover{transform:scale(1.03)}' +
+  '.st-hover--sink:hover{transform:translateY(2px) scale(.985)}' +
+  '.st-hover--tilt:hover{transform:perspective(900px) rotateX(2.5deg) rotateY(-2.5deg)}' +
+  '}';

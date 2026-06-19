@@ -214,6 +214,12 @@ export const BUILDER_STYLE_GUIDE = {
       tokens: ['fade-in', 'fade-up', 'fade-down', 'scale-in', 'slide-in-left', 'slide-in-right'],
       stagger:
         'On a CONTAINER, `st-reveal-stagger` (or `st-reveal-stagger--bold`) fades its direct children in sequence as it scrolls into view — do NOT also put a reveal on each child.',
+      hoverEffects: {
+        note: 'A PERSISTENT hover effect (held while hovered, eases back on hover-out) — the card/tile/image idiom, distinct from the one-shot `hover:animate-<token>` entrance. Emit ONE `st-hover--<effect>` class on the element; it is reduced-motion aware on its own (movement is gated, a shadow/brightness cue stays), so never add a guard.',
+        effects: ['lift', 'grow', 'sink', 'glow', 'brighten', 'tilt'],
+        guidance:
+          '`lift` (rise + shadow) is the default for cards; `grow`/`brighten` suit images & media; `glow` (brand-tinted) suits feature cards & CTAs; `sink` suits pressable tiles; `tilt` is a playful 3D accent.',
+      },
       transitions: ['transition', 'duration-300', 'ease-out', 'hover:scale-105'],
     },
     states: {

@@ -30,7 +30,7 @@ export {
 } from './allowlist';
 export { contentHash } from './hash';
 export { SURFACE_THEME_CSS } from './theme';
-export { REDUCED_MOTION_CSS, SCROLL_MOTION_CSS } from './motion';
+export { REDUCED_MOTION_CSS, SCROLL_MOTION_CSS, HOVER_MOTION_CSS, HOVER_EFFECTS } from './motion';
 
 export interface TenantStylesheet {
   /** The compiled CSS (minified when `minify` was set). */
