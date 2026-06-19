@@ -9,6 +9,8 @@
 // Deletes the throwaway tenant at the end (cascade). Run:
 //   pnpm --filter @sparx/api-rest exec tsx src/scripts/verify-blueprint-update.ts
 
+import type { FastifyBaseLogger } from 'fastify';
+
 import { prisma, withTenant } from '@sparx/db';
 import { safeParseBlueprint, type Blueprint } from '@sparx/blueprints';
 import { savedThemeService } from '@sparx/sitebuilder';
@@ -35,18 +37,19 @@ async function resolveCatalogBlueprint(): Promise<Blueprint> {
 
 /* eslint-disable no-console */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const log: any = {
-  info() {},
-  warn() {},
-  error() {},
-  debug() {},
-  child() {
-    return log;
-  },
-};
+const noop = (): undefined => undefined;
+const log = {
+  info: noop,
+  warn: noop,
+  error: noop,
+  debug: noop,
+  trace: noop,
+  fatal: noop,
+  level: 'silent',
+  child: () => log,
+} as unknown as FastifyBaseLogger;
 
-const PRESETS = ['market', 'apex', 'drift', 'industrial', 'fleet', 'drop'];
+const PRESETS = ['market', 'apex', 'drift', 'industrial', 'fleet', 'drop'] as const;
 let failures = 0;
 function check(name: string, cond: boolean, detail?: unknown): void {
   if (cond) {
