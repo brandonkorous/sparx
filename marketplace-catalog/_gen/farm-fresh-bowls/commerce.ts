@@ -3,7 +3,7 @@
 // Both are spread into the manifest verbatim — pure data, no node() calls — so they
 // resolve before any builder tree is assembled.
 
-import { pic } from './media';
+import { photoSvg } from './media';
 
 interface ProductSpec {
   handle: string;
@@ -34,7 +34,7 @@ const PRODUCTS: ProductSpec[] = [
 
 export const assets = PRODUCTS.map((p) => ({
   id: `img-${p.handle}`,
-  url: pic(`prod-${p.seed}`, 1000, 1000),
+  url: photoSvg(p.seed),
   alt: p.title,
 }));
 
@@ -65,7 +65,15 @@ export const commerce = {
     categoryHandles: [p.category],
     ...(p.collections ? { collectionHandles: p.collections } : {}),
     variants: [
-      { sku: p.handle.toUpperCase().replace(/-/g, '').slice(0, 12), priceCents: p.priceCents, isDefault: true },
+      {
+        sku: p.handle.toUpperCase().replace(/-/g, '').slice(0, 12),
+        priceCents: p.priceCents,
+        isDefault: true,
+        // Made-to-order bowls — always purchasable, no stock to track. Without this the
+        // variant defaults to `deny` and, with no inventory seeded, every card reads
+        // "Sold out". `continue` accepts the order so the demo ships shoppable.
+        inventoryPolicy: 'continue' as const,
+      },
     ],
     images: [{ assetId: `img-${p.handle}`, isPrimary: true }],
   })),

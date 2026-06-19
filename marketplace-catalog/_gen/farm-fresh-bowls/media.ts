@@ -1,45 +1,37 @@
-// Farm Fresh generator — imagery + the emoji "photo" panel. `pic()` builds a
-// keyworded, deterministic loremflickr URL (used for the product/asset references);
+// Farm Fresh generator — imagery + the emoji "photo" panel. `photoSvg()` builds a
+// self-contained data-URI product image (a brand-coloured panel + the food emoji);
 // `emojiPanel()` is the mockup's `.photo` block — a rounded colored panel with a big
-// centered food emoji, 100% reliable (no remote load), used by the section builders.
+// centered food emoji, used by the section builders. Both are 100% reliable: no
+// remote load means no throttled / failed placeholder (a remote photo service
+// returned solid-colour error blocks for ~⅓ of the catalog — never on a gold
+// standard). The tenant swaps these for real photography post-install.
 
 import { node, type BuilderNode } from './_kit';
+import { BERRY, LEAF, MANGO, SAGE } from './theme';
 
-// Food-relevant, always-resolvable photos (the tenant swaps these post-install).
-// loremflickr serves real Creative-Commons food photos BY KEYWORD, so the imagery
-// reads as açaí/smoothie/salad instead of generic stock; `?lock=<n>` pins a stable
-// image per seed (deterministic regen, no per-request flicker).
-const FOOD_TAGS: Record<string, string> = {
-  hero: 'acai,bowl',
-  care: 'healthy,bowl',
-  love: 'smoothie,bowl',
-  'story-hero': 'fresh,fruit',
-  'story-care': 'farm,vegetables',
-  'story-food': 'healthy,food',
-  'catering-hero': 'catering,food',
-  acai: 'acai,bowl',
-  strawberry: 'strawberry,smoothie',
-  green: 'green,smoothie',
-  mango: 'mango,smoothie',
-  blueberry: 'blueberry,smoothie',
-  citrus: 'orange,juice',
-  coconut: 'coconut,bowl',
-  kale: 'kale,salad',
-  avocado: 'avocado,salad',
-  southwest: 'grain,bowl',
+/** The brand hex behind each PANEL_SURFACE role — the data-URI panel can't read the
+ *  tenant `--st-*` vars (it renders in an isolated <img> context), so it bakes the
+ *  blueprint's own palette, matching what the home cards paint via their surface. */
+const SURFACE_HEX: Record<PanelSurface, string> = {
+  accent: BERRY,
+  brand: LEAF,
+  secondary: MANGO,
+  subtle: SAGE,
 };
 
-/** A small stable hash → a deterministic loremflickr `lock` per seed. */
-const lockOf = (s: string): number => {
-  let h = 0;
-  for (let i = 0; i < s.length; i += 1) h = (h * 31 + s.charCodeAt(i)) % 100000;
-  return h + 1;
-};
-
-export const pic = (seed: string, w = 1600, h = 1100): string => {
-  const key = seed.replace(/^prod-/, '');
-  const tags = FOOD_TAGS[key] ?? 'healthy,food';
-  return `https://loremflickr.com/${w}/${h}/${tags}?lock=${lockOf(seed)}`;
+/** A product "photo" as a self-contained SVG data URI: the food's brand-surface
+ *  colour with its big food emoji centred — the same look the home menu cards paint,
+ *  but as a real image so a bound `item.images` (Menu grid, product detail) renders
+ *  it. No network, so it always resolves. */
+export const photoSvg = (seed: string): string => {
+  const fill = SURFACE_HEX[emojiSurface(seed)];
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">` +
+    `<rect width="800" height="800" fill="${fill}"/>` +
+    `<text x="400" y="400" font-size="420" text-anchor="middle" dominant-baseline="central" ` +
+    `font-family="'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif">${emojiOf(seed)}</text>` +
+    `</svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 };
 
 // Mockup-style "photo" = a rounded colored panel with a big food emoji centered

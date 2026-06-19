@@ -51,6 +51,7 @@ export default {
           sku: 'MIDNIGHTACAI',
           priceCents: 1150,
           isDefault: true,
+          inventoryPolicy: 'continue',
         },
       ],
       images: [
@@ -76,6 +77,7 @@ export default {
           sku: 'STRAWBERRYFI',
           priceCents: 1075,
           isDefault: true,
+          inventoryPolicy: 'continue',
         },
       ],
       images: [
@@ -101,6 +103,7 @@ export default {
           sku: 'GREENMACHINE',
           priceCents: 1195,
           isDefault: true,
+          inventoryPolicy: 'continue',
         },
       ],
       images: [
@@ -124,6 +127,7 @@ export default {
           sku: 'MANGOSUNRISE',
           priceCents: 825,
           isDefault: true,
+          inventoryPolicy: 'continue',
         },
       ],
       images: [
@@ -147,6 +151,7 @@ export default {
           sku: 'BLUERECOVERY',
           priceCents: 875,
           isDefault: true,
+          inventoryPolicy: 'continue',
         },
       ],
       images: [
@@ -170,6 +175,7 @@ export default {
           sku: 'CITRUSGLOW',
           priceCents: 795,
           isDefault: true,
+          inventoryPolicy: 'continue',
         },
       ],
       images: [
@@ -193,6 +199,7 @@ export default {
           sku: 'COCOALMOND',
           priceCents: 850,
           isDefault: true,
+          inventoryPolicy: 'continue',
         },
       ],
       images: [
@@ -216,6 +223,7 @@ export default {
           sku: 'HARVESTKALE',
           priceCents: 1250,
           isDefault: true,
+          inventoryPolicy: 'continue',
         },
       ],
       images: [
@@ -239,6 +247,7 @@ export default {
           sku: 'AVOCADOPOWER',
           priceCents: 1325,
           isDefault: true,
+          inventoryPolicy: 'continue',
         },
       ],
       images: [
@@ -262,6 +271,7 @@ export default {
           sku: 'SOUTHWESTGRA',
           priceCents: 1295,
           isDefault: true,
+          inventoryPolicy: 'continue',
         },
       ],
       images: [
