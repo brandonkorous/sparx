@@ -14,6 +14,7 @@ import type { FastifyBaseLogger } from 'fastify';
 import { prisma, withTenant } from '@sparx/db';
 import { safeParseBlueprint, type Blueprint } from '@sparx/blueprints';
 import { savedThemeService } from '@sparx/sitebuilder';
+import { productService, variantService } from '@sparx/commerce';
 
 import { installBlueprint } from '../lib/blueprint-installer.js';
 import { applyUpdate, planUpdate } from '../lib/blueprint-updater.js';
@@ -181,6 +182,58 @@ async function main(): Promise<void> {
       'C3 tenant rename now reads as a tenant-only edit (kept, not re-flagged)',
       planC.artifacts.find((a) => a.kind === 'theme')?.status === 'unchanged'
     );
+
+    // ── D) COMMERCE: a tenant product title + variant price survive an update ────
+    const products =
+      (install.result as { products?: { handle: string; id: string }[] }).products ?? [];
+    const prod = products[0];
+    const bpProd = bp.commerce?.products?.[0];
+    if (prod && bpProd && bp.commerce) {
+      await productService.update(ctx, prod.id, { title: 'Tenant Product Title' });
+      const variants = await withTenant(ctx, (tx) =>
+        tx.productVariant.findMany({
+          where: { productId: prod.id, deletedAt: null },
+          select: { id: true },
+          take: 1,
+        })
+      );
+      const v0 = variants[0];
+      if (v0) await variantService.update(ctx, v0.id, { priceCents: 31337 });
+
+      // v3: author renames the SAME product (conflict with the tenant) but leaves price.
+      const v3: Blueprint = structuredClone(bp);
+      v3.version = '9.9.2';
+      v3.commerce!.products[0]!.title = 'Author Product Title';
+      const after = await withTenant(ctx, (tx) =>
+        tx.tenantBlueprintInstall.findFirstOrThrow({ where: { id: installId } })
+      );
+      const planD = await planUpdate(uctx, after, v3);
+      check(
+        'D0 product title is a conflict (both renamed)',
+        planD.artifacts.find((a) => a.kind === 'product')?.status === 'conflict'
+      );
+      await applyUpdate(uctx, after, v3, []); // keep tenant on conflict
+      const prodAfter = await withTenant(ctx, (tx) =>
+        tx.product.findFirstOrThrow({ where: { id: prod.id }, select: { title: true } })
+      );
+      check(
+        'D1 tenant product title SURVIVED apply',
+        prodAfter.title === 'Tenant Product Title',
+        prodAfter.title
+      );
+      if (v0) {
+        const priceAfter = await withTenant(ctx, (tx) =>
+          tx.productVariant.findFirstOrThrow({ where: { id: v0.id }, select: { priceCents: true } })
+        );
+        check(
+          'D2 tenant variant price is sacred (untouched by the update)',
+          priceAfter.priceCents === 31337,
+          priceAfter.priceCents
+        );
+      }
+    } else {
+      console.log('   (blueprint has no product — skipping commerce check D)');
+    }
   } finally {
     // ── cleanup ──────────────────────────────────────────────────────────────────
     await prisma.tenant.delete({ where: { id: tenantId } }).catch((err) => {

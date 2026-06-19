@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { canonicalEqual, mergeTree, mergeValue, resolverFrom } from './merge';
+import { canonicalEqual, mergeByKey, mergeTree, mergeValue, resolverFrom } from './merge';
 
 type N = {
   id: string;
@@ -211,6 +211,39 @@ describe('mergeTree — node-keyed builder-tree merge', () => {
     const r = mergeTree(base as never, current as never, incoming as never);
     const merged = r.merged as N;
     expect(merged.children?.find((c) => c.id === 'b')?.props.text).toBe('My custom body'); // kept
+  });
+});
+
+describe('mergeByKey — variant prices keyed by SKU', () => {
+  const base = [
+    { sku: 'A', priceCents: 1000 },
+    { sku: 'B', priceCents: 2000 },
+  ];
+
+  it("keeps a tenant's price edit while the author's edit to another SKU applies", () => {
+    const current = [
+      { sku: 'A', priceCents: 1500 }, // tenant raised A
+      { sku: 'B', priceCents: 2000 },
+    ];
+    const incoming = [
+      { sku: 'A', priceCents: 1000 }, // author left A
+      { sku: 'B', priceCents: 2500 }, // author raised B
+    ];
+    const r = mergeByKey(base, current, incoming, 'sku');
+    const merged = r.merged as { sku: string; priceCents: number }[];
+    expect(merged.find((v) => v.sku === 'A')?.priceCents).toBe(1500); // tenant kept
+    expect(merged.find((v) => v.sku === 'B')?.priceCents).toBe(2500); // author applied
+  });
+
+  it('adds an author-added SKU and removes an author-removed untouched SKU', () => {
+    const current = base;
+    const incoming = [
+      { sku: 'A', priceCents: 1000 },
+      { sku: 'C', priceCents: 3000 }, // B dropped, C added
+    ];
+    const r = mergeByKey(base, current, incoming, 'sku');
+    const merged = r.merged as { sku: string }[];
+    expect(merged.map((v) => v.sku).sort()).toEqual(['A', 'C']);
   });
 });
 

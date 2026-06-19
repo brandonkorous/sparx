@@ -19,8 +19,21 @@ import type { FastifyBaseLogger } from 'fastify';
 import { withTenant, type Prisma } from '@sparx/db';
 import { savedThemeService, publishService } from '@sparx/sitebuilder';
 import { componentService, emailService, layoutService, pageService } from '@sparx/builder';
+import {
+  categoryService,
+  collectionService,
+  productService,
+  variantService,
+} from '@sparx/commerce';
 import type { BuilderNode } from '@sparx/builder-schemas';
 import {
+  parseTypeSchema,
+  resolveType,
+  validateAndNormalizeBody,
+} from '@sparx/api-core/content-types';
+import { recordRevision, syncReferences } from '@sparx/api-core/entries';
+import {
+  mergeByKey,
   mergeTree,
   mergeValue,
   resolverFrom,
@@ -159,6 +172,33 @@ function definedOnly(obj: Json): Json {
   const out: Json = {};
   for (const [k, v] of Object.entries(obj)) if (v !== undefined) out[k] = v;
   return out;
+}
+
+/** Products: field-merge the scalar columns and merge variant PRICES keyed by SKU
+ *  (docs/55 §7.3) — a tenant's price edit is sacred. */
+function mergeProductArtifact(
+  base: Json | undefined,
+  current: Json,
+  incoming: Json,
+  resolve: Resolver
+): MergeResult {
+  const split = (c: Json | undefined): { rest: Json | undefined; variants: Json[] | undefined } => {
+    if (!c) return { rest: undefined, variants: undefined };
+    const { variants, ...rest } = c;
+    return { rest, variants: variants as Json[] | undefined };
+  };
+  const b = split(base);
+  const cu = split(current);
+  const inc = split(incoming);
+  const restRes = mergeValue(b.rest, cu.rest, inc.rest, { resolve });
+  const varRes = mergeByKey(b.variants, cu.variants, inc.variants, 'sku', { resolve }, 'variants');
+  const merged: Json = { ...(restRes.merged as Json) };
+  if (varRes.merged !== undefined) merged.variants = varRes.merged;
+  return {
+    merged,
+    changes: [...restRes.changes, ...varRes.changes],
+    changed: restRes.changed || varRes.changed,
+  };
 }
 
 // ── asset resolution (shared shape with the installer; find-or-create) ──────────
@@ -469,6 +509,229 @@ const componentHandler: KindHandler = {
   },
 };
 
+// ── commerce handlers: category · collection · product (docs/55 §7.3) ───────────
+
+const categoryHandler: KindHandler = {
+  kind: 'category',
+  async extractCurrent(env, artifact) {
+    if (!artifact.refId) return null;
+    const row = await categoryService.get(env.ctx, artifact.refId).catch(() => null);
+    if (!row) return null;
+    return compact({
+      handle: row.handle,
+      name: row.name,
+      description: row.description ?? undefined,
+      position: row.position,
+      featured: row.featured,
+      seoTitle: row.seoTitle ?? undefined,
+      seoDescription: row.seoDescription ?? undefined,
+    });
+  },
+  async writeMerged(env, artifact, merged) {
+    if (!artifact.refId) return;
+    await categoryService.update(
+      env.ctx,
+      artifact.refId,
+      definedOnly({
+        name: merged.name,
+        description: merged.description,
+        featured: merged.featured,
+        seoTitle: merged.seoTitle,
+        seoDescription: merged.seoDescription,
+      })
+    );
+  },
+};
+
+const collectionHandler: KindHandler = {
+  kind: 'collection',
+  async extractCurrent(env, artifact) {
+    if (!artifact.refId) return null;
+    const row = await withTenant(env.ctx, (tx) =>
+      tx.productCollection.findFirst({
+        where: { id: artifact.refId!, deletedAt: null },
+        select: {
+          handle: true,
+          name: true,
+          description: true,
+          featured: true,
+          seoTitle: true,
+          seoDescription: true,
+        },
+      })
+    );
+    if (!row) return null;
+    return compact({
+      handle: row.handle,
+      name: row.name,
+      description: row.description ?? undefined,
+      featured: row.featured,
+      seoTitle: row.seoTitle ?? undefined,
+      seoDescription: row.seoDescription ?? undefined,
+    });
+  },
+  async writeMerged(env, artifact, merged) {
+    if (!artifact.refId) return;
+    await collectionService.update(
+      env.ctx,
+      artifact.refId,
+      definedOnly({
+        name: merged.name,
+        description: merged.description,
+        featured: merged.featured,
+        seoTitle: merged.seoTitle,
+        seoDescription: merged.seoDescription,
+      })
+    );
+  },
+};
+
+const productHandler: KindHandler = {
+  kind: 'product',
+  merge: mergeProductArtifact,
+  async extractCurrent(env, artifact) {
+    if (!artifact.refId) return null;
+    const row = await withTenant(env.ctx, (tx) =>
+      tx.product.findFirst({
+        where: { id: artifact.refId!, deletedAt: null },
+        select: {
+          handle: true,
+          title: true,
+          description: true,
+          status: true,
+          productType: true,
+          vendor: true,
+          tags: true,
+          fulfillmentType: true,
+          weightGrams: true,
+          taxClass: true,
+          requiresShipping: true,
+          seoTitle: true,
+          seoDescription: true,
+          variants: {
+            where: { deletedAt: null },
+            select: { sku: true, priceCents: true, compareAtPriceCents: true, costCents: true },
+          },
+        },
+      })
+    );
+    if (!row) return null;
+    return compact({
+      handle: row.handle,
+      title: row.title,
+      description: row.description ?? undefined,
+      status: row.status,
+      productType: row.productType ?? undefined,
+      vendor: row.vendor ?? undefined,
+      tags: row.tags,
+      fulfillmentType: row.fulfillmentType,
+      weight: row.weightGrams ?? undefined,
+      taxClass: row.taxClass ?? undefined,
+      requiresShipping: row.requiresShipping,
+      seoTitle: row.seoTitle ?? undefined,
+      seoDescription: row.seoDescription ?? undefined,
+      variants: row.variants.map((v) =>
+        compact({
+          sku: v.sku,
+          priceCents: v.priceCents,
+          compareAtPriceCents: v.compareAtPriceCents ?? undefined,
+          costCents: v.costCents ?? undefined,
+        })
+      ),
+    });
+  },
+  async writeMerged(env, artifact, merged) {
+    if (!artifact.refId) return;
+    await productService.update(
+      env.ctx,
+      artifact.refId,
+      definedOnly({
+        title: merged.title,
+        description: merged.description,
+        status: merged.status,
+        productType: merged.productType,
+        vendor: merged.vendor,
+        tags: merged.tags,
+        fulfillmentType: merged.fulfillmentType,
+        weight: merged.weight,
+        taxClass: merged.taxClass,
+        requiresShipping: merged.requiresShipping,
+        seoTitle: merged.seoTitle,
+        seoDescription: merged.seoDescription,
+      })
+    );
+    // Variant prices, correlated by SKU.
+    for (const v of (merged.variants ?? []) as Json[]) {
+      const sku = v.sku as string | undefined;
+      if (!sku) continue;
+      const live = await variantService.getBySku(env.ctx, sku).catch(() => null);
+      if (!live) continue;
+      await variantService.update(
+        env.ctx,
+        live.id,
+        definedOnly({
+          priceCents: v.priceCents,
+          compareAtPriceCents: v.compareAtPriceCents,
+          costCents: v.costCents,
+        })
+      );
+    }
+  },
+};
+
+// ── content handler (docs/55 §7.3) — body merged per top-level field ────────────
+
+const contentHandler: KindHandler = {
+  kind: 'content',
+  async extractCurrent(env, artifact) {
+    if (!artifact.refId) return null;
+    const row = await withTenant(env.ctx, (tx) =>
+      tx.contentEntry.findFirst({
+        where: { id: artifact.refId! },
+        select: { typeKey: true, slug: true, status: true, body: true, seoJson: true },
+      })
+    );
+    if (!row) return null;
+    return compact({
+      typeKey: row.typeKey,
+      slug: row.slug,
+      status: row.status,
+      body: (row.body ?? {}),
+      seo: (row.seoJson ?? {}),
+    });
+  },
+  async writeMerged(env, artifact, merged) {
+    if (!artifact.refId) return;
+    const entryId = artifact.refId;
+    await withTenant(env.ctx, async (tx) => {
+      const type = await resolveType(tx, merged.typeKey as string);
+      const schema = parseTypeSchema(type);
+      const body = validateAndNormalizeBody(schema, (merged.body ?? {}));
+      const seo = (merged.seo ?? {}) as Record<string, unknown>;
+      const status = (merged.status as string) ?? 'draft';
+      await tx.contentEntry.update({
+        where: { id: entryId },
+        data: {
+          body: body as Prisma.InputJsonValue,
+          seoJson: seo as Prisma.InputJsonValue,
+          status,
+        },
+      });
+      await syncReferences(tx, env.tenantId, entryId, schema, body);
+      await recordRevision(tx, {
+        tenantId: env.tenantId,
+        entryId,
+        body,
+        seoJson: seo,
+        status,
+        kind: 'manual',
+        authorId: env.ctx.userId ?? null,
+        summary: 'Blueprint update',
+      });
+    });
+  },
+};
+
 /** Handler registry — kinds grow per slice (docs/55 §12). */
 const HANDLERS: KindHandler[] = [
   themeHandler,
@@ -477,6 +740,10 @@ const HANDLERS: KindHandler[] = [
   pageHandler,
   emailHandler,
   componentHandler,
+  categoryHandler,
+  collectionHandler,
+  productHandler,
+  contentHandler,
 ];
 const HANDLED_KINDS = new Set<ArtifactKind>(HANDLERS.map((h) => h.kind));
 

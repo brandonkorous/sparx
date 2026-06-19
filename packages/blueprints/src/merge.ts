@@ -288,3 +288,74 @@ export function mergeTree(
 ): MergeResult {
   return mergeNode(base, current, incoming, opts, path);
 }
+
+// ── keyed-array merge (docs/55 §7.3) ────────────────────────────────────────────
+//
+// A flat array of objects correlated by a stable key field (e.g. product variants
+// by `sku`). Each element three-way-merges by mergeValue; an element the author
+// dropped is removed if the tenant never touched it, kept (orphan) if they did; an
+// author-added element is appended. Mirrors the children logic of mergeTree without
+// recursion.
+
+type Row = Record<string, unknown>;
+
+export function mergeByKey(
+  base: Row[] | undefined,
+  current: Row[] | undefined,
+  incoming: Row[] | undefined,
+  keyField: string,
+  opts: MergeOptions = {},
+  path = ''
+): MergeResult {
+  const index = (arr: Row[] | undefined): Map<string, Row> => {
+    const m = new Map<string, Row>();
+    for (const el of arr ?? []) m.set(String(el[keyField]), el);
+    return m;
+  };
+  const baseM = index(base);
+  const curM = index(current);
+  const incM = index(incoming);
+  const changes: FieldChange[] = [];
+  const merged: Row[] = [];
+
+  for (const el of current ?? []) {
+    const k = String(el[keyField]);
+    const elPath = `${path}[${k}]`;
+    const b = baseM.get(k);
+    const inc = incM.get(k);
+    if (!inc) {
+      if (b && canonicalEqual(el, b)) {
+        changes.push({
+          path: elPath,
+          type: 'auto',
+          base: b,
+          mine: el,
+          theirs: undefined,
+          taken: 'theirs',
+        });
+        continue;
+      }
+      merged.push(el);
+      continue;
+    }
+    const r = mergeValue(b, el, inc, opts, elPath);
+    if (r.merged !== undefined) merged.push(r.merged as Row);
+    changes.push(...r.changes);
+  }
+
+  for (const inc of incoming ?? []) {
+    const k = String(inc[keyField]);
+    if (curM.has(k) || baseM.has(k)) continue;
+    changes.push({
+      path: `${path}[${k}]`,
+      type: 'auto',
+      base: undefined,
+      mine: undefined,
+      theirs: inc,
+      taken: 'theirs',
+    });
+    merged.push(inc);
+  }
+
+  return { merged, changes, changed: !canonicalEqual(merged, current) };
+}

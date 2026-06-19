@@ -209,7 +209,6 @@ export function resolveBlueprintArtifacts(
           handle: c.handle,
           name: c.name,
           description: c.description,
-          parentHandle: c.parentHandle,
           position: c.position,
           featured: c.featured,
           seoTitle: c.seoTitle,
@@ -226,9 +225,6 @@ export function resolveBlueprintArtifacts(
           handle: c.handle,
           name: c.name,
           description: c.description,
-          type: c.type,
-          ruleSet: c.ruleSet,
-          productHandles: c.productHandles,
           featured: c.featured,
           seoTitle: c.seoTitle,
           seoDescription: c.seoDescription,
@@ -241,6 +237,10 @@ export function resolveBlueprintArtifacts(
         kind: 'product',
         naturalKey: p.handle,
         refId,
+        // The merge surface (docs/55 §7.3): tenant-editable scalar fields + variant
+        // prices by SKU. Structural fields (options, images, category/collection
+        // membership) are install-set, not field-merged in v1 — so they're left out
+        // of the baseline to keep base == live-extract exact.
         content: compact({
           handle: p.handle,
           title: p.title,
@@ -251,40 +251,16 @@ export function resolveBlueprintArtifacts(
           tags: p.tags,
           fulfillmentType: p.fulfillmentType,
           weight: p.weight,
-          dimensions: p.dimensions,
           taxClass: p.taxClass,
           requiresShipping: p.requiresShipping,
           seoTitle: p.seoTitle,
           seoDescription: p.seoDescription,
-          ogImage: asset(p.ogImageAssetId) ?? undefined,
-          categoryHandles: p.categoryHandles,
-          collectionHandles: p.collectionHandles,
-          options: p.options,
           variants: p.variants.map((v) =>
             compact({
               sku: v.sku,
-              title: v.title,
-              optionValues: v.optionValues,
               priceCents: v.priceCents,
               compareAtPriceCents: v.compareAtPriceCents,
               costCents: v.costCents,
-              currency: v.currency,
-              weight: v.weight,
-              dimensions: v.dimensions,
-              inventoryPolicy: v.inventoryPolicy,
-              requiresShipping: v.requiresShipping,
-              isDefault: v.isDefault,
-              position: v.position,
-            })
-          ),
-          images: p.images.map((img) =>
-            compact({
-              assetId: asset(img.assetId),
-              variantSku: img.variantSku,
-              optionValues: img.optionValues,
-              position: img.position,
-              alt: img.alt,
-              isPrimary: img.isPrimary,
             })
           ),
         }),
