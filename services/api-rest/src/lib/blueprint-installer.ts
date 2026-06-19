@@ -35,6 +35,8 @@ import { publish } from '@sparx/api-core/pubsub';
 import { isAssetRef, type Blueprint } from '@sparx/blueprints';
 import type { BuilderNode } from '@sparx/builder-schemas';
 
+import { captureBaselines, resolveBlueprintArtifacts } from './blueprint-baseline.js';
+
 export interface InstallContext {
   tenantId: string;
   userId: string | null;
@@ -923,6 +925,19 @@ export async function installBlueprint(
       pages: result.pages.length,
       emails: result.emails.length,
     };
+
+    // 10b. Baseline capture (docs/55 §4) — record the per-artifact merge ANCESTOR so
+    //      a later blueprint update can reconcile non-destructively (tell a tenant
+    //      edit from a blueprint change). One row per artifact in
+    //      tenant_blueprint_install_artifacts, holding the stamped content for this
+    //      version. Without this, an update could only two-way-merge and would
+    //      false-conflict on every edit.
+    await captureBaselines(
+      ctx,
+      installRow.id,
+      blueprint.version,
+      resolveBlueprintArtifacts(blueprint, result, assetMap)
+    );
 
     // 11. Finalize the install row → `installed`, with the full id-map. Use
     //     installRow.id (definitely set here) so the closure sees a non-null id.

@@ -453,13 +453,16 @@ renders the themed home/PDP/blog and the product add-to-cart works.
 4. **Public marketplace + onboarding thread (§15, #4)** — including the **real billing gate** (D7)
    and **tenant-owned media** (D3 seam, §6), both of which become load-bearing once installs run
    for self-serve public signups.
-5. **Version _upgrades_ ("Update to vN")** — deferred; the genuinely hard part (a 3-way merge
-   against a tenant's customizations, per docs/53), built on the drift signal from step 1.
+5. **Version _upgrades_ ("Update to vN")** — **specified in full in
+   [docs/55 — Blueprint Updates](55-blueprint-updates.md)** and now being built: a non-destructive
+   three-way merge against the tenant's customizations (the genuinely hard part), built on the
+   drift signal from step 1. docs/55 also **removes the destructive Reset-as-upgrade workflow** —
+   Reset becomes a plain Delete (uninstall); getting a new version is Update, never delete-then-reinstall.
 
 **Deferred (build on it later):**
 
-- Blueprint **update/upgrade** for already-installed tenants — Phase-2 step 5 above (echo docs/53
-  "Update to vN").
+- Blueprint **update/upgrade** for already-installed tenants — **now specified + in build per
+  [docs/55](55-blueprint-updates.md)** (no longer deferred).
 - Multiple verticals — 6 manifests ship today (retail, tattoo, salon/spa, antiques, auto-parts,
   wellness clinic); more (B2B/fleet, content publisher, services) as needed.
 - Per-property installs beyond primary — **explicitly a non-goal under D6** (always primary); revisit
