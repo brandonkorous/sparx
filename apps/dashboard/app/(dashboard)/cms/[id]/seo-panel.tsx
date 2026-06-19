@@ -23,11 +23,7 @@ import {
   Heading,
   Input,
   Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  NativeSelect,
   Stack,
   Text,
   Textarea,
@@ -191,21 +187,21 @@ export function SeoPanel({
 
           <Stack gap={2}>
             <Label htmlFor="robots">Robots directive</Label>
-            <Select
+            {/* A plain native select — like the Page template picker below. A simple
+                text-option enum needs no Radix Select (whose hidden form-mirror is an
+                absolutely-positioned element that escapes scroll containers). */}
+            <NativeSelect
+              id="robots"
+              aria-label="Robots directive"
               value={value.robots ? value.robots : 'default'}
-              onValueChange={(v) => update('robots', v === 'default' ? '' : v)}
+              onChange={(e) => update('robots', e.target.value === 'default' ? '' : e.target.value)}
             >
-              <SelectTrigger id="robots" aria-label="Robots directive">
-                <SelectValue placeholder="Default (index, follow)" />
-              </SelectTrigger>
-              <SelectContent>
-                {ROBOTS_OPTIONS.map((o) => (
-                  <SelectItem key={o.value} value={o.value}>
-                    {o.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              {ROBOTS_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </NativeSelect>
             <Text size="xs" variant="muted">
               Controls whether search engines index this page and follow its links.
             </Text>

@@ -22,11 +22,7 @@ import {
   Checkbox,
   Input,
   Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  NativeSelect,
   Stack,
   Switch,
   Text,
@@ -376,18 +372,25 @@ function EnumFieldR({
   return (
     <Stack gap={1}>
       <FieldLabel htmlFor={inputId} field={field} />
-      <Select value={asString(value)} onValueChange={(next) => onChange(next)} disabled={disabled}>
-        <SelectTrigger id={inputId}>
-          <SelectValue placeholder="Select…" />
-        </SelectTrigger>
-        <SelectContent>
-          {field.options.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value}>
-              {opt.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      {/* A simple text-option enum → native select (parity with the template /
+          robots pickers). Radix Select's hidden form-mirror is an absolutely-
+          positioned element that escapes scroll containers; a native <select>
+          has no such mirror. */}
+      <NativeSelect
+        id={inputId}
+        value={asString(value)}
+        disabled={disabled}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        <option value="" disabled>
+          Select…
+        </option>
+        {field.options.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </NativeSelect>
     </Stack>
   );
 }
