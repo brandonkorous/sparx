@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "farm-fresh-bowls",
   "name": "Farm Fresh",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "tagline": "Here to deliver health.",
   "description": "A warm, organic storefront for a fresh-food brand — açaí bowls, smoothies and salads. Ships a full menu catalog, a brand story, locations, catering, product and blog templates, a matching theme, and a welcome email. Installs as a draft for the tenant to review, customize, and publish.",
   "payload": "blueprint.ts",

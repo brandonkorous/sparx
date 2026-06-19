@@ -17,7 +17,7 @@ import email_welcome from './parts/emails/welcome';
 
 export default {
   key: 'farm-fresh-bowls',
-  version: '1.0.7',
+  version: '1.0.8',
   name: 'Farm Fresh',
   summary:
     'A warm, organic storefront for a fresh-food brand — açaí bowls, smoothies and salads with a full menu, a brand story, locations, catering, and a welcome email. A ready-to-edit retail starter.',

@@ -49,8 +49,14 @@ export function splitBand(opts: {
     box: { padding: 'none' },
     layout: { direction: 'stack', gap: 'md', alignItems: 'start', justify: 'center' },
     children: [
-      // Accent hairline (mockup `.hairline`): a short 3px brand-colored rule.
-      node('Section', { cls: `h-[3px] w-16 rounded-full bg-${accent}`, box: { padding: 'none' } }),
+      // Accent hairline (mockup `.hairline`): a short 3px brand-colored rule. A LEAF
+      // (Text), not a Section — an empty Section renders as a "drop a block here"
+      // placeholder in the builder canvas (an empty container is a drop-zone). A leaf
+      // renders its own box, so the bar shows with no rogue empty-section.
+      node('Text', {
+        cls: `block h-[3px] w-16 rounded-full bg-${accent}`,
+        props: { variant: 'body', text: '' },
+      }),
       node('Heading', {
         cls: `text-4xl @3xl:text-5xl font-bold leading-tight text-${accent}`,
         props: { level: 'h2', text: opts.heading },

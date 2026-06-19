@@ -24,9 +24,12 @@ export default {
           children: [
             {
               id: 'ffb-42',
-              type: 'Section',
-              props: {},
-              class: 'mx-auto w-full max-w-site h-[3px] w-16 rounded-full bg-accent',
+              type: 'Text',
+              props: {
+                variant: 'body',
+                text: '',
+              },
+              class: 'block h-[3px] w-16 rounded-full bg-accent',
             },
             {
               id: 'ffb-43',
