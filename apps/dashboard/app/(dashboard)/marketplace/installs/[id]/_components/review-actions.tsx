@@ -1,15 +1,15 @@
 'use client';
 
-// Go-live + Reset for the "Review & go live" surface (docs/54 §8). Go-live
-// publishes everything the install created; reset tears it down. Confirm-gated +
-// toasts, mirroring the card actions. After go-live we refresh (status → live);
-// after reset the install is gone, so we return to the marketplace.
+// Go-live + Delete for the "Review & go live" surface (docs/54 §8, docs/55 §9).
+// Go-live publishes everything the install created; delete uninstalls it. Confirm-
+// gated + toasts. After go-live we refresh (status → live); after delete the install
+// is gone, so we return to the marketplace.
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Stack, Text, toast, useConfirm } from '@sparx/ui';
 
-import { goLiveAction, resetBlueprintAction } from '../../../actions';
+import { deleteBlueprintAction, goLiveAction } from '../../../actions';
 
 interface Props {
   installId: string;
@@ -26,7 +26,7 @@ export function ReviewActions({ installId, blueprintName, status, canManage }: P
   if (!canManage) {
     return (
       <Text size="sm" variant="muted">
-        Only an owner or admin can go live or reset this install.
+        Only an owner or admin can go live or delete this install.
       </Text>
     );
   }
@@ -61,27 +61,27 @@ export function ReviewActions({ installId, blueprintName, status, canManage }: P
     })();
   }
 
-  function onReset(): void {
+  function onDelete(): void {
     void (async () => {
       const ok = await confirm({
-        title: `Reset “${blueprintName}”?`,
+        title: `Delete “${blueprintName}”?`,
         description:
-          'This deletes the pages, products, content, components, and emails this blueprint created on your site. This cannot be undone.',
-        confirmLabel: 'Reset',
+          'This uninstalls the blueprint — deleting the pages, products, content, components, and emails it created on your site. This cannot be undone. (To get a newer version of the blueprint, use Update instead — it keeps your edits.)',
+        confirmLabel: 'Delete',
         tone: 'danger',
       });
       if (!ok) return;
       startTransition(async () => {
         try {
-          const res = await resetBlueprintAction(installId);
+          const res = await deleteBlueprintAction(installId);
           if (res.ok) {
-            toast.success(`${blueprintName} reset`);
+            toast.success(`${blueprintName} deleted`);
             router.push('/marketplace');
           } else {
-            toast.error("Couldn't reset", { description: res.error.message });
+            toast.error("Couldn't delete", { description: res.error.message });
           }
         } catch (err) {
-          toast.error("Couldn't reset", {
+          toast.error("Couldn't delete", {
             description: err instanceof Error ? err.message : String(err),
           });
         }
@@ -99,11 +99,11 @@ export function ReviewActions({ installId, blueprintName, status, canManage }: P
       <Button
         color="danger"
         variant="outline"
-        onClick={onReset}
+        onClick={onDelete}
         loading={pending}
         disabled={pending}
       >
-        Reset
+        Delete
       </Button>
     </Stack>
   );

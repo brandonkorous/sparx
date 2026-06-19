@@ -50,13 +50,15 @@ The general lesson: reconcile every reference, not just the convenient ones.)
 5. `pnpm --filter @sparx/api-rest marketplace:ingest`
 6. apply to a tenant + verify (below)
 
-Applying to a tenant — endpoints `POST /v1/blueprints/<key>/install` and
-`/v1/blueprints/installs/<id>/{reset,go-live}`. **Re-installing over a LIVE install is
-currently blocked** (the route 409s "reset to reinstall"), so the dashboard flow is
-Reset → Install → Go-live (each confirm-gated). Reset is destructive (drops pages/content,
-soft-deletes products). The intended direction is a **one-click Update that reconciles in
-place** (the install is already idempotent; the gap is the page step blindly `create`s
-slugged pages — it must reconcile by `(propertyId, slug)` first).
+Applying to a tenant — endpoints `POST /v1/blueprints/<key>/install`,
+`POST /v1/blueprints/installs/<id>/go-live`, `GET|POST /v1/blueprints/installs/<id>/update`
+(preview | apply), and `DELETE /v1/blueprints/installs/<id>` (uninstall). A newer blueprint
+version is an **Update** — a non-destructive three-way merge that keeps the tenant's edits
+([docs/55](../docs/55-blueprint-updates.md)); **Reset is gone**, replaced by a plain **Delete**
+(uninstall: drops pages/content, soft-deletes products for SKU/cart integrity). Never
+delete-then-reinstall to "get the new version" — that's what Update is for. Re-installing over
+an existing install still 409s (one install per tenant/property/blueprint); the message points
+to Update or Delete.
 
 ## Emails are marketing starters, not transactional
 

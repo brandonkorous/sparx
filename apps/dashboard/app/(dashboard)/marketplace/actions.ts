@@ -99,21 +99,21 @@ export async function addComponentAction(input: {
   return { ok: true, data: { key: res.data.key } };
 }
 
-// Reset & reinstall (docs/54 D8): tears down everything the install created and
-// deletes the install row, so the blueprint can be installed fresh. Destructive —
-// the card gates it behind a confirm.
-export async function resetBlueprintAction(
+// Delete / uninstall (docs/55 §9): tears down everything the install created and
+// deletes the install row. A plain uninstall — getting a newer version is an Update
+// (non-destructive), never delete-then-reinstall. Destructive — confirm-gated.
+export async function deleteBlueprintAction(
   installId: string
 ): Promise<ActionResult<{ id: string; status: string }>> {
   try {
-    const data = await api.post<{ id: string; status: string }>(
-      `/v1/blueprints/installs/${encodeURIComponent(installId)}/reset`
+    const data = await api.delete<{ id: string; status: string }>(
+      `/v1/blueprints/installs/${encodeURIComponent(installId)}`
     );
     revalidatePath('/marketplace');
     revalidatePath('/builder/blueprints');
     return { ok: true, data };
   } catch (err) {
     const e = err as ApiRestError;
-    return { ok: false, error: { message: e.message ?? 'Reset failed.' } };
+    return { ok: false, error: { message: e.message ?? 'Delete failed.' } };
   }
 }

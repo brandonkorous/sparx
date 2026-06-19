@@ -1076,23 +1076,26 @@ export async function goLiveInstall(ctxIn: InstallContext, installId: string): P
   logger.info({ tenantId, propertyId, installId }, 'blueprint install went live');
 }
 
-// ── reset & reinstall ─────────────────────────────────────────────────────────────
+// ── delete / uninstall ──────────────────────────────────────────────────────────
 
-/** Reset & reinstall (D8): delete everything an install created — read from the
- *  id-map on the row — then delete the row, so the blueprint can be installed
- *  fresh. Best-effort per artifact (an already-removed one is skipped) and in
- *  reverse dependency order so "has descendants" / "is placed" / FK guards don't
- *  block teardown. Destructive — gated behind a confirm in the dashboard.
+/** Delete / uninstall an install (docs/55 §9): remove everything it created — read
+ *  from the id-map on the row — then delete the row. This is a plain UNINSTALL, not
+ *  a precursor to reinstall: getting a NEW blueprint version is an Update (docs/55,
+ *  non-destructive merge), never delete-then-reinstall. Best-effort per artifact (an
+ *  already-removed one is skipped) and in reverse dependency order so "has
+ *  descendants" / "is placed" / FK guards don't block teardown. Destructive — gated
+ *  behind a confirm in the dashboard.
  *
- *  Commerce rows (products/categories/collections) soft-delete via the service, so
- *  their handles/SKUs stay reserved after a reset — that is intentional: a reinstall
- *  RECONCILES by natural key (step 6 `reuseOrRestore*`), restoring those exact
- *  tombstones in place rather than recreating, so it reuses the handles/SKUs cleanly
- *  (the SKU unique constraint + cart-pin `Restrict` make reuse the only safe path).
- *  Pages/emails/components/theme hard delete; content hard deletes and cascades its
- *  revisions + references; the layout is deactivated then removed so a LIVE install
- *  tears down fully. */
-export async function resetInstall(ctxIn: InstallContext, installId: string): Promise<void> {
+ *  Commerce rows (products/categories/collections) SOFT-delete via the service — not
+ *  a reinstall convenience but a data-integrity necessity: a SKU is tenant-unique
+ *  even when soft-deleted and a cart line pins the variant (`onDelete: Restrict`), so
+ *  a SKU can never be freed, only reused. (A later fresh install reconciles those
+ *  tombstones by natural key — resilience, not the update path.) Pages/emails/
+ *  components/theme hard delete; content hard deletes and cascades its revisions +
+ *  references; the layout is deactivated then removed so a LIVE install tears down
+ *  fully. The install's `tenant_blueprint_install_artifacts` baselines cascade away
+ *  with the row (docs/55 §4). */
+export async function deleteInstall(ctxIn: InstallContext, installId: string): Promise<void> {
   const { tenantId, userId, propertyId, logger } = ctxIn;
   const ctx = { tenantId, userId: userId ?? undefined };
   const propCtx = { tenantId, userId: userId ?? undefined, propertyId };
@@ -1107,7 +1110,7 @@ export async function resetInstall(ctxIn: InstallContext, installId: string): Pr
   const r = (row.result ?? {}) as unknown as InstallResult;
 
   const warn = (label: string, id: string) => (err: unknown) =>
-    logger.warn({ err, id }, `reset: ${label} delete failed (left in place)`);
+    logger.warn({ err, id }, `uninstall: ${label} delete failed (left in place)`);
 
   // Reverse dependency order, so each delete's "is placed" / "has descendants" /
   // FK guard is already satisfied by the time we reach the parent.
@@ -1145,5 +1148,5 @@ export async function resetInstall(ctxIn: InstallContext, installId: string): Pr
     await withTenant(ctx, (tx) => tx.mediaAsset.delete({ where: { id } })).catch(warn('asset', id));
 
   await withTenant(ctx, (tx) => tx.tenantBlueprintInstall.delete({ where: { id: installId } }));
-  logger.info({ tenantId, propertyId, installId }, 'blueprint install reset');
+  logger.info({ tenantId, propertyId, installId }, 'blueprint install uninstalled');
 }

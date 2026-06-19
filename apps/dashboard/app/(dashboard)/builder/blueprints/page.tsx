@@ -129,7 +129,7 @@ export default async function BuilderBlueprintsPage({ searchParams }: PageProps)
           <PageHeader
             icon={<LayoutTemplate className="h-5 w-5" />}
             title="Blueprints"
-            description="The blueprints installed on your site. Review and go live, or reset to start over — and browse the marketplace to install more."
+            description="The blueprints installed on your site. Review and go live, update to the latest version (keeping your edits), or delete to remove — and browse the marketplace to install more."
             actions={browseButton}
           />
 

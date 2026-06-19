@@ -34,10 +34,10 @@ import {
 import { requireTenantProperty, resolvePropertyId } from '../../../lib/property.js';
 import { readArtifact } from '../../../lib/marketplace/artifacts.js';
 import {
+  deleteInstall,
   findInstall,
   goLiveInstall,
   installBlueprint,
-  resetInstall,
   type InstallResult,
 } from '../../../lib/blueprint-installer.js';
 import { applyUpdate, planUpdate } from '../../../lib/blueprint-updater.js';
@@ -309,12 +309,13 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
       : await resolvePropertyId(auth.tenantId, activePropertyHeader(request.headers));
     const existing = await findInstall(auth.tenantId, propertyId, key);
     if (existing) {
-      // One install row per (tenant, property, blueprint). A clean re-install is an
-      // explicit reset first (D8) — guide the caller there rather than duplicating.
+      // One install row per (tenant, property, blueprint). A newer version is an
+      // Update (non-destructive merge, docs/55); removing it is a Delete — never
+      // delete-then-reinstall to "get the new version".
       throw conflict(
         existing.status === 'installed' || existing.status === 'live'
-          ? `This template is already installed (status: ${existing.status}). Reset it to reinstall.`
-          : `A previous install is ${existing.status}. Reset it, then install again.`
+          ? `This template is already installed (status: ${existing.status}). Update it to the latest version, or delete it to remove it.`
+          : `A previous install is ${existing.status}. Delete it, then install again.`
       );
     }
     const { installId, result } = await installBlueprint(
@@ -413,17 +414,18 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
     return ok(res);
   });
 
-  // Reset & reinstall (D8): tear down everything the install created (id-map on the
-  // row) + delete the row, so the blueprint can be installed fresh. Admin-only and
-  // destructive — the dashboard gates it behind a confirm.
-  app.post('/v1/blueprints/installs/:id/reset', async (request) => {
+  // Delete / uninstall (docs/55 §9): tear down everything the install created
+  // (id-map on the row) + delete the row. This is a plain uninstall — a newer
+  // version is an Update, not delete-then-reinstall. Admin-only and destructive —
+  // the dashboard gates it behind a confirm.
+  app.delete('/v1/blueprints/installs/:id', async (request) => {
     const auth = requireRole(request, 'admin');
     const { id } = IdParam.parse(request.params);
     const row = await withTenant({ tenantId: auth.tenantId }, (tx) =>
       tx.tenantBlueprintInstall.findFirst({ where: { id }, select: { id: true, propertyId: true } })
     );
     if (!row) throw notFound('Install', id);
-    await resetInstall(
+    await deleteInstall(
       {
         tenantId: auth.tenantId,
         userId: auth.actorId,
@@ -432,7 +434,7 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
       },
       id
     );
-    return ok({ id, status: 'reset' });
+    return ok({ id, status: 'deleted' });
   });
 
   return Promise.resolve();
