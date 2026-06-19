@@ -370,20 +370,31 @@ Mobile: the side-by-side collapses to stacked panels ([[responsive-builder-mobil
 
 ## 12. Build order (each slice independently shippable; all ship)
 
-1. **Substrate** — `tenant_blueprint_install_artifacts` table + RLS migration; Prisma model;
-   installer captures the per-artifact `baseline` at stamp (and on the home-page replace path);
-   `delete` keeps the rows cascading. No behaviour change yet — pure groundwork.
-2. **Merge core + Theme & Brand** — the pure `@sparx/blueprints` merge module (+ unit tests);
-   the updater's theme + brand path; preview + apply endpoints (theme/brand only); re-publish
-   parity; version bump + baseline advance. **Proves the loop end-to-end on the named must-have.**
-3. **Trees** — `mergeTree` for pages / layout / emails / components (component-version interplay
-   with docs/53, §7.2).
-4. **Commerce & content** — products (+ variant price), categories/collections, content entries;
-   new/removed/orphan handling (§7.4).
-5. **Delete rename** — `resetInstall` → `deleteInstall`; `DELETE` route; install-route 409
-   messaging; dashboard Reset → Delete.
-6. **Dashboard update surface** — changeset review, per-conflict keep-mine/take-theirs, detach,
-   orphans (§11).
+**✅ ALL SIX BUILT (2026-06-19).** Verified end-to-end against the live DB + service layer
+(`services/api-rest/src/scripts/verify-blueprint-update.ts`): install the flagship blueprint,
+edit theme + product + variant price, bump the version → the tenant's edits SURVIVE, untouched
+fields fast-forward, conflicts keep the tenant's value by default. 30 merge unit tests +
+15 live assertions green.
+
+1. ✅ **Substrate** — `tenant_blueprint_install_artifacts` table + RLS migration
+   (`20260914000000`); Prisma model; installer captures the per-artifact `baseline` at stamp;
+   `delete` cascades the rows. (commit `18dbcce9`)
+2. ✅ **Merge core + Theme & Brand** — the pure `@sparx/blueprints` merge module (`merge.ts`,
+   unit-tested); the updater's theme (per-token) + brand path; preview + apply endpoints;
+   re-publish parity; version bump + baseline advance. (commit `606741c3`)
+3. ✅ **Trees** — `mergeTree` (node-keyed by id) for pages / layout / emails / components;
+   components create a new version on change (docs/53), no auto-re-pin. (commit `9cc27f25`)
+4. ✅ **Commerce & content** — products (+ variant price by SKU via `mergeByKey`),
+   categories/collections, content entries; new/removed/orphan classification. (slice-4 commit)
+5. ✅ **Delete rename** — `resetInstall` → `deleteInstall`; `DELETE /v1/blueprints/installs/:id`;
+   install-route 409 messaging; dashboard Reset → Delete (+ "Delete & retry" for failed runs).
+6. ✅ **Dashboard update surface** — `/marketplace/installs/[id]/update`: changeset review,
+   per-conflict Keep-mine / Take-theirs, new + orphan sections, drift banner on the detail page.
+
+**Remaining polish (not blocking):** per-artifact **Detach** (§13, U8) — the table column +
+`POST …/artifacts/:id/detach` route + a per-artifact UI toggle; the async `template-installer`
+worker lift (docs/54 §13 1b); and new-artifact CREATION on apply (currently surfaced in the
+changeset as "new" and added on a fresh install; in-place add-on-update is the next increment).
 
 ---
 

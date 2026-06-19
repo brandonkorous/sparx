@@ -150,7 +150,7 @@ export function UpdateReview({ installId, blueprintName, plan, canManage }: Prop
         <InfoCard
           title="New in this version"
           items={created.map((a) => `${KIND_LABEL[a.kind] ?? a.kind} · ${a.naturalKey}`)}
-          note="These will be added to your site."
+          note="Items the blueprint added since you installed. Your existing content is updated above; adding these new items in place is coming next."
         />
       ) : null}
       {removed.length > 0 ? (
