@@ -3,20 +3,20 @@
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
 export default {
-  id: 'ffb-259',
+  id: 'ffb-191',
   type: 'Section',
   class: 'w-full bg-base-200',
   props: {},
   name: 'Testimonials',
   children: [
     {
-      id: 'ffb-259__c',
+      id: 'ffb-191__c',
       type: 'Stack',
       class: 'mx-auto w-full max-w-site flex flex-col gap-6 items-center p-8 @3xl:p-16 text-center',
       props: {},
       children: [
         {
-          id: 'ffb-233',
+          id: 'ffb-165',
           type: 'Heading',
           props: {
             level: 'h2',
@@ -25,20 +25,20 @@ export default {
           class: 'text-center text-3xl @3xl:text-4xl text-accent',
         },
         {
-          id: 'ffb-258',
+          id: 'ffb-190',
           type: 'Section',
           props: {},
           class: 'grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-3 gap-6',
           children: [
             {
-              id: 'ffb-241',
+              id: 'ffb-173',
               type: 'Card',
               props: {},
               class:
                 'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10 bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
-                  id: 'ffb-234',
+                  id: 'ffb-166',
                   type: 'Text',
                   props: {
                     variant: 'body',
@@ -47,7 +47,7 @@ export default {
                   class: 'text-secondary text-lg',
                 },
                 {
-                  id: 'ffb-235',
+                  id: 'ffb-167',
                   type: 'Text',
                   props: {
                     variant: 'body',
@@ -56,13 +56,13 @@ export default {
                   class: 'italic leading-relaxed',
                 },
                 {
-                  id: 'ffb-240',
+                  id: 'ffb-172',
                   type: 'Stack',
                   props: {},
                   class: 'mx-auto w-full max-w-site flex flex-col @3xl:flex-row gap-2 items-center',
                   children: [
                     {
-                      id: 'ffb-236',
+                      id: 'ffb-168',
                       type: 'Text',
                       props: {
                         variant: 'body',
@@ -72,13 +72,13 @@ export default {
                         'h-10 w-10 bg-base-200 text-lg shrink-0 inline-flex items-center justify-center rounded-full leading-none',
                     },
                     {
-                      id: 'ffb-239',
+                      id: 'ffb-171',
                       type: 'Stack',
                       props: {},
                       class: 'mx-auto w-full max-w-site flex flex-col items-start',
                       children: [
                         {
-                          id: 'ffb-237',
+                          id: 'ffb-169',
                           type: 'Text',
                           props: {
                             variant: 'body',
@@ -87,7 +87,7 @@ export default {
                           class: 'font-extrabold',
                         },
                         {
-                          id: 'ffb-238',
+                          id: 'ffb-170',
                           type: 'Text',
                           props: {
                             variant: 'meta',
@@ -102,14 +102,14 @@ export default {
               ],
             },
             {
-              id: 'ffb-249',
+              id: 'ffb-181',
               type: 'Card',
               props: {},
               class:
                 'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10 bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
-                  id: 'ffb-242',
+                  id: 'ffb-174',
                   type: 'Text',
                   props: {
                     variant: 'body',
@@ -118,7 +118,7 @@ export default {
                   class: 'text-secondary text-lg',
                 },
                 {
-                  id: 'ffb-243',
+                  id: 'ffb-175',
                   type: 'Text',
                   props: {
                     variant: 'body',
@@ -127,13 +127,13 @@ export default {
                   class: 'italic leading-relaxed',
                 },
                 {
-                  id: 'ffb-248',
+                  id: 'ffb-180',
                   type: 'Stack',
                   props: {},
                   class: 'mx-auto w-full max-w-site flex flex-col @3xl:flex-row gap-2 items-center',
                   children: [
                     {
-                      id: 'ffb-244',
+                      id: 'ffb-176',
                       type: 'Text',
                       props: {
                         variant: 'body',
@@ -143,13 +143,13 @@ export default {
                         'h-10 w-10 bg-base-200 text-lg shrink-0 inline-flex items-center justify-center rounded-full leading-none',
                     },
                     {
-                      id: 'ffb-247',
+                      id: 'ffb-179',
                       type: 'Stack',
                       props: {},
                       class: 'mx-auto w-full max-w-site flex flex-col items-start',
                       children: [
                         {
-                          id: 'ffb-245',
+                          id: 'ffb-177',
                           type: 'Text',
                           props: {
                             variant: 'body',
@@ -158,7 +158,7 @@ export default {
                           class: 'font-extrabold',
                         },
                         {
-                          id: 'ffb-246',
+                          id: 'ffb-178',
                           type: 'Text',
                           props: {
                             variant: 'meta',
@@ -173,14 +173,14 @@ export default {
               ],
             },
             {
-              id: 'ffb-257',
+              id: 'ffb-189',
               type: 'Card',
               props: {},
               class:
                 'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 items-start p-6 @3xl:p-10 bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
-                  id: 'ffb-250',
+                  id: 'ffb-182',
                   type: 'Text',
                   props: {
                     variant: 'body',
@@ -189,7 +189,7 @@ export default {
                   class: 'text-secondary text-lg',
                 },
                 {
-                  id: 'ffb-251',
+                  id: 'ffb-183',
                   type: 'Text',
                   props: {
                     variant: 'body',
@@ -198,13 +198,13 @@ export default {
                   class: 'italic leading-relaxed',
                 },
                 {
-                  id: 'ffb-256',
+                  id: 'ffb-188',
                   type: 'Stack',
                   props: {},
                   class: 'mx-auto w-full max-w-site flex flex-col @3xl:flex-row gap-2 items-center',
                   children: [
                     {
-                      id: 'ffb-252',
+                      id: 'ffb-184',
                       type: 'Text',
                       props: {
                         variant: 'body',
@@ -214,13 +214,13 @@ export default {
                         'h-10 w-10 bg-base-200 text-lg shrink-0 inline-flex items-center justify-center rounded-full leading-none',
                     },
                     {
-                      id: 'ffb-255',
+                      id: 'ffb-187',
                       type: 'Stack',
                       props: {},
                       class: 'mx-auto w-full max-w-site flex flex-col items-start',
                       children: [
                         {
-                          id: 'ffb-253',
+                          id: 'ffb-185',
                           type: 'Text',
                           props: {
                             variant: 'body',
@@ -229,7 +229,7 @@ export default {
                           class: 'font-extrabold',
                         },
                         {
-                          id: 'ffb-254',
+                          id: 'ffb-186',
                           type: 'Text',
                           props: {
                             variant: 'meta',

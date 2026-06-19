@@ -1,8 +1,8 @@
 # sparx Platform — Stripe Integration Map & Go-Live Tracker
 
-**Version:** 1.3
+**Version:** 1.4
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-13
+**Last Updated:** 2026-06-18
 
 ---
 
@@ -56,25 +56,30 @@ no account, and no code path — conflating them is the classic footgun.
 Platform fee: the only payment fee is **sparx Pay's flat 0.5%**, taken at charge time
 via `application_fee_amount` (docs/94 §8). There is no metered transaction fee.
 
+Platform **one-off charges** (e.g. **domain registration**) are also **Part A** —
+tenant → WizeWorks, on the platform account + the tenant's card on file — never the
+Part B Connect surface. Part A is no longer subscriptions-only; see **§11**.
+
 ---
 
 # Part A — Platform billing (WizeWorks charges tenants)
 
 ## 1. Status dashboard
 
-| Area                                           | Status | Note                                                                                                                             |
-| ---------------------------------------------- | :----: | -------------------------------------------------------------------------------------------------------------------------------- |
-| Billing engine (`@sparx/billing`)              |   ✅   | Customer/subscription sync, webhook reconcile, portal, state read — built                                                        |
-| ~~Phase 7 transaction fee~~                    |   ❌   | **REMOVED** — no tiers, only modules. sparx Pay's flat 0.5% (charge-time `application_fee`) is the only payment fee (docs/94 §8) |
-| Module Products + Prices in Stripe             |   ⬜   | 10 products, ~19 prices — none exist yet (§4)                                                                                    |
-| Billing **webhook endpoint** + secret          |   ⬜   | None — subscription/invoice events won't reach us (§6)                                                                           |
-| Billing **portal configuration**               |   ⬜   | None — `POST /v1/billing/portal` will error until one exists (§6)                                                                |
-| Secret Manager values                          |  🔧⬜  | `STRIPE_SECRET_KEY`, price IDs, webhook secret (§7)                                                                              |
-| DB migration `20260813000000_platform_billing` |   ⬜   | Author-complete; not yet applied via DB Migrate workflow                                                                         |
-| `syncModuleItems` cancel-on-empty              |   ✅   | One item per billable module; cancels the subscription when the last module is disabled (no fee anchor)                          |
-| Phase 3 trial banner / choose-plan             |   ✅   | C4 — trial/past-due/cancel banner; plan+interval switch via portal `subscription_update`                                         |
-| Phase 8 enterprise provisioning                |   ✅   | C5 — Enterprise dashboard card + `settings.billing.planType` flag + runbook (§10)                                                |
-| Stripe-flow behaviour tests                    |   ✅   | `service.behavior.test.ts` mocks Stripe+DB: subscription create, cancel-on-empty, reconcile flags                                |
+| Area                                           | Status | Note                                                                                                                                     |
+| ---------------------------------------------- | :----: | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Billing engine (`@sparx/billing`)              |   ✅   | Customer/subscription sync, webhook reconcile, portal, state read — built                                                                |
+| ~~Phase 7 transaction fee~~                    |   ❌   | **REMOVED** — no tiers, only modules. sparx Pay's flat 0.5% (charge-time `application_fee`) is the only payment fee (docs/94 §8)         |
+| Module Products + Prices in Stripe             |   ⬜   | 10 products, ~19 prices — none exist yet (§4)                                                                                            |
+| Billing **webhook endpoint** + secret          |   ⬜   | None — subscription/invoice events won't reach us (§6)                                                                                   |
+| Billing **portal configuration**               |   ⬜   | None — `POST /v1/billing/portal` will error until one exists (§6)                                                                        |
+| Secret Manager values                          |  🔧⬜  | `STRIPE_SECRET_KEY`, price IDs, webhook secret (§7)                                                                                      |
+| DB migration `20260813000000_platform_billing` |   ⬜   | Author-complete; not yet applied via DB Migrate workflow                                                                                 |
+| `syncModuleItems` cancel-on-empty              |   ✅   | One item per billable module; cancels the subscription when the last module is disabled (no fee anchor)                                  |
+| Domain registration charge (card-on-file)      |   ⬜   | First non-subscription Part A charge; off-session PI on the tenant's saved PM — seams disabled + checkout gated until card-on-file (§11) |
+| Phase 3 trial banner / choose-plan             |   ✅   | C4 — trial/past-due/cancel banner; plan+interval switch via portal `subscription_update`                                                 |
+| Phase 8 enterprise provisioning                |   ✅   | C5 — Enterprise dashboard card + `settings.billing.planType` flag + runbook (§10)                                                        |
+| Stripe-flow behaviour tests                    |   ✅   | `service.behavior.test.ts` mocks Stripe+DB: subscription create, cancel-on-empty, reconcile flags                                        |
 
 ---
 
@@ -289,6 +294,72 @@ To provision one:
 > `planType` lives in `settings.billing` precisely so enterprise is a data op, not a
 > deploy. The metered fee item still works for enterprise (it's just another item on
 > their custom subscription).
+
+---
+
+## 11. Platform one-off charges — domain registration (card-on-file)
+
+The first **non-subscription** Part A charge. When a tenant buys a custom domain
+through sparx, WizeWorks bills the **tenant's saved payment method** for the domain
+(registrar wholesale + per-TLD convenience fee). This is **platform billing (Part A)**
+— tenant → WizeWorks — **not** the commerce/Connect surface (Part B). Conflating them
+is the footgun this doc opens with: a domain charge runs on `STRIPE_SECRET_KEY` (the
+platform account + the tenant's platform `stripe_customer_id`), and must **never** go
+through `@sparx/payments` / sparx Pay, which is shoppers → tenants.
+
+**Why it's blocked today.** A domain registration is a HARD pass-through cost: the
+instant we call the registrar's `purchaseDomain`, ICANN/the registrar bills the sparx
+reseller account for real — no trial, no reversal. So we MUST charge the tenant
+**before** registering, and refund if registration then fails. That requires a tenant
+**card on file**, which is the Part A go-live deliverable (§1, §7). Until it lands,
+domain checkout is gated OFF.
+
+**Already built (the hard part)** — see [docs/24](archive/24-domain-purchase-management.md):
+
+- The purchase/renew routes already sequence **charge-first → register →
+  refund-on-failure** ([routes/v1/domains.ts](../services/api-rest/src/routes/v1/domains.ts)),
+  so a tenant is never billed for a domain they didn't get.
+- Two **intentionally-disabled seams** in
+  [lib/domain-billing.ts](../services/api-rest/src/lib/domain-billing.ts) —
+  `chargeForDomain` / `refundDomainCharge` — throw `paymentRequired` today.
+- A kill-switch `env.DOMAIN_PURCHASE_ENABLED` (only the literal `"true"`/`"1"` enables)
+  gates buy + renew (403 when off); the dashboard reads the same flag for UX
+  ("checkout opens soon"). Free `*.sparx.zone` subdomains + connecting an owned domain
+  are never gated.
+
+> **Registrar note:** the registrar itself is now abstracted behind the
+> `@sparx/registrar` `RegistrarClient` contract (GoDaddy today; name.com next). The
+> registrar swap and the billing seam are independent — none of the above changes when
+> the provider does.
+
+**Requirements for the Stripe build (to open domain checkout):**
+
+1. **Expose a reusable off-session charge helper on `@sparx/billing`** — e.g.
+   `chargeTenantOffSession({ tenantId, amountCents, description, idempotencyKey })`:
+   resolve the tenant's platform `stripe_customer_id` + default payment method, create
+   **and confirm** an **off-session** PaymentIntent, throw on decline. Plus
+   `refundCharge(paymentIntentId)`. Domain registration is the first caller; **dunning
+   and any other one-off platform charge reuse the same helper** — don't re-implement
+   off-session charging per feature.
+2. **Implement the two domain seams** against that helper: `chargeForDomain` →
+   `chargeTenantOffSession(...)` returning the PaymentIntent id; `refundDomainCharge` →
+   `refundCharge(id)` (best-effort — log, don't throw).
+3. **Flip `DOMAIN_PURCHASE_ENABLED=true`** (Secret Manager / app-env) once 1 + 2 ship.
+
+**Card-on-file dependency.** The tenant Stripe customer is created the first time any
+module toggles (§10); a default payment method exists once they subscribe via the
+hosted checkout/portal. Off-session domain charges **reuse that customer + default PM**
+— there's no separate card-collection step. A tenant with **no** saved PM (free/trial,
+never subscribed) can't buy a domain off-session: the helper should return a clean "add
+a payment method first" error and the dashboard should route them to the portal to add
+one before purchase.
+
+**Full-purchase test (unblocked once checkout opens).** One real end-to-end purchase
+also closes the two open registrar items (docs/24): the **real-money** registration
+test (no registrar sandbox on the live path), and confirming the registrar accepts
+`consent.agreedBy: email` without a buyer IP.
+
+⬜ **Domain checkout** — blocked on Part A card-on-file + the two seams + the flag.
 
 ---
 

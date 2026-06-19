@@ -6,14 +6,13 @@
 
 import { node, type BuilderNode } from '../_kit';
 import {
+  boundMenuGroup,
   locationCard,
-  menuGroup,
   splitBand,
   stepCard,
   testimonialCard,
   valueCard,
 } from '../sections';
-import { ACAI, SALADS, SMOOTHIES } from '../menu-data';
 
 /** A small uppercase pill label (the mockup `.pill`). `cls` carries the per-context
  *  fill/foreground (sage on light, fern on the dark band). */
@@ -168,10 +167,13 @@ export function homeTree(): BuilderNode {
               }),
             ],
           }),
-          menuGroup('Açaí & Smoothie Bowls', ACAI, 3, 'h-48'),
-          menuGroup('Cold-Pressed Smoothies', SMOOTHIES, 4, 'h-40'),
-          menuGroup('Salads & Grain Bowls', SALADS, 3, 'h-48'),
-          node('Button', { props: { label: 'Order the full menu', style: 'accent', href: '/menu' } }),
+          // Live product teasers — a few real, shoppable bowls per group (photo + title
+          // link to the PDP, Add sells the scoped product). The full catalog lives on
+          // the Menu page; this is the home taste of it.
+          boundMenuGroup('Açaí & Smoothie Bowls', 'acai-bowls', 3, 3),
+          boundMenuGroup('Cold-Pressed Smoothies', 'smoothies', 4, 4),
+          boundMenuGroup('Salads & Grain Bowls', 'salads-grains', 3, 3),
+          node('Button', { props: { label: 'See the full menu', style: 'accent', href: '/menu' } }),
         ],
       }),
       // How it works (moss band). Surface 'none' + explicit moss bg/light text: a

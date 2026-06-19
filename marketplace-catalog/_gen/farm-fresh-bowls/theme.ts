@@ -39,6 +39,11 @@ export const brand = {
     secondary: MANGO,
   },
   fonts: { heading: 'Quicksand', body: 'Nunito' },
+  // The sprout-in-bowl mark (logo.ts) — a self-contained SVG data URI. The installer
+  // sets it as the site identity logo (shown in the Wordmark, header + footer) and the
+  // favicon. One mark serves both; it's drawn to read on the cream header AND ink footer.
+  logoLightAssetId: 'brand-logo',
+  faviconAssetId: 'brand-favicon',
   // Example social handles the install seeds into the site's per-site links so the
   // footer's SocialLinks renders icons out of the box (the tenant swaps these, like
   // the placeholder imagery). Platform keys map to brand icons in @sparx/site-ui.

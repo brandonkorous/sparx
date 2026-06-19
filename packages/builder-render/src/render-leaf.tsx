@@ -385,8 +385,14 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
       link: 'Open link',
       submit: 'Submit',
     };
+    // A trigger WRAPPING content (an image/heading linked to a PDP) is identified by
+    // its children — its label is the wrapped content, so don't inject a fallback
+    // ("Open link" etc.). A bare trigger with no content keeps the action's default.
     const label =
-      str('label') || str('text') || rawElementText(node) || (actionLabel[action] ?? 'Button');
+      str('label') ||
+      str('text') ||
+      rawElementText(node) ||
+      (children ? '' : (actionLabel[action] ?? 'Button'));
     const className = leafClass ?? legacyButtonStyleToClass(str('style'));
     const linkHref = (node.binding?.href ?? '') || str('href');
     const href = action === 'link' ? linkHref || undefined : undefined;

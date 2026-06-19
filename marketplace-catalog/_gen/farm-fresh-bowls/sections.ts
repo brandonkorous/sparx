@@ -154,6 +154,92 @@ export const menuGroup = (
     ],
   });
 
+/** Wrap a node in a link to the scoped product's PDP. `/products/{{item.handle}}` is
+ *  resolved per-product by the renderer (BuilderActionButton reads the repeater's
+ *  scoped product), so a card's photo + title tap through to that product's page. The
+ *  link wears `cls` and carries the wrapped node as its only content (no button label). */
+const pdpLink = (cls: string, child: BuilderNode): BuilderNode => {
+  const link = node('Button', { cls, children: [child] });
+  link.binding = { action: 'link', href: '/products/{{item.handle}}' };
+  return link;
+};
+
+/** A LIVE shoppable card bound to the repeated `item.*` product: the photo + title
+ *  link to the product's PDP, and a working Add-to-cart sells the scoped product.
+ *  Wears the brand card shell + hover-lift, matching the rest of the site. Shared by
+ *  the Menu page (full grids) and the home menu teaser, so one card style is shoppable
+ *  everywhere. */
+export const shopCard = (): BuilderNode => {
+  const addToCart = node('Button', {
+    cls: 'st-btn st-c-accent st-v-solid st-btn--sz-sm whitespace-nowrap',
+    props: { label: 'Add' },
+  });
+  addToCart.binding = { action: 'add-to-cart' };
+  return node('Card', {
+    cls: `overflow-hidden ${CARD_CLS}`,
+    box: { padding: 'none' },
+    layout: { direction: 'stack', gap: 'none' },
+    children: [
+      pdpLink('block', node('Image', { bind: 'item.images', cls: 'w-full', props: { ratio: 'square', alt: 'Bowl' } })),
+      node('Stack', {
+        cls: 'flex-1',
+        box: { padding: 'md' },
+        layout: { direction: 'stack', gap: 'sm', alignItems: 'start' },
+        children: [
+          pdpLink(
+            'block transition-colors hover:text-accent',
+            node('Heading', { cls: 'text-xl', props: { level: 'h3', text: 'Bowl' }, bind: 'item.title' })
+          ),
+          node('Text', {
+            cls: 'text-sm leading-relaxed text-base-content/70',
+            props: { variant: 'body', text: 'A fresh, balanced bowl.' },
+            bind: 'item.description',
+          }),
+          node('Stack', {
+            cls: 'mt-auto w-full',
+            box: { padding: 'none' },
+            layout: { direction: 'row', justify: 'between', alignItems: 'center', gap: 'sm' },
+            children: [
+              node('PriceTag', { cls: 'text-accent font-extrabold text-lg', bind: 'item.price' }),
+              addToCart,
+            ],
+          }),
+        ],
+      }),
+    ],
+  });
+};
+
+/** A LIVE product grid bound to a category by HANDLE (the installer rewrites the
+ *  handle → the real category id at install). `limit` caps it for a teaser (the home
+ *  menu shows a few per group); omit for the full shop. Repeats `shopCard` per product. */
+export const boundProductGrid = (handle: string, cols: number, limit?: number): BuilderNode => {
+  const grid = node('Section', {
+    box: { padding: 'none', backgroundWidth: 'full', contentWidth: 'full' },
+    layout: { direction: 'grid', columns: cols, gap: 'lg' },
+    children: [shopCard()],
+  });
+  grid.binding = { source: { from: 'category', id: handle, ...(limit ? { limit } : {}) } };
+  return grid;
+};
+
+/** A labeled live product group (home menu teaser): a leaf subhead over a capped
+ *  `boundProductGrid` for `handle`. */
+export const boundMenuGroup = (
+  title: string,
+  handle: string,
+  cols: number,
+  limit: number
+): BuilderNode =>
+  node('Stack', {
+    box: { name: title, padding: 'none', backgroundWidth: 'full', contentWidth: 'full' },
+    layout: { direction: 'stack', gap: 'md', alignItems: 'start' },
+    children: [
+      node('Heading', { cls: 'text-primary text-2xl', props: { level: 'h3', text: title } }),
+      boundProductGrid(handle, cols, limit),
+    ],
+  });
+
 /** A step card for "how it works" (text on the dark band): a fern-tinted emoji
  *  circle over a numbered title + a short line. */
 export const stepCard = (emoji: string, title: string, body: string): BuilderNode =>

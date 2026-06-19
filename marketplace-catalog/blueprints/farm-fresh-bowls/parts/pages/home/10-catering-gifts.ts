@@ -3,21 +3,21 @@
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
 export default {
-  id: 'ffb-268',
+  id: 'ffb-200',
   type: 'Section',
   props: {},
   class: 'w-full mx-auto w-full max-w-site grid grid-cols-1 @3xl:grid-cols-2 gap-6 p-8 @3xl:p-16',
   name: 'Catering & gifts',
   children: [
     {
-      id: 'ffb-263',
+      id: 'ffb-195',
       type: 'Card',
       props: {},
       class:
         'mx-auto w-full max-w-site rounded-box bg-primary text-primary-content flex flex-col gap-4 justify-between items-start p-9 st-hover--lift',
       children: [
         {
-          id: 'ffb-260',
+          id: 'ffb-192',
           type: 'Heading',
           props: {
             level: 'h3',
@@ -25,7 +25,7 @@ export default {
           },
         },
         {
-          id: 'ffb-261',
+          id: 'ffb-193',
           type: 'Text',
           props: {
             variant: 'body',
@@ -33,7 +33,7 @@ export default {
           },
         },
         {
-          id: 'ffb-262',
+          id: 'ffb-194',
           type: 'Button',
           props: {
             label: 'Plan an event',
@@ -44,14 +44,14 @@ export default {
       ],
     },
     {
-      id: 'ffb-267',
+      id: 'ffb-199',
       type: 'Card',
       props: {},
       class:
         'mx-auto w-full max-w-site rounded-box bg-secondary text-secondary-content flex flex-col gap-4 justify-between items-start p-9 st-hover--lift',
       children: [
         {
-          id: 'ffb-264',
+          id: 'ffb-196',
           type: 'Heading',
           props: {
             level: 'h3',
@@ -59,7 +59,7 @@ export default {
           },
         },
         {
-          id: 'ffb-265',
+          id: 'ffb-197',
           type: 'Text',
           props: {
             variant: 'body',
@@ -67,7 +67,7 @@ export default {
           },
         },
         {
-          id: 'ffb-266',
+          id: 'ffb-198',
           type: 'Button',
           props: {
             label: 'Buy a gift card',

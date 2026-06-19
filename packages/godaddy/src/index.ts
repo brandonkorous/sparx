@@ -14,6 +14,7 @@
 // drop-in swap. The free functions remain exported as the implementation.
 
 import {
+  DEFAULT_TLDS,
   RegistrarError,
   buildSparxDnsRecords,
   generateDkimKeypair,
@@ -25,8 +26,10 @@ import {
 } from '@sparx/registrar';
 
 // Re-export the contract surface so existing `@sparx/godaddy` importers keep
-// working: the shared types, the neutral DNS/DKIM helpers, and the error.
+// working: the shared types, the TLD menu, the neutral DNS/DKIM helpers, and
+// the error.
 export {
+  DEFAULT_TLDS,
   RegistrarError,
   buildSparxDnsRecords,
   generateDkimKeypair,
@@ -154,9 +157,16 @@ interface GdTransferOutResponse {
 // ─── Availability + suggestions ──────────────────────────────────────────────
 
 export async function checkAvailability(domain: string): Promise<DomainAvailability> {
+  // checkType=FULL: live registry query — accurate but slower. This is the
+  // AUTHORITATIVE single-domain check (drives /check, the exact-host result, and
+  // the purchase pre-flight), so correctness wins over latency: FAST is served
+  // from a cache GoDaddy itself flags as "less accurate" and was returning wrong
+  // availability for recently registered/dropped names. The bulk suggestion-list
+  // enrichment below stays on FAST (a type-ahead list of look-alikes where speed
+  // matters more than precision).
   const res = await gd<GdAvailableResponse>(
     'GET',
-    `/v1/domains/available?domain=${encodeURIComponent(domain)}&checkType=FAST`
+    `/v1/domains/available?domain=${encodeURIComponent(domain)}&checkType=FULL`
   );
   return {
     available: res.available,
@@ -180,6 +190,10 @@ async function checkAvailabilityBulk(
     { available: boolean; price: number; renewalPrice: number; currency: string }
   >();
   if (domains.length === 0) return map;
+  // Intentionally FAST here (unlike the authoritative single check, which is
+  // FULL): this enriches the suggestion type-ahead list, where a quick response
+  // across many names matters more than per-name precision — and the exact host
+  // the tenant actually cares about is re-checked with FULL via checkAvailability.
   const res = await gd<GdBulkAvailableResponse>(
     'POST',
     '/v1/domains/available?checkType=FAST',
@@ -196,33 +210,9 @@ async function checkAvailabilityBulk(
   return map;
 }
 
-// Curated TLD menu for domain search. The suggest endpoint only surfaces these,
-// so the list IS the menu the tenant sees — spanning classics, tech, commerce,
-// and content/brand TLDs, all in the affordable tier. Premium-priced TLDs (.ai
-// ~$420/yr, .inc, .llc, …) are intentionally excluded so a ~$12 search never sits
-// beside a $400+ outlier; they remain purchasable by exact domain via
-// checkAvailability(). Callers can override `tlds` for a narrower/wider set.
-const DEFAULT_TLDS = [
-  'com',
-  'co',
-  'net',
-  'org',
-  'io',
-  'app',
-  'dev',
-  'xyz',
-  'tech',
-  'shop',
-  'store',
-  'online',
-  'site',
-  'studio',
-  'blog',
-  'me',
-  'info',
-  'biz',
-];
-
+// The curated TLD menu (`DEFAULT_TLDS`) is registrar-neutral and lives in
+// @sparx/registrar — the suggest endpoint surfaces exactly these. Callers can
+// override `tlds` for a narrower/wider set.
 export async function getDomainSuggestions(
   query: string,
   tlds: string[] = DEFAULT_TLDS

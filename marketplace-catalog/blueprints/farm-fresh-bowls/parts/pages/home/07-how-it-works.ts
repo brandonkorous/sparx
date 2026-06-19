@@ -3,7 +3,7 @@
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
 export default {
-  id: 'ffb-208',
+  id: 'ffb-140',
   type: 'Section',
   props: {},
   class:
@@ -11,7 +11,7 @@ export default {
   name: 'How it works',
   children: [
     {
-      id: 'ffb-193',
+      id: 'ffb-125',
       type: 'Text',
       props: {
         variant: 'body',
@@ -21,7 +21,7 @@ export default {
         'inline-flex w-fit items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-wide bg-[#7FA85B]/30 text-white',
     },
     {
-      id: 'ffb-194',
+      id: 'ffb-126',
       type: 'Heading',
       props: {
         level: 'h2',
@@ -30,19 +30,19 @@ export default {
       class: 'text-center text-4xl @3xl:text-5xl text-white',
     },
     {
-      id: 'ffb-207',
+      id: 'ffb-139',
       type: 'Section',
       props: {},
       class: 'grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-3 gap-6',
       children: [
         {
-          id: 'ffb-198',
+          id: 'ffb-130',
           type: 'Stack',
           props: {},
           class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
           children: [
             {
-              id: 'ffb-195',
+              id: 'ffb-127',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -52,7 +52,7 @@ export default {
                 'h-20 w-20 bg-[#7FA85B]/25 text-4xl shrink-0 inline-flex items-center justify-center rounded-full leading-none',
             },
             {
-              id: 'ffb-196',
+              id: 'ffb-128',
               type: 'Heading',
               props: {
                 level: 'h3',
@@ -61,7 +61,7 @@ export default {
               class: 'text-center text-xl text-white',
             },
             {
-              id: 'ffb-197',
+              id: 'ffb-129',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -72,13 +72,13 @@ export default {
           ],
         },
         {
-          id: 'ffb-202',
+          id: 'ffb-134',
           type: 'Stack',
           props: {},
           class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
           children: [
             {
-              id: 'ffb-199',
+              id: 'ffb-131',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -88,7 +88,7 @@ export default {
                 'h-20 w-20 bg-[#7FA85B]/25 text-4xl shrink-0 inline-flex items-center justify-center rounded-full leading-none',
             },
             {
-              id: 'ffb-200',
+              id: 'ffb-132',
               type: 'Heading',
               props: {
                 level: 'h3',
@@ -97,7 +97,7 @@ export default {
               class: 'text-center text-xl text-white',
             },
             {
-              id: 'ffb-201',
+              id: 'ffb-133',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -108,13 +108,13 @@ export default {
           ],
         },
         {
-          id: 'ffb-206',
+          id: 'ffb-138',
           type: 'Stack',
           props: {},
           class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
           children: [
             {
-              id: 'ffb-203',
+              id: 'ffb-135',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -124,7 +124,7 @@ export default {
                 'h-20 w-20 bg-[#7FA85B]/25 text-4xl shrink-0 inline-flex items-center justify-center rounded-full leading-none',
             },
             {
-              id: 'ffb-204',
+              id: 'ffb-136',
               type: 'Heading',
               props: {
                 level: 'h3',
@@ -133,7 +133,7 @@ export default {
               class: 'text-center text-xl text-white',
             },
             {
-              id: 'ffb-205',
+              id: 'ffb-137',
               type: 'Text',
               props: {
                 variant: 'body',

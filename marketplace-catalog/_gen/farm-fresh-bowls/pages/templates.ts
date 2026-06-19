@@ -31,12 +31,17 @@ export function postTemplate(): BuilderNode {
       node('Section', {
         box: { name: 'Post header', surface: 'subtle', padding: 'xl', backgroundWidth: 'full', contentWidth: 'contained', align: 'center' },
         layout: { direction: 'stack', gap: 'sm', alignItems: 'center', justify: 'center' },
-        children: [node('Heading', { box: { align: 'center' }, props: { level: 'h1' }, bind: 'page.title' })],
+        // The in-scope CMS record is bound under `blog_post.*` (the type key) — the same
+        // root apps/site `postToBuilderRecord` and the entry-editor preview both inject.
+        children: [
+          node('Text', { box: { align: 'center' }, cls: 'text-primary text-sm font-medium', bind: 'blog_post.date' }),
+          node('Heading', { box: { align: 'center' }, props: { level: 'h1' }, bind: 'blog_post.title' }),
+        ],
       }),
       node('Section', {
         box: { name: 'Post body', padding: 'lg', backgroundWidth: 'full', contentWidth: 'contained' },
         layout: { direction: 'stack', gap: 'md' },
-        children: [node('Prose', { bind: 'page.body' })],
+        children: [node('Prose', { bind: 'blog_post.body' })],
       }),
     ],
   });

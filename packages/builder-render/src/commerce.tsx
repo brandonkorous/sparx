@@ -369,8 +369,20 @@ export function BuilderActionButton({
   const f = useProductForm();
 
   if (action === 'link') {
+    // A link inside a product scope (a card in a collection repeater, or a pinned
+    // product) may template the scoped product into its href — `{{item.field}}` /
+    // `{{product.field}}` — so a product card links to its own PDP
+    // (`/products/{{item.handle}}`). Resolved from the scoped product; outside a scope
+    // (no `f`) the raw href passes through. Product fields are slugs/ids (url-safe).
+    const resolved =
+      href && href.includes('{{') && f
+        ? href.replace(/\{\{\s*(?:item|product)\.(\w+)\s*\}\}/g, (_m, field) => {
+            const v = (f.product as unknown as Record<string, unknown>)[field];
+            return v == null ? '' : String(v);
+          })
+        : href;
     return (
-      <a href={href ?? '#'} className={className}>
+      <a href={resolved ?? '#'} className={className}>
         {label}
         {children}
       </a>

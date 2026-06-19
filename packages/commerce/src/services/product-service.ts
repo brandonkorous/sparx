@@ -512,8 +512,46 @@ export async function archive(ctx: ServiceContext, productId: string): Promise<v
   await transitionStatus(ctx, productId, 'archived', 'commerce.product.archived');
 }
 
+/** Undelete a soft-deleted product (and its tombstoned variants). Unlike the status
+ *  transitions, this must see the deleted row, so it can't go through
+ *  transitionStatus (which filters `deletedAt: null`). Idempotent: a live product is
+ *  left as-is. Mirrors softDelete's variant cascade so the product comes back whole. */
 export async function restore(ctx: ServiceContext, productId: string): Promise<void> {
-  await transitionStatus(ctx, productId, 'draft', 'commerce.product.restored');
+  const result = await withTenant(ctx, async (tx) => {
+    const before = await tx.product.findFirst({ where: { id: productId } });
+    if (!before) throw new CommerceNotFoundError('Product', productId);
+    if (before.deletedAt === null) return before;
+
+    const updated = await tx.product.update({
+      where: { id: productId },
+      data: { deletedAt: null, status: before.status === 'archived' ? 'draft' : before.status },
+    });
+
+    await tx.productVariant.updateMany({
+      where: { productId, tenantId: ctx.tenantId, deletedAt: { not: null } },
+      data: { deletedAt: null },
+    });
+
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'commerce.product.restored',
+      entityType: 'Product',
+      entityId: updated.id,
+      diff: { before: serializeProduct(before), after: serializeProduct(updated) },
+    });
+
+    return updated;
+  });
+
+  await publishCommerceEvent({
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId ?? null,
+    topic: 'product.updated',
+    data: { productId: result.id, handle: result.handle, status: result.status },
+  });
 }
 
 export async function publish(ctx: ServiceContext, productId: string): Promise<void> {
@@ -534,6 +572,17 @@ export async function softDelete(ctx: ServiceContext, productId: string): Promis
     const updated = await tx.product.update({
       where: { id: productId },
       data: { deletedAt: new Date(), status: 'archived' },
+    });
+
+    // Cascade the tombstone to the product's live variants. A soft-deleted product
+    // must NOT leave live variants behind: a live variant under a deleted product is
+    // an orphan whose SKU stays reserved (the SKU-uniqueness check ignores deletedAt)
+    // with no owning live product — which then blocks a later reconcile/reinstall.
+    // Hard delete is unsafe (cart lines pin variants via onDelete: Restrict), so we
+    // tombstone them in lockstep; restore() brings them back together.
+    await tx.productVariant.updateMany({
+      where: { productId, tenantId: ctx.tenantId, deletedAt: null },
+      data: { deletedAt: new Date(), isDefault: false },
     });
 
     await writeAuditLog({

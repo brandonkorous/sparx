@@ -3,35 +3,44 @@
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
 export default {
-  id: 'ffb-402',
+  id: 'ffb-341',
   type: 'Section',
   props: {},
   class: 'w-full flex flex-col',
   name: 'Post',
   children: [
     {
-      id: 'ffb-399',
+      id: 'ffb-338',
       type: 'Section',
       class: 'w-full bg-base-200',
       props: {},
       name: 'Post header',
       children: [
         {
-          id: 'ffb-399__c',
+          id: 'ffb-338__c',
           type: 'Stack',
           class:
             'mx-auto w-full max-w-site flex flex-col gap-2 justify-center items-center p-8 @3xl:p-16 text-center',
           props: {},
           children: [
             {
-              id: 'ffb-398',
+              id: 'ffb-336',
+              type: 'Text',
+              props: {},
+              class: 'text-center text-primary text-sm font-medium',
+              binding: {
+                path: 'blog_post.date',
+              },
+            },
+            {
+              id: 'ffb-337',
               type: 'Heading',
               props: {
                 level: 'h1',
               },
               class: 'text-center',
               binding: {
-                path: 'page.title',
+                path: 'blog_post.title',
               },
             },
           ],
@@ -39,18 +48,18 @@ export default {
       ],
     },
     {
-      id: 'ffb-401',
+      id: 'ffb-340',
       type: 'Section',
       props: {},
       class: 'w-full mx-auto w-full max-w-site flex flex-col gap-4 p-6 @3xl:p-10',
       name: 'Post body',
       children: [
         {
-          id: 'ffb-400',
+          id: 'ffb-339',
           type: 'Prose',
           props: {},
           binding: {
-            path: 'page.body',
+            path: 'blog_post.body',
           },
         },
       ],

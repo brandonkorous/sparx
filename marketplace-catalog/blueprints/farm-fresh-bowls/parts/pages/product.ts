@@ -3,7 +3,7 @@
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
 export default {
-  id: 'ffb-397',
+  id: 'ffb-335',
   type: 'Section',
   props: {},
   class:
@@ -11,7 +11,7 @@ export default {
   name: 'Product',
   children: [
     {
-      id: 'ffb-392',
+      id: 'ffb-330',
       type: 'Image',
       props: {
         ratio: 'square',
@@ -22,13 +22,13 @@ export default {
       },
     },
     {
-      id: 'ffb-396',
+      id: 'ffb-334',
       type: 'Stack',
       props: {},
       class: 'mx-auto w-full max-w-site flex flex-col gap-4 items-start',
       children: [
         {
-          id: 'ffb-393',
+          id: 'ffb-331',
           type: 'Heading',
           props: {
             level: 'h1',
@@ -38,7 +38,7 @@ export default {
           },
         },
         {
-          id: 'ffb-394',
+          id: 'ffb-332',
           type: 'Prose',
           props: {},
           binding: {
@@ -46,7 +46,7 @@ export default {
           },
         },
         {
-          id: 'ffb-395',
+          id: 'ffb-333',
           type: 'BuyBox',
           props: {},
           binding: {

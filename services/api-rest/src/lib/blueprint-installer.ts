@@ -166,6 +166,128 @@ async function enableModules(tenantId: string, modules: string[]): Promise<void>
   });
 }
 
+// ── commerce reconcile-by-natural-key ─────────────────────────────────────────────
+//
+// Install is idempotent and ADDITIVE, not destroy-and-recreate. Every commerce row is
+// matched by its stable natural key (category/collection/product handle, variant SKU):
+// an existing row is REUSED as-is, a prior reset's soft-deleted tombstone is RESTORED
+// in place, and only a genuinely-absent row is created. This is also the only correct
+// path: `product_variants_sku_unique (tenant_id, sku)` reserves a SKU even while
+// soft-deleted, and a cart line pins the variant (`onDelete: Restrict`) — so a SKU that
+// already exists can NEVER be freed by deletion, only reused. Reusing leaves the
+// tenant's catalog untouched and makes reinstall safe to re-run.
+
+type ReconcileCtx = { tenantId: string; userId?: string };
+
+/** Reuse a live product by handle, else restore a tombstone, else null (caller creates). */
+async function reuseOrRestoreProduct(ctx: ReconcileCtx, handle: string): Promise<string | null> {
+  const tenantId = ctx.tenantId;
+  const live = await withTenant(ctx, (tx) =>
+    tx.product.findFirst({ where: { tenantId, handle, deletedAt: null }, select: { id: true } })
+  );
+  if (live) return live.id;
+  const dead = await withTenant(ctx, (tx) =>
+    tx.product.findFirst({
+      where: { tenantId, handle, deletedAt: { not: null } },
+      select: { id: true },
+    })
+  );
+  if (!dead) return null;
+  await productService.restore(ctx, dead.id); // clears the tombstone + restores variants
+  return dead.id;
+}
+
+/** Reuse a live variant by SKU, else restore its tombstone, else null. The SKU is
+ *  globally unique per tenant, so there is at most one row to find. */
+async function reuseOrRestoreVariant(ctx: ReconcileCtx, sku: string): Promise<string | null> {
+  const tenantId = ctx.tenantId;
+  const row = await withTenant(ctx, (tx) =>
+    tx.productVariant.findFirst({
+      where: { tenantId, sku },
+      select: { id: true, deletedAt: true },
+    })
+  );
+  if (!row) return null;
+  if (row.deletedAt) await variantService.restore(ctx, row.id);
+  return row.id;
+}
+
+/** Reuse a live category by handle, else restore its tombstone, else null. No service
+ *  `restore` exists for categories, so the tombstone is cleared in place. */
+async function reuseOrRestoreCategory(ctx: ReconcileCtx, handle: string): Promise<string | null> {
+  const tenantId = ctx.tenantId;
+  return withTenant(ctx, async (tx) => {
+    const row = await tx.productCategory.findFirst({
+      where: { tenantId, handle },
+      select: { id: true, deletedAt: true },
+    });
+    if (!row) return null;
+    if (row.deletedAt)
+      await tx.productCategory.update({ where: { id: row.id }, data: { deletedAt: null } });
+    return row.id;
+  });
+}
+
+/** Reuse a live collection by handle, else restore its tombstone, else null. */
+async function reuseOrRestoreCollection(ctx: ReconcileCtx, handle: string): Promise<string | null> {
+  const tenantId = ctx.tenantId;
+  return withTenant(ctx, async (tx) => {
+    const row = await tx.productCollection.findFirst({
+      where: { tenantId, handle },
+      select: { id: true, deletedAt: true },
+    });
+    if (!row) return null;
+    if (row.deletedAt)
+      await tx.productCollection.update({ where: { id: row.id }, data: { deletedAt: null } });
+    return row.id;
+  });
+}
+
+/** Seed a REUSED product's blueprint relationships — category + collection membership
+ *  and site scope — additively (`skipDuplicates`, so the tenant's own links are never
+ *  removed). Reusing the product row avoids a SKU collision, but the blueprint still
+ *  needs its products WIRED INTO the categories/collections the bound grids read from;
+ *  a prior reset that hard-purged a category cascades its joins away, so a reused
+ *  product can come back unlinked. Mirrors the create path's linking (product-service
+ *  `create`). `isPrimary` is only claimed when the product currently has no category. */
+async function linkProductRelations(
+  ctx: ReconcileCtx,
+  productId: string,
+  categoryIds: string[],
+  collectionIds: string[],
+  propertyId: string
+): Promise<void> {
+  await withTenant(ctx, async (tx) => {
+    if (categoryIds.length > 0) {
+      const existingCats = await tx.categoryProduct.count({ where: { productId } });
+      await tx.categoryProduct.createMany({
+        data: categoryIds.map((categoryId, idx) => ({
+          categoryId,
+          productId,
+          isPrimary: existingCats === 0 && idx === 0,
+          position: idx,
+        })),
+        skipDuplicates: true,
+      });
+    }
+    if (collectionIds.length > 0) {
+      await tx.collectionProduct.createMany({
+        data: collectionIds.map((collectionId, idx) => ({
+          collectionId,
+          productId,
+          position: idx,
+          addedBy: 'manual',
+        })),
+        skipDuplicates: true,
+      });
+    }
+    await tx.productProperty.createMany({
+      data: [{ propertyId, productId }],
+      skipDuplicates: true,
+    });
+  });
+}
+
 // ── install ─────────────────────────────────────────────────────────────────────
 
 /** Already-installed guard. Returns the existing row (any status) or null. */
@@ -232,24 +354,32 @@ export async function installBlueprint(
     await enableModules(tenantId, blueprint.requiresModules);
 
     // 2. Assets → MediaAsset rows (one tx). Hot-linked: key holds the absolute
-    //    URL; mediaPublicUrl() passes it through (docs/54 §6).
+    //    URL; mediaPublicUrl() passes it through (docs/54 §6). Idempotent: an asset
+    //    whose key already exists for this tenant is reused, so a reinstall doesn't
+    //    pile up duplicate media rows (reconcile, never destroy-and-recreate).
     if (blueprint.assets.length > 0) {
       await withTenant(ctx, async (tx) => {
         for (const a of blueprint.assets) {
-          const row = await tx.mediaAsset.create({
-            data: {
-              tenantId,
-              key: a.url,
-              originalFilename: `${a.id}.${mimeFromUrl(a.url).split('/')[1] ?? 'jpg'}`,
-              mimeType: a.mimeType ?? mimeFromUrl(a.url),
-              byteSize: BigInt(0),
-              status: 'ready',
-              ...(a.width !== undefined ? { width: a.width } : {}),
-              ...(a.height !== undefined ? { height: a.height } : {}),
-              ...(a.alt !== undefined ? { altText: a.alt } : {}),
-            },
+          const existing = await tx.mediaAsset.findFirst({
+            where: { tenantId, key: a.url },
             select: { id: true },
           });
+          const row =
+            existing ??
+            (await tx.mediaAsset.create({
+              data: {
+                tenantId,
+                key: a.url,
+                originalFilename: `${a.id}.${mimeFromUrl(a.url).split('/')[1] ?? 'jpg'}`,
+                mimeType: a.mimeType ?? mimeFromUrl(a.url),
+                byteSize: BigInt(0),
+                status: 'ready',
+                ...(a.width !== undefined ? { width: a.width } : {}),
+                ...(a.height !== undefined ? { height: a.height } : {}),
+                ...(a.alt !== undefined ? { altText: a.alt } : {}),
+              },
+              select: { id: true },
+            }));
           assetMap.set(a.id, row.id);
           result.assets[a.id] = row.id;
         }
@@ -417,37 +547,8 @@ export async function installBlueprint(
     // 6. Commerce
     const commerce = blueprint.commerce;
     if (commerce) {
-      // 6·0. Clear tombstones (fixes the §13 1a limitation). Reset soft-deletes
-      //   commerce rows, so their handle/SKU stays reserved — a reinstall would
-      //   then suffix handles (`widget` → `widget-2`) and HARD-fail on the variant
-      //   SKU unique. Before creating, purge only the SOFT-DELETED rows whose exact
-      //   handle/SKU we're about to reuse: products cascade to their variants
-      //   (freeing the SKU), categories/collections cascade their joins. Live rows
-      //   are never touched (deletedAt must be set), so this only undoes prior
-      //   teardown. Best-effort — a tombstone pinned by a cart item (variant
-      //   onDelete: Restrict) just falls back to the old suffix behavior.
-      const productHandles = commerce.products.map((p) => p.handle);
-      const variantSkus = commerce.products.flatMap((p) => p.variants.map((v) => v.sku));
-      const categoryHandles = commerce.categories.map((c) => c.handle);
-      const collectionHandles = commerce.collections.map((c) => c.handle);
-      await withTenant(ctx, async (tx) => {
-        if (productHandles.length > 0)
-          await tx.product.deleteMany({
-            where: { tenantId, handle: { in: productHandles }, deletedAt: { not: null } },
-          });
-        if (variantSkus.length > 0)
-          await tx.productVariant.deleteMany({
-            where: { tenantId, sku: { in: variantSkus }, deletedAt: { not: null } },
-          });
-        if (collectionHandles.length > 0)
-          await tx.productCollection.deleteMany({
-            where: { tenantId, handle: { in: collectionHandles }, deletedAt: { not: null } },
-          });
-        if (categoryHandles.length > 0)
-          await tx.productCategory.deleteMany({
-            where: { tenantId, handle: { in: categoryHandles }, deletedAt: { not: null } },
-          });
-      }).catch((err) => logger.warn({ err }, 'commerce tombstone purge skipped'));
+      // Reconcile by natural key (see the helpers above): reuse/restore-then-create,
+      // never destroy-and-recreate. Existing rows are left alone.
 
       // 6a. Categories — parent-first (resolve parentHandle as we go).
       const catMap = new Map<string, string>();
@@ -457,21 +558,25 @@ export async function installBlueprint(
         for (let i = pending.length - 1; i >= 0; i--) {
           const c = pending[i]!;
           if (c.parentHandle && !catMap.has(c.parentHandle)) continue; // wait for parent
-          const created = await categoryService.create(ctx, {
-            name: c.name,
-            handle: c.handle,
-            description: c.description,
-            parentId: c.parentHandle ? catMap.get(c.parentHandle) : null,
-            position: c.position,
-            featured: c.featured,
-            iconMediaId: asset(c.iconAssetId),
-            heroMediaId: asset(c.heroAssetId),
-            seoTitle: c.seoTitle,
-            seoDescription: c.seoDescription,
-            ogImageId: asset(c.ogImageAssetId),
-          });
-          catMap.set(c.handle, created.id);
-          result.categories[c.handle] = created.id;
+          let id = await reuseOrRestoreCategory(ctx, c.handle);
+          if (!id) {
+            const created = await categoryService.create(ctx, {
+              name: c.name,
+              handle: c.handle,
+              description: c.description,
+              parentId: c.parentHandle ? catMap.get(c.parentHandle) : null,
+              position: c.position,
+              featured: c.featured,
+              iconMediaId: asset(c.iconAssetId),
+              heroMediaId: asset(c.heroAssetId),
+              seoTitle: c.seoTitle,
+              seoDescription: c.seoDescription,
+              ogImageId: asset(c.ogImageAssetId),
+            });
+            id = created.id;
+          }
+          catMap.set(c.handle, id);
+          result.categories[c.handle] = id;
           pending.splice(i, 1);
         }
       }
@@ -479,20 +584,24 @@ export async function installBlueprint(
       // 6b. Collections (empty; membership set from products below).
       const collMap = new Map<string, string>();
       for (const c of commerce.collections) {
-        const created = await collectionService.create(ctx, {
-          name: c.name,
-          handle: c.handle,
-          description: c.description,
-          type: c.type,
-          ruleSet: c.ruleSet,
-          heroMediaId: asset(c.heroAssetId),
-          featured: c.featured,
-          seoTitle: c.seoTitle,
-          seoDescription: c.seoDescription,
-          ogImageId: asset(c.ogImageAssetId),
-        });
-        collMap.set(c.handle, created.id);
-        result.collections[c.handle] = created.id;
+        let id = await reuseOrRestoreCollection(ctx, c.handle);
+        if (!id) {
+          const created = await collectionService.create(ctx, {
+            name: c.name,
+            handle: c.handle,
+            description: c.description,
+            type: c.type,
+            ruleSet: c.ruleSet,
+            heroMediaId: asset(c.heroAssetId),
+            featured: c.featured,
+            seoTitle: c.seoTitle,
+            seoDescription: c.seoDescription,
+            ogImageId: asset(c.ogImageAssetId),
+          });
+          id = created.id;
+        }
+        collMap.set(c.handle, id);
+        result.collections[c.handle] = id;
       }
 
       // Precompute each product's collections (union of its collectionHandles and
@@ -506,6 +615,28 @@ export async function installBlueprint(
 
       // 6c. Products → options → variants → images.
       for (const p of commerce.products) {
+        // Reconcile first: if a product with this handle already exists (live, or a
+        // tombstone from a prior reset), reuse it and leave its content alone — only
+        // bring back any of the blueprint's variant SKUs that are tombstoned so the
+        // product is sellable. The SKU unique constraint makes reuse the ONLY way to
+        // reinstall; recreating would collide. Missing variants under an already-living
+        // product are intentionally not added (leave the existing product untouched).
+        const reusedId = await reuseOrRestoreProduct(ctx, p.handle);
+        if (reusedId) {
+          for (const v of p.variants) await reuseOrRestoreVariant(ctx, v.sku);
+          // Wire the reused product into the blueprint's categories/collections + site
+          // so the bound grids actually render it (additive — see linkProductRelations).
+          const categoryIds = p.categoryHandles
+            .map((h) => catMap.get(h))
+            .filter((x): x is string => !!x);
+          const collectionIds = [...(collsForProduct.get(p.handle) ?? [])]
+            .map((h) => collMap.get(h))
+            .filter((x): x is string => !!x);
+          await linkProductRelations(ctx, reusedId, categoryIds, collectionIds, propertyId);
+          result.products.push({ handle: p.handle, id: reusedId });
+          continue;
+        }
+
         const created = await productService.create(ctx, {
           title: p.title,
           handle: p.handle,
@@ -854,11 +985,13 @@ export async function goLiveInstall(ctxIn: InstallContext, installId: string): P
  *  block teardown. Destructive — gated behind a confirm in the dashboard.
  *
  *  Commerce rows (products/categories/collections) soft-delete via the service, so
- *  their handles/SKUs stay reserved after a reset — but install step 6·0 purges
- *  those exact tombstones before recreating, so a reinstall reuses the handles
- *  cleanly (no `widget` → `widget-2` suffixing). Pages/emails/components/theme hard
- *  delete; content hard deletes and cascades its revisions + references; the layout
- *  is deactivated then removed so a LIVE install tears down fully. */
+ *  their handles/SKUs stay reserved after a reset — that is intentional: a reinstall
+ *  RECONCILES by natural key (step 6 `reuseOrRestore*`), restoring those exact
+ *  tombstones in place rather than recreating, so it reuses the handles/SKUs cleanly
+ *  (the SKU unique constraint + cart-pin `Restrict` make reuse the only safe path).
+ *  Pages/emails/components/theme hard delete; content hard deletes and cascades its
+ *  revisions + references; the layout is deactivated then removed so a LIVE install
+ *  tears down fully. */
 export async function resetInstall(ctxIn: InstallContext, installId: string): Promise<void> {
   const { tenantId, userId, propertyId, logger } = ctxIn;
   const ctx = { tenantId, userId: userId ?? undefined };

@@ -3,21 +3,21 @@
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
 export default {
-  id: 'ffb-274',
+  id: 'ffb-206',
   type: 'Section',
   class: 'w-full bg-accent text-accent-content',
   props: {},
   name: 'Order',
   children: [
     {
-      id: 'ffb-274__c',
+      id: 'ffb-206__c',
       type: 'Stack',
       class:
         'mx-auto w-full max-w-site flex flex-col gap-4 justify-center items-center p-8 @3xl:p-16 text-center',
       props: {},
       children: [
         {
-          id: 'ffb-269',
+          id: 'ffb-201',
           type: 'Heading',
           props: {
             level: 'h2',
@@ -26,7 +26,7 @@ export default {
           class: 'text-center text-4xl @3xl:text-5xl',
         },
         {
-          id: 'ffb-270',
+          id: 'ffb-202',
           type: 'Text',
           props: {
             variant: 'body',
@@ -35,7 +35,7 @@ export default {
           class: 'text-center max-w-lg',
         },
         {
-          id: 'ffb-271',
+          id: 'ffb-203',
           type: 'Button',
           props: {
             label: 'Start an order',
@@ -44,13 +44,13 @@ export default {
           class: 'st-btn st-c-surface st-v-glass st-btn--sz-md',
         },
         {
-          id: 'ffb-273',
+          id: 'ffb-205',
           type: 'Stack',
           props: {},
           class: 'mx-auto w-full max-w-site flex flex-col items-center w-full max-w-md',
           children: [
             {
-              id: 'ffb-272',
+              id: 'ffb-204',
               type: 'Signup',
               props: {
                 cta: 'Sign up',

@@ -119,6 +119,54 @@ export interface RegistrarClient {
 /** The active registrar, by env key. Extend as providers are added. */
 export type RegistrarName = 'godaddy' | 'namecom';
 
+// ─── TLD menu ──────────────────────────────────────────────────────────────
+//
+// The curated TLD menu for domain SEARCH (registrar-neutral product decision, so
+// it lives with the contract — every provider's suggestion call defaults to it).
+// The list IS the menu the tenant sees: classics, tech/startup, commerce, and
+// business/content/lifestyle TLDs, all in the affordable tier. Premium-priced
+// TLDs (.ai ~$420/yr, .inc, .llc, …) are intentionally excluded so a ~$12 search
+// never sits beside a $400+ outlier — they remain reachable by EXACT domain via
+// checkAvailability(). Callers can override with a narrower/wider set.
+
+export const DEFAULT_TLDS = [
+  // classics + generic
+  'com',
+  'co',
+  'net',
+  'org',
+  'info',
+  'biz',
+  // tech / startup
+  'io',
+  'app',
+  'dev',
+  'tech',
+  'xyz',
+  'digital',
+  'space',
+  // commerce
+  'shop',
+  'store',
+  'online',
+  'site',
+  // business / services / brand
+  'works',
+  'agency',
+  'group',
+  'pro',
+  'studio',
+  'design',
+  'media',
+  // content / audience / lifestyle
+  'blog',
+  'me',
+  'world',
+  'life',
+  'live',
+  'club',
+];
+
 // ─── Registrar-neutral helpers ─────────────────────────────────────────────────
 //
 // These build sparx's DESIRED state (the record set we want, a DKIM keypair).

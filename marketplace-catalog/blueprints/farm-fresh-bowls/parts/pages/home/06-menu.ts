@@ -3,7 +3,7 @@
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
 export default {
-  id: 'ffb-192',
+  id: 'ffb-124',
   type: 'Section',
   props: {},
   class: 'w-full mx-auto w-full max-w-site flex flex-col gap-6 items-center p-8 @3xl:p-16',
@@ -85,7 +85,7 @@ export default {
       ],
     },
     {
-      id: 'ffb-119',
+      id: 'ffb-96',
       type: 'Stack',
       props: {},
       class: 'w-full flex flex-col gap-4 items-start',
@@ -101,285 +101,109 @@ export default {
           class: 'text-primary text-2xl',
         },
         {
-          id: 'ffb-118',
+          id: 'ffb-95',
           type: 'Section',
           props: {},
           class: 'w-full grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-3 gap-6',
           children: [
             {
-              id: 'ffb-95',
+              id: 'ffb-94',
               type: 'Card',
               props: {},
               class:
                 'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
-                  id: 'ffb-86',
-                  type: 'Section',
+                  id: 'ffb-87',
+                  type: 'Button',
                   props: {},
-                  class:
-                    'w-full bg-accent text-accent-content flex flex-col justify-center items-center text-center h-48 rounded-b-none',
+                  class: 'block',
                   children: [
                     {
-                      id: 'ffb-85',
-                      type: 'Text',
+                      id: 'ffb-86',
+                      type: 'Image',
                       props: {
-                        variant: 'body',
-                        text: '🥣',
+                        ratio: 'square',
+                        alt: 'Bowl',
                       },
-                      class: 'text-6xl leading-none',
+                      class: 'w-full',
+                      binding: {
+                        path: 'item.images',
+                      },
                     },
                   ],
+                  binding: {
+                    action: 'link',
+                    href: '/products/{{item.handle}}',
+                  },
                 },
                 {
-                  id: 'ffb-94',
+                  id: 'ffb-93',
                   type: 'Stack',
                   props: {},
-                  class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6',
+                  class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 flex-1',
                   children: [
                     {
                       id: 'ffb-89',
-                      type: 'Stack',
+                      type: 'Button',
                       props: {},
-                      class:
-                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row justify-between items-start',
+                      class: 'block transition-colors hover:text-accent',
                       children: [
                         {
-                          id: 'ffb-87',
+                          id: 'ffb-88',
                           type: 'Heading',
                           props: {
                             level: 'h3',
-                            text: 'Midnight Açaí',
+                            text: 'Bowl',
                           },
                           class: 'text-xl',
-                        },
-                        {
-                          id: 'ffb-88',
-                          type: 'Text',
-                          props: {
-                            variant: 'body',
-                            text: '$11.50',
+                          binding: {
+                            path: 'item.title',
                           },
-                          class: 'text-accent font-extrabold text-lg whitespace-nowrap',
                         },
                       ],
+                      binding: {
+                        action: 'link',
+                        href: '/products/{{item.handle}}',
+                      },
                     },
                     {
                       id: 'ffb-90',
                       type: 'Text',
                       props: {
                         variant: 'body',
-                        text: 'Pure açaí blended with banana & almond milk, topped with granola, blueberries, coconut and raw honey.',
+                        text: 'A fresh, balanced bowl.',
                       },
-                      class: 'text-sm leading-relaxed',
+                      class: 'text-sm leading-relaxed text-base-content/70',
+                      binding: {
+                        path: 'item.description',
+                      },
                     },
                     {
-                      id: 'ffb-93',
+                      id: 'ffb-92',
                       type: 'Stack',
                       props: {},
                       class:
-                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row flex-wrap gap-2',
+                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row gap-2 justify-between items-center mt-auto w-full',
                       children: [
                         {
                           id: 'ffb-91',
-                          type: 'Badge',
-                          props: {
-                            label: 'Vegan',
+                          type: 'PriceTag',
+                          props: {},
+                          class: 'text-accent font-extrabold text-lg',
+                          binding: {
+                            path: 'item.price',
                           },
                         },
                         {
-                          id: 'ffb-92',
-                          type: 'Badge',
+                          id: 'ffb-85',
+                          type: 'Button',
                           props: {
-                            label: 'Antioxidant',
+                            label: 'Add',
                           },
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              id: 'ffb-106',
-              type: 'Card',
-              props: {},
-              class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
-              children: [
-                {
-                  id: 'ffb-97',
-                  type: 'Section',
-                  props: {},
-                  class:
-                    'w-full bg-accent text-accent-content flex flex-col justify-center items-center text-center h-48 rounded-b-none',
-                  children: [
-                    {
-                      id: 'ffb-96',
-                      type: 'Text',
-                      props: {
-                        variant: 'body',
-                        text: '🍓',
-                      },
-                      class: 'text-6xl leading-none',
-                    },
-                  ],
-                },
-                {
-                  id: 'ffb-105',
-                  type: 'Stack',
-                  props: {},
-                  class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6',
-                  children: [
-                    {
-                      id: 'ffb-100',
-                      type: 'Stack',
-                      props: {},
-                      class:
-                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row justify-between items-start',
-                      children: [
-                        {
-                          id: 'ffb-98',
-                          type: 'Heading',
-                          props: {
-                            level: 'h3',
-                            text: 'Strawberry Fields',
-                          },
-                          class: 'text-xl',
-                        },
-                        {
-                          id: 'ffb-99',
-                          type: 'Text',
-                          props: {
-                            variant: 'body',
-                            text: '$10.75',
-                          },
-                          class: 'text-accent font-extrabold text-lg whitespace-nowrap',
-                        },
-                      ],
-                    },
-                    {
-                      id: 'ffb-101',
-                      type: 'Text',
-                      props: {
-                        variant: 'body',
-                        text: 'Local strawberries & dragon fruit over a creamy banana base, finished with hemp hearts and mint.',
-                      },
-                      class: 'text-sm leading-relaxed',
-                    },
-                    {
-                      id: 'ffb-104',
-                      type: 'Stack',
-                      props: {},
-                      class:
-                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row flex-wrap gap-2',
-                      children: [
-                        {
-                          id: 'ffb-102',
-                          type: 'Badge',
-                          props: {
-                            label: 'Gluten-Free',
-                          },
-                        },
-                        {
-                          id: 'ffb-103',
-                          type: 'Badge',
-                          props: {
-                            label: 'Local',
-                          },
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              id: 'ffb-117',
-              type: 'Card',
-              props: {},
-              class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
-              children: [
-                {
-                  id: 'ffb-108',
-                  type: 'Section',
-                  props: {},
-                  class:
-                    'w-full bg-primary text-primary-content flex flex-col justify-center items-center text-center h-48 rounded-b-none',
-                  children: [
-                    {
-                      id: 'ffb-107',
-                      type: 'Text',
-                      props: {
-                        variant: 'body',
-                        text: '🥝',
-                      },
-                      class: 'text-6xl leading-none',
-                    },
-                  ],
-                },
-                {
-                  id: 'ffb-116',
-                  type: 'Stack',
-                  props: {},
-                  class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6',
-                  children: [
-                    {
-                      id: 'ffb-111',
-                      type: 'Stack',
-                      props: {},
-                      class:
-                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row justify-between items-start',
-                      children: [
-                        {
-                          id: 'ffb-109',
-                          type: 'Heading',
-                          props: {
-                            level: 'h3',
-                            text: 'Green Machine',
-                          },
-                          class: 'text-xl',
-                        },
-                        {
-                          id: 'ffb-110',
-                          type: 'Text',
-                          props: {
-                            variant: 'body',
-                            text: '$11.95',
-                          },
-                          class: 'text-accent font-extrabold text-lg whitespace-nowrap',
-                        },
-                      ],
-                    },
-                    {
-                      id: 'ffb-112',
-                      type: 'Text',
-                      props: {
-                        variant: 'body',
-                        text: 'Spinach, kale, kiwi and pineapple blended smooth, topped with kiwi, chia and house granola.',
-                      },
-                      class: 'text-sm leading-relaxed',
-                    },
-                    {
-                      id: 'ffb-115',
-                      type: 'Stack',
-                      props: {},
-                      class:
-                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row flex-wrap gap-2',
-                      children: [
-                        {
-                          id: 'ffb-113',
-                          type: 'Badge',
-                          props: {
-                            label: 'Detox',
-                          },
-                        },
-                        {
-                          id: 'ffb-114',
-                          type: 'Badge',
-                          props: {
-                            label: 'Vegan',
+                          class: 'st-btn st-c-accent st-v-solid st-btn--sz-sm whitespace-nowrap',
+                          binding: {
+                            action: 'add-to-cart',
                           },
                         },
                       ],
@@ -389,18 +213,25 @@ export default {
               ],
             },
           ],
+          binding: {
+            source: {
+              from: 'category',
+              id: 'acai-bowls',
+              limit: 3,
+            },
+          },
         },
       ],
     },
     {
-      id: 'ffb-154',
+      id: 'ffb-109',
       type: 'Stack',
       props: {},
       class: 'w-full flex flex-col gap-4 items-start',
       name: 'Cold-Pressed Smoothies',
       children: [
         {
-          id: 'ffb-120',
+          id: 'ffb-97',
           type: 'Heading',
           props: {
             level: 'h3',
@@ -409,308 +240,137 @@ export default {
           class: 'text-primary text-2xl',
         },
         {
-          id: 'ffb-153',
+          id: 'ffb-108',
           type: 'Section',
           props: {},
           class: 'w-full grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-4 gap-6',
           children: [
             {
-              id: 'ffb-128',
+              id: 'ffb-107',
               type: 'Card',
               props: {},
               class:
                 'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
-                  id: 'ffb-122',
-                  type: 'Section',
+                  id: 'ffb-100',
+                  type: 'Button',
                   props: {},
-                  class:
-                    'w-full bg-secondary text-secondary-content flex flex-col justify-center items-center text-center h-40 rounded-b-none',
+                  class: 'block',
                   children: [
                     {
-                      id: 'ffb-121',
-                      type: 'Text',
+                      id: 'ffb-99',
+                      type: 'Image',
                       props: {
-                        variant: 'body',
-                        text: '🥭',
+                        ratio: 'square',
+                        alt: 'Bowl',
                       },
-                      class: 'text-6xl leading-none',
+                      class: 'w-full',
+                      binding: {
+                        path: 'item.images',
+                      },
                     },
                   ],
+                  binding: {
+                    action: 'link',
+                    href: '/products/{{item.handle}}',
+                  },
                 },
                 {
-                  id: 'ffb-127',
+                  id: 'ffb-106',
                   type: 'Stack',
                   props: {},
-                  class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6',
+                  class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 flex-1',
                   children: [
                     {
-                      id: 'ffb-125',
-                      type: 'Stack',
+                      id: 'ffb-102',
+                      type: 'Button',
                       props: {},
-                      class:
-                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row justify-between items-start',
+                      class: 'block transition-colors hover:text-accent',
                       children: [
                         {
-                          id: 'ffb-123',
+                          id: 'ffb-101',
                           type: 'Heading',
                           props: {
                             level: 'h3',
-                            text: 'Mango Sunrise',
+                            text: 'Bowl',
                           },
                           class: 'text-xl',
-                        },
-                        {
-                          id: 'ffb-124',
-                          type: 'Text',
-                          props: {
-                            variant: 'body',
-                            text: '$8.25',
+                          binding: {
+                            path: 'item.title',
                           },
-                          class: 'text-accent font-extrabold text-lg whitespace-nowrap',
                         },
                       ],
+                      binding: {
+                        action: 'link',
+                        href: '/products/{{item.handle}}',
+                      },
                     },
                     {
-                      id: 'ffb-126',
+                      id: 'ffb-103',
                       type: 'Text',
                       props: {
                         variant: 'body',
-                        text: 'Mango, orange, carrot & turmeric with a ginger kick.',
+                        text: 'A fresh, balanced bowl.',
                       },
-                      class: 'text-sm leading-relaxed',
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              id: 'ffb-136',
-              type: 'Card',
-              props: {},
-              class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
-              children: [
-                {
-                  id: 'ffb-130',
-                  type: 'Section',
-                  props: {},
-                  class:
-                    'w-full bg-base-200 flex flex-col justify-center items-center text-center h-40 rounded-b-none',
-                  children: [
-                    {
-                      id: 'ffb-129',
-                      type: 'Text',
-                      props: {
-                        variant: 'body',
-                        text: '🫐',
+                      class: 'text-sm leading-relaxed text-base-content/70',
+                      binding: {
+                        path: 'item.description',
                       },
-                      class: 'text-6xl leading-none',
                     },
-                  ],
-                },
-                {
-                  id: 'ffb-135',
-                  type: 'Stack',
-                  props: {},
-                  class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6',
-                  children: [
                     {
-                      id: 'ffb-133',
+                      id: 'ffb-105',
                       type: 'Stack',
                       props: {},
                       class:
-                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row justify-between items-start',
+                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row gap-2 justify-between items-center mt-auto w-full',
                       children: [
                         {
-                          id: 'ffb-131',
-                          type: 'Heading',
-                          props: {
-                            level: 'h3',
-                            text: 'Blue Recovery',
+                          id: 'ffb-104',
+                          type: 'PriceTag',
+                          props: {},
+                          class: 'text-accent font-extrabold text-lg',
+                          binding: {
+                            path: 'item.price',
                           },
-                          class: 'text-xl',
                         },
                         {
-                          id: 'ffb-132',
-                          type: 'Text',
+                          id: 'ffb-98',
+                          type: 'Button',
                           props: {
-                            variant: 'body',
-                            text: '$8.75',
+                            label: 'Add',
                           },
-                          class: 'text-accent font-extrabold text-lg whitespace-nowrap',
+                          class: 'st-btn st-c-accent st-v-solid st-btn--sz-sm whitespace-nowrap',
+                          binding: {
+                            action: 'add-to-cart',
+                          },
                         },
                       ],
-                    },
-                    {
-                      id: 'ffb-134',
-                      type: 'Text',
-                      props: {
-                        variant: 'body',
-                        text: 'Wild blueberry, banana, oat milk & plant protein.',
-                      },
-                      class: 'text-sm leading-relaxed',
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              id: 'ffb-144',
-              type: 'Card',
-              props: {},
-              class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
-              children: [
-                {
-                  id: 'ffb-138',
-                  type: 'Section',
-                  props: {},
-                  class:
-                    'w-full bg-secondary text-secondary-content flex flex-col justify-center items-center text-center h-40 rounded-b-none',
-                  children: [
-                    {
-                      id: 'ffb-137',
-                      type: 'Text',
-                      props: {
-                        variant: 'body',
-                        text: '🍊',
-                      },
-                      class: 'text-6xl leading-none',
-                    },
-                  ],
-                },
-                {
-                  id: 'ffb-143',
-                  type: 'Stack',
-                  props: {},
-                  class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6',
-                  children: [
-                    {
-                      id: 'ffb-141',
-                      type: 'Stack',
-                      props: {},
-                      class:
-                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row justify-between items-start',
-                      children: [
-                        {
-                          id: 'ffb-139',
-                          type: 'Heading',
-                          props: {
-                            level: 'h3',
-                            text: 'Citrus Glow',
-                          },
-                          class: 'text-xl',
-                        },
-                        {
-                          id: 'ffb-140',
-                          type: 'Text',
-                          props: {
-                            variant: 'body',
-                            text: '$7.95',
-                          },
-                          class: 'text-accent font-extrabold text-lg whitespace-nowrap',
-                        },
-                      ],
-                    },
-                    {
-                      id: 'ffb-142',
-                      type: 'Text',
-                      props: {
-                        variant: 'body',
-                        text: 'Orange, pineapple, lemon & a hint of cayenne.',
-                      },
-                      class: 'text-sm leading-relaxed',
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              id: 'ffb-152',
-              type: 'Card',
-              props: {},
-              class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
-              children: [
-                {
-                  id: 'ffb-146',
-                  type: 'Section',
-                  props: {},
-                  class:
-                    'w-full bg-base-200 flex flex-col justify-center items-center text-center h-40 rounded-b-none',
-                  children: [
-                    {
-                      id: 'ffb-145',
-                      type: 'Text',
-                      props: {
-                        variant: 'body',
-                        text: '🥥',
-                      },
-                      class: 'text-6xl leading-none',
-                    },
-                  ],
-                },
-                {
-                  id: 'ffb-151',
-                  type: 'Stack',
-                  props: {},
-                  class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6',
-                  children: [
-                    {
-                      id: 'ffb-149',
-                      type: 'Stack',
-                      props: {},
-                      class:
-                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row justify-between items-start',
-                      children: [
-                        {
-                          id: 'ffb-147',
-                          type: 'Heading',
-                          props: {
-                            level: 'h3',
-                            text: 'Coco Almond',
-                          },
-                          class: 'text-xl',
-                        },
-                        {
-                          id: 'ffb-148',
-                          type: 'Text',
-                          props: {
-                            variant: 'body',
-                            text: '$8.50',
-                          },
-                          class: 'text-accent font-extrabold text-lg whitespace-nowrap',
-                        },
-                      ],
-                    },
-                    {
-                      id: 'ffb-150',
-                      type: 'Text',
-                      props: {
-                        variant: 'body',
-                        text: 'Coconut, almond butter, dates, banana & cinnamon.',
-                      },
-                      class: 'text-sm leading-relaxed',
                     },
                   ],
                 },
               ],
             },
           ],
+          binding: {
+            source: {
+              from: 'category',
+              id: 'smoothies',
+              limit: 4,
+            },
+          },
         },
       ],
     },
     {
-      id: 'ffb-190',
+      id: 'ffb-122',
       type: 'Stack',
       props: {},
       class: 'w-full flex flex-col gap-4 items-start',
       name: 'Salads & Grain Bowls',
       children: [
         {
-          id: 'ffb-155',
+          id: 'ffb-110',
           type: 'Heading',
           props: {
             level: 'h3',
@@ -719,285 +379,109 @@ export default {
           class: 'text-primary text-2xl',
         },
         {
-          id: 'ffb-189',
+          id: 'ffb-121',
           type: 'Section',
           props: {},
           class: 'w-full grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-3 gap-6',
           children: [
             {
-              id: 'ffb-166',
+              id: 'ffb-120',
               type: 'Card',
               props: {},
               class:
                 'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
-                  id: 'ffb-157',
-                  type: 'Section',
+                  id: 'ffb-113',
+                  type: 'Button',
                   props: {},
-                  class:
-                    'w-full bg-primary text-primary-content flex flex-col justify-center items-center text-center h-48 rounded-b-none',
+                  class: 'block',
                   children: [
                     {
-                      id: 'ffb-156',
-                      type: 'Text',
+                      id: 'ffb-112',
+                      type: 'Image',
                       props: {
-                        variant: 'body',
-                        text: '🥗',
+                        ratio: 'square',
+                        alt: 'Bowl',
                       },
-                      class: 'text-6xl leading-none',
+                      class: 'w-full',
+                      binding: {
+                        path: 'item.images',
+                      },
                     },
                   ],
+                  binding: {
+                    action: 'link',
+                    href: '/products/{{item.handle}}',
+                  },
                 },
                 {
-                  id: 'ffb-165',
+                  id: 'ffb-119',
                   type: 'Stack',
                   props: {},
-                  class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6',
+                  class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 flex-1',
                   children: [
                     {
-                      id: 'ffb-160',
-                      type: 'Stack',
+                      id: 'ffb-115',
+                      type: 'Button',
                       props: {},
-                      class:
-                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row justify-between items-start',
+                      class: 'block transition-colors hover:text-accent',
                       children: [
                         {
-                          id: 'ffb-158',
+                          id: 'ffb-114',
                           type: 'Heading',
                           props: {
                             level: 'h3',
-                            text: 'Harvest Kale',
+                            text: 'Bowl',
                           },
                           class: 'text-xl',
-                        },
-                        {
-                          id: 'ffb-159',
-                          type: 'Text',
-                          props: {
-                            variant: 'body',
-                            text: '$12.50',
-                          },
-                          class: 'text-accent font-extrabold text-lg whitespace-nowrap',
-                        },
-                      ],
-                    },
-                    {
-                      id: 'ffb-161',
-                      type: 'Text',
-                      props: {
-                        variant: 'body',
-                        text: 'Massaged kale, roasted squash, quinoa, pomegranate & tahini-lemon dressing.',
-                      },
-                      class: 'text-sm leading-relaxed',
-                    },
-                    {
-                      id: 'ffb-164',
-                      type: 'Stack',
-                      props: {},
-                      class:
-                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row flex-wrap gap-2',
-                      children: [
-                        {
-                          id: 'ffb-162',
-                          type: 'Badge',
-                          props: {
-                            label: 'High-Protein',
-                          },
-                        },
-                        {
-                          id: 'ffb-163',
-                          type: 'Badge',
-                          props: {
-                            label: 'Seasonal',
+                          binding: {
+                            path: 'item.title',
                           },
                         },
                       ],
+                      binding: {
+                        action: 'link',
+                        href: '/products/{{item.handle}}',
+                      },
                     },
-                  ],
-                },
-              ],
-            },
-            {
-              id: 'ffb-177',
-              type: 'Card',
-              props: {},
-              class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
-              children: [
-                {
-                  id: 'ffb-168',
-                  type: 'Section',
-                  props: {},
-                  class:
-                    'w-full bg-primary text-primary-content flex flex-col justify-center items-center text-center h-48 rounded-b-none',
-                  children: [
                     {
-                      id: 'ffb-167',
+                      id: 'ffb-116',
                       type: 'Text',
                       props: {
                         variant: 'body',
-                        text: '🥑',
+                        text: 'A fresh, balanced bowl.',
                       },
-                      class: 'text-6xl leading-none',
+                      class: 'text-sm leading-relaxed text-base-content/70',
+                      binding: {
+                        path: 'item.description',
+                      },
                     },
-                  ],
-                },
-                {
-                  id: 'ffb-176',
-                  type: 'Stack',
-                  props: {},
-                  class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6',
-                  children: [
                     {
-                      id: 'ffb-171',
+                      id: 'ffb-118',
                       type: 'Stack',
                       props: {},
                       class:
-                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row justify-between items-start',
+                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row gap-2 justify-between items-center mt-auto w-full',
                       children: [
                         {
-                          id: 'ffb-169',
-                          type: 'Heading',
-                          props: {
-                            level: 'h3',
-                            text: 'Avocado Power',
-                          },
-                          class: 'text-xl',
-                        },
-                        {
-                          id: 'ffb-170',
-                          type: 'Text',
-                          props: {
-                            variant: 'body',
-                            text: '$13.25',
-                          },
-                          class: 'text-accent font-extrabold text-lg whitespace-nowrap',
-                        },
-                      ],
-                    },
-                    {
-                      id: 'ffb-172',
-                      type: 'Text',
-                      props: {
-                        variant: 'body',
-                        text: 'Brown rice, avocado, edamame, cucumber, pickled carrot & sesame-ginger.',
-                      },
-                      class: 'text-sm leading-relaxed',
-                    },
-                    {
-                      id: 'ffb-175',
-                      type: 'Stack',
-                      props: {},
-                      class:
-                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row flex-wrap gap-2',
-                      children: [
-                        {
-                          id: 'ffb-173',
-                          type: 'Badge',
-                          props: {
-                            label: 'Vegan',
+                          id: 'ffb-117',
+                          type: 'PriceTag',
+                          props: {},
+                          class: 'text-accent font-extrabold text-lg',
+                          binding: {
+                            path: 'item.price',
                           },
                         },
                         {
-                          id: 'ffb-174',
-                          type: 'Badge',
+                          id: 'ffb-111',
+                          type: 'Button',
                           props: {
-                            label: 'Filling',
+                            label: 'Add',
                           },
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              id: 'ffb-188',
-              type: 'Card',
-              props: {},
-              class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
-              children: [
-                {
-                  id: 'ffb-179',
-                  type: 'Section',
-                  props: {},
-                  class:
-                    'w-full bg-secondary text-secondary-content flex flex-col justify-center items-center text-center h-48 rounded-b-none',
-                  children: [
-                    {
-                      id: 'ffb-178',
-                      type: 'Text',
-                      props: {
-                        variant: 'body',
-                        text: '🌽',
-                      },
-                      class: 'text-6xl leading-none',
-                    },
-                  ],
-                },
-                {
-                  id: 'ffb-187',
-                  type: 'Stack',
-                  props: {},
-                  class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6',
-                  children: [
-                    {
-                      id: 'ffb-182',
-                      type: 'Stack',
-                      props: {},
-                      class:
-                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row justify-between items-start',
-                      children: [
-                        {
-                          id: 'ffb-180',
-                          type: 'Heading',
-                          props: {
-                            level: 'h3',
-                            text: 'Southwest Grain',
-                          },
-                          class: 'text-xl',
-                        },
-                        {
-                          id: 'ffb-181',
-                          type: 'Text',
-                          props: {
-                            variant: 'body',
-                            text: '$12.95',
-                          },
-                          class: 'text-accent font-extrabold text-lg whitespace-nowrap',
-                        },
-                      ],
-                    },
-                    {
-                      id: 'ffb-183',
-                      type: 'Text',
-                      props: {
-                        variant: 'body',
-                        text: 'Farro, black beans, roasted corn, peppers, cilantro & chipotle-lime crema.',
-                      },
-                      class: 'text-sm leading-relaxed',
-                    },
-                    {
-                      id: 'ffb-186',
-                      type: 'Stack',
-                      props: {},
-                      class:
-                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row flex-wrap gap-2',
-                      children: [
-                        {
-                          id: 'ffb-184',
-                          type: 'Badge',
-                          props: {
-                            label: 'Hearty',
-                          },
-                        },
-                        {
-                          id: 'ffb-185',
-                          type: 'Badge',
-                          props: {
-                            label: 'Local',
+                          class: 'st-btn st-c-accent st-v-solid st-btn--sz-sm whitespace-nowrap',
+                          binding: {
+                            action: 'add-to-cart',
                           },
                         },
                       ],
@@ -1007,14 +491,21 @@ export default {
               ],
             },
           ],
+          binding: {
+            source: {
+              from: 'category',
+              id: 'salads-grains',
+              limit: 3,
+            },
+          },
         },
       ],
     },
     {
-      id: 'ffb-191',
+      id: 'ffb-123',
       type: 'Button',
       props: {
-        label: 'Order the full menu',
+        label: 'See the full menu',
         href: '/menu',
       },
       class: 'st-btn st-c-accent st-v-solid st-btn--sz-md',

@@ -3,7 +3,7 @@
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
 export default {
-  id: 'ffb-232',
+  id: 'ffb-164',
   type: 'Section',
   props: {},
   class:
@@ -11,7 +11,7 @@ export default {
   name: 'Locations',
   children: [
     {
-      id: 'ffb-209',
+      id: 'ffb-141',
       type: 'Text',
       props: {
         variant: 'body',
@@ -21,7 +21,7 @@ export default {
         'inline-flex w-fit items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-wide bg-base-200 text-[#3E5C2A]',
     },
     {
-      id: 'ffb-210',
+      id: 'ffb-142',
       type: 'Heading',
       props: {
         level: 'h2',
@@ -30,27 +30,27 @@ export default {
       class: 'text-center text-4xl @3xl:text-5xl',
     },
     {
-      id: 'ffb-231',
+      id: 'ffb-163',
       type: 'Section',
       props: {},
       class: 'grid grid-cols-1 @3xl:grid-cols-2 gap-6',
       children: [
         {
-          id: 'ffb-220',
+          id: 'ffb-152',
           type: 'Card',
           props: {},
           class:
             'mx-auto w-full max-w-site rounded-box flex flex-col @3xl:flex-row overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
           children: [
             {
-              id: 'ffb-212',
+              id: 'ffb-144',
               type: 'Section',
               props: {},
               class:
                 'w-full bg-primary text-primary-content flex flex-col justify-center items-center text-center h-40 @3xl:h-auto w-full @3xl:w-2/5 shrink-0 rounded-b-none',
               children: [
                 {
-                  id: 'ffb-211',
+                  id: 'ffb-143',
                   type: 'Text',
                   props: {
                     variant: 'body',
@@ -61,14 +61,14 @@ export default {
               ],
             },
             {
-              id: 'ffb-219',
+              id: 'ffb-151',
               type: 'Stack',
               props: {},
               class:
                 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 @3xl:p-10 flex-1 min-w-0',
               children: [
                 {
-                  id: 'ffb-213',
+                  id: 'ffb-145',
                   type: 'Heading',
                   props: {
                     level: 'h3',
@@ -77,7 +77,7 @@ export default {
                   class: 'text-primary text-xl',
                 },
                 {
-                  id: 'ffb-214',
+                  id: 'ffb-146',
                   type: 'Text',
                   props: {
                     variant: 'body',
@@ -86,7 +86,7 @@ export default {
                   class: 'text-sm',
                 },
                 {
-                  id: 'ffb-215',
+                  id: 'ffb-147',
                   type: 'Text',
                   props: {
                     variant: 'meta',
@@ -95,13 +95,13 @@ export default {
                   class: 'text-sm',
                 },
                 {
-                  id: 'ffb-218',
+                  id: 'ffb-150',
                   type: 'Stack',
                   props: {},
                   class: 'mx-auto w-full max-w-site flex flex-col @3xl:flex-row flex-wrap gap-2',
                   children: [
                     {
-                      id: 'ffb-216',
+                      id: 'ffb-148',
                       type: 'Button',
                       props: {
                         label: 'Order Pickup',
@@ -110,7 +110,7 @@ export default {
                       class: 'st-btn st-c-primary st-v-solid st-btn--sz-md',
                     },
                     {
-                      id: 'ffb-217',
+                      id: 'ffb-149',
                       type: 'Button',
                       props: {
                         label: 'Directions',
@@ -125,21 +125,21 @@ export default {
           ],
         },
         {
-          id: 'ffb-230',
+          id: 'ffb-162',
           type: 'Card',
           props: {},
           class:
             'mx-auto w-full max-w-site rounded-box flex flex-col @3xl:flex-row overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
           children: [
             {
-              id: 'ffb-222',
+              id: 'ffb-154',
               type: 'Section',
               props: {},
               class:
                 'w-full bg-accent text-accent-content flex flex-col justify-center items-center text-center h-40 @3xl:h-auto w-full @3xl:w-2/5 shrink-0 rounded-b-none',
               children: [
                 {
-                  id: 'ffb-221',
+                  id: 'ffb-153',
                   type: 'Text',
                   props: {
                     variant: 'body',
@@ -150,14 +150,14 @@ export default {
               ],
             },
             {
-              id: 'ffb-229',
+              id: 'ffb-161',
               type: 'Stack',
               props: {},
               class:
                 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 @3xl:p-10 flex-1 min-w-0',
               children: [
                 {
-                  id: 'ffb-223',
+                  id: 'ffb-155',
                   type: 'Heading',
                   props: {
                     level: 'h3',
@@ -166,7 +166,7 @@ export default {
                   class: 'text-primary text-xl',
                 },
                 {
-                  id: 'ffb-224',
+                  id: 'ffb-156',
                   type: 'Text',
                   props: {
                     variant: 'body',
@@ -175,7 +175,7 @@ export default {
                   class: 'text-sm',
                 },
                 {
-                  id: 'ffb-225',
+                  id: 'ffb-157',
                   type: 'Text',
                   props: {
                     variant: 'meta',
@@ -184,13 +184,13 @@ export default {
                   class: 'text-sm',
                 },
                 {
-                  id: 'ffb-228',
+                  id: 'ffb-160',
                   type: 'Stack',
                   props: {},
                   class: 'mx-auto w-full max-w-site flex flex-col @3xl:flex-row flex-wrap gap-2',
                   children: [
                     {
-                      id: 'ffb-226',
+                      id: 'ffb-158',
                       type: 'Button',
                       props: {
                         label: 'Order Pickup',
@@ -199,7 +199,7 @@ export default {
                       class: 'st-btn st-c-primary st-v-solid st-btn--sz-md',
                     },
                     {
-                      id: 'ffb-227',
+                      id: 'ffb-159',
                       type: 'Button',
                       props: {
                         label: 'Directions',
