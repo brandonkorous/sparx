@@ -57,12 +57,6 @@ export const ManifestId = z
 
 const Hex = z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Color must be #RRGGBB.');
 
-/** An absolute http(s) URL — every blueprint image hot-links one (docs/54 §6 D3). */
-const AbsoluteUrl = z
-  .string()
-  .max(2048)
-  .regex(/^https?:\/\//i, 'Must be an absolute http(s) URL.');
-
 /** An asset source — an absolute http(s) URL (hot-linked, docs/54 §6 D3) OR a
  *  self-contained `data:image/...` URI for reliable, network-free blueprint imagery
  *  (SVG placeholders, logos). The public media route serves data assets inline; the
