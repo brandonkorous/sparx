@@ -3,28 +3,28 @@
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
 export default {
-  id: 'ffb-312',
+  id: 'ffb-352',
   type: 'Section',
   props: {},
   class: 'w-full flex flex-col',
   name: 'Story',
   children: [
     {
-      id: 'ffb-278',
+      id: 'ffb-318',
       type: 'Section',
       class: 'w-full flex items-center justify-center bg-primary text-primary-content min-h-[50vh]',
       props: {},
       name: 'Story hero',
       children: [
         {
-          id: 'ffb-278__c',
+          id: 'ffb-318__c',
           type: 'Stack',
           class:
             'mx-auto w-full max-w-site flex flex-col gap-2 justify-center items-center p-8 @3xl:p-16 text-center',
           props: {},
           children: [
             {
-              id: 'ffb-276',
+              id: 'ffb-316',
               type: 'Heading',
               props: {
                 level: 'h1',
@@ -34,7 +34,7 @@ export default {
               class: 'text-center',
             },
             {
-              id: 'ffb-277',
+              id: 'ffb-317',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -47,33 +47,33 @@ export default {
       ],
     },
     {
-      id: 'ffb-286',
+      id: 'ffb-326',
       type: 'Section',
       class: 'w-full bg-base-200',
       props: {},
       name: 'We really do care',
       children: [
         {
-          id: 'ffb-286__c',
+          id: 'ffb-326__c',
           type: 'Stack',
           class:
             'mx-auto w-full max-w-site grid grid-cols-1 @3xl:grid-cols-2 gap-6 items-center p-8 @3xl:p-16',
           props: {},
           children: [
             {
-              id: 'ffb-283',
+              id: 'ffb-323',
               type: 'Stack',
               props: {},
               class: 'mx-auto w-full max-w-site flex flex-col gap-4 justify-center items-start',
               children: [
                 {
-                  id: 'ffb-279',
+                  id: 'ffb-319',
                   type: 'Divider',
                   props: {},
                   class: 'block h-[3px] w-16 rounded-full border-0 bg-accent',
                 },
                 {
-                  id: 'ffb-280',
+                  id: 'ffb-320',
                   type: 'Heading',
                   props: {
                     level: 'h2',
@@ -82,7 +82,7 @@ export default {
                   class: 'text-4xl @3xl:text-5xl font-bold leading-tight text-accent',
                 },
                 {
-                  id: 'ffb-281',
+                  id: 'ffb-321',
                   type: 'Text',
                   props: {
                     variant: 'body',
@@ -90,7 +90,7 @@ export default {
                   },
                 },
                 {
-                  id: 'ffb-282',
+                  id: 'ffb-322',
                   type: 'Text',
                   props: {
                     variant: 'body',
@@ -100,14 +100,14 @@ export default {
               ],
             },
             {
-              id: 'ffb-285',
+              id: 'ffb-325',
               type: 'Section',
               props: {},
               class:
                 'rounded-box bg-primary text-primary-content flex flex-col justify-center items-center p-6 @3xl:p-10 text-center h-[300px]',
               children: [
                 {
-                  id: 'ffb-284',
+                  id: 'ffb-324',
                   type: 'Heading',
                   props: {
                     level: 'h1',
@@ -123,7 +123,7 @@ export default {
       ],
     },
     {
-      id: 'ffb-294',
+      id: 'ffb-334',
       type: 'Section',
       props: {},
       class:
@@ -131,14 +131,14 @@ export default {
       name: 'Food that loves you back',
       children: [
         {
-          id: 'ffb-293',
+          id: 'ffb-333',
           type: 'Section',
           props: {},
           class:
             'rounded-box bg-base-200 flex flex-col justify-center items-center p-6 @3xl:p-10 text-center h-[300px]',
           children: [
             {
-              id: 'ffb-292',
+              id: 'ffb-332',
               type: 'Heading',
               props: {
                 level: 'h1',
@@ -150,19 +150,19 @@ export default {
           ],
         },
         {
-          id: 'ffb-291',
+          id: 'ffb-331',
           type: 'Stack',
           props: {},
           class: 'mx-auto w-full max-w-site flex flex-col gap-4 justify-center items-start',
           children: [
             {
-              id: 'ffb-287',
+              id: 'ffb-327',
               type: 'Divider',
               props: {},
               class: 'block h-[3px] w-16 rounded-full border-0 bg-accent',
             },
             {
-              id: 'ffb-288',
+              id: 'ffb-328',
               type: 'Heading',
               props: {
                 level: 'h2',
@@ -171,7 +171,7 @@ export default {
               class: 'text-4xl @3xl:text-5xl font-bold leading-tight text-accent',
             },
             {
-              id: 'ffb-289',
+              id: 'ffb-329',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -179,7 +179,7 @@ export default {
               },
             },
             {
-              id: 'ffb-290',
+              id: 'ffb-330',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -191,7 +191,7 @@ export default {
       ],
     },
     {
-      id: 'ffb-311',
+      id: 'ffb-351',
       type: 'Section',
       props: {},
       class:
@@ -199,13 +199,13 @@ export default {
       name: 'Values',
       children: [
         {
-          id: 'ffb-298',
+          id: 'ffb-338',
           type: 'Stack',
           props: {},
           class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
           children: [
             {
-              id: 'ffb-295',
+              id: 'ffb-335',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -215,7 +215,7 @@ export default {
                 'h-16 w-16 bg-base-200 text-3xl shrink-0 inline-flex items-center justify-center rounded-full leading-none',
             },
             {
-              id: 'ffb-296',
+              id: 'ffb-336',
               type: 'Heading',
               props: {
                 level: 'h3',
@@ -224,7 +224,7 @@ export default {
               class: 'text-center text-lg',
             },
             {
-              id: 'ffb-297',
+              id: 'ffb-337',
               type: 'Text',
               props: {
                 variant: 'meta',
@@ -235,13 +235,13 @@ export default {
           ],
         },
         {
-          id: 'ffb-302',
+          id: 'ffb-342',
           type: 'Stack',
           props: {},
           class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
           children: [
             {
-              id: 'ffb-299',
+              id: 'ffb-339',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -251,7 +251,7 @@ export default {
                 'h-16 w-16 bg-base-200 text-3xl shrink-0 inline-flex items-center justify-center rounded-full leading-none',
             },
             {
-              id: 'ffb-300',
+              id: 'ffb-340',
               type: 'Heading',
               props: {
                 level: 'h3',
@@ -260,7 +260,7 @@ export default {
               class: 'text-center text-lg',
             },
             {
-              id: 'ffb-301',
+              id: 'ffb-341',
               type: 'Text',
               props: {
                 variant: 'meta',
@@ -271,13 +271,13 @@ export default {
           ],
         },
         {
-          id: 'ffb-306',
+          id: 'ffb-346',
           type: 'Stack',
           props: {},
           class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
           children: [
             {
-              id: 'ffb-303',
+              id: 'ffb-343',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -287,7 +287,7 @@ export default {
                 'h-16 w-16 bg-base-200 text-3xl shrink-0 inline-flex items-center justify-center rounded-full leading-none',
             },
             {
-              id: 'ffb-304',
+              id: 'ffb-344',
               type: 'Heading',
               props: {
                 level: 'h3',
@@ -296,7 +296,7 @@ export default {
               class: 'text-center text-lg',
             },
             {
-              id: 'ffb-305',
+              id: 'ffb-345',
               type: 'Text',
               props: {
                 variant: 'meta',
@@ -307,13 +307,13 @@ export default {
           ],
         },
         {
-          id: 'ffb-310',
+          id: 'ffb-350',
           type: 'Stack',
           props: {},
           class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
           children: [
             {
-              id: 'ffb-307',
+              id: 'ffb-347',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -323,7 +323,7 @@ export default {
                 'h-16 w-16 bg-base-200 text-3xl shrink-0 inline-flex items-center justify-center rounded-full leading-none',
             },
             {
-              id: 'ffb-308',
+              id: 'ffb-348',
               type: 'Heading',
               props: {
                 level: 'h3',
@@ -332,7 +332,7 @@ export default {
               class: 'text-center text-lg',
             },
             {
-              id: 'ffb-309',
+              id: 'ffb-349',
               type: 'Text',
               props: {
                 variant: 'meta',

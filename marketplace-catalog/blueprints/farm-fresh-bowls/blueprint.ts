@@ -8,6 +8,7 @@ import content from './parts/content';
 import commerce from './parts/commerce';
 import layoutTree from './parts/layout';
 import page_home from './parts/pages/home';
+import page_menu from './parts/pages/menu';
 import page_story from './parts/pages/story';
 import page_locations from './parts/pages/locations';
 import page_catering from './parts/pages/catering';
@@ -17,7 +18,7 @@ import email_welcome from './parts/emails/welcome';
 
 export default {
   key: 'farm-fresh-bowls',
-  version: '1.0.10',
+  version: '1.0.11',
   name: 'Farm Fresh',
   summary:
     'A warm, organic storefront for a fresh-food brand — açaí bowls, smoothies and salads with a full menu, a brand story, locations, catering, and a welcome email. A ready-to-edit retail starter.',
@@ -104,6 +105,15 @@ export default {
       seoTitle: 'Farm Fresh — Here to deliver health',
       seoDescription:
         'Balanced, nutritious bowls made with local ingredients — açaí bowls, smoothies and salads.',
+    },
+    {
+      name: 'Menu',
+      kind: 'singleton',
+      slug: 'menu',
+      tree: page_menu,
+      seoTitle: 'Menu — Farm Fresh',
+      seoDescription:
+        'Order açaí bowls, cold-pressed smoothies, and grain bowls for pickup or free local delivery.',
     },
     {
       name: 'Our Story',

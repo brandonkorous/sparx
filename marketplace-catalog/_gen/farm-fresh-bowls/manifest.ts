@@ -13,6 +13,7 @@ import { assets, commerce } from './commerce';
 import { content } from './cms';
 import { layoutTree } from './layout';
 import { homeTree } from './pages/home';
+import { menuTree } from './pages/menu';
 import { storyTree } from './pages/story';
 import { locationsTree } from './pages/locations';
 import { cateringTree } from './pages/catering';
@@ -21,7 +22,7 @@ import { welcomeEmail } from './email';
 
 export const manifest = {
   key: 'farm-fresh-bowls',
-  version: '1.0.10',
+  version: '1.0.11',
   name: 'Farm Fresh',
   summary:
     'A warm, organic storefront for a fresh-food brand — açaí bowls, smoothies and salads with a full menu, a brand story, locations, catering, and a welcome email. A ready-to-edit retail starter.',
@@ -47,6 +48,14 @@ export const manifest = {
       tree: homeTree(),
       seoTitle: 'Farm Fresh — Here to deliver health',
       seoDescription: 'Balanced, nutritious bowls made with local ingredients — açaí bowls, smoothies and salads.',
+    },
+    {
+      name: 'Menu',
+      kind: 'singleton' as const,
+      slug: 'menu',
+      tree: menuTree(),
+      seoTitle: 'Menu — Farm Fresh',
+      seoDescription: 'Order açaí bowls, cold-pressed smoothies, and grain bowls for pickup or free local delivery.',
     },
     {
       name: 'Our Story',
