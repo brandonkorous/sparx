@@ -24,6 +24,7 @@ import '../builder.css';
 import '@sparx/site-ui/styles.canvas.css';
 
 import { Canvas, type CanvasFrame } from './canvas';
+import { useSurfacePreview } from './use-surface-preview';
 import type { BuilderNode, Device } from './model';
 import type { SitePreviewData } from './binding-catalog';
 import { buildNodeFieldMaps, buildRecordPreviewData, fieldKeySet } from './record-preview-data';
@@ -72,6 +73,24 @@ export function EmbeddedRecordPreview({
     () => buildNodeFieldMaps(tree, typeKey, fieldKeys),
     [tree, typeKey, fieldKeys]
   );
+
+  // Live-compile the authored Tailwind-native utilities for the WHOLE visible stack
+  // (site chrome + the entry's template), @scope-d to `.bx-canvas` — the exact step
+  // the studio runs (useSurfacePreview over its combined tree). Without it the canvas
+  // gets only the static recipe sheet, so authored layout utilities (grid/gap/padding
+  // /max-w/alignment) never paint and sections collapse to default block flow — i.e.
+  // the preview wouldn't render as it does in the builder. A synthetic root over both
+  // trees covers header/footer + content in one compile.
+  const compileTree = React.useMemo<BuilderNode>(
+    () => ({
+      id: '__cms_preview_combined',
+      type: 'Section',
+      props: {},
+      children: [...(chrome ? [chrome] : []), tree],
+    }),
+    [chrome, tree]
+  );
+  const previewCss = useSurfacePreview(compileTree);
   // The resolver root, rebuilt as the body changes — this is the "live" in live preview.
   const data = React.useMemo(
     () => buildRecordPreviewData(catalog, typeKey, body, tenantSlug, sitePreview),
@@ -89,15 +108,18 @@ export function EmbeddedRecordPreview({
   );
 
   return (
-    <Canvas
-      tree={tree}
-      chrome={chrome ?? null}
-      data={data}
-      catalog={catalog}
-      device={device}
-      selectedId={selectedId}
-      onSelect={handleSelect}
-      frame={frame}
-    />
+    <>
+      {previewCss ? <style dangerouslySetInnerHTML={{ __html: previewCss }} /> : null}
+      <Canvas
+        tree={tree}
+        chrome={chrome ?? null}
+        data={data}
+        catalog={catalog}
+        device={device}
+        selectedId={selectedId}
+        onSelect={handleSelect}
+        frame={frame}
+      />
+    </>
   );
 }
