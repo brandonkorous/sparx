@@ -317,9 +317,9 @@ async function relinkProductImages(
     if (rows.length === 0) return;
     const assetIds = [...new Set(rows.map((r) => r.mediaAssetId))];
     const alive = new Set(
-      (
-        await tx.mediaAsset.findMany({ where: { id: { in: assetIds } }, select: { id: true } })
-      ).map((a) => a.id)
+      (await tx.mediaAsset.findMany({ where: { id: { in: assetIds } }, select: { id: true } })).map(
+        (a) => a.id
+      )
     );
     const staleIds = rows.filter((r) => !alive.has(r.mediaAssetId)).map((r) => r.id);
     if (staleIds.length > 0) {
