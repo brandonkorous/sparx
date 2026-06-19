@@ -65,6 +65,24 @@ const publicMediaRoutes: FastifyPluginAsync = (app) => {
       tx.mediaAsset.findFirst({ where: { id }, select: { key: true } })
     );
     if (!asset?.key) throw notFound('MediaAsset', id);
+    // Inline `data:` asset (a blueprint shipping a self-contained image — e.g. an SVG
+    // product placeholder or logo): a 302 can't target a data URI, so SERVE the bytes
+    // here with their declared content-type instead of redirecting. Reusable by any
+    // blueprint that wants reliable, network-free imagery.
+    if (asset.key.startsWith('data:')) {
+      const comma = asset.key.indexOf(',');
+      const meta = comma >= 0 ? asset.key.slice(5, comma) : '';
+      const isB64 = /;base64$/i.test(meta);
+      const mime = meta.replace(/;base64$/i, '') || 'application/octet-stream';
+      const raw = comma >= 0 ? asset.key.slice(comma + 1) : '';
+      const body = isB64
+        ? Buffer.from(raw, 'base64')
+        : Buffer.from(decodeURIComponent(raw), 'utf8');
+      return reply
+        .header('content-type', mime)
+        .header('cache-control', 'public, max-age=86400')
+        .send(body);
+    }
     // Resolve the redirect target for the asset's stored key:
     //   · external hot-linked URL (blueprint installs) → pass through verbatim.
     //   · local-dev (no GCS) → the original bytes are served by api-rest's own

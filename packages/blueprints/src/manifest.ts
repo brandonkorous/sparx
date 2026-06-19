@@ -63,6 +63,18 @@ const AbsoluteUrl = z
   .max(2048)
   .regex(/^https?:\/\//i, 'Must be an absolute http(s) URL.');
 
+/** An asset source — an absolute http(s) URL (hot-linked, docs/54 §6 D3) OR a
+ *  self-contained `data:image/...` URI for reliable, network-free blueprint imagery
+ *  (SVG placeholders, logos). The public media route serves data assets inline; the
+ *  scheme is pinned to `image/` so a blueprint can't smuggle `data:text/html`. */
+const AssetUrl = z
+  .string()
+  .max(32_768)
+  .refine(
+    (u) => /^https?:\/\//i.test(u) || /^data:image\//i.test(u),
+    'Must be an absolute http(s) URL or a data:image/... URI.'
+  );
+
 /** The modules a blueprint can require / provision for. Mirrors @sparx/auth's
  *  ModuleSlug (kept independent so this package stays DB-free). */
 export const BlueprintModuleSlug = z.enum([
@@ -86,7 +98,7 @@ export type BlueprintVertical = z.infer<typeof BlueprintVertical>;
 export const AssetDecl = z.object({
   /** Manifest-local id referenced by `*AssetId` fields and `{ $asset }` body refs. */
   id: ManifestId,
-  url: AbsoluteUrl,
+  url: AssetUrl,
   alt: z.string().max(512).optional(),
   width: z.number().int().positive().max(100_000).optional(),
   height: z.number().int().positive().max(100_000).optional(),

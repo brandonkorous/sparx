@@ -122,6 +122,11 @@ function resolveAssetRefs(value: unknown, assets: Map<string, string>): unknown 
 }
 
 function mimeFromUrl(url: string): string {
+  // A self-contained `data:` asset declares its own mediatype — read it directly
+  // rather than guessing from a (non-existent) file extension.
+  if (url.startsWith('data:')) {
+    return /^data:([^;,]+)/.exec(url)?.[1] || 'application/octet-stream';
+  }
   const ext = url.split('?')[0]?.split('.').pop()?.toLowerCase();
   switch (ext) {
     case 'png':
