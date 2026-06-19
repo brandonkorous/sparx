@@ -376,9 +376,9 @@ export function BuilderActionButton({
     // (no `f`) the raw href passes through. Product fields are slugs/ids (url-safe).
     const resolved =
       href && href.includes('{{') && f
-        ? href.replace(/\{\{\s*(?:item|product)\.(\w+)\s*\}\}/g, (_m, field) => {
+        ? href.replace(/\{\{\s*(?:item|product)\.(\w+)\s*\}\}/g, (_m, field: string) => {
             const v = (f.product as unknown as Record<string, unknown>)[field];
-            return v == null ? '' : String(v);
+            return typeof v === 'string' || typeof v === 'number' ? String(v) : '';
           })
         : href;
     return (
