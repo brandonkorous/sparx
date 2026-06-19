@@ -15,7 +15,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Button, cn } from '@sparx/ui';
+import { Button, cn, useMediaQuery } from '@sparx/ui';
 import {
   Columns2,
   Eye,
@@ -125,6 +125,17 @@ export function EntryEditorWorkspace({ form, preview }: EntryEditorWorkspaceProp
   const [device, setDevice] = React.useState<PreviewDevice>('desktop');
   const [selectedFieldKey, setSelectedFieldKey] = React.useState<string | null>(null);
 
+  // The builder-style toolbar hosts the entry's status + publish actions: the form
+  // PORTALS its status bar into this slot (EditEntryForm `statusSlot`). A callback
+  // ref via state so the portal target exists once the toolbar mounts.
+  const [statusSlotEl, setStatusSlotEl] = React.useState<HTMLDivElement | null>(null);
+  // Side-by-side split needs real width; below `lg` we drop the Split option and let
+  // the author flip Form ↔ Preview instead of hiding the form pane entirely (CORE
+  // responsive rule). `effectiveView` coerces a desktop 'split' to 'form' on narrow.
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+  const effectiveView: View = !isDesktop && view === 'split' ? 'form' : view;
+  const viewOptions = isDesktop ? VIEW_OPTIONS : VIEW_OPTIONS.filter((o) => o.value !== 'split');
+
   const formHostRef = React.useRef<HTMLDivElement>(null);
 
   // Scroll a field into view + focus its control (the preview → form half of the
@@ -169,17 +180,19 @@ export function EntryEditorWorkspace({ form, preview }: EntryEditorWorkspaceProp
         // The form pane scrolls on its own so the preview stays put — the editor
         // fills the content area instead of scrolling the whole page (a builder).
         'min-h-0 min-w-0 overflow-y-auto',
-        view === 'preview' && 'hidden',
-        view === 'split' && 'hidden lg:block lg:w-[440px] lg:flex-none',
-        view === 'form' && 'w-full flex-1'
+        effectiveView === 'preview' && 'hidden',
+        // Split is desktop-only (effectiveView coerces it away below lg), so the form
+        // takes a fixed side column there; full width when it's the sole pane.
+        effectiveView === 'split' && 'w-full lg:w-[440px] lg:flex-none',
+        effectiveView === 'form' && 'w-full flex-1'
       )}
     >
-      <EditEntryForm {...form} onBody={setBody} />
+      <EditEntryForm {...form} onBody={setBody} statusSlot={statusSlotEl} />
     </div>
   );
 
   const previewPane = (
-    <div className={cn('min-h-0 min-w-0 flex-1', view === 'form' && 'hidden')}>
+    <div className={cn('min-h-0 min-w-0 flex-1', effectiveView === 'form' && 'hidden')}>
       <div className="h-full overflow-hidden rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
         <EmbeddedRecordPreview
           tree={preview.tree}
@@ -206,15 +219,19 @@ export function EntryEditorWorkspace({ form, preview }: EntryEditorWorkspaceProp
       {preview.themeCss ? <style dangerouslySetInnerHTML={{ __html: preview.themeCss }} /> : null}
 
       <div className="flex h-full min-h-0 flex-col gap-4">
-        <div className="flex shrink-0 items-center justify-between gap-3 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2">
-          <Segmented
-            value={view}
-            onChange={setView}
-            options={VIEW_OPTIONS}
-            ariaLabel="Editor view"
-          />
-          <div className="flex items-center gap-2">
-            {view !== 'form' ? (
+        {/* Builder-style toolbar (parity with the site studio's, docs/builder/03
+            §2.8): view + device + layout controls on the left; the entry's status +
+            publish actions on the right — the form PORTALS its status bar into the
+            slot below. Wraps on narrow viewports. */}
+        <div className="flex shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <Segmented
+              value={effectiveView}
+              onChange={setView}
+              options={viewOptions}
+              ariaLabel="Editor view"
+            />
+            {effectiveView !== 'form' ? (
               <Segmented
                 value={device}
                 onChange={setDevice}
@@ -234,6 +251,8 @@ export function EntryEditorWorkspace({ form, preview }: EntryEditorWorkspaceProp
               <Link href={`/builder/studio?page=${preview.templateId}`}>Edit layout</Link>
             </Button>
           </div>
+          {/* Portal target for the entry's status + publish actions (EditEntryForm). */}
+          <div ref={setStatusSlotEl} className="flex flex-wrap items-center justify-end gap-2" />
         </div>
 
         <div className="flex min-h-0 flex-1 gap-6">

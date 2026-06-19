@@ -165,7 +165,8 @@ export async function ContentEntryDetailContent({
       <Stack direction="row" align="center" gap={2}>
         <Heading level={1}>{title || `Untitled ${lowerType}`}</Heading>
         <Badge color="module">{lowerType}</Badge>
-        <Badge color={entry.status === 'published' ? 'success' : 'outline'}>{entry.status}</Badge>
+        {/* Live status lives in the editor toolbar's status bar (EntryStatusBar), so
+            the heading carries just the type — no stale duplicate of the status. */}
       </Stack>
       {entry.slug && (
         <Text size="sm" variant="muted">
