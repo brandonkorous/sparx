@@ -339,6 +339,22 @@ export const BACKGROUND_CONTROL: ClassControl = {
   ],
 };
 
+// Page-surface fills (the neutral tones an element sits ON) — the always-flat half
+// of the inspector's Background fill. The semantic palette colours are NOT here:
+// they go through the recipe (`st-c-*` colour × `st-v-*` Emphasis), so a brand fill
+// carries a treatment (solid / soft / outline / …) while a surface tone stays flat.
+// These four are raw `bg-base-*` utilities — a surface has no emphasis to speak of.
+export const BG_SURFACE_CONTROL: ClassControl = {
+  id: 'bgSurface',
+  label: 'Surface',
+  options: [
+    { value: 'none', label: 'None', token: 'bg-transparent' },
+    { value: 'page', label: 'Page', token: 'bg-base-100' },
+    { value: 'subtle', label: 'Subtle', token: 'bg-base-200' },
+    { value: 'muted', label: 'Muted', token: 'bg-base-300' },
+  ],
+};
+
 // Text colour — the full named palette (mirrors the recipe COLOR_KEYS), then the
 // contrast helpers for text sitting ON a coloured fill. No explicit base-content
 // option: the empty "Default" already inherits the base text colour.

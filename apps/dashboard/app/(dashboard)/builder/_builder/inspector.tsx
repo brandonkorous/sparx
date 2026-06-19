@@ -163,11 +163,11 @@ import {
   ASPECT_CONTROL,
   BACKDROP_BLUR_CONTROL,
   BACKDROP_GRAYSCALE_CONTROL,
-  BACKGROUND_CONTROL,
   BASE_CONTEXT,
   BG_POSITION_CONTROL,
   BG_REPEAT_CONTROL,
   BG_SIZE_CONTROL,
+  BG_SURFACE_CONTROL,
   BLUR_CONTROL,
   BORDER_CONTROL,
   BORDER_COLLAPSE_CONTROL,
@@ -265,6 +265,7 @@ import {
   type StyleContext,
 } from './class-controls';
 import { ColorSwatchField, EmphasisSwatchField } from './color-swatch';
+import { BackgroundFillField } from './background-fill';
 import {
   IconChoiceField,
   PositionPadField,
@@ -2066,7 +2067,14 @@ function typographySummary(node: BuilderNode): string {
 function backgroundSummary(node: BuilderNode): string {
   if (activeValue(node.class, GRADIENT_DIRECTION_CONTROL)) return 'Gradient';
   if (typeof node.props.bgImage === 'string' && node.props.bgImage) return 'Image';
-  return activeLabel(node, BACKGROUND_CONTROL) ?? 'None';
+  // A recipe fill reports colour + treatment (Primary · Soft); a flat surface tone
+  // reports its name; nothing set → None.
+  const color = activeLabel(node, COLOR_CONTROL);
+  if (color) {
+    const emphasis = activeLabel(node, VARIANT_CONTROL);
+    return emphasis ? `${color} · ${emphasis}` : color;
+  }
+  return activeLabel(node, BG_SURFACE_CONTROL) ?? 'None';
 }
 function effectsSummary(node: BuilderNode): string {
   return (
@@ -2352,14 +2360,11 @@ function BackgroundCard({
   const hasGradient = activeValue(node.class, GRADIENT_DIRECTION_CONTROL, prefix) !== null;
   return (
     <Card icon={Palette} title="Background" summary={backgroundSummary(node)} defaultOpen={false}>
+      {/* Fill = colour × Emphasis (recipe) or a flat surface tone. Base layer only
+          (the recipe classes are static CSS, not per-breakpoint utilities), so it
+          sits ABOVE the layer pill — which governs the gradient / image below. */}
+      <BackgroundFillField node={node} archetype={def.defaults.class} onClass={onClass} />
       {selector}
-      <ColorOpacityField
-        node={node}
-        def={def}
-        control={BACKGROUND_CONTROL}
-        ctx={prefix}
-        onClass={onClass}
-      />
       <Subgroup title="Gradient">
         <IconChoiceField
           node={node}

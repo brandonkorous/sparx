@@ -33,7 +33,7 @@ const useIsoLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect
  *  Runs once per mount (the inspector remounts on node-select, and theme edits
  *  happen in a different zone where this panel is unmounted — so a mount-time read
  *  always reflects the current theme). Returns `{}` when no canvas is present. */
-function useCanvasThemeVars(): Record<string, string> {
+export function useCanvasThemeVars(): Record<string, string> {
   const [vars, setVars] = React.useState<Record<string, string>>({});
   useIsoLayoutEffect(() => {
     const canvas = document.querySelector('.bx-canvas');
