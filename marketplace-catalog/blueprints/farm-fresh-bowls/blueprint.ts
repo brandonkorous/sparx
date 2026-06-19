@@ -1,4 +1,4 @@
-// Farm Fresh Bowls — blueprint payload ENTRY (GENERATED, docs/85). THIN: it imports
+// Farm Fresh — blueprint payload ENTRY (GENERATED, docs/85). THIN: it imports
 // each heavy section from ./parts/* and default-exports the assembled manifest. The
 // ingest dynamic-imports this file; ESM resolves the parts. Edit a scoped file under
 // ./parts/, or the gen source, then re-run the generator.
@@ -17,14 +17,14 @@ import email_welcome from './parts/emails/welcome';
 
 export default {
   key: 'farm-fresh-bowls',
-  version: '1.0.2',
-  name: 'Farm Fresh Bowls',
+  version: '1.0.7',
+  name: 'Farm Fresh',
   summary:
     'A warm, organic storefront for a fresh-food brand — açaí bowls, smoothies and salads with a full menu, a brand story, locations, catering, and a welcome email. A ready-to-edit retail starter.',
   vertical: 'retail',
   requiresModules: ['builder', 'commerce', 'cms', 'email'],
   brand: {
-    businessName: 'Farm Fresh Bowls',
+    businessName: 'Farm Fresh',
     tagline: 'Here to deliver health.',
     colors: {
       primary: '#5C7A3D',
@@ -101,7 +101,7 @@ export default {
       name: 'Home',
       kind: 'singleton',
       tree: page_home,
-      seoTitle: 'Farm Fresh Bowls — Here to deliver health',
+      seoTitle: 'Farm Fresh — Here to deliver health',
       seoDescription:
         'Balanced, nutritious bowls made with local ingredients — açaí bowls, smoothies and salads.',
     },
@@ -110,21 +110,21 @@ export default {
       kind: 'singleton',
       slug: 'story',
       tree: page_story,
-      seoTitle: 'Our Story — Farm Fresh Bowls',
+      seoTitle: 'Our Story — Farm Fresh',
     },
     {
       name: 'Locations',
       kind: 'singleton',
       slug: 'locations',
       tree: page_locations,
-      seoTitle: 'Locations — Farm Fresh Bowls',
+      seoTitle: 'Locations — Farm Fresh',
     },
     {
       name: 'Catering',
       kind: 'singleton',
       slug: 'catering',
       tree: page_catering,
-      seoTitle: 'Catering & Events — Farm Fresh Bowls',
+      seoTitle: 'Catering & Events — Farm Fresh',
     },
     {
       name: 'Product',
@@ -144,7 +144,7 @@ export default {
   emails: [
     {
       name: 'Welcome',
-      subject: 'Welcome to Farm Fresh Bowls',
+      subject: 'Welcome to Farm Fresh',
       preheader: 'Fresh menus, new flavors, and the occasional treat.',
       tree: email_welcome,
     },

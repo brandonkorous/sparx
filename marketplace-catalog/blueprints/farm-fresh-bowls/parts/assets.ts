@@ -1,4 +1,4 @@
-// Farm Fresh Bowls — media asset references (GENERATED payload part, docs/85). Pure data, no imports.
+// Farm Fresh — media asset references (GENERATED payload part, docs/85). Pure data, no imports.
 // Safe to hand-edit for a quick tweak; re-running the generator overwrites it. The
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 

@@ -1,9 +1,9 @@
-// Farm Fresh Bowls — Product page (GENERATED payload part, docs/85). Pure data, no imports.
+// Farm Fresh — Product page (GENERATED payload part, docs/85). Pure data, no imports.
 // Safe to hand-edit for a quick tweak; re-running the generator overwrites it. The
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
 export default {
-  id: 'ffb-318',
+  id: 'ffb-357',
   type: 'Section',
   props: {},
   class:
@@ -11,7 +11,7 @@ export default {
   name: 'Product',
   children: [
     {
-      id: 'ffb-313',
+      id: 'ffb-352',
       type: 'Image',
       props: {
         ratio: 'square',
@@ -22,13 +22,13 @@ export default {
       },
     },
     {
-      id: 'ffb-317',
+      id: 'ffb-356',
       type: 'Stack',
       props: {},
       class: 'mx-auto w-full max-w-site flex flex-col gap-4 items-start',
       children: [
         {
-          id: 'ffb-314',
+          id: 'ffb-353',
           type: 'Heading',
           props: {
             level: 'h1',
@@ -38,7 +38,7 @@ export default {
           },
         },
         {
-          id: 'ffb-315',
+          id: 'ffb-354',
           type: 'Prose',
           props: {},
           binding: {
@@ -46,7 +46,7 @@ export default {
           },
         },
         {
-          id: 'ffb-316',
+          id: 'ffb-355',
           type: 'BuyBox',
           props: {},
           binding: {

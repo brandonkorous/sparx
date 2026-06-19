@@ -1,4 +1,4 @@
-// Farm Fresh Bowls generator — CMS content (the two seeded blog posts). Spread into
+// Farm Fresh generator — CMS content (the two seeded blog posts). Spread into
 // the manifest's `content` array. No node() calls here (CMS bodies are ProseMirror
 // docs via `doc()`), so this evaluates before any tree is built.
 

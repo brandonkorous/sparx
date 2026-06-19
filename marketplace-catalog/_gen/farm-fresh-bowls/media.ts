@@ -1,4 +1,4 @@
-// Farm Fresh Bowls generator — imagery + the emoji "photo" panel. `pic()` builds a
+// Farm Fresh generator — imagery + the emoji "photo" panel. `pic()` builds a
 // keyworded, deterministic loremflickr URL (used for the product/asset references);
 // `emojiPanel()` is the mockup's `.photo` block — a rounded colored panel with a big
 // centered food emoji, 100% reliable (no remote load), used by the section builders.
@@ -79,21 +79,20 @@ const PANEL_SURFACE: Record<string, PanelSurface> = {
   avocado: 'brand',
   southwest: 'secondary',
 };
-const emojiOf = (seed: string): string => PANEL_EMOJI[seed] ?? '🥣';
-const emojiSurface = (seed: string): PanelSurface => PANEL_SURFACE[seed] ?? 'subtle';
+export const emojiOf = (seed: string): string => PANEL_EMOJI[seed] ?? '🥣';
+export const emojiSurface = (seed: string): PanelSurface => PANEL_SURFACE[seed] ?? 'subtle';
 
-/** A mockup-style emoji "photo": a rounded colored panel with a big centered food
- *  emoji. `height` tunes the block (a decorative band vs a card header). */
-export const emojiPanel = (seed: string, height: 'sm' | 'md'): BuilderNode =>
+/** A standalone decorative emoji "photo" band (the split-band photo column): a
+ *  rounded colored panel with a big centered food emoji. A FIXED 300px tall — NOT
+ *  the box `height` scale (`min-h-[50vh]`), which is viewport-relative and made the
+ *  editorial image cards balloon on tall screens. */
+export const emojiPanel = (seed: string): BuilderNode =>
   node('Section', {
+    cls: 'h-[300px]',
     box: {
       surface: emojiSurface(seed),
-      height,
       align: 'center',
-      // A standalone decorative panel (md) is contained, so the box-radius rule
-      // rounds it. A card HEADER (sm) is full-bleed within its card, so it stays
-      // square and the card's `overflow-hidden` clips the top corners cleanly.
-      backgroundWidth: height === 'sm' ? 'full' : 'contained',
+      backgroundWidth: 'contained',
       contentWidth: 'full',
       padding: 'lg',
     },
@@ -103,5 +102,26 @@ export const emojiPanel = (seed: string, height: 'sm' | 'md'): BuilderNode =>
         box: { align: 'center' },
         props: { level: 'h1', size: 'display', text: emojiOf(seed) },
       }),
+    ],
+  });
+
+/** A menu-card photo header (mockup `.photo h-48 rounded-t-[28px]`): a FIXED-height
+ *  colored emoji panel flush to the card top. It uses a fixed `heightCls` (e.g.
+ *  `h-48`), NOT the box `height` scale — that maps to `min-h-[25vh]`, which is
+ *  viewport-relative and elongates the card. The card's `overflow-hidden` rounds the
+ *  top corners; `rounded-b-none` keeps the bottom square so it meets the card body. */
+export const cardPhoto = (seed: string, heightCls: string): BuilderNode =>
+  node('Section', {
+    cls: `${heightCls} rounded-b-none`,
+    box: {
+      surface: emojiSurface(seed),
+      align: 'center',
+      backgroundWidth: 'full',
+      contentWidth: 'full',
+      padding: 'none',
+    },
+    layout: { direction: 'stack', gap: 'none', alignItems: 'center', justify: 'center' },
+    children: [
+      node('Text', { cls: 'text-6xl leading-none', props: { variant: 'body', text: emojiOf(seed) } }),
     ],
   });

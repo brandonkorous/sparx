@@ -1,23 +1,23 @@
-// Farm Fresh Bowls — Home page · Catering & gifts (GENERATED payload part, docs/85). Pure data, no imports.
+// Farm Fresh — Home page · Catering & gifts (GENERATED payload part, docs/85). Pure data, no imports.
 // Safe to hand-edit for a quick tweak; re-running the generator overwrites it. The
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
 export default {
-  id: 'ffb-237',
+  id: 'ffb-268',
   type: 'Section',
   props: {},
   class: 'w-full mx-auto w-full max-w-site grid grid-cols-1 @3xl:grid-cols-2 gap-6 p-8 @3xl:p-16',
   name: 'Catering & gifts',
   children: [
     {
-      id: 'ffb-232',
+      id: 'ffb-263',
       type: 'Card',
       props: {},
       class:
-        'mx-auto w-full max-w-site rounded-box bg-primary text-primary-content flex flex-col gap-4 justify-between items-start p-8 @3xl:p-16',
+        'mx-auto w-full max-w-site rounded-box bg-primary text-primary-content flex flex-col gap-4 justify-between items-start p-9',
       children: [
         {
-          id: 'ffb-229',
+          id: 'ffb-260',
           type: 'Heading',
           props: {
             level: 'h3',
@@ -25,7 +25,7 @@ export default {
           },
         },
         {
-          id: 'ffb-230',
+          id: 'ffb-261',
           type: 'Text',
           props: {
             variant: 'body',
@@ -33,7 +33,7 @@ export default {
           },
         },
         {
-          id: 'ffb-231',
+          id: 'ffb-262',
           type: 'Button',
           props: {
             label: 'Plan an event',
@@ -44,14 +44,14 @@ export default {
       ],
     },
     {
-      id: 'ffb-236',
+      id: 'ffb-267',
       type: 'Card',
       props: {},
       class:
-        'mx-auto w-full max-w-site rounded-box bg-secondary text-secondary-content flex flex-col gap-4 justify-between items-start p-8 @3xl:p-16',
+        'mx-auto w-full max-w-site rounded-box bg-secondary text-secondary-content flex flex-col gap-4 justify-between items-start p-9',
       children: [
         {
-          id: 'ffb-233',
+          id: 'ffb-264',
           type: 'Heading',
           props: {
             level: 'h3',
@@ -59,7 +59,7 @@ export default {
           },
         },
         {
-          id: 'ffb-234',
+          id: 'ffb-265',
           type: 'Text',
           props: {
             variant: 'body',
@@ -67,7 +67,7 @@ export default {
           },
         },
         {
-          id: 'ffb-235',
+          id: 'ffb-266',
           type: 'Button',
           props: {
             label: 'Buy a gift card',

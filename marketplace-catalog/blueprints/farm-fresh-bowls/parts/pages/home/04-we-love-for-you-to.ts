@@ -1,4 +1,4 @@
-// Farm Fresh Bowls — Home page · We love for you to (GENERATED payload part, docs/85). Pure data, no imports.
+// Farm Fresh — Home page · We love for you to (GENERATED payload part, docs/85). Pure data, no imports.
 // Safe to hand-edit for a quick tweak; re-running the generator overwrites it. The
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
@@ -15,7 +15,7 @@ export default {
       type: 'Section',
       props: {},
       class:
-        'rounded-box bg-base-200 min-h-[50vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
+        'rounded-box bg-base-200 flex flex-col justify-center items-center p-6 @3xl:p-10 text-center h-[300px]',
       children: [
         {
           id: 'ffb-56',

@@ -1,4 +1,4 @@
-// Farm Fresh Bowls — Home page · Quote (GENERATED payload part, docs/85). Pure data, no imports.
+// Farm Fresh — Home page · Quote (GENERATED payload part, docs/85). Pure data, no imports.
 // Safe to hand-edit for a quick tweak; re-running the generator overwrites it. The
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
@@ -17,7 +17,7 @@ export default {
         level: 'h2',
         text: '“Healthy bowls from healthy people, to make people healthy and happy.”',
       },
-      class: 'text-center',
+      class: 'text-center text-2xl @3xl:text-3xl text-primary',
     },
   ],
 };

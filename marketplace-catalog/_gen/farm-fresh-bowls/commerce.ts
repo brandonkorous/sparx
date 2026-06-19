@@ -1,4 +1,4 @@
-// Farm Fresh Bowls generator — commerce catalog: the 10 products, their media asset
+// Farm Fresh generator — commerce catalog: the 10 products, their media asset
 // references (`assets`), and the categories/collections/products payload (`commerce`).
 // Both are spread into the manifest verbatim — pure data, no node() calls — so they
 // resolve before any builder tree is assembled.
@@ -60,7 +60,7 @@ export const commerce = {
     description: p.description,
     status: 'draft' as const,
     productType: 'Bowl',
-    vendor: 'Farm Fresh Bowls',
+    vendor: 'Farm Fresh',
     tags: p.tags,
     categoryHandles: [p.category],
     ...(p.collections ? { collectionHandles: p.collections } : {}),

@@ -1,4 +1,4 @@
-// Farm Fresh Bowls generator — assembles the full blueprint manifest from the section
+// Farm Fresh generator — assembles the full blueprint manifest from the section
 // modules. This is the ONE place the tree builders are invoked, so it owns the shared
 // node-id ordering: ids advance in `node()` call order (CLAUDE.md), and that order is
 // fixed by the property order below — `layout.tree` first, then `pages` (Home, Our
@@ -21,8 +21,8 @@ import { welcomeEmail } from './email';
 
 export const manifest = {
   key: 'farm-fresh-bowls',
-  version: '1.0.2',
-  name: 'Farm Fresh Bowls',
+  version: '1.0.7',
+  name: 'Farm Fresh',
   summary:
     'A warm, organic storefront for a fresh-food brand — açaí bowls, smoothies and salads with a full menu, a brand story, locations, catering, and a welcome email. A ready-to-edit retail starter.',
   vertical: 'retail',
@@ -45,7 +45,7 @@ export const manifest = {
       name: 'Home',
       kind: 'singleton' as const,
       tree: homeTree(),
-      seoTitle: 'Farm Fresh Bowls — Here to deliver health',
+      seoTitle: 'Farm Fresh — Here to deliver health',
       seoDescription: 'Balanced, nutritious bowls made with local ingredients — açaí bowls, smoothies and salads.',
     },
     {
@@ -53,21 +53,21 @@ export const manifest = {
       kind: 'singleton' as const,
       slug: 'story',
       tree: storyTree(),
-      seoTitle: 'Our Story — Farm Fresh Bowls',
+      seoTitle: 'Our Story — Farm Fresh',
     },
     {
       name: 'Locations',
       kind: 'singleton' as const,
       slug: 'locations',
       tree: locationsTree(),
-      seoTitle: 'Locations — Farm Fresh Bowls',
+      seoTitle: 'Locations — Farm Fresh',
     },
     {
       name: 'Catering',
       kind: 'singleton' as const,
       slug: 'catering',
       tree: cateringTree(),
-      seoTitle: 'Catering & Events — Farm Fresh Bowls',
+      seoTitle: 'Catering & Events — Farm Fresh',
     },
     {
       name: 'Product',
@@ -88,7 +88,7 @@ export const manifest = {
   emails: [
     {
       name: 'Welcome',
-      subject: 'Welcome to Farm Fresh Bowls',
+      subject: 'Welcome to Farm Fresh',
       preheader: 'Fresh menus, new flavors, and the occasional treat.',
       tree: welcomeEmail(),
     },

@@ -1,16 +1,16 @@
-// Farm Fresh Bowls — Welcome email (GENERATED payload part, docs/85). Pure data, no imports.
+// Farm Fresh — Welcome email (GENERATED payload part, docs/85). Pure data, no imports.
 // Safe to hand-edit for a quick tweak; re-running the generator overwrites it. The
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
 export default {
-  id: 'ffb-329',
+  id: 'ffb-368',
   type: 'Section',
   props: {},
   class: 'flex flex-col gap-4',
   name: 'Email body',
   children: [
     {
-      id: 'ffb-324',
+      id: 'ffb-363',
       type: 'email_wordmark',
       props: {
         treatment: 'lockup',
@@ -19,7 +19,7 @@ export default {
       },
     },
     {
-      id: 'ffb-325',
+      id: 'ffb-364',
       type: 'Heading',
       props: {
         level: 'h1',
@@ -27,15 +27,15 @@ export default {
       },
     },
     {
-      id: 'ffb-326',
+      id: 'ffb-365',
       type: 'Text',
       props: {
         variant: 'body',
-        text: 'Thanks for joining Farm Fresh Bowls. You’ll be first to hear about seasonal menus, new flavors, and the occasional treat.',
+        text: 'Thanks for joining Farm Fresh. You’ll be first to hear about seasonal menus, new flavors, and the occasional treat.',
       },
     },
     {
-      id: 'ffb-327',
+      id: 'ffb-366',
       type: 'Button',
       props: {
         label: 'Start an order',
@@ -44,7 +44,7 @@ export default {
       class: 'st-btn st-c-primary st-v-solid st-btn--sz-md',
     },
     {
-      id: 'ffb-328',
+      id: 'ffb-367',
       type: 'Text',
       props: {
         variant: 'meta',

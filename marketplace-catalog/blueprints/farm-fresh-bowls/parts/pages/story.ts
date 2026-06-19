@@ -1,30 +1,30 @@
-// Farm Fresh Bowls — Our Story page (GENERATED payload part, docs/85). Pure data, no imports.
+// Farm Fresh — Our Story page (GENERATED payload part, docs/85). Pure data, no imports.
 // Safe to hand-edit for a quick tweak; re-running the generator overwrites it. The
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
 export default {
-  id: 'ffb-276',
+  id: 'ffb-312',
   type: 'Section',
   props: {},
   class: 'w-full flex flex-col',
   name: 'Story',
   children: [
     {
-      id: 'ffb-246',
+      id: 'ffb-278',
       type: 'Section',
       class: 'w-full flex items-center justify-center bg-primary text-primary-content min-h-[50vh]',
       props: {},
       name: 'Story hero',
       children: [
         {
-          id: 'ffb-246__c',
+          id: 'ffb-278__c',
           type: 'Stack',
           class:
             'mx-auto w-full max-w-site flex flex-col gap-2 justify-center items-center p-8 @3xl:p-16 text-center',
           props: {},
           children: [
             {
-              id: 'ffb-244',
+              id: 'ffb-276',
               type: 'Heading',
               props: {
                 level: 'h1',
@@ -34,7 +34,7 @@ export default {
               class: 'text-center',
             },
             {
-              id: 'ffb-245',
+              id: 'ffb-277',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -47,33 +47,33 @@ export default {
       ],
     },
     {
-      id: 'ffb-254',
+      id: 'ffb-286',
       type: 'Section',
       class: 'w-full bg-base-200',
       props: {},
       name: 'We really do care',
       children: [
         {
-          id: 'ffb-254__c',
+          id: 'ffb-286__c',
           type: 'Stack',
           class:
             'mx-auto w-full max-w-site grid grid-cols-1 @3xl:grid-cols-2 gap-6 items-center p-8 @3xl:p-16',
           props: {},
           children: [
             {
-              id: 'ffb-251',
+              id: 'ffb-283',
               type: 'Stack',
               props: {},
               class: 'mx-auto w-full max-w-site flex flex-col gap-4 justify-center items-start',
               children: [
                 {
-                  id: 'ffb-247',
+                  id: 'ffb-279',
                   type: 'Section',
                   props: {},
                   class: 'mx-auto w-full max-w-site h-[3px] w-16 rounded-full bg-accent',
                 },
                 {
-                  id: 'ffb-248',
+                  id: 'ffb-280',
                   type: 'Heading',
                   props: {
                     level: 'h2',
@@ -82,7 +82,7 @@ export default {
                   class: 'text-4xl @3xl:text-5xl font-bold leading-tight text-accent',
                 },
                 {
-                  id: 'ffb-249',
+                  id: 'ffb-281',
                   type: 'Text',
                   props: {
                     variant: 'body',
@@ -90,7 +90,7 @@ export default {
                   },
                 },
                 {
-                  id: 'ffb-250',
+                  id: 'ffb-282',
                   type: 'Text',
                   props: {
                     variant: 'body',
@@ -100,14 +100,14 @@ export default {
               ],
             },
             {
-              id: 'ffb-253',
+              id: 'ffb-285',
               type: 'Section',
               props: {},
               class:
-                'rounded-box bg-primary text-primary-content min-h-[50vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
+                'rounded-box bg-primary text-primary-content flex flex-col justify-center items-center p-6 @3xl:p-10 text-center h-[300px]',
               children: [
                 {
-                  id: 'ffb-252',
+                  id: 'ffb-284',
                   type: 'Heading',
                   props: {
                     level: 'h1',
@@ -123,7 +123,7 @@ export default {
       ],
     },
     {
-      id: 'ffb-262',
+      id: 'ffb-294',
       type: 'Section',
       props: {},
       class:
@@ -131,14 +131,14 @@ export default {
       name: 'Food that loves you back',
       children: [
         {
-          id: 'ffb-261',
+          id: 'ffb-293',
           type: 'Section',
           props: {},
           class:
-            'rounded-box bg-base-200 min-h-[50vh] flex flex-col justify-center items-center p-6 @3xl:p-10 text-center',
+            'rounded-box bg-base-200 flex flex-col justify-center items-center p-6 @3xl:p-10 text-center h-[300px]',
           children: [
             {
-              id: 'ffb-260',
+              id: 'ffb-292',
               type: 'Heading',
               props: {
                 level: 'h1',
@@ -150,19 +150,19 @@ export default {
           ],
         },
         {
-          id: 'ffb-259',
+          id: 'ffb-291',
           type: 'Stack',
           props: {},
           class: 'mx-auto w-full max-w-site flex flex-col gap-4 justify-center items-start',
           children: [
             {
-              id: 'ffb-255',
+              id: 'ffb-287',
               type: 'Section',
               props: {},
               class: 'mx-auto w-full max-w-site h-[3px] w-16 rounded-full bg-accent',
             },
             {
-              id: 'ffb-256',
+              id: 'ffb-288',
               type: 'Heading',
               props: {
                 level: 'h2',
@@ -171,7 +171,7 @@ export default {
               class: 'text-4xl @3xl:text-5xl font-bold leading-tight text-accent',
             },
             {
-              id: 'ffb-257',
+              id: 'ffb-289',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -179,7 +179,7 @@ export default {
               },
             },
             {
-              id: 'ffb-258',
+              id: 'ffb-290',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -191,7 +191,7 @@ export default {
       ],
     },
     {
-      id: 'ffb-275',
+      id: 'ffb-311',
       type: 'Section',
       props: {},
       class:
@@ -199,110 +199,146 @@ export default {
       name: 'Values',
       children: [
         {
-          id: 'ffb-265',
-          type: 'Card',
+          id: 'ffb-298',
+          type: 'Stack',
           props: {},
-          class:
-            'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
+          class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
           children: [
             {
-              id: 'ffb-263',
+              id: 'ffb-295',
+              type: 'Text',
+              props: {
+                variant: 'body',
+                text: '🌾',
+              },
+              class:
+                'h-16 w-16 bg-base-200 text-3xl shrink-0 inline-flex items-center justify-center rounded-full leading-none',
+            },
+            {
+              id: 'ffb-296',
               type: 'Heading',
               props: {
                 level: 'h3',
-                text: '🌾  Locally Sourced',
+                text: 'Locally Sourced',
               },
-              class: 'text-center',
+              class: 'text-center text-lg',
             },
             {
-              id: 'ffb-264',
+              id: 'ffb-297',
               type: 'Text',
               props: {
                 variant: 'meta',
                 text: 'From farms within 60 miles',
               },
-              class: 'text-center',
+              class: 'text-center text-sm',
             },
           ],
         },
         {
-          id: 'ffb-268',
-          type: 'Card',
+          id: 'ffb-302',
+          type: 'Stack',
           props: {},
-          class:
-            'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
+          class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
           children: [
             {
-              id: 'ffb-266',
+              id: 'ffb-299',
+              type: 'Text',
+              props: {
+                variant: 'body',
+                text: '🚫',
+              },
+              class:
+                'h-16 w-16 bg-base-200 text-3xl shrink-0 inline-flex items-center justify-center rounded-full leading-none',
+            },
+            {
+              id: 'ffb-300',
               type: 'Heading',
               props: {
                 level: 'h3',
-                text: '🚫  No Preservatives',
+                text: 'No Preservatives',
               },
-              class: 'text-center',
+              class: 'text-center text-lg',
             },
             {
-              id: 'ffb-267',
+              id: 'ffb-301',
               type: 'Text',
               props: {
                 variant: 'meta',
                 text: 'Nothing artificial, ever',
               },
-              class: 'text-center',
+              class: 'text-center text-sm',
             },
           ],
         },
         {
-          id: 'ffb-271',
-          type: 'Card',
+          id: 'ffb-306',
+          type: 'Stack',
           props: {},
-          class:
-            'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
+          class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
           children: [
             {
-              id: 'ffb-269',
+              id: 'ffb-303',
+              type: 'Text',
+              props: {
+                variant: 'body',
+                text: '⚖️',
+              },
+              class:
+                'h-16 w-16 bg-base-200 text-3xl shrink-0 inline-flex items-center justify-center rounded-full leading-none',
+            },
+            {
+              id: 'ffb-304',
               type: 'Heading',
               props: {
                 level: 'h3',
-                text: '⚖️  Balanced Macros',
+                text: 'Balanced Macros',
               },
-              class: 'text-center',
+              class: 'text-center text-lg',
             },
             {
-              id: 'ffb-270',
+              id: 'ffb-305',
               type: 'Text',
               props: {
                 variant: 'meta',
                 text: 'Portioned by nutritionists',
               },
-              class: 'text-center',
+              class: 'text-center text-sm',
             },
           ],
         },
         {
-          id: 'ffb-274',
-          type: 'Card',
+          id: 'ffb-310',
+          type: 'Stack',
           props: {},
-          class:
-            'mx-auto w-full max-w-site rounded-box bg-base-200 flex flex-col gap-2 items-center p-6 @3xl:p-10 text-center',
+          class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
           children: [
             {
-              id: 'ffb-272',
+              id: 'ffb-307',
+              type: 'Text',
+              props: {
+                variant: 'body',
+                text: '♻️',
+              },
+              class:
+                'h-16 w-16 bg-base-200 text-3xl shrink-0 inline-flex items-center justify-center rounded-full leading-none',
+            },
+            {
+              id: 'ffb-308',
               type: 'Heading',
               props: {
                 level: 'h3',
-                text: '♻️  Eco Packaging',
+                text: 'Eco Packaging',
               },
-              class: 'text-center',
+              class: 'text-center text-lg',
             },
             {
-              id: 'ffb-273',
+              id: 'ffb-309',
               type: 'Text',
               props: {
                 variant: 'meta',
                 text: '100% compostable bowls',
               },
-              class: 'text-center',
+              class: 'text-center text-sm',
             },
           ],
         },

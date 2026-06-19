@@ -1,4 +1,4 @@
-// Farm Fresh Bowls generator — the site layout tree: announcement bar · sticky header
+// Farm Fresh generator — the site layout tree: announcement bar · sticky header
 // · Outlet · footer. The Outlet is the only required node; everything else is author-
 // composed chrome (CLAUDE.md "site layout is a free canvas").
 
@@ -133,7 +133,7 @@ export function layoutTree(): BuilderNode {
               node('Text', {
                 props: {
                   variant: 'meta',
-                  text: '© 2026 Farm Fresh Bowls. All rights reserved.',
+                  text: '© 2026 Farm Fresh. All rights reserved.',
                 },
               }),
             ],

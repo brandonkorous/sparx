@@ -1,4 +1,4 @@
-// Farm Fresh Bowls generator — the Our Story page: hero · two editorial split bands ·
+// Farm Fresh generator — the Our Story page: hero · two editorial split bands ·
 // values strip.
 
 import { node, type BuilderNode } from '../_kit';

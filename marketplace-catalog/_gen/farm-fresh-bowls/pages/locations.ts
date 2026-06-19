@@ -1,4 +1,4 @@
-// Farm Fresh Bowls generator — the Locations page: intro + a text/map block per store.
+// Farm Fresh generator — the Locations page: intro + a text/map block per store.
 
 import { node, type BuilderNode } from '../_kit';
 

@@ -1,6 +1,6 @@
 /* Signup — inline email-capture form (docs/51 §7). The field + button sit on one
- * row on wide frames and stack on narrow ones (the input flex-grows; both wrap
- * once there's no room for a comfortable field width). */
+ * row; the input flex-grows AND shrinks (min-width:0), so it stays inline even in a
+ * narrow footer column, wrapping only when there's truly no room for both controls. */
 
 .st-signup {
   display: flex;
@@ -14,10 +14,10 @@
   gap: 0.75rem;
   align-items: center;
 }
-/* Grow to fill the row, but force a wrap (→ stacked layout) below a usable
- * field width rather than crushing the input next to the button. */
+/* Grow to fill the row and shrink to share it with the button — a small basis keeps
+ * the field + button on one line even in a ~270px footer column. */
 .st-signup__input {
-  flex: 1 1 16rem;
+  flex: 1 1 8rem;
   min-width: 0;
 }
 /* Accessible label — present for screen readers, the placeholder carries the

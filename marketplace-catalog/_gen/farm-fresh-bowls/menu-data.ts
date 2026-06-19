@@ -1,4 +1,4 @@
-// Farm Fresh Bowls generator — menu showcase copy for the home page menu groups
+// Farm Fresh generator — menu showcase copy for the home page menu groups
 // (Açaí & Smoothie Bowls / Cold-Pressed Smoothies / Salads & Grain Bowls). Pure data;
 // the commerce catalog (commerce.ts) carries the same items as real products.
 

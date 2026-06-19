@@ -1,4 +1,4 @@
-// Farm Fresh Bowls generator — the welcome email body (newsletter signup). Composed
+// Farm Fresh generator — the welcome email body (newsletter signup). Composed
 // from the email wordmark + heading/text/button atoms.
 
 import { node, type BuilderNode } from './_kit';
@@ -13,7 +13,7 @@ export function welcomeEmail(): BuilderNode {
       node('Text', {
         props: {
           variant: 'body',
-          text: 'Thanks for joining Farm Fresh Bowls. You’ll be first to hear about seasonal menus, new flavors, and the occasional treat.',
+          text: 'Thanks for joining Farm Fresh. You’ll be first to hear about seasonal menus, new flavors, and the occasional treat.',
         },
       }),
       node('Button', { props: { label: 'Start an order', style: 'primary', href: '/menu' } }),

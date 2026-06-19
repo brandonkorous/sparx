@@ -1,16 +1,16 @@
-// Farm Fresh Bowls — Locations page (GENERATED payload part, docs/85). Pure data, no imports.
+// Farm Fresh — Locations page (GENERATED payload part, docs/85). Pure data, no imports.
 // Safe to hand-edit for a quick tweak; re-running the generator overwrites it. The
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
 export default {
-  id: 'ffb-294',
+  id: 'ffb-330',
   type: 'Section',
   props: {},
   class: 'w-full flex flex-col',
   name: 'Locations',
   children: [
     {
-      id: 'ffb-279',
+      id: 'ffb-315',
       type: 'Section',
       props: {},
       class:
@@ -18,7 +18,7 @@ export default {
       name: 'Locations intro',
       children: [
         {
-          id: 'ffb-277',
+          id: 'ffb-313',
           type: 'Heading',
           props: {
             level: 'h1',
@@ -27,7 +27,7 @@ export default {
           class: 'text-center',
         },
         {
-          id: 'ffb-278',
+          id: 'ffb-314',
           type: 'Text',
           props: {
             variant: 'body',
@@ -38,7 +38,7 @@ export default {
       ],
     },
     {
-      id: 'ffb-286',
+      id: 'ffb-322',
       type: 'Section',
       props: {},
       class:
@@ -46,13 +46,13 @@ export default {
       name: 'Riverside Market',
       children: [
         {
-          id: 'ffb-284',
+          id: 'ffb-320',
           type: 'Stack',
           props: {},
           class: 'mx-auto w-full max-w-site flex flex-col gap-2 justify-center items-start',
           children: [
             {
-              id: 'ffb-280',
+              id: 'ffb-316',
               type: 'Heading',
               props: {
                 level: 'h2',
@@ -60,7 +60,7 @@ export default {
               },
             },
             {
-              id: 'ffb-281',
+              id: 'ffb-317',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -68,7 +68,7 @@ export default {
               },
             },
             {
-              id: 'ffb-282',
+              id: 'ffb-318',
               type: 'Text',
               props: {
                 variant: 'meta',
@@ -76,7 +76,7 @@ export default {
               },
             },
             {
-              id: 'ffb-283',
+              id: 'ffb-319',
               type: 'Button',
               props: {
                 label: 'Order Pickup',
@@ -87,7 +87,7 @@ export default {
           ],
         },
         {
-          id: 'ffb-285',
+          id: 'ffb-321',
           type: 'Map',
           props: {
             query: '214 Orchard Lane, Riverside, CA 92501',
@@ -96,7 +96,7 @@ export default {
       ],
     },
     {
-      id: 'ffb-293',
+      id: 'ffb-329',
       type: 'Section',
       props: {},
       class:
@@ -104,13 +104,13 @@ export default {
       name: 'Downtown Commons',
       children: [
         {
-          id: 'ffb-291',
+          id: 'ffb-327',
           type: 'Stack',
           props: {},
           class: 'mx-auto w-full max-w-site flex flex-col gap-2 justify-center items-start',
           children: [
             {
-              id: 'ffb-287',
+              id: 'ffb-323',
               type: 'Heading',
               props: {
                 level: 'h2',
@@ -118,7 +118,7 @@ export default {
               },
             },
             {
-              id: 'ffb-288',
+              id: 'ffb-324',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -126,7 +126,7 @@ export default {
               },
             },
             {
-              id: 'ffb-289',
+              id: 'ffb-325',
               type: 'Text',
               props: {
                 variant: 'meta',
@@ -134,7 +134,7 @@ export default {
               },
             },
             {
-              id: 'ffb-290',
+              id: 'ffb-326',
               type: 'Button',
               props: {
                 label: 'Order Pickup',
@@ -145,7 +145,7 @@ export default {
           ],
         },
         {
-          id: 'ffb-292',
+          id: 'ffb-328',
           type: 'Map',
           props: {
             query: '88 Maple Street, Suite B, Riverside, CA 92507',

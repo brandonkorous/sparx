@@ -1,4 +1,4 @@
-// Farm Fresh Bowls — commerce catalog (GENERATED payload part, docs/85). Pure data, no imports.
+// Farm Fresh — commerce catalog (GENERATED payload part, docs/85). Pure data, no imports.
 // Safe to hand-edit for a quick tweak; re-running the generator overwrites it. The
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
@@ -42,7 +42,7 @@ export default {
         'Pure açaí blended with banana & almond milk, topped with granola, blueberries, coconut and a drizzle of raw honey.',
       status: 'draft',
       productType: 'Bowl',
-      vendor: 'Farm Fresh Bowls',
+      vendor: 'Farm Fresh',
       tags: ['vegan', 'antioxidant'],
       categoryHandles: ['acai-bowls'],
       collectionHandles: ['signature-bowls'],
@@ -67,7 +67,7 @@ export default {
         'Local strawberries & dragon fruit over a creamy banana base, finished with hemp hearts, fresh berries and mint.',
       status: 'draft',
       productType: 'Bowl',
-      vendor: 'Farm Fresh Bowls',
+      vendor: 'Farm Fresh',
       tags: ['gluten-free', 'local'],
       categoryHandles: ['acai-bowls'],
       collectionHandles: ['signature-bowls'],
@@ -92,7 +92,7 @@ export default {
         'Spinach, kale, kiwi and pineapple blended smooth, topped with kiwi, chia, toasted coconut and house granola.',
       status: 'draft',
       productType: 'Bowl',
-      vendor: 'Farm Fresh Bowls',
+      vendor: 'Farm Fresh',
       tags: ['detox', 'vegan'],
       categoryHandles: ['acai-bowls'],
       collectionHandles: ['signature-bowls'],
@@ -116,7 +116,7 @@ export default {
       description: 'Mango, orange, carrot & turmeric with a ginger kick.',
       status: 'draft',
       productType: 'Bowl',
-      vendor: 'Farm Fresh Bowls',
+      vendor: 'Farm Fresh',
       tags: ['vegan'],
       categoryHandles: ['smoothies'],
       variants: [
@@ -139,7 +139,7 @@ export default {
       description: 'Wild blueberry, banana, oat milk & plant protein.',
       status: 'draft',
       productType: 'Bowl',
-      vendor: 'Farm Fresh Bowls',
+      vendor: 'Farm Fresh',
       tags: ['protein'],
       categoryHandles: ['smoothies'],
       variants: [
@@ -162,7 +162,7 @@ export default {
       description: 'Orange, pineapple, lemon & a hint of cayenne.',
       status: 'draft',
       productType: 'Bowl',
-      vendor: 'Farm Fresh Bowls',
+      vendor: 'Farm Fresh',
       tags: ['immunity'],
       categoryHandles: ['smoothies'],
       variants: [
@@ -185,7 +185,7 @@ export default {
       description: 'Coconut, almond butter, dates, banana & cinnamon.',
       status: 'draft',
       productType: 'Bowl',
-      vendor: 'Farm Fresh Bowls',
+      vendor: 'Farm Fresh',
       tags: ['vegan'],
       categoryHandles: ['smoothies'],
       variants: [
@@ -208,7 +208,7 @@ export default {
       description: 'Massaged kale, roasted squash, quinoa, pomegranate & tahini-lemon dressing.',
       status: 'draft',
       productType: 'Bowl',
-      vendor: 'Farm Fresh Bowls',
+      vendor: 'Farm Fresh',
       tags: ['high-protein', 'seasonal'],
       categoryHandles: ['salads-grains'],
       variants: [
@@ -231,7 +231,7 @@ export default {
       description: 'Brown rice, avocado, edamame, cucumber, pickled carrot & sesame-ginger.',
       status: 'draft',
       productType: 'Bowl',
-      vendor: 'Farm Fresh Bowls',
+      vendor: 'Farm Fresh',
       tags: ['vegan', 'filling'],
       categoryHandles: ['salads-grains'],
       variants: [
@@ -254,7 +254,7 @@ export default {
       description: 'Farro, black beans, roasted corn, peppers, cilantro & chipotle-lime crema.',
       status: 'draft',
       productType: 'Bowl',
-      vendor: 'Farm Fresh Bowls',
+      vendor: 'Farm Fresh',
       tags: ['hearty', 'local'],
       categoryHandles: ['salads-grains'],
       variants: [

@@ -1,4 +1,4 @@
-// Farm Fresh Bowls generator — brand palette + the manifest's brand/theme fragments.
+// Farm Fresh generator — brand palette + the manifest's brand/theme fragments.
 // Colors come straight from docs/mockups/examples/farmfreshbowls.html so the semantic
 // surfaces resolve to its exact tones. `brand` + `theme` are spread into the manifest
 // verbatim (no node() calls here — pure data).
@@ -24,7 +24,7 @@ export const CARD_CLS = 'bg-white shadow-lg border border-base-300';
 // ── Manifest brand + theme ──────────────────────────────────────────────────────
 
 export const brand = {
-  businessName: 'Farm Fresh Bowls',
+  businessName: 'Farm Fresh',
   tagline: 'Here to deliver health.',
   colors: {
     primary: LEAF,

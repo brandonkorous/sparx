@@ -1,4 +1,4 @@
-// Farm Fresh Bowls generator — the MULTI-FILE payload emitter (docs/85). The shipped
+// Farm Fresh generator — the MULTI-FILE payload emitter (docs/85). The shipped
 // payload is a THIN entry (blueprint.ts) that imports each big section from ./parts/*
 // and default-exports the assembled manifest. The ingest dynamic-imports the entry;
 // ESM resolves the relative parts (proven), so the payload stays self-contained (pure
@@ -34,7 +34,7 @@ const kebab = (s: string): string =>
     .replace(/^-|-$/g, '');
 
 const partHeader = (what: string): string =>
-  `// Farm Fresh Bowls — ${what} (GENERATED payload part, docs/85). Pure data, no imports.\n` +
+  `// Farm Fresh — ${what} (GENERATED payload part, docs/85). Pure data, no imports.\n` +
   `// Safe to hand-edit for a quick tweak; re-running the generator overwrites it. The\n` +
   `// authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.\n\n`;
 
@@ -134,7 +134,7 @@ export async function emitBundle(bundleDir: string, manifest: ManifestLike): Pro
 
   const entryJson = JSON.stringify(entry, null, 2).replace(/"__REF__(\w+)"/g, '$1');
   const entryFile =
-    `// Farm Fresh Bowls — blueprint payload ENTRY (GENERATED, docs/85). THIN: it imports\n` +
+    `// Farm Fresh — blueprint payload ENTRY (GENERATED, docs/85). THIN: it imports\n` +
     `// each heavy section from ./parts/* and default-exports the assembled manifest. The\n` +
     `// ingest dynamic-imports this file; ESM resolves the parts. Edit a scoped file under\n` +
     `// ./parts/, or the gen source, then re-run the generator.\n\n` +

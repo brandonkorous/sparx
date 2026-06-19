@@ -1,4 +1,4 @@
-// Farm Fresh Bowls generator — shared authoring KIT. Every other module composes
+// Farm Fresh generator — shared authoring KIT. Every other module composes
 // trees through the single `node()` helper exported here, so node ids are minted from
 // ONE shared counter. That counter advances in `node()` CALL order, and the ids are
 // persisted into the payload + used as React/dnd-kit keys (CLAUDE.md), so call order is

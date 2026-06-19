@@ -1,4 +1,4 @@
-// Farm Fresh Bowls generator — the two collection templates: product detail (binds the
+// Farm Fresh generator — the two collection templates: product detail (binds the
 // commerce record) and blog post (binds the CMS record). These render per-record at
 // runtime, so they bind tokens (`product.*` / `page.*`) rather than literal copy.
 

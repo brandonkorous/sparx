@@ -1,4 +1,4 @@
-// Farm Fresh Bowls — site layout (announcement · header · footer) (GENERATED payload part, docs/85). Pure data, no imports.
+// Farm Fresh — site layout (announcement · header · footer) (GENERATED payload part, docs/85). Pure data, no imports.
 // Safe to hand-edit for a quick tweak; re-running the generator overwrites it. The
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
@@ -282,7 +282,7 @@ export default {
                   type: 'Text',
                   props: {
                     variant: 'meta',
-                    text: '© 2026 Farm Fresh Bowls. All rights reserved.',
+                    text: '© 2026 Farm Fresh. All rights reserved.',
                   },
                 },
               ],

@@ -1,4 +1,4 @@
-// Farm Fresh Bowls generator — the Catering page: hero · three option cards · CTA band.
+// Farm Fresh generator — the Catering page: hero · three option cards · CTA band.
 
 import { node, type BuilderNode } from '../_kit';
 import { valueCard } from '../sections';

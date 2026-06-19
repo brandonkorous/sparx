@@ -1,4 +1,4 @@
-// Farm Fresh Bowls — Home page (GENERATED payload part, docs/85). Pure data, no imports.
+// Farm Fresh — Home page (GENERATED payload part, docs/85). Pure data, no imports.
 // Safe to hand-edit for a quick tweak; re-running the generator overwrites it. The
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh-bowls/.
 
@@ -15,7 +15,7 @@ import page_home_9 from './home/10-catering-gifts';
 import page_home_10 from './home/11-order';
 
 export default {
-  id: 'ffb-243',
+  id: 'ffb-275',
   type: 'Section',
   props: {},
   class: 'w-full flex flex-col',
