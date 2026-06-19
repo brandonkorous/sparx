@@ -125,7 +125,7 @@ function mimeFromUrl(url: string): string {
   // A self-contained `data:` asset declares its own mediatype — read it directly
   // rather than guessing from a (non-existent) file extension.
   if (url.startsWith('data:')) {
-    return /^data:([^;,]+)/.exec(url)?.[1] || 'application/octet-stream';
+    return /^data:([^;,]+)/.exec(url)?.[1] ?? 'application/octet-stream';
   }
   const ext = url.split('?')[0]?.split('.').pop()?.toLowerCase();
   switch (ext) {
@@ -177,7 +177,10 @@ async function enableModules(tenantId: string, modules: string[]): Promise<void>
 // already exists can NEVER be freed by deletion, only reused. Reusing leaves the
 // tenant's catalog untouched and makes reinstall safe to re-run.
 
-type ReconcileCtx = { tenantId: string; userId?: string };
+interface ReconcileCtx {
+  tenantId: string;
+  userId?: string;
+}
 
 /** Reuse a live product by handle, else restore a tombstone, else null (caller creates). */
 async function reuseOrRestoreProduct(ctx: ReconcileCtx, handle: string): Promise<string | null> {
@@ -300,13 +303,13 @@ async function linkProductRelations(
 async function relinkProductImages(
   ctx: ReconcileCtx,
   productId: string,
-  images: Array<{
+  images: {
     mediaAssetId: string;
     variantId?: string;
     position?: number;
     alt?: string;
     isPrimary?: boolean;
-  }>
+  }[]
 ): Promise<void> {
   // Drop dangling image rows (mediaAssetId points at an asset a prior reset removed).
   await withTenant(ctx, async (tx) => {
@@ -828,7 +831,7 @@ export async function installBlueprint(
     if (blueprint.layout) {
       const layout = await layoutService.create(propCtx, {
         name: blueprint.layout.name,
-        tree: resolveBindingHandles(blueprint.layout.tree as BuilderNode, result),
+        tree: resolveBindingHandles(blueprint.layout.tree, result),
       });
       result.layoutId = layout.id;
     }
@@ -853,7 +856,7 @@ export async function installBlueprint(
       if (existingHome) {
         const updated = await pageService.update(propCtx, existingHome.id, {
           name: pg.name,
-          tree: resolveBindingHandles(pg.tree as BuilderNode, result),
+          tree: resolveBindingHandles(pg.tree, result),
           seoTitle: pg.seoTitle,
           seoDescription: pg.seoDescription,
           canonical: pg.canonical,
@@ -867,7 +870,7 @@ export async function installBlueprint(
           kind: pg.kind,
           recordType: pg.recordType ?? null,
           slug: pg.slug ?? null,
-          tree: resolveBindingHandles(pg.tree as BuilderNode, result),
+          tree: resolveBindingHandles(pg.tree, result),
           seoTitle: pg.seoTitle,
           seoDescription: pg.seoDescription,
           canonical: pg.canonical,
