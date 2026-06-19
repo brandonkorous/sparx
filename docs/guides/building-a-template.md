@@ -94,10 +94,10 @@ blueprints/<slug>/
 The only rule is **self-containment**: every file in the graph is pure data with
 **relative** imports and **no `@sparx/*`** (the entry is imported from outside any
 workspace package, and Phase-2 sandboxes the graph). Each part `export default`s its
-slice; the entry stitches them back together. `marketplace-catalog/blueprints/farm-fresh-bowls/`
-is the worked example. Its **generator** is split the same way — a `_gen/farm-fresh-bowls/`
+slice; the entry stitches them back together. `marketplace-catalog/blueprints/farm-fresh/`
+is the worked example. Its **generator** is split the same way — a `_gen/farm-fresh/`
 module folder (`_kit`, `theme`, `media`, `sections`, `layout`, `pages/*`, `manifest`, `emit`)
-behind a thin `_gen/gen-farm-fresh-bowls.ts` entry — so the authoring source is never one
+behind a thin `_gen/gen-farm-fresh.ts` entry — so the authoring source is never one
 wall either. (The shared `node()` id counter advances in call order, so `manifest.ts` invokes
 the page trees in a fixed order; keep that order stable across edits.)
 
@@ -177,9 +177,9 @@ checks. Top-level shape (full field reference:
 > `node()` helper in a **generator** under `marketplace-catalog/_gen/` that imports the
 > helper by **relative path** (`../../packages/builder-schemas/src/index`) and
 > serializes the compiled manifest to `blueprint.ts` as `export default { … }`. See the
-> [`_gen/farm-fresh-bowls/`](../../marketplace-catalog/_gen/farm-fresh-bowls/) generator
-> (run via [`_gen/gen-farm-fresh-bowls.ts`](../../marketplace-catalog/_gen/gen-farm-fresh-bowls.ts))
-> → [`blueprints/farm-fresh-bowls/blueprint.ts`](../../marketplace-catalog/blueprints/farm-fresh-bowls/) for the worked example. (The `marketplace-templates/blueprint/` skeleton shows the
+> [`_gen/farm-fresh/`](../../marketplace-catalog/_gen/farm-fresh/) generator
+> (run via [`_gen/gen-farm-fresh.ts`](../../marketplace-catalog/_gen/gen-farm-fresh.ts))
+> → [`blueprints/farm-fresh/blueprint.ts`](../../marketplace-catalog/blueprints/farm-fresh/) for the worked example. (The `marketplace-templates/blueprint/` skeleton shows the
 > authoring vocabulary with the import; that import is only for reading — the shipped
 > bundle ships the serialized output.)
 
