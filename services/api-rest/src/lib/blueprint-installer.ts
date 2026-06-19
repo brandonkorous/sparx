@@ -33,6 +33,7 @@ import {
 import { recordRevision, syncReferences } from '@sparx/api-core/entries';
 import { publish } from '@sparx/api-core/pubsub';
 import { isAssetRef, type Blueprint } from '@sparx/blueprints';
+import type { BuilderNode } from '@sparx/builder-schemas';
 
 export interface InstallContext {
   tenantId: string;
@@ -57,6 +58,48 @@ export interface InstallResult {
   emails: { name: string; id: string }[];
   content: { typeKey: string; slug: string | null; id: string }[];
   counts: Record<string, number>;
+}
+
+/** Resolve handle-addressed commerce bindings to the real row ids (docs/103).
+ *
+ *  A blueprint authors collection repeaters and entity pins by stable HANDLE — e.g.
+ *  a Menu page's product grid binds `{ source: { from: 'category', id: 'acai-bowls' } }`
+ *  — because it cannot know the row ids until install mints them. This walks a page /
+ *  layout tree and rewrites every `binding.source.id` (category / collection source)
+ *  and entity-pin `binding.id` (product / collection / category) from a handle to the
+ *  id this install just created. An id that matches no handle (already real, or `all`)
+ *  is left untouched, so it is safe to run on any tree. Returns a fresh tree; the input
+ *  blueprint payload is not mutated. */
+export function resolveBindingHandles(tree: BuilderNode, result: InstallResult): BuilderNode {
+  const categories = result.categories ?? {};
+  const collections = result.collections ?? {};
+  const products: Record<string, string> = {};
+  for (const p of result.products ?? []) products[p.handle] = p.id;
+  const byEntity: Record<string, Record<string, string>> = {
+    product: products,
+    collection: collections,
+    category: categories,
+  };
+  const walk = (n: BuilderNode): BuilderNode => {
+    const out: BuilderNode = { ...n };
+    if (n.binding) {
+      const b = { ...n.binding };
+      const src = b.source;
+      if (src && (src.from === 'category' || src.from === 'collection') && src.id) {
+        const map = src.from === 'category' ? categories : collections;
+        const id = map[src.id];
+        if (id) b.source = { ...src, id };
+      }
+      if (b.entity && b.id) {
+        const id = byEntity[b.entity]?.[b.id];
+        if (id) b.id = id;
+      }
+      out.binding = b;
+    }
+    if (n.children) out.children = n.children.map(walk);
+    return out;
+  };
+  return walk(tree);
 }
 
 // ── small helpers ──────────────────────────────────────────────────────────────
@@ -567,7 +610,7 @@ export async function installBlueprint(
     if (blueprint.layout) {
       const layout = await layoutService.create(propCtx, {
         name: blueprint.layout.name,
-        tree: blueprint.layout.tree,
+        tree: resolveBindingHandles(blueprint.layout.tree as BuilderNode, result),
       });
       result.layoutId = layout.id;
     }
@@ -592,7 +635,7 @@ export async function installBlueprint(
       if (existingHome) {
         const updated = await pageService.update(propCtx, existingHome.id, {
           name: pg.name,
-          tree: pg.tree,
+          tree: resolveBindingHandles(pg.tree as BuilderNode, result),
           seoTitle: pg.seoTitle,
           seoDescription: pg.seoDescription,
           canonical: pg.canonical,
@@ -606,7 +649,7 @@ export async function installBlueprint(
           kind: pg.kind,
           recordType: pg.recordType ?? null,
           slug: pg.slug ?? null,
-          tree: pg.tree,
+          tree: resolveBindingHandles(pg.tree as BuilderNode, result),
           seoTitle: pg.seoTitle,
           seoDescription: pg.seoDescription,
           canonical: pg.canonical,
