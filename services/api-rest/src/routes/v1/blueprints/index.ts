@@ -40,6 +40,7 @@ import {
   resetInstall,
   type InstallResult,
 } from '../../../lib/blueprint-installer.js';
+import { applyUpdate, planUpdate } from '../../../lib/blueprint-updater.js';
 
 const KeyParam = z.object({ key: z.string().min(1).max(63) });
 const IdParam = z.object({ id: z.string().uuid() });
@@ -56,6 +57,12 @@ const ListQuery = z.object({
 // absent falls back to the active site (header) then primary. The body itself is
 // optional (a bare POST still installs into the active/primary site).
 const InstallBody = z.object({ property_id: z.string().uuid().optional() }).default({});
+// Update apply (docs/55 §10): per-conflict resolutions. Each entry is a conflict id
+// (`${kind}:${naturalKey}#${path}`) the tenant chose to take from the blueprint; any
+// conflict not listed defaults to keeping the tenant's value (docs/55 U1).
+const UpdateBody = z
+  .object({ take_theirs: z.array(z.string().max(512)).max(2000).optional() })
+  .default({});
 
 /** The site switcher's active-property header, when present. */
 function activePropertyHeader(headers: Record<string, unknown>): string | null {
@@ -352,6 +359,58 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
       id
     );
     return ok({ id, status: 'live' });
+  });
+
+  // Update preview (docs/55 §6) — the changeset (per-artifact fast-forwards /
+  // conflicts / adds / orphans) for the catalog's current version. Read-only:
+  // nothing is written, so a tenant can review before applying.
+  app.get('/v1/blueprints/installs/:id/update', async (request) => {
+    const auth = requireRole(request, 'viewer');
+    const { id } = IdParam.parse(request.params);
+    const row = await withTenant({ tenantId: auth.tenantId }, (tx) =>
+      tx.tenantBlueprintInstall.findFirst({ where: { id } })
+    );
+    if (!row) throw notFound('Install', id);
+    const bp = await resolveBlueprint(auth.tenantId, row.blueprintKey);
+    if (!bp) throw notFound('Blueprint', row.blueprintKey);
+    const plan = await planUpdate(
+      {
+        tenantId: auth.tenantId,
+        userId: auth.actorId,
+        propertyId: row.propertyId,
+        logger: request.log,
+      },
+      row,
+      bp
+    );
+    return ok(plan);
+  });
+
+  // Update apply (docs/55 §6) — three-way merge the new version onto the install,
+  // keeping every tenant edit by default (U1). `take_theirs` flips named conflicts
+  // to the blueprint's value. Live installs re-publish; draft installs stay draft.
+  app.post('/v1/blueprints/installs/:id/update', async (request) => {
+    const auth = requireRole(request, 'admin');
+    const { id } = IdParam.parse(request.params);
+    const { take_theirs } = UpdateBody.parse(request.body ?? {});
+    const row = await withTenant({ tenantId: auth.tenantId }, (tx) =>
+      tx.tenantBlueprintInstall.findFirst({ where: { id } })
+    );
+    if (!row) throw notFound('Install', id);
+    const bp = await resolveBlueprint(auth.tenantId, row.blueprintKey);
+    if (!bp) throw notFound('Blueprint', row.blueprintKey);
+    const res = await applyUpdate(
+      {
+        tenantId: auth.tenantId,
+        userId: auth.actorId,
+        propertyId: row.propertyId,
+        logger: request.log,
+      },
+      row,
+      bp,
+      take_theirs ?? []
+    );
+    return ok(res);
   });
 
   // Reset & reinstall (D8): tear down everything the install created (id-map on the

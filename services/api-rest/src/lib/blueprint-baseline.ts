@@ -106,6 +106,8 @@ export function resolveBlueprintArtifacts(
   }
 
   // Brand identity (TenantBrand on the primary / brand_override on a secondary).
+  // Socials + the customer-facing site name are seed-once on Property (not part of
+  // the TenantBrand merge surface), so they are intentionally NOT baselined here.
   const b = blueprint.brand;
   out.push({
     kind: 'brand',
@@ -119,7 +121,6 @@ export function resolveBlueprintArtifacts(
       logoLight: asset(b.logoLightAssetId) ?? undefined,
       logoDark: asset(b.logoDarkAssetId) ?? undefined,
       favicon: asset(b.faviconAssetId) ?? undefined,
-      socials: b.socials,
     }),
   });
 

@@ -7,3 +7,4 @@ export * from './manifest';
 export * from './refs';
 export * from './validate';
 export * from './registry';
+export * from './merge';

@@ -123,7 +123,7 @@ function resolveAssetRefs(value: unknown, assets: Map<string, string>): unknown 
   return value;
 }
 
-function mimeFromUrl(url: string): string {
+export function mimeFromUrl(url: string): string {
   // A self-contained `data:` asset declares its own mediatype — read it directly
   // rather than guessing from a (non-existent) file extension.
   if (url.startsWith('data:')) {
