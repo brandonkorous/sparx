@@ -477,10 +477,9 @@ async function resolveBooking(
     partySize: b.partySize != null ? String(b.partySize) : '',
     status: b.status,
     cancellationReason: b.cancellationReason ?? '',
-    // Where the customer manages a booking (their account area) + where they
-    // re-book after a cancellation. The dedicated portal lands in a later phase
-    // (docs/79 §15 Phase 3c); until then these resolve to working storefront routes.
-    manageUrl: siteLink(slug, '/account'),
+    // Where the customer manages a booking (the self-service portal, docs/79 §15
+    // Phase 3c) + where they re-book after a cancellation.
+    manageUrl: siteLink(slug, '/account/bookings'),
     bookUrl: siteLink(slug, '/book'),
   };
 }

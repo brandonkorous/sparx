@@ -506,3 +506,88 @@ export async function cancelB2bAppointment(
   );
   if (!res.ok) throw new AccountError('Could not cancel appointment.', res.status);
 }
+
+// ── Bookings (Scheduling module portal, docs/79 §15 Phase 3c) ─────────────────
+
+export interface CustomerBooking {
+  id: string;
+  serviceId: string;
+  serviceName: string;
+  bookingType: string;
+  status: string;
+  startAt: string;
+  endAt: string;
+  timezone: string;
+  durationMinutes: number;
+  partySize: number | null;
+  staff: string[];
+  notes: string | null;
+  cancellationReason: string | null;
+  canCancel: boolean;
+  canReschedule: boolean;
+}
+
+export async function getMyBookings(
+  tenantSlug: string,
+  scope: 'upcoming' | 'past' | 'all' = 'upcoming',
+  page = 1,
+  pageSize = 20
+): Promise<{ items: CustomerBooking[]; total: number; totalPages: number }> {
+  const res = await fetch(
+    `${url('/v1/public/scheduling/account/bookings', tenantSlug)}&scope=${scope}&page=${page}&pageSize=${pageSize}`,
+    { cache: 'no-store' }
+  );
+  const json = (await res.json().catch(() => null)) as {
+    success: boolean;
+    data?: CustomerBooking[];
+    meta?: { total?: number; total_pages?: number };
+  } | null;
+  if (!res.ok || !json || json.success === false) {
+    throw new AccountError('Could not load bookings.', res.status);
+  }
+  return {
+    items: json.data ?? [],
+    total: json.meta?.total ?? 0,
+    totalPages: json.meta?.total_pages ?? 1,
+  };
+}
+
+export async function cancelMyBooking(
+  tenantSlug: string,
+  bookingId: string,
+  reason?: string
+): Promise<CustomerBooking> {
+  const res = await fetch(
+    url(
+      `/v1/public/scheduling/account/bookings/${encodeURIComponent(bookingId)}/cancel`,
+      tenantSlug
+    ),
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason }),
+      cache: 'no-store',
+    }
+  );
+  return parse<CustomerBooking>(res);
+}
+
+export async function rescheduleMyBooking(
+  tenantSlug: string,
+  bookingId: string,
+  startAt: string
+): Promise<CustomerBooking> {
+  const res = await fetch(
+    url(
+      `/v1/public/scheduling/account/bookings/${encodeURIComponent(bookingId)}/reschedule`,
+      tenantSlug
+    ),
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ startAt }),
+      cache: 'no-store',
+    }
+  );
+  return parse<CustomerBooking>(res);
+}

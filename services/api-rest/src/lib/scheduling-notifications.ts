@@ -101,7 +101,7 @@ async function claim(row: DueNotification): Promise<Dispatchable | null> {
   const tenantId = row.tenant_id;
   return withTenant({ tenantId }, async (tx) => {
     const note = await tx.bookingNotification.findUnique({ where: { id: row.id } });
-    if (!note || note.status !== 'pending') return null;
+    if (note?.status !== 'pending') return null;
 
     // An unknown notification type (future followup/waitlist) — leave pending? No:
     // this tick owns the table, so mark failed to avoid a permanent re-scan.
