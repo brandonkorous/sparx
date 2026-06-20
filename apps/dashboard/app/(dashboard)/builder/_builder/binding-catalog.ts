@@ -54,6 +54,7 @@ const MODULE_COLOR: Record<string, string> = {
   commerce: '#f97316',
   crm: '#06b6d4',
   events: '#a855f7',
+  scheduling: '#f43f5e', // Rose — the Scheduling module accent (docs/79)
   site: '#6366f1', // the storefront/chrome lineage (docs/45)
 };
 const SCOPE_COLOR = '#6366f1'; // item.* / index — resolved from the enclosing scope

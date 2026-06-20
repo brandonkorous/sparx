@@ -41,6 +41,8 @@ export interface EmailRecipientRef {
   fulfillmentId?: string | null;
   /** The service appointment an appointment-* send is about (docs/93 §3). */
   appointmentId?: string | null;
+  /** The Scheduling-module booking a booking-* send is about (docs/79 §10). */
+  bookingId?: string | null;
 }
 
 // Public api-rest origin for media URLs (GET /v1/public/media/:id) — REST-specific
@@ -411,6 +413,78 @@ async function resolveAppointment(
   };
 }
 
+// ── booking (Scheduling module, docs/79) ─────────────────────────────────────
+
+/** A wall-clock date/time formatted in the BOOKING's own timezone — a booking's
+ *  time is the one piece of email copy that must read in the customer's local
+ *  zone, not the server's. Intl handles DST without a date library. */
+function inZone(d: Date, tz: string, opts: Intl.DateTimeFormatOptions): string {
+  try {
+    return new Intl.DateTimeFormat('en-US', { timeZone: tz, ...opts }).format(d);
+  } catch {
+    // An invalid stored tz (shouldn't happen) falls back to UTC rather than throw.
+    return new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', ...opts }).format(d);
+  }
+}
+
+async function resolveBooking(
+  ctx: ServiceContext,
+  ref: EmailRecipientRef | undefined,
+  slug: string
+): Promise<Record<string, unknown>> {
+  if (!ref?.bookingId) return {};
+  const b = await withTenant(ctx, (tx) =>
+    tx.booking.findUnique({
+      where: { id: ref.bookingId! },
+      select: {
+        startAt: true,
+        timezone: true,
+        status: true,
+        partySize: true,
+        cancellationReason: true,
+        service: { select: { name: true, durationMinutes: true } },
+        location: { select: { name: true } },
+        resources: {
+          select: { resource: { select: { name: true, kind: true } } },
+        },
+      },
+    })
+  );
+  if (!b) return {};
+  const tz = b.timezone || 'UTC';
+  const date = inZone(b.startAt, tz, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+  const time = inZone(b.startAt, tz, { hour: 'numeric', minute: '2-digit' });
+  // Staff assigned to the booking (kind 'staff') — the "with {name}" line for an
+  // appointment; empty for an asset/table/space booking (the conditional hides it).
+  const staff = b.resources
+    .map((r) => r.resource)
+    .filter((r) => r.kind === 'staff')
+    .map((r) => r.name)
+    .join(', ');
+  return {
+    service: b.service?.name ?? '',
+    date,
+    time,
+    when: date && time ? `${date} at ${time}` : date || time,
+    duration: b.service?.durationMinutes ? `${b.service.durationMinutes} min` : '',
+    location: b.location?.name ?? '',
+    staff,
+    partySize: b.partySize != null ? String(b.partySize) : '',
+    status: b.status,
+    cancellationReason: b.cancellationReason ?? '',
+    // Where the customer manages a booking (their account area) + where they
+    // re-book after a cancellation. The dedicated portal lands in a later phase
+    // (docs/79 §15 Phase 3c); until then these resolve to working storefront routes.
+    manageUrl: siteLink(slug, '/account'),
+    bookUrl: siteLink(slug, '/book'),
+  };
+}
+
 // ── cart ──────────────────────────────────────────────────────────────────
 
 async function resolveCart(
@@ -728,6 +802,9 @@ export async function resolveEmailData(
   }
   if (keys.has('appointment')) {
     tasks.push(resolveAppointment(ctx, ref, slug).then((v) => void (out.appointment = v)));
+  }
+  if (keys.has('booking')) {
+    tasks.push(resolveBooking(ctx, ref, slug).then((v) => void (out.booking = v)));
   }
   if (keys.has('cart')) {
     tasks.push(resolveCart(ctx, ref, slug).then((v) => void (out.cart = v)));

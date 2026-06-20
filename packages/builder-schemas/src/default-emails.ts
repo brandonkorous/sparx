@@ -328,6 +328,54 @@ const appointmentCancelled = (): BuilderNode =>
     button('Book another time', '{{appointment.manageUrl}}'),
   ]);
 
+// ── Scheduling-module booking trees (docs/79 §10) ────────────────────────────
+// The industry-agnostic counterpart to the legacy `appointment-*` trees above:
+// bound to the `booking` source (the Scheduling module's appointment | class |
+// reservation | rental record), never to the B2B-fleet `appointment` source.
+// No vehicle copy — `location` / `staff` are the cross-type optionals instead.
+
+const bookingConfirmation = (): BuilderNode =>
+  body([
+    heading('Your booking is confirmed'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — your {{booking.service}} is booked for {{booking.when}}.'
+    ),
+    conditional('booking.location', [para('Location: {{booking.location}}')]),
+    conditional('booking.staff', [para('With: {{booking.staff}}')]),
+    button('Manage booking', '{{booking.manageUrl}}'),
+  ]);
+
+const bookingReminder = (): BuilderNode =>
+  body([
+    heading('A reminder about your upcoming booking'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — a reminder that your {{booking.service}} is coming up on {{booking.when}}.'
+    ),
+    conditional('booking.location', [para('Location: {{booking.location}}')]),
+    conditional('booking.staff', [para('With: {{booking.staff}}')]),
+    button('Manage booking', '{{booking.manageUrl}}'),
+  ]);
+
+const bookingRescheduled = (): BuilderNode =>
+  body([
+    heading('Your booking has been rescheduled'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — your {{booking.service}} has been moved to {{booking.when}}.'
+    ),
+    conditional('booking.location', [para('Location: {{booking.location}}')]),
+    button('Manage booking', '{{booking.manageUrl}}'),
+  ]);
+
+const bookingCancelled = (): BuilderNode =>
+  body([
+    heading('Your booking was cancelled'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — your {{booking.service}} scheduled for {{booking.when}} has been cancelled.'
+    ),
+    conditional('booking.cancellationReason', [para('Reason: {{booking.cancellationReason}}')]),
+    button('Book another time', '{{booking.bookUrl}}'),
+  ]);
+
 // ── The registry ─────────────────────────────────────────────────────────────
 
 export type EmailTemplateType = 'transactional' | 'marketing';
@@ -551,6 +599,50 @@ export const DEFAULT_EMAIL_TEMPLATES: DefaultEmailTemplate[] = [
     sources: ['customer', 'appointment', 'tenant'],
     refs: ['customerId', 'appointmentId'],
     tree: appointmentCancelled(),
+  },
+  {
+    key: 'booking-confirmation',
+    name: 'Booking confirmation',
+    type: 'transactional',
+    category: 'scheduling',
+    subject: 'Your booking is confirmed',
+    preheader: '{{booking.service}} on {{booking.when}}.',
+    sources: ['customer', 'booking', 'tenant'],
+    refs: ['customerId', 'bookingId'],
+    tree: bookingConfirmation(),
+  },
+  {
+    key: 'booking-reminder',
+    name: 'Booking reminder',
+    type: 'transactional',
+    category: 'scheduling',
+    subject: 'Reminder: your booking on {{booking.date}}',
+    preheader: '{{booking.service}} on {{booking.when}}.',
+    sources: ['customer', 'booking', 'tenant'],
+    refs: ['customerId', 'bookingId'],
+    tree: bookingReminder(),
+  },
+  {
+    key: 'booking-rescheduled',
+    name: 'Booking rescheduled',
+    type: 'transactional',
+    category: 'scheduling',
+    subject: 'Your booking has been rescheduled',
+    preheader: 'Now {{booking.when}}.',
+    sources: ['customer', 'booking', 'tenant'],
+    refs: ['customerId', 'bookingId'],
+    tree: bookingRescheduled(),
+  },
+  {
+    key: 'booking-cancelled',
+    name: 'Booking cancelled',
+    type: 'transactional',
+    category: 'scheduling',
+    subject: 'Your booking was cancelled',
+    preheader: 'About your {{booking.service}}.',
+    sources: ['customer', 'booking', 'tenant'],
+    refs: ['customerId', 'bookingId'],
+    tree: bookingCancelled(),
   },
 ];
 

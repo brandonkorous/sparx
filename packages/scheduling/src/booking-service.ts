@@ -24,6 +24,12 @@ import {
   ServiceNotFoundError,
   SlotUnavailableError,
 } from './errors';
+import {
+  cancelBookingNotifications,
+  dropPendingBookingNotifications,
+  rescheduleBookingNotifications,
+  scheduleBookingNotifications,
+} from './notifications';
 import type { Interval } from './time';
 
 const MINUTE_MS = 60 * 1000;
@@ -180,8 +186,9 @@ export async function createBooking(
 
     const status = service.requiresApproval ? 'requested' : 'confirmed';
 
+    let booking: Booking;
     try {
-      const booking = await tx.booking.create({
+      booking = await tx.booking.create({
         data: {
           tenantId,
           serviceId: service.id,
@@ -218,11 +225,16 @@ export async function createBooking(
           },
         },
       });
-      return { booking, resourceIds: picks.map((p) => p.resourceId) };
     } catch (err) {
       if (isExclusionViolation(err)) throw new SlotUnavailableError();
       throw err;
     }
+    // Auto-confirmed bookings (no approval gate) notify immediately + schedule
+    // reminders; a `requested` booking waits for confirmBooking to notify.
+    if (status === 'confirmed') {
+      await scheduleBookingNotifications(tx, tenantId, booking);
+    }
+    return { booking, resourceIds: picks.map((p) => p.resourceId) };
   });
 }
 
@@ -283,10 +295,12 @@ export async function confirmBooking(
       throw new InvalidBookingStateError(`Cannot confirm a booking that is ${booking.status}`);
     }
     await setAllocationStatus(tx, id, 'confirmed');
-    return tx.booking.update({
+    const confirmed = await tx.booking.update({
       where: { id },
       data: { status: 'confirmed', confirmedAt: new Date(), confirmedByUserId: userId ?? null },
     });
+    await scheduleBookingNotifications(tx, tenantId, confirmed);
+    return confirmed;
   });
 }
 
@@ -298,7 +312,7 @@ export async function cancelBooking(tenantId: string, input: CancelBookingInput)
     }
     // Release the resources so the slot frees immediately (partial EXCLUDE drops them).
     await setAllocationStatus(tx, input.id, 'cancelled');
-    return tx.booking.update({
+    const cancelled = await tx.booking.update({
       where: { id: input.id },
       data: {
         status: 'cancelled',
@@ -306,6 +320,8 @@ export async function cancelBooking(tenantId: string, input: CancelBookingInput)
         cancellationReason: input.reason ?? null,
       },
     });
+    await cancelBookingNotifications(tx, tenantId, cancelled);
+    return cancelled;
   });
 }
 
@@ -368,7 +384,12 @@ export async function rescheduleBooking(
           status: booking.status,
         })),
       });
-      return await tx.booking.update({ where: { id: input.id }, data: { startAt, endAt } });
+      const moved = await tx.booking.update({
+        where: { id: input.id },
+        data: { startAt, endAt },
+      });
+      await rescheduleBookingNotifications(tx, tenantId, moved);
+      return moved;
     } catch (err) {
       if (isExclusionViolation(err)) throw new SlotUnavailableError();
       throw err;
@@ -402,6 +423,7 @@ export async function completeBooking(tenantId: string, id: string): Promise<Boo
       throw new InvalidBookingStateError(`Cannot complete a booking that is ${booking.status}`);
     }
     await setAllocationStatus(tx, id, 'completed');
+    await dropPendingBookingNotifications(tx, id);
     return tx.booking.update({
       where: { id },
       data: { status: 'completed', completedAt: new Date() },
@@ -418,6 +440,7 @@ export async function noShowBooking(tenantId: string, input: NoShowBookingInput)
       );
     }
     await setAllocationStatus(tx, input.id, 'no_show');
+    await dropPendingBookingNotifications(tx, input.id);
     return tx.booking.update({
       where: { id: input.id },
       data: { status: 'no_show', noShowAt: new Date() },

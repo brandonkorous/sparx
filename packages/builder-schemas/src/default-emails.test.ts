@@ -12,10 +12,10 @@ function* walk(node: BuilderNode): Generator<BuilderNode> {
 const types = (root: BuilderNode): string[] => [...walk(root)].map((nd) => nd.type);
 
 describe('DEFAULT_EMAIL_TEMPLATES', () => {
-  it('ships exactly the 18 documented templates with unique keys', () => {
+  it('ships exactly the 22 documented templates with unique keys', () => {
     const keys = DEFAULT_EMAIL_TEMPLATES.map((t) => t.key);
-    expect(keys).toHaveLength(18);
-    expect(new Set(keys).size).toBe(18);
+    expect(keys).toHaveLength(22);
+    expect(new Set(keys).size).toBe(22);
     expect(keys).toEqual(
       expect.arrayContaining([
         'welcome-customer',
@@ -37,6 +37,11 @@ describe('DEFAULT_EMAIL_TEMPLATES', () => {
         'appointment-confirmation',
         'appointment-reminder',
         'appointment-cancelled',
+        // docs/79 — Scheduling module booking notifications
+        'booking-confirmation',
+        'booking-reminder',
+        'booking-rescheduled',
+        'booking-cancelled',
       ])
     );
   });

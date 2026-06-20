@@ -58,6 +58,7 @@
     "@sparx/registrar": "workspace:*",
     "@sparx/scheduling": "workspace:*",
     "@sparx/scheduling-schemas": "workspace:*",
+    "@sparx/sms": "workspace:*",
     "jose": "^6.0.10",
     "socket.io": "^4.8.1",
     "@socket.io/redis-adapter": "^8.3.0",

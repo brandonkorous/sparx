@@ -19,6 +19,7 @@ import { env } from './env.js';
 import { startScheduledPublishLoop } from './lib/scheduled-publish.js';
 import { startSitebuilderPublishLoop } from './lib/sitebuilder-publish.js';
 import { startEmailDispatchLoop } from './lib/email-dispatch.js';
+import { startBookingNotificationLoop } from './lib/scheduling-notifications.js';
 import { attachChatWebsocket } from './websocket/index.js';
 
 async function main(): Promise<void> {
@@ -88,6 +89,12 @@ async function main(): Promise<void> {
   // via its own advisory lock — see lib/email-dispatch.ts.
   const stopEmailDispatch = startEmailDispatchLoop(app.log);
 
+  // Background tick that sends due booking notifications (confirmations,
+  // reminders, change/cancellation notices) over email + SMS from the
+  // scheduling_booking_notifications ledger. Singleton across pods via its own
+  // advisory lock — see lib/scheduling-notifications.ts (docs/79 §10).
+  const stopBookingNotifications = startBookingNotificationLoop(app.log);
+
   // Background pass that back-fills the 13 default Builder-email templates for any
   // email-active tenant that missed `module.activated` (docs/90 §6, docs/91 §7).
   // Singleton across pods via its own advisory lock — see lib/email-provisioning.ts.
@@ -109,6 +116,7 @@ async function main(): Promise<void> {
     stopSitebuilderPublish();
     stopWebhookDelivery();
     stopEmailDispatch();
+    stopBookingNotifications();
     stopEmailProvisioningReconcile();
     stopModuleProvisioningReconcile();
     void chatWs.close().catch((err: unknown) => {

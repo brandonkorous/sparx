@@ -129,6 +129,17 @@ const EnvSchema = z
     // Cloudflare-fronted CDN domain; in dev it's the api-rest origin so the
     // dashboard can hit /v1/public/media/variants/<key>.
     MEDIA_PUBLIC_URL: z.string().default(''),
+    // SMS provider (docs/79 §10) — the Scheduling booking-notification dispatch
+    // tick sends reminders/confirmations over SMS via @sparx/sms. Unset (or any
+    // value but 'twilio', or 'twilio' without creds) → the console provider, which
+    // logs instead of sending, so local + un-provisioned tenants still exercise the
+    // full path safely. Real SMS needs SMS_PROVIDER=twilio + the TWILIO_* creds
+    // (a From number OR a Messaging Service SID).
+    SMS_PROVIDER: z.string().optional(),
+    TWILIO_ACCOUNT_SID: z.string().optional(),
+    TWILIO_AUTH_TOKEN: z.string().optional(),
+    TWILIO_FROM: z.string().optional(),
+    TWILIO_MESSAGING_SERVICE_SID: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     // GCS mode requires both buckets — the public one holds variants,

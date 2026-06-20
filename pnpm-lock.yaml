@@ -2133,6 +2133,9 @@ importers:
       '@sparx/sitebuilder':
         specifier: workspace:*
         version: link:../../packages/sitebuilder
+      '@sparx/sms':
+        specifier: workspace:*
+        version: link:../../packages/sms
       fastify:
         specifier: ^5.6.1
         version: 5.8.5

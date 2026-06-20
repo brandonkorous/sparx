@@ -61,3 +61,14 @@ export {
   deleteAvailabilityException,
 } from './availability-rules';
 export { bootstrapSchedulingDefaults } from './provisioning';
+export {
+  type BookingNotificationType,
+  type NotificationChannel,
+  type NotifiableBooking,
+  BOOKING_EMAIL_KEY,
+  scheduleBookingNotifications,
+  rescheduleBookingNotifications,
+  cancelBookingNotifications,
+  dropPendingBookingNotifications,
+} from './notifications';
+export { type BookingSmsFields, renderBookingSms } from './sms-templates';

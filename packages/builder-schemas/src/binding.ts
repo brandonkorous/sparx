@@ -29,7 +29,7 @@ export type FieldKind =
 
 export type FieldCardinality = 'scalar' | 'object' | 'array';
 export type SourceCardinality = 'array' | 'object';
-export type SourceModule = 'cms' | 'commerce' | 'crm' | 'site';
+export type SourceModule = 'cms' | 'commerce' | 'crm' | 'site' | 'scheduling';
 
 export interface FieldSchema {
   key: string;
@@ -463,6 +463,31 @@ export const EMAIL_SOURCES: DataSource[] = [
       text('vehicle', 'Vehicle'),
       text('cancellationReason', 'Cancellation reason'),
       text('manageUrl', 'Manage link'),
+    ],
+  },
+  {
+    // The Scheduling module's booking (docs/79) — the industry-agnostic
+    // appointment/class/reservation/rental record. Distinct from the legacy
+    // `appointment` source (B2B fleet `service_appointments`): no vehicle field,
+    // and it carries location/staff/party-size that span every booking type.
+    key: 'booking',
+    label: 'Booking',
+    module: 'scheduling',
+    cardinality: 'object',
+    recordType: 'booking',
+    fields: [
+      text('service', 'Service'),
+      text('date', 'Date'),
+      text('time', 'Time'),
+      text('when', 'When'),
+      text('duration', 'Duration'),
+      text('location', 'Location'),
+      text('staff', 'Staff'),
+      text('partySize', 'Party size'),
+      text('status', 'Status'),
+      text('cancellationReason', 'Cancellation reason'),
+      text('manageUrl', 'Manage link'),
+      text('bookUrl', 'Book-again link'),
     ],
   },
   {
