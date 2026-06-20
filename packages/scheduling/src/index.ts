@@ -60,3 +60,4 @@ export {
   listAvailabilityExceptions,
   deleteAvailabilityException,
 } from './availability-rules';
+export { bootstrapSchedulingDefaults } from './provisioning';

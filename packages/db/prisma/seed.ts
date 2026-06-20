@@ -1668,6 +1668,470 @@ async function seedPlatformCatalog(): Promise<void> {
   console.log(`[seed] platform component catalog: ${PLATFORM_CATALOG.length} entries published`);
 }
 
+// ── Demo scheduling data (docs/79) ───────────────────────────────────────────
+// Rich, industry-varied booking data for the e2e tenant so the Scheduling
+// dashboard, the public /book page, and the availability engine all show real
+// data locally. Idempotent: every demo row is tagged `settings.demo:'scheduling'`
+// (or, for bookings, hangs off a demo service) and cleared up-front on re-run.
+
+interface DemoResource {
+  key: string;
+  kind: 'staff' | 'space' | 'table' | 'equipment';
+  name: string;
+  color?: string;
+  skillTags?: string[];
+  capacityMin?: number;
+  capacityMax?: number;
+  // Weekly hours: days (0=Sun..6=Sat) + [startMinute, endMinute] in the resource zone.
+  hours: { days: number[]; start: number; end: number };
+}
+
+interface DemoService {
+  key: string;
+  name: string;
+  bookingType: 'appointment' | 'class' | 'reservation' | 'rental';
+  durationMinutes: number;
+  priceCents: number;
+  capacity?: number;
+  bufferAfterMin?: number;
+  requiresApproval?: boolean;
+  slotIntervalMin?: number;
+  description: string;
+  requirements: { role: string; kind: DemoResource['kind']; skillTags?: string[] }[];
+}
+
+interface DemoBooking {
+  service: string;
+  resources: string[]; // resource keys to allocate
+  customerEmail: string;
+  dayOffset: number;
+  hour: number;
+  minute?: number;
+  status: 'requested' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
+  partySize?: number;
+  extraAttendees?: number; // for classes
+}
+
+const WEEKDAYS = [1, 2, 3, 4, 5];
+const MON_SAT = [1, 2, 3, 4, 5, 6];
+
+const DEMO_RESOURCES: DemoResource[] = [
+  {
+    key: 'alex',
+    kind: 'staff',
+    name: 'Alex Rivera',
+    color: '#6366F1',
+    skillTags: ['haircut', 'color'],
+    hours: { days: MON_SAT, start: 9 * 60, end: 17 * 60 },
+  },
+  {
+    key: 'jordan',
+    kind: 'staff',
+    name: 'Jordan Lee',
+    color: '#0EA5E9',
+    skillTags: ['haircut', 'beard'],
+    hours: { days: WEEKDAYS, start: 10 * 60, end: 18 * 60 },
+  },
+  {
+    key: 'maya',
+    kind: 'staff',
+    name: 'Maya Patel',
+    color: '#14B8A6',
+    skillTags: ['massage', 'facial'],
+    hours: { days: MON_SAT, start: 9 * 60, end: 16 * 60 },
+  },
+  {
+    key: 'chris',
+    kind: 'staff',
+    name: 'Chris Doyle',
+    color: '#F97316',
+    skillTags: ['yoga', 'pilates'],
+    hours: { days: MON_SAT, start: 7 * 60, end: 12 * 60 },
+  },
+  {
+    key: 'studioA',
+    kind: 'space',
+    name: 'Studio A',
+    color: '#8B5CF6',
+    hours: { days: MON_SAT, start: 6 * 60, end: 21 * 60 },
+  },
+  {
+    key: 'room1',
+    kind: 'space',
+    name: 'Treatment Room 1',
+    color: '#06B6D4',
+    hours: { days: MON_SAT, start: 9 * 60, end: 17 * 60 },
+  },
+  {
+    key: 'table4',
+    kind: 'table',
+    name: 'Table 4',
+    capacityMin: 1,
+    capacityMax: 4,
+    hours: { days: MON_SAT, start: 17 * 60, end: 22 * 60 },
+  },
+  {
+    key: 'table8',
+    kind: 'table',
+    name: 'Table 8',
+    capacityMin: 4,
+    capacityMax: 8,
+    hours: { days: MON_SAT, start: 17 * 60, end: 22 * 60 },
+  },
+  {
+    key: 'kayak1',
+    kind: 'equipment',
+    name: 'Kayak #1',
+    hours: { days: MON_SAT, start: 9 * 60, end: 17 * 60 },
+  },
+  {
+    key: 'kayak2',
+    kind: 'equipment',
+    name: 'Kayak #2',
+    hours: { days: MON_SAT, start: 9 * 60, end: 17 * 60 },
+  },
+];
+
+const DEMO_SERVICES: DemoService[] = [
+  {
+    key: 'haircut',
+    name: 'Haircut & Style',
+    bookingType: 'appointment',
+    durationMinutes: 45,
+    priceCents: 4500,
+    description: 'A cut and finish with one of our stylists.',
+    requirements: [{ role: 'stylist', kind: 'staff', skillTags: ['haircut'] }],
+  },
+  {
+    key: 'massage',
+    name: 'Deep Tissue Massage (60 min)',
+    bookingType: 'appointment',
+    durationMinutes: 60,
+    priceCents: 9500,
+    bufferAfterMin: 15,
+    description: 'A 60-minute therapeutic massage.',
+    requirements: [{ role: 'therapist', kind: 'staff', skillTags: ['massage'] }],
+  },
+  {
+    key: 'consult',
+    name: 'New Client Consultation',
+    bookingType: 'appointment',
+    durationMinutes: 30,
+    priceCents: 0,
+    requiresApproval: true,
+    description: 'A free 30-minute intro consultation (request — we confirm).',
+    requirements: [{ role: 'staff', kind: 'staff' }],
+  },
+  {
+    key: 'yoga',
+    name: 'Morning Yoga Flow',
+    bookingType: 'class',
+    durationMinutes: 60,
+    priceCents: 2200,
+    capacity: 12,
+    description: 'A 60-minute all-levels vinyasa class.',
+    requirements: [
+      { role: 'instructor', kind: 'staff', skillTags: ['yoga'] },
+      { role: 'room', kind: 'space' },
+    ],
+  },
+  {
+    key: 'dinner',
+    name: 'Dinner Reservation',
+    bookingType: 'reservation',
+    durationMinutes: 120,
+    priceCents: 0,
+    slotIntervalMin: 30,
+    description: 'Reserve a table for dinner service.',
+    requirements: [{ role: 'table', kind: 'table' }],
+  },
+  {
+    key: 'kayak',
+    name: 'Kayak Rental (2 hr)',
+    bookingType: 'rental',
+    durationMinutes: 120,
+    priceCents: 4000,
+    bufferAfterMin: 30,
+    description: 'A two-hour single-kayak rental, paddle included.',
+    requirements: [{ role: 'kayak', kind: 'equipment' }],
+  },
+];
+
+const DEMO_CUSTOMERS = [
+  { email: 'dana.wells@example.com', firstName: 'Dana', lastName: 'Wells', phone: '+15555550110' },
+  { email: 'pat.kim@example.com', firstName: 'Pat', lastName: 'Kim', phone: '+15555550111' },
+  { email: 'lee.ray@example.com', firstName: 'Lee', lastName: 'Ray', phone: '+15555550112' },
+  { email: 'sam.ford@example.com', firstName: 'Sam', lastName: 'Ford', phone: '+15555550113' },
+  { email: 'robin.cho@example.com', firstName: 'Robin', lastName: 'Cho', phone: '+15555550114' },
+];
+
+const DEMO_BOOKINGS: DemoBooking[] = [
+  {
+    service: 'haircut',
+    resources: ['alex'],
+    customerEmail: 'dana.wells@example.com',
+    dayOffset: 1,
+    hour: 10,
+    status: 'confirmed',
+  },
+  {
+    service: 'haircut',
+    resources: ['jordan'],
+    customerEmail: 'sam.ford@example.com',
+    dayOffset: 1,
+    hour: 11,
+    status: 'confirmed',
+  },
+  {
+    service: 'massage',
+    resources: ['maya'],
+    customerEmail: 'pat.kim@example.com',
+    dayOffset: 2,
+    hour: 14,
+    status: 'confirmed',
+  },
+  {
+    service: 'consult',
+    resources: ['alex'],
+    customerEmail: 'lee.ray@example.com',
+    dayOffset: 3,
+    hour: 13,
+    status: 'requested',
+  },
+  {
+    service: 'yoga',
+    resources: ['chris', 'studioA'],
+    customerEmail: 'robin.cho@example.com',
+    dayOffset: 1,
+    hour: 8,
+    status: 'confirmed',
+    extraAttendees: 6,
+  },
+  {
+    service: 'dinner',
+    resources: ['table4'],
+    customerEmail: 'sam.ford@example.com',
+    dayOffset: 0,
+    hour: 19,
+    status: 'confirmed',
+    partySize: 3,
+  },
+  {
+    service: 'kayak',
+    resources: ['kayak1'],
+    customerEmail: 'robin.cho@example.com',
+    dayOffset: 4,
+    hour: 10,
+    status: 'confirmed',
+  },
+  {
+    service: 'haircut',
+    resources: ['alex'],
+    customerEmail: 'pat.kim@example.com',
+    dayOffset: -3,
+    hour: 15,
+    status: 'completed',
+  },
+  {
+    service: 'massage',
+    resources: ['maya'],
+    customerEmail: 'dana.wells@example.com',
+    dayOffset: -2,
+    hour: 11,
+    status: 'cancelled',
+  },
+];
+
+function attendeeStatusFor(bookingStatus: DemoBooking['status']): string {
+  switch (bookingStatus) {
+    case 'completed':
+      return 'attended';
+    case 'in_progress':
+      return 'checked_in';
+    case 'cancelled':
+      return 'cancelled';
+    default:
+      return 'booked';
+  }
+}
+
+function atUtc(dayOffset: number, hour: number, minute = 0): Date {
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate() + dayOffset);
+  d.setUTCHours(hour, minute, 0, 0);
+  return d;
+}
+
+async function seedDemoScheduling(tenantId: string): Promise<void> {
+  await prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+
+    const demoMarker = { path: ['demo'], equals: 'scheduling' };
+
+    // Clear prior demo rows (bookings first — they reference resources/services).
+    const priorServices = await tx.schedulingService.findMany({
+      where: { settings: demoMarker },
+      select: { id: true },
+    });
+    if (priorServices.length > 0) {
+      await tx.booking.deleteMany({ where: { serviceId: { in: priorServices.map((s) => s.id) } } });
+    }
+    await tx.schedulingService.deleteMany({ where: { settings: demoMarker } });
+    await tx.schedulingResource.deleteMany({ where: { settings: demoMarker } });
+
+    // Resources + their weekly availability windows.
+    const resourceIdByKey = new Map<string, string>();
+    for (const r of DEMO_RESOURCES) {
+      const res = await tx.schedulingResource.create({
+        data: {
+          tenantId,
+          kind: r.kind,
+          name: r.name,
+          color: r.color ?? null,
+          timezone: 'UTC',
+          skillTags: r.skillTags ?? [],
+          capacityMin: r.capacityMin ?? null,
+          capacityMax: r.capacityMax ?? null,
+          settings: { demo: 'scheduling' },
+        },
+      });
+      resourceIdByKey.set(r.key, res.id);
+      await tx.availabilityWindow.createMany({
+        data: r.hours.days.map((dayOfWeek) => ({
+          tenantId,
+          resourceId: res.id,
+          dayOfWeek,
+          startMinute: r.hours.start,
+          endMinute: r.hours.end,
+        })),
+      });
+    }
+
+    // Services (with their resource-role requirements).
+    const serviceByKey = new Map<
+      string,
+      {
+        id: string;
+        durationMinutes: number;
+        bufferAfterMin: number;
+        bookingType: string;
+        capacity: number;
+      }
+    >();
+    for (const s of DEMO_SERVICES) {
+      const svc = await tx.schedulingService.create({
+        data: {
+          tenantId,
+          bookingType: s.bookingType,
+          name: s.name,
+          description: s.description,
+          durationMinutes: s.durationMinutes,
+          bufferAfterMin: s.bufferAfterMin ?? 0,
+          priceCents: s.priceCents,
+          capacity: s.capacity ?? 1,
+          slotIntervalMin: s.slotIntervalMin ?? 15,
+          requiresApproval: s.requiresApproval ?? false,
+          resourceRequirements: s.requirements,
+          settings: { demo: 'scheduling' },
+        },
+      });
+      serviceByKey.set(s.key, {
+        id: svc.id,
+        durationMinutes: s.durationMinutes,
+        bufferAfterMin: s.bufferAfterMin ?? 0,
+        bookingType: s.bookingType,
+        capacity: s.capacity ?? 1,
+      });
+    }
+
+    // Demo customers (find-or-create by email — the shared customer spine).
+    const customerIdByEmail = new Map<string, string>();
+    for (const c of DEMO_CUSTOMERS) {
+      const existing = await tx.customer.findFirst({
+        where: { email: c.email },
+        select: { id: true },
+      });
+      const id =
+        existing?.id ??
+        (
+          await tx.customer.create({
+            data: {
+              tenantId,
+              email: c.email,
+              firstName: c.firstName,
+              lastName: c.lastName,
+              phone: c.phone,
+              metadata: { source: 'scheduling-demo' },
+            },
+            select: { id: true },
+          })
+        ).id;
+      customerIdByEmail.set(c.email, id);
+    }
+
+    // Bookings — direct inserts with their resource allocations + attendees. Times
+    // are spaced so no exclusive resource overlaps (the no-overlap EXCLUDE holds).
+    for (const b of DEMO_BOOKINGS) {
+      const svc = serviceByKey.get(b.service);
+      const customerId = customerIdByEmail.get(b.customerEmail);
+      if (!svc || !customerId) continue;
+      const startAt = atUtc(b.dayOffset, b.hour, b.minute ?? 0);
+      const endAt = new Date(startAt.getTime() + svc.durationMinutes * 60_000);
+      const spanEnd = new Date(endAt.getTime() + svc.bufferAfterMin * 60_000);
+      const aStatus = attendeeStatusFor(b.status);
+
+      const extraAttendees = Array.from({ length: b.extraAttendees ?? 0 }, () => ({
+        tenantId,
+        guestName: 'Class guest',
+        partySize: 1,
+        status: aStatus,
+      }));
+
+      await tx.booking.create({
+        data: {
+          tenantId,
+          serviceId: svc.id,
+          bookingType: svc.bookingType,
+          status: b.status,
+          startAt,
+          endAt,
+          timezone: 'UTC',
+          capacity: svc.capacity,
+          partySize: b.partySize ?? null,
+          customerId,
+          source: 'dashboard',
+          ...(b.status === 'confirmed' || b.status === 'completed'
+            ? { confirmedAt: new Date() }
+            : {}),
+          ...(b.status === 'completed' ? { completedAt: endAt } : {}),
+          ...(b.status === 'cancelled' ? { cancelledAt: new Date() } : {}),
+          resources: {
+            create: b.resources.map((key) => ({
+              tenantId,
+              resourceId: resourceIdByKey.get(key)!,
+              role: 'resource',
+              startAt,
+              endAt: spanEnd,
+              exclusive: true,
+              status: b.status,
+            })),
+          },
+          attendees: {
+            create: [
+              { tenantId, customerId, partySize: b.partySize ?? 1, status: aStatus },
+              ...extraAttendees,
+            ],
+          },
+        },
+      });
+    }
+
+    console.log(
+      `Seeded demo scheduling: ${DEMO_SERVICES.length} services, ${DEMO_RESOURCES.length} resources, ${DEMO_BOOKINGS.length} bookings`
+    );
+  });
+}
+
 async function main(): Promise<void> {
   // tenants has no RLS — safe to upsert outside a tenant context. Default
   // settings (incl. the module activation registry read by
@@ -1688,6 +2152,9 @@ async function main(): Promise<void> {
       // plan tier — see services/api-mcp/src/auth.ts). Enabled so local MCP
       // tooling + the MCP e2e path work against the seeded tenant.
       ai: { enabled: true },
+      // Scheduling (docs/79) — enabled so the dashboard surfaces + the public
+      // /book page exercise against the seeded demo bookings/services/resources.
+      scheduling: { enabled: true },
     },
   };
 
@@ -1792,6 +2259,17 @@ async function main(): Promise<void> {
   } catch (err) {
     console.warn(
       `[seed] demo inventory seed skipped: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
+
+  // Demo scheduling data (docs/79) — services/resources/availability/bookings so
+  // the Scheduling dashboard + the public /book page show real data locally.
+  // Idempotent; wrapped so a hiccup never blocks the rest of the seed.
+  try {
+    await seedDemoScheduling(tenant.id);
+  } catch (err) {
+    console.warn(
+      `[seed] demo scheduling seed skipped: ${err instanceof Error ? err.message : String(err)}`
     );
   }
 

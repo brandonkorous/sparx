@@ -36,6 +36,7 @@ import { commerceSiteService, shippingService, taxService } from '@sparx/commerc
 import { getPlatformBus, type PlatformEvent } from '@sparx/crm';
 import { prisma } from '@sparx/db';
 import { inventoryService } from '@sparx/inventory';
+import { bootstrapSchedulingDefaults } from '@sparx/scheduling';
 import type { FastifyBaseLogger } from 'fastify';
 
 import { bootstrapDefaultApprovalRule } from './b2b-defaults.js';
@@ -43,7 +44,7 @@ import { quickReplyService } from './chat/index.js';
 import { bootstrapSavedViewPresets, SAVED_VIEW_PRESET_MODULES } from './saved-view-presets.js';
 
 /** The modules whose activation this provisioner seeds defaults for. */
-const PROVISIONED_MODULES = ['commerce', 'inventory', 'b2b', 'chat'] as const;
+const PROVISIONED_MODULES = ['commerce', 'inventory', 'b2b', 'chat', 'scheduling'] as const;
 type ProvisionedModule = (typeof PROVISIONED_MODULES)[number];
 const PROVISIONED_SET = new Set<string>(PROVISIONED_MODULES);
 
@@ -94,6 +95,10 @@ async function provisionForModule(tenantId: string, slug: ProvisionedModule): Pr
     }
     case 'chat': {
       await quickReplyService.bootstrapDefaults(ctx);
+      break;
+    }
+    case 'scheduling': {
+      await bootstrapSchedulingDefaults(tenantId);
       break;
     }
   }
