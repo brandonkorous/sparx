@@ -46,6 +46,10 @@ function PostHogPageView() {
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
+    // Never init from local dev — `pnpm dev` runs with NODE_ENV !== 'production',
+    // and the shared .env key would otherwise pump localhost traffic into the
+    // production PostHog project, drowning real signal.
+    if (process.env.NODE_ENV !== 'production') return;
     const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
     if (!key) return;
     // Analytics is consent-gated (docs/42). PostHog only initialises once the

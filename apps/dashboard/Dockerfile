@@ -138,6 +138,17 @@ RUN pnpm --filter @sparx/site-ui build
 # source layers above it.
 ARG APP_VERSION=dev
 ENV NEXT_PUBLIC_APP_VERSION=$APP_VERSION
+
+# PostHog analytics — like APP_VERSION, NEXT_PUBLIC_* is inlined here at build
+# time; runtime env can't reach an already-bundled client JS. Passed as a
+# build-arg from build-images.yml. Absent ⇒ the provider no-ops (`if (!key)
+# return`), so a build without the arg simply ships PostHog disabled. HOST
+# carries the canonical default so a plain `docker build` needs no arg.
+ARG NEXT_PUBLIC_POSTHOG_KEY
+ENV NEXT_PUBLIC_POSTHOG_KEY=$NEXT_PUBLIC_POSTHOG_KEY
+ARG NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+ENV NEXT_PUBLIC_POSTHOG_HOST=$NEXT_PUBLIC_POSTHOG_HOST
+
 RUN pnpm --filter @sparx/dashboard build
 
 # ----- Production runner -----

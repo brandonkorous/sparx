@@ -38,6 +38,16 @@ COPY packages/chat-widget packages/chat-widget
 COPY packages/site-themes packages/site-themes
 COPY apps/web apps/web
 
+# PostHog analytics — NEXT_PUBLIC_* is inlined at build time, so the key must be
+# present during `next build`; runtime env can't reach an already-bundled client
+# JS. Passed as a build-arg from build-images.yml. Absent ⇒ the provider no-ops
+# (`if (!key) return`), so a build without the arg simply ships PostHog disabled.
+# HOST carries the canonical default so a plain `docker build` needs no arg.
+ARG NEXT_PUBLIC_POSTHOG_KEY
+ENV NEXT_PUBLIC_POSTHOG_KEY=$NEXT_PUBLIC_POSTHOG_KEY
+ARG NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+ENV NEXT_PUBLIC_POSTHOG_HOST=$NEXT_PUBLIC_POSTHOG_HOST
+
 # next.config.ts must have `output: 'standalone'` and outputFileTracingRoot
 # pointing at the monorepo root for this to work.
 RUN pnpm --filter @sparx/web build
