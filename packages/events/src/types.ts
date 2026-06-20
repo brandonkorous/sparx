@@ -141,6 +141,17 @@ export type EventType =
   | 'b2b.appointment.cancelled'
   | 'b2b.appointment.reminder'
   | 'b2b.appointment.completed'
+  // ─── Scheduling (docs/79) — the standalone booking module ──────────────
+  // Booking lifecycle; the scheduling-worker consumes these to send
+  // confirmations/reminders and the calendar-sync push.
+  | 'booking.created'
+  | 'booking.confirmed'
+  | 'booking.rescheduled'
+  | 'booking.cancelled'
+  | 'booking.completed'
+  | 'booking.no_show'
+  | 'booking.reminder'
+  | 'booking.waitlist_offered'
   // ─── Dropship (docs/14, docs/64 Ph1-Ph3) ───────────────────────────────
   | 'dropship.supplier.connected'
   | 'dropship.supplier.sync_started'

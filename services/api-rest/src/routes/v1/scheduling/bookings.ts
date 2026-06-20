@@ -42,6 +42,7 @@ import {
   type BookingWithRelations,
 } from '@sparx/scheduling';
 import { requireSchedulingModule, toSchedulingContext } from '../../../lib/scheduling-context.js';
+import { publishBookingEvent } from '../../../lib/scheduling-events.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({
@@ -93,6 +94,11 @@ const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId, userId } = toSchedulingContext(request);
     const input = CreateBookingInput.parse(request.body);
     const created = await createBooking(tenantId, input, userId);
+    await publishBookingEvent('booking.created', tenantId, userId, {
+      bookingId: created.booking.id,
+      serviceId: input.serviceId,
+      source: input.source,
+    });
     return reply.code(201).send(ok(bookingView(await getBooking(tenantId, created.booking.id))));
   });
 
@@ -119,26 +125,35 @@ const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     await confirmBooking(tenantId, id, userId);
+    await publishBookingEvent('booking.confirmed', tenantId, userId, { bookingId: id });
     return ok(bookingView(await getBooking(tenantId, id)));
   });
 
   app.post('/v1/scheduling/bookings/:id/cancel', async (request) => {
     await requireSchedulingModule(request);
     requireRole(request, 'editor');
-    const { tenantId } = toSchedulingContext(request);
+    const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     const input = CancelBookingInput.parse({ ...(request.body as object), id });
     await cancelBooking(tenantId, input);
+    await publishBookingEvent('booking.cancelled', tenantId, userId, {
+      bookingId: id,
+      reason: input.reason ?? null,
+    });
     return ok(bookingView(await getBooking(tenantId, id)));
   });
 
   app.post('/v1/scheduling/bookings/:id/reschedule', async (request) => {
     await requireSchedulingModule(request);
     requireRole(request, 'editor');
-    const { tenantId } = toSchedulingContext(request);
+    const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     const input = RescheduleBookingInput.parse({ ...(request.body as object), id });
     await rescheduleBooking(tenantId, input);
+    await publishBookingEvent('booking.rescheduled', tenantId, userId, {
+      bookingId: id,
+      startAt: input.startAt,
+    });
     return ok(bookingView(await getBooking(tenantId, id)));
   });
 
@@ -155,19 +170,21 @@ const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/scheduling/bookings/:id/complete', async (request) => {
     await requireSchedulingModule(request);
     requireRole(request, 'editor');
-    const { tenantId } = toSchedulingContext(request);
+    const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     await completeBooking(tenantId, id);
+    await publishBookingEvent('booking.completed', tenantId, userId, { bookingId: id });
     return ok(bookingView(await getBooking(tenantId, id)));
   });
 
   app.post('/v1/scheduling/bookings/:id/no-show', async (request) => {
     await requireSchedulingModule(request);
     requireRole(request, 'editor');
-    const { tenantId } = toSchedulingContext(request);
+    const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     const input = NoShowBookingInput.parse({ ...(request.body as object), id });
     await noShowBooking(tenantId, input);
+    await publishBookingEvent('booking.no_show', tenantId, userId, { bookingId: id });
     return ok(bookingView(await getBooking(tenantId, id)));
   });
 };
