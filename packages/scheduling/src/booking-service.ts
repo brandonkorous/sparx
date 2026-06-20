@@ -13,6 +13,7 @@ import type {
   CreateBookingInput,
   NoShowBookingInput,
   RescheduleBookingInput,
+  UpdateBookingInput,
 } from '@sparx/scheduling-schemas';
 
 import {
@@ -303,6 +304,25 @@ export async function cancelBooking(tenantId: string, input: CancelBookingInput)
         status: 'cancelled',
         cancelledAt: new Date(),
         cancellationReason: input.reason ?? null,
+      },
+    });
+  });
+}
+
+/** Staff-side edits that don't move the booking in time (notes, parts, asset,
+ *  location). Time changes go through rescheduleBooking so the EXCLUDE re-checks. */
+export async function updateBooking(tenantId: string, input: UpdateBookingInput): Promise<Booking> {
+  const { id, assetRef, partsLinked, ...rest } = input;
+  return withTenant({ tenantId }, async (tx) => {
+    await loadBooking(tx, id);
+    return tx.booking.update({
+      where: { id },
+      data: {
+        ...rest,
+        ...(assetRef !== undefined
+          ? { assetRef: (assetRef ?? undefined) as Prisma.InputJsonValue | undefined }
+          : {}),
+        ...(partsLinked !== undefined ? { partsLinked } : {}),
       },
     });
   });

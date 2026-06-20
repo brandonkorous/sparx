@@ -29,6 +29,7 @@ export const MODULE_MONTHLY_CENTS: Partial<Record<ModuleSlug, number>> = {
   inventory: 2900,
   invoicing: 1900,
   chat: 1900,
+  scheduling: 2900,
 };
 
 /** The 14-day, all-modules, no-card trial (docs/17 §6). */

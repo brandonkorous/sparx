@@ -19,6 +19,7 @@ import { b2bManifest } from '../b2b/manifest';
 import { dropshipManifest } from '../dropship/manifest';
 import { inventoryManifest } from '../inventory/manifest';
 import { chatManifest } from '../chat/manifest';
+import { schedulingManifest } from '../scheduling/manifest';
 import { aiManifest } from '../ai/manifest';
 
 // Ordered. This is the sidebar display order under the "Modules" section.
@@ -33,6 +34,7 @@ export const moduleManifests: readonly ModuleManifest[] = [
   dropshipManifest,
   inventoryManifest,
   chatManifest,
+  schedulingManifest,
   aiManifest,
 ] as const;
 

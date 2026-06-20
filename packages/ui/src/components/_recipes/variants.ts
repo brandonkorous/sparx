@@ -37,6 +37,7 @@ export const MODULE_COLOR_KEYS = [
   'dropship',
   'inventory',
   'chat',
+  'scheduling',
   'automations',
   'seo',
 ] as const;

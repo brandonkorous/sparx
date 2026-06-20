@@ -36,6 +36,7 @@ const MODULE_NAMES: Partial<Record<ModuleSlug, string>> = {
   dropship: 'Dropship',
   invoicing: 'Invoicing',
   chat: 'Live Chat',
+  scheduling: 'Scheduling',
 };
 
 const WEBHOOK_EVENTS: Stripe.WebhookEndpointCreateParams.EnabledEvent[] = [

@@ -10,6 +10,7 @@
 
 import {
   Building2,
+  CalendarClock,
   FileText,
   LayoutTemplate,
   MessagesSquare,
@@ -259,6 +260,40 @@ export const moduleCatalog: Record<ModuleSlug, ModuleCatalogEntry> = {
       {
         title: 'Notifications',
         description: 'Desktop push and email fallback when no one is watching the inbox.',
+      },
+    ],
+  },
+  scheduling: {
+    Icon: CalendarClock,
+    title: 'Scheduling',
+    tagline: 'Appointments, classes, reservations, and rentals.',
+    description:
+      'The Scheduling module adds online booking for anything time-based — appointments, group classes, table reservations, and equipment rentals — with availability that prevents double-booking at the database level, deposits, reminders, and two-way calendar sync.',
+    features: [
+      {
+        title: 'Bookable services',
+        description:
+          'Appointments, classes, reservations, rentals — one engine, per-service rules.',
+      },
+      {
+        title: 'Resources & staff',
+        description: 'Staff, rooms, tables, and equipment with per-resource hours and skills.',
+      },
+      {
+        title: 'Real availability',
+        description: 'Buffers, lead time, and a no-overlap guarantee enforced in Postgres.',
+      },
+      {
+        title: 'Deposits & no-shows',
+        description: 'Card holds, deposits, and cancellation/no-show fees via your own policies.',
+      },
+      {
+        title: 'Reminders',
+        description: 'Automated email and SMS confirmations and reminders cut no-shows.',
+      },
+      {
+        title: 'Calendar sync',
+        description: 'Two-way Google, Microsoft, and Apple calendar sync per resource.',
       },
     ],
   },

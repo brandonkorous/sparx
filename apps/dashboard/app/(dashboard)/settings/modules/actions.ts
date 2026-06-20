@@ -35,6 +35,7 @@ const VALID_SLUGS: ReadonlySet<ModuleSlug> = new Set([
   'inventory',
   'chat',
   'ai',
+  'scheduling',
 ]);
 
 export async function setModuleEnabledAction(

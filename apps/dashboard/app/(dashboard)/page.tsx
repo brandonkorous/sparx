@@ -25,6 +25,7 @@ import {
 } from '@sparx/ui';
 import {
   Building2,
+  CalendarClock,
   Layers,
   LayoutTemplate,
   Mail,
@@ -114,6 +115,14 @@ const MODULE_REGISTRY: ModuleEntry[] = [
     label: 'B2B',
     description: 'Wholesale, fleet, net terms',
     icon: <Building2 className="h-4 w-4" />,
+  },
+  {
+    slug: 'scheduling',
+    id: 'scheduling',
+    href: '/scheduling',
+    label: 'Scheduling',
+    description: 'Appointments, classes, reservations',
+    icon: <CalendarClock className="h-4 w-4" />,
   },
   {
     slug: 'dropship',

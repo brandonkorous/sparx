@@ -24,6 +24,7 @@ const MODULE_SLUGS: ModuleSlug[] = [
   'inventory',
   'chat',
   'ai',
+  'scheduling',
 ];
 
 function readModuleFlags(settings: unknown): Record<string, boolean> {
@@ -50,6 +51,17 @@ async function loadMetric(tenantId: string, slug: ModuleSlug): Promise<string | 
     case 'crm': {
       const n = await prisma.customer.count({ where: { tenantId, deletedAt: null } });
       return `${n} ${n === 1 ? 'customer' : 'customers'}`;
+    }
+    case 'scheduling': {
+      const n = await prisma.booking.count({
+        where: {
+          tenantId,
+          deletedAt: null,
+          startAt: { gte: new Date() },
+          status: { notIn: ['cancelled', 'no_show'] },
+        },
+      });
+      return `${n} upcoming`;
     }
     default:
       return null;

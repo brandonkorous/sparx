@@ -2106,6 +2106,12 @@ importers:
       '@sparx/registrar':
         specifier: workspace:*
         version: link:../../packages/registrar
+      '@sparx/scheduling':
+        specifier: workspace:*
+        version: link:../../packages/scheduling
+      '@sparx/scheduling-schemas':
+        specifier: workspace:*
+        version: link:../../packages/scheduling-schemas
       '@sparx/search':
         specifier: workspace:*
         version: link:../../packages/search

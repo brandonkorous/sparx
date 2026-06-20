@@ -21,6 +21,7 @@ const MODULE_SEGMENTS = new Set<string>([
   'dropship',
   'inventory',
   'chat',
+  'scheduling',
   'automations',
   'seo',
 ]);

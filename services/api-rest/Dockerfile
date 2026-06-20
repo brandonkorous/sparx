@@ -46,6 +46,8 @@ COPY packages/search ./packages/search
 COPY packages/seo-audit ./packages/seo-audit
 COPY packages/commerce ./packages/commerce
 COPY packages/inventory ./packages/inventory
+COPY packages/scheduling-schemas ./packages/scheduling-schemas
+COPY packages/scheduling ./packages/scheduling
 COPY packages/provider-shippo ./packages/provider-shippo
 COPY packages/customer-auth ./packages/customer-auth
 COPY packages/site-themes ./packages/site-themes

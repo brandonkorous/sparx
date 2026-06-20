@@ -115,6 +115,7 @@ const MODULE_SLUGS = [
   'dropship',
   'inventory',
   'ai',
+  'scheduling',
 ] as const;
 
 // All fields optional → PATCH semantics. `slug` is intentionally immutable here

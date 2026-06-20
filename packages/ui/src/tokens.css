@@ -29,6 +29,7 @@
   --module-dropship: #10b981;
   --module-inventory: #f59e0b;
   --module-chat: #8b5cf6;
+  --module-scheduling: #f43f5e;
   --module-automations: #d946ef;
   --module-seo: #eab308;
 
@@ -376,6 +377,13 @@
   --c-ink: color-mix(in oklch, var(--module-chat) 58%, var(--color-text-primary));
   --c-hover: color-mix(in oklch, var(--module-chat) 86%, var(--color-text-primary));
   --c-tint: color-mix(in oklch, var(--module-chat) 14%, transparent);
+}
+.sx-c-scheduling {
+  --c-bg: var(--module-scheduling);
+  --c-fg: #ffffff;
+  --c-ink: color-mix(in oklch, var(--module-scheduling) 58%, var(--color-text-primary));
+  --c-hover: color-mix(in oklch, var(--module-scheduling) 86%, var(--color-text-primary));
+  --c-tint: color-mix(in oklch, var(--module-scheduling) 14%, transparent);
 }
 .sx-c-automations {
   --c-bg: var(--module-automations);

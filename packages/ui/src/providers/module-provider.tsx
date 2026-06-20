@@ -20,6 +20,7 @@ export type SparxModule =
   | 'dropship'
   | 'inventory'
   | 'chat'
+  | 'scheduling'
   // Automations + SEO are platform surfaces (always-on, not separately billed),
   // but they own a brand color so their overview pages read in-module. They are
   // intentionally NOT in moduleManifests — they get no gated sidebar slot.
@@ -57,6 +58,9 @@ const MODULE_COLORS: Record<SparxModule, ModuleColors> = {
   // is dark. Status colors inside Inventory use danger/red to stay legible.
   inventory: { color: '#F59E0B', tint: '#FFFBEB', text: '#B45309', content: AMBER_INK },
   chat: { color: '#8B5CF6', tint: '#F5F3FF', text: '#6D28D9', content: WHITE },
+  // Scheduling rose — distinct from AI's magenta-pink and Commerce's orange,
+  // claiming the open red/rose slot on the module hue wheel.
+  scheduling: { color: '#F43F5E', tint: '#FFF1F2', text: '#BE123C', content: WHITE },
   automations: { color: '#D946EF', tint: '#FDF4FF', text: '#A21CAF', content: WHITE },
   // SEO yellow is bright; on-fill ink is dark for legibility.
   seo: { color: '#EAB308', tint: '#FEFCE8', text: '#854D0E', content: AMBER_INK },

@@ -29,6 +29,7 @@ export {
 export {
   type CreatedBooking,
   createBooking,
+  updateBooking,
   confirmBooking,
   cancelBooking,
   rescheduleBooking,
@@ -36,6 +37,14 @@ export {
   completeBooking,
   noShowBooking,
 } from './booking-service';
+export {
+  type BookingWithRelations,
+  type ListBookingsOptions,
+  type CalendarEvent,
+  getBooking,
+  listBookings,
+  getCalendar,
+} from './booking-queries';
 export {
   createResource,
   updateResource,

@@ -47,6 +47,15 @@ import {
   LockedAutomationError,
   NoDraftError,
 } from '@sparx/automation';
+import {
+  BookingNotFoundError,
+  InvalidBookingStateError,
+  NoEligibleResourceError,
+  ResourceNotFoundError as SchedulingResourceNotFoundError,
+  SchedulingError,
+  ServiceNotFoundError as SchedulingServiceNotFoundError,
+  SlotUnavailableError,
+} from '@sparx/scheduling';
 import { createAuthPlugin } from '@sparx/api-core/auth';
 import { createErrorsPlugin, type ErrorEnvelope } from '@sparx/api-core/errors-plugin';
 import { env } from './env.js';
@@ -113,6 +122,7 @@ import builderRoutes from './routes/v1/builder/index.js';
 import commerceRoutes from './routes/v1/commerce/index.js';
 import dropshipRoutes from './routes/v1/dropship/index.js';
 import inventoryRoutes from './routes/v1/inventory/index.js';
+import schedulingRoutes from './routes/v1/scheduling/index.js';
 import tenantRoutes from './routes/v1/tenant.js';
 import billingRoutes from './routes/v1/billing.js';
 import brandRoutes from './routes/v1/brand.js';
@@ -582,6 +592,58 @@ function automationErrorMapper(
   return undefined;
 }
 
+// Scheduling engine errors (@sparx/scheduling) — same envelope vocabulary as the
+// other modules. SLOT_UNAVAILABLE (a lost race against the DB no-overlap EXCLUDE)
+// gets a distinct 409 code so the booking surface can re-fetch availability and
+// ask the customer to pick again; invalid-state transitions are also a 409.
+function schedulingErrorMapper(
+  err: unknown,
+  request: { id: string },
+  reply: FastifyReply
+): FastifyReply | undefined {
+  const requestId = request.id;
+  if (
+    err instanceof BookingNotFoundError ||
+    err instanceof SchedulingResourceNotFoundError ||
+    err instanceof SchedulingServiceNotFoundError
+  ) {
+    const body: ErrorEnvelope = {
+      success: false,
+      error: { code: 'NOT_FOUND', message: err.message, request_id: requestId },
+    };
+    return reply.code(404).send(body);
+  }
+  if (err instanceof SlotUnavailableError) {
+    const body: ErrorEnvelope = {
+      success: false,
+      error: { code: 'SLOT_UNAVAILABLE', message: err.message, request_id: requestId },
+    };
+    return reply.code(409).send(body);
+  }
+  if (err instanceof InvalidBookingStateError) {
+    const body: ErrorEnvelope = {
+      success: false,
+      error: { code: 'INVALID_BOOKING_STATE', message: err.message, request_id: requestId },
+    };
+    return reply.code(409).send(body);
+  }
+  if (err instanceof NoEligibleResourceError) {
+    const body: ErrorEnvelope = {
+      success: false,
+      error: { code: 'NO_ELIGIBLE_RESOURCE', message: err.message, request_id: requestId },
+    };
+    return reply.code(422).send(body);
+  }
+  if (err instanceof SchedulingError) {
+    const body: ErrorEnvelope = {
+      success: false,
+      error: { code: err.code, message: err.message, request_id: requestId },
+    };
+    return reply.code(422).send(body);
+  }
+  return undefined;
+}
+
 export async function createApp(): Promise<FastifyInstance> {
   // Populate the integration-framework registry + wire the SecretReader
   // before any route can call providerService.runPayment*.
@@ -629,6 +691,7 @@ export async function createApp(): Promise<FastifyInstance> {
         builderErrorMapper,
         emailErrorMapper,
         automationErrorMapper,
+        schedulingErrorMapper,
       ],
     })
   );
@@ -725,6 +788,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(commerceRoutes);
   await app.register(dropshipRoutes);
   await app.register(inventoryRoutes);
+  await app.register(schedulingRoutes);
   await app.register(tenantRoutes);
   await app.register(billingRoutes);
   await app.register(brandRoutes);

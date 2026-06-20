@@ -90,6 +90,7 @@ const MODULE_SLUGS: ModuleSlug[] = [
   'inventory',
   'chat',
   'ai',
+  'scheduling',
 ];
 const MODULE_SLUG_SET = new Set<string>(MODULE_SLUGS);
 

@@ -151,6 +151,22 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     replaces: 'Zapier Team + custom integration work',
   },
   {
+    key: 'scheduling',
+    name: 'Scheduling',
+    desc: 'Appointments, classes, reservations',
+    price: 29,
+    elsewhere: 49,
+    colorVar: 'var(--module-scheduling)',
+    long: 'Online booking for anything time-based — appointments, group classes, table reservations, equipment rentals — on one engine. Availability that prevents double-booking at the database level, deposits and no-show fees, automated reminders, and two-way calendar sync.',
+    feats: [
+      'Appointments, classes, reservations & rentals',
+      'No-overlap booking with buffers & lead time',
+      'Deposits, no-show fees & cancellation policies',
+      'Email + SMS reminders, two-way calendar sync',
+    ],
+    replaces: 'a booking tool like Calendly or Acuity',
+  },
+  {
     key: 'dropship',
     name: 'Dropship',
     desc: 'Suppliers, sync, fulfillment',
