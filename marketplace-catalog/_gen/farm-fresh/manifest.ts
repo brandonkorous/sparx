@@ -26,7 +26,7 @@ import { welcomeEmail, newsletterEmail } from './email';
 
 export const manifest = {
     key: 'farm-fresh',
-    version: '1.0.22',
+    version: '1.0.23',
     name: 'Farm Fresh',
     summary:
         'A warm, organic storefront for a fresh-food brand — açaí bowls, smoothies and salads with a full menu, a brand story, locations, catering, and a welcome email. A ready-to-edit retail starter.',

@@ -69,7 +69,7 @@ export default {
       type: 'Section',
       props: {},
       class:
-        'w-full mx-auto w-full max-w-site grid grid-cols-1 @3xl:grid-cols-2 items-start p-8 @3xl:p-16',
+        'w-full mx-auto w-full max-w-site grid grid-cols-1 @3xl:grid-cols-2 gap-8 items-start p-8 @3xl:p-16',
       name: 'Product detail',
       children: [
         {
