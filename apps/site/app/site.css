@@ -3188,4 +3188,96 @@
     border-radius: var(--st-radius-box, 16px);
     overflow: hidden;
   }
+
+  /* ── Scheduling: customer booking page + widget (docs/79 §13) ─────── */
+  .st-booking__header {
+    display: grid;
+    gap: 0.4rem;
+    margin-bottom: 1.75rem;
+  }
+  .st-booking__service-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+  }
+  .st-booking__service-card {
+    display: grid;
+    gap: 0.4rem;
+    padding: 1.25rem;
+    text-decoration: none;
+    color: inherit;
+    transition:
+      border-color var(--st-ease),
+      box-shadow var(--st-ease);
+  }
+  .st-booking__service-card:hover {
+    border-color: var(--st-primary);
+    box-shadow: var(--st-shadow-sm);
+  }
+  .st-booking__service-meta {
+    display: flex;
+    gap: 1rem;
+    color: var(--st-text-muted);
+    font-size: 0.9rem;
+  }
+  .st-booking__detail {
+    display: grid;
+    gap: 1.5rem;
+    max-width: 40rem;
+  }
+  .st-booking__back {
+    font-size: 0.9rem;
+  }
+  .st-booking {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .st-booking__row {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr 1fr;
+  }
+  @media (max-width: 540px) {
+    .st-booking__row {
+      grid-template-columns: 1fr;
+    }
+  }
+  .st-booking__slots {
+    display: grid;
+    gap: 0.6rem;
+  }
+  .st-booking__slot-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .st-booking__slot {
+    padding: 0.5rem 0.9rem;
+    border: var(--st-border-width, 1px) solid var(--st-border);
+    border-radius: var(--st-radius-sm);
+    background: var(--st-surface);
+    color: var(--st-text);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition:
+      border-color var(--st-ease),
+      background var(--st-ease);
+  }
+  .st-booking__slot:hover {
+    border-color: var(--st-primary);
+  }
+  .st-booking__slot.is-selected {
+    background: var(--st-primary);
+    color: var(--st-on-primary);
+    border-color: var(--st-primary);
+  }
+  .st-booking__confirm {
+    display: grid;
+    gap: 0.5rem;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    text-align: center;
+  }
 } /* end @layer st-legacy */
