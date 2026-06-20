@@ -35,6 +35,7 @@ import { moduleDisabled, notFound, unauthorized } from '@sparx/api-core/errors';
 
 import { resolveTenantId } from '../../../lib/public-commerce-context.js';
 import { publishBookingEvent } from '../../../lib/scheduling-events.js';
+import { settleBookingPayment } from '../../../lib/scheduling-payments.js';
 
 const ListQuery = z.object({
   scope: z.enum(['upcoming', 'past', 'all']).default('upcoming'),
@@ -143,11 +144,14 @@ const schedulingAccountRoutes: FastifyPluginAsync = async (app) => {
     const updated = await cancelBooking(ctx.tenantId, {
       id: bookingId,
       reason: body.reason ?? 'Cancelled by customer',
-      // Self-service cancel: notify (the ledger handles it) and don't waive any
-      // policy fee on the customer's behalf (fee capture lands in Phase 4).
+      // Self-service cancel: the policy fee applies (a late cancel captures it from
+      // the hold; an on-time cancel releases/refunds it) — settleBookingPayment
+      // decides, so the customer can't waive it on their own behalf.
       waiveFee: false,
       notifyCustomer: true,
     });
+    // Settle the deposit/hold per policy (timely → release/refund; late → fee).
+    await settleBookingPayment(request.log, ctx.tenantId, bookingId, 'cancel');
     await publishBookingEvent('booking.cancelled', ctx.tenantId, null, {
       bookingId,
       customerId,

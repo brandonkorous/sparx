@@ -72,3 +72,13 @@ export {
   dropPendingBookingNotifications,
 } from './notifications';
 export { type BookingSmsFields, renderBookingSms } from './sms-templates';
+export {
+  type DepositType,
+  type DepositPolicyInput,
+  type DepositPlan,
+  computeFee,
+  computeNoShowFee,
+  computeLateCancelFee,
+  resolveDepositPlan,
+  isLateCancellation,
+} from './deposits';

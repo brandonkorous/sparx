@@ -17,6 +17,7 @@ import { badRequest, moduleDisabled, notFound } from '@sparx/api-core/errors';
 import { createBooking, getAvailability, getService, listServices } from '@sparx/scheduling';
 import { resolveTenantId } from '../../../lib/public-commerce-context.js';
 import { publishBookingEvent } from '../../../lib/scheduling-events.js';
+import { createBookingDeposit } from '../../../lib/scheduling-payments.js';
 
 async function requireScheduling(request: FastifyRequest): Promise<string> {
   const tenantId = await resolveTenantId(request);
@@ -156,6 +157,11 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
       source: 'site',
     });
 
+    // Deposit / card-hold per the service's policy (docs/79 §9). Returns a
+    // clientSecret the widget confirms with the gateway's card element; no policy
+    // (or none) → `required:false` and the booking stands as-is.
+    const deposit = await createBookingDeposit(request.log, tenantId, created.booking.id);
+
     await publishBookingEvent('booking.created', tenantId, null, {
       bookingId: created.booking.id,
       serviceId: service.id,
@@ -171,6 +177,13 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
         startAt: created.booking.startAt.toISOString(),
         endAt: created.booking.endAt.toISOString(),
         requiresApproval: created.booking.status === 'requested',
+        deposit: deposit.required
+          ? {
+              clientSecret: deposit.clientSecret,
+              amountCents: deposit.amountCents,
+              type: deposit.type,
+            }
+          : null,
       })
     );
   });

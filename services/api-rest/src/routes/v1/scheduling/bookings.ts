@@ -43,6 +43,7 @@ import {
 } from '@sparx/scheduling';
 import { requireSchedulingModule, toSchedulingContext } from '../../../lib/scheduling-context.js';
 import { publishBookingEvent } from '../../../lib/scheduling-events.js';
+import { settleBookingPayment } from '../../../lib/scheduling-payments.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({
@@ -136,6 +137,8 @@ const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
     const { id } = PathId.parse(request.params);
     const input = CancelBookingInput.parse({ ...(request.body as object), id });
     await cancelBooking(tenantId, input);
+    // Settle the deposit/hold per policy (release, refund, or capture a late fee).
+    await settleBookingPayment(request.log, tenantId, id, 'cancel');
     await publishBookingEvent('booking.cancelled', tenantId, userId, {
       bookingId: id,
       reason: input.reason ?? null,
@@ -173,6 +176,8 @@ const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     await completeBooking(tenantId, id);
+    // Service happened: release a card hold (the deposit/prepay charge is kept).
+    await settleBookingPayment(request.log, tenantId, id, 'complete');
     await publishBookingEvent('booking.completed', tenantId, userId, { bookingId: id });
     return ok(bookingView(await getBooking(tenantId, id)));
   });
@@ -184,6 +189,8 @@ const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
     const { id } = PathId.parse(request.params);
     const input = NoShowBookingInput.parse({ ...(request.body as object), id });
     await noShowBooking(tenantId, input);
+    // No-show: capture the policy's no-show fee from the hold (or forfeit a deposit).
+    await settleBookingPayment(request.log, tenantId, id, 'no_show');
     await publishBookingEvent('booking.no_show', tenantId, userId, { bookingId: id });
     return ok(bookingView(await getBooking(tenantId, id)));
   });

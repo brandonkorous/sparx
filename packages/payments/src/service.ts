@@ -12,6 +12,7 @@ import type {
   CreatePaymentLinkParams,
   PaymentGateway,
   PaymentIntent,
+  PaymentResult,
   RefundParams,
   RefundResult,
 } from './gateway';
@@ -57,6 +58,7 @@ export class PaymentService {
           status: intent.status,
           ...(params.orderId ? { orderId: params.orderId } : {}),
           ...(params.invoiceId ? { billingDocId: params.invoiceId } : {}),
+          ...(params.bookingId ? { bookingId: params.bookingId } : {}),
           ...(params.customerId ? { customerId: params.customerId } : {}),
           metadata: params.metadata ?? {},
         },
@@ -64,6 +66,44 @@ export class PaymentService {
     );
 
     return intent;
+  }
+
+  /** Capture a previously-authorized (manual-capture) intent — fully, or a partial
+   *  `amountCents`, releasing any uncaptured remainder. Used to take a no-show /
+   *  late-cancel fee from a booking's card hold (docs/79 §9). Mirrors the ledger
+   *  status on success; the gateway webhook is the backstop. */
+  async capturePayment(
+    tenantId: string,
+    intentId: string,
+    amountCents?: number
+  ): Promise<PaymentResult> {
+    const gateway = await this.getGatewayForTenant(tenantId);
+    const result = await gateway.capturePayment(intentId, amountCents);
+    if (result.success) {
+      await withTenant({ tenantId }, (tx) =>
+        tx.paymentIntent.updateMany({
+          where: { externalId: intentId },
+          data: { status: 'succeeded' },
+        })
+      );
+    }
+    return result;
+  }
+
+  /** Void an authorized-but-uncaptured intent (release a card hold). Used when a
+   *  booking is cancelled in time or completed without a fee. */
+  async cancelPayment(tenantId: string, intentId: string): Promise<PaymentResult> {
+    const gateway = await this.getGatewayForTenant(tenantId);
+    const result = await gateway.cancelPayment(intentId);
+    if (result.success) {
+      await withTenant({ tenantId }, (tx) =>
+        tx.paymentIntent.updateMany({
+          where: { externalId: intentId },
+          data: { status: 'canceled' },
+        })
+      );
+    }
+    return result;
   }
 
   /** Refund through the tenant's gateway. */

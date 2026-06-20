@@ -231,6 +231,22 @@ async function handleSucceeded(
 
   if (result.kind === 'already') return;
   if (result.kind === 'none') {
+    // A scheduling deposit/prepay charge confirmed (docs/79 §9): the booking's
+    // intent carries metadata.booking_id. Advance the booking's deposit from `held`
+    // (set at creation) to `captured`. A card hold is captured by us in
+    // settleBookingPayment (which already sets `captured`), so the guard makes this
+    // a no-op there; this branch is the real confirmation for deposit/prepay.
+    const bookingId = intent.metadata?.booking_id;
+    if (bookingId) {
+      const moved = await withTenant({ tenantId }, (tx) =>
+        tx.booking.updateMany({
+          where: { id: bookingId, depositStatus: 'held' },
+          data: { depositStatus: 'captured' },
+        })
+      );
+      if (moved.count > 0) log.info({ bookingId }, 'payment webhook: booking deposit captured');
+      return;
+    }
     // No OrderPayment — an invoice payment-link intent carries metadata.invoiceId and
     // is recorded against its BillingDocument (which fires crm.billing_document.paid on
     // the balance-clearing edge). Anything else is noise. The PaymentEvent dedupe above
@@ -319,7 +335,19 @@ async function handleFailed(
       where: { processorRef: intent.id },
       select: { id: true, orderId: true, status: true },
     });
-    if (!payment || payment.status === 'failed') return null;
+    if (!payment) {
+      // A scheduling deposit charge that failed: clear the optimistic `held` so the
+      // booking shows no live deposit (staff can re-request). docs/79 §9.
+      const bookingId = intent.metadata?.booking_id;
+      if (bookingId) {
+        await tx.booking.updateMany({
+          where: { id: bookingId, depositStatus: 'held' },
+          data: { depositStatus: 'none' },
+        });
+      }
+      return null;
+    }
+    if (payment.status === 'failed') return null;
     await tx.orderPayment.update({
       where: { id: payment.id },
       data: { status: 'failed', ...(failureReason ? { failureReason } : {}) },

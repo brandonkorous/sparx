@@ -72,6 +72,8 @@ export interface CreatePaymentIntentParams {
   currency: string;
   orderId?: string;
   invoiceId?: string;
+  /** A scheduling booking this intent is a deposit / hold / fee for (docs/79 §9). */
+  bookingId?: string;
   customerId?: string;
   metadata?: Record<string, string>;
   captureMethod?: 'automatic' | 'manual';
