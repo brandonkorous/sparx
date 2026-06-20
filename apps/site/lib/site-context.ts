@@ -179,7 +179,11 @@ async function fetchSiteByHost(host: string): Promise<SiteRoute | null> {
 export const resolveSiteRoute = cache(async (): Promise<SiteRoute | null> => {
   const hdrs = await headers();
   // The proxy stashes the dev-fallback slugs here so Server Components can read
-  // them without re-parsing searchParams on every page.
+  // them without re-parsing searchParams on every page. LOCAL-DEV ONLY: the proxy
+  // sets these only on local hosts and strips them on any real host (it also
+  // expires the backing cookies), so in production this branch never fires and
+  // every site resolves purely by Host. Do not re-broaden this — it's the
+  // multi-site "all sites load the same one" footgun (see apps/site/proxy.ts).
   const devTenant = hdrs.get('x-tenant-slug');
   if (devTenant) {
     return { tenantSlug: devTenant, propertySlug: hdrs.get('x-property-slug') };

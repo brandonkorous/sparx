@@ -1,21 +1,33 @@
 // Tenant resolution at the edge (Next.js `proxy` file convention — formerly
 // `middleware`).
 //
-// Production: the tenant is derived from the Host header inside resolveSite()
-// (subdomain of sparx.zone, or a custom domain later). The proxy doesn't need
-// to do anything there.
+// Production: the tenant + site are derived from the Host header inside
+// resolveSite() (a `*.sparx.zone` subdomain, or a connected custom domain). The
+// proxy does NOT influence site selection there — see the dev-override note below.
 //
-// Local dev: there's no per-tenant DNS, so we accept `?tenant=<slug>`, stash it
-// in an `x-tenant-slug` request header (read by resolveSite) AND persist it
-// as a cookie so navigating between pages keeps the active store without
-// re-appending the query param.
+// Local dev: there's no per-tenant DNS, so we accept `?tenant=<slug>` (and
+// `?property=<slug>`), stash them in `x-tenant-slug` / `x-property-slug` request
+// headers (read by resolveSite) AND persist them as cookies so navigating between
+// pages keeps the active site without re-appending the query param.
+//
+// IMPORTANT (multi-site routing footgun, fixed 2026-06-20): the `?tenant=`/
+// `?property=` override and its cookies are a LOCAL-DEV affordance ONLY. In
+// production every site has a real Host (`<slug>.<tenant>.sparx.zone` or a custom
+// domain), and `resolveSiteRoute` honors `x-tenant-slug` BEFORE the Host. So if a
+// production browser ever picked up a `sparx_dev_tenant` cookie (e.g. by visiting a
+// storefront once with `?tenant=`), EVERY `*.sparx.zone` host it opened would be
+// pinned to that one site — which is exactly the "all my sites load the same one"
+// bug. The override is therefore gated strictly to LOCAL hosts; on any real host we
+// never set those headers AND we actively EXPIRE the dev cookies, so an already-
+// affected browser self-heals on its next request (no manual cookie clearing).
 //
 // Site preview: the page components read the `?sparxSitePreview=` draft token
 // straight off their `searchParams`, but the root layout (which renders the
 // header / footer / announcement chrome) can't see searchParams. So we mirror
-// the token into an `x-sparx-site-preview` request header here, letting the
-// layout fetch the DRAFT chrome too — without it, chrome changes (and the
-// announcement bar) only ever appear after publishing.
+// the token into an `x-sparx-site-preview` request header here — in ALL
+// environments — letting the layout fetch the DRAFT chrome too. (This is a signed
+// preview token scoped to the host's own tenant, not a site selector, so it is
+// unaffected by the dev-override gating.)
 
 import { NextResponse, type NextRequest } from 'next/server';
 
@@ -24,31 +36,65 @@ const COOKIE = 'sparx_dev_tenant';
 // tenant's sites to render without per-site DNS. Mirrors the tenant cookie.
 const PROPERTY_COOKIE = 'sparx_dev_property';
 
-export function proxy(req: NextRequest) {
-  const fromQuery = req.nextUrl.searchParams.get('tenant');
-  const fromCookie = req.cookies.get(COOKIE)?.value;
-  const slug = fromQuery ?? fromCookie;
-  const propertyQuery = req.nextUrl.searchParams.get('property');
-  const propertyCookie = req.cookies.get(PROPERTY_COOKIE)?.value;
-  const propertySlug = propertyQuery ?? propertyCookie;
-  const previewToken = req.nextUrl.searchParams.get('sparxSitePreview');
+// The dev override is valid ONLY on local hosts — the one place there's no
+// per-tenant DNS. Every production host (a real `*.sparx.zone` subdomain or a
+// connected custom domain) carries the site in the Host header, so it must resolve
+// by Host alone and never trust the `?tenant=`/`?property=` cookies.
+function isLocalDevHost(hostname: string): boolean {
+  const h = hostname.toLowerCase();
+  return (
+    h === 'localhost' ||
+    h === '127.0.0.1' ||
+    h === '0.0.0.0' ||
+    h === '::1' ||
+    h.endsWith('.localhost')
+  );
+}
 
+export function proxy(req: NextRequest) {
   const requestHeaders = new Headers(req.headers);
-  if (slug) requestHeaders.set('x-tenant-slug', slug);
-  if (propertySlug) requestHeaders.set('x-property-slug', propertySlug);
+
+  // Site preview (every environment): mirror the draft token so the root layout
+  // can fetch DRAFT chrome. Not a site selector — always honored.
+  const previewToken = req.nextUrl.searchParams.get('sparxSitePreview');
   if (previewToken) requestHeaders.set('x-sparx-site-preview', previewToken);
 
+  // ── Local dev: honor the `?tenant=`/`?property=` site override ──────────────
+  if (isLocalDevHost(req.nextUrl.hostname)) {
+    const fromQuery = req.nextUrl.searchParams.get('tenant');
+    const fromCookie = req.cookies.get(COOKIE)?.value;
+    const slug = fromQuery ?? fromCookie;
+    const propertyQuery = req.nextUrl.searchParams.get('property');
+    const propertyCookie = req.cookies.get(PROPERTY_COOKIE)?.value;
+    const propertySlug = propertyQuery ?? propertyCookie;
+
+    if (slug) requestHeaders.set('x-tenant-slug', slug);
+    if (propertySlug) requestHeaders.set('x-property-slug', propertySlug);
+
+    const res = NextResponse.next({ request: { headers: requestHeaders } });
+    if (fromQuery && fromQuery !== fromCookie) {
+      res.cookies.set(COOKIE, fromQuery, { httpOnly: false, sameSite: 'lax', path: '/' });
+    }
+    if (propertyQuery && propertyQuery !== propertyCookie) {
+      res.cookies.set(PROPERTY_COOKIE, propertyQuery, {
+        httpOnly: false,
+        sameSite: 'lax',
+        path: '/',
+      });
+    }
+    return res;
+  }
+
+  // ── Production (any real host): never honor the dev override ────────────────
+  // Strip the headers defensively (a client can't spoof site selection), and
+  // expire any stale dev cookies so a poisoned browser resolves purely by Host
+  // from now on.
+  requestHeaders.delete('x-tenant-slug');
+  requestHeaders.delete('x-property-slug');
   const res = NextResponse.next({ request: { headers: requestHeaders } });
-  if (fromQuery && fromQuery !== fromCookie) {
-    res.cookies.set(COOKIE, fromQuery, { httpOnly: false, sameSite: 'lax', path: '/' });
-  }
-  if (propertyQuery && propertyQuery !== propertyCookie) {
-    res.cookies.set(PROPERTY_COOKIE, propertyQuery, {
-      httpOnly: false,
-      sameSite: 'lax',
-      path: '/',
-    });
-  }
+  if (req.cookies.has(COOKIE)) res.cookies.set(COOKIE, '', { path: '/', maxAge: 0 });
+  if (req.cookies.has(PROPERTY_COOKIE))
+    res.cookies.set(PROPERTY_COOKIE, '', { path: '/', maxAge: 0 });
   return res;
 }
 
