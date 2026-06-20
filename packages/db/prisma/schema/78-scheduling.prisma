@@ -1,0 +1,474 @@
+// Scheduling module (docs/79) — the industry-agnostic appointments / classes /
+// reservations / rentals engine. One booking model with a `bookingType`
+// discriminator; availability is computed per resource, and a booking allocates
+// one or more resources for a time range (see BookingResource).
+//
+// Generalizes the narrow B2B fleet tables (service_types / service_appointments,
+// 64-b2b-scheduling.prisma). Those stay in place for now; Phase 9 migrates B2B
+// onto this engine and retires them (docs/79 §15.7). Until then this is additive.
+//
+// Cross-module references (customerId, b2bAccountId, userId, workOrderId,
+// paymentIntentId) are stored as plain indexed UUIDs WITHOUT a Prisma relation —
+// matching payment_intents.order_id / .customer_id — to keep the module loosely
+// coupled. Intra-module relations ARE defined for integrity + query ergonomics.
+//
+// Double-booking is made impossible at the DB tier by a btree_gist EXCLUDE
+// constraint on booking_resources (docs/79 §7.4) — hand-edited in the migration
+// SQL (Prisma can't express it); the @@index here supports the same lookups.
+// All tables are tenant-scoped + FORCE RLS (hand-edited in the migration).
+
+// ── Resources: anything whose time is consumed by a booking ─────────────────
+model SchedulingResource {
+  id             String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String  @map("tenant_id") @db.Uuid
+  kind           String  @db.VarChar(20) // staff | asset | table | space | equipment
+  userId         String? @map("user_id") @db.Uuid // staff → team member (plain ref)
+  locationId     String? @map("location_id") @db.Uuid
+  name           String  @db.VarChar(255)
+  description    String? @db.Text
+  imageUrl       String? @map("image_url") @db.Text // portfolio / photo
+  color          String? @db.VarChar(7)
+  timezone       String  @default("UTC") @db.VarChar(64)
+  exclusive      Boolean @default(true) // false = pooled / overbookable (§7.4)
+  capacity       Int     @default(1) // pooled units, or seats
+  capacityMin    Int?    @map("capacity_min") // party-size min (tables)
+  capacityMax    Int?    @map("capacity_max") // party-size max (tables)
+  skillTags      String[] @map("skill_tags") // skill-based routing
+  bookableOnline Boolean @default(true) @map("bookable_online")
+  isActive       Boolean @default(true) @map("is_active")
+  settings       Json    @default("{}")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+
+  tenant              Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  location            BusinessLocation?       @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  availabilityWindows AvailabilityWindow[]
+  availabilityExceptions AvailabilityException[]
+  bookingResources    BookingResource[]
+  calendarConnections CalendarConnection[]
+  externalBusyBlocks  ExternalBusyBlock[]
+
+  @@index([tenantId, kind, isActive])
+  @@index([tenantId, locationId])
+  @@map("scheduling_resources")
+}
+
+// ── Services: what can be booked ────────────────────────────────────────────
+model SchedulingService {
+  id                   String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId             String  @map("tenant_id") @db.Uuid
+  bookingType          String  @default("appointment") @map("booking_type") @db.VarChar(20)
+  name                 String  @db.VarChar(255)
+  description          String? @db.Text
+  durationMinutes      Int     @default(60) @map("duration_minutes")
+  bufferBeforeMin      Int     @default(0) @map("buffer_before_min")
+  bufferAfterMin       Int     @default(0) @map("buffer_after_min")
+  priceCents           Int     @default(0) @map("price_cents")
+  currency             String  @default("usd") @db.Char(3)
+  capacity             Int     @default(1) // >1 for classes
+  assignmentStrategy   String  @default("any_available") @map("assignment_strategy") @db.VarChar(20)
+  // resource roles required: [{ kind, skillTags[], count }]
+  resourceRequirements Json    @default("[]") @map("resource_requirements")
+  policyId             String? @map("policy_id") @db.Uuid
+  intakeFormId         String? @map("intake_form_id") @db.Uuid
+  locationId           String? @map("location_id") @db.Uuid
+  minLeadMinutes       Int     @default(0) @map("min_lead_minutes")
+  maxAdvanceDays       Int     @default(365) @map("max_advance_days")
+  slotIntervalMin      Int     @default(15) @map("slot_interval_min")
+  color                String? @db.VarChar(7)
+  imageUrl             String? @map("image_url") @db.Text
+  bookableOnline       Boolean @default(true) @map("bookable_online")
+  requiresApproval     Boolean @default(false) @map("requires_approval")
+  isActive             Boolean @default(true) @map("is_active")
+  // B2B / fleet extension (generalized from service_types.requires_vehicle)
+  requiresAsset        Boolean @default(false) @map("requires_asset")
+  settings             Json    @default("{}")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+
+  tenant        Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  policy        BookingPolicy?    @relation(fields: [policyId], references: [id], onDelete: SetNull)
+  intakeForm    IntakeForm?       @relation(fields: [intakeFormId], references: [id], onDelete: SetNull)
+  location      BusinessLocation? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  bookings      Booking[]
+  bookingSeries BookingSeries[]
+  waitlist      WaitlistEntry[]
+
+  @@index([tenantId, bookingType, isActive])
+  @@index([tenantId, policyId])
+  @@index([tenantId, intakeFormId])
+  @@map("scheduling_services")
+}
+
+// ── Bookings: the central record (appointment | class | reservation | rental) ─
+model Booking {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String  @map("tenant_id") @db.Uuid
+  serviceId   String  @map("service_id") @db.Uuid
+  bookingType String  @map("booking_type") @db.VarChar(20) // denormalized
+  seriesId    String? @map("series_id") @db.Uuid
+  locationId  String? @map("location_id") @db.Uuid
+  // requested | confirmed | in_progress | completed | cancelled | no_show | waitlisted
+  status      String  @default("requested") @db.VarChar(20)
+
+  startAt  DateTime @map("start_at") @db.Timestamptz
+  endAt    DateTime @map("end_at") @db.Timestamptz
+  timezone String   @default("UTC") @db.VarChar(64)
+  capacity Int      @default(1) // class session capacity
+  partySize Int?    @map("party_size") // reservations
+
+  // who — appointment: customerId/b2bAccountId on the row; class: see BookingAttendee
+  customerId   String? @map("customer_id") @db.Uuid
+  b2bAccountId String? @map("b2b_account_id") @db.Uuid
+  assetRef     Json?   @map("asset_ref") // vehicle snapshot { year, make, model, vin, ... }
+  partsLinked  Json    @default("[]") @map("parts_linked") // [{ productId?, sku?, qty }]
+  workOrderId  String? @map("work_order_id") @db.Uuid
+
+  source String @default("dashboard") @db.VarChar(20) // site|portal|dashboard|mcp|phone|marketplace|api
+
+  // payment / policy
+  policyId           String? @map("policy_id") @db.Uuid
+  depositStatus      String? @map("deposit_status") @db.VarChar(20) // none|held|captured|refunded|forfeited
+  paymentIntentId    String? @map("payment_intent_id") @db.Uuid
+  intakeSubmissionId String? @map("intake_submission_id") @db.Uuid
+
+  notes         String? @db.Text // customer-visible
+  staffNotes    String? @map("staff_notes") @db.Text
+  reminderState Json    @default("{}") @map("reminder_state")
+
+  confirmedByUserId  String?   @map("confirmed_by_user_id") @db.Uuid
+  confirmedAt        DateTime? @map("confirmed_at") @db.Timestamptz
+  checkedInAt        DateTime? @map("checked_in_at") @db.Timestamptz
+  completedAt        DateTime? @map("completed_at") @db.Timestamptz
+  cancelledAt        DateTime? @map("cancelled_at") @db.Timestamptz
+  cancellationReason String?   @map("cancellation_reason") @db.Text
+  noShowAt           DateTime? @map("no_show_at") @db.Timestamptz
+  createdByUserId    String?   @map("created_by_user_id") @db.Uuid
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+
+  tenant        Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  service       SchedulingService     @relation(fields: [serviceId], references: [id])
+  series        BookingSeries?        @relation(fields: [seriesId], references: [id], onDelete: SetNull)
+  policy        BookingPolicy?        @relation(fields: [policyId], references: [id], onDelete: SetNull)
+  location      BusinessLocation?     @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  resources     BookingResource[]
+  attendees     BookingAttendee[]
+  notifications BookingNotification[]
+
+  @@index([tenantId, status])
+  @@index([tenantId, startAt])
+  @@index([tenantId, customerId])
+  @@index([tenantId, b2bAccountId])
+  @@index([tenantId, serviceId])
+  @@index([tenantId, seriesId])
+  @@map("bookings")
+}
+
+// ── The allocation join that powers availability + the no-overlap constraint ──
+model BookingResource {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  bookingId  String   @map("booking_id") @db.Uuid
+  resourceId String   @map("resource_id") @db.Uuid
+  role       String   @db.VarChar(40) // matches service resourceRequirements role
+  startAt    DateTime @map("start_at") @db.Timestamptz // denormalized (incl. buffers)
+  endAt      DateTime @map("end_at") @db.Timestamptz
+  exclusive  Boolean  @default(true) // denormalized from resource (§7.4)
+  status     String   @default("confirmed") @db.VarChar(20) // mirrors booking for the EXCLUDE WHERE
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  booking  Booking            @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  resource SchedulingResource @relation(fields: [resourceId], references: [id])
+
+  // EXCLUDE USING gist (resource_id WITH =, tstzrange(start_at, end_at, '[)') WITH &&)
+  //   WHERE (exclusive AND status NOT IN ('cancelled','no_show'))  ← migration SQL (§7.4)
+  @@index([tenantId, resourceId, startAt])
+  @@index([bookingId])
+  @@map("booking_resources")
+}
+
+// ── Class roster / reservation party / waitlist seat ────────────────────────
+model BookingAttendee {
+  id                 String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId           String  @map("tenant_id") @db.Uuid
+  bookingId          String  @map("booking_id") @db.Uuid
+  customerId         String? @map("customer_id") @db.Uuid
+  guestName          String? @map("guest_name") @db.VarChar(255) // non-account guest
+  partySize          Int     @default(1) @map("party_size")
+  // booked | checked_in | attended | no_show | cancelled | waitlisted
+  status             String  @default("booked") @db.VarChar(20)
+  waitlistPosition   Int?    @map("waitlist_position")
+  paymentIntentId    String? @map("payment_intent_id") @db.Uuid
+  creditApplied      Int     @default(0) @map("credit_applied")
+  intakeSubmissionId String? @map("intake_submission_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, bookingId, status])
+  @@index([tenantId, customerId])
+  @@map("booking_attendees")
+}
+
+// ── Recurring availability (weekly pattern, in the resource's local zone) ────
+model AvailabilityWindow {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String    @map("tenant_id") @db.Uuid
+  resourceId  String    @map("resource_id") @db.Uuid
+  dayOfWeek   Int       @map("day_of_week") // 0=Sun .. 6=Sat
+  startMinute Int       @map("start_minute") // minutes from local midnight
+  endMinute   Int       @map("end_minute")
+  validFrom   DateTime? @map("valid_from") @db.Date
+  validTo     DateTime? @map("valid_to") @db.Date
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  resource SchedulingResource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, resourceId, dayOfWeek])
+  @@map("scheduling_availability_windows")
+}
+
+// ── One-off overrides: time off, custom hours, blackout, special pricing ─────
+model AvailabilityException {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  resourceId String?  @map("resource_id") @db.Uuid // null = tenant / location-wide
+  locationId String?  @map("location_id") @db.Uuid
+  kind       String   @db.VarChar(20) // closed | custom_hours | blackout | special_price
+  startAt    DateTime @map("start_at") @db.Timestamptz
+  endAt      DateTime @map("end_at") @db.Timestamptz
+  reason     String?  @db.Text
+  meta       Json     @default("{}") // custom hours / price multiplier
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  resource SchedulingResource? @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  location BusinessLocation?   @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, resourceId, startAt])
+  @@index([tenantId, locationId, startAt])
+  @@map("scheduling_availability_exceptions")
+}
+
+// ── Recurring series (RFC 5545 RRULE) — materialized into child bookings ─────
+model BookingSeries {
+  id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId            String    @map("tenant_id") @db.Uuid
+  serviceId           String    @map("service_id") @db.Uuid
+  rrule               String    @db.Text
+  customerId          String?   @map("customer_id") @db.Uuid
+  resourceIds         String[]  @map("resource_ids")
+  materializedThrough DateTime? @map("materialized_through") @db.Timestamptz
+  status              String    @default("active") @db.VarChar(20)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  service  SchedulingService @relation(fields: [serviceId], references: [id])
+  bookings Booking[]
+
+  @@index([tenantId, status])
+  @@index([tenantId, serviceId])
+  @@map("scheduling_booking_series")
+}
+
+model WaitlistEntry {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String    @map("tenant_id") @db.Uuid
+  serviceId      String    @map("service_id") @db.Uuid
+  customerId     String    @map("customer_id") @db.Uuid
+  resourcePref   String?   @map("resource_pref") @db.Uuid // preferred staff (plain ref)
+  desiredFrom    DateTime  @map("desired_from") @db.Timestamptz
+  desiredTo      DateTime  @map("desired_to") @db.Timestamptz
+  status         String    @default("waiting") @db.VarChar(20) // waiting|offered|booked|expired|cancelled
+  offeredAt      DateTime? @map("offered_at") @db.Timestamptz
+  offerExpiresAt DateTime? @map("offer_expires_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant  Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  service SchedulingService @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, serviceId, status])
+  @@index([tenantId, customerId])
+  @@map("scheduling_waitlist_entries")
+}
+
+// ── Deposit / cancellation / no-show policy (Tock-style, per service) ────────
+model BookingPolicy {
+  id                      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId                String  @map("tenant_id") @db.Uuid
+  name                    String  @db.VarChar(255)
+  depositType             String  @default("none") @map("deposit_type") @db.VarChar(20) // none|card_hold|deposit|prepay
+  depositAmountCents      Int?    @map("deposit_amount_cents")
+  depositPercent          Int?    @map("deposit_percent")
+  cancellationWindowHours Int     @default(24) @map("cancellation_window_hours")
+  lateCancelFeeType       String? @map("late_cancel_fee_type") @db.VarChar(20) // fixed|percent
+  lateCancelFeeValue      Int?    @map("late_cancel_fee_value")
+  noShowFeeType           String? @map("no_show_fee_type") @db.VarChar(20)
+  noShowFeeValue          Int?    @map("no_show_fee_value")
+  policyText              String? @map("policy_text") @db.Text // shown + accepted at booking
+  reminderOffsetsMin      Int[]   @map("reminder_offsets_min") // e.g. [1440, 120]
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  services SchedulingService[]
+  bookings Booking[]
+
+  @@index([tenantId])
+  @@map("scheduling_booking_policies")
+}
+
+// ── Intake / consultation forms (declarative, no code) ──────────────────────
+model IntakeForm {
+  id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String  @map("tenant_id") @db.Uuid
+  name     String  @db.VarChar(255)
+  schema   Json    @default("{}") // declarative fields
+  isActive Boolean @default(true) @map("is_active")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant      Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  services    SchedulingService[]
+  submissions IntakeSubmission[]
+
+  @@index([tenantId, isActive])
+  @@map("scheduling_intake_forms")
+}
+
+model IntakeSubmission {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  formId     String  @map("form_id") @db.Uuid
+  bookingId  String? @map("booking_id") @db.Uuid
+  customerId String? @map("customer_id") @db.Uuid
+  answers    Json    @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  form   IntakeForm @relation(fields: [formId], references: [id])
+
+  @@index([tenantId, bookingId])
+  @@index([tenantId, formId])
+  @@map("scheduling_intake_submissions")
+}
+
+// ── Calendar connections — platform OAuth, BYO, or iCal feed (docs/79 §8) ────
+model CalendarConnection {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId         String    @map("tenant_id") @db.Uuid
+  resourceId       String    @map("resource_id") @db.Uuid
+  provider         String    @db.VarChar(20) // google | microsoft | apple_caldav | caldav
+  connectionKind   String    @default("oauth") @map("connection_kind") @db.VarChar(20) // oauth | caldav | ical_feed
+  // tenant_byo = tenant's own OAuth client / app-password; platform = verified WizeWorks app (§8.5)
+  credentialSource String    @default("tenant_byo") @map("credential_source") @db.VarChar(20)
+  direction        String    @default("two_way") @db.VarChar(10) // in | out | two_way
+  fidelity         String    @default("realtime") @db.VarChar(20) // realtime | stale_feed
+  oauthClientRef   String?   @map("oauth_client_ref") @db.VarChar(255) // BYO client → Secret Manager
+  credentialsRef   String?   @map("credentials_ref") @db.VarChar(255) // token / app-password → Secret Manager
+  icalUrlRef       String?   @map("ical_url_ref") @db.VarChar(255) // secret feed URL → Secret Manager
+  externalCalendarId String? @map("external_calendar_id") @db.VarChar(255)
+  syncToken        String?   @map("sync_token") @db.Text
+  channelId        String?   @map("channel_id") @db.VarChar(255) // push channel (oauth only)
+  channelExpiresAt DateTime? @map("channel_expires_at") @db.Timestamptz
+  status           String    @default("active") @db.VarChar(20) // active|expired|error
+  lastSyncedAt     DateTime? @map("last_synced_at") @db.Timestamptz
+  lastError        String?   @map("last_error") @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant             Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  resource           SchedulingResource  @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  externalBusyBlocks ExternalBusyBlock[]
+
+  @@index([tenantId, resourceId])
+  @@map("scheduling_calendar_connections")
+}
+
+model ExternalBusyBlock {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String   @map("tenant_id") @db.Uuid
+  resourceId      String   @map("resource_id") @db.Uuid
+  connectionId    String   @map("connection_id") @db.Uuid
+  externalEventId String   @map("external_event_id") @db.VarChar(255)
+  startAt         DateTime @map("start_at") @db.Timestamptz
+  endAt           DateTime @map("end_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant     Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  resource   SchedulingResource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  connection CalendarConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@unique([connectionId, externalEventId], map: "scheduling_external_busy_idem")
+  @@index([tenantId, resourceId, startAt])
+  @@map("scheduling_external_busy_blocks")
+}
+
+// ── Notification ledger — dedupe + dispute evidence (docs/79 §10) ────────────
+model BookingNotification {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String    @map("tenant_id") @db.Uuid
+  bookingId    String    @map("booking_id") @db.Uuid
+  type         String    @db.VarChar(20) // confirmation|reminder|change|cancellation|followup|waitlist_offer
+  channel      String    @db.VarChar(10) // email|sms|push
+  scheduledFor DateTime  @map("scheduled_for") @db.Timestamptz
+  sentAt       DateTime? @map("sent_at") @db.Timestamptz
+  status       String    @default("pending") @db.VarChar(20)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, status, scheduledFor])
+  @@index([bookingId])
+  @@map("scheduling_booking_notifications")
+}
+
+// ── Physical service locations (shop / clinic / restaurant). Open question in
+//    docs/79 §21: reconcile with a shared platform locations table later. ─────
+model BusinessLocation {
+  id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String  @map("tenant_id") @db.Uuid
+  name     String  @db.VarChar(255)
+  address  Json    @default("{}")
+  timezone String  @default("UTC") @db.VarChar(64)
+  lat      Float?
+  lng      Float?
+  isActive Boolean @default(true) @map("is_active")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant     Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  resources  SchedulingResource[]
+  services   SchedulingService[]
+  bookings   Booking[]
+  exceptions AvailabilityException[]
+
+  @@index([tenantId, isActive])
+  @@map("scheduling_locations")
+}

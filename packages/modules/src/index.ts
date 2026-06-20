@@ -27,7 +27,8 @@ export type ModuleSlug =
   | 'dropship'
   | 'inventory'
   | 'chat'
-  | 'ai';
+  | 'ai'
+  | 'scheduling';
 
 // Canonical ordering is irrelevant here — callers (sidebar, breadcrumb) order
 // by their own manifest list. This is just the closed set we probe.
@@ -43,6 +44,7 @@ const ALL_MODULES: readonly ModuleSlug[] = [
   'inventory',
   'chat',
   'ai',
+  'scheduling',
 ];
 
 // ── Module dependency graph ──────────────────────────────────────────────────

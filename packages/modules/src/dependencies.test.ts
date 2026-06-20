@@ -37,6 +37,9 @@ describe('requiredModules', () => {
     expect(requiredModules('builder')).toEqual([]);
     expect(requiredModules('invoicing')).toEqual([]);
     expect(requiredModules('crm')).toEqual([]);
+    // Scheduling is a true standalone (decided, docs/79 §18): no module deps —
+    // deposits gate on a connected payment gateway, not the Commerce module.
+    expect(requiredModules('scheduling')).toEqual([]);
   });
 });
 
@@ -53,6 +56,8 @@ describe('blockingDependents', () => {
   it('never blocks a module nothing requires', () => {
     expect(blockingDependents('b2b', () => true)).toEqual([]);
     expect(blockingDependents('invoicing', () => true)).toEqual([]);
+    // Nothing requires scheduling, and scheduling requires nothing.
+    expect(blockingDependents('scheduling', () => true)).toEqual([]);
   });
 
   it('blocks disabling Builder while a site-backed module is on', () => {
@@ -137,5 +142,19 @@ describe('deriveModuleStates — enabled + source', () => {
   it('marks an unprovided module off', () => {
     const s = deriveModuleStates(settings('cms'));
     expect(s.invoicing).toEqual({ enabled: false, source: 'off', includedBy: [] });
+  });
+
+  it('scheduling is always explicit when set and never bundled (standalone, docs/79)', () => {
+    expect(deriveModuleStates(settings('scheduling')).scheduling).toEqual({
+      enabled: true,
+      source: 'explicit',
+      includedBy: [],
+    });
+    // No provider bundles it free — a B2B tenant still pays for scheduling.
+    expect(deriveModuleStates(settings('b2b')).scheduling).toEqual({
+      enabled: false,
+      source: 'off',
+      includedBy: [],
+    });
   });
 });

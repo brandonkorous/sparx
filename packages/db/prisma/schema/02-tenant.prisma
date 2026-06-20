@@ -386,6 +386,26 @@ model Tenant {
   siteAnalyticsEvents SiteAnalyticsEvent[]
   rollupSiteDaily     RollupSiteDaily[]
 
+  // Scheduling module (docs/79) — appointments / classes / reservations / rentals.
+  // The B2B fleet tables above (serviceTypes/serviceAppointments) are the narrow
+  // ancestor; Phase 9 migrates them onto this engine and retires them (§15.7).
+  schedulingResources    SchedulingResource[]
+  schedulingServices     SchedulingService[]
+  bookings               Booking[]
+  bookingResources       BookingResource[]
+  bookingAttendees       BookingAttendee[]
+  availabilityWindows    AvailabilityWindow[]
+  availabilityExceptions AvailabilityException[]
+  bookingSeries          BookingSeries[]
+  waitlistEntries        WaitlistEntry[]
+  bookingPolicies        BookingPolicy[]
+  intakeForms            IntakeForm[]
+  intakeSubmissions      IntakeSubmission[]
+  calendarConnections    CalendarConnection[]
+  externalBusyBlocks     ExternalBusyBlock[]
+  bookingNotifications   BookingNotification[]
+  businessLocations      BusinessLocation[]
+
   @@map("tenants")
 }
 

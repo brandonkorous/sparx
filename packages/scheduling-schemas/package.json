@@ -1,0 +1,31 @@
+{
+  "name": "@sparx/scheduling-schemas",
+  "version": "0.0.0",
+  "private": true,
+  "description": "sparx Scheduling — Zod input schemas + shared types for resources, services, availability, bookings, policies, intake, and calendar sync (docs/79-scheduling.md).",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

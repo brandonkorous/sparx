@@ -39,6 +39,8 @@ model PaymentIntent {
   orderId      String? @map("order_id") @db.Uuid
   billingDocId String? @map("billing_doc_id") @db.Uuid
   customerId   String? @map("customer_id") @db.Uuid
+  // Scheduling deposits / holds / no-show fees (docs/79 §9) — plain ref, like orderId.
+  bookingId    String? @map("booking_id") @db.Uuid
   metadata     Json    @default("{}")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
@@ -49,6 +51,7 @@ model PaymentIntent {
   @@unique([gatewayId, externalId], map: "payment_intents_external_unique")
   @@index([tenantId, status])
   @@index([tenantId, orderId])
+  @@index([tenantId, bookingId])
   @@map("payment_intents")
 }
 
