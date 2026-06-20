@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "mosaic",
+  "name": "Mosaic",
+  "version": "1.0.0",
+  "tagline": "The AI workspace that works for you.",
+  "description": "A clean, modern marketing site for an AI-workspace / productivity SaaS — a long bento-driven home page with a browser-chrome product preview, a scrolling logo wall, agent and assistant showcases, social proof and stats, plus Pricing, Enterprise, a Request-a-demo page, two customer stories with a Customers index, and brand-voiced welcome + product-tips emails. Near-monochrome apex theme with a playful bento accent palette. Installs as a draft for the tenant to review, customize, and publish.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "requiredModules": ["builder", "cms", "email"]
+  },
+  "pricing": { "model": "free", "priceCents": 0 },
+  "media": [
+    { "file": "media/icon.png", "kind": "icon", "alt": "Mosaic icon" },
+    { "file": "media/preview.png", "kind": "preview", "alt": "Mosaic home page" }
+  ],
+  "author": { "displayName": "sparx", "website": "https://sparx.works" },
+  "accent": "#2383E2",
+  "sortWeight": 55
+}
