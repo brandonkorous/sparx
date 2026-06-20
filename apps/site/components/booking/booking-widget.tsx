@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import { SparxAlert, SparxButton, SparxInput, SparxLabel } from '@sparx/site-ui';
+import { cx, SparxAlert, SparxButton, SparxInput, SparxLabel } from '@sparx/site-ui';
 
 import type { PublicService } from '../../lib/scheduling';
 import {
@@ -169,7 +169,7 @@ export function BookingWidget({
               <button
                 key={slot.startAt}
                 type="button"
-                className={`st-booking__slot${selected === slot.startAt ? 'is-selected' : ''}`}
+                className={cx('st-booking__slot', selected === slot.startAt && 'is-selected')}
                 aria-pressed={selected === slot.startAt}
                 onClick={() => setSelected(slot.startAt)}
               >
