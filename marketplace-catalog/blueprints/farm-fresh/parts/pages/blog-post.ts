@@ -3,28 +3,28 @@
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh/.
 
 export default {
-  id: 'ffb-445',
+  id: 'ffb-446',
   type: 'Section',
   props: {},
   class: 'w-full flex flex-col',
   name: 'Post',
   children: [
     {
-      id: 'ffb-441',
+      id: 'ffb-442',
       type: 'Section',
       class: 'w-full bg-base-200',
       props: {},
       name: 'Post header',
       children: [
         {
-          id: 'ffb-441__c',
+          id: 'ffb-442__c',
           type: 'Stack',
           class:
             'mx-auto w-full max-w-site flex flex-col gap-2 justify-center items-center p-8 @3xl:p-16 text-center',
           props: {},
           children: [
             {
-              id: 'ffb-439',
+              id: 'ffb-440',
               type: 'Text',
               props: {},
               class: 'text-center text-primary text-sm font-medium',
@@ -33,7 +33,7 @@ export default {
               },
             },
             {
-              id: 'ffb-440',
+              id: 'ffb-441',
               type: 'Heading',
               props: {
                 level: 'h1',
@@ -48,14 +48,14 @@ export default {
       ],
     },
     {
-      id: 'ffb-444',
+      id: 'ffb-445',
       type: 'Section',
       props: {},
       class: 'w-full mx-auto w-full max-w-site flex flex-col gap-6 p-6 @3xl:p-10',
       name: 'Post body',
       children: [
         {
-          id: 'ffb-442',
+          id: 'ffb-443',
           type: 'Image',
           props: {
             ratio: 'wide',
@@ -67,7 +67,7 @@ export default {
           },
         },
         {
-          id: 'ffb-443',
+          id: 'ffb-444',
           type: 'Prose',
           props: {},
           binding: {

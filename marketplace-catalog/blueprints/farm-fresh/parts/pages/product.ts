@@ -3,7 +3,7 @@
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh/.
 
 export default {
-  id: 'ffb-438',
+  id: 'ffb-439',
   type: 'Section',
   props: {},
   class: 'w-full flex flex-col',
@@ -65,7 +65,7 @@ export default {
       ],
     },
     {
-      id: 'ffb-410',
+      id: 'ffb-411',
       type: 'Section',
       props: {},
       class:
@@ -85,41 +85,49 @@ export default {
           },
         },
         {
-          id: 'ffb-409',
+          id: 'ffb-410',
           type: 'Stack',
           props: {},
-          class: 'mx-auto w-full max-w-site flex flex-col gap-4 items-start',
+          class: 'mx-auto w-full max-w-site flex flex-col gap-6 items-start',
           children: [
             {
-              id: 'ffb-394',
-              type: 'Badge',
-              props: {
-                label: 'Made to order',
-              },
-              class: 'st-badge st-c-primary st-v-soft st-badge--sz-md',
-            },
-            {
-              id: 'ffb-395',
-              type: 'Heading',
-              props: {
-                level: 'h1',
-                size: 'display',
-              },
-              binding: {
-                path: 'product.title',
-              },
-            },
-            {
-              id: 'ffb-396',
-              type: 'Prose',
-              props: {},
-              class: 'text-base-content/80',
-              binding: {
-                path: 'product.description',
-              },
-            },
-            {
               id: 'ffb-397',
+              type: 'Stack',
+              props: {},
+              class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start',
+              children: [
+                {
+                  id: 'ffb-394',
+                  type: 'Badge',
+                  props: {
+                    label: 'Made to order',
+                  },
+                  class: 'st-badge st-c-primary st-v-soft st-badge--sz-sm',
+                },
+                {
+                  id: 'ffb-395',
+                  type: 'Heading',
+                  props: {
+                    level: 'h1',
+                  },
+                  class: 'text-4xl leading-tight @3xl:text-5xl',
+                  binding: {
+                    path: 'product.title',
+                  },
+                },
+                {
+                  id: 'ffb-396',
+                  type: 'Prose',
+                  props: {},
+                  class: 'text-lg leading-relaxed text-base-content/70',
+                  binding: {
+                    path: 'product.description',
+                  },
+                },
+              ],
+            },
+            {
+              id: 'ffb-398',
               type: 'BuyBox',
               props: {},
               binding: {
@@ -127,25 +135,25 @@ export default {
               },
             },
             {
-              id: 'ffb-398',
+              id: 'ffb-399',
               type: 'Divider',
               props: {},
               class: 'w-full border-base-300',
             },
             {
-              id: 'ffb-408',
+              id: 'ffb-409',
               type: 'Stack',
               props: {},
               class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start',
               children: [
                 {
-                  id: 'ffb-401',
+                  id: 'ffb-402',
                   type: 'Stack',
                   props: {},
                   class: 'mx-auto w-full max-w-site flex flex-col @3xl:flex-row gap-2 items-start',
                   children: [
                     {
-                      id: 'ffb-399',
+                      id: 'ffb-400',
                       type: 'Text',
                       props: {
                         variant: 'body',
@@ -154,7 +162,7 @@ export default {
                       class: 'text-xl leading-none',
                     },
                     {
-                      id: 'ffb-400',
+                      id: 'ffb-401',
                       type: 'Text',
                       props: {
                         variant: 'body',
@@ -165,13 +173,13 @@ export default {
                   ],
                 },
                 {
-                  id: 'ffb-404',
+                  id: 'ffb-405',
                   type: 'Stack',
                   props: {},
                   class: 'mx-auto w-full max-w-site flex flex-col @3xl:flex-row gap-2 items-start',
                   children: [
                     {
-                      id: 'ffb-402',
+                      id: 'ffb-403',
                       type: 'Text',
                       props: {
                         variant: 'body',
@@ -180,7 +188,7 @@ export default {
                       class: 'text-xl leading-none',
                     },
                     {
-                      id: 'ffb-403',
+                      id: 'ffb-404',
                       type: 'Text',
                       props: {
                         variant: 'body',
@@ -191,13 +199,13 @@ export default {
                   ],
                 },
                 {
-                  id: 'ffb-407',
+                  id: 'ffb-408',
                   type: 'Stack',
                   props: {},
                   class: 'mx-auto w-full max-w-site flex flex-col @3xl:flex-row gap-2 items-start',
                   children: [
                     {
-                      id: 'ffb-405',
+                      id: 'ffb-406',
                       type: 'Text',
                       props: {
                         variant: 'body',
@@ -206,7 +214,7 @@ export default {
                       class: 'text-xl leading-none',
                     },
                     {
-                      id: 'ffb-406',
+                      id: 'ffb-407',
                       type: 'Text',
                       props: {
                         variant: 'body',
@@ -223,27 +231,27 @@ export default {
       ],
     },
     {
-      id: 'ffb-423',
+      id: 'ffb-424',
       type: 'Section',
       class: 'w-full bg-base-200',
       props: {},
       name: 'Why bowls',
       children: [
         {
-          id: 'ffb-423__c',
+          id: 'ffb-424__c',
           type: 'Stack',
           class:
             'mx-auto w-full max-w-site grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-3 gap-6 p-8 @3xl:p-16',
           props: {},
           children: [
             {
-              id: 'ffb-414',
+              id: 'ffb-415',
               type: 'Stack',
               props: {},
               class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
               children: [
                 {
-                  id: 'ffb-411',
+                  id: 'ffb-412',
                   type: 'Text',
                   props: {
                     variant: 'body',
@@ -253,7 +261,7 @@ export default {
                     'h-16 w-16 bg-base-200 text-3xl shrink-0 inline-flex items-center justify-center rounded-full leading-none',
                 },
                 {
-                  id: 'ffb-412',
+                  id: 'ffb-413',
                   type: 'Heading',
                   props: {
                     level: 'h3',
@@ -262,7 +270,7 @@ export default {
                   class: 'text-center text-lg',
                 },
                 {
-                  id: 'ffb-413',
+                  id: 'ffb-414',
                   type: 'Text',
                   props: {
                     variant: 'meta',
@@ -273,13 +281,13 @@ export default {
               ],
             },
             {
-              id: 'ffb-418',
+              id: 'ffb-419',
               type: 'Stack',
               props: {},
               class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
               children: [
                 {
-                  id: 'ffb-415',
+                  id: 'ffb-416',
                   type: 'Text',
                   props: {
                     variant: 'body',
@@ -289,7 +297,7 @@ export default {
                     'h-16 w-16 bg-base-200 text-3xl shrink-0 inline-flex items-center justify-center rounded-full leading-none',
                 },
                 {
-                  id: 'ffb-416',
+                  id: 'ffb-417',
                   type: 'Heading',
                   props: {
                     level: 'h3',
@@ -298,7 +306,7 @@ export default {
                   class: 'text-center text-lg',
                 },
                 {
-                  id: 'ffb-417',
+                  id: 'ffb-418',
                   type: 'Text',
                   props: {
                     variant: 'meta',
@@ -309,13 +317,13 @@ export default {
               ],
             },
             {
-              id: 'ffb-422',
+              id: 'ffb-423',
               type: 'Stack',
               props: {},
               class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
               children: [
                 {
-                  id: 'ffb-419',
+                  id: 'ffb-420',
                   type: 'Text',
                   props: {
                     variant: 'body',
@@ -325,7 +333,7 @@ export default {
                     'h-16 w-16 bg-base-200 text-3xl shrink-0 inline-flex items-center justify-center rounded-full leading-none',
                 },
                 {
-                  id: 'ffb-420',
+                  id: 'ffb-421',
                   type: 'Heading',
                   props: {
                     level: 'h3',
@@ -334,7 +342,7 @@ export default {
                   class: 'text-center text-lg',
                 },
                 {
-                  id: 'ffb-421',
+                  id: 'ffb-422',
                   type: 'Text',
                   props: {
                     variant: 'meta',
@@ -349,14 +357,14 @@ export default {
       ],
     },
     {
-      id: 'ffb-437',
+      id: 'ffb-438',
       type: 'Section',
       props: {},
       class: 'w-full mx-auto w-full max-w-site flex flex-col gap-6 items-start p-8 @3xl:p-16',
       name: 'You might also like',
       children: [
         {
-          id: 'ffb-424',
+          id: 'ffb-425',
           type: 'Heading',
           props: {
             level: 'h2',
@@ -365,7 +373,7 @@ export default {
           class: 'text-primary text-3xl',
         },
         {
-          id: 'ffb-425',
+          id: 'ffb-426',
           type: 'Text',
           props: {
             variant: 'body',
@@ -374,26 +382,26 @@ export default {
           class: 'text-base-content/70',
         },
         {
-          id: 'ffb-436',
+          id: 'ffb-437',
           type: 'Section',
           props: {},
           class: 'w-full grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-4 gap-6',
           children: [
             {
-              id: 'ffb-435',
+              id: 'ffb-436',
               type: 'Card',
               props: {},
               class:
                 'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
-                  id: 'ffb-428',
+                  id: 'ffb-429',
                   type: 'Button',
                   props: {},
                   class: 'block',
                   children: [
                     {
-                      id: 'ffb-427',
+                      id: 'ffb-428',
                       type: 'Image',
                       props: {
                         ratio: 'square',
@@ -411,19 +419,19 @@ export default {
                   },
                 },
                 {
-                  id: 'ffb-434',
+                  id: 'ffb-435',
                   type: 'Stack',
                   props: {},
                   class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 flex-1',
                   children: [
                     {
-                      id: 'ffb-430',
+                      id: 'ffb-431',
                       type: 'Button',
                       props: {},
                       class: 'block transition-colors hover:text-accent',
                       children: [
                         {
-                          id: 'ffb-429',
+                          id: 'ffb-430',
                           type: 'Heading',
                           props: {
                             level: 'h3',
@@ -441,7 +449,7 @@ export default {
                       },
                     },
                     {
-                      id: 'ffb-431',
+                      id: 'ffb-432',
                       type: 'Text',
                       props: {
                         variant: 'body',
@@ -453,14 +461,14 @@ export default {
                       },
                     },
                     {
-                      id: 'ffb-433',
+                      id: 'ffb-434',
                       type: 'Stack',
                       props: {},
                       class:
                         'mx-auto w-full max-w-site flex flex-col @3xl:flex-row gap-2 justify-between items-center mt-auto w-full',
                       children: [
                         {
-                          id: 'ffb-432',
+                          id: 'ffb-433',
                           type: 'PriceTag',
                           props: {},
                           class: 'text-accent font-extrabold text-lg',
@@ -469,7 +477,7 @@ export default {
                           },
                         },
                         {
-                          id: 'ffb-426',
+                          id: 'ffb-427',
                           type: 'Button',
                           props: {
                             label: 'Add',

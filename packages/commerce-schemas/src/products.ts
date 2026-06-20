@@ -203,6 +203,24 @@ export const UpdateProductInput = CreateProductInput.partial()
     variants: true,
   })
   .extend({
+    // ── Strip create-only DEFAULTS on update ──────────────────────────────────
+    // In this Zod version `.partial()` does NOT neutralize `.default()`: parsing a
+    // body that OMITS one of these fields still fills the create-default, so the
+    // service's `input.X !== undefined` guards see a value and overwrite the row.
+    // That silently reverted `status` → draft and WIPED category / collection /
+    // site-scope links on every partial save (the Overview form carries no such
+    // fields, yet its save sent `categoryIds: []` etc. → the service deleted the
+    // links). Re-declaring them as plain `.optional()` (no default) restores true
+    // partial semantics: an omitted field stays `undefined` → the service leaves
+    // it alone. Keep this list in sync with every `.default()` in CreateProductInput.
+    status: ProductStatus.optional(),
+    tags: z.array(z.string().min(1).max(63)).max(50).optional(),
+    fulfillmentType: FulfillmentType.optional(),
+    hazmatClass: HazmatClass.optional(),
+    requiresShipping: z.boolean().optional(),
+    categoryIds: z.array(Uuid).max(20).optional(),
+    collectionIds: z.array(Uuid).max(50).optional(),
+    propertyIds: z.array(Uuid).max(50).optional(),
     // These fields are nullable in the DB — the update form sends null to clear them.
     // .partial() alone only allows undefined, so we extend with .nullish() here.
     description: z.string().max(50_000).nullish(),

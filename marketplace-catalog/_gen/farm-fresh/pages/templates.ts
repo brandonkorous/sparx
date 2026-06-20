@@ -55,14 +55,31 @@ export function productTemplate(): BuilderNode {
           }),
           node('Stack', {
             box: { padding: 'none' },
-            layout: { direction: 'stack', gap: 'md', alignItems: 'start' },
+            // Major blocks (title · buy · trust) breathe; the title block itself
+            // groups tight — a mature vertical rhythm rather than one flat gap.
+            layout: { direction: 'stack', gap: 'lg', alignItems: 'start' },
             children: [
-              node('Badge', {
-                cls: 'st-badge st-c-primary st-v-soft st-badge--sz-md',
-                props: { label: 'Made to order' },
+              node('Stack', {
+                box: { padding: 'none' },
+                layout: { direction: 'stack', gap: 'sm', alignItems: 'start' },
+                children: [
+                  node('Badge', {
+                    cls: 'st-badge st-c-primary st-v-soft st-badge--sz-sm',
+                    props: { label: 'Made to order' },
+                  }),
+                  // h1, but sized for a PDP column (the hero owns `display`); the
+                  // container query keeps it from dominating a narrow viewport.
+                  node('Heading', {
+                    cls: 'text-4xl leading-tight @3xl:text-5xl',
+                    props: { level: 'h1' },
+                    bind: 'product.title',
+                  }),
+                  node('Prose', {
+                    cls: 'text-lg leading-relaxed text-base-content/70',
+                    bind: 'product.description',
+                  }),
+                ],
               }),
-              node('Heading', { props: { level: 'h1', size: 'display' }, bind: 'product.title' }),
-              node('Prose', { cls: 'text-base-content/80', bind: 'product.description' }),
               node('BuyBox', { bind: 'product' }),
               node('Divider', { cls: 'w-full border-base-300' }),
               node('Stack', {

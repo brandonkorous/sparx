@@ -3,14 +3,14 @@
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh/.
 
 export default {
-  id: 'ffb-455',
+  id: 'ffb-456',
   type: 'Section',
   props: {},
   class: 'flex flex-col gap-4',
   name: 'Email body',
   children: [
     {
-      id: 'ffb-446',
+      id: 'ffb-447',
       type: 'email_wordmark',
       props: {
         treatment: 'lockup',
@@ -19,7 +19,7 @@ export default {
       },
     },
     {
-      id: 'ffb-447',
+      id: 'ffb-448',
       type: 'Heading',
       props: {
         level: 'h1',
@@ -27,7 +27,7 @@ export default {
       },
     },
     {
-      id: 'ffb-448',
+      id: 'ffb-449',
       type: 'Text',
       props: {
         variant: 'body',
@@ -35,7 +35,7 @@ export default {
       },
     },
     {
-      id: 'ffb-449',
+      id: 'ffb-450',
       type: 'Text',
       props: {
         variant: 'body',
@@ -43,7 +43,7 @@ export default {
       },
     },
     {
-      id: 'ffb-450',
+      id: 'ffb-451',
       type: 'Text',
       props: {
         variant: 'body',
@@ -51,7 +51,7 @@ export default {
       },
     },
     {
-      id: 'ffb-451',
+      id: 'ffb-452',
       type: 'Text',
       props: {
         variant: 'body',
@@ -59,7 +59,7 @@ export default {
       },
     },
     {
-      id: 'ffb-452',
+      id: 'ffb-453',
       type: 'Text',
       props: {
         variant: 'body',
@@ -67,7 +67,7 @@ export default {
       },
     },
     {
-      id: 'ffb-453',
+      id: 'ffb-454',
       type: 'Button',
       props: {
         label: 'See this week’s menu',
@@ -75,7 +75,7 @@ export default {
       },
     },
     {
-      id: 'ffb-454',
+      id: 'ffb-455',
       type: 'Text',
       props: {
         variant: 'meta',

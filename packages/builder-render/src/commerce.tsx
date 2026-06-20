@@ -336,7 +336,7 @@ export function BuilderAddToCart({ label }: { label?: string }) {
   return (
     <button
       type="button"
-      className="st-btn st-btn--primary st-btn--lg"
+      className="st-btn st-c-primary st-v-solid st-btn--sz-lg"
       style={{ minWidth: '200px' }}
       disabled={!f.resolvedVariant || !f.inStock || f.adding}
       onClick={() => void f.addToCart()}
@@ -445,11 +445,6 @@ function BuyBoxInner() {
         <BuilderQuantity />
         <BuilderAddToCart />
       </div>
-      {f.resolvedVariant?.sku ? (
-        <span className="st-muted" style={{ fontSize: '0.82rem' }}>
-          SKU: {f.resolvedVariant.sku}
-        </span>
-      ) : null}
     </div>
   );
 }

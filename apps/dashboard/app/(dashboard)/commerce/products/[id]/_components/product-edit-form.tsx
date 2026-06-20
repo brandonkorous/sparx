@@ -77,8 +77,11 @@ export function ProductEditForm({
       description: stringOrNull(form.get('description')),
       productType: stringOrNull(form.get('productType')),
       vendor: stringOrNull(form.get('vendor')),
-      tags: nonEmpty(form.get('tags'))
-        ?.split(',')
+      // Always an explicit array (never undefined): the field is the source of
+      // truth, so emptying it clears the tags rather than leaving them as-is.
+      // `stringOrNull` type-guards the FormData entry (string | File | null) first.
+      tags: (stringOrNull(form.get('tags')) ?? '')
+        .split(',')
         .map((t) => t.trim())
         .filter(Boolean),
       fulfillmentType: nonEmpty(form.get('fulfillmentType')),

@@ -88,7 +88,7 @@ export function UpdateReview({ installId, blueprintName, plan, canManage }: Prop
       const ok = await confirm({
         title: `Update “${blueprintName}” to v${plan.toVersion}?`,
         description:
-          plan.summary.conflicts > 0
+          takeTheirs.size > 0
             ? `Applies the blueprint's changes. Your edits are kept, except the ${takeTheirs.size} conflict${takeTheirs.size === 1 ? '' : 's'} you set to the blueprint's version.`
             : "Applies the blueprint's changes. Your edits are kept.",
         confirmLabel: 'Update',

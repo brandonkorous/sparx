@@ -19,16 +19,35 @@ const SURFACE_HEX: Record<PanelSurface, string> = {
   subtle: SAGE,
 };
 
+/** Lighten a `#rrggbb` toward white by `amt` (0..1) — builds the top stop of the
+ *  panel gradient so a product photo reads as a soft, designed surface instead of a
+ *  flat saturated block. */
+const lighten = (hex: string, amt: number): string => {
+  const n = parseInt(hex.slice(1), 16);
+  const mix = (c: number): number => Math.round(c + (255 - c) * amt);
+  const r = mix((n >> 16) & 255);
+  const g = mix((n >> 8) & 255);
+  const b = mix(n & 255);
+  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+};
+
 /** A product "photo" as a self-contained SVG data URI: the food's brand-surface
  *  colour with its big food emoji centred — the same look the home menu cards paint,
  *  but as a real image so a bound `item.images` (Menu grid, product detail) renders
- *  it. No network, so it always resolves. */
+ *  it. A single soft radial gradient (a lighter tint behind the food easing to the
+ *  base colour at the edges) reads as a designed spotlight panel, not a flat block.
+ *  The whole URI must stay under the `media_assets.key` cap (1024 chars) — this fits
+ *  comfortably (~740). No network, so it always resolves. */
 export const photoSvg = (seed: string): string => {
   const fill = SURFACE_HEX[emojiSurface(seed)];
+  const tint = lighten(fill, 0.28);
   const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">` +
-    `<rect width="800" height="800" fill="${fill}"/>` +
-    `<text x="400" y="400" font-size="420" text-anchor="middle" dominant-baseline="central" ` +
+    `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800">` +
+    `<defs><radialGradient id="g" cx="0.5" cy="0.42" r="0.72">` +
+    `<stop offset="0" stop-color="${tint}"/><stop offset="1" stop-color="${fill}"/>` +
+    `</radialGradient></defs>` +
+    `<rect width="800" height="800" fill="url(#g)"/>` +
+    `<text x="400" y="408" font-size="376" text-anchor="middle" dominant-baseline="central" ` +
     `font-family="'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif">${emojiOf(seed)}</text>` +
     `</svg>`;
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
