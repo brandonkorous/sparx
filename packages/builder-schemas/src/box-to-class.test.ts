@@ -31,6 +31,20 @@ describe('migrateNode / migrateTree', () => {
     expect(out.class).toContain('gap-4'); // gap: md
   });
 
+  it('maps the XL gap step to gap-8 (parity with the builder Space-between control)', () => {
+    const legacy: LegacyNode = {
+      id: 'gx',
+      type: 'Section',
+      box: { backgroundWidth: 'full', contentWidth: 'full' },
+      layout: { direction: 'grid', columns: 2, gap: 'xl' },
+      props: {},
+    };
+    // Regression: the editor's "Space between → XL" emitted gap-8 but the structured
+    // box→class path dropped `xl`, so a blueprint's `layout.gap:'xl'` rendered NO gap
+    // (image/text collided on the PDP). The two scales must stay in lockstep.
+    expect(migrateNode(legacy).class).toContain('gap-8');
+  });
+
   it('splits a full-bleed band with contained content into outer band + inner column', () => {
     const legacy: LegacyNode = {
       id: 'hero',

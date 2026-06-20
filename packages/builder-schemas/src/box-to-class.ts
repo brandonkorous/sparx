@@ -65,7 +65,7 @@ export interface LayoutStyle {
   direction?: 'stack' | 'row' | 'grid';
   /** Column count when `direction === 'grid'`. */
   columns?: number;
-  gap?: 'none' | 'sm' | 'md' | 'lg';
+  gap?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
   justify?: 'start' | 'center' | 'end' | 'between';
   alignItems?: 'start' | 'center' | 'end' | 'stretch';
   wrap?: boolean;
@@ -165,6 +165,7 @@ const GAP_CLASS: Record<NonNullable<LayoutStyle['gap']>, string> = {
   sm: 'gap-2',
   md: 'gap-4',
   lg: 'gap-6',
+  xl: 'gap-8',
 };
 
 const JUSTIFY_CLASS: Record<NonNullable<LayoutStyle['justify']>, string> = {
