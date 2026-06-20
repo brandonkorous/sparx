@@ -169,7 +169,7 @@ export function BookingWidget({
               <button
                 key={slot.startAt}
                 type="button"
-                className={`st-booking__slot${selected === slot.startAt ? ' is-selected' : ''}`}
+                className={`st-booking__slot${selected === slot.startAt ? 'is-selected' : ''}`}
                 aria-pressed={selected === slot.startAt}
                 onClick={() => setSelected(slot.startAt)}
               >

@@ -37,27 +37,28 @@ The design's **playful campaign color** (the team-color gradient tiles, the bold
 blue/yellow/red hero) is baked as `bg-[#…]` / `bg-[linear-gradient(...)]` classes
 in the page modules — Mosaic's bento precedent and Forge's thumb precedent — so it
 reads identically regardless of the installing tenant's theme, while the surfaces
-+ primary re-theme on a fork. Tempo's _brand_ is just black + white + a sale red +
-a club green; color lives inside the tiles.
+
+- primary re-theme on a fork. Tempo's _brand_ is just black + white + a sale red +
+  a club green; color lives inside the tiles.
 
 ---
 
 ## Brand & theme (lifted from the mockup)
 
-| Token            | Value                       | Mockup source                                   |
-| ---------------- | --------------------------- | ----------------------------------------------- |
-| page (`base100`) | `#ffffff` paper             | `bg-paper`                                       |
-| `base200` subtle | `#f5f5f5` soft              | product-card / tile wells                        |
-| `base300`/border | `#e3e3e3` hairline          | `border-hairline`                               |
-| `baseContent`    | `#111111` ink               | `text-ink`                                       |
-| `neutral`        | `#111111` ink               | the black footer, black CTAs                     |
-| primary          | `#111111` ink               | adidas CTAs are **black**, not colored          |
-| accent           | `#e3251f` sale red          | `#d32f2f` sale tags / strike-through prices      |
-| secondary        | `#1c6b3e` club green        | `#1d6b3e` adiClub membership band               |
-| heading font     | **Archivo** (Google)        | bold condensed grotesque caps                   |
-| body font        | **Inter** (Google)          | body copy                                        |
-| radius           | `0` (sharp)                 | adidas is hard-edged — square cards, rect CTAs  |
-| container        | `1480px`                    | the mockup's `max-w-shell` (1480px)             |
+| Token            | Value                | Mockup source                                  |
+| ---------------- | -------------------- | ---------------------------------------------- |
+| page (`base100`) | `#ffffff` paper      | `bg-paper`                                     |
+| `base200` subtle | `#f5f5f5` soft       | product-card / tile wells                      |
+| `base300`/border | `#e3e3e3` hairline   | `border-hairline`                              |
+| `baseContent`    | `#111111` ink        | `text-ink`                                     |
+| `neutral`        | `#111111` ink        | the black footer, black CTAs                   |
+| primary          | `#111111` ink        | adidas CTAs are **black**, not colored         |
+| accent           | `#e3251f` sale red   | `#d32f2f` sale tags / strike-through prices    |
+| secondary        | `#1c6b3e` club green | `#1d6b3e` adiClub membership band              |
+| heading font     | **Archivo** (Google) | bold condensed grotesque caps                  |
+| body font        | **Inter** (Google)   | body copy                                      |
+| radius           | `0` (sharp)          | adidas is hard-edged — square cards, rect CTAs |
+| container        | `1480px`             | the mockup's `max-w-shell` (1480px)            |
 
 Base preset: **`drop`** (bright, punchy, grid-first, wide) — the platform's
 catalog-first foundation, the closest match for a high-volume sportswear grid.
@@ -73,20 +74,20 @@ it is the single strongest carrier of the adidas voice.
 The home page is split into a folder of per-section payload files
 (`parts/pages/home/NN-*.ts`), one cohesive section each.
 
-| #   | Mockup section                          | → Blueprint                                                                              |
-| --- | --------------------------------------- | --------------------------------------------------------------------------------------- |
+| #   | Mockup section                          | → Blueprint                                                                                                                                                |
+| --- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | —   | Top utility bar + sticky header + promo | **layout** chrome — utility links row, app-bar (motion-mark + wordmark · nav · search · account/wishlist/bag · hamburger), then a black-ruled promo strip. |
-| 01  | Hero campaign (carousel + pause)        | **carousel** behavior — auto-advancing campaign slides (team-color gradient bands) with an overlaid white copy card, arrows + dots. |
-| 02  | Find Your Team scroller                 | a **marquee** strip of colored team/colorway tiles, each stamped with the motion-mark.  |
-| 03  | Shop the Season (4-up category tiles)   | a `Grid` of full-bleed gradient tiles with a white caption foot + arrow-link.            |
-| 04  | Shop by Category (Originals/Running/…)  | a `Grid` of 4 category tiles, each linking to its `/shop` category.                      |
-| 05  | Shop Best Sellers (product row)         | a **live** `boundProductGrid` bound to the `best-sellers` collection by handle — real shoppable cards (PDP link + add-to-cart). |
-| 06  | Editorial promo (Men/Women/Kids)        | a 3-up `Grid` of tall gradient editorial panels with arrow-links.                       |
-| 07  | Full-bleed editorial banner (dark)      | an `inverse` band with a big display headline, a CSS product silhouette, and a paper CTA. |
-| 08  | Membership join band (green)            | a `secondary`-surfaced (club green) band — motion-mark + wordmark lockup, headline, two CTAs. |
-| 09  | Benefit strip (4-up)                    | a hairline-gridded 4-up of benefit cells.                                               |
-| 10  | SEO copy block                          | a dense `Prose`/`Text` block above the footer.                                          |
-| —   | Mega footer                             | **layout** — 5 link columns, a newsletter `Signup`, `SocialLinks`, a big wordmark, a country pill, and the legal line. |
+| 01  | Hero campaign (carousel + pause)        | **carousel** behavior — auto-advancing campaign slides (team-color gradient bands) with an overlaid white copy card, arrows + dots.                        |
+| 02  | Find Your Team scroller                 | a **marquee** strip of colored team/colorway tiles, each stamped with the motion-mark.                                                                     |
+| 03  | Shop the Season (4-up category tiles)   | a `Grid` of full-bleed gradient tiles with a white caption foot + arrow-link.                                                                              |
+| 04  | Shop by Category (Originals/Running/…)  | a `Grid` of 4 category tiles, each linking to its `/shop` category.                                                                                        |
+| 05  | Shop Best Sellers (product row)         | a **live** `boundProductGrid` bound to the `best-sellers` collection by handle — real shoppable cards (PDP link + add-to-cart).                            |
+| 06  | Editorial promo (Men/Women/Kids)        | a 3-up `Grid` of tall gradient editorial panels with arrow-links.                                                                                          |
+| 07  | Full-bleed editorial banner (dark)      | an `inverse` band with a big display headline, a CSS product silhouette, and a paper CTA.                                                                  |
+| 08  | Membership join band (green)            | a `secondary`-surfaced (club green) band — motion-mark + wordmark lockup, headline, two CTAs.                                                              |
+| 09  | Benefit strip (4-up)                    | a hairline-gridded 4-up of benefit cells.                                                                                                                  |
+| 10  | SEO copy block                          | a dense `Prose`/`Text` block above the footer.                                                                                                             |
+| —   | Mega footer                             | **layout** — 5 link columns, a newsletter `Signup`, `SocialLinks`, a big wordmark, a country pill, and the legal line.                                     |
 
 **Commerce** — four categories (Originals, Running, Soccer, Lifestyle) matching the
 category tiles, a `best-sellers` + `new-arrivals` collection, and ~12 products

@@ -33,8 +33,7 @@ async function unwrap<T>(res: Response): Promise<T> {
     | { success: false; error: { message: string } }
     | null;
   if (!res.ok || !body || body.success === false) {
-    const message =
-      body?.success === false ? body.error.message : `Request failed (${res.status})`;
+    const message = body?.success === false ? body.error.message : `Request failed (${res.status})`;
     throw new Error(message);
   }
   return body.data;
