@@ -23,6 +23,12 @@ COPY packages/ui/package.json packages/ui/
 COPY packages/auth/package.json packages/auth/
 COPY packages/modules/package.json packages/modules/
 COPY packages/legal/package.json packages/legal/
+# @sparx/auth's index re-exports server.ts/sign-up.ts → tenant-events.ts, which
+# imports @sparx/legal-seed (in-process tenant.created legal-page seeding). It in
+# turn imports the dependency-free @sparx/legal-templates. Both must be present or
+# the filtered install leaves a dangling symlink that Turbopack fails to resolve.
+COPY packages/legal-seed/package.json packages/legal-seed/
+COPY packages/legal-templates/package.json packages/legal-templates/
 COPY packages/db/package.json packages/db/
 COPY packages/email/package.json packages/email/
 COPY packages/events/package.json packages/events/
@@ -79,6 +85,8 @@ COPY packages/ui packages/ui
 COPY packages/auth packages/auth
 COPY packages/modules packages/modules
 COPY packages/legal packages/legal
+COPY packages/legal-seed packages/legal-seed
+COPY packages/legal-templates packages/legal-templates
 COPY packages/db packages/db
 COPY packages/email packages/email
 COPY packages/events packages/events

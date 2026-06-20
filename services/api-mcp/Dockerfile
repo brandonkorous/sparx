@@ -18,6 +18,13 @@ COPY packages/db ./packages/db
 COPY packages/auth ./packages/auth
 COPY packages/modules ./packages/modules
 COPY packages/legal ./packages/legal
+# @sparx/auth's index (server.ts imports isModuleEnabled here) statically pulls
+# sign-up.ts → tenant-events.ts → @sparx/legal-seed → @sparx/legal-templates. Under
+# `node --import tsx` the whole graph evaluates at boot, so both must be present or
+# the service crashloops with ERR_MODULE_NOT_FOUND. (legal-templates is dep-free;
+# legal-seed's @sparx/db dep is already above.)
+COPY packages/legal-seed ./packages/legal-seed
+COPY packages/legal-templates ./packages/legal-templates
 COPY packages/events ./packages/events
 # @sparx/automation MCP tools (the AI authoring path) call only the automation
 # SERVICE layer → closure is just these two (db/events already above; the module

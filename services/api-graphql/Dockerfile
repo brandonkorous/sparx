@@ -30,6 +30,13 @@ COPY packages/cms-editor ./packages/cms-editor
 COPY packages/auth ./packages/auth
 COPY packages/modules ./packages/modules
 COPY packages/legal ./packages/legal
+# @sparx/auth's index (crm-context.ts imports isModuleEnabled here) statically pulls
+# sign-up.ts → tenant-events.ts → @sparx/legal-seed → @sparx/legal-templates. Under
+# `node --import tsx` the whole graph evaluates at boot, so both must be present or
+# the service crashloops with ERR_MODULE_NOT_FOUND. (legal-templates is dep-free;
+# legal-seed's @sparx/db dep is already above.)
+COPY packages/legal-seed ./packages/legal-seed
+COPY packages/legal-templates ./packages/legal-templates
 COPY packages/crm-schemas ./packages/crm-schemas
 # @sparx/crm now depends on @sparx/commerce-schemas (the pure markup engine) for
 # quote-line markup pricing (docs/48 §5), so it must be present even though the

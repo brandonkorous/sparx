@@ -36,6 +36,12 @@ COPY packages/commerce-schemas ./packages/commerce-schemas
 COPY packages/integration-framework ./packages/integration-framework
 COPY packages/legal ./packages/legal
 COPY packages/legal-templates ./packages/legal-templates
+# @sparx/auth's index statically pulls sign-up.ts → tenant-events.ts →
+# @sparx/legal-seed (the many isModuleEnabled imports evaluate the whole graph
+# under `node --import tsx`), so legal-seed must be present or the service
+# crashloops at boot. (legal-templates above is already imported directly by
+# routes/v1/legal.ts; legal-seed's @sparx/db dep is already copied.)
+COPY packages/legal-seed ./packages/legal-seed
 COPY packages/search ./packages/search
 COPY packages/seo-audit ./packages/seo-audit
 COPY packages/commerce ./packages/commerce
