@@ -16,6 +16,7 @@ import {
   type BookingConfirmation,
   type PublicSlot,
 } from '../../lib/scheduling-client';
+import { BookingDepositStep } from './booking-deposit-step';
 
 function todayISODate(): string {
   const d = new Date();
@@ -58,6 +59,8 @@ export function BookingWidget({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmation, setConfirmation] = useState<BookingConfirmation | null>(null);
+  // A booking created but awaiting its deposit/hold payment (docs/79 §9).
+  const [pendingDeposit, setPendingDeposit] = useState<BookingConfirmation | null>(null);
 
   const fetchSlots = useCallback(async () => {
     setLoadingSlots(true);
@@ -107,12 +110,33 @@ export function BookingWidget({
         },
         ...(notes.trim() ? { notes: notes.trim() } : {}),
       });
-      setConfirmation(result);
+      // A deposit/hold-required service returns a clientSecret to collect before
+      // the booking is secured; otherwise it's confirmed outright.
+      if (result.deposit?.clientSecret) {
+        setPendingDeposit(result);
+      } else {
+        setConfirmation(result);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not complete the booking.');
     } finally {
       setSubmitting(false);
     }
+  }
+
+  if (pendingDeposit?.deposit) {
+    return (
+      <BookingDepositStep
+        clientSecret={pendingDeposit.deposit.clientSecret}
+        amountCents={pendingDeposit.deposit.amountCents}
+        type={pendingDeposit.deposit.type}
+        serviceName={pendingDeposit.serviceName}
+        onPaid={() => {
+          setConfirmation(pendingDeposit);
+          setPendingDeposit(null);
+        }}
+      />
+    );
   }
 
   if (confirmation) {

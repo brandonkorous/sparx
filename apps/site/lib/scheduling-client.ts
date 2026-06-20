@@ -10,6 +10,8 @@ export interface PublicSlot {
   remaining: number;
 }
 
+export type DepositType = 'card_hold' | 'deposit' | 'prepay';
+
 export interface BookingConfirmation {
   id: string;
   status: string;
@@ -17,6 +19,13 @@ export interface BookingConfirmation {
   startAt: string;
   endAt: string;
   requiresApproval: boolean;
+  /** Present when the service's policy requires payment at booking (docs/79 §9):
+   *  a clientSecret to confirm with the gateway's card element. Null otherwise. */
+  deposit?: {
+    clientSecret: string;
+    amountCents: number;
+    type: DepositType;
+  } | null;
 }
 
 export interface CreateBookingBody {
