@@ -179,6 +179,23 @@ export type {
   ChatConversation,
   ChatMessage,
   ChatQuickReply,
+  // Scheduling (docs/79)
+  SchedulingResource,
+  SchedulingService,
+  Booking,
+  BookingResource,
+  BookingAttendee,
+  AvailabilityWindow,
+  AvailabilityException,
+  BookingSeries,
+  WaitlistEntry,
+  BookingPolicy,
+  IntakeForm,
+  IntakeSubmission,
+  CalendarConnection,
+  ExternalBusyBlock,
+  BookingNotification,
+  BusinessLocation,
 } from '@prisma/client';
 
 // `Prisma` is exported as a VALUE (not type-only) because callers need the
