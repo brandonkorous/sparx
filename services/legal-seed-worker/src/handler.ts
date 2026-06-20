@@ -9,7 +9,7 @@
 
 import type { Logger } from 'pino';
 import { z } from 'zod';
-import { seedLegalPages, type SeedResult } from './seed.js';
+import { seedLegalPages, type SeedResult } from '@sparx/legal-seed';
 
 const TenantCreatedEvent = z.object({
   type: z.literal('tenant.created'),

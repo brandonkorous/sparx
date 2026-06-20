@@ -325,6 +325,35 @@ function slugSuggestions(base: string): string[] {
   return [`${clean}-store`, `${clean}-shop`, `${clean}-co`];
 }
 
+// Rename every always-on `<…>.sparx.zone` subdomain in lockstep with a tenant
+// slug change. Provisioning mints `<slug>.sparx.zone` (primary) and multi-site
+// adds `<prop>.<slug>.sparx.zone` — all embed the tenant slug, so the slug
+// segment must be rewritten or the canonical host dangles. Custom domains
+// (type !== 'subdomain') are never touched.
+async function renameZoneSubdomains(
+  tx: Prisma.TransactionClient,
+  tenantId: string,
+  oldSlug: string,
+  newSlug: string
+): Promise<void> {
+  const zone = process.env.SPARX_ZONE_DOMAIN ?? 'sparx.zone';
+  const exact = `${oldSlug}.${zone}`;
+  const suffix = `.${oldSlug}.${zone}`;
+  const subdomains = await tx.domain.findMany({
+    where: { tenantId, type: 'subdomain' },
+    select: { id: true, host: true },
+  });
+  for (const d of subdomains) {
+    let nextHost: string | null = null;
+    if (d.host === exact) nextHost = `${newSlug}.${zone}`;
+    else if (d.host.endsWith(suffix))
+      nextHost = `${d.host.slice(0, -suffix.length)}.${newSlug}.${zone}`;
+    if (nextHost && nextHost !== d.host) {
+      await tx.domain.update({ where: { id: d.id }, data: { host: nextHost } });
+    }
+  }
+}
+
 const ModuleParams = z.object({
   slug: z.string().refine((s) => MODULE_SLUG_SET.has(s), 'Unknown module slug'),
 });
@@ -547,7 +576,10 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     return ok({ available: true });
   });
 
-  // Update the tenant's storefront subdomain. Owner/admin only.
+  // Update the tenant's storefront subdomain. Owner/admin only. Renames the
+  // always-on `<slug>.sparx.zone` subdomain(s) in lockstep — provisioning mints
+  // them from the SIGNUP slug, so an onboarding/admin slug change must rename
+  // them too, or the canonical host dangles at a slug that no longer resolves.
   app.patch('/v1/tenant/slug', async (request) => {
     const auth = requireRole(request, 'admin');
     const { slug } = SlugBody.parse(request.body);
@@ -562,10 +594,22 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     if (existing && existing.id !== auth.tenantId) {
       throw conflict('That subdomain is already taken.', 'slug');
     }
-    const row = await prisma.tenant.update({
+    const before = await prisma.tenant.findUnique({
       where: { id: auth.tenantId },
-      data: { slug: normalized },
-      select: { id: true, name: true, email: true, slug: true, plan: true },
+      select: { slug: true },
+    });
+    const oldSlug = before?.slug ?? null;
+
+    const row = await prisma.$transaction(async (tx) => {
+      const updated = await tx.tenant.update({
+        where: { id: auth.tenantId },
+        data: { slug: normalized },
+        select: { id: true, name: true, email: true, slug: true, plan: true },
+      });
+      if (oldSlug && oldSlug !== normalized) {
+        await renameZoneSubdomains(tx, auth.tenantId, oldSlug, normalized);
+      }
+      return updated;
     });
     return ok(row);
   });

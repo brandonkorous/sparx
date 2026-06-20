@@ -5,10 +5,13 @@
 // (or an existing page at the same slug) is skipped, so re-processing is safe.
 // Pages are seeded as DRAFTS — nothing unreviewed goes live; the dashboard
 // Legal checklist makes publishing one click.
+//
+// This is the SINGLE source of truth shared by two callers (docs/104 §4.3):
+//   - the legal-seed-worker — prod, on the `tenant.created` Pub/Sub push;
+//   - the signup flow (tenant-events) — in-process, in dev where the standalone
+//     worker isn't running. Both seed identically because both call this.
 
-import type { Logger } from 'pino';
-import type { Prisma } from '@prisma/client';
-import { withTenant } from '@sparx/db';
+import { withTenant, type Prisma } from '@sparx/db';
 import { LEGAL_TEMPLATES, legalEntryBody } from '@sparx/legal-templates';
 
 export interface SeedResult {
@@ -16,7 +19,13 @@ export interface SeedResult {
   skipped: number;
 }
 
-export async function seedLegalPages(tenantId: string, logger: Logger): Promise<SeedResult> {
+/** Minimal structured logger — satisfied by pino (worker) and the signup flow's
+ *  console-based logger alike, so this package needs no pino dependency. */
+export interface SeedLogger {
+  info(obj: object, msg?: string): void;
+}
+
+export async function seedLegalPages(tenantId: string, logger: SeedLogger): Promise<SeedResult> {
   return withTenant({ tenantId }, async (tx) => {
     let created = 0;
     let skipped = 0;

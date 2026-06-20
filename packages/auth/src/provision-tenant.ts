@@ -134,5 +134,11 @@ export async function provisionTenant(
     },
   });
 
+  // Default consent state (docs/53) — born `mode='off'` so the banner stays dark
+  // until the merchant opts into GDPR/CCPA. Seeding the row now (rather than lazily
+  // on first read) means the consent surface + `computeBannerEnabled` always have a
+  // concrete row to read, and a tenant is never missing this core site-state.
+  await tx.consentSettings.create({ data: { tenantId: tenant.id } });
+
   return { tenantId: tenant.id, propertyId: property.id };
 }
