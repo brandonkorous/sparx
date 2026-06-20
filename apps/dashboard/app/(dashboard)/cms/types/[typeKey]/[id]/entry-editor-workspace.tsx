@@ -205,6 +205,7 @@ export function EntryEditorWorkspace({ form, preview }: EntryEditorWorkspaceProp
           tree={preview.tree}
           chrome={preview.chrome}
           catalog={preview.catalog}
+          components={preview.components}
           typeKey={preview.typeKey}
           body={body}
           tenantSlug={preview.tenantSlug}

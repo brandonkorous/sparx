@@ -6,10 +6,15 @@
 // the entry editor simply falls back to the form-only layout.
 
 import 'server-only';
-import type { BindingCatalog, BuilderNode, FieldSchema } from '@sparx/builder-schemas';
+import type {
+  BindingCatalog,
+  BuilderNode,
+  ComponentDto,
+  FieldSchema,
+} from '@sparx/builder-schemas';
 
 import type { SitePreviewData } from '../_builder/binding-catalog';
-import { getActiveLayout, getBindingCatalog, listPages } from './api';
+import { getActiveLayout, getBindingCatalog, listComponentsFull, listPages } from './api';
 import { canvasThemeCss } from './canvas-theme';
 import { getBrand, getConfig, getSitePreviewData, getTenant } from '../_brand/lib/api';
 import { applyBrandOverride } from '../_brand/lib/site-brand';
@@ -24,6 +29,10 @@ export interface RecordPreviewBundle {
    *  content block alone. Null when there's no active layout. */
   chrome: BuilderNode | null;
   catalog: BindingCatalog;
+  /** The tenant's saved components (full trees). A template that places a `custom:*`
+   *  block renders it live exactly like the studio — not a "missing component"
+   *  placeholder. Empty when the load fails or the tenant has none. */
+  components: ComponentDto[];
   /** The record source's fields (kinds), for shaping the live body + the bridge. */
   fields: FieldSchema[];
   /** The tenant theme compiled to a `.bx-canvas`-scoped `<style>` (or '' on failure). */
@@ -43,7 +52,7 @@ export async function loadRecordPreviewBundle(opts: {
   templateId: string;
 }): Promise<RecordPreviewBundle | null> {
   try {
-    const [catalog, pages, baseBrand, config, activeProperty, tenant, activeLayout] =
+    const [catalog, pages, baseBrand, config, activeProperty, tenant, activeLayout, components] =
       await Promise.all([
         getBindingCatalog(),
         listPages(),
@@ -52,6 +61,7 @@ export async function loadRecordPreviewBundle(opts: {
         getActiveProperty().catch(() => null),
         getTenant(),
         getActiveLayout().catch(() => null),
+        listComponentsFull().catch(() => [] as ComponentDto[]),
       ]);
 
     const page = pages.find((p) => p.id === opts.templateId);
@@ -74,6 +84,7 @@ export async function loadRecordPreviewBundle(opts: {
       tree: page.tree,
       chrome: activeLayout?.tree ?? null,
       catalog,
+      components,
       fields: source?.fields ?? [],
       themeCss: canvasThemeCss(effectiveBrand, config),
       sitePreview,

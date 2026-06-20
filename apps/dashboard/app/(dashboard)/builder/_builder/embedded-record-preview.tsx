@@ -15,7 +15,7 @@
 // template is edited in the builder; this is a window onto it bound to one record.
 
 import * as React from 'react';
-import type { BindingCatalog } from '@sparx/builder-schemas';
+import type { BindingCatalog, ComponentDto } from '@sparx/builder-schemas';
 
 // The base canvas sheet (.bx-* chrome + the `.bx-canvas` theme host) and the
 // Surface RECIPE (@sparx/site-ui's `st-*` classes pre-scoped to `.bx-canvas`), so
@@ -25,6 +25,7 @@ import '@sparx/site-ui/styles.canvas.css';
 
 import { Canvas, type CanvasFrame } from './canvas';
 import { useSurfacePreview } from './use-surface-preview';
+import { useComponentVersions } from './use-component-versions';
 import type { BuilderNode, Device } from './model';
 import type { SitePreviewData } from './binding-catalog';
 import { buildNodeFieldMaps, buildRecordPreviewData, fieldKeySet } from './record-preview-data';
@@ -37,6 +38,9 @@ export interface EmbeddedRecordPreviewProps {
    *  backdrop so only the content (at the Outlet) drives the click-to-edit bridge. */
   chrome?: BuilderNode | null;
   catalog: BindingCatalog;
+  /** The tenant's saved components — so a `custom:*` placement in the template (or
+   *  chrome) renders live exactly like the studio, not a "missing" marker. */
+  components: ComponentDto[];
   /** The content type key — the record source the template binds (`<typeKey>.*`). */
   typeKey: string;
   /** The entry's LIVE in-editor body (re-renders the preview on each keystroke). */
@@ -58,6 +62,7 @@ export function EmbeddedRecordPreview({
   tree,
   chrome,
   catalog,
+  components,
   typeKey,
   body,
   tenantSlug,
@@ -97,6 +102,15 @@ export function EmbeddedRecordPreview({
     [catalog, typeKey, body, tenantSlug, sitePreview]
   );
 
+  // Tenant components keyed for the canvas (docs/53 P-B) + the version resolver that
+  // expands each `custom:*` placement at its pinned version — the same pair the studio
+  // passes, so a component-bearing template previews faithfully here too.
+  const componentsByKey = React.useMemo(
+    () => new Map(components.map((c) => [c.key, c])),
+    [components]
+  );
+  const resolveVersion = useComponentVersions(componentsByKey, compileTree);
+
   const selectedId = selectedFieldKey ? (maps.fieldToNode.get(selectedFieldKey) ?? null) : null;
   const frame: CanvasFrame = { kind: 'browser', origin: siteOrigin, path };
 
@@ -115,6 +129,8 @@ export function EmbeddedRecordPreview({
         chrome={chrome ?? null}
         data={data}
         catalog={catalog}
+        components={componentsByKey}
+        resolveVersion={resolveVersion}
         device={device}
         selectedId={selectedId}
         onSelect={handleSelect}
