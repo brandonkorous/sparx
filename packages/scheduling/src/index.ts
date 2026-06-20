@@ -54,6 +54,13 @@ export {
 } from './resources';
 export { createService, updateService, getService, listServices, deleteService } from './services';
 export {
+  createBookingPolicy,
+  updateBookingPolicy,
+  getBookingPolicy,
+  listBookingPolicies,
+  deleteBookingPolicy,
+} from './policies';
+export {
   setAvailabilityWindows,
   listAvailabilityWindows,
   createAvailabilityException,

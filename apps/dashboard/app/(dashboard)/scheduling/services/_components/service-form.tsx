@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Button,
@@ -16,13 +16,18 @@ import {
 
 import type {
   AssignmentStrategy,
+  BookingPolicy,
   BookingType,
   ResourceRequirement,
   SchedulingService,
 } from '../../_lib/types';
 import { BOOKING_TYPE_LABEL } from '../../_lib/format';
 import { RequirementEditor } from '../../_components/requirement-editor';
-import { createServiceAction, updateServiceAction } from '../../_lib/actions';
+import {
+  createServiceAction,
+  listBookingPoliciesAction,
+  updateServiceAction,
+} from '../../_lib/actions';
 
 interface Props {
   service?: SchedulingService;
@@ -63,6 +68,16 @@ export function ServiceForm({ service, onSuccess, onCancel }: Props) {
   const [bookableOnline, setBookableOnline] = useState(service?.bookableOnline ?? true);
   const [requiresApproval, setRequiresApproval] = useState(service?.requiresApproval ?? false);
   const [isActive, setIsActive] = useState(service?.isActive ?? true);
+  const [policyId, setPolicyId] = useState(service?.policyId ?? '');
+  const [policies, setPolicies] = useState<BookingPolicy[]>([]);
+
+  // Load policies for the picker — attaching one opts the service into deposits,
+  // cancellation fees, and reminders (docs/79 §9).
+  useEffect(() => {
+    void listBookingPoliciesAction().then((r) => {
+      if (r.ok) setPolicies(r.data);
+    });
+  }, []);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -85,6 +100,7 @@ export function ServiceForm({ service, onSuccess, onCancel }: Props) {
       maxAdvanceDays,
       assignmentStrategy: strategy,
       resourceRequirements: requirements.filter((r) => r.role.trim()),
+      policyId: policyId || null,
       bookableOnline,
       requiresApproval,
       isActive,
@@ -218,6 +234,22 @@ export function ServiceForm({ service, onSuccess, onCancel }: Props) {
             onChange={setMaxAdvance}
           />
         </Grid>
+
+        <div>
+          <Label htmlFor="svc-policy">Booking policy</Label>
+          <NativeSelect
+            id="svc-policy"
+            value={policyId}
+            onChange={(e) => setPolicyId(e.target.value)}
+          >
+            <option value="">No policy</option>
+            {policies.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </NativeSelect>
+        </div>
 
         <RequirementEditor value={requirements} onChange={setRequirements} />
 

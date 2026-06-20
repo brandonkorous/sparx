@@ -1,4 +1,4 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@sparx/ui';
+import { Badge, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@sparx/ui';
 
 import type { Booking } from '../../_lib/types';
 import { BOOKING_TYPE_LABEL, formatDateTime } from '../../_lib/format';
@@ -13,6 +13,29 @@ function customerLabel(b: Booking): string {
   return '—';
 }
 
+// Deposit/hold status badge (docs/79 §9): held = a card hold or pending charge,
+// captured = money taken (a charged deposit or a captured no-show fee), released =
+// a hold voided / deposit refunded, forfeited = a charged deposit kept.
+const DEPOSIT: Record<
+  string,
+  { label: string; color: 'module' | 'success' | 'neutral' | 'danger' }
+> = {
+  held: { label: 'Hold', color: 'module' },
+  captured: { label: 'Paid', color: 'success' },
+  refunded: { label: 'Released', color: 'neutral' },
+  forfeited: { label: 'Forfeited', color: 'danger' },
+};
+
+function DepositCell({ status }: { status: string | null }) {
+  const dep = status ? DEPOSIT[status] : undefined;
+  if (!dep) return <span className="text-[var(--color-muted-foreground)]">—</span>;
+  return (
+    <Badge color={dep.color} variant="soft">
+      {dep.label}
+    </Badge>
+  );
+}
+
 export function BookingsList({ bookings }: { bookings: Booking[] }) {
   return (
     <Table>
@@ -22,6 +45,7 @@ export function BookingsList({ bookings }: { bookings: Booking[] }) {
           <TableHead>Service</TableHead>
           <TableHead>Customer</TableHead>
           <TableHead>Resource</TableHead>
+          <TableHead>Deposit</TableHead>
           <TableHead>Status</TableHead>
           <TableHead className="w-10" />
         </TableRow>
@@ -42,6 +66,9 @@ export function BookingsList({ bookings }: { bookings: Booking[] }) {
             <TableCell>{customerLabel(b)}</TableCell>
             <TableCell className="text-[var(--color-muted-foreground)]">
               {b.resources.map((r) => r.resource.name).join(', ') || '—'}
+            </TableCell>
+            <TableCell>
+              <DepositCell status={b.depositStatus} />
             </TableCell>
             <TableCell>
               <StatusBadge status={b.status} />

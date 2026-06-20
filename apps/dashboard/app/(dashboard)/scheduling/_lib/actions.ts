@@ -7,7 +7,7 @@
 import { revalidatePath } from 'next/cache';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
-import type { AvailabilitySlot, Booking } from './types';
+import type { AvailabilitySlot, Booking, BookingPolicy } from './types';
 
 export type ActionResult<T = undefined> = { ok: true; data: T } | { ok: false; error: string };
 
@@ -44,6 +44,46 @@ export async function deleteServiceAction(id: string): Promise<ActionResult> {
     return { ok: true, data: undefined };
   } catch (err) {
     return fail(err, 'Failed to delete service');
+  }
+}
+
+// ── Booking policies (deposits / fees / reminders) ──────────────────────────
+export async function listBookingPoliciesAction(): Promise<ActionResult<BookingPolicy[]>> {
+  try {
+    const data = await api.get<BookingPolicy[]>('/v1/scheduling/policies');
+    return { ok: true, data };
+  } catch (err) {
+    return fail(err, 'Failed to load policies');
+  }
+}
+
+export async function createBookingPolicyAction(body: unknown): Promise<ActionResult> {
+  try {
+    await api.post('/v1/scheduling/policies', body);
+    revalidatePath('/scheduling/policies');
+    return { ok: true, data: undefined };
+  } catch (err) {
+    return fail(err, 'Failed to create policy');
+  }
+}
+
+export async function updateBookingPolicyAction(id: string, body: unknown): Promise<ActionResult> {
+  try {
+    await api.patch(`/v1/scheduling/policies/${id}`, body);
+    revalidatePath('/scheduling/policies');
+    return { ok: true, data: undefined };
+  } catch (err) {
+    return fail(err, 'Failed to update policy');
+  }
+}
+
+export async function deleteBookingPolicyAction(id: string): Promise<ActionResult> {
+  try {
+    await api.delete(`/v1/scheduling/policies/${id}`);
+    revalidatePath('/scheduling/policies');
+    return { ok: true, data: undefined };
+  } catch (err) {
+    return fail(err, 'Failed to delete policy');
   }
 }
 

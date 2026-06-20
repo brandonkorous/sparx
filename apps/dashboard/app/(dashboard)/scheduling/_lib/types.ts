@@ -51,6 +51,26 @@ export interface SchedulingService {
   updatedAt: string;
 }
 
+export type DepositType = 'none' | 'card_hold' | 'deposit' | 'prepay';
+export type FeeType = 'fixed' | 'percent';
+
+export interface BookingPolicy {
+  id: string;
+  name: string;
+  depositType: DepositType;
+  depositAmountCents: number | null;
+  depositPercent: number | null;
+  cancellationWindowHours: number;
+  lateCancelFeeType: FeeType | null;
+  lateCancelFeeValue: number | null;
+  noShowFeeType: FeeType | null;
+  noShowFeeValue: number | null;
+  policyText: string | null;
+  reminderOffsetsMin: number[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface SchedulingResource {
   id: string;
   kind: ResourceKind;

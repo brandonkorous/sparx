@@ -42,6 +42,13 @@ export class ServiceNotFoundError extends SchedulingError {
   }
 }
 
+export class BookingPolicyNotFoundError extends SchedulingError {
+  constructor(id: string) {
+    super('BOOKING_POLICY_NOT_FOUND', `Booking policy ${id} not found`);
+    this.name = 'BookingPolicyNotFoundError';
+  }
+}
+
 /** An action isn't valid for the booking's current status (e.g. checking in a
  *  cancelled booking). */
 export class InvalidBookingStateError extends SchedulingError {
