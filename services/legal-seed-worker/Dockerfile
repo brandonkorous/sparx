@@ -13,11 +13,13 @@ WORKDIR /app
 
 # Workspace context — minimum needed to install legal-seed-worker + its
 # workspace deps (@sparx/db for the writes, @sparx/events for the event type,
+# @sparx/legal-seed for the shared seeding logic, which itself pulls in
 # @sparx/legal-templates for the starter content).
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 COPY tsconfig.base.json ./
 COPY packages/db ./packages/db
 COPY packages/events ./packages/events
+COPY packages/legal-seed ./packages/legal-seed
 COPY packages/legal-templates ./packages/legal-templates
 COPY services/legal-seed-worker ./services/legal-seed-worker
 
