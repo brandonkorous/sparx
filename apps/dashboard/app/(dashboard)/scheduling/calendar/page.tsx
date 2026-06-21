@@ -17,8 +17,8 @@ function ymd(d: Date): string {
 
 function parseFrom(from: string | undefined): Date {
   if (from && /^\d{4}-\d{2}-\d{2}$/.test(from)) {
-    const [y, m, d] = from.split('-').map(Number);
-    return new Date(y!, m! - 1, d!);
+    const [y = 0, m = 1, d = 1] = from.split('-').map(Number);
+    return new Date(y, m - 1, d);
   }
   return new Date();
 }
