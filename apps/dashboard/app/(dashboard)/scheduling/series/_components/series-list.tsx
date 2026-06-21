@@ -98,7 +98,9 @@ export function SeriesList({ series }: { series: BookingSeriesSummary[] }) {
     if (!ok) return;
     const result = await cancelBookingSeriesAction(s.id, scope);
     if (result.ok) {
-      toast.success(`Cancelled ${result.data.cancelled} booking${result.data.cancelled === 1 ? '' : 's'}`);
+      toast.success(
+        `Cancelled ${result.data.cancelled} booking${result.data.cancelled === 1 ? '' : 's'}`
+      );
       router.refresh();
     } else {
       toast.error(result.error);

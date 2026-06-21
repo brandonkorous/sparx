@@ -257,9 +257,7 @@ export function BookingForm({ services, onSuccess, onCancel }: Props) {
         </Label>
       </div>
 
-      {repeat ? (
-        <RecurrenceFields value={recurrence} onChange={setRecurrence} />
-      ) : null}
+      {repeat ? <RecurrenceFields value={recurrence} onChange={setRecurrence} /> : null}
 
       <div className="flex justify-end gap-2 pt-2">
         <Button type="button" variant="ghost" onClick={onCancel} disabled={saving}>
