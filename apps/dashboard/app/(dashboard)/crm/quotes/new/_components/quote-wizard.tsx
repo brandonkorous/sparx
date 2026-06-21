@@ -24,6 +24,7 @@ import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import {
+  Badge,
   Card,
   CardContent,
   CardHeader,
@@ -37,6 +38,9 @@ import {
   Textarea,
   WizardFrame,
   WizardStep,
+  WizardSummary,
+  WizardSummaryDivider,
+  WizardSummaryRow,
   type WizardStepDef,
 } from '@sparx/ui';
 
@@ -518,6 +522,37 @@ function QuoteWizardInner({
     </button>
   );
 
+  // The live draft summary — the F layout's right-hand column (docs/86). Mirrors
+  // the Review step's totals so the running figures are visible from step one.
+  const summary = (
+    <WizardSummary
+      title="Draft summary"
+      footer={
+        <Badge color="module" variant="soft" size="sm">
+          Draft — editable after create
+        </Badge>
+      }
+    >
+      <WizardSummaryRow
+        label="Quote for"
+        value={partyLabel(customerId, b2bAccountId, customers, b2bAccounts)}
+      />
+      <WizardSummaryRow label="Currency" value={(currency || 'USD').toUpperCase()} />
+      <WizardSummaryRow label="Line items" value={String(validItems.length)} />
+      <WizardSummaryDivider />
+      <WizardSummaryRow label="Subtotal" value={money(subtotal, currency)} />
+      {discountTotal > 0 && (
+        <WizardSummaryRow label="Discount" value={`- ${money(discountTotal, currency)}`} />
+      )}
+      {taxTotal > 0 && <WizardSummaryRow label="Tax" value={money(taxTotal, currency)} />}
+      {shippingNum > 0 && (
+        <WizardSummaryRow label="Shipping" value={money(shippingNum, currency)} />
+      )}
+      <WizardSummaryDivider />
+      <WizardSummaryRow label="Total" value={money(total, currency)} strong />
+    </WizardSummary>
+  );
+
   // One top-stepper frame for both presentations: `embedded` fills the dashboard
   // content area at `/new` (sidebar + header stay); `inline` fills the drawer/
   // modal detail panel, which supplies its own chrome.
@@ -531,6 +566,7 @@ function QuoteWizardInner({
       onStepSelect={onStepSelect}
       canSelectStep={canSelectStep}
       footer={cancelButton}
+      summary={summary}
     >
       {body}
     </WizardFrame>

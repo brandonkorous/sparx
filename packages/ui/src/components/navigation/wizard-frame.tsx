@@ -75,8 +75,15 @@ export interface WizardFrameProps {
   /** Whether a journey row is clickable. Default: any step at/at-or-before the
    *  current one (you can't skip ahead by clicking). */
   canSelectStep?: (key: string, index: number) => boolean;
-  /** Header/rail footer — utility links (Save & exit / Need help, or Cancel). */
+  /** Header/rail footer — utility links (Save & exit / Need help, or Cancel). In
+   *  the F variants (inline/embedded) this is the Cancel affordance, dropped into
+   *  the bottom action toolbar's left side. */
   footer?: React.ReactNode;
+  /** F variants (inline/embedded): a live "draft summary" tree (compose with
+   *  WizardSummary / WizardSummaryRow). Renders as the right-hand column when the
+   *  frame is wide and stacks as a card after the fields when narrow. Omit for
+   *  wizards without a natural summary — the form then fills the full width. */
+  summary?: React.ReactNode;
   className?: string;
   children: React.ReactNode;
 
@@ -91,9 +98,26 @@ export interface WizardFrameProps {
 
 interface WizardContextValue {
   variant: WizardVariant;
+  /** F variants (inline/embedded): the cancel/leave affordance, dropped into the
+   *  action toolbar's left side so there's a single bottom toolbar. */
+  cancel?: React.ReactNode;
+  /** F variants: the live summary content. Rendered as the right-hand column when
+   *  the frame is wide enough (container query) and stacked as a card after the
+   *  fields when it's narrow (the drawer). */
+  summary?: React.ReactNode;
 }
 
 const WizardContext = React.createContext<WizardContextValue>({ variant: 'page' });
+
+// The F layout is responsive by CONTAINER width, not viewport: at/above ~720px
+// the frame is two columns (form + summary aside); below it collapses to one and
+// the summary stacks as a card after the fields. The `@container` lives on the
+// frame root and the `@[720px]:` variants below read it — so a narrow drawer
+// stacks even on a wide screen (docs/86). The classes are written as full
+// literals (never concatenated) so Tailwind's scanner generates them.
+//
+// A soft module tint over the surface — the quiet summary panel background.
+const SUMMARY_BG = 'bg-[color-mix(in_oklab,var(--module-active)_6%,var(--color-bg-surface))]';
 
 // ── Rail (immersive `page` variant) ────────────────────────────────────────────
 // RAIL_BG + RailWordmark are shared with the auth split-panel via ../brand/brand-rail
@@ -416,6 +440,197 @@ function TopStepperFrame({
   );
 }
 
+// ── F layout (inline + embedded): form column + live summary ───────────────────
+// The in-app create surface (docs/86). A title strip (embedded only — the
+// drawer/modal host supplies the title + window controls for inline), a compact
+// MiniProgress, the working pane, and a quiet module-tinted summary that fills
+// the right column when wide and stacks as a card when narrow. The bottom action
+// toolbar (Cancel + Back/Next) lives under the FORM column only; the summary runs
+// full height beside it.
+
+// The compact progress indicator: n segments filled through the current step, plus
+// "<label> · step n of m". Replaces the big numbered stepper in the F layout.
+function MiniProgress({
+  steps,
+  current,
+  className,
+}: {
+  steps: WizardStepDef[];
+  current: number;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn('flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]', className)}
+    >
+      <span className="flex items-center gap-1" aria-hidden>
+        {steps.map((step, idx) => (
+          <span
+            key={step.key}
+            className={cn(
+              'h-1 w-8 rounded-full transition-colors duration-200',
+              idx <= current
+                ? 'bg-[var(--module-active)]'
+                : 'bg-[color-mix(in_oklab,var(--color-text-primary)_12%,transparent)]'
+            )}
+          />
+        ))}
+      </span>
+      <span className="ml-1.5 font-medium text-[var(--color-text-primary)]">
+        {steps[current]?.label}
+      </span>
+      <span>
+        · step {current + 1} of {steps.length}
+      </span>
+    </div>
+  );
+}
+
+// ── Summary primitives (the live "draft summary" content) ──────────────────────
+// Consumers compose these and pass the tree as WizardFrame's `summary` — the
+// frame places it in the right column (wide) or a stacked card (narrow). Keeps
+// every wizard's summary visually identical without each re-rolling the styling.
+
+export function WizardSummary({
+  title,
+  children,
+  footer,
+}: {
+  title: React.ReactNode;
+  children: React.ReactNode;
+  /** Pinned to the bottom of the column (e.g. a Draft/Published badge). */
+  footer?: React.ReactNode;
+}) {
+  return (
+    <div className="flex h-full flex-col">
+      <p className="mb-4 text-[1.0625rem] leading-tight font-medium tracking-tight text-[var(--color-text-primary)]">
+        {title}
+      </p>
+      <div className="flex flex-col">{children}</div>
+      {footer && <div className="mt-auto pt-5">{footer}</div>}
+    </div>
+  );
+}
+
+export function WizardSummaryRow({
+  label,
+  value,
+  strong,
+}: {
+  label: React.ReactNode;
+  value: React.ReactNode;
+  /** The total row — heavier weight, larger size, anchors the column. */
+  strong?: boolean;
+}) {
+  return (
+    <div className="flex items-baseline justify-between gap-3 py-2">
+      <span
+        className={cn(
+          'text-sm text-[var(--color-text-muted)]',
+          strong && 'text-[0.9375rem] font-semibold text-[var(--color-text-primary)]'
+        )}
+      >
+        {label}
+      </span>
+      <span
+        className={cn(
+          'text-sm text-[var(--color-text-primary)] tabular-nums',
+          strong && 'text-[0.9375rem] font-semibold'
+        )}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
+
+export function WizardSummaryDivider() {
+  return <div className="my-1.5 border-t border-[var(--color-border-default)]" />;
+}
+
+// The shared F frame. `showHeader` adds the title strip (embedded full page);
+// inline omits it because the host chrome owns the title + window controls.
+function FWizardFrame({
+  variant,
+  showHeader,
+  title,
+  steps,
+  current,
+  summary,
+  footer,
+  className,
+  children,
+}: {
+  variant: 'inline' | 'embedded';
+  showHeader: boolean;
+  title?: React.ReactNode;
+  steps: WizardStepDef[];
+  current: number;
+  summary?: React.ReactNode;
+  footer?: React.ReactNode;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  const hasSummary = Boolean(summary);
+  const inner = (
+    <div
+      className={cn(
+        '@container flex h-full min-h-0 flex-col overflow-hidden bg-[var(--color-bg-surface)]',
+        // Embedded (full page) is a CONTAINED, centered sheet — never edge-to-edge.
+        // Capped in width with the page showing on either side; the inline (drawer/
+        // modal) host already bounds the frame, so it fills its host instead.
+        variant === 'embedded' &&
+          'mx-auto w-full max-w-[1120px] border-x border-[var(--color-border-default)]',
+        className
+      )}
+    >
+      {showHeader && title && (
+        <div className="flex h-[52px] shrink-0 items-center border-b border-[var(--color-border-default)] px-7 max-[680px]:px-5">
+          <span className="truncate text-sm font-semibold tracking-tight text-[var(--color-text-primary)]">
+            {title}
+          </span>
+        </div>
+      )}
+      <div
+        className={cn(
+          'grid min-h-0 flex-1 grid-cols-1',
+          hasSummary && '@[720px]:grid-cols-[1fr_320px]'
+        )}
+      >
+        {/* Form column: progress + working pane (WizardStep owns its scroll +
+            the action toolbar pinned at the bottom). */}
+        <div className="flex min-h-0 flex-col">
+          <div className="shrink-0 px-7 pt-4 pb-1 max-[680px]:px-5">
+            <MiniProgress steps={steps} current={current} />
+          </div>
+          <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+        </div>
+        {/* Summary aside — full-height right column, shown only when wide. The
+            narrow (stacked) rendering lives inside WizardStep's scroll body. */}
+        {hasSummary && (
+          <aside
+            className={cn(
+              'hidden min-h-0 flex-col overflow-y-auto border-l border-[var(--color-border-default)] px-6 py-6 @[720px]:flex',
+              SUMMARY_BG
+            )}
+          >
+            {summary}
+          </aside>
+        )}
+      </div>
+    </div>
+  );
+  return (
+    <WizardContext.Provider value={{ variant, cancel: footer, summary }}>
+      {variant === 'embedded' ? (
+        <div className="h-full overflow-hidden bg-[var(--color-bg-page)]">{inner}</div>
+      ) : (
+        inner
+      )}
+    </WizardContext.Provider>
+  );
+}
+
 // ── WizardFrame ──────────────────────────────────────────────────────────────
 
 export function WizardFrame({
@@ -429,6 +644,7 @@ export function WizardFrame({
   onStepSelect,
   canSelectStep,
   footer,
+  summary,
   className,
   children,
   open,
@@ -500,26 +716,28 @@ export function WizardFrame({
     );
   }
 
-  // ── Inline / embedded — top stepper filling the host or the content area ───────
-  // `inline` is hosted by the drawer/modal detail panel (which supplies close /
-  // switch / maximize); `embedded` is the in-flow full page inside the dashboard
-  // chrome. Identical frame — the host just differs.
+  // ── Inline / embedded — the F layout (form column + live summary) ─────────────
+  // `inline` is hosted by the drawer/modal detail panel (which supplies the title
+  // + close/switch/maximize chrome), so it omits the title strip; `embedded` is
+  // the in-flow full page inside the dashboard chrome, so it shows the title.
+  // `context` (the old per-step rail note) is intentionally dropped here — the
+  // step's own supporting copy carries the guidance and the summary fills the
+  // space. The `onStepSelect`/`canSelectStep` jump-to-step affordance lives on
+  // the immersive rail + self-owned modal; the compact MiniProgress is display-only.
   if (variant === 'inline' || variant === 'embedded') {
     return (
-      <WizardContext.Provider value={{ variant: 'modal' }}>
-        <TopStepperFrame
-          title={title}
-          steps={steps}
-          current={current}
-          context={context}
-          onStepSelect={onStepSelect}
-          canSelectStep={selectable}
-          footer={footer}
-          className={className}
-        >
-          {children}
-        </TopStepperFrame>
-      </WizardContext.Provider>
+      <FWizardFrame
+        variant={variant}
+        showHeader={variant === 'embedded'}
+        title={title}
+        steps={steps}
+        current={current}
+        summary={summary}
+        footer={footer}
+        className={className}
+      >
+        {children}
+      </FWizardFrame>
     );
   }
 
@@ -604,7 +822,7 @@ function StepHeader({ header }: { header: NonNullable<WizardStepProps['header']>
   );
 }
 
-function ActionRow({ actions }: { actions: WizardStepActions }) {
+function ActionRow({ actions, cancel }: { actions?: WizardStepActions; cancel?: React.ReactNode }) {
   const {
     onBack,
     backLabel = 'Back',
@@ -615,10 +833,12 @@ function ActionRow({ actions }: { actions: WizardStepActions }) {
     onSkip,
     skipLabel = 'Skip for now',
     extra,
-  } = actions;
+  } = actions ?? {};
   return (
     <div className="flex items-center justify-between gap-3">
-      <div>
+      {/* F variants seat Cancel here (leftmost) so there's one bottom toolbar. */}
+      <div className="flex items-center gap-2">
+        {cancel}
         {onBack && (
           <Button variant="ghost" color="neutral" onClick={onBack}>
             {backLabel}
@@ -654,16 +874,21 @@ export function WizardStep({
   className,
   children,
 }: WizardStepProps) {
-  const { variant } = React.useContext(WizardContext);
+  const { variant, cancel, summary } = React.useContext(WizardContext);
+  const isF = variant === 'inline' || variant === 'embedded';
+  const topStepper = isF || variant === 'modal';
 
-  // Top-stepper variants (context reports 'modal'): a flex column that fills the
-  // pane — a scrolling body and an action row pinned to the bottom edge. Both the
-  // body and the action row center on the same column width.
-  if (variant === 'modal') {
+  // Top-stepper family (inline / embedded / self-owned modal): a flex column that
+  // fills the pane — a scrolling body and an action row pinned to the bottom edge,
+  // both centered on the same column width. The F variants additionally seat
+  // Cancel in the toolbar and, when too narrow for the summary aside, stack the
+  // summary as a card after the fields (container query — see FWizardFrame).
+  if (topStepper) {
+    const colWidth = isF ? 'max-w-3xl' : WIDTH_CLASS[width];
     return (
       <div className={cn('flex h-full flex-col', className)}>
         <div className="min-h-0 flex-1 overflow-y-auto">
-          <div className={cn('mx-auto w-full px-7 py-6 max-[680px]:px-5', WIDTH_CLASS[width])}>
+          <div className={cn('mx-auto w-full px-7 py-6 max-[680px]:px-5', colWidth)}>
             {header && <StepHeader header={header} />}
             <div
               className={cn(
@@ -673,12 +898,22 @@ export function WizardStep({
             >
               {children}
             </div>
+            {isF && summary && (
+              <div
+                className={cn(
+                  'mt-6 rounded-xl border border-[var(--color-border-default)] px-5 py-4 @[720px]:hidden',
+                  SUMMARY_BG
+                )}
+              >
+                {summary}
+              </div>
+            )}
           </div>
         </div>
-        {actions && (
+        {(actions != null || (isF && cancel != null)) && (
           <div className="shrink-0 border-t border-[var(--color-border-default)] bg-[var(--color-bg-surface)]">
-            <div className={cn('mx-auto w-full px-7 py-4 max-[680px]:px-5', WIDTH_CLASS[width])}>
-              <ActionRow actions={actions} />
+            <div className={cn('mx-auto w-full px-7 py-4 max-[680px]:px-5', colWidth)}>
+              <ActionRow actions={actions} cancel={isF ? cancel : undefined} />
             </div>
           </div>
         )}

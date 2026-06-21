@@ -37,6 +37,33 @@ export interface CalendarConnection {
   createdAt: string;
 }
 
+/** A recurring booking series (docs/79 §7.6) — its RRULE + occurrence counts. */
+export interface BookingSeriesSummary {
+  id: string;
+  serviceId: string;
+  serviceName: string | null;
+  rrule: string;
+  status: string;
+  customerId: string | null;
+  resourceIds: string[];
+  materializedThrough: string | null;
+  totalBookings: number;
+  upcomingBookings: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BookingSeriesOccurrence {
+  id: string;
+  status: string;
+  startAt: string;
+  endAt: string;
+}
+
+export interface BookingSeriesDetail extends BookingSeriesSummary {
+  bookings: BookingSeriesOccurrence[];
+}
+
 export interface SchedulingService {
   id: string;
   bookingType: BookingType;

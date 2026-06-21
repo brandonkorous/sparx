@@ -1,6 +1,6 @@
-# sparx Platform — Wizard Layout Pattern
+# sparx Platform — Form & Wizard Layout Pattern
 
-**Version:** 2.0
+**Version:** 3.0
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-20
 
@@ -8,73 +8,85 @@
 
 ## 1. Purpose
 
-One layout language for every guided, multi-step flow in the platform — onboarding, blueprint installs, the create-wizards (Product, Customer, B2B Account, Document, Content, …), import flows, and any future setup sequence.
+One layout language for every **form surface** in the platform — create and edit forms, the multi-step create-wizards (Product, Quote, Order, Customer, B2B Account, Document, Content, …), onboarding, blueprint installs, and any future setup sequence.
 
-It ships in **two presentations of the same journey model**:
+It ships in **two presentations of the same model**:
 
-1. **The in-app top stepper** — the default for every wizard launched _inside_ the dashboard. A light, module-tinted **horizontal stepper** above a working pane, on the dashboard's normal surface language. It renders **inside the app chrome** (sidebar + header stay put), so "full page" no longer means "escape the app." The same frame backs a full page, a drawer, and a modal.
+1. **The in-app form surface (the "F layout")** — the default for every form/wizard launched _inside_ the dashboard. A working pane on the dashboard's normal surface language, with a compact progress strip and an optional **live summary** column. It renders **inside the app chrome** (sidebar + header stay put), so "full page" never means "escape the app." The same frame backs a full page, a drawer, and a modal — _learn one, know all_.
 2. **The immersive rail** — a full-bleed two-pane frame with a flat module-colored **left rail**, owning the whole viewport. Reserved for **first-run onboarding / blueprint install**, where there is no app chrome yet and the branded moment fits.
 
-This doc owns the **layout**. The **flows** inside it (which steps, which fields, validation) are owned by their feature docs — onboarding by [docs/15](15-merchant-onboarding-prd.md), the create-wizards by [docs/68](68-wizards-import-export-bulk.md).
+This doc owns the **layout**. The **flows** inside it (which steps, which fields, validation) are owned by their feature docs — onboarding by [docs/15](15-merchant-onboarding-prd.md), the create-wizards by [docs/68](68-wizards-import-export-bulk.md). The **wiring** of a form into the drawer/modal/full-page system is the [`form-surface`](../.claude/skills/form-surface/SKILL.md) skill.
 
-> **v2 change:** earlier versions used the dark left rail for _every_ wizard, forcing the in-dashboard `/new` routes to cover the sidebar/header with a `fixed inset-0` overlay (a second rail beside the app's own nav). That is replaced by the top stepper for all in-app wizards; the rail is kept only for onboarding. See §6.
-
----
-
-## 2. The in-app top stepper (default)
-
-```
-┌─────────────────────────────────────────────────────┐
-│  New document                                Cancel  │  ← header: title + footer
-├─────────────────────────────────────────────────────┤
-│   ①────────②────────③────────④────────⑤            │  ← horizontal stepper
-│  Bill to   Lines   Charges  Deposit  Review          │     (module-tinted)
-├─────────────────────────────────────────────────────┤
-│                                                       │
-│     Step headline                                     │
-│     Supporting line                                   │
-│     ┌───────────────────────────────────────────┐    │  ← working pane (scrolls)
-│     │  the step's content                        │    │
-│     └───────────────────────────────────────────┘    │
-│                                                       │
-├─────────────────────────────────────────────────────┤
-│  [ Back ]                              [ Continue ]   │  ← action row (pinned)
-└─────────────────────────────────────────────────────┘
-```
-
-- **Header (top): the constant identity.** The wizard's title (e.g. "New document") on the left; a footer affordance (Cancel / Save & exit) on the right. Omitted when neither is supplied.
-- **Stepper (below header): the progress.** A horizontal row of numbered markers with connectors — `done` (filled + check), `current` (filled + ring), `upcoming` (outline). Visited steps are clickable (you can't skip ahead). Connectors fill with the module color up to the current step. It sits on `--color-bg-surface`, tinted with the active module color — **never** a dark rail.
-- **Working pane: the variable.** A left-aligned step headline + supporting line, the step body, then the action row. The pane **scrolls internally**; the header, stepper, and action row stay put.
-- **Action row (pinned): fixed placement.** Back (ghost, left), primary advance (`color="module"`, right), Skip ("Skip for now") beside the primary when a step is genuinely optional. Pinned to the bottom edge so it never scrolls away.
-
-**Why a top stepper and not the dark rail:** inside the dashboard the colored side-rail competes with the app's own left nav (two rails), which is exactly why the old full-page wizard had to take over the whole viewport. A horizontal stepper on the dashboard's surface language sits _inside_ the chrome, reads as part of the app, and renders identically in a page, a drawer, or a modal — "learn one, know all."
+> **v3 change:** the in-app presentation moved from a dark left rail (v1) → a horizontal numbered top stepper (v2) → the **F layout** (v3): a compact segmented progress strip, a form column, and an optional live **summary** column that earns the width instead of leaving it empty. Cancel moved into the bottom toolbar; the embedded full page became a contained, centered sheet. The numbered top stepper survives only in the self-owned `modal` variant (e.g. New site). The immersive rail (onboarding) is unchanged.
 
 ---
 
-## 3. The three in-app variants (same top stepper)
+## 2. The F layout (in-app default)
 
-All three render the identical header + stepper + working-pane frame; only the host differs.
+```
+┌──────────────────────────────────────────────┬───────────────┐
+│  New quote                          ⤢  ▢  ✕   │               │ ← header
+├──────────────────────────────────────────────┤  Draft        │
+│  ▰▰▱▱   Bill to · step 1 of 4                  │  summary      │ ← MiniProgress
+│                                                │               │
+│   Step headline                                │  Quote for —  │ ← summary
+│   Supporting line                              │  Currency USD │   (optional,
+│   ┌────────────────────────────────────────┐  │  Line items 0 │    full height,
+│   │  the step's fields                      │  │  ─────────────│    module tint)
+│   └────────────────────────────────────────┘  │  Total  $0.00 │
+│                                                │               │
+├──────────────────────────────────────────────┤  ● Draft —    │
+│  Cancel                          [ Continue ]  │    editable   │ ← toolbar (form col)
+└──────────────────────────────────────────────┴───────────────┘
+```
 
-| Variant    | Host                                                                            | Used by                                                                  |
-| ---------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `embedded` | In-flow, fills the dashboard **content area** (sidebar + header stay)           | The full-page `/new` create routes — the "full page" option              |
-| `inline`   | Fills a **drawer / modal detail panel** that supplies its own close chrome      | The create overlays (the `@detail` slot), picked by `defaultDetailView`  |
-| `modal`    | A **self-owned Radix dialog** (centered, `min(680px,88vh)` × `min(920px,94vw)`) | Stand-alone create wizards not wired to the detail panel (e.g. New site) |
+- **Header — the constant identity.** The form's title on the left (e.g. "New quote"); window controls on the right with **Close last** (the corner): maximize → switch drawer/modal → close. In the `inline` (drawer/modal) presentation the **host chrome supplies this header**; the `embedded` full page renders just the title (the breadcrumb owns nav, so no window controls).
+- **MiniProgress (below header) — the progress.** A row of segments filled through the current step, then **"{label} · step _n_ of _N_"**. Display-only and compact; on a multi-step form it orients without competing. (Single-step forms omit it.)
+- **Form column — the variable.** A left-aligned step headline + supporting line, the step body, then the action toolbar. The body **scrolls internally**; header, progress, and toolbar stay put. Content centers on a readable column (`max-w-3xl`).
+- **Summary column — the quiet reference (optional).** A module-tinted right column that runs **full height** beside the form, building live as the user fills (e.g. a quote's party, line count, subtotal, total + a draft badge). It turns the horizontal space into something useful instead of a dead gutter. Omit it for forms without a natural summary — the form then fills the width.
+- **Action toolbar (pinned, under the form column only).** **Cancel** (left) + Back, then the primary advance on the right (`color="module"`); Skip beside the primary when a step is genuinely optional. The summary column runs to the floor beside it.
 
-### How a create-wizard chooses
+**Why the F layout:** a centered form in a wide modal/page leaves dead side gutters; a tall frame on a short step leaves a dead vertical void; a dark side-rail competes with the app's own nav. The F layout fixes all three — the form fills its column, the summary earns the rest of the width, and there is one cohesive header and one bottom toolbar.
 
-Each create-wizard takes a `presentation` prop and renders one frame:
+---
+
+## 3. The three in-app presentations (same F layout)
+
+All three render the identical frame; only the host differs.
+
+| Variant    | Host                                                                                                                  | Header                                | Used by                                                                 |
+| ---------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------- |
+| `embedded` | In-flow, fills the dashboard **content area** as a **contained, centered sheet** (capped width, page bg on the sides) | Title strip (no window controls)      | The full-page `/new` (and `/{id}/edit`) routes — the "full page" option |
+| `inline`   | Fills a **drawer / modal detail panel** that supplies the chrome                                                      | Host chrome (title + window controls) | The create overlays (the `@detail` slot), picked by `defaultDetailView` |
+| `modal`    | A **self-owned Radix dialog** (numbered top stepper, not the F layout)                                                | Own header                            | Stand-alone wizards not wired to the detail panel (e.g. New site)       |
+
+### How a form chooses
+
+Each form takes a `presentation` prop and renders one frame:
 
 ```
 variant={presentation === 'overlay' ? 'inline' : 'embedded'}
 ```
 
 - The `/new` route renders `presentation="page"` → `embedded`.
-- The dashboard "New X" button (`EntityCreateButton`) resolves the user's `defaultDetailView` (drawer / modal / full page / new tab). Drawer + modal open the wizard as `inline` inside the `@detail` panel; "full page" navigates to the `/new` route (`embedded`); new tab opens it there in a new tab. See [docs/24](24-dashboard-shell.md) and the detail-view registry.
+- The dashboard "New X" button (`EntityCreateButton`) resolves the user's `defaultDetailView` (drawer / modal / full page / new tab). Drawer + modal open the form as `inline` inside the `@detail` panel; "full page" navigates to `/new` (`embedded`); new tab opens it there. See [docs/24](24-dashboard-shell.md) and the detail-view registry.
 
-### Responsive (top-2 rule)
+### Modal width keys off the form, not a constant
 
-Below ~680px the stepper collapses to a single centered line — **"Step _n_ of _N_ · {label}"** — and the working pane goes full width; two-column step bodies stack. The modal variant becomes a full-screen sheet below ~940px.
+The drawer/modal host sizes the dialog by purpose (`detail-registry` `SUMMARY_CREATE_TYPES`):
+
+- **Create + has a summary** → wider dialog (`~960px`) so form + summary both fit.
+- **Create, no summary** → tighter dialog (`~720px`) so a lone form never floats with gutters.
+- **Record detail** → the full canvas (`~1200px`).
+
+A form joins `SUMMARY_CREATE_TYPES` **only once it actually passes a `summary`** — otherwise the wide dialog frames a narrow form with empty gutters.
+
+### Responsive — by CONTAINER width (the top-2 rule)
+
+The split is a **container query (`@container` + `@[720px]`), not a viewport media query** — so a narrow drawer collapses even on a wide screen:
+
+- **≥ 720px (modal, full page, wide drawer):** two columns — form + full-height summary aside.
+- **< 720px (narrow drawer, small viewport):** one column — the summary **stacks as a card** after the fields; the toolbar stays pinned at the bottom.
 
 ---
 
@@ -86,7 +98,7 @@ Below ~680px the stepper collapses to a single centered line — **"Step _n_ of 
 │  (module     │  Supporting line                       │
 │   color)     │                                        │
 │  wordmark    │  ┌─────────────────────────────────┐  │
-│  lede        │  │   WORKING PANE                    │  │
+│  lede        │  │   WORKING PANE                   │  │
 │  ① done      │  │                                  │  │
 │  ② current   │  └─────────────────────────────────┘  │
 │  context     │  [ Back ]               [ Continue ]   │
@@ -99,24 +111,25 @@ The full-bleed two-pane frame with a flat module-colored left rail (brand wordma
 - Below ~940px the rail collapses to a slim top bar with dot progress (`RailTopBar`).
 - The rail (`RAIL_BG`, `RailWordmark`) shares one source of truth with the auth split-panel via `brand-rail`.
 
-### When to use the rail vs. the top stepper
+### When to use the rail vs. the F layout
 
-| Use the **immersive rail** (`page`)            | Use the **top stepper** (`embedded`/`inline`/`modal`) |
-| ---------------------------------------------- | ----------------------------------------------------- |
-| User is not yet in the app (first-run setup)   | User is already working in the dashboard              |
-| Once-per-tenant onboarding / blueprint install | Repeated, on-demand creation of an object             |
-| The flow _is_ the destination                  | The flow returns you to where you were                |
+| Use the **immersive rail** (`page`)            | Use the **F layout** (`embedded`/`inline`)   |
+| ---------------------------------------------- | -------------------------------------------- |
+| User is not yet in the app (first-run setup)   | User is already working in the dashboard     |
+| Once-per-tenant onboarding / blueprint install | Repeated, on-demand create/edit of an object |
+| The flow _is_ the destination                  | The flow returns you to where you were       |
 
 ---
 
-## 5. Shared rules (both presentations)
+## 5. Shared rules (every presentation)
 
-- **Progress is always visible.** The stepper (in-app) or the rail journey (onboarding) shows done / current / upcoming on every step. No floating "Step 2 of 4" badge in the pane (except the in-app compact line at the narrow breakpoint, which _is_ the stepper).
-- **One headline pattern.** Left-aligned heading + muted supporting line at the top of the pane. No centered hero stacks; no uppercase mono eyebrows (no-eyebrows rule).
-- **Action placement is fixed.** Back left, primary right, Skip beside the primary. Primary uses `color="module"`; everything else ghost/soft/outline.
-- **Motion:** the working pane content does a small `fadeUp` on step change (~0.3–0.4s); the stepper/rail is static. Respect `prefers-reduced-motion`.
+- **Progress is always visible** on a multi-step flow — MiniProgress (F layout) or the rail journey (onboarding). No floating "Step 2 of 4" badge invented elsewhere.
+- **One headline pattern.** Left-aligned heading + muted supporting line at the top of the pane. No centered hero stacks; **no uppercase mono eyebrows** (no-eyebrows rule) — that includes the summary's heading.
+- **One bottom toolbar.** Cancel left, Back beside it, primary right (`color="module"`), Skip beside the primary. Never a second Cancel/Close in the body when the host chrome already has one.
+- **The summary is a reference, not a step.** It never holds inputs or the primary action; it mirrors what the form is building. It's an optional slot — present it only when the record has a natural running summary.
+- **Motion:** the working-pane content does a small `fadeUp` on step change (~0.3s); the progress/rail is static. Respect `prefers-reduced-motion`.
 - **State is preserved on Back.** Going back never clears entered data.
-- **Tokens only.** Geist; module color via `--module-active` (+ `-tint`, `-content`); neutrals/radii from `@sparx/ui` tokens — no hardcoded colors.
+- **Tokens only.** Geist; module color via `--module-active` (+ `-tint`, `-content`); neutrals/radii from `@sparx/ui` tokens — no hardcoded colors. The summary tint is `color-mix(module 6%, surface)`.
 
 ---
 
@@ -124,36 +137,57 @@ The full-bleed two-pane frame with a flat module-colored left rail (brand wordma
 
 A single `@sparx/ui` primitive — [`WizardFrame`](../packages/ui/src/components/navigation/wizard-frame.tsx) — backs all presentations so they cannot drift:
 
-```
-<WizardFrame variant="embedded" | "inline" | "modal" | "page"
-             title | wordmark
-             steps={[{ key, label, sublabel }]}
-             current
-             context={perStepHint}
-             lede={perStepLede}          // page variant only
-             onStepSelect canSelectStep
-             footer={cancelButton}>
-   <WizardStep header={{ title, supporting }} actions={{ onBack, onNext, onSkip }}>
-     …step body…
-   </WizardStep>
+```tsx
+<WizardFrame
+  variant={presentation === 'overlay' ? 'inline' : 'embedded'} // | 'modal' | 'page'
+  title="New quote" // shown by the embedded title strip / self-owned modal
+  steps={[{ key, label, sublabel }]}
+  current={current}
+  footer={cancelButton} // F layout: seated in the bottom toolbar's left
+  summary={summaryNode} // F layout: the live right-hand column (optional)
+>
+  <WizardStep header={{ title, supporting }} actions={{ onBack, onNext, onSkip }}>
+    …step body…
+  </WizardStep>
 </WizardFrame>
 ```
 
-- `embedded` / `inline` render the top-stepper shell as in-flow content (`h-full`, filling the content area or the host panel). `modal` renders the same shell inside a Radix Dialog. `page` renders the immersive rail grid.
-- `WizardStep` adapts to the frame: the top-stepper variants give it a **scrolling body + pinned action row**, both centered on the `width` column; the `page` rail gives it a flowing centered column.
+The summary is composed from exported primitives so every form's summary looks identical:
+
+```tsx
+const summary = (
+  <WizardSummary
+    title="Draft summary"
+    footer={
+      <Badge color="module" variant="soft" size="sm">
+        Draft — editable after create
+      </Badge>
+    }
+  >
+    <WizardSummaryRow label="Quote for" value={party} />
+    <WizardSummaryRow label="Line items" value={String(count)} />
+    <WizardSummaryDivider />
+    <WizardSummaryRow label="Total" value={money(total)} strong />
+  </WizardSummary>
+);
+```
+
+- `inline` / `embedded` render the F layout (`embedded` as a contained centered sheet; `inline` filling its host). `modal` renders the numbered top-stepper shell inside a Radix Dialog. `page` renders the immersive rail grid.
+- `WizardStep` adapts to the frame: the F variants give it a **scrolling body + a pinned bottom toolbar** (Cancel seated left, via context) and stack the summary as a card when narrow; the `page` rail gives it a flowing centered column.
 - Module color flows from the surrounding `<ModuleProvider>`; the wrapper carries `h-full` so the frame fills its host.
-- **Who mounts what:** onboarding ([docs/15](15-merchant-onboarding-prd.md)) → `page`. The create-wizards (Product, Customer, B2B Account, Document, Content) → `embedded` at `/new`, `inline` in the detail panel. The New-site wizard → `modal`.
+- **Who mounts what:** onboarding ([docs/15](15-merchant-onboarding-prd.md)) → `page`. The create-wizards (Product, Quote, Order, …) → `embedded` at `/new`, `inline` in the detail panel (with a `summary` for record-building wizards). The New-site wizard → `modal`.
 
 ---
 
 ## 7. Cross-references
 
+- [`form-surface` skill](../.claude/skills/form-surface/SKILL.md) — the step-by-step procedure to wire a form into drawer/modal/full-page and apply this layout.
 - [docs/15](15-merchant-onboarding-prd.md) — onboarding, the canonical immersive-rail instance.
 - [docs/68](68-wizards-import-export-bulk.md) — the create-wizard flows.
 - [docs/24](24-dashboard-shell.md) — the dashboard shell + the `@detail` drawer/modal create overlays and `defaultDetailView`.
-- [docs/34](34-dashboard-working-area-standard.md) — dashboard working-area archetypes (the wizard is the guided-flow archetype).
+- [docs/34](34-dashboard-working-area-standard.md) — dashboard working-area archetypes (the form is the guided-flow archetype).
 - [docs/23](23-frontend-component-architecture.md) · [docs/35](35-ui-variant-system.md) — component architecture and the four-axis variant system the chrome is built on.
 
 ## 8. Status
 
-**Built.** `WizardFrame` (`@sparx/ui`) ships all four variants. In-app wizards (Product, Customer, B2B Account, Document, Content, New site) use the top stepper; onboarding uses the immersive rail.
+**Built.** `WizardFrame` (`@sparx/ui`) ships the F layout (`inline`/`embedded`) with the `summary` slot + `WizardSummary` primitives, the numbered self-owned `modal`, and the immersive `page` rail. Product and Quote create-wizards pass a live summary; the remaining line-item wizards (Order, PO, Transfer, Billing-document) render the form-only F modal until their summaries are wired.

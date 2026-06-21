@@ -24,6 +24,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Plus, Truck } from 'lucide-react';
 
 import {
+  Badge,
   Button,
   Card,
   CardContent,
@@ -39,6 +40,9 @@ import {
   Textarea,
   WizardFrame,
   WizardStep,
+  WizardSummary,
+  WizardSummaryDivider,
+  WizardSummaryRow,
   type WizardStepDef,
 } from '@sparx/ui';
 
@@ -495,6 +499,30 @@ function PurchaseOrderWizardInner({
     </button>
   );
 
+  // The live draft summary — the F layout's right-hand column (docs/86). Mirrors
+  // the Review step so the supplier, destination, and running cost stay visible.
+  const summary = (
+    <WizardSummary
+      title="Draft summary"
+      footer={
+        <Badge color="module" variant="soft" size="sm">
+          Draft — editable before submit
+        </Badge>
+      }
+    >
+      <WizardSummaryRow label="Supplier" value={supplierLabel} />
+      <WizardSummaryRow label="Warehouse" value={warehouseLabel} />
+      <WizardSummaryRow label="Currency" value={(currency || 'USD').toUpperCase()} />
+      <WizardSummaryRow label="Lines" value={String(lines.length)} />
+      <WizardSummaryDivider />
+      <WizardSummaryRow
+        label="Known subtotal"
+        value={`${formatMoney(knownSubtotal, currency)}${hasDefaults ? ' + defaults' : ''}`}
+        strong
+      />
+    </WizardSummary>
+  );
+
   return (
     <WizardFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
@@ -505,6 +533,7 @@ function PurchaseOrderWizardInner({
       onStepSelect={onStepSelect}
       canSelectStep={canSelectStep}
       footer={cancelButton}
+      summary={summary}
     >
       {body}
     </WizardFrame>

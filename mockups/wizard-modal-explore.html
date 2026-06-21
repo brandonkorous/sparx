@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wizard modal — design explorations</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;450;500;600&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ── sparx tokens (subset, light mode) — CRM module active ───────── */
+      :root {
+        --sparx-primary: #6366f1;
+
+        --module-active: #06b6d4; /* CRM cyan */
+        --module-active-content: #ffffff;
+        --module-active-tint: rgba(6, 182, 212, 0.12);
+        --module-active-tint-soft: rgba(6, 182, 212, 0.06);
+        --module-active-ring: rgba(6, 182, 212, 0.18);
+        --module-active-ink: #0e7490; /* deepened cyan for text on light */
+
+        --color-bg-page: #fafafa;
+        --color-bg-surface: #ffffff;
+        --color-bg-subtle: #f4f4f5;
+
+        --color-border-default: #e5e5e5;
+        --color-border-strong: #d4d4d8;
+
+        --color-text-primary: #0a0a0a;
+        --color-text-secondary: #52525b;
+        --color-text-tertiary: #a1a1aa;
+        --color-text-muted: #71717a;
+
+        --radius-md: 6px;
+        --radius-lg: 8px;
+        --radius-xl: 12px;
+        --radius-2xl: 16px;
+        --radius-full: 9999px;
+
+        --shadow-md: 0 2px 8px 0 rgb(0 0 0 / 0.08);
+        --shadow-lg: 0 18px 48px -12px rgb(0 0 0 / 0.28);
+
+        --text-xs: 0.6875rem;
+        --text-sm: 0.8125rem;
+        --text-base: 0.9375rem;
+        --text-lg: 1.0625rem;
+        --text-xl: 1.25rem;
+        --text-2xl: 1.5rem;
+
+        --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
+        --font-mono: 'Geist Mono', monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: var(--font-sans);
+        color: var(--color-text-primary);
+        background: #18181b;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+
+      /* ── stage: a dimmed dashboard backdrop behind each modal ───────── */
+      .stage {
+        position: relative;
+        min-height: 980px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 80px 40px;
+        background:
+          linear-gradient(rgba(9, 9, 11, 0.55), rgba(9, 9, 11, 0.55)),
+          repeating-linear-gradient(
+            to bottom,
+            #fafafa 0,
+            #fafafa 56px,
+            #f1f1f3 56px,
+            #f1f1f3 57px
+          );
+      }
+      .stage-label {
+        position: absolute;
+        top: 28px;
+        left: 40px;
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        color: #fff;
+        z-index: 5;
+      }
+      .stage-label .tag {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        background: var(--module-active);
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: var(--radius-full);
+        font-weight: 500;
+      }
+      .stage-label .name {
+        font-size: 18px;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+      }
+      .stage-label .desc {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      /* ── shared modal primitives ────────────────────────────────────── */
+      .modal {
+        background: var(--color-bg-surface);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-2xl);
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .winctl {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+      }
+      .winbtn {
+        width: 30px;
+        height: 30px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        color: var(--color-text-tertiary);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+      }
+      .winbtn:hover {
+        background: var(--color-bg-subtle);
+        color: var(--color-text-primary);
+      }
+      .winbtn svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      .cancel-link {
+        font-size: var(--text-sm);
+        color: var(--color-text-muted);
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .cancel-link:hover {
+        text-decoration: underline;
+      }
+
+      .modal-title {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: var(--color-text-primary);
+      }
+
+      /* form bits */
+      .step-h {
+        font-size: var(--text-2xl);
+        font-weight: 500;
+        letter-spacing: -0.025em;
+        line-height: 1.2;
+        margin: 0;
+      }
+      .step-sub {
+        margin: 8px 0 0;
+        font-size: var(--text-base);
+        color: var(--color-text-muted);
+        max-width: 54ch;
+        line-height: 1.5;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .label {
+        font-size: var(--text-sm);
+        font-weight: 500;
+        color: var(--color-text-primary);
+      }
+      .control {
+        height: 38px;
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-md);
+        background: var(--color-bg-surface);
+        padding: 0 12px;
+        font-family: inherit;
+        font-size: var(--text-base);
+        color: var(--color-text-primary);
+        width: 100%;
+        appearance: none;
+        display: flex;
+        align-items: center;
+      }
+      select.control {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        padding-right: 34px;
+        color: var(--color-text-muted);
+      }
+      .control::placeholder {
+        color: var(--color-text-tertiary);
+      }
+      .hint {
+        font-size: var(--text-xs);
+        color: var(--color-text-muted);
+        line-height: 1.5;
+        margin: 0;
+      }
+
+      .card {
+        border: 1px solid var(--color-border-default);
+        border-top: 3px solid var(--module-active);
+        border-radius: var(--radius-xl);
+        background: var(--color-bg-surface);
+        overflow: hidden;
+      }
+      .card-head {
+        padding: 16px 20px 0;
+      }
+      .card-h {
+        margin: 0;
+        font-size: var(--text-lg);
+        font-weight: 500;
+        letter-spacing: -0.01em;
+      }
+      .card-body {
+        padding: 16px 20px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+
+      .footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .btn {
+        font-family: inherit;
+        font-size: var(--text-sm);
+        font-weight: 500;
+        border-radius: var(--radius-md);
+        padding: 9px 16px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        line-height: 1;
+      }
+      .btn-ghost {
+        background: transparent;
+        color: var(--color-text-secondary);
+        border-color: transparent;
+      }
+      .btn-ghost:hover {
+        background: var(--color-bg-subtle);
+      }
+      .btn-primary {
+        background: var(--module-active);
+        color: var(--module-active-content);
+      }
+      .btn-primary[disabled] {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+
+      /* ── TOP STEPPER (numbered, horizontal) ─────────────────────────── */
+      .stepper {
+        display: flex;
+        align-items: flex-start;
+      }
+      .stepper .step {
+        position: relative;
+        flex: 1 1 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+      .stepper .step .connector {
+        position: absolute;
+        top: 13px;
+        right: 50%;
+        left: -50%;
+        height: 2px;
+        background: var(--color-border-default);
+      }
+      .stepper .step.done .connector,
+      .stepper .step.current .connector {
+        background: var(--module-active);
+      }
+      .dot {
+        position: relative;
+        z-index: 1;
+        width: 28px;
+        height: 28px;
+        border-radius: var(--radius-full);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 600;
+        border: 1px solid var(--color-border-strong);
+        background: var(--color-bg-surface);
+        color: var(--color-text-muted);
+      }
+      .step.current .dot {
+        background: var(--module-active);
+        color: #fff;
+        border-color: transparent;
+        box-shadow: 0 0 0 4px var(--module-active-ring);
+      }
+      .step.done .dot {
+        background: var(--module-active);
+        color: #fff;
+        border-color: transparent;
+      }
+      .step .lbl {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--color-text-muted);
+        text-align: center;
+      }
+      .step.current .lbl,
+      .step.done .lbl {
+        color: var(--color-text-primary);
+      }
+
+      /* ════════════════════════════════════════════════════════════════
+         VERSION A — Slim top stepper, full-bleed form
+         ════════════════════════════════════════════════════════════════ */
+      .va {
+        width: 640px;
+      }
+      .va .chrome {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        height: 52px;
+        padding: 0 10px 0 8px;
+        border-bottom: 1px solid var(--color-border-default);
+      }
+      .va .chrome .divider {
+        width: 1px;
+        height: 20px;
+        background: var(--color-border-default);
+        margin: 0 4px;
+      }
+      .va .chrome .spacer {
+        flex: 1;
+      }
+      .va .stepwrap {
+        padding: 18px 28px 4px;
+      }
+      .va .body {
+        padding: 22px 28px 26px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .va .footer {
+        padding: 14px 28px;
+        border-top: 1px solid var(--color-border-default);
+      }
+
+      /* ════════════════════════════════════════════════════════════════
+         VERSION B — Left journey rail
+         ════════════════════════════════════════════════════════════════ */
+      .vb {
+        width: 880px;
+      }
+      .vb .grid {
+        display: grid;
+        grid-template-columns: 248px 1fr;
+        min-height: 460px;
+      }
+      .vb .rail {
+        background: var(--module-active-tint-soft);
+        border-right: 1px solid var(--color-border-default);
+        padding: 22px 22px 20px;
+        display: flex;
+        flex-direction: column;
+      }
+      .vb .rail .rail-title {
+        font-size: var(--text-base);
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        margin: 0 0 22px;
+      }
+      .vb .vsteps {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .vb .vstep {
+        position: relative;
+        display: grid;
+        grid-template-columns: 28px 1fr;
+        gap: 12px;
+        padding: 6px 0;
+        align-items: start;
+      }
+      .vb .vstep .vdot {
+        position: relative;
+        z-index: 1;
+        width: 28px;
+        height: 28px;
+        border-radius: var(--radius-full);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 600;
+        border: 1px solid var(--color-border-strong);
+        background: var(--color-bg-surface);
+        color: var(--color-text-muted);
+      }
+      .vb .vstep.current .vdot {
+        background: var(--module-active);
+        color: #fff;
+        border-color: transparent;
+        box-shadow: 0 0 0 4px var(--module-active-ring);
+      }
+      .vb .vstep.done .vdot {
+        background: var(--module-active);
+        color: #fff;
+        border-color: transparent;
+      }
+      .vb .vstep .vconn {
+        position: absolute;
+        left: 13px;
+        top: 34px;
+        width: 2px;
+        height: calc(100% - 22px);
+        background: var(--color-border-default);
+      }
+      .vb .vstep.done .vconn {
+        background: var(--module-active);
+      }
+      .vb .vstep .vmeta {
+        padding-top: 4px;
+      }
+      .vb .vstep .vlbl {
+        display: block;
+        font-size: var(--text-sm);
+        font-weight: 500;
+        line-height: 1.2;
+        color: var(--color-text-muted);
+      }
+      .vb .vstep.current .vlbl,
+      .vb .vstep.done .vlbl {
+        color: var(--color-text-primary);
+      }
+      .vb .vstep .vslbl {
+        display: block;
+        font-size: var(--text-xs);
+        color: var(--color-text-tertiary);
+        margin-top: 2px;
+      }
+      .vb .rail-foot {
+        margin-top: auto;
+        padding-top: 16px;
+      }
+      .vb .ctx {
+        background: var(--color-bg-surface);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-lg);
+        padding: 10px 12px;
+        font-size: var(--text-xs);
+        color: var(--color-text-muted);
+        line-height: 1.5;
+      }
+      .vb .pane {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      }
+      .vb .pane .pane-chrome {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        z-index: 2;
+      }
+      .vb .pane .pane-body {
+        flex: 1;
+        padding: 30px 30px 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .vb .pane .footer {
+        padding: 14px 30px;
+        border-top: 1px solid var(--color-border-default);
+      }
+
+      /* ════════════════════════════════════════════════════════════════
+         VERSION C — Branded header band + connected progress
+         ════════════════════════════════════════════════════════════════ */
+      .vc {
+        width: 720px;
+      }
+      .vc .band {
+        position: relative;
+        background: linear-gradient(
+          180deg,
+          var(--module-active-tint) 0%,
+          var(--module-active-tint-soft) 100%
+        );
+        border-bottom: 1px solid var(--color-border-default);
+        padding: 16px 20px 18px;
+      }
+      .vc .band .band-top {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .vc .band .band-title {
+        font-size: var(--text-base);
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      .vc .band .spacer {
+        flex: 1;
+      }
+      .vc .band .winbtn:hover {
+        background: rgba(255, 255, 255, 0.6);
+      }
+      .vc .body {
+        padding: 26px 30px 26px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .vc .footer {
+        padding: 14px 30px;
+        border-top: 1px solid var(--color-border-default);
+      }
+      .segs {
+        display: flex;
+        gap: 8px;
+      }
+      .seg {
+        flex: 1 1 0;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+      .seg .bar {
+        height: 4px;
+        border-radius: var(--radius-full);
+        background: rgba(9, 9, 11, 0.1);
+      }
+      .seg.done .bar,
+      .seg.current .bar {
+        background: var(--module-active);
+      }
+      .seg .seg-lbl {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: var(--text-xs);
+        font-weight: 500;
+        color: var(--color-text-muted);
+      }
+      .seg.current .seg-lbl {
+        color: var(--module-active-ink);
+      }
+      .seg .num {
+        font-variant-numeric: tabular-nums;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ════════════════ VERSION A ════════════════ -->
+    <section class="stage">
+      <div class="stage-label">
+        <span class="tag">Version A</span>
+        <span class="name">Slim top stepper</span>
+        <span class="desc">Narrow, form-first — content fills edge to edge, height hugs the step.</span>
+      </div>
+
+      <div class="modal va">
+        <div class="chrome">
+          <span class="winctl">
+            <button class="winbtn" title="Close" aria-label="Close">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+            </button>
+            <button class="winbtn" title="Open in full page">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg>
+            </button>
+            <button class="winbtn" title="Switch to drawer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M15 3v18" /></svg>
+            </button>
+          </span>
+          <span class="divider"></span>
+          <span class="modal-title">New quote</span>
+          <span class="spacer"></span>
+          <a class="cancel-link">Cancel</a>
+        </div>
+
+        <div class="stepwrap">
+          <div class="stepper">
+            <div class="step current">
+              <span class="dot">1</span><span class="lbl">Bill to</span>
+            </div>
+            <div class="step">
+              <span class="connector"></span><span class="dot">2</span><span class="lbl">Line items</span>
+            </div>
+            <div class="step">
+              <span class="connector"></span><span class="dot">3</span><span class="lbl">Terms</span>
+            </div>
+            <div class="step">
+              <span class="connector"></span><span class="dot">4</span><span class="lbl">Review</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="body">
+          <div>
+            <h2 class="step-h">Who is this quote for?</h2>
+            <p class="step-sub">Anchor the quote to a retail customer, a B2B account, or both.</p>
+          </div>
+          <div class="grid2">
+            <div class="field">
+              <label class="label">Customer</label>
+              <select class="control"><option>(none)</option></select>
+            </div>
+            <div class="field">
+              <label class="label">B2B account</label>
+              <select class="control"><option>(none)</option></select>
+            </div>
+          </div>
+          <p class="hint">At least one of customer or B2B account is required. A B2B account can also carry a contact customer.</p>
+          <div class="field" style="max-width: 9rem">
+            <label class="label">Currency</label>
+            <input class="control" value="USD" />
+          </div>
+        </div>
+
+        <div class="footer">
+          <button class="btn btn-ghost" style="visibility: hidden">Back</button>
+          <button class="btn btn-primary" disabled>Continue</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════ VERSION B ════════════════ -->
+    <section class="stage">
+      <div class="stage-label">
+        <span class="tag">Version B</span>
+        <span class="name">Left journey rail</span>
+        <span class="desc">A light, module-tinted step rail fills the left — the form owns the right.</span>
+      </div>
+
+      <div class="modal vb">
+        <div class="grid">
+          <aside class="rail">
+            <p class="rail-title">New quote</p>
+            <div class="vsteps">
+              <div class="vstep current">
+                <span class="vdot">1</span>
+                <span class="vmeta"><span class="vlbl">Bill to</span><span class="vslbl">Customer</span></span>
+              </div>
+              <div class="vstep">
+                <span class="vdot">2</span>
+                <span class="vmeta"><span class="vlbl">Line items</span><span class="vslbl">The quote</span></span>
+              </div>
+              <div class="vstep">
+                <span class="vdot">3</span>
+                <span class="vmeta"><span class="vlbl">Terms</span><span class="vslbl">Shipping &amp; notes</span></span>
+              </div>
+              <div class="vstep">
+                <span class="vdot">4</span>
+                <span class="vmeta"><span class="vlbl">Review</span><span class="vslbl">Create</span></span>
+              </div>
+            </div>
+            <div class="rail-foot">
+              <div class="ctx">At least one of customer or B2B account is required.</div>
+            </div>
+          </aside>
+
+          <div class="pane">
+            <div class="pane-chrome">
+              <span class="winctl">
+                <button class="winbtn" title="Open in full page">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg>
+                </button>
+                <button class="winbtn" title="Switch to drawer">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M15 3v18" /></svg>
+                </button>
+                <button class="winbtn" title="Close" aria-label="Close">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+                </button>
+              </span>
+            </div>
+            <div class="pane-body">
+              <div>
+                <h2 class="step-h">Who is this quote for?</h2>
+                <p class="step-sub">Anchor the quote to a retail customer, a B2B account, or both.</p>
+              </div>
+              <div class="grid2">
+                <div class="field">
+                  <label class="label">Customer</label>
+                  <select class="control"><option>(none)</option></select>
+                </div>
+                <div class="field">
+                  <label class="label">B2B account</label>
+                  <select class="control"><option>(none)</option></select>
+                </div>
+              </div>
+              <p class="hint">A B2B account can also carry a contact customer.</p>
+              <div class="field" style="max-width: 9rem">
+                <label class="label">Currency</label>
+                <input class="control" value="USD" />
+              </div>
+            </div>
+            <div class="footer">
+              <button class="btn btn-ghost" style="visibility: hidden">Back</button>
+              <button class="btn btn-primary" disabled>Continue</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════ VERSION C ════════════════ -->
+    <section class="stage">
+      <div class="stage-label">
+        <span class="tag">Version C</span>
+        <span class="name">Branded header band</span>
+        <span class="desc">A module-tinted header anchors the title + connected progress; form fills below.</span>
+      </div>
+
+      <div class="modal vc">
+        <div class="band">
+          <div class="band-top">
+            <span class="band-title">New quote</span>
+            <span class="spacer"></span>
+            <span class="winctl">
+              <button class="winbtn" title="Open in full page">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg>
+              </button>
+              <button class="winbtn" title="Switch to drawer">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M15 3v18" /></svg>
+              </button>
+              <button class="winbtn" title="Close" aria-label="Close">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+              </button>
+            </span>
+          </div>
+          <div class="segs">
+            <div class="seg current">
+              <span class="bar"></span>
+              <span class="seg-lbl"><span class="num">1</span> Bill to</span>
+            </div>
+            <div class="seg">
+              <span class="bar"></span>
+              <span class="seg-lbl"><span class="num">2</span> Line items</span>
+            </div>
+            <div class="seg">
+              <span class="bar"></span>
+              <span class="seg-lbl"><span class="num">3</span> Terms</span>
+            </div>
+            <div class="seg">
+              <span class="bar"></span>
+              <span class="seg-lbl"><span class="num">4</span> Review</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="body">
+          <div>
+            <h2 class="step-h">Who is this quote for?</h2>
+            <p class="step-sub">Anchor the quote to a retail customer, a B2B account, or both.</p>
+          </div>
+          <div class="grid2">
+            <div class="field">
+              <label class="label">Customer</label>
+              <select class="control"><option>(none)</option></select>
+            </div>
+            <div class="field">
+              <label class="label">B2B account</label>
+              <select class="control"><option>(none)</option></select>
+            </div>
+          </div>
+          <p class="hint">At least one of customer or B2B account is required. A B2B account can also carry a contact customer.</p>
+          <div class="field" style="max-width: 9rem">
+            <label class="label">Currency</label>
+            <input class="control" value="USD" />
+          </div>
+        </div>
+
+        <div class="footer">
+          <button class="btn btn-ghost" style="visibility: hidden">Back</button>
+          <button class="btn btn-primary" disabled>Continue</button>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

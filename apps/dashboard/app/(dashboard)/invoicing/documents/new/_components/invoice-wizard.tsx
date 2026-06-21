@@ -44,6 +44,9 @@ import {
   Textarea,
   WizardFrame,
   WizardStep,
+  WizardSummary,
+  WizardSummaryDivider,
+  WizardSummaryRow,
   type WizardStepDef,
 } from '@sparx/ui';
 
@@ -940,6 +943,55 @@ function InvoiceWizardInner({
     </button>
   );
 
+  // The live draft summary — the F layout's right-hand column (docs/86). Mirrors
+  // the Review step's totals + deposit so the running figures track from step one;
+  // the footer reflects the chosen start stage (it may finalize the document).
+  const startStage = stages.find((s) => s.id === startStageId);
+  const summary = (
+    <WizardSummary
+      title="Draft summary"
+      footer={
+        <Badge color="module" variant="soft" size="sm">
+          {startStage && startStageId !== firstStageId
+            ? `Starts at ${startStage.customerLabel}`
+            : 'Draft — editable after create'}
+        </Badge>
+      }
+    >
+      <WizardSummaryRow label="Workflow" value={selectedWorkflow?.name ?? '—'} />
+      <WizardSummaryRow
+        label="Bills"
+        value={partyLabel(customerId, b2bAccountId, customers, b2bAccounts)}
+      />
+      <WizardSummaryRow label="Line items" value={String(lines.length)} />
+      <WizardSummaryDivider />
+      <WizardSummaryRow label="Subtotal" value={formatMoney(subtotal, currency)} />
+      {taxTotal > 0 && (
+        <WizardSummaryRow
+          label={`Tax (${taxPct.toFixed(2)}%)`}
+          value={formatMoney(taxTotal, currency)}
+        />
+      )}
+      {shippingNum > 0 && (
+        <WizardSummaryRow label="Shipping" value={formatMoney(shippingNum, currency)} />
+      )}
+      {surchargeNum > 0 && (
+        <WizardSummaryRow label="Surcharge" value={formatMoney(surchargeNum, currency)} />
+      )}
+      <WizardSummaryDivider />
+      <WizardSummaryRow label="Total" value={formatMoney(total, currency)} strong />
+      {depositNum > 0 && (
+        <>
+          <WizardSummaryRow
+            label={`Deposit (${depositKind})`}
+            value={`- ${formatMoney(depositNum, currency)}`}
+          />
+          <WizardSummaryRow label="Balance due" value={formatMoney(balance, currency)} strong />
+        </>
+      )}
+    </WizardSummary>
+  );
+
   // One top-stepper frame for both presentations: `embedded` fills the dashboard
   // content area at `/new` (sidebar + header stay); `inline` fills the drawer/
   // modal detail panel, which supplies its own chrome.
@@ -953,6 +1005,7 @@ function InvoiceWizardInner({
       onStepSelect={onStepSelect}
       canSelectStep={canSelectStep}
       footer={cancelButton}
+      summary={summary}
     >
       {body}
     </WizardFrame>

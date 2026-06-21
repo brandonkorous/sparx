@@ -294,6 +294,9 @@ export { Stepper, type StepperProps, type StepperStep } from './components/navig
 export {
   WizardFrame,
   WizardStep,
+  WizardSummary,
+  WizardSummaryRow,
+  WizardSummaryDivider,
   type WizardFrameProps,
   type WizardStepProps,
   type WizardStepActions,

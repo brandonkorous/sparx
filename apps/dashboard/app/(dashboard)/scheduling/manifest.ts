@@ -1,5 +1,13 @@
 import type { ModuleManifest } from '@sparx/ui/shell';
-import { CalendarClock, CalendarDays, Briefcase, Users, Clock, ShieldCheck } from 'lucide-react';
+import {
+  CalendarClock,
+  CalendarDays,
+  Briefcase,
+  Users,
+  Clock,
+  Repeat,
+  ShieldCheck,
+} from 'lucide-react';
 
 export const schedulingManifest: ModuleManifest = {
   id: 'scheduling',
@@ -9,6 +17,7 @@ export const schedulingManifest: ModuleManifest = {
   sections: [
     { id: 'calendar', label: 'Calendar', icon: CalendarDays, href: '/scheduling' },
     { id: 'bookings', label: 'Bookings', icon: CalendarClock, href: '/scheduling/bookings' },
+    { id: 'series', label: 'Recurring', icon: Repeat, href: '/scheduling/series' },
     { id: 'services', label: 'Services', icon: Briefcase, href: '/scheduling/services' },
     { id: 'policies', label: 'Policies', icon: ShieldCheck, href: '/scheduling/policies' },
     { id: 'resources', label: 'Resources', icon: Users, href: '/scheduling/resources' },

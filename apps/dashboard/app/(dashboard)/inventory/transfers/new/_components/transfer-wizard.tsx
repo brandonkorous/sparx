@@ -22,6 +22,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ArrowRight, Plus, Warehouse as WarehouseIcon } from 'lucide-react';
 
 import {
+  Badge,
   Button,
   Card,
   CardContent,
@@ -37,6 +38,9 @@ import {
   Textarea,
   WizardFrame,
   WizardStep,
+  WizardSummary,
+  WizardSummaryDivider,
+  WizardSummaryRow,
   type WizardStepDef,
 } from '@sparx/ui';
 
@@ -118,6 +122,7 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
   const routeValid = Boolean(fromId) && Boolean(toId) && !sameWarehouse;
   const fromLabel = warehouses.find((w) => w.id === fromId)?.name ?? '—';
   const toLabel = warehouses.find((w) => w.id === toId)?.name ?? '—';
+  const totalUnits = lines.reduce((s, l) => s + l.quantity, 0);
 
   function goToStep(key: StepKey) {
     setError(null);
@@ -411,6 +416,25 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
     </button>
   );
 
+  // The live draft summary — the F layout's right-hand column (docs/86). A
+  // transfer has no money, so the running figures are the route + units to move.
+  const summary = (
+    <WizardSummary
+      title="Draft summary"
+      footer={
+        <Badge color="module" variant="soft" size="sm">
+          Draft — in transit until received
+        </Badge>
+      }
+    >
+      <WizardSummaryRow label="From" value={fromLabel} />
+      <WizardSummaryRow label="To" value={toLabel} />
+      <WizardSummaryRow label="Line items" value={String(lines.length)} />
+      <WizardSummaryDivider />
+      <WizardSummaryRow label="Total units" value={String(totalUnits)} strong />
+    </WizardSummary>
+  );
+
   return (
     <WizardFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
@@ -421,6 +445,7 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
       onStepSelect={onStepSelect}
       canSelectStep={canSelectStep}
       footer={cancelButton}
+      summary={summary}
     >
       {body}
     </WizardFrame>

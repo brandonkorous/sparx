@@ -34,6 +34,9 @@ import {
   Textarea,
   WizardFrame,
   WizardStep,
+  WizardSummary,
+  WizardSummaryDivider,
+  WizardSummaryRow,
   useConfirm,
   type WizardStepDef,
 } from '@sparx/ui';
@@ -76,6 +79,12 @@ interface WarehouseOption {
   code: string;
   name: string;
 }
+
+const FULFILLMENT_LABEL: Record<FulfillmentType, string> = {
+  physical: 'Physical goods',
+  digital: 'Digital download',
+  service: 'Service / booking',
+};
 
 type StepKey =
   | 'basics'
@@ -985,6 +994,33 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
     </button>
   );
 
+  // The live draft summary — the F layout's right-hand column (docs/86). Builds as
+  // the merchant fills the spine; the right column earns the modal's width instead
+  // of leaving it empty.
+  const summary = (
+    <WizardSummary
+      title="Draft summary"
+      footer={
+        <Badge color={published ? 'success' : 'module'} variant="soft" size="sm">
+          {published ? 'Published' : 'Draft — editable after create'}
+        </Badge>
+      }
+    >
+      <WizardSummaryRow label="Title" value={title.trim() || '—'} />
+      <WizardSummaryRow label="Format" value={FULFILLMENT_LABEL[fulfillmentType]} />
+      {productType.trim() && <WizardSummaryRow label="Type" value={productType.trim()} />}
+      <WizardSummaryRow label="SKU" value={sku.trim() || '—'} />
+      <WizardSummaryDivider />
+      <WizardSummaryRow label="Price" value={centsToDisplay(dollarsToCents(priceStr))} strong />
+      {dollarsToCents(compareAtStr) !== undefined && (
+        <WizardSummaryRow label="Compare at" value={centsToDisplay(dollarsToCents(compareAtStr))} />
+      )}
+      {isPhysical && trackInventory && (
+        <WizardSummaryRow label="On hand" value={String(toNonNegInt(quantityStr) ?? 0)} />
+      )}
+    </WizardSummary>
+  );
+
   // One top-stepper frame for both presentations: `embedded` fills the dashboard
   // content area at the `/new` route (sidebar + header stay); `inline` fills the
   // drawer/modal detail panel, which supplies its own close/switch/maximize chrome.
@@ -998,6 +1034,7 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
       onStepSelect={onStepSelect}
       canSelectStep={canSelectStep}
       footer={cancelButton}
+      summary={summary}
     >
       {body}
     </WizardFrame>

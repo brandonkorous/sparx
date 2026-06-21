@@ -95,6 +95,30 @@ export function isFullBleedCreate(typeId: string): boolean {
   return FULL_BLEED_CREATE_TYPES.has(typeId);
 }
 
+// Create overlays whose WizardFrame renders a live "draft summary" column (the
+// F layout — docs/86). These are the record-building wizards where the right
+// column earns the width. The modal host reads this to size the dialog wider
+// (room for form + summary); creates absent from this set use a narrower,
+// form-only modal so a lone form never floats in a too-wide dialog. A wizard
+// joins this set ONLY once it actually passes WizardFrame a `summary` — otherwise
+// the wide modal would frame a narrow form with empty gutters. The whole
+// line-item document family now carries a live summary: quote / order bill a
+// party and roll up to a total; purchase-order / transfer build against a
+// supplier or route; billing-document mirrors its totals + deposit. Client-safe
+// (no server import).
+const SUMMARY_CREATE_TYPES = new Set<string>([
+  'product',
+  'quote',
+  'order',
+  'purchase-order',
+  'transfer',
+  'billing-document',
+]);
+
+export function isSummaryCreate(typeId: string): boolean {
+  return SUMMARY_CREATE_TYPES.has(typeId);
+}
+
 // Parses a `type:id` token (the value of `?drawer=` / `?modal=`) into its
 // parts. Returns null for malformed tokens (no colon, empty type, empty id).
 // Pure and dependency-free so both the server `@detail` slot and the client

@@ -10,13 +10,24 @@ import {
   NativeSelect,
   Spinner,
   Stack,
+  Switch,
   Textarea,
   toast,
 } from '@sparx/ui';
 
 import type { AvailabilitySlot, SchedulingService } from '../../_lib/types';
 import { duration, formatTime, money } from '../../_lib/format';
-import { createBookingAction, loadSlotsAction } from '../../_lib/actions';
+import {
+  createBookingAction,
+  createBookingSeriesAction,
+  loadSlotsAction,
+} from '../../_lib/actions';
+import {
+  buildRrule,
+  defaultRecurrence,
+  RecurrenceFields,
+  type RecurrenceValue,
+} from './recurrence-fields';
 
 interface Props {
   services: SchedulingService[];
@@ -42,6 +53,8 @@ export function BookingForm({ services, onSuccess, onCancel }: Props) {
   const [selected, setSelected] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [repeat, setRepeat] = useState(false);
+  const [recurrence, setRecurrence] = useState<RecurrenceValue>(defaultRecurrence);
 
   const service = bookable.find((s) => s.id === serviceId);
   const isReservation = service?.bookingType === 'reservation';
@@ -77,6 +90,10 @@ export function BookingForm({ services, onSuccess, onCancel }: Props) {
       return;
     }
     setSaving(true);
+    if (repeat) {
+      await createSeries();
+      return;
+    }
     const attendees = customerName.trim()
       ? [{ guestName: customerName.trim(), partySize: isReservation ? partySize : 1 }]
       : [];
@@ -96,6 +113,28 @@ export function BookingForm({ services, onSuccess, onCancel }: Props) {
     } else {
       toast.error(result.error);
     }
+  }
+
+  async function createSeries() {
+    const result = await createBookingSeriesAction({
+      serviceId,
+      startAt: selected!,
+      rrule: buildRrule(recurrence),
+    });
+    setSaving(false);
+    if (!result.ok) {
+      toast.error(result.error);
+      return;
+    }
+    const made = result.data.created.length;
+    const skipped = result.data.skipped.length;
+    toast.success(
+      `Created ${made} booking${made === 1 ? '' : 's'}${
+        skipped > 0 ? ` · ${skipped} skipped (time taken)` : ''
+      }`
+    );
+    onSuccess();
+    router.refresh();
   }
 
   if (bookable.length === 0) {
@@ -187,27 +226,47 @@ export function BookingForm({ services, onSuccess, onCancel }: Props) {
         )
       ) : null}
 
-      <div>
-        <Label htmlFor="bk-customer">Customer name</Label>
-        <Input
-          id="bk-customer"
-          value={customerName}
-          onChange={(e) => setCustomerName(e.target.value)}
-          placeholder="Optional — for walk-ins or phone bookings"
-        />
+      {repeat ? null : (
+        <>
+          <div>
+            <Label htmlFor="bk-customer">Customer name</Label>
+            <Input
+              id="bk-customer"
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              placeholder="Optional — for walk-ins or phone bookings"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="bk-notes">Notes</Label>
+            <Textarea
+              id="bk-notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={2}
+            />
+          </div>
+        </>
+      )}
+
+      <div className="flex items-center gap-3">
+        <Switch id="bk-repeat" checked={repeat} onCheckedChange={setRepeat} />
+        <Label htmlFor="bk-repeat" className="cursor-pointer">
+          Repeat this booking
+        </Label>
       </div>
 
-      <div>
-        <Label htmlFor="bk-notes">Notes</Label>
-        <Textarea id="bk-notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
-      </div>
+      {repeat ? (
+        <RecurrenceFields value={recurrence} onChange={setRecurrence} />
+      ) : null}
 
       <div className="flex justify-end gap-2 pt-2">
         <Button type="button" variant="ghost" onClick={onCancel} disabled={saving}>
           Cancel
         </Button>
         <Button color="module" loading={saving} disabled={!selected} onClick={create}>
-          Create booking
+          {repeat ? 'Create series' : 'Create booking'}
         </Button>
       </div>
     </Stack>

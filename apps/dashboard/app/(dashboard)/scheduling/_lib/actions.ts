@@ -7,7 +7,14 @@
 import { revalidatePath } from 'next/cache';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
-import type { AvailabilitySlot, Booking, BookingPolicy, CalendarConnection } from './types';
+import type {
+  AvailabilitySlot,
+  Booking,
+  BookingPolicy,
+  BookingSeriesDetail,
+  BookingSeriesOccurrence,
+  CalendarConnection,
+} from './types';
 
 export type ActionResult<T = undefined> = { ok: true; data: T } | { ok: false; error: string };
 
@@ -261,6 +268,61 @@ export async function createBookingAction(body: unknown): Promise<ActionResult<B
     return { ok: true, data };
   } catch (err) {
     return fail(err, 'Failed to create booking');
+  }
+}
+
+// ── Recurring booking series (docs/79 §7.6) ─────────────────────────────────
+export interface CreateSeriesResult {
+  series: { id: string };
+  created: BookingSeriesOccurrence[];
+  skipped: { startAt: string; reason: string }[];
+}
+
+export async function createBookingSeriesAction(body: {
+  serviceId: string;
+  startAt: string;
+  rrule: string;
+  customerId?: string | null;
+  resourceIds?: string[];
+}): Promise<ActionResult<CreateSeriesResult>> {
+  try {
+    const data = await api.post<CreateSeriesResult>('/v1/scheduling/series', body);
+    revalidatePath('/scheduling/series');
+    revalidatePath('/scheduling/bookings');
+    revalidatePath('/scheduling');
+    return { ok: true, data };
+  } catch (err) {
+    return fail(err, 'Failed to create the recurring series');
+  }
+}
+
+export async function getBookingSeriesAction(
+  id: string
+): Promise<ActionResult<BookingSeriesDetail>> {
+  try {
+    const data = await api.get<BookingSeriesDetail>(`/v1/scheduling/series/${id}`);
+    return { ok: true, data };
+  } catch (err) {
+    return fail(err, 'Failed to load the series');
+  }
+}
+
+export async function cancelBookingSeriesAction(
+  id: string,
+  scope: 'future' | 'all',
+  reason?: string
+): Promise<ActionResult<{ id: string; cancelled: number }>> {
+  try {
+    const data = await api.post<{ id: string; cancelled: number }>(
+      `/v1/scheduling/series/${id}/cancel`,
+      { scope, reason: reason ?? null }
+    );
+    revalidatePath('/scheduling/series');
+    revalidatePath('/scheduling/bookings');
+    revalidatePath('/scheduling');
+    return { ok: true, data };
+  } catch (err) {
+    return fail(err, 'Failed to cancel the series');
   }
 }
 

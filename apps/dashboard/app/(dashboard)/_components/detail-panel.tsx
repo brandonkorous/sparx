@@ -21,6 +21,7 @@ import {
   findEntityType,
   fullPageHrefFor,
   isFullBleedCreate,
+  isSummaryCreate,
   parseDetailToken,
 } from '../_shell/detail-registry';
 
@@ -103,9 +104,18 @@ interface ModalDetailProps {
 
 export function ModalDetailContent({ target, onClose, children }: ModalDetailProps) {
   const fullBleed = isFullBleedTarget(target);
+  // Width by purpose: a record detail wants the full canvas; a create wizard with
+  // a live summary column wants room for form + summary; a plain create form is
+  // narrower so its fields don't stretch (docs/86 F layout).
+  const isCreate = target.entityId === CREATE_SENTINEL;
+  const widthClass = !isCreate
+    ? 'w-[min(1200px,94vw)] max-w-[min(1200px,94vw)]'
+    : isSummaryCreate(target.typeId)
+      ? 'w-[min(960px,94vw)] max-w-[min(960px,94vw)]'
+      : 'w-[min(720px,94vw)] max-w-[min(720px,94vw)]';
   return (
     <Modal open onOpenChange={(open) => !open && onClose()}>
-      <ModalContent className="max-h-[88vh] w-[min(1200px,94vw)] max-w-[min(1200px,94vw)] overflow-hidden p-0">
+      <ModalContent className={`max-h-[88vh] overflow-hidden p-0 ${widthClass}`}>
         <ModalTitle className="sr-only">{describeTarget(target)}</ModalTitle>
         <ModalDescription className="sr-only">
           Detail view for {describeTarget(target)}
@@ -166,15 +176,12 @@ function DetailHeader({ target }: { target: DetailTarget }) {
 
   return (
     <ModuleProvider module={manifest.id}>
-      <div className="flex h-12 shrink-0 items-center gap-1 border-b border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-2">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" size="sm" aria-label="Close" onClick={close}>
-              <X className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Close</TooltipContent>
-        </Tooltip>
+      {/* Title on the left, window controls on the right with Close last (the
+          corner), matching the wizard F layout (docs/86). */}
+      <div className="flex h-[52px] shrink-0 items-center gap-1 border-b border-[var(--color-border-default)] bg-[var(--color-bg-surface)] pr-2 pl-5">
+        <span className="min-w-0 flex-1 truncate text-sm font-semibold tracking-tight text-[var(--color-text-primary)]">
+          {describeTarget(target)}
+        </span>
 
         {fullPageHref && (
           <Tooltip>
@@ -198,7 +205,14 @@ function DetailHeader({ target }: { target: DetailTarget }) {
           <TooltipContent>{switchLabel}</TooltipContent>
         </Tooltip>
 
-        <div className="flex-1" />
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="sm" aria-label="Close" onClick={close}>
+              <X className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Close</TooltipContent>
+        </Tooltip>
       </div>
     </ModuleProvider>
   );
