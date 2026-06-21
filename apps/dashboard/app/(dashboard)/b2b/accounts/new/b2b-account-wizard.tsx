@@ -171,9 +171,8 @@ export interface B2bAccountWizardProps {
 }
 
 export function B2bAccountWizard(props: B2bAccountWizardProps = {}) {
-  const fill = props.presentation === 'overlay';
   return (
-    <ModuleProvider module="b2b" className={fill ? 'h-full' : undefined}>
+    <ModuleProvider module="b2b" className="h-full">
       <B2bAccountWizardInner {...props} />
     </ModuleProvider>
   );
@@ -493,34 +492,19 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
     <button
       type="button"
       onClick={close}
-      className="text-white/70 underline-offset-2 hover:underline"
+      className="text-[var(--color-text-muted)] underline-offset-2 hover:underline"
     >
       Cancel
     </button>
   );
 
-  if (presentation === 'overlay') {
-    return (
-      <WizardFrame
-        variant="inline"
-        title="New B2B account"
-        steps={steps}
-        current={current}
-        context={RAIL[stepKey].context}
-        onStepSelect={onStepSelect}
-        canSelectStep={canSelectStep}
-        footer={cancelButton}
-      >
-        {body}
-      </WizardFrame>
-    );
-  }
-
+  // One top-stepper frame for both presentations: `embedded` fills the dashboard
+  // content area at `/new` (sidebar + header stay); `inline` fills the drawer/
+  // modal detail panel, which supplies its own chrome.
   return (
     <WizardFrame
-      variant="page"
-      className="fixed inset-0 z-50"
-      lede={{ title: RAIL[stepKey].title, blurb: RAIL[stepKey].blurb }}
+      variant={presentation === 'overlay' ? 'inline' : 'embedded'}
+      title="New B2B account"
       steps={steps}
       current={current}
       context={RAIL[stepKey].context}

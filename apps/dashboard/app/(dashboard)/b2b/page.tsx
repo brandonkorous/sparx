@@ -40,6 +40,7 @@ import {
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { EntityCreateButton } from '../_components/entity-create-button';
 import {
   CardLink,
   OverviewCard,
@@ -405,9 +406,14 @@ export default async function B2bPage() {
               <Button asChild variant="outline" leftIcon={<FileText className="h-4 w-4" />}>
                 <Link href="/b2b/quotes/new">New quote</Link>
               </Button>
-              <Button asChild color="module" leftIcon={<Plus className="h-4 w-4" />}>
-                <Link href="/b2b/accounts/new">New account</Link>
-              </Button>
+              <EntityCreateButton
+                entityType="b2b-account"
+                newHref="/b2b/accounts/new"
+                color="module"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New account
+              </EntityCreateButton>
             </>
           }
         />

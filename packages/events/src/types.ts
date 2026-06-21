@@ -152,6 +152,9 @@ export type EventType =
   | 'booking.no_show'
   | 'booking.reminder'
   | 'booking.waitlist_offered'
+  // Calendar sync (docs/79 §8/§16): connection health + import outcomes.
+  | 'calendar.connected'
+  | 'calendar.sync_failed'
   // ─── Dropship (docs/14, docs/64 Ph1-Ph3) ───────────────────────────────
   | 'dropship.supplier.connected'
   | 'dropship.supplier.sync_started'

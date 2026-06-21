@@ -39,6 +39,7 @@ import {
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { EntityCreateButton } from '../_components/entity-create-button';
 import { SAMPLE_REVENUE_14D } from '../_components/overview-charts';
 import {
   CardLink,
@@ -412,9 +413,14 @@ export default async function CommercePage() {
               <Button asChild variant="outline" leftIcon={<Tag className="h-4 w-4" />}>
                 <Link href="/commerce/discounts/new">New discount</Link>
               </Button>
-              <Button asChild color="module" leftIcon={<Plus className="h-4 w-4" />}>
-                <Link href="/commerce/products/new">Add product</Link>
-              </Button>
+              <EntityCreateButton
+                entityType="product"
+                newHref="/commerce/products/new"
+                color="module"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                Add product
+              </EntityCreateButton>
             </>
           }
         />

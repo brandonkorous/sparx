@@ -379,19 +379,30 @@ model CalendarConnection {
   id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId         String    @map("tenant_id") @db.Uuid
   resourceId       String    @map("resource_id") @db.Uuid
-  provider         String    @db.VarChar(20) // google | microsoft | apple_caldav | caldav
+  provider         String    @db.VarChar(20) // google | microsoft | apple_caldav | caldav | ical
   connectionKind   String    @default("oauth") @map("connection_kind") @db.VarChar(20) // oauth | caldav | ical_feed
   // tenant_byo = tenant's own OAuth client / app-password; platform = verified WizeWorks app (§8.5)
   credentialSource String    @default("tenant_byo") @map("credential_source") @db.VarChar(20)
   direction        String    @default("two_way") @db.VarChar(10) // in | out | two_way
   fidelity         String    @default("realtime") @db.VarChar(20) // realtime | stale_feed
-  oauthClientRef   String?   @map("oauth_client_ref") @db.VarChar(255) // BYO client → Secret Manager
-  credentialsRef   String?   @map("credentials_ref") @db.VarChar(255) // token / app-password → Secret Manager
-  icalUrlRef       String?   @map("ical_url_ref") @db.VarChar(255) // secret feed URL → Secret Manager
-  externalCalendarId String? @map("external_calendar_id") @db.VarChar(255)
-  syncToken        String?   @map("sync_token") @db.Text
-  channelId        String?   @map("channel_id") @db.VarChar(255) // push channel (oauth only)
-  channelExpiresAt DateTime? @map("channel_expires_at") @db.Timestamptz
+  // Credentials are encrypted at rest (AES-256-GCM; api-rest lib/scheduling-calendar
+  // crypto, key SCHEDULING_CALENDAR_TOKEN_KEY) — opaque ciphertext bundles, never
+  // plaintext, mirroring the Search Console OAuth-token pattern (77-search-console).
+  // Out-of-band Secret Manager provisioning can't hold runtime-minted/refreshed
+  // OAuth tokens, so encrypt-at-rest is the platform pattern (docs/79 §8.4, §19).
+  icalUrlEnc           String?   @map("ical_url_enc") @db.Text // inbound iCal feed URL (Layer 2)
+  accessTokenEnc       String?   @map("access_token_enc") @db.Text // OAuth access token (Layer 3)
+  refreshTokenEnc      String?   @map("refresh_token_enc") @db.Text // OAuth refresh token (Layer 3)
+  tokenExpiresAt       DateTime? @map("token_expires_at") @db.Timestamptz
+  appPasswordEnc       String?   @map("app_password_enc") @db.Text // CalDAV app-password (Layer 3)
+  caldavUsername       String?   @map("caldav_username") @db.VarChar(255)
+  caldavUrl            String?   @map("caldav_url") @db.VarChar(2048)
+  oauthClientId        String?   @map("oauth_client_id") @db.VarChar(512) // BYO client id (non-secret)
+  oauthClientSecretEnc String?   @map("oauth_client_secret_enc") @db.Text // BYO client secret
+  externalCalendarId   String?   @map("external_calendar_id") @db.VarChar(255)
+  syncToken            String?   @map("sync_token") @db.Text // Google syncToken / CalDAV ctag / iCal ETag
+  channelId            String?   @map("channel_id") @db.VarChar(255) // push channel (oauth only)
+  channelExpiresAt     DateTime? @map("channel_expires_at") @db.Timestamptz
   status           String    @default("active") @db.VarChar(20) // active|expired|error
   lastSyncedAt     DateTime? @map("last_synced_at") @db.Timestamptz
   lastError        String?   @map("last_error") @db.Text

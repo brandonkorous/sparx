@@ -38,8 +38,11 @@ export const invoicingManifest: ModuleManifest = {
   ],
   entityTypes: [
     // No `hasDetailView`: the document editor is a wide, interactive full-page
-    // surface (like the CRM pipeline board), so it always opens full-page rather
-    // than in a drawer.
+    // surface (like the CRM pipeline board), so OPENING a document always goes
+    // full-page rather than into a drawer. CREATING one, however, opts into the
+    // drawer/modal create overlay (CREATE_VIEW_TYPES + detail-slot) so the "New"
+    // button honors the user's `defaultDetailView`; the full page lives at
+    // /invoicing/documents/new.
     { id: 'billing-document', label: 'Document', routePrefix: '/invoicing/documents' },
   ],
 };

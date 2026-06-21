@@ -1,63 +1,27 @@
-import { Container, PageHeader, Stack } from '@sparx/ui';
+import { QuoteWizard } from './_components/quote-wizard';
+import { loadQuoteWizardData } from './wizard-data';
 
-import { api } from '@/lib/api-rest-client';
-
-import { NewQuoteForm } from './_components/new-quote-form';
+// Full-page surface for creating a quote. The in-app `embedded` top stepper
+// (docs/86) composes the whole draft — party + currency, priced line items,
+// shipping/terms/notes — then commits it on finish.
+//
+// On the Quotes list the "New" affordance opens this same wizard inside the
+// dashboard's drawer/modal detail chrome, picked by the user's `defaultDetailView`
+// preference (the `'overlay'` presentation; see `EntityCreateButton` + the
+// `@detail` create registry). This route is the full-page option that chrome's
+// "open in full page" button, Shift-click, new-tab, and `?customerId=` deep links
+// resolve to.
 
 export const dynamic = 'force-dynamic';
-
-interface CustomerLite {
-  id: string;
-  firstName: string | null;
-  lastName: string | null;
-  company: string | null;
-  email: string | null;
-}
-
-interface B2bAccountLite {
-  id: string;
-  companyName: string;
-}
 
 interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 export default async function NewQuotePage({ searchParams }: PageProps) {
-  const sp = await searchParams;
+  const [sp, data] = await Promise.all([searchParams, loadQuoteWizardData()]);
 
-  const [customers, b2bAccounts] = await Promise.all([
-    api
-      .getPaged<CustomerLite[]>('/v1/crm/customers?take=200&sort_by=updatedAt')
-      .then((r) => r.data),
-    api.getPaged<B2bAccountLite[]>('/v1/crm/b2b-accounts?take=200').then((r) => r.data),
-  ]);
-  const preselectedCustomerId = stringParam(sp.customerId) ?? null;
-
-  return (
-    <Container size="lg">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          title="New quote"
-          description="Drafts can be edited freely. Submitting locks the quote; accepted quotes convert to a new Order atomically via the detail page."
-        />
-
-        <NewQuoteForm
-          customers={customers.map((c) => ({
-            id: c.id,
-            label:
-              [c.firstName, c.lastName].filter(Boolean).join(' ') ||
-              (c.company ?? c.email ?? c.id.slice(0, 8)),
-          }))}
-          b2bAccounts={b2bAccounts.map((a) => ({
-            id: a.id,
-            label: a.companyName,
-          }))}
-          preselectedCustomerId={preselectedCustomerId}
-        />
-      </Stack>
-    </Container>
-  );
+  return <QuoteWizard {...data} preselectedCustomerId={stringParam(sp.customerId) ?? null} />;
 }
 
 function stringParam(v: string | string[] | undefined): string | undefined {

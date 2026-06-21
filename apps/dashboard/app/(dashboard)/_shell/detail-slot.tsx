@@ -10,6 +10,16 @@ import { loadPipelineOptions } from '../crm/customers/new/pipeline-options';
 import { B2bAccountWizard } from '../b2b/accounts/new/b2b-account-wizard';
 import { ContentEntryWizard } from '../cms/content/new/content-entry-wizard';
 import { loadAuthorOptions } from '../cms/content/new/author-options';
+import { InvoiceWizard } from '../invoicing/documents/new/_components/invoice-wizard';
+import { loadInvoiceWizardData } from '../invoicing/documents/new/wizard-data';
+import { QuoteWizard } from '../crm/quotes/new/_components/quote-wizard';
+import { loadQuoteWizardData } from '../crm/quotes/new/wizard-data';
+import { OrderWizard } from '../crm/orders/new/_components/order-wizard';
+import { loadOrderWizardData } from '../crm/orders/new/wizard-data';
+import { PurchaseOrderWizard } from '../inventory/purchase-orders/new/_components/purchase-order-wizard';
+import { loadPurchaseOrderWizardData } from '../inventory/purchase-orders/new/wizard-data';
+import { TransferWizard } from '../inventory/transfers/new/_components/transfer-wizard';
+import { loadTransferWizardData } from '../inventory/transfers/new/wizard-data';
 import { CategoryCreateForm } from '../commerce/categories/_components/category-create-form';
 import { loadCategoryParents } from '../commerce/categories/_components/category-parent-options';
 import { CollectionCreateForm } from '../commerce/collections/_components/collection-create-form';
@@ -121,6 +131,8 @@ const detailModules: Record<string, SparxModule> = {
   'content-entry': 'cms',
   // CMS — create-only overlays (no detail view)
   redirect: 'cms',
+  // Invoicing — create-only overlay (the document editor stays full-page)
+  'billing-document': 'invoicing',
   // Email — create-only overlays (no detail view)
   'sending-domain': 'email',
   suppression: 'email',
@@ -138,6 +150,9 @@ const detailModules: Record<string, SparxModule> = {
   // Warehouse is an inventory-module entity now (docs/100 P1e) — its overlay
   // chrome wears the inventory accent even though it's reachable from commerce.
   warehouse: 'inventory',
+  // Inventory — create-only overlays (the PO / transfer editors stay full-page)
+  'purchase-order': 'inventory',
+  transfer: 'inventory',
   review: 'commerce',
   'qa-question': 'commerce',
   subscription: 'commerce',
@@ -205,6 +220,46 @@ async function CategoryCreateOverlay() {
   return <CategoryCreateForm surface="overlay" parents={parents} />;
 }
 
+// Billing-document create is the multi-step WizardFrame. Its detail/editor is a
+// wide, interactive full-page surface (no detail-view drawer), but CREATION opts
+// into the overlay so the user's `defaultDetailView` picks the style. The wizard
+// needs the tenant's workflows, parties, line types and markup rules, so a thin
+// server wrapper resolves them. No `?customerId=` preselection here — the /new
+// route carries deep-link preselection instead.
+async function BillingDocumentCreateOverlay() {
+  const data = await loadInvoiceWizardData();
+  return <InvoiceWizard presentation="overlay" {...data} />;
+}
+
+// Quote create is the multi-step WizardFrame. Quotes anchor to a customer and/or
+// B2B account, so a thin server wrapper resolves both pickers. No `?customerId=`
+// preselection here — the /new route carries deep-link preselection instead.
+async function QuoteCreateOverlay() {
+  const data = await loadQuoteWizardData();
+  return <QuoteWizard presentation="overlay" {...data} />;
+}
+
+// Order create is the multi-step WizardFrame; a created order opens into its
+// detail view. The customer picker needs the tenant's customers.
+async function OrderCreateOverlay() {
+  const data = await loadOrderWizardData();
+  return <OrderWizard presentation="overlay" {...data} />;
+}
+
+// Purchase-order + transfer create are multi-step WizardFrames; their editors are
+// wide full-page surfaces (no detail-view drawer), so only CREATION opens in the
+// overlay. Each needs its option lists (suppliers / warehouses). The wizards guard
+// on missing options themselves.
+async function PurchaseOrderCreateOverlay() {
+  const data = await loadPurchaseOrderWizardData();
+  return <PurchaseOrderWizard presentation="overlay" {...data} />;
+}
+
+async function TransferCreateOverlay() {
+  const data = await loadTransferWizardData();
+  return <TransferWizard presentation="overlay" {...data} />;
+}
+
 async function ContentEntryCreateOverlay() {
   let types: ContentTypeSummary[] = [];
   try {
@@ -262,10 +317,20 @@ const createComponents: Record<string, React.ComponentType> = {
   'price-list': () => <PriceListCreateForm surface="overlay" />,
   customer: CustomerCreateOverlay,
   'b2b-account': () => <B2bAccountWizard presentation="overlay" />,
+  // Quote + Order create are multi-step WizardFrames (full-bleed); their detail
+  // views exist, so a created record opens straight into it.
+  quote: QuoteCreateOverlay,
+  order: OrderCreateOverlay,
+  // Inventory — multi-step WizardFrame create overlays (editors stay full-page).
+  'purchase-order': PurchaseOrderCreateOverlay,
+  transfer: TransferCreateOverlay,
   segment: () => <SegmentCreateForm surface="overlay" />,
   page: () => <PageCreateForm surface="overlay" />,
   'content-type': () => <ContentTypeCreateForm surface="overlay" />,
   'content-entry': ContentEntryCreateOverlay,
+  // Invoicing — multi-step WizardFrame create overlay (the document editor stays
+  // full-page; only creation opens in the drawer/modal).
+  'billing-document': BillingDocumentCreateOverlay,
 };
 
 // Renders the detail content for a given (typeId, id), or null when the type

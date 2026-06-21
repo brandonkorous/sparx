@@ -1,56 +1,28 @@
-import { Container, PageHeader, Stack } from '@sparx/ui';
+import { OrderWizard } from './_components/order-wizard';
+import { loadOrderWizardData } from './wizard-data';
 
-import { api } from '@/lib/api-rest-client';
-
-import { NewOrderForm } from './_components/new-order-form';
+// Full-page surface for creating an order. The in-app `embedded` top stepper
+// (docs/86) composes the whole order — customer + channel + currency, priced
+// line items, shipping/notes — then commits it on finish (the service emits
+// `order.created` after the transaction commits).
+//
+// On the Orders list the "New" affordance opens this same wizard inside the
+// dashboard's drawer/modal detail chrome, picked by the user's `defaultDetailView`
+// preference (the `'overlay'` presentation; see `EntityCreateButton` + the
+// `@detail` create registry). This route is the full-page option that chrome's
+// "open in full page" button, Shift-click, new-tab, and `?customerId=` deep links
+// resolve to.
 
 export const dynamic = 'force-dynamic';
-
-interface CustomerLite {
-  id: string;
-  firstName: string | null;
-  lastName: string | null;
-  company: string | null;
-  email: string | null;
-}
 
 interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 export default async function NewOrderPage({ searchParams }: PageProps) {
-  const sp = await searchParams;
+  const [sp, data] = await Promise.all([searchParams, loadOrderWizardData()]);
 
-  const { data: customers } = await api.getPaged<CustomerLite[]>(
-    '/v1/crm/customers?take=200&sort_by=updatedAt'
-  );
-  const preselectedCustomerId = stringParam(sp.customerId) ?? null;
-
-  return (
-    <Container size="lg">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          title="New order"
-          description={
-            <>
-              Place an order manually. Totals are derived from line items + header shipping; the
-              service emits <code>order.created</code> after the transaction commits.
-            </>
-          }
-        />
-
-        <NewOrderForm
-          customers={customers.map((c) => ({
-            id: c.id,
-            label:
-              [c.firstName, c.lastName].filter(Boolean).join(' ') ||
-              (c.company ?? c.email ?? c.id.slice(0, 8)),
-          }))}
-          preselectedCustomerId={preselectedCustomerId}
-        />
-      </Stack>
-    </Container>
-  );
+  return <OrderWizard {...data} preselectedCustomerId={stringParam(sp.customerId) ?? null} />;
 }
 
 function stringParam(v: string | string[] | undefined): string | undefined {

@@ -40,6 +40,7 @@ import {
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { EntityCreateButton } from '../_components/entity-create-button';
 import {
   CardLink,
   MetricTile,
@@ -512,9 +513,15 @@ export default async function InventoryPage() {
                 right={`${po.units} units`}
               />
             ))}
-            <Button asChild variant="outline" size="sm" className="mt-4 w-full">
-              <Link href="/inventory/purchase-orders/new">Create purchase order</Link>
-            </Button>
+            <EntityCreateButton
+              entityType="purchase-order"
+              newHref="/inventory/purchase-orders/new"
+              variant="outline"
+              size="sm"
+              className="mt-4 w-full"
+            >
+              Create purchase order
+            </EntityCreateButton>
           </OverviewCard>
 
           <OverviewCard

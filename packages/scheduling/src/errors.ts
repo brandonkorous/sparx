@@ -49,6 +49,13 @@ export class BookingPolicyNotFoundError extends SchedulingError {
   }
 }
 
+export class CalendarConnectionNotFoundError extends SchedulingError {
+  constructor(id: string) {
+    super('CALENDAR_CONNECTION_NOT_FOUND', `Calendar connection ${id} not found`);
+    this.name = 'CalendarConnectionNotFoundError';
+  }
+}
+
 /** An action isn't valid for the booking's current status (e.g. checking in a
  *  cancelled booking). */
 export class InvalidBookingStateError extends SchedulingError {

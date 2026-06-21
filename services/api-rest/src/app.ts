@@ -638,11 +638,14 @@ function schedulingErrorMapper(
     return reply.code(422).send(body);
   }
   if (err instanceof SchedulingError) {
+    // A *_NOT_FOUND code (calendar connection, booking policy) is a 404; every
+    // other engine error is a 422 (a well-formed request the engine can't honor).
+    const status = err.code.endsWith('_NOT_FOUND') ? 404 : 422;
     const body: ErrorEnvelope = {
       success: false,
       error: { code: err.code, message: err.message, request_id: requestId },
     };
-    return reply.code(422).send(body);
+    return reply.code(status).send(body);
   }
   return undefined;
 }

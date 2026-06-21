@@ -6,6 +6,7 @@ import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack } from '@
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
 
+import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
@@ -50,9 +51,14 @@ export default async function InventoryTransfersPage({ searchParams }: PageProps
           }
           description="Move stock between warehouses. Shipping leaves the source and holds the units in transit; receiving lands them at the destination — so total inventory stays correct the whole way."
           actions={
-            <Button color="module" asChild leftIcon={<Plus className="h-4 w-4" />}>
-              <Link href="/inventory/transfers/new">New transfer</Link>
-            </Button>
+            <EntityCreateButton
+              entityType="transfer"
+              newHref="/inventory/transfers/new"
+              color="module"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New transfer
+            </EntityCreateButton>
           }
         />
 
@@ -87,9 +93,14 @@ export default async function InventoryTransfersPage({ searchParams }: PageProps
               title={status ? `No ${status.replace('_', ' ')} transfers` : 'No transfers yet'}
               description="Move stock between two warehouses. Build the lines, ship to send the units into transit, then receive them at the destination — every leg is recorded in the movement ledger."
               action={
-                <Button color="module" asChild leftIcon={<Plus className="h-4 w-4" />}>
-                  <Link href="/inventory/transfers/new">New transfer</Link>
-                </Button>
+                <EntityCreateButton
+                  entityType="transfer"
+                  newHref="/inventory/transfers/new"
+                  color="module"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New transfer
+                </EntityCreateButton>
               }
             />
           </Card>

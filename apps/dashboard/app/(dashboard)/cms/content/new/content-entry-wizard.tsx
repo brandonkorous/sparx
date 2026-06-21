@@ -131,9 +131,8 @@ function slugify(s: string): string {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function ContentEntryWizard(props: ContentEntryWizardProps) {
-  const fill = props.presentation === 'overlay';
   return (
-    <ModuleProvider module="cms" className={fill ? 'h-full' : undefined}>
+    <ModuleProvider module="cms" className="h-full">
       <ContentEntryWizardInner {...props} />
     </ModuleProvider>
   );
@@ -658,34 +657,19 @@ function ContentEntryWizardInner({
     <button
       type="button"
       onClick={close}
-      className="text-white/70 underline-offset-2 hover:underline"
+      className="text-[var(--color-text-muted)] underline-offset-2 hover:underline"
     >
       Cancel
     </button>
   );
 
-  if (presentation === 'overlay') {
-    return (
-      <WizardFrame
-        variant="inline"
-        title="New content"
-        steps={steps}
-        current={current}
-        context={RAIL[stepKey].context}
-        onStepSelect={onStepSelect}
-        canSelectStep={canSelectStep}
-        footer={cancelButton}
-      >
-        {body_}
-      </WizardFrame>
-    );
-  }
-
+  // One top-stepper frame for both presentations: `embedded` fills the dashboard
+  // content area at `/new` (sidebar + header stay); `inline` fills the drawer/
+  // modal detail panel, which supplies its own chrome.
   return (
     <WizardFrame
-      variant="page"
-      className="fixed inset-0 z-50"
-      lede={{ title: RAIL[stepKey].title, blurb: RAIL[stepKey].blurb }}
+      variant={presentation === 'overlay' ? 'inline' : 'embedded'}
+      title="New content"
       steps={steps}
       current={current}
       context={RAIL[stepKey].context}

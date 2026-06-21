@@ -20,6 +20,7 @@ import { startScheduledPublishLoop } from './lib/scheduled-publish.js';
 import { startSitebuilderPublishLoop } from './lib/sitebuilder-publish.js';
 import { startEmailDispatchLoop } from './lib/email-dispatch.js';
 import { startBookingNotificationLoop } from './lib/scheduling-notifications.js';
+import { startCalendarSyncLoop } from './lib/scheduling-calendar-sync.js';
 import { attachChatWebsocket } from './websocket/index.js';
 
 async function main(): Promise<void> {
@@ -95,6 +96,11 @@ async function main(): Promise<void> {
   // advisory lock — see lib/scheduling-notifications.ts (docs/79 §10).
   const stopBookingNotifications = startBookingNotificationLoop(app.log);
 
+  // Background tick that refreshes inbound calendar feeds (Layer 2, docs/79 §8.2):
+  // re-fetches each due ical_feed connection and replaces its external_busy_blocks.
+  // Singleton across pods via its own advisory lock — see lib/scheduling-calendar-sync.ts.
+  const stopCalendarSync = startCalendarSyncLoop(app.log);
+
   // Background pass that back-fills the 13 default Builder-email templates for any
   // email-active tenant that missed `module.activated` (docs/90 §6, docs/91 §7).
   // Singleton across pods via its own advisory lock — see lib/email-provisioning.ts.
@@ -117,6 +123,7 @@ async function main(): Promise<void> {
     stopWebhookDelivery();
     stopEmailDispatch();
     stopBookingNotifications();
+    stopCalendarSync();
     stopEmailProvisioningReconcile();
     stopModuleProvisioningReconcile();
     void chatWs.close().catch((err: unknown) => {

@@ -99,6 +99,16 @@ export {
 } from './rrule';
 export { type BusyParseOptions, parseBusyIntervals, parseIcsDuration } from './ical-parse';
 export {
+  type CreateConnectionData,
+  type ConnectionSyncState,
+  createCalendarConnection,
+  listCalendarConnections,
+  getCalendarConnection,
+  deleteCalendarConnection,
+  updateConnectionSyncState,
+  replaceExternalBusyBlocks,
+} from './calendar';
+export {
   type DepositType,
   type DepositPolicyInput,
   type DepositPlan,

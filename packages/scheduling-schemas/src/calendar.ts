@@ -34,6 +34,18 @@ export const CreateCalendarConnectionInput = z.object({
 });
 export type CreateCalendarConnectionInput = z.infer<typeof CreateCalendarConnectionInput>;
 
+// Layer-2 inbound iCal feed (docs/79 §8.2) — the friction-free path: a staff
+// member's read-only secret `.ics` URL becomes external_busy_blocks so their
+// outside commitments block sparx slots. The URL is the only secret; the service
+// encrypts it at rest. `provider` is just the source label (defaults to 'ical').
+export const CreateIcalFeedInput = z.object({
+  resourceId: Uuid,
+  icalUrl: z.string().url().max(2048),
+  provider: CalendarProvider.default('ical'),
+  label: z.string().max(120).optional(),
+});
+export type CreateIcalFeedInput = z.infer<typeof CreateIcalFeedInput>;
+
 // Start a platform-app OAuth flow — returns the provider consent URL.
 export const StartCalendarOAuthInput = z.object({
   resourceId: Uuid,

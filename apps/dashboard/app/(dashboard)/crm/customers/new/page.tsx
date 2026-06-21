@@ -2,8 +2,9 @@ import { requireSession } from '@sparx/auth';
 import { CustomerFullProfileWizard } from './customer-full-profile-wizard';
 import { loadPipelineOptions } from './pipeline-options';
 
-// Full-page surface for creating a customer. The WizardFrame `page` variant
-// (docs/86) owns the viewport. On the CRM list the "New" affordance opens this
+// Full-page surface for creating a customer. The in-app `embedded` top stepper
+// (docs/86) fills the dashboard content area (sidebar + header stay). On the CRM
+// list the "New" affordance opens this
 // same wizard inside the dashboard's drawer/modal detail chrome, picked by the
 // user's `defaultDetailView` preference (the `overlay` presentation). This route
 // is the full-page option that "open in full page", Shift-click, new-tab, and

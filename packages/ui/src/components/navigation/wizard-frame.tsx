@@ -10,29 +10,30 @@ import { Text } from '../primitives/text';
 import { RAIL_BG, RailWordmark } from '../brand/brand-rail';
 
 // WizardFrame — the platform's one layout language for guided, multi-step flows
-// (docs/86). A persistent two-pane frame: a left RAIL that never moves (brand +
-// vertical journey + per-step context) and a right WORKING PANE that is the only
-// thing that changes. It ships in two variants of the SAME design so a user who
-// learns one knows the other:
+// (docs/86). There are TWO presentations of the same journey model:
 //
-//   • variant="page"   — full-bleed, first-run/high-stakes setup (onboarding,
-//                         blueprint install). Owns the whole viewport.
-//   • variant="modal"  — the same frame inside a Radix dialog, for in-dashboard
-//                         create-wizards (Product / B2B / Email, docs/68) where
-//                         the user shouldn't lose their place.
-//   • variant="inline" — the same two-pane frame as the modal, but as plain
-//                         in-flow content with NO dialog of its own. For hosting
-//                         inside another overlay shell that supplies its own
-//                         chrome — the dashboard's drawer/modal detail panel,
-//                         where the user's `defaultDetailView` preference picks
-//                         drawer vs. modal and the wizard fills the body. It
-//                         collapses to the compact top-bar layout in a narrow
-//                         drawer via the same breakpoint as the modal.
+//   1. The IN-APP TOP STEPPER (default for every dashboard wizard). A light,
+//      module-tinted horizontal stepper above a working pane, on the dashboard's
+//      normal surface language. It sits INSIDE the app chrome rather than taking
+//      it over, so "full page" keeps the sidebar + header and a drawer/modal
+//      hosts the very same frame:
+//        • variant="embedded" — in-flow, fills the dashboard content area. The
+//                               full-page `/new` create routes (Product, Customer,
+//                               B2B, Document, …) — picked by `defaultDetailView`.
+//        • variant="inline"   — fills a host overlay that supplies its own chrome
+//                               (the drawer/modal detail panel). The user's
+//                               `defaultDetailView` chooses drawer vs. modal.
+//        • variant="modal"    — the same frame inside a self-owned Radix dialog
+//                               (e.g. the new-site wizard).
+//      All three collapse the stepper to a compact "Step n of N" line below the
+//      narrow breakpoint (top-2 rule, docs/86).
 //
-// The rail is a FLAT SOLID fill of the active module color (no gradient — sparx
-// is flat by default), driven by the wrapping <ModuleProvider> via
-// `--module-active`. Onboarding's rail is Builder Indigo; a Product wizard's is
-// Commerce orange; and so on, with zero per-call color props.
+//   2. The IMMERSIVE RAIL — variant="page". A full-bleed two-pane frame with a
+//      flat module-colored left RAIL (brand + vertical journey + per-step lede),
+//      owning the whole viewport. Reserved for FIRST-RUN onboarding / blueprint
+//      install, where there's no app chrome yet and the branded moment fits. The
+//      rail is a FLAT SOLID fill of the active module color (no gradient — sparx
+//      is flat), driven by the wrapping <ModuleProvider> via `--module-active`.
 //
 // This file owns the LAYOUT only. The flow inside it (which steps, which fields,
 // validation) is owned by the feature: onboarding by docs/15, the create-wizards
@@ -49,14 +50,15 @@ export interface WizardStepDef {
   sublabel?: string;
 }
 
-export type WizardVariant = 'page' | 'modal' | 'inline';
+export type WizardVariant = 'page' | 'modal' | 'inline' | 'embedded';
 
 export interface WizardFrameProps {
   variant?: WizardVariant;
   /** Page variant: the brand node at the rail top. Defaults to the inverted
    *  sparx wordmark (white "Spar" + a light tint of the module color "x"). */
   wordmark?: React.ReactNode;
-  /** Modal variant: the wizard's title at the rail top, e.g. "New product". */
+  /** Top-stepper variants: the wizard's title at the header left, e.g. "New
+   *  product". (Page variant uses `lede` instead.) */
   title?: React.ReactNode;
   /** Page variant lede under the brand — a headline + supporting blurb that the
    *  consumer changes per step to narrate the journey. */
@@ -65,14 +67,15 @@ export interface WizardFrameProps {
   steps: WizardStepDef[];
   /** Zero-based index of the current step. */
   current: number;
-  /** A one-line context card pinned to the rail bottom, reframing this step. */
+  /** A one-line context note. Page variant pins it to the rail bottom; the
+   *  top-stepper variants show it as a muted hint under the stepper. */
   context?: React.ReactNode;
   /** Jump to a visited step from the journey. */
   onStepSelect?: (key: string, index: number) => void;
   /** Whether a journey row is clickable. Default: any step at/at-or-before the
    *  current one (you can't skip ahead by clicking). */
   canSelectStep?: (key: string, index: number) => boolean;
-  /** Rail footer — utility links (Save & exit / Need help, or Cancel). */
+  /** Header/rail footer — utility links (Save & exit / Need help, or Cancel). */
   footer?: React.ReactNode;
   className?: string;
   children: React.ReactNode;
@@ -92,7 +95,7 @@ interface WizardContextValue {
 
 const WizardContext = React.createContext<WizardContextValue>({ variant: 'page' });
 
-// ── Rail ─────────────────────────────────────────────────────────────────────
+// ── Rail (immersive `page` variant) ────────────────────────────────────────────
 // RAIL_BG + RailWordmark are shared with the auth split-panel via ../brand/brand-rail
 // so the colored rail has one source of truth across guided surfaces.
 
@@ -263,6 +266,156 @@ function RailTopBar({
   );
 }
 
+// ── Top stepper (in-app variants) ──────────────────────────────────────────────
+// The horizontal progress stepper that replaces the dark rail for in-app wizards.
+// Light surface, module-tinted markers — it lives inside the dashboard chrome
+// (embedded), the drawer/modal detail panel (inline), or a dialog (modal), and
+// never competes with the app's own nav. Connectors are drawn behind the markers
+// as half-segments per step so the layout stays fluid at any step count / width.
+
+interface TopStepperProps {
+  steps: WizardStepDef[];
+  current: number;
+  onStepSelect?: WizardFrameProps['onStepSelect'];
+  canSelectStep: (key: string, index: number) => boolean;
+}
+
+function TopStepper({ steps, current, onStepSelect, canSelectStep }: TopStepperProps) {
+  return (
+    <div className="shrink-0 border-b border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-6 py-4">
+      {/* Narrow viewports collapse to a single line (top-2 rule). */}
+      <p className="hidden text-center text-xs font-medium text-[var(--color-text-secondary)] max-[680px]:block">
+        Step {current + 1} of {steps.length}
+        {steps[current]?.label ? ` · ${steps[current]?.label}` : ''}
+      </p>
+      <ol className="flex items-start max-[680px]:hidden">
+        {steps.map((step, idx) => {
+          const status: 'done' | 'current' | 'upcoming' =
+            idx < current ? 'done' : idx === current ? 'current' : 'upcoming';
+          const selectable = canSelectStep(step.key, idx);
+          return (
+            <li key={step.key} className="relative flex min-w-0 flex-1 flex-col items-center">
+              {/* Connector to the previous marker, drawn behind (z-0). The segment
+                  is "done" once we've reached this step. */}
+              {idx > 0 && (
+                <span
+                  aria-hidden
+                  className={cn(
+                    'absolute top-[13px] right-1/2 left-[-50%] h-0.5',
+                    idx <= current
+                      ? 'bg-[var(--module-active)]'
+                      : 'bg-[var(--color-border-default)]'
+                  )}
+                />
+              )}
+              <button
+                type="button"
+                disabled={!selectable}
+                aria-current={status === 'current' ? 'step' : undefined}
+                onClick={selectable ? () => onStepSelect?.(step.key, idx) : undefined}
+                className={cn(
+                  'relative z-10 flex flex-col items-center gap-1.5 px-2',
+                  selectable ? 'cursor-pointer' : 'cursor-default'
+                )}
+              >
+                <span
+                  aria-hidden
+                  className={cn(
+                    'flex h-7 w-7 items-center justify-center rounded-full border text-[12px] font-semibold transition-colors duration-200',
+                    status === 'upcoming' &&
+                      'border-[var(--color-border-strong)] bg-[var(--color-bg-surface)] text-[var(--color-text-muted)]',
+                    status === 'done' &&
+                      'border-transparent bg-[var(--module-active)] text-[var(--module-active-content)]',
+                    status === 'current' &&
+                      'border-transparent bg-[var(--module-active)] text-[var(--module-active-content)] ring-4 ring-[var(--module-active-tint)]'
+                  )}
+                >
+                  {status === 'done' ? <Check className="h-3.5 w-3.5" /> : idx + 1}
+                </span>
+                <span
+                  className={cn(
+                    'max-w-[14ch] text-center text-[11px] leading-tight font-medium transition-colors duration-200',
+                    status === 'upcoming'
+                      ? 'text-[var(--color-text-muted)]'
+                      : 'text-[var(--color-text-primary)]'
+                  )}
+                >
+                  {step.label}
+                </span>
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  );
+}
+
+// The header strip above the stepper: the wizard title (left) and the footer /
+// cancel affordance (right). Omitted entirely when neither is supplied.
+function WizardTopHeader({ title, footer }: { title?: React.ReactNode; footer?: React.ReactNode }) {
+  if (!title && !footer) return null;
+  return (
+    <div className="flex shrink-0 items-center gap-3 border-b border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-6 py-3">
+      {title && (
+        <div className="min-w-0 truncate text-sm font-semibold tracking-tight text-[var(--color-text-primary)]">
+          {title}
+        </div>
+      )}
+      <div className="flex-1" />
+      {footer && (
+        <div className="shrink-0 text-[0.8rem] text-[var(--color-text-muted)]">{footer}</div>
+      )}
+    </div>
+  );
+}
+
+// The shared in-app shell: header + top stepper + working pane. Fills its host
+// (h-full) — the dashboard content area (embedded), a drawer/modal body (inline),
+// or a dialog (modal). The pane is `min-h-0 flex-1` so the child WizardStep owns
+// the scroll and pins its action row to the bottom edge.
+function TopStepperFrame({
+  title,
+  steps,
+  current,
+  context,
+  onStepSelect,
+  canSelectStep,
+  footer,
+  className,
+  children,
+}: {
+  title?: React.ReactNode;
+  steps: WizardStepDef[];
+  current: number;
+  context?: React.ReactNode;
+  onStepSelect?: WizardFrameProps['onStepSelect'];
+  canSelectStep: (key: string, index: number) => boolean;
+  footer?: React.ReactNode;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={cn('flex h-full flex-col overflow-hidden bg-[var(--color-bg-page)]', className)}
+    >
+      <WizardTopHeader title={title} footer={footer} />
+      <TopStepper
+        steps={steps}
+        current={current}
+        onStepSelect={onStepSelect}
+        canSelectStep={canSelectStep}
+      />
+      {context && (
+        <p className="shrink-0 border-b border-[var(--color-border-default)] bg-[var(--color-bg-page)] px-6 py-2 text-center text-xs text-[var(--color-text-muted)]">
+          {context}
+        </p>
+      )}
+      <div className="min-h-0 flex-1">{children}</div>
+    </div>
+  );
+}
+
 // ── WizardFrame ──────────────────────────────────────────────────────────────
 
 export function WizardFrame({
@@ -287,24 +440,22 @@ export function WizardFrame({
     [canSelectStep, current]
   );
 
-  const ctx = React.useMemo<WizardContextValue>(() => ({ variant }), [variant]);
-
   // Page-variant working pane: scroll it back to the top whenever the step
   // changes (the rail is the constant, the pane is what moves). Declared
-  // unconditionally — hooks can't sit behind the modal early-return; in the modal
-  // variant the ref stays null and the scroll is a harmless no-op.
+  // unconditionally — hooks can't sit behind the early-returns; in the other
+  // variants the ref stays null and the scroll is a harmless no-op.
   const paneRef = React.useRef<HTMLElement>(null);
   React.useEffect(() => {
     paneRef.current?.scrollTo({ top: 0 });
   }, [current]);
 
-  // ── Modal variant ───────────────────────────────────────────────────────────
+  // ── Modal variant — top stepper inside a self-owned dialog ────────────────────
   if (variant === 'modal') {
     const guard = (event: Event) => {
       if (onRequestClose && onRequestClose() === false) event.preventDefault();
     };
     return (
-      <WizardContext.Provider value={ctx}>
+      <WizardContext.Provider value={{ variant: 'modal' }}>
         <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
           <DialogPrimitive.Portal>
             <DialogPrimitive.Overlay
@@ -320,9 +471,9 @@ export function WizardFrame({
               aria-describedby={undefined}
               className={cn(
                 'fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2',
-                'grid h-[min(680px,88vh)] w-[min(920px,94vw)] grid-cols-[240px_1fr] overflow-hidden',
+                'h-[min(680px,88vh)] w-[min(920px,94vw)] overflow-hidden',
                 'rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] shadow-md',
-                'max-[940px]:h-screen max-[940px]:w-screen max-[940px]:max-w-none max-[940px]:grid-cols-1 max-[940px]:grid-rows-[auto_1fr] max-[940px]:rounded-none',
+                'max-[940px]:h-screen max-[940px]:w-screen max-[940px]:max-w-none max-[940px]:rounded-none',
                 'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
                 'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
                 className
@@ -331,36 +482,17 @@ export function WizardFrame({
               <DialogPrimitive.Title className="sr-only">
                 {typeof title === 'string' ? title : 'Wizard'}
               </DialogPrimitive.Title>
-              <RailTopBar
-                brand={
-                  title ? (
-                    <span className="text-sm font-medium text-white">{title}</span>
-                  ) : (
-                    <RailWordmark />
-                  )
-                }
-                steps={steps}
-                current={current}
-                className="hidden max-[940px]:flex"
-              />
-              <Rail
-                compact
-                brand={
-                  title ? (
-                    <span className="text-base font-medium tracking-tight text-white">{title}</span>
-                  ) : (
-                    <RailWordmark />
-                  )
-                }
+              <TopStepperFrame
+                title={title}
                 steps={steps}
                 current={current}
                 context={context}
                 onStepSelect={onStepSelect}
                 canSelectStep={selectable}
                 footer={footer}
-                className="max-[940px]:hidden"
-              />
-              <div className="min-h-0 min-w-0">{children}</div>
+              >
+                {children}
+              </TopStepperFrame>
             </DialogPrimitive.Content>
           </DialogPrimitive.Portal>
         </DialogPrimitive.Root>
@@ -368,57 +500,32 @@ export function WizardFrame({
     );
   }
 
-  // ── Inline variant ────────────────────────────────────────────────────────────
-  // The modal's two-pane frame without the dialog — the host overlay (drawer or
-  // modal detail panel) owns the shell. WizardStep renders in its modal layout
-  // (scrolling body + pinned action row), so we pin the context to 'modal'.
-  if (variant === 'inline') {
-    const inlineBrand = title ? (
-      <span className="text-sm font-medium text-white">{title}</span>
-    ) : (
-      <RailWordmark />
-    );
+  // ── Inline / embedded — top stepper filling the host or the content area ───────
+  // `inline` is hosted by the drawer/modal detail panel (which supplies close /
+  // switch / maximize); `embedded` is the in-flow full page inside the dashboard
+  // chrome. Identical frame — the host just differs.
+  if (variant === 'inline' || variant === 'embedded') {
     return (
       <WizardContext.Provider value={{ variant: 'modal' }}>
-        <div
-          className={cn(
-            'grid h-full grid-cols-[240px_1fr] overflow-hidden bg-[var(--color-bg-surface)]',
-            'max-[940px]:grid-cols-1 max-[940px]:grid-rows-[auto_1fr]',
-            className
-          )}
+        <TopStepperFrame
+          title={title}
+          steps={steps}
+          current={current}
+          context={context}
+          onStepSelect={onStepSelect}
+          canSelectStep={selectable}
+          footer={footer}
+          className={className}
         >
-          <RailTopBar
-            brand={inlineBrand}
-            steps={steps}
-            current={current}
-            className="hidden max-[940px]:flex"
-          />
-          <Rail
-            compact
-            brand={
-              title ? (
-                <span className="text-base font-medium tracking-tight text-white">{title}</span>
-              ) : (
-                <RailWordmark />
-              )
-            }
-            steps={steps}
-            current={current}
-            context={context}
-            onStepSelect={onStepSelect}
-            canSelectStep={selectable}
-            footer={footer}
-            className="max-[940px]:hidden"
-          />
-          <div className="min-h-0 min-w-0">{children}</div>
-        </div>
+          {children}
+        </TopStepperFrame>
       </WizardContext.Provider>
     );
   }
 
-  // ── Page variant ────────────────────────────────────────────────────────────
+  // ── Page variant — the immersive rail (first-run onboarding) ──────────────────
   return (
-    <WizardContext.Provider value={ctx}>
+    <WizardContext.Provider value={{ variant: 'page' }}>
       <div
         className={cn(
           'grid h-screen grid-cols-[340px_1fr] overflow-hidden bg-[var(--color-bg-page)]',
@@ -472,7 +579,7 @@ export interface WizardStepProps {
   /** The standard Back/Skip/Next action row. Omit for steps that own their
    *  primary action elsewhere (e.g. the Modules plan card, the template gallery). */
   actions?: WizardStepActions;
-  /** Working-pane width (page variant). */
+  /** Working-pane width (centered column). */
   width?: 'narrow' | 'default' | 'wide';
   className?: string;
   children: React.ReactNode;
@@ -549,33 +656,38 @@ export function WizardStep({
 }: WizardStepProps) {
   const { variant } = React.useContext(WizardContext);
 
-  // Modal: a flex column that fills the dialog pane — a scrolling body and a
-  // pinned action row at the dialog's bottom edge.
+  // Top-stepper variants (context reports 'modal'): a flex column that fills the
+  // pane — a scrolling body and an action row pinned to the bottom edge. Both the
+  // body and the action row center on the same column width.
   if (variant === 'modal') {
     return (
       <div className={cn('flex h-full flex-col', className)}>
-        <div className="min-h-0 flex-1 overflow-y-auto px-7 py-6">
-          {header && <StepHeader header={header} />}
-          <div
-            className={cn(
-              header && 'mt-6',
-              'animate-in fade-in-0 slide-in-from-bottom-2 duration-300 motion-reduce:animate-none'
-            )}
-          >
-            {children}
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <div className={cn('mx-auto w-full px-7 py-6 max-[680px]:px-5', WIDTH_CLASS[width])}>
+            {header && <StepHeader header={header} />}
+            <div
+              className={cn(
+                header && 'mt-6',
+                'animate-in fade-in-0 slide-in-from-bottom-2 duration-300 motion-reduce:animate-none'
+              )}
+            >
+              {children}
+            </div>
           </div>
         </div>
         {actions && (
-          <div className="shrink-0 border-t border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-7 py-4">
-            <ActionRow actions={actions} />
+          <div className="shrink-0 border-t border-[var(--color-border-default)] bg-[var(--color-bg-surface)]">
+            <div className={cn('mx-auto w-full px-7 py-4 max-[680px]:px-5', WIDTH_CLASS[width])}>
+              <ActionRow actions={actions} />
+            </div>
           </div>
         )}
       </div>
     );
   }
 
-  // Page: a centered column with generous padding; the action row flows after
-  // the content at the same width.
+  // Page (immersive rail): a centered column with generous padding; the action
+  // row flows after the content at the same width.
   return (
     <div
       className={cn(

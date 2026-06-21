@@ -4,8 +4,9 @@ import { api } from '@/lib/api-rest-client';
 import { ContentEntryWizard } from './content-entry-wizard';
 import { loadAuthorOptions } from './author-options';
 
-// Full-page surface for creating a content entry. The WizardFrame `page` variant
-// (docs/86) owns the viewport. On the content list the "New" affordance opens
+// Full-page surface for creating a content entry. The in-app `embedded` top
+// stepper (docs/86) fills the dashboard content area (sidebar + header stay). On
+// the content list the "New" affordance opens
 // this same wizard inside the dashboard's drawer/modal detail chrome, picked by
 // the user's `defaultDetailView` preference (the `overlay` presentation). This
 // route is the full-page option and the one that carries a `?type=` preselection.

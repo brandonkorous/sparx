@@ -516,14 +516,14 @@ export function NewSiteWizard({
         onRequestClose={requestClose}
         footer={
           submitting ? (
-            <span className="flex items-center gap-2 text-white/70">
+            <span className="flex items-center gap-2 text-[var(--color-text-muted)]">
               <Spinner className="h-3.5 w-3.5" /> Creating…
             </span>
           ) : (
             <button
               type="button"
               onClick={onCancelClick}
-              className="text-white/70 underline-offset-2 hover:underline"
+              className="text-[var(--color-text-muted)] underline-offset-2 hover:underline"
             >
               {done ? 'Close' : 'Cancel'}
             </button>

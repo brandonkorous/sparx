@@ -16,9 +16,16 @@
 // then best-effort add each line, record the deposit, and advance to the chosen
 // start stage — landing on the new document either way (a failed extra is reported,
 // never silently dropped, and never blocks the others).
+//
+// Presentation (like the product/customer wizards): the `/new` route renders the
+// in-app `embedded` top stepper (full page inside the dashboard chrome); the
+// Documents list opens it inside the drawer/modal detail chrome (`overlay` →
+// WizardFrame `inline`), picked by the user's `defaultDetailView`. Finishing
+// navigates to the new document, which clears the overlay token — closing the
+// drawer/modal on its own.
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle2, Plus, Trash2 } from 'lucide-react';
 
 import {
@@ -88,6 +95,9 @@ export interface LineTypeOption {
 }
 
 export interface InvoiceWizardProps {
+  /** `'page'` = full-screen `/new` route; `'overlay'` = inside the dashboard
+   *  drawer/modal detail chrome (the `defaultDetailView` preference picks which). */
+  presentation?: 'page' | 'overlay';
   workflows: WorkflowOption[];
   customers: PartyOption[];
   b2bAccounts: PartyOption[];
@@ -172,14 +182,18 @@ function toIsoDate(value: string): string | undefined {
 // ─── Component ────────────────────────────────────────────────────────────────────
 
 export function InvoiceWizard(props: InvoiceWizardProps) {
+  // Both presentations are full-height top-stepper frames (embedded fills the
+  // dashboard content area; inline fills the drawer/modal body), so the wrapping
+  // ModuleProvider carries the height through (h-full).
   return (
-    <ModuleProvider module="invoicing">
+    <ModuleProvider module="invoicing" className="h-full">
       <InvoiceWizardInner {...props} />
     </ModuleProvider>
   );
 }
 
 function InvoiceWizardInner({
+  presentation = 'page',
   workflows,
   customers,
   b2bAccounts,
@@ -190,6 +204,8 @@ function InvoiceWizardInner({
   preselectedAccountId,
 }: InvoiceWizardProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const defaultWorkflow = workflows.find((w) => w.isDefault) ?? workflows[0];
 
@@ -268,6 +284,20 @@ function InvoiceWizardInner({
   function removeLocalLine(tempId: string) {
     setLines((prev) => prev.filter((l) => l.tempId !== tempId));
   }
+
+  // Where "leave the wizard" goes. In the overlay it clears the detail token so
+  // the drawer/modal closes in place; the page route returns to the list.
+  const close = React.useCallback(() => {
+    if (presentation === 'overlay') {
+      const next = new URLSearchParams(searchParams?.toString() ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname}?${qs}` : (pathname ?? '/'));
+    } else {
+      router.push('/invoicing/documents');
+    }
+  }, [presentation, pathname, searchParams, router]);
 
   // ── Submit ───────────────────────────────────────────────────────────────────
 
@@ -903,18 +933,20 @@ function InvoiceWizardInner({
   const cancelButton = (
     <button
       type="button"
-      onClick={() => router.push('/invoicing/documents')}
-      className="text-white/70 underline-offset-2 hover:underline"
+      onClick={close}
+      className="text-[var(--color-text-muted)] underline-offset-2 hover:underline"
     >
       Cancel
     </button>
   );
 
+  // One top-stepper frame for both presentations: `embedded` fills the dashboard
+  // content area at `/new` (sidebar + header stay); `inline` fills the drawer/
+  // modal detail panel, which supplies its own chrome.
   return (
     <WizardFrame
-      variant="page"
-      className="fixed inset-0 z-50"
-      lede={{ title: RAIL[stepKey].title, blurb: RAIL[stepKey].blurb }}
+      variant={presentation === 'overlay' ? 'inline' : 'embedded'}
+      title="New document"
       steps={steps}
       current={current}
       context={RAIL[stepKey].context}

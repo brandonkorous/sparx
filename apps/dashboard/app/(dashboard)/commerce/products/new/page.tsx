@@ -1,8 +1,9 @@
 import { ProductWizard } from '../_components/product-wizard';
 
 // Full-page surface for creating a product. The comprehensive WizardFrame flow
-// (docs/68, docs/86) owns the viewport as a full-screen overlay — it creates a
-// draft on the first step and walks the merchant through its relations.
+// (docs/68, docs/86) renders as the in-app `embedded` top stepper, filling the
+// dashboard content area (sidebar + header stay) — it creates a draft on the
+// first step and walks the merchant through its relations.
 //
 // On the products list the "New" affordance opens this same wizard inside the
 // dashboard's drawer/modal detail chrome, picked by the user's `defaultDetailView`

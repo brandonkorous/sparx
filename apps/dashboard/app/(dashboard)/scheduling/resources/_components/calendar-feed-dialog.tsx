@@ -21,6 +21,7 @@ import {
 import { Copy } from 'lucide-react';
 
 import { getResourceFeedUrlAction } from '../../_lib/actions';
+import { CalendarConnectionsSection } from './calendar-connections-section';
 
 export function CalendarFeedDialog({
   resourceId,
@@ -65,13 +66,14 @@ export function CalendarFeedDialog({
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalContent className="max-w-xl">
         <ModalHeader>
-          <ModalTitle>Calendar feed — {resourceName}</ModalTitle>
+          <ModalTitle>Calendar sync — {resourceName}</ModalTitle>
           <ModalDescription>
-            Add this private link to Google, Outlook, or Apple Calendar (&ldquo;Subscribe&rdquo; /
-            &ldquo;Add by URL&rdquo;). This resource&rsquo;s bookings will appear automatically.
+            Two-way at a glance: subscribe to this resource&rsquo;s sparx bookings, and import an
+            outside calendar so its events block sparx slots.
           </ModalDescription>
         </ModalHeader>
 
+        <p className="px-1 pt-1 text-sm font-medium">Subscribe to this resource&rsquo;s bookings</p>
         <div className="flex flex-col gap-3 px-1 py-2">
           {error ? (
             <p className="text-sm text-[var(--color-danger)]">{error}</p>
@@ -100,6 +102,12 @@ export function CalendarFeedDialog({
             Subscribed calendars refresh on the provider&rsquo;s own cadence (Google ~12h, Outlook
             ~24h), so it can lag; sparx remains the source of truth for availability.
           </p>
+        </div>
+
+        <hr className="my-1 border-[var(--color-border)]" />
+
+        <div className="px-1 py-2">
+          <CalendarConnectionsSection resourceId={resourceId} />
         </div>
       </ModalContent>
     </Modal>

@@ -7,7 +7,7 @@
 import { revalidatePath } from 'next/cache';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
-import type { AvailabilitySlot, Booking, BookingPolicy } from './types';
+import type { AvailabilitySlot, Booking, BookingPolicy, CalendarConnection } from './types';
 
 export type ActionResult<T = undefined> = { ok: true; data: T } | { ok: false; error: string };
 
@@ -127,6 +127,54 @@ export async function getResourceFeedUrlAction(
     return { ok: true, data };
   } catch (err) {
     return fail(err, 'Failed to load the calendar feed URL');
+  }
+}
+
+// ── Calendar connections (inbound iCal busy import, docs/79 §8.2) ────────────
+export async function listCalendarConnectionsAction(
+  resourceId: string
+): Promise<ActionResult<CalendarConnection[]>> {
+  try {
+    const data = await api.get<CalendarConnection[]>(
+      `/v1/scheduling/calendar/connections?resourceId=${resourceId}`
+    );
+    return { ok: true, data };
+  } catch (err) {
+    return fail(err, 'Failed to load calendar connections');
+  }
+}
+
+export async function createIcalFeedAction(body: {
+  resourceId: string;
+  icalUrl: string;
+  provider?: string;
+}): Promise<ActionResult<CalendarConnection & { sync?: { ok: boolean; error?: string } }>> {
+  try {
+    const data = await api.post<CalendarConnection & { sync?: { ok: boolean; error?: string } }>(
+      '/v1/scheduling/calendar/connections/ical',
+      body
+    );
+    return { ok: true, data };
+  } catch (err) {
+    return fail(err, 'Failed to add the calendar feed');
+  }
+}
+
+export async function syncCalendarConnectionAction(id: string): Promise<ActionResult> {
+  try {
+    await api.post(`/v1/scheduling/calendar/connections/${id}/sync`, {});
+    return { ok: true, data: undefined };
+  } catch (err) {
+    return fail(err, 'Failed to sync the calendar');
+  }
+}
+
+export async function deleteCalendarConnectionAction(id: string): Promise<ActionResult> {
+  try {
+    await api.delete(`/v1/scheduling/calendar/connections/${id}`);
+    return { ok: true, data: undefined };
+  } catch (err) {
+    return fail(err, 'Failed to remove the calendar connection');
   }
 }
 

@@ -171,8 +171,8 @@ function centsToDisplay(cents: number | undefined): string {
 
 export interface ProductWizardProps {
   /** How the wizard is presented:
-   *   • `'page'`    — the `/new` route; a full-screen overlay that owns the
-   *                   viewport (the full-page escape hatch).
+   *   • `'page'`    — the `/new` route; the in-app `embedded` top-stepper that
+   *                   fills the dashboard content area (sidebar + header stay).
    *   • `'overlay'` — hosted inside the dashboard's drawer/modal detail chrome
    *                   (docs/86 `WizardFrame` inline variant). The user's
    *                   `defaultDetailView` preference picks drawer vs. modal;
@@ -182,12 +182,11 @@ export interface ProductWizardProps {
 }
 
 export function ProductWizard(props: ProductWizardProps = {}) {
-  // In the overlay the wizard fills the host drawer/modal body, so the wrapping
-  // ModuleProvider div must carry the height through (h-full) instead of
-  // collapsing to content — otherwise the rail can't run the full panel height.
-  const fill = props.presentation === 'overlay';
+  // Both presentations are full-height top-stepper frames (embedded fills the
+  // dashboard content area; inline fills the drawer/modal body), so the wrapping
+  // ModuleProvider div carries the height through (h-full).
   return (
-    <ModuleProvider module="commerce" className={fill ? 'h-full' : undefined}>
+    <ModuleProvider module="commerce" className="h-full">
       <ProductWizardInner {...props} />
     </ModuleProvider>
   );
@@ -980,40 +979,19 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
     <button
       type="button"
       onClick={() => void onCancel()}
-      className="text-white/70 underline-offset-2 hover:underline"
+      className="text-[var(--color-text-muted)] underline-offset-2 hover:underline"
     >
       Cancel
     </button>
   );
 
-  if (presentation === 'overlay') {
-    // Hosted inside the dashboard's drawer/modal detail chrome — that shell owns
-    // the overlay + the close/switch/maximize header; the wizard just fills the
-    // body as its two-pane (collapsing) inline frame.
-    return (
-      <WizardFrame
-        variant="inline"
-        title="New product"
-        steps={steps}
-        current={current}
-        context={railContext}
-        onStepSelect={onStepSelect}
-        canSelectStep={canSelectStep}
-        footer={cancelButton}
-      >
-        {body}
-      </WizardFrame>
-    );
-  }
-
+  // One top-stepper frame for both presentations: `embedded` fills the dashboard
+  // content area at the `/new` route (sidebar + header stay); `inline` fills the
+  // drawer/modal detail panel, which supplies its own close/switch/maximize chrome.
   return (
     <WizardFrame
-      variant="page"
-      // The /new route lives under the dashboard layout; render the page-variant
-      // frame as a full-screen overlay so it covers the sidebar/topbar chrome
-      // rather than nesting a second rail beside it.
-      className="fixed inset-0 z-50"
-      lede={{ title: RAIL[stepKey].title, blurb: RAIL[stepKey].blurb }}
+      variant={presentation === 'overlay' ? 'inline' : 'embedded'}
+      title="New product"
       steps={steps}
       current={current}
       context={railContext}

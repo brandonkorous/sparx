@@ -13,10 +13,11 @@
 // is created only if you name it, a draft quote only if you add a starter line —
 // so someone who just wants a contact clicks straight through.
 //
-// Presentation (like the product wizard): the `/new` route renders the
-// full-screen `page` variant; the CRM list opens it inside the dashboard's
-// drawer/modal detail chrome (`overlay` → WizardFrame `inline`), picked by the
-// user's `defaultDetailView`. On finish: creates the customer, then best-effort
+// Presentation (like the product wizard): the `/new` route renders the in-app
+// `embedded` top stepper (full page inside the dashboard chrome); the CRM list
+// opens it inside the drawer/modal detail chrome (`overlay` → WizardFrame
+// `inline`), picked by the user's `defaultDetailView`. On finish: creates the
+// customer, then best-effort
 // applies the address, note, task, deal, and quote, and navigates to the new
 // detail with a `?notice=` listing anything that failed (the contact is saved
 // regardless).
@@ -221,8 +222,9 @@ export interface PipelineOption {
 }
 
 export interface CustomerWizardProps {
-  /** `'page'` = full-screen `/new` route; `'overlay'` = inside the dashboard
-   *  drawer/modal detail chrome (the `defaultDetailView` preference picks which). */
+  /** `'page'` = the in-app full-page `/new` route (embedded top stepper, inside
+   *  the dashboard chrome); `'overlay'` = the drawer/modal detail chrome (the
+   *  `defaultDetailView` preference picks which). */
   presentation?: 'page' | 'overlay';
   /** Current user id — the optional follow-up task is assigned to them. Supplied
    *  by the server surface (the wizard is a client component); when absent, a
@@ -234,11 +236,11 @@ export interface CustomerWizardProps {
 }
 
 export function CustomerFullProfileWizard(props: CustomerWizardProps = {}) {
-  // In the overlay the wizard fills the host body, so the wrapping ModuleProvider
-  // must carry the height through (h-full) rather than collapse to content.
-  const fill = props.presentation === 'overlay';
+  // Both presentations are full-height top-stepper frames (embedded fills the
+  // dashboard content area; inline fills the drawer/modal body), so the wrapping
+  // ModuleProvider carries the height through (h-full).
   return (
-    <ModuleProvider module="crm" className={fill ? 'h-full' : undefined}>
+    <ModuleProvider module="crm" className="h-full">
       <CustomerWizardInner {...props} />
     </ModuleProvider>
   );
@@ -914,34 +916,19 @@ function CustomerWizardInner({
     <button
       type="button"
       onClick={close}
-      className="text-white/70 underline-offset-2 hover:underline"
+      className="text-[var(--color-text-muted)] underline-offset-2 hover:underline"
     >
       Cancel
     </button>
   );
 
-  if (presentation === 'overlay') {
-    return (
-      <WizardFrame
-        variant="inline"
-        title="New customer"
-        steps={steps}
-        current={current}
-        context={RAIL[stepKey].context}
-        onStepSelect={onStepSelect}
-        canSelectStep={canSelectStep}
-        footer={cancelButton}
-      >
-        {body}
-      </WizardFrame>
-    );
-  }
-
+  // One top-stepper frame for both presentations: `embedded` fills the dashboard
+  // content area at `/new` (sidebar + header stay); `inline` fills the drawer/
+  // modal detail panel, which supplies its own chrome.
   return (
     <WizardFrame
-      variant="page"
-      className="fixed inset-0 z-50"
-      lede={{ title: RAIL[stepKey].title, blurb: RAIL[stepKey].blurb }}
+      variant={presentation === 'overlay' ? 'inline' : 'embedded'}
+      title="New customer"
       steps={steps}
       current={current}
       context={RAIL[stepKey].context}

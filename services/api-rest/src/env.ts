@@ -140,6 +140,14 @@ const EnvSchema = z
     TWILIO_AUTH_TOKEN: z.string().optional(),
     TWILIO_FROM: z.string().optional(),
     TWILIO_MESSAGING_SERVICE_SID: z.string().optional(),
+    // Calendar sync (docs/79 §8) — AES-256-GCM key (32 bytes, base64 or hex)
+    // encrypting calendar credentials at rest (iCal feed URLs, OAuth tokens,
+    // CalDAV app-passwords) in scheduling_calendar_connections, mirroring
+    // SEARCH_CONSOLE_TOKEN_KEY. Unset → the calendar-connection endpoints return a
+    // clear "not configured" error and the inbound-sync tick is inert (the rest of
+    // Scheduling, incl. outbound iCal, is unaffected). Rotating it invalidates
+    // every stored calendar credential (tenants reconnect) — never log it.
+    SCHEDULING_CALENDAR_TOKEN_KEY: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     // GCS mode requires both buckets — the public one holds variants,
@@ -177,6 +185,16 @@ const EnvSchema = z
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['SEARCH_CONSOLE_TOKEN_KEY'],
+        message: 'Must be a 32-byte key encoded as base64 (44 chars) or hex (64 chars).',
+      });
+    }
+    if (
+      data.SCHEDULING_CALENDAR_TOKEN_KEY &&
+      decodeKeyBytes(data.SCHEDULING_CALENDAR_TOKEN_KEY) !== 32
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['SCHEDULING_CALENDAR_TOKEN_KEY'],
         message: 'Must be a 32-byte key encoded as base64 (44 chars) or hex (64 chars).',
       });
     }

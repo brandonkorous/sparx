@@ -6,6 +6,7 @@ import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack } from '@
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
 
+import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
@@ -50,9 +51,14 @@ export default async function PurchaseOrdersPage({ searchParams }: PageProps) {
           }
           description="Inbound orders — buy stock from a supplier, received into a warehouse. Draft an order, submit it, then receive against it as goods arrive."
           actions={
-            <Button color="module" asChild leftIcon={<Plus className="h-4 w-4" />}>
-              <Link href="/inventory/purchase-orders/new">New</Link>
-            </Button>
+            <EntityCreateButton
+              entityType="purchase-order"
+              newHref="/inventory/purchase-orders/new"
+              color="module"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New
+            </EntityCreateButton>
           }
         />
 
@@ -87,9 +93,14 @@ export default async function PurchaseOrdersPage({ searchParams }: PageProps) {
               title={status ? `No ${status} purchase orders` : 'No purchase orders yet'}
               description="Draft your first purchase order to restock from a supplier. Add lines, submit, then receive as goods arrive."
               action={
-                <Button color="module" asChild leftIcon={<Plus className="h-4 w-4" />}>
-                  <Link href="/inventory/purchase-orders/new">New</Link>
-                </Button>
+                <EntityCreateButton
+                  entityType="purchase-order"
+                  newHref="/inventory/purchase-orders/new"
+                  color="module"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New
+                </EntityCreateButton>
               }
             />
           </Card>

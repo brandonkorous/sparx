@@ -21,6 +21,22 @@ export interface ResourceRequirement {
   count?: number;
 }
 
+/** A resource's linked external calendar (docs/79 §8) — safe view, no secrets. */
+export interface CalendarConnection {
+  id: string;
+  resourceId: string;
+  provider: string;
+  connectionKind: string;
+  credentialSource: string;
+  direction: string;
+  fidelity: string;
+  status: string;
+  externalCalendarId: string | null;
+  lastSyncedAt: string | null;
+  lastError: string | null;
+  createdAt: string;
+}
+
 export interface SchedulingService {
   id: string;
   bookingType: BookingType;

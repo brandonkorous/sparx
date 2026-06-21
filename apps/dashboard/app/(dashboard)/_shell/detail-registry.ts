@@ -41,10 +41,23 @@ const CREATE_VIEW_TYPES = new Set<string>([
   'price-list',
   'customer',
   'b2b-account',
+  // Quote + Order creation are multi-step WizardFrames (full-bleed below); a
+  // created record opens into its detail view. Full pages: /crm/quotes/new,
+  // /crm/orders/new.
+  'quote',
+  'order',
+  // Purchase order + transfer creation are multi-step WizardFrames (full-bleed
+  // below); their editors stay full-page. Full pages live under /inventory/.
+  'purchase-order',
+  'transfer',
   'segment',
   'page',
   'content-type',
   'content-entry',
+  // Billing-document creation is the multi-step WizardFrame (full-bleed below).
+  // Its detail/editor stays full-page, but create opts into the drawer/modal so
+  // the "New" button honors `defaultDetailView`. Full page: /invoicing/documents/new.
+  'billing-document',
   // Single-column create overlays for list surfaces that previously rendered an
   // inline form in the page body. author + taxonomy flow into their detail view
   // on success; the rest have no detail view and stay open with an inline result.
@@ -71,6 +84,11 @@ const FULL_BLEED_CREATE_TYPES = new Set<string>([
   'customer',
   'b2b-account',
   'content-entry',
+  'billing-document',
+  'quote',
+  'order',
+  'purchase-order',
+  'transfer',
 ]);
 
 export function isFullBleedCreate(typeId: string): boolean {

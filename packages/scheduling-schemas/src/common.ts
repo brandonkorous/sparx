@@ -90,8 +90,9 @@ export type ExceptionKind = z.infer<typeof ExceptionKind>;
 export const WaitlistStatus = z.enum(['waiting', 'offered', 'booked', 'expired', 'cancelled']);
 export type WaitlistStatus = z.infer<typeof WaitlistStatus>;
 
-// Calendar sync (docs/79 §8).
-export const CalendarProvider = z.enum(['google', 'microsoft', 'apple_caldav', 'caldav']);
+// Calendar sync (docs/79 §8). `ical` = a plain read-only iCal/ICS feed URL from
+// any source (Google/Outlook/Apple secret address) — the Layer-2 inbound path.
+export const CalendarProvider = z.enum(['google', 'microsoft', 'apple_caldav', 'caldav', 'ical']);
 export type CalendarProvider = z.infer<typeof CalendarProvider>;
 
 export const ConnectionKind = z.enum(['oauth', 'caldav', 'ical_feed']);
