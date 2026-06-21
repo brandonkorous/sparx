@@ -12,6 +12,14 @@ export interface PublicSlot {
 
 export type DepositType = 'card_hold' | 'deposit' | 'prepay';
 
+/** "Add to calendar" links for a booking (docs/79 §8.1): the per-booking `.ics`
+ *  download plus Google/Outlook web deep links. */
+export interface CalendarLinks {
+  ics: string;
+  google: string;
+  outlook: string;
+}
+
 export interface BookingConfirmation {
   id: string;
   status: string;
@@ -26,6 +34,7 @@ export interface BookingConfirmation {
     amountCents: number;
     type: DepositType;
   } | null;
+  calendar?: CalendarLinks | null;
 }
 
 export interface CreateBookingBody {

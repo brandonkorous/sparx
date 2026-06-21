@@ -17,6 +17,7 @@ import {
   type PublicSlot,
 } from '../../lib/scheduling-client';
 import { BookingDepositStep } from './booking-deposit-step';
+import { AddToCalendar } from './add-to-calendar';
 
 function todayISODate(): string {
   const d = new Date();
@@ -150,6 +151,7 @@ export function BookingWidget({
             ? `We've received your request for ${confirmation.serviceName} on ${formatDateTime(confirmation.startAt)}. You'll get a confirmation once it's approved.`
             : `${confirmation.serviceName} is confirmed for ${formatDateTime(confirmation.startAt)}. A confirmation is on its way to ${email}.`}
         </p>
+        {confirmation.calendar ? <AddToCalendar links={confirmation.calendar} /> : null}
       </div>
     );
   }

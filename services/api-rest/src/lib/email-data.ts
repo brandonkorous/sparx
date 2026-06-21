@@ -25,6 +25,7 @@ import { collectEmailSourceKeys, type BuilderNode, type DataSources } from '@spa
 import type { ServiceContext } from '@sparx/email-platform';
 
 import { resolveActivePropertyName } from './property.js';
+import { bookingIcsUrl } from './scheduling-ical.js';
 
 /** The entity ids a send resolves against (docs/91 §3) — the automation's
  *  `entityRefs`, or just `{ customerId }` for a customer-addressed broadcast.
@@ -481,6 +482,9 @@ async function resolveBooking(
     // Phase 3c) + where they re-book after a cancellation.
     manageUrl: siteLink(slug, '/account/bookings'),
     bookUrl: siteLink(slug, '/book'),
+    // The per-booking `.ics` download (docs/79 §8.1) — an "Add to calendar" link in
+    // the confirmation/reminder. Absolute api-rest URL (reachable by mail clients).
+    addToCalendarUrl: bookingIcsUrl(ctx.tenantId, ref.bookingId),
   };
 }
 

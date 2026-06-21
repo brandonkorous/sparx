@@ -3280,4 +3280,31 @@
     padding: clamp(1.5rem, 4vw, 2.5rem);
     text-align: center;
   }
+  /* "Add to calendar" link row (docs/79 §8.1) — confirmation + portal. */
+  .st-add-to-cal {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem 0.85rem;
+    font-size: 0.85rem;
+  }
+  .st-add-to-cal__label {
+    color: var(--st-text-muted, var(--st-muted));
+    font-weight: 600;
+  }
+  .st-add-to-cal__link {
+    color: var(--st-primary);
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--st-primary) 35%, transparent);
+  }
+  .st-add-to-cal__link:hover {
+    border-bottom-color: var(--st-primary);
+  }
+  /* Left-aligned variant for list rows (portal) vs. the centered confirmation. */
+  .st-add-to-cal--start {
+    justify-content: flex-start;
+    margin-top: 0.45rem;
+    font-size: 0.82rem;
+  }
 } /* end @layer st-legacy */

@@ -36,6 +36,7 @@ import { moduleDisabled, notFound, unauthorized } from '@sparx/api-core/errors';
 import { resolveTenantId } from '../../../lib/public-commerce-context.js';
 import { publishBookingEvent } from '../../../lib/scheduling-events.js';
 import { settleBookingPayment } from '../../../lib/scheduling-payments.js';
+import { bookingCalendarLinks } from '../../../lib/scheduling-ical.js';
 
 const ListQuery = z.object({
   scope: z.enum(['upcoming', 'past', 'all']).default('upcoming'),
@@ -69,7 +70,11 @@ const MODIFIABLE = ['requested', 'confirmed'];
 /** A customer-facing projection of a booking — only their-eyes copy (no staff
  *  notes). `canCancel`/`canReschedule` drive the portal's action buttons; the
  *  engine still enforces the real state machine + slot availability on write. */
-function toBookingDto(b: BookingWithRelations, now: number): Record<string, unknown> {
+function toBookingDto(
+  b: BookingWithRelations,
+  now: number,
+  tenantId: string
+): Record<string, unknown> {
   const future = b.startAt.getTime() > now;
   const modifiable = MODIFIABLE.includes(b.status) && future;
   return {
@@ -88,6 +93,15 @@ function toBookingDto(b: BookingWithRelations, now: number): Record<string, unkn
     serviceId: b.service.id,
     canCancel: modifiable,
     canReschedule: modifiable,
+    // "Add to calendar" — only meaningful for a live (non-cancelled) booking.
+    calendar:
+      b.status === 'cancelled' || b.status === 'no_show'
+        ? null
+        : bookingCalendarLinks(tenantId, b.id, {
+            summary: b.service.name,
+            start: b.startAt,
+            end: b.endAt,
+          }),
   };
 }
 
@@ -120,7 +134,7 @@ const schedulingAccountRoutes: FastifyPluginAsync = async (app) => {
     });
     const now = Date.now();
     return paged(
-      rows.map((b) => toBookingDto(b, now)),
+      rows.map((b) => toBookingDto(b, now, ctx.tenantId)),
       { page, per_page: pageSize, total, total_pages: Math.ceil(total / pageSize) }
     );
   });
@@ -130,7 +144,7 @@ const schedulingAccountRoutes: FastifyPluginAsync = async (app) => {
     const ctx = await bookingContext(request);
     const customerId = await requireCustomer(request, ctx);
     const booking = await ownedBooking(ctx.tenantId, bookingId, customerId);
-    return ok(toBookingDto(booking, Date.now()));
+    return ok(toBookingDto(booking, Date.now(), ctx.tenantId));
   });
 
   app.post('/v1/public/scheduling/account/bookings/:bookingId/cancel', async (request) => {
@@ -157,7 +171,7 @@ const schedulingAccountRoutes: FastifyPluginAsync = async (app) => {
       customerId,
       source: 'portal',
     });
-    return ok(toBookingDto(await getBooking(ctx.tenantId, updated.id), Date.now()));
+    return ok(toBookingDto(await getBooking(ctx.tenantId, updated.id), Date.now(), ctx.tenantId));
   });
 
   app.post('/v1/public/scheduling/account/bookings/:bookingId/reschedule', async (request) => {
@@ -180,7 +194,7 @@ const schedulingAccountRoutes: FastifyPluginAsync = async (app) => {
       startAt: body.startAt,
       source: 'portal',
     });
-    return ok(toBookingDto(await getBooking(ctx.tenantId, updated.id), Date.now()));
+    return ok(toBookingDto(await getBooking(ctx.tenantId, updated.id), Date.now(), ctx.tenantId));
   });
 };
 

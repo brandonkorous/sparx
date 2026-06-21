@@ -118,6 +118,18 @@ export async function deleteResourceAction(id: string): Promise<ActionResult> {
   }
 }
 
+/** The resource's private subscribe-to `.ics` feed URL (docs/79 §8.1). */
+export async function getResourceFeedUrlAction(
+  id: string
+): Promise<ActionResult<{ feedUrl: string }>> {
+  try {
+    const data = await api.get<{ feedUrl: string }>(`/v1/scheduling/resources/${id}/calendar-feed`);
+    return { ok: true, data };
+  } catch (err) {
+    return fail(err, 'Failed to load the calendar feed URL');
+  }
+}
+
 // ── Availability ──────────────────────────────────────────────────────────────
 export async function setAvailabilityWindowsAction(
   resourceId: string,

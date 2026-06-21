@@ -21,6 +21,7 @@ import {
   deleteResource,
 } from '@sparx/scheduling';
 import { requireSchedulingModule, toSchedulingContext } from '../../../lib/scheduling-context.js';
+import { resourceFeedUrl } from '../../../lib/scheduling-ical.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({
@@ -53,6 +54,17 @@ const schedulingResourceRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     return ok(resourceView(await getResource(tenantId, id)));
+  });
+
+  // The resource's private subscribe-to `.ics` feed URL (docs/79 §8.1). Any staff
+  // member with dashboard access can copy it into Google/Outlook/Apple; the signed
+  // URL itself is the auth on the public feed endpoint. read = auth (no role gate).
+  app.get('/v1/scheduling/resources/:id/calendar-feed', async (request) => {
+    await requireSchedulingModule(request);
+    const { tenantId } = toSchedulingContext(request);
+    const { id } = PathId.parse(request.params);
+    await getResource(tenantId, id); // 404s a missing/foreign resource before signing
+    return ok({ feedUrl: resourceFeedUrl(tenantId, id) });
   });
 
   app.patch('/v1/scheduling/resources/:id', async (request) => {

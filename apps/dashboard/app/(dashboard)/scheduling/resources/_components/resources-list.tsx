@@ -23,17 +23,19 @@ import {
   toast,
   useConfirm,
 } from '@sparx/ui';
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { CalendarDays, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 
 import type { SchedulingResource } from '../../_lib/types';
 import { RESOURCE_KIND_LABEL } from '../../_lib/format';
 import { deleteResourceAction } from '../../_lib/actions';
 import { ResourceForm } from './resource-form';
+import { CalendarFeedDialog } from './calendar-feed-dialog';
 
 export function ResourcesList({ resources }: { resources: SchedulingResource[] }) {
   const router = useRouter();
   const confirm = useConfirm();
   const [editing, setEditing] = useState<SchedulingResource | null>(null);
+  const [feedFor, setFeedFor] = useState<SchedulingResource | null>(null);
 
   async function remove(r: SchedulingResource) {
     const ok = await confirm({
@@ -120,6 +122,10 @@ export function ResourcesList({ resources }: { resources: SchedulingResource[] }
                       <Pencil className="mr-2 h-4 w-4" />
                       Edit
                     </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => setFeedFor(r)}>
+                      <CalendarDays className="mr-2 h-4 w-4" />
+                      Calendar feed
+                    </DropdownMenuItem>
                     <DropdownMenuItem
                       onSelect={() => void remove(r)}
                       className="text-[var(--color-danger)]"
@@ -149,6 +155,13 @@ export function ResourcesList({ resources }: { resources: SchedulingResource[] }
           ) : null}
         </ModalContent>
       </Modal>
+
+      <CalendarFeedDialog
+        resourceId={feedFor?.id ?? ''}
+        resourceName={feedFor?.name ?? ''}
+        open={feedFor !== null}
+        onOpenChange={(o) => !o && setFeedFor(null)}
+      />
     </>
   );
 }

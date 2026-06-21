@@ -343,6 +343,9 @@ const bookingConfirmation = (): BuilderNode =>
     conditional('booking.location', [para('Location: {{booking.location}}')]),
     conditional('booking.staff', [para('With: {{booking.staff}}')]),
     button('Manage booking', '{{booking.manageUrl}}'),
+    conditional('booking.addToCalendarUrl', [
+      button('Add to calendar', '{{booking.addToCalendarUrl}}'),
+    ]),
   ]);
 
 const bookingReminder = (): BuilderNode =>
@@ -354,6 +357,9 @@ const bookingReminder = (): BuilderNode =>
     conditional('booking.location', [para('Location: {{booking.location}}')]),
     conditional('booking.staff', [para('With: {{booking.staff}}')]),
     button('Manage booking', '{{booking.manageUrl}}'),
+    conditional('booking.addToCalendarUrl', [
+      button('Add to calendar', '{{booking.addToCalendarUrl}}'),
+    ]),
   ]);
 
 const bookingRescheduled = (): BuilderNode =>
@@ -364,6 +370,9 @@ const bookingRescheduled = (): BuilderNode =>
     ),
     conditional('booking.location', [para('Location: {{booking.location}}')]),
     button('Manage booking', '{{booking.manageUrl}}'),
+    conditional('booking.addToCalendarUrl', [
+      button('Add to calendar', '{{booking.addToCalendarUrl}}'),
+    ]),
   ]);
 
 const bookingCancelled = (): BuilderNode =>

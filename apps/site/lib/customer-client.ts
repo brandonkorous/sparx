@@ -525,6 +525,8 @@ export interface CustomerBooking {
   cancellationReason: string | null;
   canCancel: boolean;
   canReschedule: boolean;
+  /** "Add to calendar" links (docs/79 §8.1); null for a cancelled/missed booking. */
+  calendar: { ics: string; google: string; outlook: string } | null;
 }
 
 export async function getMyBookings(

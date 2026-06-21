@@ -80,6 +80,17 @@ export {
 } from './notifications';
 export { type BookingSmsFields, renderBookingSms } from './sms-templates';
 export {
+  type IcsEvent,
+  type IcsStatus,
+  type IcsCalendarMeta,
+  buildIcsEvent,
+  buildIcsFeed,
+  formatIcsUtc,
+  escapeIcsText,
+  googleCalendarUrl,
+  outlookCalendarUrl,
+} from './ical';
+export {
   type DepositType,
   type DepositPolicyInput,
   type DepositPlan,

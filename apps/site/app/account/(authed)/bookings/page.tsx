@@ -11,6 +11,8 @@ import { SparxAlert, SparxButton } from '@sparx/site-ui';
 import { useCustomer } from '@/components/customer-provider';
 import { cancelMyBooking, getMyBookings, type CustomerBooking } from '@/lib/customer-client';
 
+import { AddToCalendar } from '@/components/booking/add-to-calendar';
+
 import { ReschedulePanel } from './reschedule-panel';
 
 const PAGE_SIZE = 20;
@@ -152,6 +154,9 @@ export default function BookingsPage() {
                       >
                         Reason: {b.cancellationReason}
                       </div>
+                    )}
+                    {b.calendar && (
+                      <AddToCalendar links={b.calendar} className="st-add-to-cal--start" />
                     )}
                   </div>
                   <div

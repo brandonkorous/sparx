@@ -488,6 +488,7 @@ export const EMAIL_SOURCES: DataSource[] = [
       text('cancellationReason', 'Cancellation reason'),
       text('manageUrl', 'Manage link'),
       text('bookUrl', 'Book-again link'),
+      text('addToCalendarUrl', 'Add-to-calendar link'),
     ],
   },
   {

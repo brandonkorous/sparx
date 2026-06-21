@@ -18,6 +18,7 @@ import { createBooking, getAvailability, getService, listServices } from '@sparx
 import { resolveTenantId } from '../../../lib/public-commerce-context.js';
 import { publishBookingEvent } from '../../../lib/scheduling-events.js';
 import { createBookingDeposit } from '../../../lib/scheduling-payments.js';
+import { bookingCalendarLinks } from '../../../lib/scheduling-ical.js';
 
 async function requireScheduling(request: FastifyRequest): Promise<string> {
   const tenantId = await resolveTenantId(request);
@@ -169,6 +170,14 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
       source: 'site',
     });
 
+    // "Add to calendar" links (docs/79 §8.1) — the per-booking `.ics` download plus
+    // Google/Outlook web deep links, shown on the confirmation step.
+    const calendar = bookingCalendarLinks(tenantId, created.booking.id, {
+      summary: service.name,
+      start: created.booking.startAt,
+      end: created.booking.endAt,
+    });
+
     return reply.code(201).send(
       ok({
         id: created.booking.id,
@@ -184,6 +193,7 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
               type: deposit.type,
             }
           : null,
+        calendar,
       })
     );
   });
