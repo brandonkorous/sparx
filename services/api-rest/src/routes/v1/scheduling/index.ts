@@ -5,6 +5,7 @@ import schedulingAvailabilityRoutes from './availability.js';
 import schedulingBookingRoutes from './bookings.js';
 import schedulingPolicyRoutes from './policies.js';
 import schedulingCalendarConnectionRoutes from './calendar.js';
+import schedulingSeriesRoutes from './series.js';
 
 const schedulingRoutes: FastifyPluginAsync = async (app) => {
   await app.register(schedulingServiceRoutes);
@@ -13,6 +14,7 @@ const schedulingRoutes: FastifyPluginAsync = async (app) => {
   await app.register(schedulingBookingRoutes);
   await app.register(schedulingPolicyRoutes);
   await app.register(schedulingCalendarConnectionRoutes);
+  await app.register(schedulingSeriesRoutes);
 };
 
 export default schedulingRoutes;

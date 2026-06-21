@@ -125,6 +125,13 @@ async function cancelPending(
   });
 }
 
+export interface ScheduleNotificationsOptions {
+  /** Skip the immediate confirmation row (still lays reminders). Used for the 2nd+
+   *  occurrence of a recurring series so the customer gets ONE confirmation, not
+   *  one per session — each occurrence still gets its own reminders. */
+  skipConfirmation?: boolean;
+}
+
 /**
  * Schedule a confirmed booking's notifications: an immediate confirmation plus a
  * reminder at each of the policy's `reminderOffsetsMin` before start. Idempotent
@@ -136,16 +143,19 @@ export async function scheduleBookingNotifications(
   tx: TxClient,
   tenantId: string,
   booking: NotifiableBooking,
-  now: Date = new Date()
+  now: Date = new Date(),
+  opts: ScheduleNotificationsOptions = {}
 ): Promise<void> {
   const channels = await reachableChannels(tx, booking.customerId);
   if (channels.length === 0) return;
 
-  const haveConfirmation = await tx.bookingNotification.count({
-    where: { bookingId: booking.id, type: 'confirmation' },
-  });
-  if (haveConfirmation === 0) {
-    await enqueueRows(tx, tenantId, booking.id, 'confirmation', channels, now);
+  if (!opts.skipConfirmation) {
+    const haveConfirmation = await tx.bookingNotification.count({
+      where: { bookingId: booking.id, type: 'confirmation' },
+    });
+    if (haveConfirmation === 0) {
+      await enqueueRows(tx, tenantId, booking.id, 'confirmation', channels, now);
+    }
   }
   await layReminders(tx, tenantId, booking, channels, now);
 }

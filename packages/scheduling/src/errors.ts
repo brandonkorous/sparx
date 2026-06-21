@@ -56,6 +56,21 @@ export class CalendarConnectionNotFoundError extends SchedulingError {
   }
 }
 
+export class BookingSeriesNotFoundError extends SchedulingError {
+  constructor(id: string) {
+    super('BOOKING_SERIES_NOT_FOUND', `Booking series ${id} not found`);
+    this.name = 'BookingSeriesNotFoundError';
+  }
+}
+
+/** The supplied RRULE has no recognizable FREQ — the series can't be expanded. */
+export class InvalidRecurrenceError extends SchedulingError {
+  constructor(rrule: string) {
+    super('INVALID_RECURRENCE', `Could not parse the recurrence rule: ${rrule}`);
+    this.name = 'InvalidRecurrenceError';
+  }
+}
+
 /** An action isn't valid for the booking's current status (e.g. checking in a
  *  cancelled booking). */
 export class InvalidBookingStateError extends SchedulingError {

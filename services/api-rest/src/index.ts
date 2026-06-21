@@ -21,6 +21,7 @@ import { startSitebuilderPublishLoop } from './lib/sitebuilder-publish.js';
 import { startEmailDispatchLoop } from './lib/email-dispatch.js';
 import { startBookingNotificationLoop } from './lib/scheduling-notifications.js';
 import { startCalendarSyncLoop } from './lib/scheduling-calendar-sync.js';
+import { startSeriesMaterializationLoop } from './lib/scheduling-series.js';
 import { attachChatWebsocket } from './websocket/index.js';
 
 async function main(): Promise<void> {
@@ -101,6 +102,11 @@ async function main(): Promise<void> {
   // Singleton across pods via its own advisory lock — see lib/scheduling-calendar-sync.ts.
   const stopCalendarSync = startCalendarSyncLoop(app.log);
 
+  // Background tick that rolls recurring booking-series horizons forward,
+  // materializing new child bookings as time passes (docs/79 §7.6). Singleton
+  // across pods via its own advisory lock — see lib/scheduling-series.ts.
+  const stopSeriesMaterialization = startSeriesMaterializationLoop(app.log);
+
   // Background pass that back-fills the 13 default Builder-email templates for any
   // email-active tenant that missed `module.activated` (docs/90 §6, docs/91 §7).
   // Singleton across pods via its own advisory lock — see lib/email-provisioning.ts.
@@ -124,6 +130,7 @@ async function main(): Promise<void> {
     stopEmailDispatch();
     stopBookingNotifications();
     stopCalendarSync();
+    stopSeriesMaterialization();
     stopEmailProvisioningReconcile();
     stopModuleProvisioningReconcile();
     void chatWs.close().catch((err: unknown) => {

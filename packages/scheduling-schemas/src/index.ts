@@ -15,3 +15,4 @@ export * from './policies';
 export * from './intake';
 export * from './calendar';
 export * from './waitlist';
+export * from './series';

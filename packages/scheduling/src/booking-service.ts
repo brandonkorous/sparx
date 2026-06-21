@@ -150,10 +150,19 @@ export interface CreatedBooking {
   resourceIds: string[];
 }
 
+/** Series-aware create options. `seriesId` links the booking to its recurring
+ *  series; `skipConfirmation` suppresses the immediate confirmation (the series
+ *  sends one confirmation across all occurrences) while still laying reminders. */
+export interface CreateBookingOptions {
+  seriesId?: string;
+  skipConfirmation?: boolean;
+}
+
 export async function createBooking(
   tenantId: string,
   input: CreateBookingInput,
-  createdByUserId?: string
+  createdByUserId?: string,
+  opts: CreateBookingOptions = {}
 ): Promise<CreatedBooking> {
   return withTenant({ tenantId }, async (tx) => {
     const service = await tx.schedulingService.findFirst({
@@ -193,6 +202,7 @@ export async function createBooking(
           tenantId,
           serviceId: service.id,
           bookingType: service.bookingType,
+          seriesId: opts.seriesId ?? null,
           status,
           startAt,
           endAt,
@@ -232,7 +242,9 @@ export async function createBooking(
     // Auto-confirmed bookings (no approval gate) notify immediately + schedule
     // reminders; a `requested` booking waits for confirmBooking to notify.
     if (status === 'confirmed') {
-      await scheduleBookingNotifications(tx, tenantId, booking);
+      await scheduleBookingNotifications(tx, tenantId, booking, new Date(), {
+        skipConfirmation: opts.skipConfirmation,
+      });
     }
     return { booking, resourceIds: picks.map((p) => p.resourceId) };
   });

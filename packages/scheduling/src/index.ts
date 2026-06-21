@@ -61,6 +61,21 @@ export {
   deleteBookingPolicy,
 } from './policies';
 export {
+  type SkippedOccurrence,
+  type MaterializeResult,
+  type CreatedSeries,
+  type MaterializeOptions,
+  type BookingSeriesSummary,
+  type BookingSeriesDetail,
+  type CancelledSeries,
+  SERIES_HORIZON_DAYS,
+  createBookingSeries,
+  materializeSeries,
+  listBookingSeries,
+  getBookingSeries,
+  cancelBookingSeries,
+} from './series';
+export {
   setAvailabilityWindows,
   listAvailabilityWindows,
   createAvailabilityException,
