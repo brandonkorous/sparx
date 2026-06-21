@@ -138,7 +138,13 @@ export function CalendarConnectionsSection({ resourceId }: { resourceId: string 
                   <span className="truncate text-sm font-medium capitalize">{c.provider} feed</span>
                   <Badge
                     variant="soft"
-                    color={c.status === 'active' ? 'success' : c.status === 'error' ? 'danger' : 'neutral'}
+                    color={
+                      c.status === 'active'
+                        ? 'success'
+                        : c.status === 'error'
+                          ? 'danger'
+                          : 'neutral'
+                    }
                   >
                     {c.status}
                   </Badge>

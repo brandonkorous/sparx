@@ -110,7 +110,8 @@ async function fetchIcs(initial: URL, etag: string | null): Promise<FetchResult>
 
     if (res.status >= 300 && res.status < 400) {
       const location = res.headers.get('location');
-      if (!location) throw new CalendarFeedError(`Feed redirect without a location (${res.status}).`);
+      if (!location)
+        throw new CalendarFeedError(`Feed redirect without a location (${res.status}).`);
       url = await assertPublicHttpsUrl(new URL(location, url).toString());
       continue;
     }
