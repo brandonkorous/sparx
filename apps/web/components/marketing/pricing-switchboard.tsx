@@ -23,8 +23,8 @@ interface Mod {
   long: string;
   feats: string[];
   replaces: string;
-  /** Add-ons render below the core eight under an "Add-ons" divider; they are
-   *  priced on top, never part of the "eight modules" story. */
+  /** Add-ons render below the core modules under an "Add-ons" divider; they are
+   *  priced on top, never part of the headline module story. */
   addon?: boolean;
 }
 
@@ -116,12 +116,12 @@ const MODULES: Mod[] = [
     price: 99,
     elsewhere: 2400,
     color: 'var(--module-b2b)',
-    long: 'Wholesale pricing, net terms, purchase orders, RFQ, fleet accounts, and service scheduling — natively, not a bolt-on. Built for how industrial actually works.',
+    long: 'Wholesale pricing, net terms, purchase orders, RFQ, and fleet accounts — natively, not a bolt-on. Built for how industrial actually works.',
     feats: [
       'Account-tier + contract pricing',
       'Net 15 / 30 / 60 / 90 + PO checkout',
       'Fleet: vehicles, VIN, cost centers',
-      'RFQ + bookable service bays',
+      'RFQ → quote → order, buyer portal',
     ],
     replaces: 'Shopify Plus for native B2B',
   },
@@ -156,6 +156,22 @@ const MODULES: Mod[] = [
       'Real-time stock sync',
     ],
     replaces: 'a dropshipping app like Spocket',
+  },
+  {
+    key: 'scheduling',
+    name: 'Scheduling',
+    desc: 'Appointments, classes, bookings',
+    price: 29,
+    elsewhere: 61,
+    color: 'var(--module-scheduling)',
+    long: 'Appointments, classes, reservations, and rentals on one engine, with deposits, reminders, waitlists, and calendar sync. Unlimited staff, resources, and bookings — no per-seat or per-cover fee, ever.',
+    feats: [
+      'Appointments, classes, reservations, rentals',
+      'Deposits, no-show & cancellation policies',
+      'Reminders + auto-promoting waitlists',
+      'Calendar sync — iCal feed + busy import',
+    ],
+    replaces: 'an appointments tool like Acuity',
   },
   {
     key: 'invoicing',

@@ -12,6 +12,7 @@ const MODULE_COLORS = {
   b2b: { color: 'var(--module-b2b)', tint: '#F1F5F9', text: '#334155' },
   ai: { color: 'var(--module-ai)', tint: '#FDF2F8', text: '#9D174D' },
   dropship: { color: 'var(--module-dropship)', tint: '#ECFDF5', text: '#065F46' },
+  scheduling: { color: 'var(--module-scheduling)', tint: '#FFF1F2', text: '#BE123C' },
 } as const;
 
 export type MarketingModule = keyof typeof MODULE_COLORS;

@@ -14,6 +14,9 @@ import type {
   BookingSeriesDetail,
   BookingSeriesOccurrence,
   CalendarConnection,
+  ClassAttendee,
+  SchedulingReport,
+  WaitlistEntry,
 } from './types';
 
 export type ActionResult<T = undefined> = { ok: true; data: T } | { ok: false; error: string };
@@ -200,6 +203,103 @@ export async function deleteCalendarConnectionAction(id: string): Promise<Action
     return { ok: true, data: undefined };
   } catch (err) {
     return fail(err, 'Failed to remove the calendar connection');
+  }
+}
+
+// ── Reports (docs/79 §12) ────────────────────────────────────────────────────
+export async function getSchedulingReportAction(
+  from: string,
+  to: string
+): Promise<ActionResult<SchedulingReport>> {
+  try {
+    const qs = new URLSearchParams({ from, to });
+    const data = await api.get<SchedulingReport>(`/v1/scheduling/reports?${qs.toString()}`);
+    return { ok: true, data };
+  } catch (err) {
+    return fail(err, 'Failed to load reports');
+  }
+}
+
+// ── Classes / roster (docs/79 §7.2) ─────────────────────────────────────────
+export async function listSessionAttendeesAction(
+  bookingId: string
+): Promise<ActionResult<ClassAttendee[]>> {
+  try {
+    const data = await api.get<ClassAttendee[]>(`/v1/scheduling/sessions/${bookingId}/attendees`);
+    return { ok: true, data };
+  } catch (err) {
+    return fail(err, 'Failed to load the roster');
+  }
+}
+
+export async function addAttendeeAction(
+  bookingId: string,
+  body: { guestName?: string; customerId?: string; partySize?: number }
+): Promise<ActionResult<ClassAttendee & { waitlisted: boolean }>> {
+  try {
+    const data = await api.post<ClassAttendee & { waitlisted: boolean }>(
+      `/v1/scheduling/sessions/${bookingId}/attendees`,
+      body
+    );
+    revalidatePath('/scheduling/bookings');
+    return { ok: true, data };
+  } catch (err) {
+    return fail(err, 'Failed to add the attendee');
+  }
+}
+
+export async function updateAttendeeAction(
+  id: string,
+  body: { status?: string; partySize?: number }
+): Promise<ActionResult> {
+  try {
+    await api.patch(`/v1/scheduling/attendees/${id}`, body);
+    revalidatePath('/scheduling/bookings');
+    return { ok: true, data: undefined };
+  } catch (err) {
+    return fail(err, 'Failed to update the attendee');
+  }
+}
+
+// ── Waitlist (docs/79 §7) ───────────────────────────────────────────────────
+export async function listWaitlistAction(status?: string): Promise<ActionResult<WaitlistEntry[]>> {
+  try {
+    const qs = status ? `?status=${encodeURIComponent(status)}` : '';
+    const data = await api.get<WaitlistEntry[]>(`/v1/scheduling/waitlist${qs}`);
+    return { ok: true, data };
+  } catch (err) {
+    return fail(err, 'Failed to load the waitlist');
+  }
+}
+
+export async function offerWaitlistAction(id: string): Promise<ActionResult> {
+  try {
+    await api.post(`/v1/scheduling/waitlist/${id}/offer`, {});
+    revalidatePath('/scheduling/waitlist');
+    return { ok: true, data: undefined };
+  } catch (err) {
+    return fail(err, 'Failed to send the offer');
+  }
+}
+
+export async function acceptWaitlistAction(id: string, startAt: string): Promise<ActionResult> {
+  try {
+    await api.post(`/v1/scheduling/waitlist/${id}/accept`, { startAt });
+    revalidatePath('/scheduling/waitlist');
+    revalidatePath('/scheduling/bookings');
+    return { ok: true, data: undefined };
+  } catch (err) {
+    return fail(err, 'Failed to book the offer');
+  }
+}
+
+export async function removeWaitlistAction(id: string): Promise<ActionResult> {
+  try {
+    await api.delete(`/v1/scheduling/waitlist/${id}`);
+    revalidatePath('/scheduling/waitlist');
+    return { ok: true, data: undefined };
+  } catch (err) {
+    return fail(err, 'Failed to remove the entry');
   }
 }
 

@@ -44,7 +44,9 @@ export type McpScope =
   | 'read:domains'
   | 'write:domains'
   | 'read:invoicing'
-  | 'write:invoicing';
+  | 'write:invoicing'
+  | 'read:scheduling'
+  | 'write:scheduling';
 
 export interface McpAuthContext {
   tenantId: string;
@@ -85,6 +87,8 @@ const DEFAULT_SCOPES_BY_ROLE: Record<StaffRole, McpScope[]> = {
     'write:domains',
     'read:invoicing',
     'write:invoicing',
+    'read:scheduling',
+    'write:scheduling',
   ],
   admin: [
     'read:crm',
@@ -107,6 +111,8 @@ const DEFAULT_SCOPES_BY_ROLE: Record<StaffRole, McpScope[]> = {
     'write:domains',
     'read:invoicing',
     'write:invoicing',
+    'read:scheduling',
+    'write:scheduling',
   ],
   editor: [
     'read:crm',
@@ -125,6 +131,8 @@ const DEFAULT_SCOPES_BY_ROLE: Record<StaffRole, McpScope[]> = {
     'read:domains',
     'read:invoicing',
     'write:invoicing',
+    'read:scheduling',
+    'write:scheduling',
   ],
   viewer: [
     'read:crm',
@@ -136,6 +144,7 @@ const DEFAULT_SCOPES_BY_ROLE: Record<StaffRole, McpScope[]> = {
     'read:automations',
     'read:domains',
     'read:invoicing',
+    'read:scheduling',
   ],
   // External api keys have no role-derived default; their scope list is
   // exactly what the dashboard issued.

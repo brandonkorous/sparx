@@ -11,14 +11,14 @@ import { CAPABILITY_AREAS, capabilityCounts } from '@/lib/capabilities';
 export const runtime = 'nodejs';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
-export const alt = 'Everything inside sparx — nearly 300 capabilities, one platform.';
+export const alt = 'Everything inside sparx — over 300 capabilities, one platform.';
 
 const MODULE_DOTS = CAPABILITY_AREAS.filter((a) => a.module).map((a) => a.accent);
 
 export default function Image() {
   const counts = capabilityCounts();
-  const liveFloor = Math.floor(counts.live / 10) * 10; // 230
-  const totalRound = Math.round(counts.total / 10) * 10; // 300
+  const liveFloor = Math.floor(counts.live / 10) * 10; // 250
+  const totalFloor = Math.floor(counts.total / 10) * 10; // 310
 
   return new ImageResponse(
     <div
@@ -87,7 +87,7 @@ export default function Image() {
             color: '#FFFFFF',
           }}
         >
-          <div style={{ display: 'flex' }}>Nearly {totalRound}</div>
+          <div style={{ display: 'flex' }}>Over {totalFloor}</div>
           <div style={{ display: 'flex', alignItems: 'flex-end' }}>
             <span>capabilities</span>
             <span

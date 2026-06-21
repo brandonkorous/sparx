@@ -6,7 +6,7 @@ import { PlatformPage } from '@/components/marketing/platform-page';
 export const metadata: Metadata = {
   title: 'Platform — sparx',
   description:
-    'One platform for content and commerce. Eight modules on one shared data layer, one dashboard, one bill — API-first and MCP-native. Activate only what you need.',
+    'One platform for content and commerce. Nine modules on one shared data layer, one dashboard, one bill — API-first and MCP-native. Activate only what you need.',
   alternates: { canonical: '/platform' },
 };
 

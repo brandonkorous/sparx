@@ -21,6 +21,7 @@ const MOD: Record<string, string> = {
   b2b: 'var(--module-b2b)',
   ai: 'var(--module-ai)',
   dropship: 'var(--module-dropship)',
+  scheduling: 'var(--module-scheduling)',
 };
 
 export function PricingPage() {
@@ -121,7 +122,7 @@ function AlwaysIncluded() {
         <SectionHeader
           headline="Every plan ships with the platform"
           accent="var(--sparx-primary)"
-          lede="You pay for modules. Everything underneath them — the hosting, the security, the API — is included on every plan, from one module to all eight."
+          lede="You pay for modules. Everything underneath them — the hosting, the security, the API — is included on every plan, from one module to all nine."
         />
         <div
           className="mkt-grid-4-2-1"
@@ -196,13 +197,11 @@ const STATS: { value: string; suffix?: string; label: string }[] = [
   {
     value: '$38,000',
     suffix: '+/yr',
-    label:
-      'Kept by running all eight capabilities as sparx instead of eight separate subscriptions.',
+    label: 'Kept by running all nine capabilities as sparx instead of nine separate subscriptions.',
   },
   {
-    value: '8 → 1',
-    label:
-      'Eight logins, renewal dates, and support queues collapse into a single monthly invoice.',
+    value: '9 → 1',
+    label: 'Nine logins, renewal dates, and support queues collapse into a single monthly invoice.',
   },
   {
     value: '0%',
@@ -238,6 +237,13 @@ const LEDGER: { key: string; name: string; price: string; alt: string; amt: stri
     amt: '$103',
   },
   { key: 'dropship', name: 'Dropship', price: '$29', alt: 'Spocket — Pro', amt: '$60' },
+  {
+    key: 'scheduling',
+    name: 'Scheduling',
+    price: '$29',
+    alt: 'Acuity — Powerhouse',
+    amt: '$61',
+  },
 ];
 
 const SCENARIOS: {
@@ -257,10 +263,10 @@ const SCENARIOS: {
   },
   {
     title: 'The full platform',
-    sub: 'All eight modules',
-    separate: '$3,565/mo',
-    sparx: '$363/mo',
-    save: 'You keep $3,202/mo — about $38,000 a year',
+    sub: 'All nine modules',
+    separate: '$3,626/mo',
+    sparx: '$392/mo',
+    save: 'You keep $3,234/mo — about $38,000 a year',
     featured: true,
   },
 ];
@@ -657,7 +663,7 @@ const FEATURES: { key: string; name: string; price: string; repl: string; feats:
       'Net 15 / 30 / 60 / 90 + PO checkout',
       'Quotes & RFQ',
       'Fleet — vehicles, VIN, cost centers',
-      'Bookable service bays',
+      'Catalog visibility & access control',
       'Approval workflows & buyer roles',
     ],
   },
@@ -684,6 +690,20 @@ const FEATURES: { key: string; name: string; price: string; repl: string; feats:
       'Per-supplier margin rules',
       'Automated multi-supplier routing',
       'Real-time stock sync',
+    ],
+  },
+  {
+    key: 'scheduling',
+    name: 'Scheduling',
+    price: '$29/mo',
+    repl: 'Replaces a standalone appointments tool',
+    feats: [
+      'Appointments, classes, reservations, rentals',
+      'No double-booking — enforced in the DB',
+      'Deposits, no-show & cancellation policies',
+      'Auto-promoting waitlists',
+      'Email & SMS reminders',
+      'Calendar feed + busy import',
     ],
   },
 ];
@@ -972,7 +992,7 @@ function Enterprise() {
 const FAQS: { q: string; a: string }[] = [
   {
     q: 'What counts as a module?',
-    a: 'The eight capabilities in the switchboard — Builder, Commerce, CMS, CRM, Email, B2B, AI, and Dropship. Each is a flat monthly price you switch on or off independently. The platform underneath (hosting, security, API) is included on every plan.',
+    a: 'The nine capabilities in the switchboard — Builder, Commerce, CMS, CRM, Email, B2B, AI, Dropship, and Scheduling. Each is a flat monthly price you switch on or off independently. The platform underneath (hosting, security, API) is included on every plan.',
   },
   {
     q: 'Do I have to start with Builder?',

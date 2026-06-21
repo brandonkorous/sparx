@@ -28,6 +28,7 @@ const SAMPLE_AREA_IDS = [
   'cms',
   'ai',
   'dropship',
+  'scheduling',
   'search',
   'automation',
 ] as const;

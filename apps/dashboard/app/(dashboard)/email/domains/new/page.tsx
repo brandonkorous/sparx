@@ -1,24 +1,15 @@
-import { Container, PageHeader, Stack } from '@sparx/ui';
-
 import { AddDomainForm } from '../_components/add-domain-form';
 
-// Full-page surface for adding a sending domain. The form body lives in the
-// surface-aware `AddDomainForm` (§13.1) so the SAME component renders here
-// (`surface="page"`) and inside a drawer/modal overlay (`surface="overlay"`).
-// Sending domains have no detail view, so this is purely the create surface.
+// Full-page surface for adding a sending domain. The surface-aware `AddDomainForm`
+// (docs/86 F layout) renders the SAME WizardFrame here (`surface="page"` → the
+// `embedded` contained sheet, filling the dashboard content area with its own
+// title + pinned toolbar) and inside the `@detail` drawer/modal overlay
+// (`surface="overlay"`). Sending domains have no detail view, so this is purely
+// the create surface — no page-level Container/PageHeader, so the title isn't
+// rendered twice.
 
 export const dynamic = 'force-dynamic';
 
 export default function NewSendingDomainPage() {
-  return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          title="Add a sending domain"
-          description="Enter the domain (or subdomain) you want to send from. sparx provisions it in Mailgun and shows the exact DNS records to publish."
-        />
-        <AddDomainForm surface="page" />
-      </Stack>
-    </Container>
-  );
+  return <AddDomainForm surface="page" />;
 }

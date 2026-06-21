@@ -102,9 +102,9 @@ const B2B_FAQ: FaqItem[] = [
   },
   {
     id: 'b2b-fleet',
-    question: 'Does it handle fleet and service scheduling?',
+    question: 'Does it handle fleet management and service booking?',
     answer:
-      'Yes, for accounts that need it. Store a fleet profile per account — vehicles and engine types — so the catalog can surface and badge parts that fit, and let customers book service appointments tied to the account, with confirmation and reminder emails through sparx Email. It’s one capability of the module, not a requirement — a salon-products or office-coffee distributor never touches it.',
+      'Fleet management is built into B2B: store a fleet profile per account — vehicles and engine types — so the catalog can surface and badge the parts that fit. Service booking itself is the separate Scheduling module ($29/mo); activate it alongside B2B and customers book service against the fleet account, with confirmation and reminder emails. Fleet is one capability of B2B, not a requirement — a salon-products or office-coffee distributor never touches it.',
   },
 ];
 
@@ -227,9 +227,10 @@ function B2bPricing() {
             }}
           >
             A flat $99/mo — account pricing, RFQ and quotes, net terms and credit, bulk PO ordering,
-            and fleet and service scheduling. B2B layers on Commerce, so turning it on activates
-            Commerce too ($49/mo) and the two bill as one engine. Invoicing is included free. No
-            tiers, no per-account or per-seat charge. Start free for 14 days; no card to begin.
+            and fleet accounts. B2B layers on Commerce, so turning it on activates Commerce too
+            ($49/mo) and the two bill as one engine. Invoicing is included free; add the Scheduling
+            module ($29/mo) to book service against a fleet. No tiers, no per-account or per-seat
+            charge. Start free for 14 days; no card to begin.
           </p>
         </div>
         <div className="mkt-cluster" style={{ gap: '12px' }}>

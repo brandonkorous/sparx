@@ -76,6 +76,36 @@ export {
   cancelBookingSeries,
 } from './series';
 export {
+  type ClassSessionSummary,
+  type ListClassSessionsOptions,
+  type BookedSeat,
+  type AttendeeUpdate,
+  listClassSessions,
+  bookClassSeat,
+  listSessionAttendees,
+  updateAttendee,
+} from './classes';
+export {
+  type SchedulingReport,
+  type SchedulingReportTotals,
+  type SchedulingReportQuery,
+  type TopService,
+  getSchedulingReport,
+} from './reports';
+export { type SchedulingMcpScope, type SchedulingMcpCtx, schedulingMcpTools } from './mcp';
+export {
+  type ListWaitlistOptions,
+  type WaitlistEntryDetail,
+  type AcceptedWaitlist,
+  joinWaitlist,
+  listWaitlist,
+  listWaitlistDetailed,
+  leaveWaitlist,
+  offerWaitlistEntry,
+  acceptWaitlistOffer,
+  expireWaitlistOffers,
+} from './waitlist';
+export {
   setAvailabilityWindows,
   listAvailabilityWindows,
   createAvailabilityException,
@@ -93,7 +123,12 @@ export {
   cancelBookingNotifications,
   dropPendingBookingNotifications,
 } from './notifications';
-export { type BookingSmsFields, renderBookingSms } from './sms-templates';
+export {
+  type BookingSmsFields,
+  type WaitlistOfferSmsFields,
+  renderBookingSms,
+  renderWaitlistOfferSms,
+} from './sms-templates';
 export {
   type IcsEvent,
   type IcsStatus,

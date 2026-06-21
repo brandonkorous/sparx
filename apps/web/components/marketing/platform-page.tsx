@@ -51,6 +51,7 @@ const MODS = {
   b2b: getModuleColor('b2b'),
   ai: getModuleColor('ai'),
   dropship: getModuleColor('dropship'),
+  scheduling: getModuleColor('scheduling'),
 } as const;
 
 const MONO = 'var(--font-mono)';
@@ -192,6 +193,7 @@ function OneSystem() {
     { label: 'B2B', module: 'b2b' },
     { label: 'AI / MCP', module: 'ai' },
     { label: 'Dropship', module: 'dropship' },
+    { label: 'Scheduling', module: 'scheduling' },
   ];
 
   return (
@@ -906,6 +908,13 @@ function ModulesStrip() {
       title: 'Sell without stock',
       body: 'Supplier sync, margin math, order routing.',
     },
+    {
+      module: 'scheduling',
+      label: 'Scheduling',
+      price: '$29/mo',
+      title: 'Every booking, one engine',
+      body: 'Appointments, classes, deposits, reminders.',
+    },
   ];
 
   return (
@@ -914,7 +923,7 @@ function ModulesStrip() {
         accent="var(--sparx-primary)"
         headline={
           <>
-            Eight modules.{' '}
+            Nine modules.{' '}
             <span style={{ color: 'var(--color-text-tertiary)' }}>Mix any combination</span>
           </>
         }
@@ -1342,7 +1351,7 @@ function PricingTeaser() {
   const tiers = [
     { name: 'Start', price: '$10', note: 'one module', highlight: false },
     { name: 'Grow', price: '$108', note: 'Builder + Commerce + CMS', highlight: true },
-    { name: 'Everything', price: '$363', note: 'all eight modules', highlight: false },
+    { name: 'Everything', price: '$392', note: 'all nine modules', highlight: false },
   ];
 
   return (

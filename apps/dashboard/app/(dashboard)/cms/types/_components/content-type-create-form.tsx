@@ -1,32 +1,41 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   Checkbox,
   Heading,
   Input,
   Label,
+  ModuleProvider,
   Stack,
   Text,
   Textarea,
+  WizardFrame,
+  WizardStep,
+  type WizardStepDef,
 } from '@sparx/ui';
-import { Plus } from 'lucide-react';
 
 import { createContentType } from '../actions';
 
-// Surface-aware create form for a content TYPE definition (§13.1). The SAME
-// component renders inside the /cms/types/new route (`surface="page"`) and
-// inside the `@detail` drawer/modal (`surface="overlay"`). On success the
-// overlay swaps to the new type's detail (create flows into the editor); the
-// page navigates to the type.
+// Surface-aware create form for a content TYPE definition (§13.1), on the
+// standard create surface (docs/86 F layout). The SAME component renders in both
+// presentations, picked by the host:
+//   - `surface="page"`    → WizardFrame `embedded` at the /cms/types/new route
+//   - `surface="overlay"` → WizardFrame `inline` inside the @detail drawer/modal
+//
+// It's a SINGLE-STEP form, so it's a one-step wizard: the frame supplies the
+// title + window controls + the pinned floor toolbar (ghost Cancel + module
+// primary) and hides the MiniProgress; the two module-tinted Cards (Identity,
+// Schema) sit in the step body. No bespoke card-footer toolbar, no repeated page
+// title — that drift is what docs/86 standardizes away.
+//
+// On success the overlay swaps to the new type's detail (create flows into the
+// editor); the page navigates to the type.
 
 const SAMPLE_SCHEMA = JSON.stringify(
   {
@@ -55,11 +64,11 @@ interface ContentTypeInitial {
 
 interface ContentTypeCreateFormProps {
   surface: 'page' | 'overlay';
-  /** Prefill values — e.g. duplicating an existing type into a new custom one.
-   *  Identity fields are uncontrolled defaults (freely editable); schema and
-   *  singleton seed controlled state. */
+  /** Prefill values — e.g. duplicating an existing type into a new custom one. */
   initial?: ContentTypeInitial;
 }
+
+const STEPS: WizardStepDef[] = [{ key: 'definition', label: 'Definition' }];
 
 export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFormProps) {
   const router = useRouter();
@@ -67,6 +76,12 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
   const searchParams = useSearchParams();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
+
+  const [key, setKey] = React.useState(initial?.key ?? '');
+  const [name, setName] = React.useState(initial?.name ?? '');
+  const [pluralName, setPluralName] = React.useState(initial?.pluralName ?? '');
+  const [description, setDescription] = React.useState(initial?.description ?? '');
+  const [urlPattern, setUrlPattern] = React.useState(initial?.urlPattern ?? '');
   const [schemaText, setSchemaText] = React.useState(initial?.schema ?? SAMPLE_SCHEMA);
   const [isSingleton, setIsSingleton] = React.useState(initial?.isSingleton ?? false);
   const [validationHint, setValidationHint] = React.useState<string | null>(null);
@@ -89,38 +104,49 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
     }
   }, [schemaText]);
 
-  function onCreated(key: string) {
+  function onCreated(createdKey: string) {
     if (surface === 'overlay') {
       const next = new URLSearchParams(searchParams ?? '');
       const mode = next.has('modal') ? 'modal' : 'drawer';
       next.delete('drawer');
       next.delete('modal');
-      next.set(mode, `content-type:${key}`);
+      next.set(mode, `content-type:${createdKey}`);
       router.replace(`${pathname ?? '/'}?${next.toString()}`);
       router.refresh();
       return;
     }
-    router.push(`/cms/types/${key}`);
+    router.push(`/cms/types/${createdKey}`);
     router.refresh();
   }
 
-  function closeOverlay() {
-    const next = new URLSearchParams(searchParams ?? '');
-    next.delete('drawer');
-    next.delete('modal');
-    const qs = next.toString();
-    router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
-  }
+  // Where "leave the form" goes. In the overlay it clears the detail token so the
+  // drawer/modal closes in place; the page route returns to the list.
+  const cancel = React.useCallback(() => {
+    if (surface === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+    } else {
+      router.push('/cms/types');
+    }
+  }, [surface, pathname, searchParams, router]);
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  function submit() {
     setError(null);
-    const data = new FormData(e.currentTarget);
-    data.set('schema', schemaText);
-    // <Checkbox> writes to React state, not native FormData — inject before
-    // the server action reads.
-    if (isSingleton) data.set('is_singleton', 'on');
-    else data.delete('is_singleton');
+    if (!key.trim() || !name.trim() || !pluralName.trim()) {
+      setError('Key, name, and plural name are required.');
+      return;
+    }
+    const data = new FormData();
+    data.append('key', key.trim());
+    data.append('name', name.trim());
+    data.append('plural_name', pluralName.trim());
+    data.append('description', description);
+    data.append('url_pattern', urlPattern);
+    data.append('schema', schemaText);
+    if (isSingleton) data.append('is_singleton', 'on');
     startTransition(async () => {
       const result = await createContentType(data);
       if (!result.ok) {
@@ -132,172 +158,160 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
   }
 
   return (
-    <Stack gap={6}>
-      {surface === 'overlay' && (
-        <Stack gap={1}>
-          <Heading level={2}>New content type</Heading>
-          <Text size="sm" variant="muted">
-            Define a tenant-specific authoring shape — testimonials, case studies, events, anything.
-            The schema validates against the same FieldDef union the platform uses for built-ins.
-          </Text>
-        </Stack>
-      )}
-
-      <form onSubmit={onSubmit} noValidate>
-        <Stack gap={5}>
-          <Card variant="module">
-            <CardHeader>
-              <Heading level={3}>Identity</Heading>
-            </CardHeader>
-            <CardContent>
-              <Stack gap={4}>
-                <Stack direction="row" gap={3}>
-                  <Stack gap={1} className="flex-1">
-                    <Label htmlFor="key" required>
-                      Key
-                    </Label>
-                    <Input
-                      id="key"
-                      name="key"
-                      defaultValue={initial?.key ?? ''}
-                      placeholder="case_study"
-                      required
-                      aria-required
-                    />
-                    <Text size="xs" variant="muted">
-                      Immutable URL-safe identifier (lowercase, underscores).
-                    </Text>
-                  </Stack>
-                  <Stack gap={1} className="flex-1">
-                    <Label htmlFor="name" required>
-                      Name
-                    </Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      defaultValue={initial?.name ?? ''}
-                      placeholder="Case study"
-                      required
-                      aria-required
-                    />
-                  </Stack>
-                  <Stack gap={1} className="flex-1">
-                    <Label htmlFor="plural_name" required>
-                      Plural
-                    </Label>
-                    <Input
-                      id="plural_name"
-                      name="plural_name"
-                      defaultValue={initial?.pluralName ?? ''}
-                      placeholder="Case studies"
-                      required
-                      aria-required
-                    />
-                  </Stack>
-                </Stack>
-                <Stack gap={1}>
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    name="description"
-                    defaultValue={initial?.description ?? ''}
-                    rows={2}
-                    placeholder="Optional short note shown in the dashboard listing."
-                  />
-                </Stack>
-                <Stack direction="row" gap={3}>
-                  <Stack gap={1} className="flex-1">
-                    <Label htmlFor="url_pattern">URL pattern (optional)</Label>
-                    <Input
-                      id="url_pattern"
-                      name="url_pattern"
-                      defaultValue={initial?.urlPattern ?? ''}
-                      placeholder="/case-studies/{slug}"
-                    />
-                    <Text size="xs" variant="muted">
-                      Leave blank for non-routable types (referenced from other entries).
-                    </Text>
-                  </Stack>
-                  <Stack gap={1}>
-                    <Label htmlFor="is_singleton">Singleton?</Label>
-                    <Stack direction="row" align="center" gap={2}>
-                      <Checkbox
-                        id="is_singleton"
-                        checked={isSingleton}
-                        onCheckedChange={(next) => setIsSingleton(next === true)}
+    <ModuleProvider module="cms" className="h-full">
+      <WizardFrame
+        variant={surface === 'overlay' ? 'inline' : 'embedded'}
+        title="New content type"
+        steps={STEPS}
+        current={0}
+        onCancel={cancel}
+      >
+        <WizardStep
+          header={{
+            title: 'Content type',
+            supporting:
+              'Define a tenant-specific authoring shape — testimonials, case studies, events, anything. The schema validates against the same FieldDef union the platform uses for built-ins.',
+          }}
+          actions={{
+            onNext: submit,
+            nextLabel: 'Create content type',
+            nextLoading: pending,
+            nextDisabled: pending,
+          }}
+        >
+          <Stack gap={5}>
+            <Card variant="module">
+              <CardHeader>
+                <Heading level={3}>Identity</Heading>
+              </CardHeader>
+              <CardContent>
+                <Stack gap={4}>
+                  <Stack direction="row" gap={3}>
+                    <Stack gap={1} className="flex-1">
+                      <Label htmlFor="key" required>
+                        Key
+                      </Label>
+                      <Input
+                        id="key"
+                        value={key}
+                        onChange={(e) => setKey(e.target.value)}
+                        placeholder="case_study"
+                        required
+                        aria-required
                       />
                       <Text size="xs" variant="muted">
-                        Only one entry of this type can ever exist.
+                        Immutable URL-safe identifier (lowercase, underscores).
                       </Text>
+                    </Stack>
+                    <Stack gap={1} className="flex-1">
+                      <Label htmlFor="name" required>
+                        Name
+                      </Label>
+                      <Input
+                        id="name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Case study"
+                        required
+                        aria-required
+                      />
+                    </Stack>
+                    <Stack gap={1} className="flex-1">
+                      <Label htmlFor="plural_name" required>
+                        Plural
+                      </Label>
+                      <Input
+                        id="plural_name"
+                        value={pluralName}
+                        onChange={(e) => setPluralName(e.target.value)}
+                        placeholder="Case studies"
+                        required
+                        aria-required
+                      />
+                    </Stack>
+                  </Stack>
+                  <Stack gap={1}>
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea
+                      id="description"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      rows={2}
+                      placeholder="Optional short note shown in the dashboard listing."
+                    />
+                  </Stack>
+                  <Stack direction="row" gap={3}>
+                    <Stack gap={1} className="flex-1">
+                      <Label htmlFor="url_pattern">URL pattern (optional)</Label>
+                      <Input
+                        id="url_pattern"
+                        value={urlPattern}
+                        onChange={(e) => setUrlPattern(e.target.value)}
+                        placeholder="/case-studies/{slug}"
+                      />
+                      <Text size="xs" variant="muted">
+                        Leave blank for non-routable types (referenced from other entries).
+                      </Text>
+                    </Stack>
+                    <Stack gap={1}>
+                      <Label htmlFor="is_singleton">Singleton?</Label>
+                      <Stack direction="row" align="center" gap={2}>
+                        <Checkbox
+                          id="is_singleton"
+                          checked={isSingleton}
+                          onCheckedChange={(next) => setIsSingleton(next === true)}
+                        />
+                        <Text size="xs" variant="muted">
+                          Only one entry of this type can ever exist.
+                        </Text>
+                      </Stack>
                     </Stack>
                   </Stack>
                 </Stack>
-              </Stack>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <Card variant="module">
-            <CardHeader>
-              <Heading level={3}>Schema</Heading>
-              <CardDescription>
-                JSON object with a <code>fields</code> array. Each field is one of:{' '}
-                <code>text</code>, <code>long_text</code>, <code>rich_text</code>, <code>slug</code>
-                , <code>number</code>, <code>boolean</code>, <code>date</code>,{' '}
-                <code>datetime</code>, <code>enum</code>, <code>url</code>, <code>email</code>,{' '}
-                <code>reference</code>, <code>asset</code>, <code>object</code>,{' '}
-                <code>repeater</code>.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Stack gap={2}>
-                <Textarea
-                  value={schemaText}
-                  onChange={(e) => setSchemaText(e.target.value)}
-                  rows={20}
-                  className="font-mono text-xs"
-                  aria-label="Schema JSON"
-                />
-                {validationHint && (
-                  <Text
-                    size="xs"
-                    variant={validationHint.startsWith('Looks good') ? 'muted' : 'danger'}
-                    aria-live="polite"
-                  >
-                    {validationHint}
-                  </Text>
-                )}
-              </Stack>
-            </CardContent>
-            <CardFooter>
-              <Stack direction="row" align="center" gap={3}>
-                {surface === 'overlay' ? (
-                  <Button type="button" variant="ghost" onClick={closeOverlay}>
-                    Cancel
-                  </Button>
-                ) : (
-                  <Button type="button" variant="ghost" asChild>
-                    <Link href="/cms/types">Cancel</Link>
-                  </Button>
-                )}
-                <Button
-                  type="submit"
-                  color="module"
-                  leftIcon={<Plus className="h-4 w-4" />}
-                  disabled={pending}
-                  loading={pending}
-                >
-                  Create content type
-                </Button>
-                {error && (
-                  <Text size="sm" variant="danger" role="alert" aria-live="polite">
-                    {error}
-                  </Text>
-                )}
-              </Stack>
-            </CardFooter>
-          </Card>
-        </Stack>
-      </form>
-    </Stack>
+            <Card variant="module">
+              <CardHeader>
+                <Heading level={3}>Schema</Heading>
+                <CardDescription>
+                  JSON object with a <code>fields</code> array. Each field is one of:{' '}
+                  <code>text</code>, <code>long_text</code>, <code>rich_text</code>,{' '}
+                  <code>slug</code>, <code>number</code>, <code>boolean</code>, <code>date</code>,{' '}
+                  <code>datetime</code>, <code>enum</code>, <code>url</code>, <code>email</code>,{' '}
+                  <code>reference</code>, <code>asset</code>, <code>object</code>,{' '}
+                  <code>repeater</code>.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Stack gap={2}>
+                  <Textarea
+                    value={schemaText}
+                    onChange={(e) => setSchemaText(e.target.value)}
+                    rows={20}
+                    className="font-mono text-xs"
+                    aria-label="Schema JSON"
+                  />
+                  {validationHint && (
+                    <Text
+                      size="xs"
+                      variant={validationHint.startsWith('Looks good') ? 'muted' : 'danger'}
+                      aria-live="polite"
+                    >
+                      {validationHint}
+                    </Text>
+                  )}
+                </Stack>
+              </CardContent>
+            </Card>
+            {error && (
+              <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                {error}
+              </Text>
+            )}
+          </Stack>
+        </WizardStep>
+      </WizardFrame>
+    </ModuleProvider>
   );
 }

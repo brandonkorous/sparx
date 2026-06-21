@@ -67,6 +67,10 @@ COPY packages/cms-editor ./packages/cms-editor
 COPY packages/email-platform ./packages/email-platform
 COPY packages/registrar ./packages/registrar
 COPY packages/godaddy ./packages/godaddy
+# @sparx/scheduling's MCP tools (docs/79 §11). Workspace deps: @sparx/db (above) +
+# @sparx/scheduling-schemas (the write tools' input schemas).
+COPY packages/scheduling-schemas ./packages/scheduling-schemas
+COPY packages/scheduling ./packages/scheduling
 COPY services/api-mcp ./services/api-mcp
 
 RUN pnpm install --filter @sparx/api-mcp... --frozen-lockfile --prod=false

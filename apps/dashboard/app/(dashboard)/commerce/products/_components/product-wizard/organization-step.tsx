@@ -10,7 +10,7 @@
 // router.refresh, which doesn't fit the client wizard).
 
 import * as React from 'react';
-import { Checkbox, Label, Spinner, Text, WizardStep } from '@sparx/ui';
+import { Card, CardContent, Checkbox, Label, Spinner, Text, WizardStep } from '@sparx/ui';
 
 import { updateProductAction } from '../../../product-actions';
 import { listSitesAction, type SiteOption } from '../../../product-actions';
@@ -113,65 +113,69 @@ export function OrganizationStep({ productId, onBack, onComplete }: Organization
         nextDisabled: submitting,
       }}
     >
-      {loading ? (
-        <div className="flex items-center gap-2 py-8 text-[var(--color-text-muted)]">
-          <Spinner className="h-4 w-4" /> Loading collections & categories…
-        </div>
-      ) : (
-        <div className="flex flex-col gap-7">
-          <PickerSection
-            title="Collections"
-            empty="No collections yet — create them under Commerce → Collections."
-            items={collections.map((c) => ({ id: c.id, label: c.name }))}
-            selected={collectionIds}
-            onToggle={(id) => setCollectionIds((s) => toggle(s, id))}
-          />
+      <Card variant="module">
+        <CardContent className="py-6">
+          {loading ? (
+            <div className="flex items-center gap-2 py-8 text-[var(--color-text-muted)]">
+              <Spinner className="h-4 w-4" /> Loading collections & categories…
+            </div>
+          ) : (
+            <div className="flex flex-col gap-7">
+              <PickerSection
+                title="Collections"
+                empty="No collections yet — create them under Commerce → Collections."
+                items={collections.map((c) => ({ id: c.id, label: c.name }))}
+                selected={collectionIds}
+                onToggle={(id) => setCollectionIds((s) => toggle(s, id))}
+              />
 
-          <PickerSection
-            title="Categories"
-            empty="No categories yet — create them under Commerce → Categories."
-            items={categories.map((c) => ({ id: c.id, label: c.path || c.name }))}
-            selected={categoryIds}
-            onToggle={(id) => setCategoryIds((s) => toggle(s, id))}
-          />
+              <PickerSection
+                title="Categories"
+                empty="No categories yet — create them under Commerce → Categories."
+                items={categories.map((c) => ({ id: c.id, label: c.path || c.name }))}
+                selected={categoryIds}
+                onToggle={(id) => setCategoryIds((s) => toggle(s, id))}
+              />
 
-          {sites.length > 1 && (
-            <div className="flex flex-col gap-2">
-              <Text size="sm" weight="medium">
-                Visible on
-              </Text>
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  checked={allSites}
-                  onCheckedChange={(v) => setAllSites(v === true)}
-                  aria-label="All sites"
-                />
-                <span className="text-sm">All sites</span>
-              </div>
-              {!allSites &&
-                sites.map((s) => (
-                  <div key={s.id} className="flex items-center gap-2 pl-6">
+              {sites.length > 1 && (
+                <div className="flex flex-col gap-2">
+                  <Text size="sm" weight="medium">
+                    Visible on
+                  </Text>
+                  <div className="flex items-center gap-2">
                     <Checkbox
-                      checked={siteIds.has(s.id)}
-                      onCheckedChange={() => setSiteIds((set) => toggle(set, s.id))}
-                      aria-label={s.name}
+                      checked={allSites}
+                      onCheckedChange={(v) => setAllSites(v === true)}
+                      aria-label="All sites"
                     />
-                    <span className="text-sm">
-                      {s.name}
-                      {s.isPrimary ? ' · primary' : ''}
-                    </span>
+                    <span className="text-sm">All sites</span>
                   </div>
-                ))}
+                  {!allSites &&
+                    sites.map((s) => (
+                      <div key={s.id} className="flex items-center gap-2 pl-6">
+                        <Checkbox
+                          checked={siteIds.has(s.id)}
+                          onCheckedChange={() => setSiteIds((set) => toggle(set, s.id))}
+                          aria-label={s.name}
+                        />
+                        <span className="text-sm">
+                          {s.name}
+                          {s.isPrimary ? ' · primary' : ''}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              )}
+
+              {error && (
+                <Text size="sm" variant="danger" role="alert">
+                  {error}
+                </Text>
+              )}
             </div>
           )}
-
-          {error && (
-            <Text size="sm" variant="danger" role="alert">
-              {error}
-            </Text>
-          )}
-        </div>
-      )}
+        </CardContent>
+      </Card>
     </WizardStep>
   );
 }

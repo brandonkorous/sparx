@@ -26,3 +26,13 @@ export const OfferWaitlistInput = z.object({
   offerTtlMinutes: z.number().int().min(5).max(1440).default(60),
 });
 export type OfferWaitlistInput = z.infer<typeof OfferWaitlistInput>;
+
+// Accept an offer by booking a concrete slot in the entry's window. The slot must
+// fall inside [desiredFrom, desiredTo]; the engine books it and marks the entry
+// `booked` (a lost race surfaces as SLOT_UNAVAILABLE, leaving the offer open).
+export const AcceptWaitlistInput = z.object({
+  id: Uuid,
+  startAt: z.string().datetime(),
+  resourceIds: z.array(Uuid).max(20).default([]),
+});
+export type AcceptWaitlistInput = z.infer<typeof AcceptWaitlistInput>;

@@ -26,10 +26,10 @@ const FEATURES = [
     body: 'Buyers request quotes from a product page. You reply with line-item pricing and expiration. Approved quotes convert to orders.',
   },
   {
-    icon: <CalendarIcon />,
+    icon: <CatalogIcon />,
     number: '05',
-    title: 'Service scheduling',
-    body: 'Bookable bays, technicians, parts. Customer-portal scheduling. Reminders via sparx Email.',
+    title: 'Catalog & access control',
+    body: 'Per-account catalog visibility, product overrides, and quantity rules. Each buyer sees exactly the assortment, pricing, and minimums you set for them.',
   },
   {
     icon: <ShieldIcon />,
@@ -57,8 +57,8 @@ export function B2bSpotlight() {
           lede={
             <>
               Shopify charges $2,400/mo for B2B and still doesn&apos;t do net terms properly. sparx
-              ships wholesale pricing, RFQ, purchase orders, fleet accounts, and service scheduling
-              natively. $99/mo. Built for the way industrial actually works.
+              ships wholesale pricing, RFQ, purchase orders, and fleet accounts natively. $99/mo.
+              Built for the way industrial actually works.
             </>
           }
         />
@@ -173,11 +173,13 @@ function RfqIcon() {
     </svg>
   );
 }
-function CalendarIcon() {
+function CatalogIcon() {
   return (
     <svg width={28} height={28} viewBox="0 0 24 24" fill="none" aria-hidden>
-      <rect x={3} y={4} width={18} height={18} rx={1} stroke="#475569" strokeWidth={1.5} />
-      <path d="M3 10H21M9 4V2M15 4V2M8 15H10M14 15H16" stroke="#475569" strokeWidth={1.5} />
+      <rect x={3} y={4} width={18} height={16} rx={1} stroke="#475569" strokeWidth={1.5} />
+      <path d="M3 9H21M8 14H13" stroke="#475569" strokeWidth={1.5} />
+      <circle cx={16.5} cy={14.5} r={2} stroke="#475569" strokeWidth={1.5} />
+      <path d="M18 16L20 18" stroke="#475569" strokeWidth={1.5} strokeLinecap="round" />
     </svg>
   );
 }

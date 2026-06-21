@@ -3254,6 +3254,11 @@
     flex-wrap: wrap;
     gap: 0.5rem;
   }
+  .st-booking__waitlist {
+    display: grid;
+    gap: 0.6rem;
+    justify-items: start;
+  }
   .st-booking__slot {
     padding: 0.5rem 0.9rem;
     border: var(--st-border-width, 1px) solid var(--st-border);
@@ -3279,6 +3284,37 @@
     gap: 0.5rem;
     padding: clamp(1.5rem, 4vw, 2.5rem);
     text-align: center;
+  }
+  /* Class session list (docs/79 §7.2) — pick a session to join. */
+  .st-booking__session-grid {
+    display: grid;
+    gap: 0.5rem;
+  }
+  .st-booking__session {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.7rem 0.9rem;
+    border: var(--st-border-width, 1px) solid var(--st-border);
+    border-radius: var(--st-radius-sm);
+    background: var(--st-surface);
+    color: var(--st-text);
+    cursor: pointer;
+    text-align: left;
+    transition:
+      border-color var(--st-ease),
+      background var(--st-ease);
+  }
+  .st-booking__session:hover {
+    border-color: var(--st-primary);
+  }
+  .st-booking__session.is-selected {
+    border-color: var(--st-primary);
+    box-shadow: 0 0 0 1px var(--st-primary) inset;
+  }
+  .st-booking__session-when {
+    font-weight: 600;
   }
   /* "Add to calendar" link row (docs/79 §8.1) — confirmation + portal. */
   .st-add-to-cal {

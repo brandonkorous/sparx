@@ -16,14 +16,6 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Button,
   Card,
   CardContent,
@@ -41,6 +33,7 @@ import {
   SelectValue,
   Stack,
   Text,
+  useConfirm,
 } from '@sparx/ui';
 import { ChevronDown, ChevronUp, Plus, Save, Trash2 } from 'lucide-react';
 import { saveMenu } from './menu-actions';
@@ -131,15 +124,12 @@ export function MenuEditor({
   entryChoices: EntryChoice[];
 }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [name, setName] = React.useState(initialName);
   const [items, setItems] = React.useState<EditableMenuItem[]>(initialItems);
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
-  const [pendingRemove, setPendingRemove] = React.useState<{
-    path: PathStep[];
-    item: EditableMenuItem;
-  } | null>(null);
 
   function addRoot() {
     setItems((prev) => [...prev, emptyItem()]);
@@ -157,17 +147,31 @@ export function MenuEditor({
     );
   }
 
-  function requestRemove(path: PathStep[]) {
+  async function requestRemove(path: PathStep[]) {
     if (path.length === 0) return;
     const item = resolveAtPath(items, path);
     if (!item) return;
     // No subtree — drop without prompting. Subtrees gate behind a confirm
-    // dialog so an accidental click can't blow away nested work.
+    // so an accidental click can't blow away nested work.
     if (item.children.length === 0) {
       executeRemove(path);
       return;
     }
-    setPendingRemove({ path, item });
+    const childCount = item.children.length;
+    const ok = await confirm({
+      title: 'Remove menu item?',
+      description: (
+        <>
+          <strong>{item.label || '(no label)'}</strong> has {childCount} nested{' '}
+          {childCount === 1 ? 'child' : 'children'}. Removing this item drops the entire subtree —
+          children cannot be recovered after you save.
+        </>
+      ),
+      confirmLabel: 'Remove subtree',
+      tone: 'danger',
+    });
+    if (!ok) return;
+    executeRemove(path);
   }
 
   function executeRemove(path: PathStep[]) {
@@ -310,36 +314,6 @@ export function MenuEditor({
           </Stack>
         </CardFooter>
       </Card>
-
-      <AlertDialog
-        open={pendingRemove !== null}
-        onOpenChange={(next) => {
-          if (!next) setPendingRemove(null);
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Remove menu item?</AlertDialogTitle>
-            <AlertDialogDescription>
-              <strong>{pendingRemove?.item.label ?? '(no label)'}</strong> has{' '}
-              {pendingRemove?.item.children.length} nested{' '}
-              {pendingRemove?.item.children.length === 1 ? 'child' : 'children'}. Removing this item
-              drops the entire subtree — children cannot be recovered after you save.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                if (pendingRemove) executeRemove(pendingRemove.path);
-                setPendingRemove(null);
-              }}
-            >
-              Remove subtree
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </Stack>
   );
 }

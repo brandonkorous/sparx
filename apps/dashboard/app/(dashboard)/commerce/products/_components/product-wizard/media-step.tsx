@@ -13,7 +13,17 @@
 
 import * as React from 'react';
 import { ImageIcon, Plus, Star, Trash } from 'lucide-react';
-import { Badge, Button, NativeSelect, Spinner, Text, WizardStep, useConfirm } from '@sparx/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  NativeSelect,
+  Spinner,
+  Text,
+  WizardStep,
+  useConfirm,
+} from '@sparx/ui';
 
 import {
   addVariantImageAction,
@@ -224,116 +234,120 @@ export function MediaStep({ productId, onBack, onComplete }: MediaStepProps) {
         nextDisabled: busy,
       }}
     >
-      {loading ? (
-        <div className="flex items-center gap-2 py-8 text-[var(--color-text-muted)]">
-          <Spinner className="h-4 w-4" /> Loading photos…
-        </div>
-      ) : (
-        <div className="flex flex-col gap-4">
-          <div className="grid grid-cols-2 items-start gap-3 sm:grid-cols-4">
-            {images.map((img) => {
-              const url = urlByAsset[img.mediaAssetId];
-              const boundVariant = img.variantId ? variantById.get(img.variantId) : undefined;
-              return (
-                <div key={img.id} className="flex flex-col gap-1.5">
-                  <div className="group relative aspect-square overflow-hidden rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
-                    {url ? (
-                      <img
-                        src={url}
-                        alt={img.alt ?? ''}
-                        className="h-full w-full object-cover"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center">
-                        <ImageIcon className="h-6 w-6 text-[var(--color-text-tertiary)]" />
+      <Card variant="module">
+        <CardContent className="py-6">
+          {loading ? (
+            <div className="flex items-center gap-2 py-8 text-[var(--color-text-muted)]">
+              <Spinner className="h-4 w-4" /> Loading photos…
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4">
+              <div className="grid grid-cols-2 items-start gap-3 sm:grid-cols-4">
+                {images.map((img) => {
+                  const url = urlByAsset[img.mediaAssetId];
+                  const boundVariant = img.variantId ? variantById.get(img.variantId) : undefined;
+                  return (
+                    <div key={img.id} className="flex flex-col gap-1.5">
+                      <div className="group relative aspect-square overflow-hidden rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
+                        {url ? (
+                          <img
+                            src={url}
+                            alt={img.alt ?? ''}
+                            className="h-full w-full object-cover"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center">
+                            <ImageIcon className="h-6 w-6 text-[var(--color-text-tertiary)]" />
+                          </div>
+                        )}
+                        {img.isPrimary && (
+                          <span className="absolute top-1.5 left-1.5">
+                            <Badge color="warning" variant="soft" size="sm">
+                              Main
+                            </Badge>
+                          </span>
+                        )}
+                        {boundVariant && (
+                          <span className="absolute top-1.5 right-1.5">
+                            <Badge color="info" variant="soft" size="sm">
+                              {variantLabel(boundVariant)}
+                            </Badge>
+                          </span>
+                        )}
+                        <div className="absolute inset-x-0 bottom-0 flex justify-end gap-1 bg-black/45 p-1 opacity-0 transition-opacity group-hover:opacity-100">
+                          {!img.isPrimary && (
+                            <Button
+                              type="button"
+                              variant="soft"
+                              size="sm"
+                              onClick={() => void makePrimary(img.id)}
+                              disabled={busy}
+                              leftIcon={<Star className="h-3.5 w-3.5" />}
+                            >
+                              Star
+                            </Button>
+                          )}
+                          <Button
+                            type="button"
+                            variant="soft"
+                            color="danger"
+                            size="sm"
+                            onClick={() => void remove(img.id)}
+                            disabled={busy}
+                            aria-label="Remove image"
+                          >
+                            <Trash className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
                       </div>
-                    )}
-                    {img.isPrimary && (
-                      <span className="absolute top-1.5 left-1.5">
-                        <Badge color="warning" variant="soft" size="sm">
-                          Main
-                        </Badge>
-                      </span>
-                    )}
-                    {boundVariant && (
-                      <span className="absolute top-1.5 right-1.5">
-                        <Badge color="info" variant="soft" size="sm">
-                          {variantLabel(boundVariant)}
-                        </Badge>
-                      </span>
-                    )}
-                    <div className="absolute inset-x-0 bottom-0 flex justify-end gap-1 bg-black/45 p-1 opacity-0 transition-opacity group-hover:opacity-100">
-                      {!img.isPrimary && (
-                        <Button
-                          type="button"
-                          variant="soft"
+                      {multiVariant && (
+                        <NativeSelect
                           size="sm"
-                          onClick={() => void makePrimary(img.id)}
+                          value={img.variantId ?? ''}
+                          onChange={(e) => void bindToVariant(img.id, e.target.value)}
                           disabled={busy}
-                          leftIcon={<Star className="h-3.5 w-3.5" />}
+                          aria-label="Show this image for a specific variant"
                         >
-                          Star
-                        </Button>
+                          <option value="">All variants</option>
+                          {variants.map((v) => (
+                            <option key={v.id} value={v.id}>
+                              {variantLabel(v)}
+                            </option>
+                          ))}
+                        </NativeSelect>
                       )}
-                      <Button
-                        type="button"
-                        variant="soft"
-                        color="danger"
-                        size="sm"
-                        onClick={() => void remove(img.id)}
-                        disabled={busy}
-                        aria-label="Remove image"
-                      >
-                        <Trash className="h-3.5 w-3.5" />
-                      </Button>
                     </div>
-                  </div>
-                  {multiVariant && (
-                    <NativeSelect
-                      size="sm"
-                      value={img.variantId ?? ''}
-                      onChange={(e) => void bindToVariant(img.id, e.target.value)}
-                      disabled={busy}
-                      aria-label="Show this image for a specific variant"
-                    >
-                      <option value="">All variants</option>
-                      {variants.map((v) => (
-                        <option key={v.id} value={v.id}>
-                          {variantLabel(v)}
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  )}
-                </div>
-              );
-            })}
+                  );
+                })}
 
-            <button
-              type="button"
-              onClick={() => setPickerOpen(true)}
-              disabled={busy}
-              className="flex aspect-square flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-[var(--color-border-default)] text-[var(--color-text-muted)] transition-colors hover:border-[var(--module-active)] hover:text-[var(--module-active)] disabled:opacity-40"
-            >
-              <Plus className="h-5 w-5" />
-              <span className="text-sm">Add image</span>
-            </button>
-          </div>
+                <button
+                  type="button"
+                  onClick={() => setPickerOpen(true)}
+                  disabled={busy}
+                  className="flex aspect-square flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-[var(--color-border-default)] text-[var(--color-text-muted)] transition-colors hover:border-[var(--module-active)] hover:text-[var(--module-active)] disabled:opacity-40"
+                >
+                  <Plus className="h-5 w-5" />
+                  <span className="text-sm">Add image</span>
+                </button>
+              </div>
 
-          {images.length === 0 && (
-            <Text size="sm" variant="muted">
-              No photos yet. Add at least one so the product looks its best — or continue and add
-              them later.
-            </Text>
+              {images.length === 0 && (
+                <Text size="sm" variant="muted">
+                  No photos yet. Add at least one so the product looks its best — or continue and
+                  add them later.
+                </Text>
+              )}
+
+              {error && (
+                <Text size="sm" variant="danger" role="alert">
+                  {error}
+                </Text>
+              )}
+            </div>
           )}
-
-          {error && (
-            <Text size="sm" variant="danger" role="alert">
-              {error}
-            </Text>
-          )}
-        </div>
-      )}
+        </CardContent>
+      </Card>
 
       <MediaPicker
         open={pickerOpen}

@@ -2,20 +2,7 @@
 
 import { useTransition } from 'react';
 import { RefreshCw, Star, Trash2 } from 'lucide-react';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-  Button,
-  Stack,
-  toast,
-} from '@sparx/ui';
+import { Button, Stack, toast, useConfirm } from '@sparx/ui';
 
 import { removeDomainAction, setDefaultDomainAction, verifyDomainAction } from '../actions';
 import type { SendingDomainRow } from '../../_lib/types';
@@ -26,6 +13,7 @@ import type { SendingDomainRow } from '../../_lib/types';
 
 export function DomainActions({ domain }: { domain: SendingDomainRow }) {
   const [pending, startTransition] = useTransition();
+  const confirm = useConfirm();
 
   function verify() {
     startTransition(async () => {
@@ -47,12 +35,22 @@ export function DomainActions({ domain }: { domain: SendingDomainRow }) {
     });
   }
 
-  function remove() {
-    startTransition(async () => {
-      const result = await removeDomainAction(domain.id);
-      if (result.ok) toast.success(`${domain.domain} removed.`);
-      else toast.error(result.error.message);
-    });
+  function onRemove() {
+    void (async () => {
+      const ok = await confirm({
+        title: `Remove ${domain.domain}?`,
+        description:
+          'This removes the domain from Mailgun and sparx. Email can no longer be sent from it until you add and verify it again.',
+        confirmLabel: 'Remove domain',
+        tone: 'danger',
+      });
+      if (!ok) return;
+      startTransition(async () => {
+        const result = await removeDomainAction(domain.id);
+        if (result.ok) toast.success(`${domain.domain} removed.`);
+        else toast.error(result.error.message);
+      });
+    })();
   }
 
   return (
@@ -69,26 +67,15 @@ export function DomainActions({ domain }: { domain: SendingDomainRow }) {
           Make default
         </Button>
       ) : null}
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button variant="ghost" size="sm" aria-label="Remove domain" disabled={pending}>
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Remove {domain.domain}?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This removes the domain from Mailgun and sparx. Email can no longer be sent from it
-              until you add and verify it again.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={remove}>Remove domain</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <Button
+        variant="ghost"
+        size="sm"
+        aria-label="Remove domain"
+        disabled={pending}
+        onClick={onRemove}
+      >
+        <Trash2 className="h-3.5 w-3.5" />
+      </Button>
     </Stack>
   );
 }

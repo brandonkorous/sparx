@@ -300,8 +300,8 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
     headlineSecondary: 'done right',
     title: 'sparx B2B — Account pricing, net terms, RFQ.',
     description:
-      'Account-specific price lists, RFQ to quote, net terms and credit limits, bulk PO ordering, and fleet & service scheduling — wholesale layered on the same catalog and checkout as D2C.',
-    lede: 'Account-specific price lists, RFQ to quote, net terms and credit limits, bulk PO ordering, and fleet and service scheduling — wholesale that runs on the same catalog and checkout as your retail orders. Each buyer logs in to their negotiated price and their terms. $99/mo, layered on Commerce.',
+      'Account-specific price lists, RFQ to quote, net terms and credit limits, bulk PO ordering, and fleet accounts — wholesale layered on the same catalog and checkout as D2C.',
+    lede: 'Account-specific price lists, RFQ to quote, net terms and credit limits, bulk PO ordering, and fleet accounts — wholesale that runs on the same catalog and checkout as your retail orders. Each buyer logs in to their negotiated price and their terms. $99/mo, layered on Commerce.',
     features: [
       {
         number: '01',
@@ -325,8 +325,8 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       },
       {
         number: '05',
-        title: 'Service scheduling.',
-        body: 'Bookable bays, technicians, parts. Customer-portal scheduling. Reminders via sparx Email.',
+        title: 'Buyer self-service portal.',
+        body: 'Each account gets its own portal: re-order from history, saved lists, multiple buyers with per-seat roles, and live statements. Add the Scheduling module and service appointments book from the same portal.',
       },
       {
         number: '06',
@@ -442,6 +442,56 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
         'A flat $29/mo. Connect a supplier, import the catalog, set a markup rule, and route orders automatically — sell without holding inventory. Works alongside Commerce, so imported products land in your catalog and your orders route back to the supplier, all on one bill.',
     },
   },
+  scheduling: {
+    slug: 'scheduling',
+    module: 'scheduling',
+    label: 'Scheduling',
+    headlinePrimary: 'Every booking,',
+    headlineSecondary: 'one engine',
+    title: 'sparx Scheduling — Every booking, one engine.',
+    description:
+      'Appointments, classes, reservations, and rentals on one engine. Deposits, reminders, waitlists, calendar sync — unlimited staff and bookings, one flat $29/mo.',
+    lede: 'Appointments, classes, reservations, and rentals on one engine — with deposits, reminders, waitlists, and calendar sync built in. Unlimited staff, resources, and bookings for one flat price. It sits on the same platform as your customers, your payments, and your email, so a booking is part of the business, not a silo.',
+    features: [
+      {
+        number: '01',
+        title: 'Every booking shape.',
+        body: 'Appointments, capped-roster classes, party reservations, and asset rentals all run on the same engine — a salon chair, a fitness class, a dinner table, a rental bay. Switch on what you book; round-robin and collective availability included.',
+      },
+      {
+        number: '02',
+        title: 'Double-booking is impossible.',
+        body: 'Availability is computed from real resource calendars, and the no-overlap guarantee is enforced in the database — not hoped for in app code. Two people can hit book on the last slot and exactly one wins.',
+      },
+      {
+        number: '03',
+        title: 'Deposits, no-shows, policies.',
+        body: 'Take a deposit or hold a card at booking, set per-service cancellation and no-show windows, and charge a fee when someone bails. Payments run through your own gateway — no Commerce module required.',
+      },
+      {
+        number: '04',
+        title: 'Reminders & waitlists.',
+        body: 'Automatic confirmations and reminders by email and SMS cut no-shows. A full session takes a waitlist that auto-promotes the moment a seat frees — at the session level and across a provider’s whole week.',
+      },
+      {
+        number: '05',
+        title: 'Your calendar, in sync.',
+        body: 'Subscribe to your bookings in Google, Apple, or Outlook, and import busy time from the calendars you already keep — by iCal feed or CalDAV — so personal commitments block your availability automatically.',
+      },
+      {
+        number: '06',
+        title: 'One loop, not five tools.',
+        body: 'The booking, the customer, the deposit, the reminder, and the no-show live in one system. A finished visit records to the customer’s history; a no-show updates their lifetime value. Book, remind, take payment, fulfill, follow up — nothing to sync.',
+      },
+    ],
+    pricing: {
+      price: '$29',
+      period: '/mo',
+      modifier: '',
+      bundleNote:
+        'A flat $29/mo — unlimited staff, resources, locations, and bookings, with no per-seat, per-staff, or per-cover fees, ever. It requires nothing else; deposits just need a connected payment gateway. One bill with everything else, off anytime.',
+    },
+  },
 };
 
 export const MODULE_ORDER: MarketingModule[] = [
@@ -453,6 +503,7 @@ export const MODULE_ORDER: MarketingModule[] = [
   'b2b',
   'ai',
   'dropship',
+  'scheduling',
 ];
 
 export function getModule(slug: string): ModuleMeta | undefined {

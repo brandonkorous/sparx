@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
-import { CalendarDays, ArrowRight } from 'lucide-react';
+import { LayoutDashboard, ArrowRight } from 'lucide-react';
 import {
   Badge,
   Button,
@@ -77,9 +77,9 @@ export default async function SchedulingOverviewPage() {
     <Container size="xl">
       <Stack gap={6} className="py-10">
         <PageHeader
-          icon={<CalendarDays className="h-5 w-5" />}
-          title="Calendar"
-          description="Your upcoming bookings at a glance — the next two weeks."
+          icon={<LayoutDashboard className="h-5 w-5" />}
+          title="Overview"
+          description="Your upcoming bookings at a glance — the next two weeks. Open the Calendar for the week grid."
           actions={services.length > 0 ? <NewBookingButton services={services} /> : undefined}
         />
 

@@ -25,6 +25,7 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
+  Badge,
   Card,
   CardContent,
   CardHeader,
@@ -39,6 +40,9 @@ import {
   Textarea,
   WizardFrame,
   WizardStep,
+  WizardSummary,
+  WizardSummaryDivider,
+  WizardSummaryRow,
   type WizardStepDef,
 } from '@sparx/ui';
 import { UserPlus } from 'lucide-react';
@@ -912,14 +916,52 @@ function CustomerWizardInner({
     if (target >= 0 && target <= current) goToStep(key as StepKey);
   };
   const canSelectStep = (_key: string, index: number) => index <= current;
-  const cancelButton = (
-    <button
-      type="button"
-      onClick={close}
-      className="text-[var(--color-text-muted)] underline-offset-2 hover:underline"
+
+  // The live draft summary — the F layout's right-hand column (docs/86). Shows the
+  // identity being built plus the "fill to create" extras that will be applied on
+  // finish, so the optional work is visible the whole way through.
+  const str = (v: unknown) => (typeof v === 'string' ? v.trim() : '');
+  const fullName = [str(contact.firstName), str(contact.lastName)].filter(Boolean).join(' ');
+  const email = str(contact.email);
+  const company = str(contact.company);
+  const typeLabel =
+    { prospect: 'Prospect', retail: 'Retail', b2b: 'B2B' }[str(classify.type)] ?? '—';
+  const noteKindLabel = { note: 'Note', call: 'Call', meeting: 'Meeting' }[noteKind];
+  const addressIncluded = !skipAddress && !!str(address.line1) && !!str(address.city);
+  const noteIncluded = !!noteDescription.trim();
+  const taskIncluded = !!taskTitle.trim() && !!currentUserId;
+  const dealIncluded = !!dealTitle.trim() && !!dealPipelineId && !!dealStageId;
+  const quoteIncluded = !!quoteItemName.trim();
+  const anyExtra = addressIncluded || noteIncluded || taskIncluded || dealIncluded || quoteIncluded;
+
+  const summary = (
+    <WizardSummary
+      title="Draft summary"
+      footer={
+        <Badge color="module" variant="soft" size="sm">
+          Editable after create
+        </Badge>
+      }
     >
-      Cancel
-    </button>
+      <WizardSummaryRow label="Name" value={fullName || '—'} />
+      <WizardSummaryRow label="Email" value={email || '—'} strong />
+      {company && <WizardSummaryRow label="Company" value={company} />}
+      <WizardSummaryRow label="Type" value={typeLabel} />
+      <WizardSummaryDivider />
+      {anyExtra ? (
+        <>
+          {addressIncluded && (
+            <WizardSummaryRow label="Address" value={str(address.city) || 'Included'} />
+          )}
+          {noteIncluded && <WizardSummaryRow label="Activity" value={noteKindLabel} />}
+          {taskIncluded && <WizardSummaryRow label="Task" value={taskTitle.trim()} />}
+          {dealIncluded && <WizardSummaryRow label="Deal" value={dealTitle.trim()} />}
+          {quoteIncluded && <WizardSummaryRow label="Draft quote" value={quoteItemName.trim()} />}
+        </>
+      ) : (
+        <WizardSummaryRow label="On create" value="Contact only" />
+      )}
+    </WizardSummary>
   );
 
   // One top-stepper frame for both presentations: `embedded` fills the dashboard
@@ -934,7 +976,8 @@ function CustomerWizardInner({
       context={RAIL[stepKey].context}
       onStepSelect={onStepSelect}
       canSelectStep={canSelectStep}
-      footer={cancelButton}
+      onCancel={close}
+      summary={summary}
     >
       {body}
     </WizardFrame>

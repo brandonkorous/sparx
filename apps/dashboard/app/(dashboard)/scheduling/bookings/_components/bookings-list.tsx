@@ -74,7 +74,7 @@ export function BookingsList({ bookings }: { bookings: Booking[] }) {
               <StatusBadge status={b.status} />
             </TableCell>
             <TableCell>
-              <BookingActions id={b.id} status={b.status} />
+              <BookingActions id={b.id} status={b.status} bookingType={b.bookingType} />
             </TableCell>
           </TableRow>
         ))}

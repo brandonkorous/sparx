@@ -489,15 +489,6 @@ function PurchaseOrderWizardInner({
     if (target >= 0 && target <= current) goToStep(key as StepKey);
   };
   const canSelectStep = (_key: string, index: number) => index <= current;
-  const cancelButton = (
-    <button
-      type="button"
-      onClick={close}
-      className="text-[var(--color-text-muted)] underline-offset-2 hover:underline"
-    >
-      Cancel
-    </button>
-  );
 
   // The live draft summary — the F layout's right-hand column (docs/86). Mirrors
   // the Review step so the supplier, destination, and running cost stay visible.
@@ -532,7 +523,7 @@ function PurchaseOrderWizardInner({
       context={RAIL[stepKey].context}
       onStepSelect={onStepSelect}
       canSelectStep={canSelectStep}
-      footer={cancelButton}
+      onCancel={close}
       summary={summary}
     >
       {body}

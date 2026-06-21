@@ -1,25 +1,18 @@
-// Dedicated "create author" route. Existed historically as a click-through
-// from /cms/authors, but only the inline form on the list page handled it —
-// hitting /cms/authors/new directly fell through to the [id] segment, which
-// treated "new" as a UUID and produced a 500 (audit F-04).
-
-import { Container, PageHeader, Stack } from '@sparx/ui';
-
 import { AuthorCreateForm } from '../author-create-form';
+
+// Full-page surface for creating an author. The surface-aware `AuthorCreateForm`
+// (docs/86 F layout) renders the SAME WizardFrame here (`surface="page"` → the
+// `embedded` contained sheet, filling the dashboard content area with its own
+// title + pinned toolbar) and inside the `@detail` drawer/modal overlay
+// (`surface="overlay"`). This route is what `fullPage` / `newTab` detail-view
+// preferences, deep links, and the overlay's "maximize" button resolve to — no
+// page-level Container/PageHeader, so the title isn't rendered twice.
+//
+// (Historically /cms/authors/new fell through to the [id] segment, which treated
+// "new" as a UUID and 500'd — audit F-04. This dedicated route fixes that.)
 
 export const dynamic = 'force-dynamic';
 
 export default function NewAuthorPage() {
-  return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          title="New author"
-          description="Add a byline for blog posts and editorial entries. Slug auto-derives from the display name when omitted; it must be unique within the tenant."
-        />
-
-        <AuthorCreateForm surface="page" />
-      </Stack>
-    </Container>
-  );
+  return <AuthorCreateForm surface="page" />;
 }

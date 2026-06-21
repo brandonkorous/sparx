@@ -1,37 +1,42 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
-  Button,
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  Heading,
   Input,
   Label,
+  ModuleProvider,
   Stack,
   Text,
+  WizardFrame,
+  WizardStep,
+  type WizardStepDef,
 } from '@sparx/ui';
 import { ContentBlockEditor, EMPTY_DOC, type CmsDoc } from '@sparx/cms-editor';
 
 import { createPage } from '../actions';
 
-// New-page form, surface-aware (§13.1). The SAME component renders:
-//   - `surface="page"`   inside the /cms/new route's Container + PageHeader
-//   - `surface="overlay"` inside the `@detail` drawer/modal chrome
+// New-page form, on the standard create surface (docs/86 F layout). The SAME
+// component renders in both presentations, picked by the host:
+//   - `surface="page"`    → WizardFrame `embedded` at the /cms/new route (contained sheet)
+//   - `surface="overlay"` → WizardFrame `inline` inside the @detail drawer/modal
 //
-// Only the framing (internal heading, Cancel target) and the post-create
-// transition differ by surface; the fields are identical. On success the
-// overlay swaps to the new record's detail view (create flows into view); the
-// page pushes to the record.
+// It's a SINGLE-STEP form, so it's a one-step wizard: the frame supplies the
+// title + window controls + the pinned floor toolbar (ghost Cancel + module
+// primary) and hides the MiniProgress; the fields sit in a module-tinted Card.
+// No bespoke card-footer toolbar, no repeated page title — that drift is what
+// docs/86 standardizes away.
+//
+// A page flows INTO its detail view on success: the overlay swaps its token to
+// the new record's detail (preserving drawer vs modal); the page navigates to it.
 
 interface PageCreateFormProps {
   surface: 'page' | 'overlay';
 }
+
+const STEPS: WizardStepDef[] = [{ key: 'basics', label: 'Basics' }];
 
 export function PageCreateForm({ surface }: PageCreateFormProps) {
   const router = useRouter();
@@ -39,7 +44,23 @@ export function PageCreateForm({ surface }: PageCreateFormProps) {
   const searchParams = useSearchParams();
   const [error, setError] = React.useState<string | null>(null);
   const [pending, startTransition] = React.useTransition();
+  const [title, setTitle] = React.useState('');
+  const [slug, setSlug] = React.useState('');
   const [doc, setDoc] = React.useState<CmsDoc>(EMPTY_DOC);
+
+  // Where "leave the form" goes. In the overlay it clears the detail token so the
+  // drawer/modal closes in place; the page route returns to the content list.
+  const cancel = React.useCallback(() => {
+    if (surface === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+    } else {
+      router.push('/cms/content');
+    }
+  }, [surface, pathname, searchParams, router]);
 
   // After create: in an overlay, transition the token to the new record's
   // detail (preserving drawer vs modal); on a page, navigate to it.
@@ -58,18 +79,15 @@ export function PageCreateForm({ surface }: PageCreateFormProps) {
     router.refresh();
   }
 
-  function closeOverlay() {
-    const next = new URLSearchParams(searchParams ?? '');
-    next.delete('drawer');
-    next.delete('modal');
-    const qs = next.toString();
-    router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
-  }
-
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  function submit() {
     setError(null);
-    const formData = new FormData(e.currentTarget);
+    if (!title.trim()) {
+      setError('Title is required.');
+      return;
+    }
+    const formData = new FormData();
+    formData.set('title', title);
+    formData.set('slug', slug);
     formData.set('content', JSON.stringify(doc));
 
     startTransition(async () => {
@@ -83,72 +101,73 @@ export function PageCreateForm({ surface }: PageCreateFormProps) {
   }
 
   return (
-    <Stack gap={6}>
-      {surface === 'overlay' && (
-        <Stack gap={1}>
-          <Heading level={2}>New page</Heading>
-          <Text size="sm" variant="muted">
-            Saves as a draft. Publish from the editor once the content is ready — nothing goes live
-            until you say so.
-          </Text>
-        </Stack>
-      )}
-
-      <form onSubmit={onSubmit} noValidate>
-        <Card variant="module">
-          <CardHeader>
-            <Heading level={3}>Page basics</Heading>
-            <CardDescription>You can edit everything after creation.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={4}>
-              <Stack gap={2}>
-                <Label htmlFor="title" required>
-                  Title
-                </Label>
-                <Input id="title" name="title" required aria-required />
+    <ModuleProvider module="cms" className="h-full">
+      <WizardFrame
+        variant={surface === 'overlay' ? 'inline' : 'embedded'}
+        title="New page"
+        steps={STEPS}
+        current={0}
+        onCancel={cancel}
+      >
+        <WizardStep
+          header={{
+            title: 'Page basics',
+            supporting:
+              'Saves as a draft. Publish from the editor once the content is ready — nothing goes live until you say so.',
+          }}
+          actions={{
+            onNext: submit,
+            nextLabel: 'Create draft',
+            nextLoading: pending,
+            nextDisabled: pending,
+          }}
+        >
+          <Card variant="module">
+            <CardContent className="py-6">
+              <Stack gap={4}>
+                <Stack gap={2}>
+                  <Label htmlFor="title" required>
+                    Title
+                  </Label>
+                  <Input
+                    id="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    aria-required
+                  />
+                </Stack>
+                <Stack gap={2}>
+                  <Label htmlFor="slug">Slug (optional)</Label>
+                  <Input
+                    id="slug"
+                    value={slug}
+                    onChange={(e) => setSlug(e.target.value)}
+                    placeholder="auto-derived from title"
+                  />
+                  <Text size="xs" variant="muted">
+                    Lowercase letters, numbers, and dashes only.
+                  </Text>
+                </Stack>
+                <Stack gap={2}>
+                  <Label htmlFor="page-body-editor">Content (optional)</Label>
+                  <ContentBlockEditor
+                    id="page-body-editor"
+                    value={doc}
+                    onChange={setDoc}
+                    placeholder="Write the initial body. You can always edit after creation."
+                    ariaLabel="Page body editor"
+                  />
+                </Stack>
               </Stack>
-              <Stack gap={2}>
-                <Label htmlFor="slug">Slug (optional)</Label>
-                <Input id="slug" name="slug" placeholder="auto-derived from title" />
-                <Text size="xs" variant="muted">
-                  Lowercase letters, numbers, and dashes only.
-                </Text>
-              </Stack>
-              <Stack gap={2}>
-                <Label htmlFor="page-body-editor">Content (optional)</Label>
-                <ContentBlockEditor
-                  id="page-body-editor"
-                  value={doc}
-                  onChange={setDoc}
-                  placeholder="Write the initial body. You can always edit after creation."
-                  ariaLabel="Page body editor"
-                />
-              </Stack>
-
-              {error && (
-                <Text size="sm" variant="danger" role="alert" aria-live="polite">
-                  {error}
-                </Text>
-              )}
-            </Stack>
-          </CardContent>
-          <CardFooter>
-            {surface === 'overlay' ? (
-              <Button type="button" variant="ghost" onClick={closeOverlay}>
-                Cancel
-              </Button>
-            ) : (
-              <Button type="button" variant="ghost" asChild>
-                <Link href="/cms/content">Cancel</Link>
-              </Button>
-            )}
-            <Button type="submit" color="module" disabled={pending} loading={pending}>
-              Create draft
-            </Button>
-          </CardFooter>
-        </Card>
-      </form>
-    </Stack>
+            </CardContent>
+          </Card>
+          {error && (
+            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+              {error}
+            </Text>
+          )}
+        </WizardStep>
+      </WizardFrame>
+    </ModuleProvider>
   );
 }

@@ -89,6 +89,24 @@ const FULL_BLEED_CREATE_TYPES = new Set<string>([
   'order',
   'purchase-order',
   'transfer',
+  // Single-step create forms now render through the same F-shell (docs/86) — a
+  // one-step WizardFrame with the pinned floor toolbar — so they are full-bleed
+  // too (no padded card-in-body). Converted off the old card+footer shell so far;
+  // the rest of the single-step forms join here as each is migrated.
+  'category',
+  'collection',
+  'warehouse',
+  'gift-card',
+  'segment',
+  'price-list',
+  'content-type',
+  'author',
+  'taxonomy',
+  'redirect',
+  'account-credit',
+  'suppression',
+  'sending-domain',
+  'page',
 ]);
 
 export function isFullBleedCreate(typeId: string): boolean {
@@ -113,6 +131,11 @@ const SUMMARY_CREATE_TYPES = new Set<string>([
   'purchase-order',
   'transfer',
   'billing-document',
+  // Record-builder wizards (not line-item docs) that earn the summary column too:
+  // the customer full-profile wizard shows identity + its "fill to create" extras;
+  // the B2B account wizard shows the account + pricing/credit + fleet size.
+  'customer',
+  'b2b-account',
 ]);
 
 export function isSummaryCreate(typeId: string): boolean {
@@ -156,6 +179,10 @@ export function hasDetailView(typeId: string): boolean {
 // the detail-panel chrome can call it.
 export function fullPageHrefFor(typeId: string, id: string): string | null {
   if (typeId === 'content-entry') {
+    // Create has no type-scoped id yet — the maximize target is the wizard's
+    // `/new` route (not a `<typeKey>:<id>` detail). Without this the split below
+    // fails on the bare `new` and the chrome drops the maximize control.
+    if (id === CREATE_SENTINEL) return '/cms/content/new';
     const sep = id.indexOf(':');
     if (sep < 1 || sep === id.length - 1) return null;
     return `/cms/types/${id.slice(0, sep)}/${id.slice(sep + 1)}`;

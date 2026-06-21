@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { activeTenantSlug, getBookableService } from '../../../lib/scheduling';
 import { BookingWidget } from '../../../components/booking/booking-widget';
+import { ClassBookingWidget } from '../../../components/booking/class-booking-widget';
 
 export const dynamic = 'force-dynamic';
 
@@ -55,7 +56,11 @@ export default async function BookServicePage({ params }: Props) {
           {service.description ? <p className="st-muted">{service.description}</p> : null}
         </header>
 
-        <BookingWidget tenantSlug={tenantSlug} service={service} />
+        {service.bookingType === 'class' ? (
+          <ClassBookingWidget tenantSlug={tenantSlug} service={service} />
+        ) : (
+          <BookingWidget tenantSlug={tenantSlug} service={service} />
+        )}
       </div>
     </section>
   );

@@ -406,15 +406,6 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
     if (target >= 0 && target <= current) goToStep(key as StepKey);
   };
   const canSelectStep = (_key: string, index: number) => index <= current;
-  const cancelButton = (
-    <button
-      type="button"
-      onClick={close}
-      className="text-[var(--color-text-muted)] underline-offset-2 hover:underline"
-    >
-      Cancel
-    </button>
-  );
 
   // The live draft summary — the F layout's right-hand column (docs/86). A
   // transfer has no money, so the running figures are the route + units to move.
@@ -444,7 +435,7 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
       context={RAIL[stepKey].context}
       onStepSelect={onStepSelect}
       canSelectStep={canSelectStep}
-      footer={cancelButton}
+      onCancel={close}
       summary={summary}
     >
       {body}

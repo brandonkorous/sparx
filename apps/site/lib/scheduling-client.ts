@@ -82,3 +82,70 @@ export async function createPublicBooking(
   });
   return unwrap<BookingConfirmation>(res);
 }
+
+export interface PublicSession {
+  bookingId: string;
+  serviceName: string | null;
+  startAt: string;
+  endAt: string;
+  remaining: number;
+}
+
+/** Upcoming class sessions with open seats (docs/79 §7.2). */
+export async function listSessions(
+  tenantSlug: string,
+  serviceId: string,
+  fromISO: string,
+  toISO: string
+): Promise<PublicSession[]> {
+  const qs = new URLSearchParams({ tenant: tenantSlug, serviceId, from: fromISO, to: toISO });
+  const res = await fetch(`${API_BASE}/v1/public/scheduling/sessions?${qs.toString()}`);
+  return unwrap<PublicSession[]>(res);
+}
+
+export interface JoinSessionResult {
+  attendeeId: string;
+  status: string;
+  waitlisted: boolean;
+}
+
+/** Join a class session (find-or-creates the customer). A full session enrolls the
+ *  customer as waitlisted. */
+export async function joinSession(
+  tenantSlug: string,
+  bookingId: string,
+  body: { customer: { name: string; email: string; phone?: string }; partySize?: number }
+): Promise<JoinSessionResult> {
+  const qs = new URLSearchParams({ tenant: tenantSlug });
+  const res = await fetch(
+    `${API_BASE}/v1/public/scheduling/sessions/${bookingId}/join?${qs.toString()}`,
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    }
+  );
+  return unwrap<JoinSessionResult>(res);
+}
+
+export interface JoinWaitlistBody {
+  serviceId: string;
+  customer: { name: string; email: string; phone?: string };
+  desiredFrom: string;
+  desiredTo: string;
+}
+
+/** Join the service waitlist when nothing's open in the desired window (docs/79
+ *  §7). The customer is emailed/texted when a spot opens. */
+export async function joinWaitlist(
+  tenantSlug: string,
+  body: JoinWaitlistBody
+): Promise<{ id: string; status: string }> {
+  const qs = new URLSearchParams({ tenant: tenantSlug });
+  const res = await fetch(`${API_BASE}/v1/public/scheduling/waitlist?${qs.toString()}`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  return unwrap<{ id: string; status: string }>(res);
+}

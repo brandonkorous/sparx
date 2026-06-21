@@ -54,7 +54,7 @@ const MODULES: ModuleColor[] = [
   },
   {
     module: 'AI / MCP',
-    colorName: 'Rose',
+    colorName: 'Pink',
     hex: '#EC4899',
     token: '--module-ai',
     why: 'Premium, intelligent, unexpected — different in kind.',
@@ -88,6 +88,13 @@ const MODULES: ModuleColor[] = [
     why: 'Conversational, responsive, human.',
   },
   {
+    module: 'Scheduling',
+    colorName: 'Rose',
+    hex: '#F43F5E',
+    token: '--module-scheduling',
+    why: 'Time, rhythm, the calendar — booking and cadence.',
+  },
+  {
     module: 'Automations',
     colorName: 'Fuchsia',
     hex: '#D946EF',
@@ -111,7 +118,7 @@ export function ModulesSection() {
           accent="var(--module-commerce)"
           headline={
             <>
-              Thirteen modules.{' '}
+              Fourteen modules.{' '}
               <span style={{ color: 'var(--color-text-tertiary)' }}>One color each</span>
             </>
           }

@@ -44,6 +44,8 @@ export interface EmailRecipientRef {
   appointmentId?: string | null;
   /** The Scheduling-module booking a booking-* send is about (docs/79 §10). */
   bookingId?: string | null;
+  /** The waitlist entry a waitlist-offer send is about (docs/79 §7). */
+  waitlistEntryId?: string | null;
 }
 
 // Public api-rest origin for media URLs (GET /v1/public/media/:id) — REST-specific
@@ -488,6 +490,42 @@ async function resolveBooking(
   };
 }
 
+// ── waitlist (Scheduling module offer, docs/79 §7) ───────────────────────────
+
+async function resolveWaitlist(
+  ctx: ServiceContext,
+  ref: EmailRecipientRef | undefined,
+  slug: string
+): Promise<Record<string, unknown>> {
+  if (!ref?.waitlistEntryId) return {};
+  const w = await withTenant(ctx, (tx) =>
+    tx.waitlistEntry.findUnique({
+      where: { id: ref.waitlistEntryId! },
+      select: {
+        desiredFrom: true,
+        desiredTo: true,
+        offerExpiresAt: true,
+        serviceId: true,
+        service: { select: { name: true } },
+      },
+    })
+  );
+  if (!w) return {};
+  const from = dateLabel(w.desiredFrom);
+  const to = dateLabel(w.desiredTo);
+  const expires = w.offerExpiresAt
+    ? `${dateLabel(w.offerExpiresAt)} at ${timeLabel(w.offerExpiresAt)}`
+    : '';
+  return {
+    service: w.service?.name ?? '',
+    window: from && to ? `${from} – ${to}` : from || to,
+    offerExpires: expires,
+    // Book-now goes straight to the service's public booking page.
+    bookUrl: siteLink(slug, `/book/${w.serviceId}`),
+    manageUrl: siteLink(slug, '/account/bookings'),
+  };
+}
+
 // ── cart ──────────────────────────────────────────────────────────────────
 
 async function resolveCart(
@@ -808,6 +846,9 @@ export async function resolveEmailData(
   }
   if (keys.has('booking')) {
     tasks.push(resolveBooking(ctx, ref, slug).then((v) => void (out.booking = v)));
+  }
+  if (keys.has('waitlist')) {
+    tasks.push(resolveWaitlist(ctx, ref, slug).then((v) => void (out.waitlist = v)));
   }
   if (keys.has('cart')) {
     tasks.push(resolveCart(ctx, ref, slug).then((v) => void (out.cart = v)));

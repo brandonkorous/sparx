@@ -75,10 +75,18 @@ export interface WizardFrameProps {
   /** Whether a journey row is clickable. Default: any step at/at-or-before the
    *  current one (you can't skip ahead by clicking). */
   canSelectStep?: (key: string, index: number) => boolean;
-  /** Header/rail footer — utility links (Save & exit / Need help, or Cancel). In
-   *  the F variants (inline/embedded) this is the Cancel affordance, dropped into
-   *  the bottom action toolbar's left side. */
+  /** Header/rail utility slot. Page variant: rail links (Save & exit / Need help)
+   *  pinned to the rail bottom. Modal variant: header-right content. NOTE: the F
+   *  variants (inline/embedded) do NOT use this for Cancel — pass `onCancel`, which
+   *  the frame renders as a real ghost Button in the bottom toolbar. */
   footer?: React.ReactNode;
+  /** The leave/cancel action for the in-app variants. The frame renders it as a
+   *  ghost Cancel Button so it always matches Back/Next — at the left of the F
+   *  variants' bottom action toolbar. Never hand-roll a cancel <button> at the
+   *  call site (that drift is exactly what stranded the old styling — docs/86). */
+  onCancel?: () => void;
+  /** Label for the frame-owned Cancel button. Defaults to "Cancel". */
+  cancelLabel?: string;
   /** F variants (inline/embedded): a live "draft summary" tree (compose with
    *  WizardSummary / WizardSummaryRow). Renders as the right-hand column when the
    *  frame is wide and stacks as a card after the fields when narrow. Omit for
@@ -98,9 +106,11 @@ export interface WizardFrameProps {
 
 interface WizardContextValue {
   variant: WizardVariant;
-  /** F variants (inline/embedded): the cancel/leave affordance, dropped into the
-   *  action toolbar's left side so there's a single bottom toolbar. */
-  cancel?: React.ReactNode;
+  /** F variants (inline/embedded): the leave action. The frame renders it as a
+   *  ghost Cancel Button in the bottom toolbar (matching Back) — never raw JSX. */
+  onCancel?: () => void;
+  /** Label for the frame-owned Cancel button (default "Cancel"). */
+  cancelLabel?: string;
   /** F variants: the live summary content. Rendered as the right-hand column when
    *  the frame is wide enough (container query) and stacked as a card after the
    *  fields when it's narrow (the drawer). */
@@ -557,7 +567,8 @@ function FWizardFrame({
   steps,
   current,
   summary,
-  footer,
+  onCancel,
+  cancelLabel,
   className,
   children,
 }: {
@@ -567,7 +578,8 @@ function FWizardFrame({
   steps: WizardStepDef[];
   current: number;
   summary?: React.ReactNode;
-  footer?: React.ReactNode;
+  onCancel?: () => void;
+  cancelLabel?: string;
   className?: string;
   children: React.ReactNode;
 }) {
@@ -580,7 +592,13 @@ function FWizardFrame({
         // Capped in width with the page showing on either side; the inline (drawer/
         // modal) host already bounds the frame, so it fills its host instead.
         variant === 'embedded' &&
-          'mx-auto w-full max-w-[1120px] border-x border-[var(--color-border-default)]',
+          cn(
+            'mx-auto w-full border-x border-[var(--color-border-default)]',
+            // With a summary the sheet is wide (room for form + the right column);
+            // without one it's a tight, centered form sheet so the fields don't
+            // float in a huge gutter.
+            hasSummary ? 'max-w-[1120px]' : 'max-w-[820px]'
+          ),
         className
       )}
     >
@@ -598,11 +616,14 @@ function FWizardFrame({
         )}
       >
         {/* Form column: progress + working pane (WizardStep owns its scroll +
-            the action toolbar pinned at the bottom). */}
+            the action toolbar pinned at the bottom). A single-step form (one
+            step) hides MiniProgress — there's no journey to show. */}
         <div className="flex min-h-0 flex-col">
-          <div className="shrink-0 px-7 pt-4 pb-1 max-[680px]:px-5">
-            <MiniProgress steps={steps} current={current} />
-          </div>
+          {steps.length > 1 && (
+            <div className="shrink-0 px-7 pt-4 pb-1 max-[680px]:px-5">
+              <MiniProgress steps={steps} current={current} />
+            </div>
+          )}
           <div className="flex min-h-0 flex-1 flex-col">{children}</div>
         </div>
         {/* Summary aside — full-height right column, shown only when wide. The
@@ -621,7 +642,7 @@ function FWizardFrame({
     </div>
   );
   return (
-    <WizardContext.Provider value={{ variant, cancel: footer, summary }}>
+    <WizardContext.Provider value={{ variant, onCancel, cancelLabel, summary }}>
       {variant === 'embedded' ? (
         <div className="h-full overflow-hidden bg-[var(--color-bg-page)]">{inner}</div>
       ) : (
@@ -644,6 +665,8 @@ export function WizardFrame({
   onStepSelect,
   canSelectStep,
   footer,
+  onCancel,
+  cancelLabel,
   summary,
   className,
   children,
@@ -733,7 +756,8 @@ export function WizardFrame({
         steps={steps}
         current={current}
         summary={summary}
-        footer={footer}
+        onCancel={onCancel}
+        cancelLabel={cancelLabel}
         className={className}
       >
         {children}
@@ -822,7 +846,15 @@ function StepHeader({ header }: { header: NonNullable<WizardStepProps['header']>
   );
 }
 
-function ActionRow({ actions, cancel }: { actions?: WizardStepActions; cancel?: React.ReactNode }) {
+function ActionRow({
+  actions,
+  onCancel,
+  cancelLabel = 'Cancel',
+}: {
+  actions?: WizardStepActions;
+  onCancel?: () => void;
+  cancelLabel?: string;
+}) {
   const {
     onBack,
     backLabel = 'Back',
@@ -836,9 +868,14 @@ function ActionRow({ actions, cancel }: { actions?: WizardStepActions; cancel?: 
   } = actions ?? {};
   return (
     <div className="flex items-center justify-between gap-3">
-      {/* F variants seat Cancel here (leftmost) so there's one bottom toolbar. */}
+      {/* F variants seat Cancel here (leftmost) — a ghost Button matching Back, so
+          the toolbar is one consistent button row (never a hand-rolled link). */}
       <div className="flex items-center gap-2">
-        {cancel}
+        {onCancel && (
+          <Button variant="ghost" color="neutral" onClick={onCancel}>
+            {cancelLabel}
+          </Button>
+        )}
         {onBack && (
           <Button variant="ghost" color="neutral" onClick={onBack}>
             {backLabel}
@@ -874,7 +911,7 @@ export function WizardStep({
   className,
   children,
 }: WizardStepProps) {
-  const { variant, cancel, summary } = React.useContext(WizardContext);
+  const { variant, onCancel, cancelLabel, summary } = React.useContext(WizardContext);
   const isF = variant === 'inline' || variant === 'embedded';
   const topStepper = isF || variant === 'modal';
 
@@ -884,11 +921,18 @@ export function WizardStep({
   // Cancel in the toolbar and, when too narrow for the summary aside, stack the
   // summary as a card after the fields (container query — see FWizardFrame).
   if (topStepper) {
-    const colWidth = isF ? 'max-w-3xl' : WIDTH_CLASS[width];
+    // F variants FILL their column (the drawer / modal / contained sheet width is
+    // already the readable bound) so the content spans edge-to-edge with symmetric
+    // px-7 — a max-width cap here would strand the right side in a gutter. The
+    // modal / page variants keep their centered fixed column.
+    const colWidth = isF ? '' : WIDTH_CLASS[width];
     return (
       <div className={cn('flex h-full flex-col', className)}>
         <div className="min-h-0 flex-1 overflow-y-auto">
-          <div className={cn('mx-auto w-full px-7 py-6 max-[680px]:px-5', colWidth)}>
+          {/* F variants left-align the column under the header (px-7); the modal /
+              page variants keep it centered. Centering an F body would drift it
+              right of the flush-left header on a wide (no-summary) sheet. */}
+          <div className={cn('w-full px-7 py-6 max-[680px]:px-5', colWidth, !isF && 'mx-auto')}>
             {header && <StepHeader header={header} />}
             <div
               className={cn(
@@ -910,10 +954,14 @@ export function WizardStep({
             )}
           </div>
         </div>
-        {(actions != null || (isF && cancel != null)) && (
+        {(actions != null || (isF && onCancel != null)) && (
           <div className="shrink-0 border-t border-[var(--color-border-default)] bg-[var(--color-bg-surface)]">
-            <div className={cn('mx-auto w-full px-7 py-4 max-[680px]:px-5', colWidth)}>
-              <ActionRow actions={actions} cancel={isF ? cancel : undefined} />
+            <div className={cn('w-full px-7 py-4 max-[680px]:px-5', colWidth, !isF && 'mx-auto')}>
+              <ActionRow
+                actions={actions}
+                onCancel={isF ? onCancel : undefined}
+                cancelLabel={cancelLabel}
+              />
             </div>
           </div>
         )}

@@ -1,14 +1,13 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Plus } from 'lucide-react';
 import {
-  Button,
-  Heading,
+  Card,
+  CardContent,
   Input,
   Label,
+  ModuleProvider,
   Select,
   SelectContent,
   SelectItem,
@@ -17,21 +16,31 @@ import {
   Stack,
   Text,
   toast,
+  WizardFrame,
+  WizardStep,
+  type WizardStepDef,
 } from '@sparx/ui';
 
 import { createDomainAction } from '../actions';
 
-// Surface-aware create form (§13.1). The SAME component renders:
-//   - `surface="page"`    inside the /new route's Container + PageHeader
-//   - `surface="overlay"` inside drawer/modal chrome (internal heading block)
+// New sending-domain form, on the standard create surface (docs/86 F layout). The
+// SAME component renders in both presentations, picked by the host:
+//   - `surface="page"`    → WizardFrame `embedded` at the /new route (contained sheet)
+//   - `surface="overlay"` → WizardFrame `inline` inside the @detail drawer/modal
+//
+// It's a SINGLE-STEP form, so it's a one-step wizard: the frame supplies the
+// title + window controls + the pinned floor toolbar (ghost Cancel + module
+// primary) and hides the MiniProgress; the fields sit in a module-tinted Card.
 //
 // Sending domains have NO detail view, so there is no create-flows-into-view
-// transition: on success we keep the form open, reset the field, refresh the
-// list behind, and let the user add another / read the DNS records.
+// transition: on success we keep the form open, reset the field, and refresh the
+// list behind so the user can add another / read the DNS records.
 
 interface AddDomainFormProps {
   surface: 'page' | 'overlay';
 }
+
+const STEPS: WizardStepDef[] = [{ key: 'domain', label: 'Domain' }];
 
 export function AddDomainForm({ surface }: AddDomainFormProps) {
   const router = useRouter();
@@ -42,16 +51,21 @@ export function AddDomainForm({ surface }: AddDomainFormProps) {
   const [region, setRegion] = useState('us');
   const [error, setError] = useState<string | null>(null);
 
-  function closeOverlay() {
-    const next = new URLSearchParams(searchParams ?? '');
-    next.delete('drawer');
-    next.delete('modal');
-    const qs = next.toString();
-    router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+  // Where "leave the form" goes. In the overlay it clears the detail token so the
+  // drawer/modal closes in place; the page route returns to the list.
+  function cancel() {
+    if (surface === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+    } else {
+      router.push('/email/domains');
+    }
   }
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  function submit() {
     setError(null);
     startTransition(async () => {
       const result = await createDomainAction({ domain: domain.trim(), region });
@@ -67,67 +81,63 @@ export function AddDomainForm({ surface }: AddDomainFormProps) {
   }
 
   return (
-    <Stack gap={6}>
-      {surface === 'overlay' && (
-        <Stack gap={1}>
-          <Heading level={2}>Add a sending domain</Heading>
-          <Text size="sm" variant="muted">
-            Enter the domain (or subdomain) you want to send from. sparx provisions it in Mailgun
-            and shows the exact DNS records to publish.
-          </Text>
-        </Stack>
-      )}
-
-      <form onSubmit={onSubmit}>
-        <Stack direction="row" align="end" gap={3} className="flex-wrap">
-          <Stack gap={2} className="min-w-64 flex-1">
-            <Label htmlFor="domain">Domain</Label>
-            <Input
-              id="domain"
-              value={domain}
-              onChange={(e) => setDomain(e.target.value)}
-              placeholder="mail.yourstore.com"
-              disabled={pending}
-              autoComplete="off"
-            />
-          </Stack>
-          <Stack gap={2}>
-            <Label htmlFor="region">Region</Label>
-            <Select value={region} onValueChange={setRegion} disabled={pending}>
-              <SelectTrigger id="region" className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="us">US</SelectItem>
-                <SelectItem value="eu">EU</SelectItem>
-              </SelectContent>
-            </Select>
-          </Stack>
-          <Button
-            type="submit"
-            color="module"
-            loading={pending}
-            disabled={pending || !domain.trim()}
-          >
-            <Plus className="h-4 w-4" />
-            Add domain
-          </Button>
-          {surface === 'overlay' ? (
-            <Button type="button" variant="ghost" onClick={closeOverlay}>
-              Close
-            </Button>
-          ) : (
-            <Button variant="ghost" asChild>
-              <Link href="/email/domains">Back</Link>
-            </Button>
+    <ModuleProvider module="email" className="h-full">
+      <WizardFrame
+        variant={surface === 'overlay' ? 'inline' : 'embedded'}
+        title="Add a sending domain"
+        steps={STEPS}
+        current={0}
+        onCancel={cancel}
+      >
+        <WizardStep
+          header={{
+            title: 'Add a sending domain',
+            supporting:
+              'Enter the domain (or subdomain) you want to send from. sparx provisions it in Mailgun and shows the exact DNS records to publish.',
+          }}
+          actions={{
+            onNext: submit,
+            nextLabel: 'Add domain',
+            nextLoading: pending,
+            nextDisabled: pending || !domain.trim(),
+          }}
+        >
+          <Card variant="module">
+            <CardContent className="py-6">
+              <Stack direction="row" align="end" gap={3} wrap>
+                <Stack gap={2} className="min-w-64 flex-1">
+                  <Label htmlFor="domain">Domain</Label>
+                  <Input
+                    id="domain"
+                    value={domain}
+                    onChange={(e) => setDomain(e.target.value)}
+                    placeholder="mail.yourstore.com"
+                    disabled={pending}
+                    autoComplete="off"
+                  />
+                </Stack>
+                <Stack gap={2}>
+                  <Label htmlFor="region">Region</Label>
+                  <Select value={region} onValueChange={setRegion} disabled={pending}>
+                    <SelectTrigger id="region" className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="us">US</SelectItem>
+                      <SelectItem value="eu">EU</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Stack>
+              </Stack>
+            </CardContent>
+          </Card>
+          {error && (
+            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+              {error}
+            </Text>
           )}
-        </Stack>
-        {error ? (
-          <Text size="sm" variant="danger" className="mt-2">
-            {error}
-          </Text>
-        ) : null}
-      </form>
-    </Stack>
+        </WizardStep>
+      </WizardFrame>
+    </ModuleProvider>
   );
 }

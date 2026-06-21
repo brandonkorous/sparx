@@ -19,14 +19,6 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Badge,
   Button,
   Card,
@@ -47,6 +39,7 @@ import {
   Stack,
   Text,
   toast,
+  useConfirm,
 } from '@sparx/ui';
 import { ContentBlockEditor, EMPTY_DOC, type CmsDoc } from '@sparx/cms-editor';
 import Link from 'next/link';
@@ -108,6 +101,7 @@ export function EditPageForm({
 }) {
   const previewOrigin = siteOrigin(tenantSlug);
   const router = useRouter();
+  const confirm = useConfirm();
   const multiSite = sites.length > 1;
   const [error, setError] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
@@ -125,13 +119,12 @@ export function EditPageForm({
   const dirtyRef = React.useRef(false);
   const hydratedRef = React.useRef(false);
 
-  // Schedule + delete + conflict dialogs (kept in this file so they share the
-  // edit form's local state without prop-drilling).
+  // Schedule dialog (kept in this file so it shares the edit form's local state
+  // without prop-drilling). Delete uses useConfirm — no open state needed.
   const [scheduleOpen, setScheduleOpen] = React.useState(false);
   const [scheduleAt, setScheduleAt] = React.useState<Date | undefined>(
     page.scheduledAt ?? undefined
   );
-  const [deleteOpen, setDeleteOpen] = React.useState(false);
 
   // Stable refs for the current values — the debounce closure reads from
   // these so we don't re-arm the timer on every keystroke (which would
@@ -284,8 +277,27 @@ export function EditPageForm({
     });
   }
 
-  function executeDelete() {
-    setDeleteOpen(false);
+  async function handleDelete() {
+    const ok = await confirm({
+      title: 'Delete this page?',
+      description: (
+        <>
+          <strong>{page.title || '(untitled)'}</strong>
+          {page.slug && (
+            <>
+              {' '}
+              at <code>/{page.slug}</code>
+            </>
+          )}{' '}
+          will be soft-deleted. The entry stays recoverable in the database for 30 days but will not
+          render on the site or appear in lists. Use <em>Unpublish</em> instead if you want it to
+          stay editable.
+        </>
+      ),
+      confirmLabel: 'Delete page',
+      tone: 'danger',
+    });
+    if (!ok) return;
     setError(null);
     setMessage(null);
     startTransition(async () => {
@@ -474,7 +486,7 @@ export function EditPageForm({
               type="button"
               variant="ghost"
               leftIcon={<Trash2 className="h-4 w-4" />}
-              onClick={() => setDeleteOpen(true)}
+              onClick={handleDelete}
               disabled={pending}
             >
               Delete
@@ -531,30 +543,6 @@ export function EditPageForm({
           </ModalFooter>
         </ModalContent>
       </Modal>
-
-      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete this page?</AlertDialogTitle>
-            <AlertDialogDescription>
-              <strong>{page.title || '(untitled)'}</strong>
-              {page.slug && (
-                <>
-                  {' '}
-                  at <code>/{page.slug}</code>
-                </>
-              )}{' '}
-              will be soft-deleted. The entry stays recoverable in the database for 30 days but will
-              not render on the storefront or appear in lists. Use <em>Unpublish</em> instead if you
-              want it to stay editable.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={executeDelete}>Delete page</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </form>
   );
 }

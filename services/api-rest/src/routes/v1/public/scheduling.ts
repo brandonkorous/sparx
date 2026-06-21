@@ -14,11 +14,20 @@ import { isModuleEnabled } from '@sparx/auth';
 import { withTenant } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
 import { badRequest, moduleDisabled, notFound } from '@sparx/api-core/errors';
-import { createBooking, getAvailability, getService, listServices } from '@sparx/scheduling';
+import {
+  bookClassSeat,
+  createBooking,
+  getAvailability,
+  getService,
+  joinWaitlist,
+  listClassSessions,
+  listServices,
+} from '@sparx/scheduling';
 import { resolveTenantId } from '../../../lib/public-commerce-context.js';
 import { publishBookingEvent } from '../../../lib/scheduling-events.js';
 import { createBookingDeposit } from '../../../lib/scheduling-payments.js';
 import { bookingCalendarLinks } from '../../../lib/scheduling-ical.js';
+import { sendSeatConfirmation } from '../../../lib/scheduling-classes.js';
 
 async function requireScheduling(request: FastifyRequest): Promise<string> {
   const tenantId = await resolveTenantId(request);
@@ -45,6 +54,24 @@ const CreatePublicBooking = z.object({
   partySize: z.coerce.number().int().min(1).max(100000).optional(),
   customer: CustomerInfo,
   notes: z.string().max(2000).optional(),
+});
+
+const CreatePublicWaitlist = z.object({
+  serviceId: z.string().uuid(),
+  customer: CustomerInfo,
+  desiredFrom: z.string().datetime(),
+  desiredTo: z.string().datetime(),
+});
+
+const SessionsQuery = z.object({
+  serviceId: z.string().uuid(),
+  from: z.string().datetime(),
+  to: z.string().datetime(),
+});
+
+const JoinSession = z.object({
+  customer: CustomerInfo,
+  partySize: z.coerce.number().int().min(1).max(100000).optional(),
 });
 
 function splitName(name: string): { firstName: string; lastName: string | null } {
@@ -194,6 +221,70 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
             }
           : null,
         calendar,
+      })
+    );
+  });
+
+  // Join the waitlist when nothing's open in the desired window (docs/79 §7). The
+  // tick auto-offers a freed slot to the oldest waiting customer + emails them.
+  app.post('/v1/public/scheduling/waitlist', async (request, reply) => {
+    const tenantId = await requireScheduling(request);
+    const body = CreatePublicWaitlist.parse(request.body);
+    const service = await getService(tenantId, body.serviceId).catch(() => null);
+    if (!service || !service.bookableOnline || !service.isActive) {
+      throw notFound('Service', body.serviceId);
+    }
+    const customerId = await findOrCreateCustomer(tenantId, body.customer);
+    const entry = await joinWaitlist(tenantId, {
+      serviceId: body.serviceId,
+      customerId,
+      desiredFrom: body.desiredFrom,
+      desiredTo: body.desiredTo,
+    });
+    return reply.code(201).send(ok({ id: entry.id, status: entry.status }));
+  });
+
+  // Class sessions a customer can join — open seats in a date range (docs/79 §7.2).
+  app.get('/v1/public/scheduling/sessions', async (request) => {
+    const tenantId = await requireScheduling(request);
+    const q = SessionsQuery.parse(request.query);
+    const service = await getService(tenantId, q.serviceId).catch(() => null);
+    if (!service || !service.bookableOnline || !service.isActive) {
+      throw notFound('Service', q.serviceId);
+    }
+    const sessions = await listClassSessions(tenantId, { ...q, openOnly: true });
+    return ok(
+      sessions.map((s) => ({
+        bookingId: s.bookingId,
+        serviceName: s.serviceName,
+        startAt: s.startAt.toISOString(),
+        endAt: s.endAt.toISOString(),
+        remaining: s.remaining,
+      }))
+    );
+  });
+
+  // Join a class session — adds a seat (find-or-creates the customer). A full
+  // session enrolls the customer as waitlisted.
+  app.post('/v1/public/scheduling/sessions/:id/join', async (request, reply) => {
+    const tenantId = await requireScheduling(request);
+    const { id } = z.object({ id: z.string().uuid() }).parse(request.params);
+    const body = JoinSession.parse(request.body);
+    const customerId = await findOrCreateCustomer(tenantId, body.customer);
+    const seat = await bookClassSeat(tenantId, {
+      bookingId: id,
+      customerId,
+      guestName: body.customer.name,
+      partySize: body.partySize ?? 1,
+    });
+    if (!seat.waitlisted) {
+      await sendSeatConfirmation(request.log, tenantId, id, seat.attendee);
+    }
+    return reply.code(201).send(
+      ok({
+        attendeeId: seat.attendee.id,
+        status: seat.attendee.status,
+        waitlisted: seat.waitlisted,
       })
     );
   });

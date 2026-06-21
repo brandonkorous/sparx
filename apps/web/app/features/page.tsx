@@ -7,13 +7,13 @@ import { capabilityCounts } from '@/lib/capabilities';
 const counts = capabilityCounts();
 
 // Rounded for social/marketing copy so the numbers read cleanly and don't look
-// like oddly precise internal counts. `live` floors (so the "+" claim stays true);
-// `total` rounds to the nearest ten ("nearly 300").
-const liveFloor = Math.floor(counts.live / 10) * 10; // 230
-const totalRound = Math.round(counts.total / 10) * 10; // 300
+// like oddly precise internal counts. Both floor to the nearest ten so the "+" /
+// "Over" claims stay true no matter how the catalog grows ("Over 300").
+const liveFloor = Math.floor(counts.live / 10) * 10; // 250
+const totalFloor = Math.floor(counts.total / 10) * 10; // 310
 const upcoming = counts.building + counts.planned; // in-build + planned
 
-const OG_TITLE = `One platform. Nearly ${totalRound} capabilities.`;
+const OG_TITLE = `One platform. Over ${totalFloor} capabilities.`;
 const OG_DESCRIPTION = `${liveFloor}+ live today across ${counts.modules} modules, ${upcoming} more on the way — all on one data layer, one dashboard, one bill. The whole platform, in one place.`;
 
 export const metadata: Metadata = {

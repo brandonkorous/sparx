@@ -1,40 +1,49 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
-  CardHeader,
-  Heading,
   Input,
   Label,
+  ModuleProvider,
+  NativeSelect,
   Stack,
   Text,
   Textarea,
+  WizardFrame,
+  WizardStep,
+  type WizardStepDef,
 } from '@sparx/ui';
 
 import { createPriceListAction } from '../../pricing-actions';
 
-// New-price-list form, surface-aware (§13.1). The SAME component renders:
-//   - `surface="page"`   inside the /new route's Container + PageHeader
-//   - `surface="overlay"` inside the `@detail` drawer/modal chrome
+// New-price-list form, on the standard create surface (docs/86 F layout). The
+// SAME component renders in both presentations, picked by the host:
+//   - `surface="page"`    → WizardFrame `embedded` at the /new route (contained sheet)
+//   - `surface="overlay"` → WizardFrame `inline` inside the @detail drawer/modal
 //
-// Only the framing (internal heading, Cancel target) and the post-create
-// transition differ by surface; the fields are identical. On success the
-// overlay swaps to the new record's detail view (create flows into view); the
-// page pushes to the record.
+// It's a SINGLE-STEP form, so it's a one-step wizard: the frame supplies the
+// title + window controls + the pinned floor toolbar (ghost Cancel + module
+// primary) and hides the MiniProgress; the fields sit in a module-tinted Card.
+// No bespoke card-footer toolbar, no repeated page title — that drift is what
+// docs/86 standardizes away.
+//
+// Price lists DO have a detail view, so create flows into it: on success the
+// overlay swaps its token to the new record's detail (preserving drawer vs
+// modal); the page navigates to the record. Targeting and per-variant entries
+// are managed from that detail page.
 
 const CHANNELS = ['storefront', 'b2b_portal', 'admin', 'subscription'] as const;
 
 interface PriceListCreateFormProps {
   surface: 'page' | 'overlay';
 }
+
+const STEPS: WizardStepDef[] = [{ key: 'basics', label: 'Basics' }];
 
 export function PriceListCreateForm({ surface }: PriceListCreateFormProps) {
   const router = useRouter();
@@ -43,6 +52,26 @@ export function PriceListCreateForm({ surface }: PriceListCreateFormProps) {
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
+
+  const [name, setName] = React.useState('');
+  const [description, setDescription] = React.useState('');
+  const [currency, setCurrency] = React.useState('USD');
+  const [channel, setChannel] = React.useState('');
+  const [priority, setPriority] = React.useState('0');
+
+  // Where "leave the form" goes. In the overlay it clears the detail token so the
+  // drawer/modal closes in place; the page route returns to the list.
+  const cancel = React.useCallback(() => {
+    if (surface === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+    } else {
+      router.push('/commerce/pricing');
+    }
+  }, [surface, pathname, searchParams, router]);
 
   // After create: in an overlay, transition the token to the new record's
   // detail (preserving drawer vs modal); on a page, navigate to it.
@@ -61,29 +90,16 @@ export function PriceListCreateForm({ surface }: PriceListCreateFormProps) {
     router.refresh();
   }
 
-  function closeOverlay() {
-    const next = new URLSearchParams(searchParams ?? '');
-    next.delete('drawer');
-    next.delete('modal');
-    const qs = next.toString();
-    router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
-  }
-
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  function submit() {
     setError(null);
     setFieldErrors({});
-
-    const form = new FormData(e.currentTarget);
-    const channelRaw = stringOr(form.get('channel'), '');
     const input = {
-      name: stringOr(form.get('name'), ''),
-      description: nonEmpty(form.get('description')),
-      currency: stringOr(form.get('currency'), 'USD').toUpperCase(),
-      channel: channelRaw === '' ? undefined : channelRaw,
-      priority: Number(stringOr(form.get('priority'), '0')) || 0,
+      name: name.trim(),
+      description: description.trim() || undefined,
+      currency: (currency.trim() || 'USD').toUpperCase(),
+      channel: channel === '' ? undefined : channel,
+      priority: Number(priority.trim() || '0') || 0,
     };
-
     startTransition(async () => {
       const result = await createPriceListAction(input);
       if (!result.ok) {
@@ -98,106 +114,106 @@ export function PriceListCreateForm({ surface }: PriceListCreateFormProps) {
   }
 
   return (
-    <Stack gap={6}>
-      {surface === 'overlay' && (
-        <Stack gap={1}>
-          <Heading level={2}>New price list</Heading>
-          <Text size="sm" variant="muted">
-            Targeting (segment, B2B account) can be set after the list exists. Per-variant entries
-            are managed from the detail page.
-          </Text>
-        </Stack>
-      )}
-
-      <form onSubmit={onSubmit}>
-        <Card>
-          <CardHeader>
-            <Heading level={3}>Basics</Heading>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={4}>
-              <Stack gap={1}>
-                <Label htmlFor="name">
-                  Name<span className="text-[var(--color-danger)]">*</span>
-                </Label>
-                <Input id="name" name="name" required />
-                {fieldErrors.name && (
-                  <Text size="xs" className="text-[var(--color-danger)]">
-                    {fieldErrors.name}
-                  </Text>
-                )}
-              </Stack>
-              <Stack gap={1}>
-                <Label htmlFor="description">Description</Label>
-                <Textarea id="description" name="description" rows={3} />
-              </Stack>
-              <Stack direction="row" gap={3} wrap>
-                <Stack gap={1} className="w-[8rem]">
-                  <Label htmlFor="currency">Currency</Label>
-                  <Input id="currency" name="currency" defaultValue="USD" maxLength={3} required />
+    <ModuleProvider module="commerce" className="h-full">
+      <WizardFrame
+        variant={surface === 'overlay' ? 'inline' : 'embedded'}
+        title="New price list"
+        steps={STEPS}
+        current={0}
+        onCancel={cancel}
+      >
+        <WizardStep
+          header={{
+            title: 'Price list basics',
+            supporting:
+              'Targeting (segment, B2B account) can be set after the list exists. Per-variant entries are managed from the detail page.',
+          }}
+          actions={{
+            onNext: submit,
+            nextLabel: 'Create price list',
+            nextLoading: pending,
+            nextDisabled: pending,
+          }}
+        >
+          <Card variant="module">
+            <CardContent className="py-6">
+              <Stack gap={4}>
+                <Stack gap={2}>
+                  <Label htmlFor="pl-name">Name</Label>
+                  <Input
+                    id="pl-name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Fleet wholesale"
+                  />
+                  {fieldErrors.name && (
+                    <Text size="xs" variant="danger">
+                      {fieldErrors.name}
+                    </Text>
+                  )}
                 </Stack>
-                <Stack gap={1} className="min-w-[12rem]">
-                  <Label htmlFor="channel">Channel</Label>
-                  <select
-                    id="channel"
-                    name="channel"
-                    defaultValue=""
-                    className="h-9 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 text-sm"
-                  >
-                    <option value="">all channels</option>
-                    {CHANNELS.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
+                <Stack gap={2}>
+                  <Label htmlFor="pl-description">Description</Label>
+                  <Textarea
+                    id="pl-description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows={3}
+                  />
                 </Stack>
-                <Stack gap={1} className="w-[8rem]">
-                  <Label htmlFor="priority">Priority</Label>
-                  <Input id="priority" name="priority" defaultValue="0" />
+                <Stack direction="row" gap={3} wrap>
+                  <Stack gap={2} className="w-[8rem]">
+                    <Label htmlFor="pl-currency">Currency</Label>
+                    <Input
+                      id="pl-currency"
+                      value={currency}
+                      onChange={(e) => setCurrency(e.target.value)}
+                      maxLength={3}
+                    />
+                    {fieldErrors.currency && (
+                      <Text size="xs" variant="danger">
+                        {fieldErrors.currency}
+                      </Text>
+                    )}
+                  </Stack>
+                  <Stack gap={2} className="min-w-[12rem] flex-1">
+                    <Label htmlFor="pl-channel">Channel</Label>
+                    <NativeSelect
+                      id="pl-channel"
+                      value={channel}
+                      onChange={(e) => setChannel(e.target.value)}
+                    >
+                      <option value="">all channels</option>
+                      {CHANNELS.map((c) => (
+                        <option key={c} value={c}>
+                          {c}
+                        </option>
+                      ))}
+                    </NativeSelect>
+                  </Stack>
+                  <Stack gap={2} className="w-[8rem]">
+                    <Label htmlFor="pl-priority">Priority</Label>
+                    <Input
+                      id="pl-priority"
+                      value={priority}
+                      onChange={(e) => setPriority(e.target.value)}
+                    />
+                  </Stack>
                 </Stack>
+                <CardDescription>
+                  Status starts as <strong>draft</strong> — flip it to active from the list page
+                  once you&apos;ve added entries.
+                </CardDescription>
               </Stack>
-              <CardDescription>
-                Status starts as <strong>draft</strong> — flip it to active from the list page once
-                you&apos;ve added entries.
-              </CardDescription>
-            </Stack>
-          </CardContent>
-          <CardFooter>
-            <Stack direction="row" gap={2} justify="between" align="center" className="w-full">
-              {error && (
-                <Text size="sm" className="text-[var(--color-danger)]">
-                  {error}
-                </Text>
-              )}
-              <Stack direction="row" gap={2} className="ml-auto">
-                {surface === 'overlay' ? (
-                  <Button type="button" variant="ghost" onClick={closeOverlay}>
-                    Cancel
-                  </Button>
-                ) : (
-                  <Button type="button" variant="ghost" asChild>
-                    <Link href="/commerce/pricing">Cancel</Link>
-                  </Button>
-                )}
-                <Button color="module" type="submit" disabled={pending}>
-                  {pending ? 'Saving…' : 'Create price list'}
-                </Button>
-              </Stack>
-            </Stack>
-          </CardFooter>
-        </Card>
-      </form>
-    </Stack>
+            </CardContent>
+          </Card>
+          {error && (
+            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+              {error}
+            </Text>
+          )}
+        </WizardStep>
+      </WizardFrame>
+    </ModuleProvider>
   );
-}
-
-function nonEmpty(value: FormDataEntryValue | null): string | undefined {
-  if (typeof value !== 'string') return undefined;
-  const trimmed = value.trim();
-  return trimmed.length === 0 ? undefined : trimmed;
-}
-
-function stringOr(value: FormDataEntryValue | null, fallback: string): string {
-  return typeof value === 'string' ? value.trim() : fallback;
 }

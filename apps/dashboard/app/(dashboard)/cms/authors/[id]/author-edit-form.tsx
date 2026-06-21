@@ -3,14 +3,6 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Button,
   Card,
   CardContent,
@@ -22,6 +14,7 @@ import {
   Stack,
   Text,
   Textarea,
+  useConfirm,
 } from '@sparx/ui';
 import { Save, Trash2 } from 'lucide-react';
 import { deleteAuthor, updateAuthor } from '../actions';
@@ -35,11 +28,11 @@ export interface EditableAuthor {
 
 export function AuthorEditForm({ author }: { author: EditableAuthor }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   const [errorField, setErrorField] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
-  const [confirmDelete, setConfirmDelete] = React.useState(false);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -59,8 +52,19 @@ export function AuthorEditForm({ author }: { author: EditableAuthor }) {
     });
   }
 
-  function executeDelete() {
-    setConfirmDelete(false);
+  async function handleDelete() {
+    const ok = await confirm({
+      title: 'Delete author?',
+      description: (
+        <>
+          <strong>{author.displayName}</strong> will be removed. Any posts attributed to this author
+          will keep their byline as a frozen string but lose the link back to the author record.
+        </>
+      ),
+      confirmLabel: 'Delete author',
+      tone: 'danger',
+    });
+    if (!ok) return;
     setError(null);
     setMessage(null);
     startTransition(async () => {
@@ -142,7 +146,7 @@ export function AuthorEditForm({ author }: { author: EditableAuthor }) {
                 type="button"
                 variant="ghost"
                 leftIcon={<Trash2 className="h-4 w-4" />}
-                onClick={() => setConfirmDelete(true)}
+                onClick={handleDelete}
                 disabled={pending}
               >
                 Delete
@@ -161,23 +165,6 @@ export function AuthorEditForm({ author }: { author: EditableAuthor }) {
           </CardFooter>
         </Card>
       </Stack>
-
-      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete author?</AlertDialogTitle>
-            <AlertDialogDescription>
-              <strong>{author.displayName}</strong> will be removed. Any blog posts attributed to
-              this author will keep their byline as a frozen string but lose the link back to the
-              author record.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={executeDelete}>Delete author</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </form>
   );
 }

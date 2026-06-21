@@ -1,0 +1,13 @@
+import { renderModuleOgImage, OG_SIZE } from '@/lib/og-module';
+import { MODULES } from '@/lib/modules';
+import { loadModuleData } from '@/lib/load-module-data';
+
+export const runtime = 'nodejs';
+export const size = OG_SIZE;
+export const contentType = 'image/png';
+export const alt = MODULES.scheduling.title;
+
+export default function Image() {
+  const meta = loadModuleData('scheduling');
+  return renderModuleOgImage(meta);
+}

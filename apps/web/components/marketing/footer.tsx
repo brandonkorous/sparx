@@ -17,6 +17,7 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
       { label: 'B2B / Wholesale', href: '/b2b' },
       { label: 'AI / MCP', href: '/ai' },
       { label: 'Dropship', href: '/dropship' },
+      { label: 'Scheduling', href: '/scheduling' },
     ],
   },
   {

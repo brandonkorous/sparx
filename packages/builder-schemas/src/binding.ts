@@ -492,6 +492,23 @@ export const EMAIL_SOURCES: DataSource[] = [
     ],
   },
   {
+    // A waitlist OFFER (docs/79 §7) — sent when a spot opens for a customer waiting
+    // on a service. Carries the service + requested window + how long the offer is
+    // held + the book-now link. No booking exists yet (the offer is a nudge to book).
+    key: 'waitlist',
+    label: 'Waitlist offer',
+    module: 'scheduling',
+    cardinality: 'object',
+    recordType: 'waitlist',
+    fields: [
+      text('service', 'Service'),
+      text('window', 'Requested window'),
+      text('offerExpires', 'Offer expires'),
+      text('bookUrl', 'Book link'),
+      text('manageUrl', 'Manage link'),
+    ],
+  },
+  {
     key: 'commerce.product',
     label: 'Products',
     module: 'commerce',

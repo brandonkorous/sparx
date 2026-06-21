@@ -1,17 +1,6 @@
 'use client';
 
-// New-segment form, surface-aware (§13.1). The SAME component renders:
-//   - `surface="page"`   inside the /new route's Container + PageHeader
-//   - `surface="overlay"` inside the `@detail` drawer/modal chrome
-//
-// The rule editor is a visual AND/OR/NOT tree builder over the SegmentRule
-// shape — see ./rule-builder. previewCount runs against the live rule object
-// so "X of Y match" reads against whatever the user has constructed in the
-// tree. On success the overlay swaps to the new record's detail view (create
-// flows into view); the page pushes to the record.
-
 import * as React from 'react';
-import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Eye } from 'lucide-react';
 
@@ -19,22 +8,44 @@ import {
   Button,
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
-  Heading,
   Input,
   Label,
+  ModuleProvider,
   Stack,
   Text,
+  WizardFrame,
+  WizardStep,
+  type WizardStepDef,
 } from '@sparx/ui';
 
 import { createSegmentAction, previewSegmentCountAction } from '../../segment-actions';
 import { type Rule, RuleBuilder, defaultRule } from './rule-builder';
 
+// New-segment form, on the standard create surface (docs/86 F layout). The SAME
+// component renders in both presentations, picked by the host:
+//   - `surface="page"`    → WizardFrame `embedded` at the /new route (contained sheet)
+//   - `surface="overlay"` → WizardFrame `inline` inside the @detail drawer/modal
+//
+// It's a SINGLE-STEP form, so it's a one-step wizard: the frame supplies the
+// title + window controls + the pinned floor toolbar (ghost Cancel + module
+// primary) and hides the MiniProgress; the fields + rule editor sit in
+// module-tinted Cards. No bespoke card-footer toolbar, no repeated overlay
+// title — that drift is what docs/86 standardizes away.
+//
+// The rule editor is a visual AND/OR/NOT tree builder over the SegmentRule
+// shape — see ./rule-builder. "Preview count" runs against the live rule object
+// so "X of Y match" reads against whatever the user has constructed in the tree
+// — it's an in-card control, NOT part of the floor toolbar. On success the
+// overlay swaps the token to the new record's detail view (create flows into
+// view); the page pushes to the record.
+
 interface SegmentCreateFormProps {
   surface: 'page' | 'overlay';
 }
+
+const STEPS: WizardStepDef[] = [{ key: 'details', label: 'Details' }];
 
 export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
   const router = useRouter();
@@ -42,6 +53,10 @@ export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
   const searchParams = useSearchParams();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
+
+  const [name, setName] = React.useState('');
+  const [slug, setSlug] = React.useState('');
+  const [description, setDescription] = React.useState('');
   const [rule, setRule] = React.useState<Rule>(defaultRule);
   const [preview, setPreview] = React.useState<{
     matches: number;
@@ -49,6 +64,20 @@ export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
     total: number;
   } | null>(null);
   const [previewing, setPreviewing] = React.useState(false);
+
+  // Where "leave the form" goes. In the overlay it clears the detail token so the
+  // drawer/modal closes in place; the page route returns to the list.
+  const cancel = React.useCallback(() => {
+    if (surface === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+    } else {
+      router.push('/crm/segments');
+    }
+  }, [surface, pathname, searchParams, router]);
 
   // After create: in an overlay, transition the token to the new record's
   // detail (preserving drawer vs modal); on a page, navigate to it.
@@ -67,14 +96,6 @@ export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
     router.refresh();
   }
 
-  function closeOverlay() {
-    const next = new URLSearchParams(searchParams ?? '');
-    next.delete('drawer');
-    next.delete('modal');
-    const qs = next.toString();
-    router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
-  }
-
   function runPreview() {
     setError(null);
     setPreviewing(true);
@@ -90,15 +111,16 @@ export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
     });
   }
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  function submit() {
     setError(null);
-    const form = new FormData(e.currentTarget);
+    if (!name.trim() || !slug.trim()) {
+      setError('Name and slug are required.');
+      return;
+    }
     const input = {
-      name: nonEmpty(form.get('name')),
-      slug: nonEmpty(form.get('slug')),
-      description: nonEmpty(form.get('description')),
-      color: nonEmpty(form.get('color')),
+      name: name.trim(),
+      slug: slug.trim(),
+      ...(description.trim() ? { description: description.trim() } : {}),
       rules: rule,
     };
     startTransition(async () => {
@@ -112,116 +134,114 @@ export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
   }
 
   return (
-    <Stack gap={6}>
-      {surface === 'overlay' && (
-        <Stack gap={1}>
-          <Heading level={2}>New segment</Heading>
-          <Text size="sm" variant="muted">
-            Segments are materialized incrementally; this rule is evaluated on every event that
-            could change a customer&apos;s projection (orders, opens, clicks, B2B updates).
-          </Text>
-        </Stack>
-      )}
-
-      <form onSubmit={onSubmit} noValidate>
-        <Stack gap={6}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Details</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Stack gap={4}>
-                <Stack direction="row" gap={4}>
-                  <Stack gap={2} className="flex-1">
-                    <Label htmlFor="name">Name</Label>
-                    <Input id="name" name="name" required placeholder="High-value customers" />
+    <ModuleProvider module="crm" className="h-full">
+      <WizardFrame
+        variant={surface === 'overlay' ? 'inline' : 'embedded'}
+        title="New segment"
+        steps={STEPS}
+        current={0}
+        onCancel={cancel}
+      >
+        <WizardStep
+          header={{
+            title: 'Segment details',
+            supporting:
+              'Segments are materialized incrementally; this rule is evaluated on every event that could change a customer’s projection (orders, opens, clicks, B2B updates).',
+          }}
+          actions={{
+            onNext: submit,
+            nextLabel: 'Create segment',
+            nextLoading: pending,
+            nextDisabled: pending,
+          }}
+        >
+          <Stack gap={6}>
+            <Card variant="module">
+              <CardHeader>
+                <CardTitle>Details</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Stack gap={4}>
+                  <Stack direction="row" gap={4} wrap>
+                    <Stack gap={2} className="flex-1">
+                      <Label htmlFor="seg-name">Name</Label>
+                      <Input
+                        id="seg-name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="High-value customers"
+                      />
+                    </Stack>
+                    <Stack gap={2} className="flex-1">
+                      <Label htmlFor="seg-slug">Slug</Label>
+                      <Input
+                        id="seg-slug"
+                        value={slug}
+                        onChange={(e) => setSlug(e.target.value)}
+                        placeholder="high-value-customers"
+                        pattern="^[a-z][a-z0-9-]*$"
+                      />
+                    </Stack>
                   </Stack>
-                  <Stack gap={2} className="flex-1">
-                    <Label htmlFor="slug">Slug</Label>
+                  <Stack gap={2}>
+                    <Label htmlFor="seg-description">Description</Label>
                     <Input
-                      id="slug"
-                      name="slug"
-                      required
-                      placeholder="high-value-customers"
-                      pattern="^[a-z][a-z0-9-]*$"
+                      id="seg-description"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
                     />
                   </Stack>
                 </Stack>
-                <Stack gap={2}>
-                  <Label htmlFor="description">Description</Label>
-                  <Input id="description" name="description" />
-                </Stack>
-              </Stack>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader>
-              <Stack direction="row" align="center" justify="between">
-                <CardTitle>Rule</CardTitle>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={runPreview}
-                  disabled={pending || previewing}
-                  loading={previewing}
-                  leftIcon={!previewing ? <Eye className="h-3.5 w-3.5" /> : undefined}
-                >
-                  Preview count
-                </Button>
-              </Stack>
-            </CardHeader>
-            <CardContent>
-              <Stack gap={3}>
-                <RuleBuilder value={rule} onChange={setRule} />
-                {preview && (
-                  <Stack
-                    direction="row"
-                    align="center"
-                    gap={2}
-                    className="rounded-md border border-[var(--color-border-default)] bg-[var(--module-active-soft)] p-3"
+            <Card variant="module">
+              <CardHeader>
+                <Stack direction="row" align="center" justify="between">
+                  <CardTitle>Rule</CardTitle>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={runPreview}
+                    disabled={pending || previewing}
+                    loading={previewing}
+                    leftIcon={!previewing ? <Eye className="h-3.5 w-3.5" /> : undefined}
                   >
-                    <Text size="sm">
-                      <span className="font-medium tabular-nums">{preview.matches}</span> of{' '}
-                      <span className="tabular-nums">{preview.sampled}</span> sampled match
-                    </Text>
-                    <Text size="xs" variant="muted">
-                      ({preview.total} customers total)
-                    </Text>
-                  </Stack>
-                )}
-              </Stack>
-            </CardContent>
-            <CardFooter>
-              {surface === 'overlay' ? (
-                <Button type="button" variant="ghost" onClick={closeOverlay}>
-                  Cancel
-                </Button>
-              ) : (
-                <Button type="button" variant="ghost" asChild>
-                  <Link href="/crm/segments">Cancel</Link>
-                </Button>
-              )}
-              <Button type="submit" color="module" disabled={pending} loading={pending}>
-                Create segment
-              </Button>
-            </CardFooter>
-          </Card>
-
+                    Preview count
+                  </Button>
+                </Stack>
+              </CardHeader>
+              <CardContent>
+                <Stack gap={3}>
+                  <RuleBuilder value={rule} onChange={setRule} />
+                  {preview && (
+                    <Stack
+                      direction="row"
+                      align="center"
+                      gap={2}
+                      className="rounded-md border border-[var(--color-border-default)] bg-[var(--module-active-soft)] p-3"
+                    >
+                      <Text size="sm">
+                        <span className="font-medium tabular-nums">{preview.matches}</span> of{' '}
+                        <span className="tabular-nums">{preview.sampled}</span> sampled match
+                      </Text>
+                      <Text size="xs" variant="muted">
+                        ({preview.total} customers total)
+                      </Text>
+                    </Stack>
+                  )}
+                </Stack>
+              </CardContent>
+            </Card>
+          </Stack>
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite">
+            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
               {error}
             </Text>
           )}
-        </Stack>
-      </form>
-    </Stack>
+        </WizardStep>
+      </WizardFrame>
+    </ModuleProvider>
   );
-}
-
-function nonEmpty(value: FormDataEntryValue | null): string | undefined {
-  if (typeof value !== 'string') return undefined;
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : undefined;
 }

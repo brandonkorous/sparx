@@ -61,7 +61,7 @@ const MODULES: ModuleCard[] = [
     label: 'B2B',
     title: 'Accounts, net terms, fleet.',
     description:
-      'Wholesale pricing, RFQ, purchase orders, service scheduling. Built for industrial.',
+      'Account pricing, RFQ, purchase orders, fleet accounts. Wholesale on the same engine as retail.',
     price: '+$99/mo',
   },
   {
@@ -81,6 +81,15 @@ const MODULES: ModuleCard[] = [
     description: 'Catalog sync, margin math, automated order routing. Sell without inventory.',
     price: '+$29/mo',
   },
+  {
+    id: 'scheduling',
+    number: '09',
+    label: 'Scheduling',
+    title: 'Appointments, classes, bookings.',
+    description:
+      'Appointments, classes, reservations, rentals — one engine, with deposits, reminders, and waitlists.',
+    price: '$29/mo',
+  },
 ];
 
 export function ModulesGrid() {
@@ -91,7 +100,7 @@ export function ModulesGrid() {
           accent="var(--sparx-primary)"
           headline={
             <>
-              Eight pieces.{' '}
+              Nine pieces.{' '}
               <span style={{ color: 'var(--color-text-tertiary)' }}>
                 Activate only what you need
               </span>

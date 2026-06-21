@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Stack, Text } from '@sparx/ui';
+import { Button, Stack, Text, useConfirm } from '@sparx/ui';
 
 import { archivePriceListAction, updatePriceListAction } from '../../../pricing-actions';
 
@@ -15,9 +15,9 @@ export function PriceListStatusBar({
   status: string;
 }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
-  const [armed, setArmed] = React.useState(false);
 
   function transition(next: 'active' | 'draft') {
     setError(null);
@@ -31,17 +31,26 @@ export function PriceListStatusBar({
     });
   }
 
-  function archive() {
+  function onArchive() {
     setError(null);
-    startTransition(async () => {
-      const result = await archivePriceListAction(priceListId);
-      if (!result.ok) {
-        setError(result.error.message);
-        setArmed(false);
-        return;
-      }
-      router.push('/commerce/pricing');
-    });
+    void (async () => {
+      const ok = await confirm({
+        title: 'Archive this price list?',
+        description:
+          'Archiving removes the price list from active use. Existing orders are unaffected but the list can no longer be applied to new orders.',
+        confirmLabel: 'Archive',
+        tone: 'warning',
+      });
+      if (!ok) return;
+      startTransition(async () => {
+        const result = await archivePriceListAction(priceListId);
+        if (!result.ok) {
+          setError(result.error.message);
+          return;
+        }
+        router.push('/commerce/pricing');
+      });
+    })();
   }
 
   return (
@@ -61,21 +70,11 @@ export function PriceListStatusBar({
           Move to draft
         </Button>
       )}
-      {status !== 'archived' &&
-        (armed ? (
-          <>
-            <Button variant="ghost" size="sm" onClick={() => setArmed(false)} disabled={pending}>
-              Cancel
-            </Button>
-            <Button color="danger" size="sm" onClick={archive} disabled={pending}>
-              {pending ? 'Archiving…' : 'Confirm archive'}
-            </Button>
-          </>
-        ) : (
-          <Button variant="ghost" size="sm" onClick={() => setArmed(true)}>
-            Archive
-          </Button>
-        ))}
+      {status !== 'archived' && (
+        <Button variant="ghost" size="sm" disabled={pending} onClick={onArchive}>
+          Archive
+        </Button>
+      )}
     </Stack>
   );
 }

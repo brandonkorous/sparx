@@ -14,6 +14,7 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
+  Badge,
   Button,
   Card,
   CardContent,
@@ -27,6 +28,9 @@ import {
   Text,
   WizardFrame,
   WizardStep,
+  WizardSummary,
+  WizardSummaryDivider,
+  WizardSummaryRow,
   type WizardStepDef,
 } from '@sparx/ui';
 import { Plus, Trash2 } from 'lucide-react';
@@ -488,14 +492,46 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
     if (target >= 0 && target <= current) goToStep(key as StepKey);
   };
   const canSelectStep = (_key: string, index: number) => index <= current;
-  const cancelButton = (
-    <button
-      type="button"
-      onClick={close}
-      className="text-[var(--color-text-muted)] underline-offset-2 hover:underline"
+
+  // The live draft summary — the F layout's right-hand column (docs/86). Mirrors
+  // the account identity plus the pricing/credit terms and fleet size as they fill in.
+  const str = (v: unknown) => (typeof v === 'string' ? v.trim() : '');
+  const accountName = str(company.companyName);
+  const statusLabel =
+    { active: 'Active', credit_hold: 'Credit hold', suspended: 'Suspended', inactive: 'Inactive' }[
+      str(company.status)
+    ] ?? 'Active';
+  const tier = str(pricing.pricingTier);
+  const creditLimit = Number(pricing.creditLimit ?? 0) || 0;
+  const discount = Number(pricing.discountPercent ?? 0) || 0;
+  const termsLabel = {
+    prepay: 'Prepay',
+    net15: 'Net 15',
+    net30: 'Net 30',
+    net60: 'Net 60',
+    net90: 'Net 90',
+  }[str(pricing.paymentTerms)];
+  const validEngineCount = engineProfiles.filter((p) => p.make.trim() && p.model.trim()).length;
+  const money0 = (n: number) => `$${n.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+
+  const summary = (
+    <WizardSummary
+      title="Draft summary"
+      footer={
+        <Badge color="module" variant="soft" size="sm">
+          Editable after create
+        </Badge>
+      }
     >
-      Cancel
-    </button>
+      <WizardSummaryRow label="Account" value={accountName || '—'} strong />
+      <WizardSummaryRow label="Status" value={statusLabel} />
+      {tier && <WizardSummaryRow label="Tier" value={tier} />}
+      <WizardSummaryDivider />
+      {creditLimit > 0 && <WizardSummaryRow label="Credit limit" value={money0(creditLimit)} />}
+      {discount > 0 && <WizardSummaryRow label="Discount" value={`${discount}%`} />}
+      {termsLabel && <WizardSummaryRow label="Terms" value={termsLabel} />}
+      <WizardSummaryRow label="Engine profiles" value={String(validEngineCount)} />
+    </WizardSummary>
   );
 
   // One top-stepper frame for both presentations: `embedded` fills the dashboard
@@ -510,7 +546,8 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
       context={RAIL[stepKey].context}
       onStepSelect={onStepSelect}
       canSelectStep={canSelectStep}
-      footer={cancelButton}
+      onCancel={close}
+      summary={summary}
     >
       {body}
     </WizardFrame>

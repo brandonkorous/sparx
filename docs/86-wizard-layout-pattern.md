@@ -42,9 +42,10 @@ This doc owns the **layout**. The **flows** inside it (which steps, which fields
 
 - **Header — the constant identity.** The form's title on the left (e.g. "New quote"); window controls on the right with **Close last** (the corner): maximize → switch drawer/modal → close. In the `inline` (drawer/modal) presentation the **host chrome supplies this header**; the `embedded` full page renders just the title (the breadcrumb owns nav, so no window controls).
 - **MiniProgress (below header) — the progress.** A row of segments filled through the current step, then **"{label} · step _n_ of _N_"**. Display-only and compact; on a multi-step form it orients without competing. (Single-step forms omit it.)
-- **Form column — the variable.** A left-aligned step headline + supporting line, the step body, then the action toolbar. The body **scrolls internally**; header, progress, and toolbar stay put. Content centers on a readable column (`max-w-3xl`).
+- **Form column — the variable.** A left-aligned step headline + supporting line, the step body, then the action toolbar. The body **scrolls internally**; header, progress, and toolbar stay put. Content centers on a readable column (`max-w-3xl`). Fields are grouped in module-tinted **`<Card variant="module">`** cards (the 3px module stripe) — the same on every create surface, so the active module reads at a glance and a cross-module flow shows which card belongs to which module. The stripe is automatic via `<ModuleProvider>`; never bare fields or a plain neutral card.
 - **Summary column — the quiet reference (optional).** A module-tinted right column that runs **full height** beside the form, building live as the user fills (e.g. a quote's party, line count, subtotal, total + a draft badge). It turns the horizontal space into something useful instead of a dead gutter. Omit it for forms without a natural summary — the form then fills the width.
-- **Action toolbar (pinned, under the form column only).** **Cancel** (left) + Back, then the primary advance on the right (`color="module"`); Skip beside the primary when a step is genuinely optional. The summary column runs to the floor beside it.
+- **Action toolbar (pinned, under the form column only).** **Cancel** and **Back** on the left — **both frame-owned ghost `<Button>`s**, so Cancel always matches Back (pass `onCancel`; never hand-roll a cancel `<button>`). The primary advance is on the right (`color="module"`); Skip sits beside the primary when a step is genuinely optional. The summary column runs to the floor beside it.
+- **Single-step forms are the same surface.** A one-screen create form is a **one-step `WizardFrame`**, not a different shell: pass a single `step`, the **MiniProgress auto-hides**, and the toolbar is **Cancel + the primary** (no Back). Title, window controls (↗ □ ✕, Close last), and the pinned floor toolbar all come from the frame — never a `<CardFooter>` toolbar inside the body and never a page-level title repeated under the chrome (the old double-header). Its `/new` page renders the form directly (no `Container`/`PageHeader`).
 
 **Why the F layout:** a centered form in a wide modal/page leaves dead side gutters; a tall frame on a short step leaves a dead vertical void; a dark side-rail competes with the app's own nav. The F layout fixes all three — the form fills its column, the summary earns the rest of the width, and there is one cohesive header and one bottom toolbar.
 
@@ -143,7 +144,7 @@ A single `@sparx/ui` primitive — [`WizardFrame`](../packages/ui/src/components
   title="New quote" // shown by the embedded title strip / self-owned modal
   steps={[{ key, label, sublabel }]}
   current={current}
-  footer={cancelButton} // F layout: seated in the bottom toolbar's left
+  onCancel={close} // F layout: frame renders a ghost Cancel Button in the toolbar
   summary={summaryNode} // F layout: the live right-hand column (optional)
 >
   <WizardStep header={{ title, supporting }} actions={{ onBack, onNext, onSkip }}>
@@ -173,7 +174,7 @@ const summary = (
 ```
 
 - `inline` / `embedded` render the F layout (`embedded` as a contained centered sheet; `inline` filling its host). `modal` renders the numbered top-stepper shell inside a Radix Dialog. `page` renders the immersive rail grid.
-- `WizardStep` adapts to the frame: the F variants give it a **scrolling body + a pinned bottom toolbar** (Cancel seated left, via context) and stack the summary as a card when narrow; the `page` rail gives it a flowing centered column.
+- `WizardStep` adapts to the frame: the F variants give it a **scrolling body + a pinned bottom toolbar** (the frame-owned ghost Cancel Button seated left, via `onCancel` in context) and stack the summary as a card when narrow; the `page` rail gives it a flowing centered column.
 - Module color flows from the surrounding `<ModuleProvider>`; the wrapper carries `h-full` so the frame fills its host.
 - **Who mounts what:** onboarding ([docs/15](15-merchant-onboarding-prd.md)) → `page`. The create-wizards (Product, Quote, Order, …) → `embedded` at `/new`, `inline` in the detail panel (with a `summary` for record-building wizards). The New-site wizard → `modal`.
 

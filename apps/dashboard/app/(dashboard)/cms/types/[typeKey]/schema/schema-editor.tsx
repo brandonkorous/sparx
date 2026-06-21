@@ -3,14 +3,6 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Button,
   Card,
   CardContent,
@@ -25,6 +17,7 @@ import {
   Text,
   Textarea,
   toast,
+  useConfirm,
 } from '@sparx/ui';
 import { Save, Trash2 } from 'lucide-react';
 import { deleteContentType, updateContentType } from '../../actions';
@@ -46,12 +39,12 @@ export function SchemaEditor({
   initial: SchemaEditorInitial;
 }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   const [schemaText, setSchemaText] = React.useState(initial.schemaText);
   const [isSingleton, setIsSingleton] = React.useState(initial.isSingleton);
   const [hint, setHint] = React.useState<string | null>(null);
-  const [confirmDelete, setConfirmDelete] = React.useState(false);
 
   React.useEffect(() => {
     try {
@@ -91,8 +84,19 @@ export function SchemaEditor({
     });
   }
 
-  function executeDelete() {
-    setConfirmDelete(false);
+  async function handleDelete() {
+    const ok = await confirm({
+      title: `Delete the "${typeKey}" content type?`,
+      description: (
+        <>
+          This removes the schema definition. If any entries still use this type the API will reject
+          the deletion — you&apos;ll need to archive those entries first.
+        </>
+      ),
+      confirmLabel: 'Delete type',
+      tone: 'danger',
+    });
+    if (!ok) return;
     setError(null);
     startTransition(async () => {
       const result = await deleteContentType(typeKey);
@@ -218,7 +222,7 @@ export function SchemaEditor({
                 type="button"
                 variant="ghost"
                 leftIcon={<Trash2 className="h-4 w-4" />}
-                onClick={() => setConfirmDelete(true)}
+                onClick={handleDelete}
                 disabled={pending}
               >
                 Delete type
@@ -232,22 +236,6 @@ export function SchemaEditor({
           </CardFooter>
         </Card>
       </Stack>
-
-      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete the &ldquo;{typeKey}&rdquo; content type?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This removes the schema definition. If any entries still use this type the API will
-              reject the deletion — you&apos;ll need to archive those entries first.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={executeDelete}>Delete type</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </form>
   );
 }

@@ -1,38 +1,45 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+
 import {
-  Button,
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
   Checkbox,
-  Heading,
   Input,
   Label,
+  ModuleProvider,
   Stack,
   Text,
+  WizardFrame,
+  WizardStep,
+  type WizardStepDef,
 } from '@sparx/ui';
-import { Plus } from 'lucide-react';
+
 import { createTaxonomy } from './actions';
 
-// New-taxonomy form, surface-aware (§13.1). The SAME component renders:
-//   - `surface="page"`    inside the /new route's Container + PageHeader
-//   - `surface="overlay"` inside the `@detail` drawer/modal chrome
+// New-taxonomy form, on the standard create surface (docs/86 F layout). The SAME
+// component renders in both presentations, picked by the host:
+//   - `surface="page"`    → WizardFrame `embedded` at the /new route (contained sheet)
+//   - `surface="overlay"` → WizardFrame `inline` inside the @detail drawer/modal
 //
-// Only the framing (internal heading, Cancel target) and the post-create
-// transition differ by surface; the fields are identical. `createTaxonomy`
-// returns no id, but the submitted `key` IS the stable identifier and the
-// detail view is keyed by it — so on success the overlay swaps to
-// `taxonomy:<key>` (create flows into view) and the page pushes to the record.
+// It's a SINGLE-STEP form, so it's a one-step wizard: the frame supplies the
+// title + window controls + the pinned floor toolbar (ghost Cancel + module
+// primary) and hides the MiniProgress; the fields sit in a module-tinted Card.
+// No bespoke card-footer toolbar, no repeated page title — that drift is what
+// docs/86 standardizes away.
+//
+// `createTaxonomy` returns no id, but the submitted `key` IS the stable
+// identifier and the detail view is keyed by it — so on success the overlay
+// swaps to `taxonomy:<key>` (create flows into view) and the page pushes to the
+// new record.
 
 interface TaxonomyCreateFormProps {
   surface: 'page' | 'overlay';
 }
+
+const STEPS: WizardStepDef[] = [{ key: 'basics', label: 'Basics' }];
 
 export function TaxonomyCreateForm({ surface }: TaxonomyCreateFormProps) {
   const router = useRouter();
@@ -40,141 +47,146 @@ export function TaxonomyCreateForm({ surface }: TaxonomyCreateFormProps) {
   const searchParams = useSearchParams();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
+
+  const [key, setKey] = React.useState('');
+  const [name, setName] = React.useState('');
+  const [pluralName, setPluralName] = React.useState('');
   const [hierarchical, setHierarchical] = React.useState(false);
 
-  // After create: in an overlay, transition the token to the new record's
-  // detail (preserving drawer vs modal); on a page, navigate to it.
-  function onCreated(key: string) {
+  // Where "leave the form" goes. In the overlay it clears the detail token so the
+  // drawer/modal closes in place; the page route returns to the list.
+  const cancel = React.useCallback(() => {
+    if (surface === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+    } else {
+      router.push('/cms/taxonomy');
+    }
+  }, [surface, pathname, searchParams, router]);
+
+  // After create: in an overlay, transition the token to the new record's detail
+  // (preserving drawer vs modal); on a page, navigate to it.
+  function onCreated(createdKey: string) {
     if (surface === 'overlay') {
       const next = new URLSearchParams(searchParams ?? '');
       const mode = next.has('modal') ? 'modal' : 'drawer';
       next.delete('drawer');
       next.delete('modal');
-      next.set(mode, `taxonomy:${key}`);
+      next.set(mode, `taxonomy:${createdKey}`);
       router.replace(`${pathname ?? '/'}?${next.toString()}`);
       router.refresh();
       return;
     }
-    router.push(`/cms/taxonomy/${encodeURIComponent(key)}`);
+    router.push(`/cms/taxonomy/${encodeURIComponent(createdKey)}`);
     router.refresh();
   }
 
-  function closeOverlay() {
-    const next = new URLSearchParams(searchParams ?? '');
-    next.delete('drawer');
-    next.delete('modal');
-    const qs = next.toString();
-    router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
-  }
-
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  function submit() {
     setError(null);
-    const form = e.currentTarget;
-    // <Checkbox> writes to React state, not native FormData. Inject the value
-    // before the server action reads it.
-    const data = new FormData(form);
+    const trimmedKey = key.trim();
+    const trimmedName = name.trim();
+    const trimmedPlural = pluralName.trim();
+    if (!trimmedKey || !trimmedName || !trimmedPlural) {
+      setError('Key, name, and plural are required.');
+      return;
+    }
+    // <Checkbox> writes to React state, not native FormData. Build the payload
+    // explicitly with the same keys the server action reads.
+    const data = new FormData();
+    data.set('key', trimmedKey);
+    data.set('name', trimmedName);
+    data.set('plural_name', trimmedPlural);
     if (hierarchical) data.set('hierarchical', 'on');
-    else data.delete('hierarchical');
-    // `createTaxonomy` returns no id; capture the submitted key up front so we
-    // can flow into the new record's detail view on success.
-    const keyValue = data.get('key');
-    const key = typeof keyValue === 'string' ? keyValue : '';
     startTransition(async () => {
       const result = await createTaxonomy(data);
       if (!result.ok) {
         setError(result.error ?? 'Could not create taxonomy.');
         return;
       }
-      onCreated(key);
+      onCreated(trimmedKey);
     });
   }
 
   return (
-    <Stack gap={6}>
-      {surface === 'overlay' && (
-        <Stack gap={1}>
-          <Heading level={2}>New taxonomy</Heading>
-          <Text size="sm" variant="muted">
-            The <code>key</code> is the stable identifier the API uses (e.g.{' '}
-            <code>blog_category</code>).
-          </Text>
-        </Stack>
-      )}
-
-      <form onSubmit={onSubmit}>
-        <Card>
-          <CardHeader>
-            <Heading level={3}>Basics</Heading>
-            <CardDescription>Key, name, plural, and nesting.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={4}>
-              <Stack direction="row" gap={3}>
-                <Stack gap={1} className="flex-1">
-                  <Label htmlFor="key" required>
-                    Key
-                  </Label>
-                  <Input id="key" name="key" placeholder="blog_category" required aria-required />
+    <ModuleProvider module="cms" className="h-full">
+      <WizardFrame
+        variant={surface === 'overlay' ? 'inline' : 'embedded'}
+        title="New taxonomy"
+        steps={STEPS}
+        current={0}
+        onCancel={cancel}
+      >
+        <WizardStep
+          header={{
+            title: 'Taxonomy basics',
+            supporting: 'The key is the stable identifier the API uses (e.g. blog_category).',
+          }}
+          actions={{
+            onNext: submit,
+            nextLabel: 'Add taxonomy',
+            nextLoading: pending,
+            nextDisabled: pending,
+          }}
+        >
+          <Card variant="module">
+            <CardContent className="py-6">
+              <Stack gap={4}>
+                <Stack direction="row" gap={3} wrap>
+                  <Stack gap={2} className="flex-1">
+                    <Label htmlFor="tax-key" required>
+                      Key
+                    </Label>
+                    <Input
+                      id="tax-key"
+                      value={key}
+                      onChange={(e) => setKey(e.target.value)}
+                      placeholder="blog_category"
+                    />
+                  </Stack>
+                  <Stack gap={2} className="flex-1">
+                    <Label htmlFor="tax-name" required>
+                      Name
+                    </Label>
+                    <Input
+                      id="tax-name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Category"
+                    />
+                  </Stack>
+                  <Stack gap={2} className="flex-1">
+                    <Label htmlFor="tax-plural" required>
+                      Plural
+                    </Label>
+                    <Input
+                      id="tax-plural"
+                      value={pluralName}
+                      onChange={(e) => setPluralName(e.target.value)}
+                      placeholder="Categories"
+                    />
+                  </Stack>
                 </Stack>
-                <Stack gap={1} className="flex-1">
-                  <Label htmlFor="name" required>
-                    Name
-                  </Label>
-                  <Input id="name" name="name" placeholder="Category" required aria-required />
-                </Stack>
-                <Stack gap={1} className="flex-1">
-                  <Label htmlFor="plural_name" required>
-                    Plural
-                  </Label>
-                  <Input
-                    id="plural_name"
-                    name="plural_name"
-                    placeholder="Categories"
-                    required
-                    aria-required
+                <Stack direction="row" align="center" gap={2}>
+                  <Checkbox
+                    id="tax-hierarchical"
+                    checked={hierarchical}
+                    onCheckedChange={(next) => setHierarchical(next === true)}
                   />
+                  <Label htmlFor="tax-hierarchical">Allow parent / child term nesting</Label>
                 </Stack>
               </Stack>
-              <Stack direction="row" align="center" gap={2}>
-                <Checkbox
-                  id="hierarchical"
-                  checked={hierarchical}
-                  onCheckedChange={(next) => setHierarchical(next === true)}
-                />
-                <Label htmlFor="hierarchical">Allow parent / child term nesting</Label>
-              </Stack>
-            </Stack>
-          </CardContent>
-          {error && (
-            <CardContent>
-              <Text size="sm" variant="danger" role="alert" aria-live="polite">
-                {error}
-              </Text>
             </CardContent>
+          </Card>
+          {error && (
+            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+              {error}
+            </Text>
           )}
-          <CardFooter>
-            {surface === 'overlay' ? (
-              <Button type="button" variant="ghost" onClick={closeOverlay}>
-                Cancel
-              </Button>
-            ) : (
-              <Button type="button" variant="ghost" asChild>
-                <Link href="/cms/taxonomy">Cancel</Link>
-              </Button>
-            )}
-            <Button
-              type="submit"
-              color="module"
-              leftIcon={<Plus className="h-4 w-4" />}
-              disabled={pending}
-              loading={pending}
-            >
-              Add taxonomy
-            </Button>
-          </CardFooter>
-        </Card>
-      </form>
-    </Stack>
+        </WizardStep>
+      </WizardFrame>
+    </ModuleProvider>
   );
 }

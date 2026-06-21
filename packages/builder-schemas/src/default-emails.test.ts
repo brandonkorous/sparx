@@ -12,10 +12,10 @@ function* walk(node: BuilderNode): Generator<BuilderNode> {
 const types = (root: BuilderNode): string[] => [...walk(root)].map((nd) => nd.type);
 
 describe('DEFAULT_EMAIL_TEMPLATES', () => {
-  it('ships exactly the 22 documented templates with unique keys', () => {
+  it('ships exactly the 23 documented templates with unique keys', () => {
     const keys = DEFAULT_EMAIL_TEMPLATES.map((t) => t.key);
-    expect(keys).toHaveLength(22);
-    expect(new Set(keys).size).toBe(22);
+    expect(keys).toHaveLength(23);
+    expect(new Set(keys).size).toBe(23);
     expect(keys).toEqual(
       expect.arrayContaining([
         'welcome-customer',
@@ -42,6 +42,7 @@ describe('DEFAULT_EMAIL_TEMPLATES', () => {
         'booking-reminder',
         'booking-rescheduled',
         'booking-cancelled',
+        'waitlist-offer',
       ])
     );
   });

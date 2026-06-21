@@ -115,7 +115,7 @@ export function ModalDetailContent({ target, onClose, children }: ModalDetailPro
       : 'w-[min(720px,94vw)] max-w-[min(720px,94vw)]';
   return (
     <Modal open onOpenChange={(open) => !open && onClose()}>
-      <ModalContent className={`max-h-[88vh] overflow-hidden p-0 ${widthClass}`}>
+      <ModalContent hideClose className={`max-h-[88vh] overflow-hidden p-0 ${widthClass}`}>
         <ModalTitle className="sr-only">{describeTarget(target)}</ModalTitle>
         <ModalDescription className="sr-only">
           Detail view for {describeTarget(target)}

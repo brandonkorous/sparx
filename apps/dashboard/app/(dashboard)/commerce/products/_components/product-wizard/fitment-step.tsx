@@ -14,7 +14,18 @@
 
 import * as React from 'react';
 import { Plus, Trash } from 'lucide-react';
-import { Badge, Button, Input, Label, NativeSelect, Spinner, Text, WizardStep } from '@sparx/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  Input,
+  Label,
+  NativeSelect,
+  Spinner,
+  Text,
+  WizardStep,
+} from '@sparx/ui';
 
 import {
   listFitmentCategoriesAction,
@@ -214,170 +225,174 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
         nextDisabled: saving,
       }}
     >
-      {loading ? (
-        <div className="flex items-center gap-2 py-8 text-[var(--color-text-muted)]">
-          <Spinner className="h-4 w-4" /> Loading fitment…
-        </div>
-      ) : (
-        <div className="flex flex-col gap-5">
-          {/* Existing entries */}
-          {rows.length > 0 && (
-            <div className="flex flex-col gap-2">
-              {rows.map((r) => (
-                <div
-                  key={r.id}
-                  className="flex items-center justify-between gap-3 rounded-lg border border-[var(--color-border-default)] px-3 py-2"
-                >
-                  <span className="flex items-center gap-2 text-sm">
-                    <Badge variant="soft" size="sm">
-                      {r.domainSlug}
-                    </Badge>
-                    {rowLabel(r)}
-                  </span>
+      <Card variant="module">
+        <CardContent className="py-6">
+          {loading ? (
+            <div className="flex items-center gap-2 py-8 text-[var(--color-text-muted)]">
+              <Spinner className="h-4 w-4" /> Loading fitment…
+            </div>
+          ) : (
+            <div className="flex flex-col gap-5">
+              {/* Existing entries */}
+              {rows.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  {rows.map((r) => (
+                    <div
+                      key={r.id}
+                      className="flex items-center justify-between gap-3 rounded-lg border border-[var(--color-border-default)] px-3 py-2"
+                    >
+                      <span className="flex items-center gap-2 text-sm">
+                        <Badge variant="soft" size="sm">
+                          {r.domainSlug}
+                        </Badge>
+                        {rowLabel(r)}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => void removeRow(r.id)}
+                        disabled={saving}
+                        aria-label={`Remove ${rowLabel(r)}`}
+                      >
+                        <Trash className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Add a new entry — the cascade */}
+              <div className="flex flex-col gap-3 rounded-xl border border-[var(--color-border-default)] p-4">
+                <Text size="sm" weight="medium">
+                  Add a fit
+                </Text>
+
+                {domains.length > 1 && (
+                  <div>
+                    <Label htmlFor="ft-domain">Kind</Label>
+                    <NativeSelect
+                      id="ft-domain"
+                      value={domainId}
+                      onChange={(e) => setDomainId(e.target.value)}
+                    >
+                      {domains.map((d) => (
+                        <option key={d.id} value={d.id}>
+                          {d.displayName}
+                        </option>
+                      ))}
+                    </NativeSelect>
+                  </div>
+                )}
+
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <div>
+                    <Label htmlFor="ft-cat">{domain?.labels.l1 ?? 'Category'}</Label>
+                    <NativeSelect
+                      id="ft-cat"
+                      value={categoryId}
+                      onChange={(e) => setCategoryId(e.target.value)}
+                    >
+                      <option value="">Select…</option>
+                      {categories.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </NativeSelect>
+                  </div>
+
+                  {domain?.labels.l2 && (
+                    <div>
+                      <Label htmlFor="ft-item">{domain.labels.l2}</Label>
+                      <NativeSelect
+                        id="ft-item"
+                        value={itemId}
+                        onChange={(e) => setItemId(e.target.value)}
+                        disabled={!categoryId || items.length === 0}
+                      >
+                        <option value="">Any</option>
+                        {items.map((it) => (
+                          <option key={it.id} value={it.id}>
+                            {it.name}
+                          </option>
+                        ))}
+                      </NativeSelect>
+                    </div>
+                  )}
+
+                  {domain?.labels.l3 && (
+                    <div>
+                      <Label htmlFor="ft-variant">{domain.labels.l3}</Label>
+                      <NativeSelect
+                        id="ft-variant"
+                        value={variantId}
+                        onChange={(e) => setVariantId(e.target.value)}
+                        disabled={!itemId || variants.length === 0}
+                      >
+                        <option value="">Any</option>
+                        {variants.map((v) => (
+                          <option key={v.id} value={v.id}>
+                            {v.name}
+                          </option>
+                        ))}
+                      </NativeSelect>
+                    </div>
+                  )}
+                </div>
+
+                {(domain?.rangeUnit != null || domain?.labels.range != null) && (
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <Label htmlFor="ft-min">
+                        {domain.labels.range ?? 'Range'} from
+                        {domain.rangeUnit ? ` (${domain.rangeUnit})` : ''}
+                      </Label>
+                      <Input
+                        id="ft-min"
+                        inputMode="numeric"
+                        value={rangeMin}
+                        onChange={(e) => setRangeMin(e.target.value)}
+                        placeholder="2011"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="ft-max">{domain.labels.range ?? 'Range'} to</Label>
+                      <Input
+                        id="ft-max"
+                        inputMode="numeric"
+                        value={rangeMax}
+                        onChange={(e) => setRangeMax(e.target.value)}
+                        placeholder="2016"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex justify-end">
                   <Button
                     type="button"
-                    variant="ghost"
+                    color="module"
                     size="sm"
-                    onClick={() => void removeRow(r.id)}
-                    disabled={saving}
-                    aria-label={`Remove ${rowLabel(r)}`}
+                    onClick={() => void addRow()}
+                    disabled={saving || !categoryId}
+                    loading={saving}
+                    leftIcon={<Plus className="h-3.5 w-3.5" />}
                   >
-                    <Trash className="h-3.5 w-3.5" />
+                    Add fit
                   </Button>
                 </div>
-              ))}
-            </div>
-          )}
-
-          {/* Add a new entry — the cascade */}
-          <div className="flex flex-col gap-3 rounded-xl border border-[var(--color-border-default)] p-4">
-            <Text size="sm" weight="medium">
-              Add a fit
-            </Text>
-
-            {domains.length > 1 && (
-              <div>
-                <Label htmlFor="ft-domain">Kind</Label>
-                <NativeSelect
-                  id="ft-domain"
-                  value={domainId}
-                  onChange={(e) => setDomainId(e.target.value)}
-                >
-                  {domains.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.displayName}
-                    </option>
-                  ))}
-                </NativeSelect>
-              </div>
-            )}
-
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div>
-                <Label htmlFor="ft-cat">{domain?.labels.l1 ?? 'Category'}</Label>
-                <NativeSelect
-                  id="ft-cat"
-                  value={categoryId}
-                  onChange={(e) => setCategoryId(e.target.value)}
-                >
-                  <option value="">Select…</option>
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </NativeSelect>
               </div>
 
-              {domain?.labels.l2 && (
-                <div>
-                  <Label htmlFor="ft-item">{domain.labels.l2}</Label>
-                  <NativeSelect
-                    id="ft-item"
-                    value={itemId}
-                    onChange={(e) => setItemId(e.target.value)}
-                    disabled={!categoryId || items.length === 0}
-                  >
-                    <option value="">Any</option>
-                    {items.map((it) => (
-                      <option key={it.id} value={it.id}>
-                        {it.name}
-                      </option>
-                    ))}
-                  </NativeSelect>
-                </div>
-              )}
-
-              {domain?.labels.l3 && (
-                <div>
-                  <Label htmlFor="ft-variant">{domain.labels.l3}</Label>
-                  <NativeSelect
-                    id="ft-variant"
-                    value={variantId}
-                    onChange={(e) => setVariantId(e.target.value)}
-                    disabled={!itemId || variants.length === 0}
-                  >
-                    <option value="">Any</option>
-                    {variants.map((v) => (
-                      <option key={v.id} value={v.id}>
-                        {v.name}
-                      </option>
-                    ))}
-                  </NativeSelect>
-                </div>
+              {error && (
+                <Text size="sm" variant="danger" role="alert">
+                  {error}
+                </Text>
               )}
             </div>
-
-            {(domain?.rangeUnit != null || domain?.labels.range != null) && (
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <Label htmlFor="ft-min">
-                    {domain.labels.range ?? 'Range'} from
-                    {domain.rangeUnit ? ` (${domain.rangeUnit})` : ''}
-                  </Label>
-                  <Input
-                    id="ft-min"
-                    inputMode="numeric"
-                    value={rangeMin}
-                    onChange={(e) => setRangeMin(e.target.value)}
-                    placeholder="2011"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="ft-max">{domain.labels.range ?? 'Range'} to</Label>
-                  <Input
-                    id="ft-max"
-                    inputMode="numeric"
-                    value={rangeMax}
-                    onChange={(e) => setRangeMax(e.target.value)}
-                    placeholder="2016"
-                  />
-                </div>
-              </div>
-            )}
-
-            <div className="flex justify-end">
-              <Button
-                type="button"
-                color="module"
-                size="sm"
-                onClick={() => void addRow()}
-                disabled={saving || !categoryId}
-                loading={saving}
-                leftIcon={<Plus className="h-3.5 w-3.5" />}
-              >
-                Add fit
-              </Button>
-            </div>
-          </div>
-
-          {error && (
-            <Text size="sm" variant="danger" role="alert">
-              {error}
-            </Text>
           )}
-        </div>
-      )}
+        </CardContent>
+      </Card>
     </WizardStep>
   );
 }

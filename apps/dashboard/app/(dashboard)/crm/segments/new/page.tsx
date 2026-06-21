@@ -1,23 +1,15 @@
-import { Container, PageHeader, Stack } from '@sparx/ui';
-
 import { SegmentCreateForm } from '../_components/segment-create-form';
 
-// Full-page surface for creating a segment. The form body lives in the
-// surface-aware `SegmentCreateForm` (§13.1) so the SAME component renders
-// here (`surface="page"`) and inside the `@detail` drawer/modal overlay
+// Full-page surface for creating a segment. The surface-aware `SegmentCreateForm`
+// (docs/86 F layout) renders the SAME WizardFrame here (`surface="page"` → the
+// `embedded` contained sheet, filling the dashboard content area with its own
+// title + pinned toolbar) and inside the `@detail` drawer/modal overlay
 // (`surface="overlay"`). This route is what `fullPage` / `newTab` detail-view
-// preferences, deep links, and the overlay's "maximize" button resolve to.
+// preferences, deep links, and the overlay's "maximize" button resolve to — no
+// page-level Container/PageHeader, so the title isn't rendered twice.
+
+export const dynamic = 'force-dynamic';
 
 export default function NewSegmentPage() {
-  return (
-    <Container size="lg">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          title="New segment"
-          description="Segments are materialized incrementally; this rule is evaluated on every event that could change a customer's projection (orders, opens, clicks, B2B updates)."
-        />
-        <SegmentCreateForm surface="page" />
-      </Stack>
-    </Container>
-  );
+  return <SegmentCreateForm surface="page" />;
 }

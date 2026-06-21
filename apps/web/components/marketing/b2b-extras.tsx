@@ -3,8 +3,10 @@ import { Dot, getModuleColor, type MarketingModule, Section, SectionHeader } fro
 /**
  * Two more structural devices for the /b2b page, split out of b2b-devices.tsx:
  *
- *  - B2bFleet ........ fleet & service scheduling — an industry-NEUTRAL
- *    capability (one of several; never the page's anchor).
+ *  - B2bFleet ........ fleet management + the Scheduling-module bridge for
+ *    service booking — industry-NEUTRAL, one of several (never the anchor).
+ *    Booking itself is the standalone Scheduling module ($29/mo), not bundled
+ *    into B2B; this section frames the pairing, not an included feature.
  *  - B2bSameEngine ... the "D2C + B2B on one engine" beat — a retail column
  *    (commerce orange) beside a wholesale column (b2b slate), over one shared
  *    catalog / checkout / record.
@@ -26,19 +28,19 @@ export function B2bFleet() {
     },
     {
       title: 'Bookable service',
-      body: 'Define service types with durations and daily capacity; customers book appointments from the portal, tied to the account, with confirmations and reminders via sparx Email.',
+      body: 'Add the Scheduling module and a fleet account books service from the same portal — service types, durations, and capacity, tied to the account, with confirmations and reminders. Booking is its own $29/mo module; B2B brings the account and fleet context.',
     },
     {
       title: 'History per unit',
-      body: 'Service history records against the vehicle in the fleet profile, and parts from an order link to the appointment — the full picture for the next visit.',
+      body: 'Service history records against the vehicle in the fleet profile, and parts from an order link to the service record — the full picture for the next visit.',
     },
   ];
   return (
     <Section surface="surface" padding="lg">
       <SectionHeader
         accent={M.color}
-        headline="Fleet and service, when the account needs it"
-        lede="For accounts that run equipment or vehicles, sparx stores a fleet profile and books service against it. It’s one capability of the module — a salon-products or office-coffee distributor never touches it, while a parts-and-service supplier leans on it daily."
+        headline="Fleet management, and service when the account needs it"
+        lede="For accounts that run equipment or vehicles, sparx stores a fleet profile — and, paired with the Scheduling module, books service against it. Fleet is one capability of B2B; a salon-products or office-coffee distributor never touches it, while a parts-and-service supplier leans on it daily."
       />
       <div className="mkt-grid-3-2-1" style={{ marginTop: '52px' }}>
         {points.map((p) => (

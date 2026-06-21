@@ -69,6 +69,7 @@ Builder is the website itself. Commerce (selling), CMS (blog and content), Email
 | AI / MCP        | +$49/mo | Any active module     |
 | Dropship        | +$29/mo | Commerce              |
 | Chat            | +$19/mo | Any active module     |
+| Scheduling      | +$29/mo | Standalone            |
 
 ---
 
@@ -88,6 +89,7 @@ B2B · Fleet           + $99    [○──]
 AI · MCP              + $49    [○──]
 Dropship              + $29    [○──]
 Chat                  + $19    [○──]
+Scheduling            + $29    [○──]
 
                               ┌──────────────────┐
                               │ Your plan  2 on  │

@@ -11,11 +11,9 @@ import {
   DropdownMenuTrigger,
   Modal,
   ModalContent,
-  ModalDescription,
-  ModalFooter,
   ModalHeader,
   ModalTitle,
-  Text,
+  useConfirm,
 } from '@sparx/ui';
 import { updateServiceType, deleteServiceType } from '../_lib/actions';
 import { ServiceTypeForm } from './service-type-form';
@@ -37,11 +35,10 @@ interface Props {
 
 export function ServiceTypeActions({ type }: Props) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [isPending, startTransition] = useTransition();
   const [editOpen, setEditOpen] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   function refresh() {
     startTransition(() => router.refresh());
@@ -49,31 +46,34 @@ export function ServiceTypeActions({ type }: Props) {
 
   async function toggleActive() {
     setSubmitting(true);
-    setError(null);
     try {
       const { error: err } = await updateServiceType(type.id, { isActive: !type.isActive });
       if (err) throw new Error(err);
       refresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Update failed');
     } finally {
       setSubmitting(false);
     }
   }
 
-  async function handleDelete() {
-    setSubmitting(true);
-    setError(null);
-    try {
-      const { error: err } = await deleteServiceType(type.id);
-      if (err) throw new Error(err);
-      setDeleteOpen(false);
-      refresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Delete failed');
-    } finally {
-      setSubmitting(false);
-    }
+  function onDelete() {
+    void (async () => {
+      const ok = await confirm({
+        title: `Delete "${type.name}"?`,
+        description:
+          'This will remove the service type. Existing appointments using this type will not be affected, but new bookings will no longer be possible.',
+        confirmLabel: 'Delete',
+        tone: 'danger',
+      });
+      if (!ok) return;
+      setSubmitting(true);
+      try {
+        const { error: err } = await deleteServiceType(type.id);
+        if (err) throw new Error(err);
+        refresh();
+      } finally {
+        setSubmitting(false);
+      }
+    })();
   }
 
   return (
@@ -93,17 +93,14 @@ export function ServiceTypeActions({ type }: Props) {
             <Power className="mr-2 h-4 w-4" />
             {type.isActive ? 'Deactivate' : 'Activate'}
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onSelect={() => setDeleteOpen(true)}
-            className="text-[var(--color-danger)]"
-          >
+          <DropdownMenuItem onSelect={() => onDelete()} className="text-[var(--color-danger)]">
             <Trash2 className="mr-2 h-4 w-4" />
             Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Edit modal */}
+      {/* Edit modal — Wave-3 item, left as-is */}
       <Modal open={editOpen} onOpenChange={setEditOpen}>
         <ModalContent>
           <ModalHeader>
@@ -119,36 +116,6 @@ export function ServiceTypeActions({ type }: Props) {
               onCancel={() => setEditOpen(false)}
             />
           </div>
-        </ModalContent>
-      </Modal>
-
-      {/* Delete confirm modal */}
-      <Modal open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <ModalContent>
-          <ModalHeader>
-            <ModalTitle>Delete &ldquo;{type.name}&rdquo;?</ModalTitle>
-            <ModalDescription>
-              This will remove the service type. Existing appointments using this type will not be
-              affected, but new bookings will no longer be possible.
-            </ModalDescription>
-          </ModalHeader>
-
-          {error && (
-            <div className="px-6 pb-2">
-              <Text size="sm" className="text-[var(--color-danger)]">
-                {error}
-              </Text>
-            </div>
-          )}
-
-          <ModalFooter>
-            <Button variant="ghost" disabled={submitting} onClick={() => setDeleteOpen(false)}>
-              Keep
-            </Button>
-            <Button color="danger" disabled={submitting} onClick={() => void handleDelete()}>
-              {submitting ? 'Deleting…' : 'Delete'}
-            </Button>
-          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

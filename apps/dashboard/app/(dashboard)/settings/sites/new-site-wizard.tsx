@@ -520,13 +520,9 @@ export function NewSiteWizard({
               <Spinner className="h-3.5 w-3.5" /> Creating…
             </span>
           ) : (
-            <button
-              type="button"
-              onClick={onCancelClick}
-              className="text-[var(--color-text-muted)] underline-offset-2 hover:underline"
-            >
+            <Button variant="ghost" color="neutral" size="sm" onClick={onCancelClick}>
               {done ? 'Close' : 'Cancel'}
-            </button>
+            </Button>
           )
         }
       >

@@ -1,28 +1,17 @@
-import { Container, PageHeader, Stack } from '@sparx/ui';
-
 import { CategoryCreateForm } from '../_components/category-create-form';
 import { loadCategoryParents } from '../_components/category-parent-options';
 
-// Full-page surface for creating a category. The form body lives in the
-// surface-aware `CategoryCreateForm` (§13.1) so the SAME component renders here
-// (`surface="page"`) and inside the `@detail` drawer/modal overlay
+// Full-page surface for creating a category. The surface-aware `CategoryCreateForm`
+// (docs/86 F layout) renders the SAME WizardFrame here (`surface="page"` → the
+// `embedded` contained sheet, filling the dashboard content area with its own
+// title + pinned toolbar) and inside the `@detail` drawer/modal overlay
 // (`surface="overlay"`). This route is what `fullPage` / `newTab` detail-view
-// preferences, deep links, and the overlay's "maximize" button resolve to.
+// preferences, deep links, and the overlay's "maximize" button resolve to — no
+// page-level Container/PageHeader, so the title isn't rendered twice.
 
 export const dynamic = 'force-dynamic';
 
 export default async function NewCategoryPage() {
   const parents = await loadCategoryParents();
-
-  return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          title="New category"
-          description="Categories are the organizational tree shoppers browse. Pick a parent to nest, or leave it top-level — position and reparenting can be changed later from the tree."
-        />
-        <CategoryCreateForm surface="page" parents={parents} />
-      </Stack>
-    </Container>
-  );
+  return <CategoryCreateForm surface="page" parents={parents} />;
 }

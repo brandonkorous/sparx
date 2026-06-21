@@ -5,13 +5,6 @@ import { useRouter } from 'next/navigation';
 import { Cpu, Copy, Check } from 'lucide-react';
 
 import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Badge,
   Button,
   Card,
@@ -26,6 +19,7 @@ import {
   ModalTitle,
   Stack,
   Text,
+  useConfirm,
 } from '@sparx/ui';
 
 import { enrollAgentAction, revokeAgentAction } from '../../_lib/agent-actions';
@@ -43,10 +37,10 @@ interface IssuedKey {
 
 export function AgentPanel({ sourceId, health }: { sourceId: string; health: SyncHealth }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   const [issued, setIssued] = React.useState<IssuedKey | null>(null);
-  const [unpairOpen, setUnpairOpen] = React.useState(false);
 
   function pair() {
     setError(null);
@@ -61,17 +55,26 @@ export function AgentPanel({ sourceId, health }: { sourceId: string; health: Syn
     });
   }
 
-  function unpair() {
-    setError(null);
-    startTransition(async () => {
-      const result = await revokeAgentAction(sourceId);
-      if (result.error) {
-        setError(result.error);
-        return;
-      }
-      setUnpairOpen(false);
-      router.refresh();
-    });
+  function onUnpair() {
+    void (async () => {
+      const ok = await confirm({
+        title: 'Unpair the bridge agent?',
+        description:
+          "This revokes the agent's key — it will stop syncing immediately. Existing stock levels and mappings are kept. You can pair a new agent at any time.",
+        confirmLabel: 'Unpair',
+        tone: 'danger',
+      });
+      if (!ok) return;
+      setError(null);
+      startTransition(async () => {
+        const result = await revokeAgentAction(sourceId);
+        if (result.error) {
+          setError(result.error);
+          return;
+        }
+        router.refresh();
+      });
+    })();
   }
 
   return (
@@ -117,7 +120,7 @@ export function AgentPanel({ sourceId, health }: { sourceId: string; health: Syn
                 <Button color="module" variant="soft" onClick={pair} disabled={pending}>
                   {pending ? 'Working…' : 'Rotate key'}
                 </Button>
-                <Button color="danger" variant="ghost" onClick={() => setUnpairOpen(true)}>
+                <Button color="danger" variant="ghost" onClick={onUnpair} disabled={pending}>
                   Unpair
                 </Button>
               </Stack>
@@ -143,30 +146,6 @@ export function AgentPanel({ sourceId, health }: { sourceId: string; health: Syn
       </CardContent>
 
       <KeyModal sourceId={sourceId} issued={issued} onClose={() => setIssued(null)} />
-
-      <AlertDialog
-        open={unpairOpen}
-        onOpenChange={(open) => {
-          if (!open) setError(null);
-          setUnpairOpen(open);
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unpair the bridge agent?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This revokes the agent&apos;s key — it will stop syncing immediately. Existing stock
-              levels and mappings are kept. You can pair a new agent at any time.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
-            <Button color="danger" disabled={pending} onClick={unpair}>
-              {pending ? 'Unpairing…' : 'Unpair'}
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </Card>
   );
 }

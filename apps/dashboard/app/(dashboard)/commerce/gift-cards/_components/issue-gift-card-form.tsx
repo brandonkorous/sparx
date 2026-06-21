@@ -1,25 +1,41 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Button, Heading, Input, Label, Stack, Text } from '@sparx/ui';
+import {
+  Card,
+  CardContent,
+  Input,
+  Label,
+  ModuleProvider,
+  Stack,
+  Text,
+  WizardFrame,
+  WizardStep,
+  type WizardStepDef,
+} from '@sparx/ui';
 
 import { issueGiftCardAction } from '../../discount-actions';
 
-// Issue-gift-card form, surface-aware (§13.1). The SAME component renders:
-//   - `surface="page"`    inside the /new route's Container + PageHeader
-//   - `surface="overlay"` inside the `@detail` drawer/modal chrome
+// Issue-gift-card form, on the standard create surface (docs/86 F layout). The
+// SAME component renders in both presentations, picked by the host:
+//   - `surface="page"`    → WizardFrame `embedded` at the /new route (contained sheet)
+//   - `surface="overlay"` → WizardFrame `inline` inside the @detail drawer/modal
+//
+// It's a SINGLE-STEP form, so it's a one-step wizard: the frame supplies the
+// title + window controls + the pinned floor toolbar (ghost Cancel + module
+// primary) and hides the MiniProgress; the fields sit in a module-tinted Card.
 //
 // Gift cards have NO detail view, so create does NOT flow into a record: on
 // success we keep the overlay/page open, surface the issued code inline, reset
-// the form, and refresh the list behind. Only the framing (internal heading,
-// secondary button target) differs by surface; the fields are identical.
+// the fields to their defaults, and refresh the list behind.
 
 interface IssueGiftCardFormProps {
   surface: 'page' | 'overlay';
 }
+
+const STEPS: WizardStepDef[] = [{ key: 'details', label: 'Details' }];
 
 export function IssueGiftCardForm({ surface }: IssueGiftCardFormProps) {
   const router = useRouter();
@@ -29,21 +45,32 @@ export function IssueGiftCardForm({ surface }: IssueGiftCardFormProps) {
   const [error, setError] = React.useState<string | null>(null);
   const [issuedCode, setIssuedCode] = React.useState<string | null>(null);
 
-  function closeOverlay() {
-    const next = new URLSearchParams(searchParams ?? '');
-    next.delete('drawer');
-    next.delete('modal');
-    const qs = next.toString();
-    router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
-  }
+  const [amount, setAmount] = React.useState('25');
+  const [currency, setCurrency] = React.useState('USD');
+  const [recipientEmail, setRecipientEmail] = React.useState('');
+  const [recipientName, setRecipientName] = React.useState('');
+  const [message, setMessage] = React.useState('');
+  const [customCode, setCustomCode] = React.useState('');
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  // Where "leave the form" goes. In the overlay it clears the detail token so the
+  // drawer/modal closes in place; the page route returns to the list.
+  const cancel = React.useCallback(() => {
+    if (surface === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+    } else {
+      router.push('/commerce/gift-cards');
+    }
+  }, [surface, pathname, searchParams, router]);
+
+  function submit() {
     setError(null);
     setIssuedCode(null);
 
-    const form = new FormData(e.currentTarget);
-    const dollars = Number(stringOr(form.get('amount'), '0'));
+    const dollars = Number(amount.trim());
     if (!Number.isFinite(dollars) || dollars <= 0) {
       setError('Amount must be positive');
       return;
@@ -51,19 +78,17 @@ export function IssueGiftCardForm({ surface }: IssueGiftCardFormProps) {
 
     const input: Record<string, unknown> = {
       initialBalanceCents: Math.round(dollars * 100),
-      currency: stringOr(form.get('currency'), 'USD').toUpperCase(),
+      currency: (currency.trim() || 'USD').toUpperCase(),
     };
-
-    const email = nonEmpty(form.get('recipientEmail'));
-    const name = nonEmpty(form.get('recipientName'));
-    const message = nonEmpty(form.get('message'));
-    const custom = nonEmpty(form.get('customCode'));
+    const email = recipientEmail.trim();
+    const name = recipientName.trim();
+    const note = message.trim();
+    const custom = customCode.trim();
     if (email) input.recipientEmail = email;
     if (name) input.recipientName = name;
-    if (message) input.message = message;
+    if (note) input.message = note;
     if (custom) input.customCode = custom.toUpperCase();
 
-    const formEl = e.currentTarget;
     startTransition(async () => {
       const result = await issueGiftCardAction(input);
       if (!result.ok) {
@@ -72,92 +97,111 @@ export function IssueGiftCardForm({ surface }: IssueGiftCardFormProps) {
       }
       // No detail view — stay open: show the code, reset, refresh the list.
       setIssuedCode(result.data.code);
-      formEl.reset();
+      setAmount('25');
+      setCurrency('USD');
+      setRecipientEmail('');
+      setRecipientName('');
+      setMessage('');
+      setCustomCode('');
       router.refresh();
     });
   }
 
   return (
-    <Stack gap={6}>
-      {surface === 'overlay' && (
-        <Stack gap={1}>
-          <Heading level={2}>Issue a gift card</Heading>
-          <Text size="sm" variant="muted">
-            Codes are auto-generated (16 alphanumeric, hyphen-grouped). Use a custom code only when
-            migrating from a legacy system.
-          </Text>
-        </Stack>
-      )}
-
-      <form onSubmit={onSubmit}>
-        <Stack gap={4}>
-          <Stack direction="row" gap={3} wrap>
-            <Stack gap={1} className="w-[8rem]">
-              <Label htmlFor="amount">Amount ($)</Label>
-              <Input id="amount" name="amount" defaultValue="25" />
-            </Stack>
-            <Stack gap={1} className="w-[6rem]">
-              <Label htmlFor="currency">Currency</Label>
-              <Input id="currency" name="currency" defaultValue="USD" maxLength={3} />
-            </Stack>
-            <Stack gap={1} className="min-w-[12rem] flex-1">
-              <Label htmlFor="recipientEmail">Recipient email</Label>
-              <Input id="recipientEmail" name="recipientEmail" type="email" />
-            </Stack>
-            <Stack gap={1} className="min-w-[12rem] flex-1">
-              <Label htmlFor="recipientName">Recipient name</Label>
-              <Input id="recipientName" name="recipientName" />
-            </Stack>
-          </Stack>
-          <Stack gap={1}>
-            <Label htmlFor="message">Message (optional)</Label>
-            <Input id="message" name="message" placeholder="Happy birthday!" />
-          </Stack>
-          <Stack gap={1} className="w-[16rem]">
-            <Label htmlFor="customCode">Custom code (optional)</Label>
-            <Input
-              id="customCode"
-              name="customCode"
-              placeholder="auto-generated when empty"
-              pattern="[A-Za-z0-9-]+"
-            />
-          </Stack>
-          <Stack direction="row" gap={2} align="center" className="pt-2">
-            <Button color="module" type="submit" disabled={pending}>
-              {pending ? 'Issuing…' : 'Issue gift card'}
-            </Button>
-            {surface === 'overlay' ? (
-              <Button type="button" variant="ghost" onClick={closeOverlay}>
-                Close
-              </Button>
-            ) : (
-              <Button variant="ghost" asChild>
-                <Link href="/commerce/gift-cards">Back</Link>
-              </Button>
-            )}
-            {error && (
-              <Text size="sm" className="text-[var(--color-danger)]">
-                {error}
-              </Text>
-            )}
-            {issuedCode && (
-              <Text size="sm" className="text-[var(--color-success)]">
-                Issued <span className="font-mono">{issuedCode}</span>
-              </Text>
-            )}
-          </Stack>
-        </Stack>
-      </form>
-    </Stack>
+    <ModuleProvider module="commerce" className="h-full">
+      <WizardFrame
+        variant={surface === 'overlay' ? 'inline' : 'embedded'}
+        title="Issue a gift card"
+        steps={STEPS}
+        current={0}
+        onCancel={cancel}
+      >
+        <WizardStep
+          header={{
+            title: 'Gift card details',
+            supporting:
+              'Codes are auto-generated (16 alphanumeric, hyphen-grouped). Use a custom code only when migrating from a legacy system.',
+          }}
+          actions={{
+            onNext: submit,
+            nextLabel: 'Issue gift card',
+            nextLoading: pending,
+            nextDisabled: pending,
+          }}
+        >
+          <Card variant="module">
+            <CardContent className="py-6">
+              <Stack gap={4}>
+                <Stack direction="row" gap={3} wrap>
+                  <Stack gap={2} className="w-[8rem]">
+                    <Label htmlFor="gc-amount">Amount ($)</Label>
+                    <Input
+                      id="gc-amount"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                    />
+                  </Stack>
+                  <Stack gap={2} className="w-[6rem]">
+                    <Label htmlFor="gc-currency">Currency</Label>
+                    <Input
+                      id="gc-currency"
+                      value={currency}
+                      onChange={(e) => setCurrency(e.target.value)}
+                      maxLength={3}
+                    />
+                  </Stack>
+                  <Stack gap={2} className="min-w-[12rem] flex-1">
+                    <Label htmlFor="gc-recipient-email">Recipient email</Label>
+                    <Input
+                      id="gc-recipient-email"
+                      type="email"
+                      value={recipientEmail}
+                      onChange={(e) => setRecipientEmail(e.target.value)}
+                    />
+                  </Stack>
+                  <Stack gap={2} className="min-w-[12rem] flex-1">
+                    <Label htmlFor="gc-recipient-name">Recipient name</Label>
+                    <Input
+                      id="gc-recipient-name"
+                      value={recipientName}
+                      onChange={(e) => setRecipientName(e.target.value)}
+                    />
+                  </Stack>
+                </Stack>
+                <Stack gap={2}>
+                  <Label htmlFor="gc-message">Message (optional)</Label>
+                  <Input
+                    id="gc-message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Happy birthday!"
+                  />
+                </Stack>
+                <Stack gap={2} className="w-[16rem]">
+                  <Label htmlFor="gc-custom-code">Custom code (optional)</Label>
+                  <Input
+                    id="gc-custom-code"
+                    value={customCode}
+                    onChange={(e) => setCustomCode(e.target.value)}
+                    placeholder="auto-generated when empty"
+                    pattern="[A-Za-z0-9-]+"
+                  />
+                </Stack>
+              </Stack>
+            </CardContent>
+          </Card>
+          {issuedCode && (
+            <Text size="sm" className="mt-4 text-[var(--color-success)]" aria-live="polite">
+              Issued <span className="font-mono">{issuedCode}</span>
+            </Text>
+          )}
+          {error && (
+            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+              {error}
+            </Text>
+          )}
+        </WizardStep>
+      </WizardFrame>
+    </ModuleProvider>
   );
-}
-
-function nonEmpty(value: FormDataEntryValue | null): string | undefined {
-  if (typeof value !== 'string') return undefined;
-  const trimmed = value.trim();
-  return trimmed.length === 0 ? undefined : trimmed;
-}
-
-function stringOr(value: FormDataEntryValue | null, fallback: string): string {
-  return typeof value === 'string' ? value.trim() : fallback;
 }

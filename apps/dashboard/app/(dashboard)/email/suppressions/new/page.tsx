@@ -1,25 +1,16 @@
-import { Container, PageHeader, Stack } from '@sparx/ui';
-
 import { AddSuppressionForm } from '../_components/add-suppression-form';
 
-// Full-page surface for suppressing addresses. The form body lives in the
-// surface-aware `AddSuppressionForm` (§13.1) so the SAME component renders here
-// (`surface="page"`) and inside the `@detail` drawer/modal overlay
-// (`surface="overlay"`). Suppression has no detail view, so the form stays open
-// and refreshes the list on success instead of navigating into a record.
+// Full-page surface for suppressing addresses. The surface-aware `AddSuppressionForm`
+// (docs/86 F layout) renders the SAME WizardFrame here (`surface="page"` → the
+// `embedded` contained sheet, filling the dashboard content area with its own
+// title + pinned toolbar) and inside the `@detail` drawer/modal overlay
+// (`surface="overlay"`). This route is what `fullPage` / `newTab` detail-view
+// preferences and deep links resolve to — no page-level Container/PageHeader, so
+// the title isn't rendered twice. Suppression has no detail view, so the form
+// stays open and refreshes the list on success instead of navigating into a record.
 
 export const dynamic = 'force-dynamic';
 
 export default function NewSuppressionPage() {
-  return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          title="Suppress an address"
-          description="Add one or many addresses to the do-not-send list. Choose whether to block all email or just marketing."
-        />
-        <AddSuppressionForm surface="page" />
-      </Stack>
-    </Container>
-  );
+  return <AddSuppressionForm surface="page" />;
 }

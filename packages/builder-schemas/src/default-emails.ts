@@ -385,6 +385,20 @@ const bookingCancelled = (): BuilderNode =>
     button('Book another time', '{{booking.bookUrl}}'),
   ]);
 
+// A spot opened for a customer on the service waitlist (docs/79 §7). Time-sensitive
+// nudge to book before the offer expires; bound to the `waitlist` source.
+const waitlistOffer = (): BuilderNode =>
+  body([
+    heading('A spot just opened up'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — good news: a spot opened for {{waitlist.service}} in your requested window ({{waitlist.window}}). Book now to claim it.'
+    ),
+    conditional('waitlist.offerExpires', [
+      para('This offer is held until {{waitlist.offerExpires}}.'),
+    ]),
+    button('Book your spot', '{{waitlist.bookUrl}}'),
+  ]);
+
 // ── The registry ─────────────────────────────────────────────────────────────
 
 export type EmailTemplateType = 'transactional' | 'marketing';
@@ -652,6 +666,17 @@ export const DEFAULT_EMAIL_TEMPLATES: DefaultEmailTemplate[] = [
     sources: ['customer', 'booking', 'tenant'],
     refs: ['customerId', 'bookingId'],
     tree: bookingCancelled(),
+  },
+  {
+    key: 'waitlist-offer',
+    name: 'Waitlist offer',
+    type: 'transactional',
+    category: 'scheduling',
+    subject: 'A spot opened for {{waitlist.service}}',
+    preheader: 'Book before {{waitlist.offerExpires}}.',
+    sources: ['customer', 'waitlist', 'tenant'],
+    refs: ['customerId', 'waitlistEntryId'],
+    tree: waitlistOffer(),
   },
 ];
 

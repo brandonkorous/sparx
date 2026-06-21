@@ -30,6 +30,12 @@ export const MODULE_GROUPS: { title: string; items: ModuleNavItem[] }[] = [
         href: '/dropship',
         desc: 'Suppliers, sync, fulfillment',
       },
+      {
+        module: 'scheduling',
+        label: 'Scheduling',
+        href: '/scheduling',
+        desc: 'Appointments, classes, bookings',
+      },
     ],
   },
   {

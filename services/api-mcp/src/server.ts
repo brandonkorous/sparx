@@ -32,6 +32,10 @@ const MODULE_BY_SCOPE: Record<string, ModuleSlug> = {
   // tenant doesn't have it active (standalone-usable; reachable even without commerce).
   'read:inventory': 'inventory',
   'write:inventory': 'inventory',
+  // Scheduling (docs/79 §11) — the 12th module; its tools refuse when the tenant
+  // doesn't have Scheduling active (beyond the global `ai` gate).
+  'read:scheduling': 'scheduling',
+  'write:scheduling': 'scheduling',
 };
 
 export function buildServerForRequest(auth: McpAuthContext): McpServer {

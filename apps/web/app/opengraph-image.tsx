@@ -14,6 +14,7 @@ const MODULE_DOTS = [
   '#475569', // b2b
   '#EC4899', // ai
   '#10B981', // dropship
+  '#F43F5E', // scheduling
 ] as const;
 
 export default function Image() {
@@ -151,7 +152,7 @@ export default function Image() {
               textTransform: 'uppercase',
             }}
           >
-            8 modules
+            9 modules
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {MODULE_DOTS.map((color) => (

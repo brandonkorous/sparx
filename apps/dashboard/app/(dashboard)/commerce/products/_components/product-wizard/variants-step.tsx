@@ -15,7 +15,7 @@
 // remaining combinations are created fresh.
 
 import * as React from 'react';
-import { Badge, Button, Input, Spinner, Text, WizardStep } from '@sparx/ui';
+import { Badge, Button, Card, CardContent, Input, Spinner, Text, WizardStep } from '@sparx/ui';
 
 import {
   assignVariantOptionValuesAction,
@@ -195,163 +195,169 @@ export function VariantsStep({
         nextDisabled: generating,
       }}
     >
-      {loading ? (
-        <div className="flex items-center gap-2 py-8 text-[var(--color-text-muted)]">
-          <Spinner className="h-4 w-4" /> Loading options & variants…
-        </div>
-      ) : (
-        <div className="flex flex-col gap-6">
-          {/* ── Options ─────────────────────────────────────────────── */}
-          <section className="flex flex-col gap-3">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <Text size="sm" weight="medium">
-                  Options
-                </Text>
-                <Badge variant="outline" size="sm">
-                  {options.length}
-                </Badge>
-              </div>
-              {!editingOptions && (
-                <Button variant="outline" size="sm" onClick={() => setEditingOptions(true)}>
-                  {options.length === 0 ? 'Add options' : 'Edit options'}
-                </Button>
-              )}
+      <Card variant="module">
+        <CardContent className="py-6">
+          {loading ? (
+            <div className="flex items-center gap-2 py-8 text-[var(--color-text-muted)]">
+              <Spinner className="h-4 w-4" /> Loading options & variants…
             </div>
-
-            {editingOptions ? (
-              <div className="rounded-xl border border-[var(--color-border-default)] p-4">
-                <OptionsEditor
-                  productId={productId}
-                  productTitle={productTitle}
-                  initialOptions={options}
-                  onSaved={() => {
-                    setEditingOptions(false);
-                    setSkuEdits({});
-                    setPriceEdits({});
-                    void reload();
-                  }}
-                  onCancel={() => setEditingOptions(false)}
-                />
-              </div>
-            ) : options.length === 0 ? (
-              <Text size="sm" variant="muted">
-                No options — this product is a single SKU (the one you priced). Add an option like
-                Size or Color to sell variations, or continue.
-              </Text>
-            ) : (
-              <div className="flex flex-col gap-2">
-                {options.map((o) => (
-                  <div key={o.id} className="flex flex-wrap items-center gap-1.5">
+          ) : (
+            <div className="flex flex-col gap-6">
+              {/* ── Options ─────────────────────────────────────────────── */}
+              <section className="flex flex-col gap-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
                     <Text size="sm" weight="medium">
-                      {o.name}:
+                      Options
                     </Text>
-                    {o.values.map((v) => (
-                      <Badge key={v.id} variant="soft" size="sm">
-                        {v.value}
-                      </Badge>
+                    <Badge variant="outline" size="sm">
+                      {options.length}
+                    </Badge>
+                  </div>
+                  {!editingOptions && (
+                    <Button variant="outline" size="sm" onClick={() => setEditingOptions(true)}>
+                      {options.length === 0 ? 'Add options' : 'Edit options'}
+                    </Button>
+                  )}
+                </div>
+
+                {editingOptions ? (
+                  <div className="rounded-xl border border-[var(--color-border-default)] p-4">
+                    <OptionsEditor
+                      productId={productId}
+                      productTitle={productTitle}
+                      initialOptions={options}
+                      onSaved={() => {
+                        setEditingOptions(false);
+                        setSkuEdits({});
+                        setPriceEdits({});
+                        void reload();
+                      }}
+                      onCancel={() => setEditingOptions(false)}
+                    />
+                  </div>
+                ) : options.length === 0 ? (
+                  <Text size="sm" variant="muted">
+                    No options — this product is a single SKU (the one you priced). Add an option
+                    like Size or Color to sell variations, or continue.
+                  </Text>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    {options.map((o) => (
+                      <div key={o.id} className="flex flex-wrap items-center gap-1.5">
+                        <Text size="sm" weight="medium">
+                          {o.name}:
+                        </Text>
+                        {o.values.map((v) => (
+                          <Badge key={v.id} variant="soft" size="sm">
+                            {v.value}
+                          </Badge>
+                        ))}
+                      </div>
                     ))}
                   </div>
-                ))}
-              </div>
-            )}
-          </section>
-
-          {/* ── Variant matrix ──────────────────────────────────────── */}
-          {!editingOptions && options.length > 0 && (
-            <section className="flex flex-col gap-3">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <Text size="sm" weight="medium">
-                    Variants
-                  </Text>
-                  <Badge variant="outline" size="sm">
-                    {combos.length} combination{combos.length === 1 ? '' : 's'}
-                  </Badge>
-                </div>
-                {pendingCount > 0 && !overCap && (
-                  <Button
-                    color="module"
-                    size="sm"
-                    onClick={() => void generate()}
-                    loading={generating}
-                    disabled={generating}
-                  >
-                    Generate {pendingCount} variant{pendingCount === 1 ? '' : 's'}
-                  </Button>
                 )}
-              </div>
+              </section>
 
-              {overCap ? (
-                <Text size="sm" variant="danger" role="alert">
-                  {combos.length} combinations exceeds the {MAX_COMBOS}-variant limit. Trim option
-                  values, then generate.
-                </Text>
-              ) : (
-                <div className="overflow-hidden rounded-xl border border-[var(--color-border-default)]">
-                  {/* eslint-disable-next-line no-restricted-syntax -- table header row with subtle bg, not a reimplemented control */}
-                  <div className="grid grid-cols-[1fr_minmax(8rem,1fr)_7rem_5rem] items-center gap-2 border-b border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-3 py-2 text-xs font-medium text-[var(--color-text-muted)]">
-                    <span>Combination</span>
-                    <span>SKU</span>
-                    <span>Price (USD)</span>
-                    <span className="text-right">Status</span>
+              {/* ── Variant matrix ──────────────────────────────────────── */}
+              {!editingOptions && options.length > 0 && (
+                <section className="flex flex-col gap-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <Text size="sm" weight="medium">
+                        Variants
+                      </Text>
+                      <Badge variant="outline" size="sm">
+                        {combos.length} combination{combos.length === 1 ? '' : 's'}
+                      </Badge>
+                    </div>
+                    {pendingCount > 0 && !overCap && (
+                      <Button
+                        color="module"
+                        size="sm"
+                        onClick={() => void generate()}
+                        loading={generating}
+                        disabled={generating}
+                      >
+                        Generate {pendingCount} variant{pendingCount === 1 ? '' : 's'}
+                      </Button>
+                    )}
                   </div>
-                  <div className="max-h-80 overflow-y-auto">
-                    {combos.map((combo) => {
-                      const ids = combo.map((v) => v.id);
-                      const key = signature(ids);
-                      const existing = variantByKey.get(key);
-                      const label = combo.map((v) => v.value).join(' · ');
-                      return (
-                        <div
-                          key={key}
-                          className="grid grid-cols-[1fr_minmax(8rem,1fr)_7rem_5rem] items-center gap-2 border-b border-[var(--color-border-default)] px-3 py-2 last:border-b-0"
-                        >
-                          <span className="truncate text-sm">{label}</span>
-                          <Input
-                            value={skuFor(key, combo, existing)}
-                            onChange={(e) => setSkuEdits((s) => ({ ...s, [key]: e.target.value }))}
-                            disabled={!!existing}
-                            aria-label={`SKU for ${label}`}
-                            className="h-8"
-                          />
-                          <Input
-                            inputMode="decimal"
-                            value={priceFor(key, existing)}
-                            onChange={(e) =>
-                              setPriceEdits((s) => ({ ...s, [key]: e.target.value }))
-                            }
-                            disabled={!!existing}
-                            aria-label={`Price for ${label}`}
-                            className="h-8"
-                          />
-                          <span className="text-right">
-                            {existing ? (
-                              <Badge color="success" variant="soft" size="sm">
-                                Created
-                              </Badge>
-                            ) : (
-                              <Badge variant="outline" size="sm">
-                                New
-                              </Badge>
-                            )}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
+
+                  {overCap ? (
+                    <Text size="sm" variant="danger" role="alert">
+                      {combos.length} combinations exceeds the {MAX_COMBOS}-variant limit. Trim
+                      option values, then generate.
+                    </Text>
+                  ) : (
+                    <div className="overflow-hidden rounded-xl border border-[var(--color-border-default)]">
+                      {/* eslint-disable-next-line no-restricted-syntax -- table header row with subtle bg, not a reimplemented control */}
+                      <div className="grid grid-cols-[1fr_minmax(8rem,1fr)_7rem_5rem] items-center gap-2 border-b border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-3 py-2 text-xs font-medium text-[var(--color-text-muted)]">
+                        <span>Combination</span>
+                        <span>SKU</span>
+                        <span>Price (USD)</span>
+                        <span className="text-right">Status</span>
+                      </div>
+                      <div className="max-h-80 overflow-y-auto">
+                        {combos.map((combo) => {
+                          const ids = combo.map((v) => v.id);
+                          const key = signature(ids);
+                          const existing = variantByKey.get(key);
+                          const label = combo.map((v) => v.value).join(' · ');
+                          return (
+                            <div
+                              key={key}
+                              className="grid grid-cols-[1fr_minmax(8rem,1fr)_7rem_5rem] items-center gap-2 border-b border-[var(--color-border-default)] px-3 py-2 last:border-b-0"
+                            >
+                              <span className="truncate text-sm">{label}</span>
+                              <Input
+                                value={skuFor(key, combo, existing)}
+                                onChange={(e) =>
+                                  setSkuEdits((s) => ({ ...s, [key]: e.target.value }))
+                                }
+                                disabled={!!existing}
+                                aria-label={`SKU for ${label}`}
+                                className="h-8"
+                              />
+                              <Input
+                                inputMode="decimal"
+                                value={priceFor(key, existing)}
+                                onChange={(e) =>
+                                  setPriceEdits((s) => ({ ...s, [key]: e.target.value }))
+                                }
+                                disabled={!!existing}
+                                aria-label={`Price for ${label}`}
+                                className="h-8"
+                              />
+                              <span className="text-right">
+                                {existing ? (
+                                  <Badge color="success" variant="soft" size="sm">
+                                    Created
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="outline" size="sm">
+                                    New
+                                  </Badge>
+                                )}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </section>
               )}
-            </section>
-          )}
 
-          {error && (
-            <Text size="sm" variant="danger" role="alert">
-              {error}
-            </Text>
+              {error && (
+                <Text size="sm" variant="danger" role="alert">
+                  {error}
+                </Text>
+              )}
+            </div>
           )}
-        </div>
-      )}
+        </CardContent>
+      </Card>
     </WizardStep>
   );
 }

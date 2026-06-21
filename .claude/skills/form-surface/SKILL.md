@@ -14,7 +14,9 @@ Design spec: [docs/86](<../../../docs/86-wizard-layout-pattern.md>) (the F layou
 | Kind | Frame | Full-bleed? | Example |
 | --- | --- | --- | --- |
 | **Multi-step wizard** (≥2 steps, or a record you build up) | `WizardFrame` F layout (`inline`/`embedded`) | **yes** | product, quote, order |
-| **Single-step form** (one screen of fields) | a plain `…CreateForm` with a `surface` prop, in the host's padded body | no | collection, segment, redirect |
+| **Single-step form** (one screen of fields) | the SAME `WizardFrame` F layout, as a **one-step** wizard (MiniProgress auto-hides) | **yes** | category |
+
+There is ONE create surface — single-step forms are NOT a different shell. The old "render a `<Card>` with a `<CardFooter>` toolbar in the host's padded body" pattern is retired (it produced double headers, in-card toolbars, and inconsistent chrome — docs/86). A single-step form is a one-step `WizardFrame`: chrome title + window controls + pinned floor toolbar from the frame, fields in a module card, Cancel + primary only (no Back).
 
 Then: **does the record have a natural running summary** (party, totals, counts, status)? If yes → it's a wizard with a `summary` slot **and** joins `SUMMARY_CREATE_TYPES` (wider modal). If no → omit the summary; the form fills the width.
 
@@ -24,8 +26,9 @@ Create vs edit: both use the same frame. Create writes the `?drawer=type:new` to
 
 - Take a presentation prop: a wizard uses `presentation?: 'page' | 'overlay'`; a single-step form uses `surface?: 'page' | 'overlay'`.
 - Wrap in `<ModuleProvider module="<module>" className="h-full">` so the chrome adopts the module accent and the height carries through.
-- **Wizard:** render [`WizardFrame`](<../../../packages/ui/src/components/navigation/wizard-frame.tsx>) with `variant={presentation === 'overlay' ? 'inline' : 'embedded'}`, a `footer={cancelButton}` (it seats in the bottom toolbar), `steps`/`current`, and `<WizardStep header actions>` per step. Compose every step's content; commit in one action on finish; on success `router.push('/.../{id}')` (navigation clears the overlay token). `close()` clears `drawer`/`modal` params in the overlay, or `router.push('/list')` on the page. Copy the shape from [`product-wizard/index.tsx`](<../../../apps/dashboard/app/(dashboard)/commerce/products/_components/product-wizard/index.tsx>) or [`quote-wizard.tsx`](<../../../apps/dashboard/app/(dashboard)/crm/quotes/new/_components/quote-wizard.tsx>).
-- **Single-step:** a form that renders its own submit/cancel inside the host's padded body. Copy `collection-create-form.tsx`.
+- **Wizard:** render [`WizardFrame`](<../../../packages/ui/src/components/navigation/wizard-frame.tsx>) with `variant={presentation === 'overlay' ? 'inline' : 'embedded'}`, `onCancel={close}` (the frame renders a ghost Cancel **`<Button>`** in the bottom toolbar — NEVER hand-roll a `<button>` cancel link; that drift is the whole reason docs/86 made Cancel frame-owned), `steps`/`current`, and `<WizardStep header actions>` per step. Compose every step's content; commit in one action on finish; on success `router.push('/.../{id}')` (navigation clears the overlay token). `close()` clears `drawer`/`modal` params in the overlay, or `router.push('/list')` on the page. Copy the shape from [`product-wizard/index.tsx`](<../../../apps/dashboard/app/(dashboard)/commerce/products/_components/product-wizard/index.tsx>) or [`quote-wizard.tsx`](<../../../apps/dashboard/app/(dashboard)/crm/quotes/new/_components/quote-wizard.tsx>).
+- **Single-step:** the SAME `WizardFrame` with one `step` (MiniProgress auto-hides), `onCancel={cancel}`, and a single `<WizardStep header actions={{ onNext: submit, nextLabel: 'Create …' }}>` whose body is a `<Card variant="module">` of fields. Use controlled state (not `FormData`) so `onNext` submits; on success close the overlay / return to the list. Copy [`category-create-form.tsx`](<../../../apps/dashboard/app/(dashboard)/commerce/categories/_components/category-create-form.tsx>) — and the page route renders `<XCreateForm surface="page" />` with **no** `Container`/`PageHeader` (the embedded frame supplies the title).
+- **Step bodies** (both kinds): group fields in **`<Card variant="module">`** — the 3px module stripe is the standard on every create surface (it's automatic via `<ModuleProvider>`, so it reads the active module and disambiguates cross-module surfaces). Don't render bare fields or a plain neutral card.
 
 ## 2. The summary slot (wizards with a natural summary)
 
@@ -52,7 +55,7 @@ These three live next to each other and MUST agree. The footgun: a green typeche
 1. **[`detail-slot.tsx`](<../../../apps/dashboard/app/(dashboard)/_shell/detail-slot.tsx>)** — register the create component in `createComponents[typeId]`. If it needs server data (option lists, session), write a thin **async server wrapper** that fetches then renders the client form with `presentation="overlay"`. Also set `detailModules[typeId]` to the owning module (the slot renders OUTSIDE any module layout, so without this the accent defaults to storefront indigo).
 2. **[`detail-registry.ts`](<../../../apps/dashboard/app/(dashboard)/_shell/detail-registry.ts>)** —
    - add the type to **`CREATE_VIEW_TYPES`** (so `EntityCreateButton` knows a drawer/modal create exists; absent → it falls back to hard-navigating `/new`),
-   - add to **`FULL_BLEED_CREATE_TYPES`** if it's a `WizardFrame` (fills the body edge-to-edge; single-step forms are NOT full-bleed),
+   - add to **`FULL_BLEED_CREATE_TYPES`** — every create surface is now a `WizardFrame` (multi- or single-step), so they all fill the body edge-to-edge and pin their own floor toolbar,
    - add to **`SUMMARY_CREATE_TYPES`** ONLY once it actually passes a `summary` (this widens the modal; adding it without a summary frames a narrow form with empty gutters).
 3. **Manifest `entityTypes`** (the module's `manifest.ts`) — an entry with `id`, `label`, `routePrefix`, and `hasDetailView: true` **only if** it also has a detail-view drawer. This drives the chrome title (`describeTarget`) and the maximize href (`routePrefix/<id>`). A create-only overlay (no detail view) still needs the entry, without `hasDetailView`.
 

@@ -34,3 +34,17 @@ export function renderBookingSms(type: BookingNotificationType, f: BookingSmsFie
       return `${f.siteName}: your ${f.serviceName} on ${f.whenLabel} has been cancelled. Contact us to rebook.`;
   }
 }
+
+export interface WaitlistOfferSmsFields {
+  serviceName: string;
+  /** The customer's requested window, e.g. "Jun 22 – Jun 29". */
+  windowLabel: string;
+  siteName: string;
+  /** Absolute book-now link (the public booking page for the service). */
+  bookUrl: string;
+}
+
+/** SMS body for a waitlist offer — a spot opened, book before it's gone. */
+export function renderWaitlistOfferSms(f: WaitlistOfferSmsFields): string {
+  return `${f.siteName}: a spot opened for ${f.serviceName} (${f.windowLabel}). Book now: ${f.bookUrl}`;
+}

@@ -13,6 +13,7 @@ const MODULE_COLORS: Record<string, { color: string; tint: string; text: string 
   b2b: { color: '#475569', tint: '#F1F5F9', text: '#334155' },
   ai: { color: '#EC4899', tint: '#FDF2F8', text: '#9D174D' },
   dropship: { color: '#10B981', tint: '#ECFDF5', text: '#065F46' },
+  scheduling: { color: '#F43F5E', tint: '#FFF1F2', text: '#BE123C' },
 };
 
 export const OG_SIZE = { width: 1200, height: 630 } as const;

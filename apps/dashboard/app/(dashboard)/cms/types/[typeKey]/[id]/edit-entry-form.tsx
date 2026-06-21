@@ -22,14 +22,6 @@ import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Button,
   Card,
   CardContent,
@@ -48,6 +40,7 @@ import {
   Stack,
   Text,
   toast,
+  useConfirm,
 } from '@sparx/ui';
 import { Trash2 } from 'lucide-react';
 import { validateBody, type FieldDef } from '@sparx/cms-schemas';
@@ -140,6 +133,7 @@ export function EditEntryForm({
   statusSlot,
 }: EditEntryFormProps) {
   const router = useRouter();
+  const confirm = useConfirm();
   const routable = Boolean(urlPattern);
   const previewOrigin = siteOrigin(tenantSlug);
   const multiSite = sites.length > 1;
@@ -170,7 +164,6 @@ export function EditEntryForm({
 
   const [scheduleOpen, setScheduleOpen] = React.useState(false);
   const [scheduleAt, setScheduleAt] = React.useState<Date | undefined>(scheduledAt ?? undefined);
-  const [deleteOpen, setDeleteOpen] = React.useState(false);
 
   // Stable refs so the debounce closure reads current values without
   // re-arming the timer on every keystroke.
@@ -337,8 +330,29 @@ export function EditEntryForm({
     });
   }
 
-  function executeDelete() {
-    setDeleteOpen(false);
+  const lowerType = typeName.toLowerCase();
+
+  async function handleDelete() {
+    const ok = await confirm({
+      title: `Delete this ${lowerType}?`,
+      description: (
+        <>
+          <strong>{fallbackTitle || '(untitled)'}</strong>
+          {slug && (
+            <>
+              {' '}
+              at <code>/{slug}</code>
+            </>
+          )}{' '}
+          will be soft-deleted. The entry stays recoverable in the database for 30 days but will not
+          render on your site or appear in lists. Use <em>Unpublish</em> instead if you want it to
+          stay editable.
+        </>
+      ),
+      confirmLabel: `Delete ${lowerType}`,
+      tone: 'danger',
+    });
+    if (!ok) return;
     setError(null);
     setMessage(null);
     startTransition(async () => {
@@ -353,8 +367,6 @@ export function EditEntryForm({
       router.refresh();
     });
   }
-
-  const lowerType = typeName.toLowerCase();
 
   // The status + publish actions are one cohesive unit (EntryStatusBar) that the
   // form owns but renders in one of two places: the standalone Status card, or — on
@@ -470,7 +482,7 @@ export function EditEntryForm({
               type="button"
               variant="ghost"
               leftIcon={<Trash2 className="h-4 w-4" />}
-              onClick={() => setDeleteOpen(true)}
+              onClick={handleDelete}
               disabled={pending}
             >
               Delete
@@ -527,30 +539,6 @@ export function EditEntryForm({
           </ModalFooter>
         </ModalContent>
       </Modal>
-
-      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete this {lowerType}?</AlertDialogTitle>
-            <AlertDialogDescription>
-              <strong>{fallbackTitle || '(untitled)'}</strong>
-              {slug && (
-                <>
-                  {' '}
-                  at <code>/{slug}</code>
-                </>
-              )}{' '}
-              will be soft-deleted. The entry stays recoverable in the database for 30 days but will
-              not render on your site or appear in lists. Use <em>Unpublish</em> instead if you want
-              it to stay editable.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={executeDelete}>Delete {lowerType}</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </form>
   );
 }

@@ -84,8 +84,8 @@ export function Pricing() {
               color: 'var(--color-text-secondary)',
             }}
           >
-            All eight modules run{' '}
-            <strong style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>$363/mo</strong>{' '}
+            All nine modules run{' '}
+            <strong style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>$392/mo</strong>{' '}
             — about $38,000 a year less than the same stack bought as separate tools. Turn any
             module off and billing stops the same day.
           </p>

@@ -933,16 +933,6 @@ function InvoiceWizardInner({
   };
   const canSelectStep = (_key: string, index: number) => index <= current && !createdDocId;
 
-  const cancelButton = (
-    <button
-      type="button"
-      onClick={close}
-      className="text-[var(--color-text-muted)] underline-offset-2 hover:underline"
-    >
-      Cancel
-    </button>
-  );
-
   // The live draft summary — the F layout's right-hand column (docs/86). Mirrors
   // the Review step's totals + deposit so the running figures track from step one;
   // the footer reflects the chosen start stage (it may finalize the document).
@@ -1004,7 +994,7 @@ function InvoiceWizardInner({
       context={RAIL[stepKey].context}
       onStepSelect={onStepSelect}
       canSelectStep={canSelectStep}
-      footer={cancelButton}
+      onCancel={close}
       summary={summary}
     >
       {body}

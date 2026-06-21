@@ -64,6 +64,53 @@ export interface BookingSeriesDetail extends BookingSeriesSummary {
   bookings: BookingSeriesOccurrence[];
 }
 
+/** Scheduling analytics over a date range (docs/79 §12). */
+export interface SchedulingReport {
+  from: string;
+  to: string;
+  totals: {
+    all: number;
+    requested: number;
+    confirmed: number;
+    inProgress: number;
+    completed: number;
+    cancelled: number;
+    noShow: number;
+  };
+  noShowRatePct: number;
+  revenueCents: number;
+  upcomingCount: number;
+  topServices: { serviceId: string; name: string; count: number }[];
+}
+
+/** A class session attendee / roster seat (docs/79 §7.2). */
+export interface ClassAttendee {
+  id: string;
+  bookingId: string;
+  customerId: string | null;
+  guestName: string | null;
+  partySize: number;
+  status: string;
+  waitlistPosition: number | null;
+}
+
+/** A service-level waitlist entry (docs/79 §7) — enriched with display names. */
+export interface WaitlistEntry {
+  id: string;
+  serviceId: string;
+  serviceName: string | null;
+  customerId: string;
+  customerName: string;
+  customerEmail: string | null;
+  resourcePref: string | null;
+  desiredFrom: string;
+  desiredTo: string;
+  status: string;
+  offeredAt: string | null;
+  offerExpiresAt: string | null;
+  createdAt: string;
+}
+
 export interface SchedulingService {
   id: string;
   bookingType: BookingType;

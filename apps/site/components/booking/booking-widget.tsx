@@ -12,6 +12,7 @@ import { cx, SparxAlert, SparxButton, SparxInput, SparxLabel } from '@sparx/site
 import type { PublicService } from '../../lib/scheduling';
 import {
   createPublicBooking,
+  joinWaitlist,
   loadSlots,
   type BookingConfirmation,
   type PublicSlot,
@@ -62,6 +63,8 @@ export function BookingWidget({
   const [confirmation, setConfirmation] = useState<BookingConfirmation | null>(null);
   // A booking created but awaiting its deposit/hold payment (docs/79 §9).
   const [pendingDeposit, setPendingDeposit] = useState<BookingConfirmation | null>(null);
+  const [joiningWaitlist, setJoiningWaitlist] = useState(false);
+  const [waitlistJoined, setWaitlistJoined] = useState(false);
 
   const fetchSlots = useCallback(async () => {
     setLoadingSlots(true);
@@ -123,6 +126,46 @@ export function BookingWidget({
     } finally {
       setSubmitting(false);
     }
+  }
+
+  async function joinWaitlistFlow() {
+    if (!name.trim() || !email.trim()) {
+      setError('Enter your name and email below, then join the waitlist.');
+      return;
+    }
+    setJoiningWaitlist(true);
+    setError(null);
+    try {
+      const from = new Date(`${date}T00:00`);
+      const to = new Date(from);
+      to.setDate(to.getDate() + 30);
+      await joinWaitlist(tenantSlug, {
+        serviceId: service.id,
+        customer: {
+          name: name.trim(),
+          email: email.trim(),
+          ...(phone.trim() ? { phone: phone.trim() } : {}),
+        },
+        desiredFrom: from.toISOString(),
+        desiredTo: to.toISOString(),
+      });
+      setWaitlistJoined(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not join the waitlist.');
+    } finally {
+      setJoiningWaitlist(false);
+    }
+  }
+
+  if (waitlistJoined) {
+    return (
+      <div className="st-card st-booking__confirm" role="status">
+        <h2 className="st-h3">You&rsquo;re on the list</h2>
+        <p className="st-muted">
+          We&rsquo;ll email {email} as soon as a spot opens for {service.name} in the coming weeks.
+        </p>
+      </div>
+    );
   }
 
   if (pendingDeposit?.deposit) {
@@ -188,7 +231,21 @@ export function BookingWidget({
         {loadingSlots ? (
           <p className="st-muted">Checking availability…</p>
         ) : slots?.length === 0 ? (
-          <p className="st-muted">No open times that day — try another date.</p>
+          <div className="st-booking__waitlist">
+            <p className="st-muted">
+              No open times that day — try another date, or join the waitlist and we&rsquo;ll let
+              you know the moment a spot opens.
+            </p>
+            <SparxButton
+              type="button"
+              variant="soft"
+              color="primary"
+              disabled={joiningWaitlist}
+              onClick={() => void joinWaitlistFlow()}
+            >
+              {joiningWaitlist ? 'Joining…' : 'Join the waitlist'}
+            </SparxButton>
+          </div>
         ) : (
           <div className="st-booking__slot-grid">
             {(slots ?? []).map((slot) => (

@@ -1,8 +1,8 @@
 # Form & Modal Surface Inventory
 
-Version: 1.0
+Version: 1.1
 Author: Brandon Korous
-Last Updated: 2026-06-20
+Last Updated: 2026-06-21
 
 A complete census of every **form, create/edit flow, and modal/dialog** in the dashboard app
 (`apps/dashboard/app`), with each one's current presentation and the work needed to bring it onto
@@ -41,8 +41,8 @@ footgun and the procedure live in the skill.
 
 | Status             | Count | Meaning                                                                                   |
 | ------------------ | ----- | ----------------------------------------------------------------------------------------- |
-| ✅ done            | ~55   | wizards already on F-layout, surface-aware create forms, settings pages, standard pickers |
-| ⚙️ partial         | ~8    | mostly: two wizards lacking a summary, and a handful of non-standard confirms             |
+| ✅ done            | ~63   | wizards already on F-layout, surface-aware create forms, settings pages, standard pickers |
+| ⚙️ partial         | ~3    | a few non-standard confirms riding on bigger (still-pending) migration rows               |
 | 🔲 needs migration | ~70   | the real backlog — full-page forms, self-owned modals, inline detail-page forms           |
 | ➖ N/A             | ~40   | `useConfirm` dialogs, `ImportDialog` users, read-only panels                              |
 
@@ -52,11 +52,18 @@ so each wave is "the same move, N times."
 
 ---
 
+## Progress log
+
+- **2026-06-21 — Wave 0 ✅ and Wave 1 ✅ complete.**
+  - Wave 0 (cross-cutting cleanups): the two `window.prompt` reason-captures (`return-status-bar`, `moderate-actions`) became proper `@sparx/ui` `Modal` + required `Textarea` dialogs; the raw `AlertDialog`/arm-confirm patterns in `email/domains/domain-actions`, `commerce/pricing/[id]/price-list-status-bar`, `inventory/sources/[id]/agent-panel` (unpair), `b2b/service-types/service-type-actions` (delete), and the CMS confirms (`cms/[id]/edit-form`, `author-edit-form`, `schema-editor`, `types/[typeKey]/[id]/edit-entry-form`, `navigation/menu-editor`, `revisions/restore-button`) now go through `useConfirm`. _Note:_ the CMS edit-form rows stay 🔲 because the **form→overlay** migration (Wave 4) is the real remaining work there — only their confirm sub-fix is done.
+  - Wave 1 (wizard summaries): `customer-full-profile-wizard` and `b2b-account-wizard` gained live F-layout summary columns and joined `SUMMARY_CREATE_TYPES`. The whole record-builder + line-item wizard family now carries a summary.
+  - Verified: `@sparx/dashboard` typecheck clean, lint 0 errors.
+
 ## Recommended waves
 
 Work top-to-bottom. Each wave is one repeatable move; do a whole wave with the skill before moving on.
 
-### Wave 0 — cross-cutting cleanups (cheap, do first)
+### Wave 0 — cross-cutting cleanups ✅ DONE (2026-06-21)
 
 Quick correctness wins that don't touch layout:
 
@@ -70,7 +77,7 @@ Quick correctness wins that don't touch layout:
   `schema-editor.tsx`, `menu-editor.tsx`, `cms/[id]/revisions/restore-button.tsx`) all confirm correctly
   but bypass the shared hook. Normalize.
 
-### Wave 1 — wizards that only need a live summary (highest consistency-per-effort)
+### Wave 1 — wizards that only need a live summary ✅ DONE (2026-06-21)
 
 Already on `WizardFrame`; just add the F-layout summary column (and join `SUMMARY_CREATE_TYPES`):
 
@@ -139,57 +146,57 @@ Dialogs that carry real input (not just confirms):
 
 ### Commerce
 
-| Path                                                                                                | Name                       | Kind                     | Current                  | Status | Action                      |
-| --------------------------------------------------------------------------------------------------- | -------------------------- | ------------------------ | ------------------------ | ------ | --------------------------- |
-| `commerce/products/_components/product-wizard/index.tsx`                                            | Create product             | Create wizard            | overlay                  | ✅     | done (F-layout + summary)   |
-| `commerce/products/[id]/_components/product-edit-form.tsx`                                          | Edit product overview      | Edit/record form         | inline (detail tab)      | ✅     | standard detail tab         |
-| `commerce/products/[id]/_components/product-media-panel.tsx`                                        | Product media              | Edit/record form         | inline (detail tab)      | ✅     | fine                        |
-| `commerce/products/[id]/_components/fitment-panel.tsx`                                              | Product fitment            | Edit/record form         | inline (detail tab)      | ✅     | fine                        |
-| `commerce/products/[id]/_components/inventory-panel.tsx`                                            | Inventory adjust / reorder | Inline page-body form    | inline (expand-in-row)   | ⚙️     | consider drawer for adjust  |
-| `commerce/products/[id]/_components/new-variant-dialog.tsx`                                         | Add variant (stub)         | Substantive dialog/modal | raw Modal                | 🔲     | build real form in modal    |
-| `commerce/products/[id]/_components/new-variant-form.tsx`                                           | Add variant body           | Single-step create form  | inline                   | 🔲     | wire into the dialog        |
-| `commerce/products/[id]/_components/options-editor-dialog.tsx`                                      | Options editor (stub)      | Substantive dialog/modal | raw Modal                | 🔲     | build real editor in modal  |
-| `commerce/products/[id]/_components/product-status-bar.tsx`                                         | Publish / archive          | Action bar               | inline                   | ➖     | low-risk direct transitions |
-| `commerce/products/_components/bulk-price-adjust-modal.tsx`                                         | Bulk price adjust          | Bulk/action modal        | Modal                    | ✅     | fine                        |
-| `commerce/products/_components/products-import-export.tsx`                                          | Products import            | Bulk/action modal        | ImportDialog             | ✅     | fine                        |
-| `commerce/products/pricing/_components/bulk-pricing-tool.tsx`                                       | Bulk pricing tool          | Bulk/action modal        | full-page tool           | 🔲     | decide page vs overlay      |
-| `commerce/categories/_components/category-create-form.tsx`                                          | New category               | Single-step create form  | overlay                  | ✅     | surface-aware               |
-| `commerce/categories/_components/category-edit-form.tsx`                                            | Edit category              | Edit/record form         | overlay                  | ✅     | fine                        |
-| `commerce/categories/_components/categories-editor.tsx`                                             | Category tree              | (nav)                    | inline                   | ➖     | read-only tree              |
-| `commerce/collections/_components/collection-create-form.tsx`                                       | New collection             | Single-step create form  | overlay                  | ✅     | surface-aware               |
-| `commerce/collections/[id]/_components/collection-meta-form.tsx`                                    | Edit collection meta       | Edit/record form         | inline (detail tab)      | ✅     | fine                        |
-| `commerce/collections/[id]/_components/collection-membership-editor.tsx`                            | Collection membership      | Edit/record form         | inline (detail tab)      | ✅     | fine                        |
-| `commerce/pricing/_components/price-list-create-form.tsx`                                           | New price list             | Single-step create form  | overlay                  | ✅     | surface-aware               |
-| `commerce/pricing/[id]/_components/price-list-entries-editor.tsx`                                   | Price-list entries         | Edit/record form         | inline (detail tab)      | ✅     | appropriate                 |
-| `commerce/pricing/[id]/_components/price-list-status-bar.tsx`                                       | Price-list archive         | Confirm                  | inline arm/confirm       | ⚙️     | use `useConfirm`            |
-| `commerce/gift-cards/_components/issue-gift-card-form.tsx`                                          | Issue gift card            | Single-step create form  | overlay                  | ✅     | surface-aware               |
-| `commerce/account-credit/_components/grant-account-credit-form.tsx`                                 | Grant account credit       | Single-step create form  | overlay                  | ✅     | surface-aware               |
-| `commerce/markup-rules/_components/markup-rules-manager.tsx` (RuleForm)                             | Create/edit markup rule    | Edit/record form         | inline expand-in-place   | 🔲     | move into overlay           |
-| `commerce/surcharges/_components/surcharges-manager.tsx` (RuleForm)                                 | Create/edit surcharge rule | Edit/record form         | inline expand-in-place   | 🔲     | move into overlay           |
-| `commerce/bundles/_components/bundle-editor.tsx` + `bundles/new`                                    | Create/edit bundle         | Create/edit form         | full-page only           | 🔲     | surface + overlay           |
-| `commerce/configurator/new/_components/new-template-form.tsx`                                       | New configurator template  | Single-step create form  | full-page only           | 🔲     | surface + overlay           |
-| `commerce/configurator/[id]/_components/template-json-editor.tsx`                                   | Template JSON editor       | Edit/record form         | inline (detail tab)      | ✅     | fine                        |
-| `commerce/discounts/new/page.tsx`                                                                   | New discount               | Single-step create form  | full-page only           | 🔲     | surface + overlay           |
-| `commerce/discounts/_components/discounts-import-export.tsx`                                        | Discounts import           | Bulk/action modal        | ImportDialog             | ✅     | fine                        |
-| `commerce/fitment/_components/fitment-reference-editor.tsx`                                         | Fitment reference add-rows | Inline page-body form    | inline (tree)            | 🔲     | standardize add-forms       |
-| `commerce/providers/install/_components/install-provider-form.tsx`                                  | Install provider           | Single-step create form  | full-page only           | 🔲     | surface + overlay           |
-| `commerce/providers/[id]/_components/provider-actions-bar.tsx`                                      | Provider enable/uninstall  | Confirm                  | inline                   | ➖     | `useConfirm`                |
-| `commerce/qa/[id]/_components/answer-form.tsx`                                                      | Post staff answer          | Edit/record form         | inline (detail)          | 🔲     | wrap in card/overlay        |
-| `commerce/qa/[id]/_components/question-moderate-actions.tsx`                                        | Moderate question          | Confirm                  | inline                   | ➖     | `useConfirm`                |
-| `commerce/returns/[id]/_components/return-approval-form.tsx`                                        | Approve return             | Edit/record form         | inline (detail)          | 🔲     | standard card layout        |
-| `commerce/returns/[id]/_components/return-inspection-form.tsx`                                      | Record inspection          | Edit/record form         | inline (detail)          | 🔲     | standard card layout        |
-| `commerce/returns/[id]/_components/return-refund-form.tsx`                                          | Issue refund               | Edit/record form         | inline (detail)          | 🔲     | standard card layout        |
-| `commerce/returns/[id]/_components/return-status-bar.tsx`                                           | Deny / mark received       | Confirm                  | inline + `window.prompt` | ⚙️     | prompt → modal field        |
-| `commerce/reviews/[id]/_components/respond-form.tsx`                                                | Respond to review          | Edit/record form         | inline (detail)          | 🔲     | standard card layout        |
-| `commerce/reviews/[id]/_components/moderate-actions.tsx`                                            | Moderate review            | Confirm                  | inline + `window.prompt` | ⚙️     | prompt → modal field        |
-| `commerce/shipping/profiles/new/_components/new-profile-form.tsx`                                   | New shipping profile       | Single-step create form  | full-page only           | 🔲     | surface + overlay           |
-| `commerce/shipping/zones/new/_components/new-zone-form.tsx`                                         | New shipping zone          | Single-step create form  | full-page only           | 🔲     | surface + overlay           |
-| `commerce/shipping/zones/[id]/_components/new-rate-form.tsx`                                        | Add shipping rate          | Single-step create form  | inline (detail)          | 🔲     | overlay or collapsible      |
-| `commerce/tax/zones/new/_components/new-tax-zone-form.tsx`                                          | New tax zone               | Single-step create form  | full-page only           | 🔲     | surface + overlay           |
-| `commerce/tax/zones/[id]/_components/new-tax-rate-form.tsx`                                         | Add tax rate               | Single-step create form  | inline (detail)          | 🔲     | overlay or collapsible      |
-| `commerce/subscriptions/[id]/_components/subscription-actions-bar.tsx`                              | Pause/skip/cancel          | Confirm                  | inline                   | ➖     | `useConfirm`                |
-| `commerce/settings/_components/site-settings-form.tsx`                                              | Commerce settings          | Settings form            | inline                   | ✅     | settings page               |
-| _delete buttons_ (`bundle`, `category`, `shipping profile/zone/rate`, `tax zone/rate`, `surcharge`) | Delete X                   | Confirm                  | inline                   | ➖     | `useConfirm`                |
+| Path                                                                                                | Name                       | Kind                     | Current                | Status | Action                         |
+| --------------------------------------------------------------------------------------------------- | -------------------------- | ------------------------ | ---------------------- | ------ | ------------------------------ |
+| `commerce/products/_components/product-wizard/index.tsx`                                            | Create product             | Create wizard            | overlay                | ✅     | done (F-layout + summary)      |
+| `commerce/products/[id]/_components/product-edit-form.tsx`                                          | Edit product overview      | Edit/record form         | inline (detail tab)    | ✅     | standard detail tab            |
+| `commerce/products/[id]/_components/product-media-panel.tsx`                                        | Product media              | Edit/record form         | inline (detail tab)    | ✅     | fine                           |
+| `commerce/products/[id]/_components/fitment-panel.tsx`                                              | Product fitment            | Edit/record form         | inline (detail tab)    | ✅     | fine                           |
+| `commerce/products/[id]/_components/inventory-panel.tsx`                                            | Inventory adjust / reorder | Inline page-body form    | inline (expand-in-row) | ⚙️     | consider drawer for adjust     |
+| `commerce/products/[id]/_components/new-variant-dialog.tsx`                                         | Add variant (stub)         | Substantive dialog/modal | raw Modal              | 🔲     | build real form in modal       |
+| `commerce/products/[id]/_components/new-variant-form.tsx`                                           | Add variant body           | Single-step create form  | inline                 | 🔲     | wire into the dialog           |
+| `commerce/products/[id]/_components/options-editor-dialog.tsx`                                      | Options editor (stub)      | Substantive dialog/modal | raw Modal              | 🔲     | build real editor in modal     |
+| `commerce/products/[id]/_components/product-status-bar.tsx`                                         | Publish / archive          | Action bar               | inline                 | ➖     | low-risk direct transitions    |
+| `commerce/products/_components/bulk-price-adjust-modal.tsx`                                         | Bulk price adjust          | Bulk/action modal        | Modal                  | ✅     | fine                           |
+| `commerce/products/_components/products-import-export.tsx`                                          | Products import            | Bulk/action modal        | ImportDialog           | ✅     | fine                           |
+| `commerce/products/pricing/_components/bulk-pricing-tool.tsx`                                       | Bulk pricing tool          | Bulk/action modal        | full-page tool         | 🔲     | decide page vs overlay         |
+| `commerce/categories/_components/category-create-form.tsx`                                          | New category               | Single-step create form  | overlay                | ✅     | surface-aware                  |
+| `commerce/categories/_components/category-edit-form.tsx`                                            | Edit category              | Edit/record form         | overlay                | ✅     | fine                           |
+| `commerce/categories/_components/categories-editor.tsx`                                             | Category tree              | (nav)                    | inline                 | ➖     | read-only tree                 |
+| `commerce/collections/_components/collection-create-form.tsx`                                       | New collection             | Single-step create form  | overlay                | ✅     | surface-aware                  |
+| `commerce/collections/[id]/_components/collection-meta-form.tsx`                                    | Edit collection meta       | Edit/record form         | inline (detail tab)    | ✅     | fine                           |
+| `commerce/collections/[id]/_components/collection-membership-editor.tsx`                            | Collection membership      | Edit/record form         | inline (detail tab)    | ✅     | fine                           |
+| `commerce/pricing/_components/price-list-create-form.tsx`                                           | New price list             | Single-step create form  | overlay                | ✅     | surface-aware                  |
+| `commerce/pricing/[id]/_components/price-list-entries-editor.tsx`                                   | Price-list entries         | Edit/record form         | inline (detail tab)    | ✅     | appropriate                    |
+| `commerce/pricing/[id]/_components/price-list-status-bar.tsx`                                       | Price-list archive         | Confirm                  | inline arm/confirm     | ✅     | done (useConfirm)              |
+| `commerce/gift-cards/_components/issue-gift-card-form.tsx`                                          | Issue gift card            | Single-step create form  | overlay                | ✅     | surface-aware                  |
+| `commerce/account-credit/_components/grant-account-credit-form.tsx`                                 | Grant account credit       | Single-step create form  | overlay                | ✅     | surface-aware                  |
+| `commerce/markup-rules/_components/markup-rules-manager.tsx` (RuleForm)                             | Create/edit markup rule    | Edit/record form         | inline expand-in-place | 🔲     | move into overlay              |
+| `commerce/surcharges/_components/surcharges-manager.tsx` (RuleForm)                                 | Create/edit surcharge rule | Edit/record form         | inline expand-in-place | 🔲     | move into overlay              |
+| `commerce/bundles/_components/bundle-editor.tsx` + `bundles/new`                                    | Create/edit bundle         | Create/edit form         | full-page only         | 🔲     | surface + overlay              |
+| `commerce/configurator/new/_components/new-template-form.tsx`                                       | New configurator template  | Single-step create form  | full-page only         | 🔲     | surface + overlay              |
+| `commerce/configurator/[id]/_components/template-json-editor.tsx`                                   | Template JSON editor       | Edit/record form         | inline (detail tab)    | ✅     | fine                           |
+| `commerce/discounts/new/page.tsx`                                                                   | New discount               | Single-step create form  | full-page only         | 🔲     | surface + overlay              |
+| `commerce/discounts/_components/discounts-import-export.tsx`                                        | Discounts import           | Bulk/action modal        | ImportDialog           | ✅     | fine                           |
+| `commerce/fitment/_components/fitment-reference-editor.tsx`                                         | Fitment reference add-rows | Inline page-body form    | inline (tree)          | 🔲     | standardize add-forms          |
+| `commerce/providers/install/_components/install-provider-form.tsx`                                  | Install provider           | Single-step create form  | full-page only         | 🔲     | surface + overlay              |
+| `commerce/providers/[id]/_components/provider-actions-bar.tsx`                                      | Provider enable/uninstall  | Confirm                  | inline                 | ➖     | `useConfirm`                   |
+| `commerce/qa/[id]/_components/answer-form.tsx`                                                      | Post staff answer          | Edit/record form         | inline (detail)        | 🔲     | wrap in card/overlay           |
+| `commerce/qa/[id]/_components/question-moderate-actions.tsx`                                        | Moderate question          | Confirm                  | inline                 | ➖     | `useConfirm`                   |
+| `commerce/returns/[id]/_components/return-approval-form.tsx`                                        | Approve return             | Edit/record form         | inline (detail)        | 🔲     | standard card layout           |
+| `commerce/returns/[id]/_components/return-inspection-form.tsx`                                      | Record inspection          | Edit/record form         | inline (detail)        | 🔲     | standard card layout           |
+| `commerce/returns/[id]/_components/return-refund-form.tsx`                                          | Issue refund               | Edit/record form         | inline (detail)        | 🔲     | standard card layout           |
+| `commerce/returns/[id]/_components/return-status-bar.tsx`                                           | Deny / mark received       | Confirm                  | Modal + reason field   | ✅     | done (Modal + required reason) |
+| `commerce/reviews/[id]/_components/respond-form.tsx`                                                | Respond to review          | Edit/record form         | inline (detail)        | 🔲     | standard card layout           |
+| `commerce/reviews/[id]/_components/moderate-actions.tsx`                                            | Moderate review            | Confirm                  | Modal + note field     | ✅     | done (Modal note + useConfirm) |
+| `commerce/shipping/profiles/new/_components/new-profile-form.tsx`                                   | New shipping profile       | Single-step create form  | full-page only         | 🔲     | surface + overlay              |
+| `commerce/shipping/zones/new/_components/new-zone-form.tsx`                                         | New shipping zone          | Single-step create form  | full-page only         | 🔲     | surface + overlay              |
+| `commerce/shipping/zones/[id]/_components/new-rate-form.tsx`                                        | Add shipping rate          | Single-step create form  | inline (detail)        | 🔲     | overlay or collapsible         |
+| `commerce/tax/zones/new/_components/new-tax-zone-form.tsx`                                          | New tax zone               | Single-step create form  | full-page only         | 🔲     | surface + overlay              |
+| `commerce/tax/zones/[id]/_components/new-tax-rate-form.tsx`                                         | Add tax rate               | Single-step create form  | inline (detail)        | 🔲     | overlay or collapsible         |
+| `commerce/subscriptions/[id]/_components/subscription-actions-bar.tsx`                              | Pause/skip/cancel          | Confirm                  | inline                 | ➖     | `useConfirm`                   |
+| `commerce/settings/_components/site-settings-form.tsx`                                              | Commerce settings          | Settings form            | inline                 | ✅     | settings page                  |
+| _delete buttons_ (`bundle`, `category`, `shipping profile/zone/rate`, `tax zone/rate`, `surcharge`) | Delete X                   | Confirm                  | inline                 | ➖     | `useConfirm`                   |
 
 ### CRM & B2B
 
@@ -197,7 +204,7 @@ Dialogs that carry real input (not just confirms):
 | ------------------------------------------------------------------------------------------------------- | --------------------------------- | ---------------------------- | ------------------------- | ------ | ------------------------------------------ |
 | `crm/quotes/new/_components/quote-wizard.tsx`                                                           | New quote                         | Create wizard                | overlay                   | ✅     | done (F-layout + summary)                  |
 | `crm/orders/new/_components/order-wizard.tsx`                                                           | New order                         | Create wizard                | overlay                   | ✅     | done (F-layout + summary)                  |
-| `crm/customers/new/customer-full-profile-wizard.tsx`                                                    | New customer                      | Create wizard                | overlay                   | ⚙️     | **give live summary**                      |
+| `crm/customers/new/customer-full-profile-wizard.tsx`                                                    | New customer                      | Create wizard                | overlay                   | ✅     | done (live summary + fill-to-create tally) |
 | `crm/customers/_components/record-activity-form.tsx`                                                    | Record activity                   | Inline page-body form        | inline (right rail)       | ➖     | belongs inline                             |
 | `crm/customers/_components/customers-import-export.tsx`                                                 | Customer import                   | Bulk/action modal            | ImportDialog              | ➖     | fine                                       |
 | `crm/segments/_components/segment-create-form.tsx`                                                      | New segment                       | Single-step create form      | overlay                   | ✅     | surface-aware                              |
@@ -209,7 +216,7 @@ Dialogs that carry real input (not just confirms):
 | `crm/b2b/_components/b2b-account-create-form.tsx` + `crm/b2b/new/page.tsx`                              | New B2B account (CRM route)       | Single-step create form      | full-page only            | 🔲     | **consolidate** into `b2b/accounts` wizard |
 | `crm/b2b/[id]/_components/credit-hold-toggle.tsx`                                                       | Credit hold                       | Confirm                      | inline                    | ➖     | `useConfirm`                               |
 | `crm/quotes/[id]/_components/quote-lifecycle-actions.tsx`                                               | Quote lifecycle                   | Action bar                   | inline                    | ➖     | fine                                       |
-| `b2b/accounts/new/b2b-account-wizard.tsx`                                                               | New B2B account                   | Create wizard                | overlay                   | ⚙️     | **give live summary**                      |
+| `b2b/accounts/new/b2b-account-wizard.tsx`                                                               | New B2B account                   | Create wizard                | overlay                   | ✅     | done (live summary)                        |
 | `b2b/accounts/[id]/_components/fleet-profile-editor.tsx`                                                | Edit fleet profiles               | Edit/record form             | self-owned modal (nested) | 🔲     | overlay / sheet                            |
 | `b2b/accounts/[id]/_components/approval-rules-editor.tsx` / `b2b-tier-assigner.tsx`                     | Approval rules / tier assign      | Inline page-body form        | inline                    | ➖     | fine                                       |
 | `b2b/accounts/[id]/_components/b2b-account-overrides-table.tsx`                                         | Price overrides                   | Edit/record form             | inline (stub)             | 🔲     | build add form                             |
@@ -224,33 +231,33 @@ Dialogs that carry real input (not just confirms):
 
 ### Inventory, Invoicing & Dropship
 
-| Path                                                                                                                                | Name                            | Kind                     | Current          | Status | Action                                         |
-| ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | ------------------------ | ---------------- | ------ | ---------------------------------------------- |
-| `inventory/purchase-orders/new/_components/purchase-order-wizard.tsx`                                                               | New purchase order              | Create wizard            | overlay          | ✅     | done (F-layout + summary)                      |
-| `inventory/transfers/new/_components/transfer-wizard.tsx`                                                                           | New transfer                    | Create wizard            | overlay          | ✅     | done (F-layout + summary)                      |
-| `invoicing/documents/new/_components/invoice-wizard.tsx`                                                                            | New billing document            | Create wizard            | overlay          | ✅     | done (F-layout + summary)                      |
-| `inventory/warehouses/_components/warehouse-create-form.tsx`                                                                        | New warehouse                   | Single-step create form  | overlay          | ✅     | wired in `CREATE_VIEW_TYPES`                   |
-| `inventory/warehouses/[id]/_components/warehouse-edit-form.tsx`                                                                     | Warehouse edit                  | Edit/record form         | inline           | ➖     | fine                                           |
-| `inventory/counts/new/_components/count-create-form.tsx`                                                                            | New inventory count             | Single-step create form  | full-page only   | 🔲     | surface + overlay                              |
-| `inventory/counts/[id]/_components/count-lines-panel.tsx`                                                                           | Count lines                     | Inline page-body form    | inline           | ➖     | fine                                           |
-| `inventory/lots/new/_components/lot-create-form.tsx`                                                                                | New lot                         | Single-step create form  | full-page only   | 🔲     | surface + overlay                              |
-| `inventory/suppliers/_components/supplier-create-form.tsx`                                                                          | New supplier                    | Single-step create form  | full-page only   | 🔲     | surface + overlay                              |
-| `inventory/suppliers/[id]/_components/supplier-edit-form.tsx`                                                                       | Supplier edit                   | Edit/record form         | inline           | ➖     | fine                                           |
-| `inventory/purchase-orders/[id]/receive/_components/receive-form.tsx`                                                               | Receive stock                   | Single-step create form  | full-page only   | 🔲     | surface + overlay (or sheet)                   |
-| `inventory/purchase-orders/[id]/_components/purchase-order-edit-form.tsx`                                                           | PO edit                         | Edit/record form         | inline           | ➖     | fine                                           |
-| `inventory/sources/_components/source-form.tsx` + `new-source-button.tsx` + `source-actions.tsx` + `[id]/source-detail-actions.tsx` | Connect/edit inventory source   | Single-step + edit       | self-owned modal | 🔲     | shared `SourceCreateForm(surface)` → overlay   |
-| `inventory/sources/[id]/_components/agent-panel.tsx`                                                                                | Bridge agent pair/rotate/unpair | Substantive dialog/modal | self-owned modal | ⚙️     | unpair → `useConfirm` (key-reveal modal ok)    |
-| `inventory/sources/[id]/_components/mappings-panel.tsx` / `unmapped-queue.tsx` / `variant-picker.tsx`                               | SKU mappings                    | Inline page-body form    | inline           | ➖     | fine                                           |
-| `inventory/stock/_components/inventory-row-editor.tsx`                                                                              | Adjust / reorder policy         | Inline page-body form    | inline           | ➖     | fine                                           |
-| `inventory/reorder/_components/reorder-board.tsx`                                                                                   | Reorder board                   | Inline page-body form    | inline           | ➖     | fine                                           |
-| `invoicing/documents/[id]/_components/line-grid.tsx` / `payments-panel.tsx`                                                         | Line composer / payments        | Inline page-body form    | inline (detail)  | ➖     | fine                                           |
-| `invoicing/documents/[id]/_components/stage-bar.tsx`                                                                                | Stage bar                       | Confirm                  | inline           | ➖     | `useConfirm`                                   |
-| `invoicing/workflows/new/page.tsx`                                                                                                  | New workflow                    | Single-step create form  | full-page only   | 🔲     | surface + overlay                              |
-| `invoicing/workflows/[id]/edit/_components/*`                                                                                       | Workflow editor / stage rows    | Settings / edit          | full-page        | ➖     | full-page editor is correct                    |
-| `invoicing/templates/_components/template-row-actions.tsx`                                                                          | Template actions                | Confirm                  | inline           | ➖     | `useConfirm`                                   |
-| `dropship/suppliers/_components/supplier-form.tsx` + `new-supplier-button.tsx` + `supplier-actions.tsx`                             | Connect/edit dropship supplier  | Single-step + edit       | self-owned modal | 🔲     | shared `SupplierCreateForm(surface)` → overlay |
-| `dropship/suppliers/_components/vendor-picker.tsx`                                                                                  | Vendor picker                   | Picker dialog            | self-owned modal | 🔲     | picker step within overlay                     |
-| `dropship/suppliers/[id]/catalog/_components/import-button.tsx` / `sync-button.tsx`                                                 | Import / sync                   | Bulk/action modal        | inline           | ➖     | fine                                           |
+| Path                                                                                                                                | Name                            | Kind                     | Current          | Status | Action                                            |
+| ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | ------------------------ | ---------------- | ------ | ------------------------------------------------- |
+| `inventory/purchase-orders/new/_components/purchase-order-wizard.tsx`                                                               | New purchase order              | Create wizard            | overlay          | ✅     | done (F-layout + summary)                         |
+| `inventory/transfers/new/_components/transfer-wizard.tsx`                                                                           | New transfer                    | Create wizard            | overlay          | ✅     | done (F-layout + summary)                         |
+| `invoicing/documents/new/_components/invoice-wizard.tsx`                                                                            | New billing document            | Create wizard            | overlay          | ✅     | done (F-layout + summary)                         |
+| `inventory/warehouses/_components/warehouse-create-form.tsx`                                                                        | New warehouse                   | Single-step create form  | overlay          | ✅     | wired in `CREATE_VIEW_TYPES`                      |
+| `inventory/warehouses/[id]/_components/warehouse-edit-form.tsx`                                                                     | Warehouse edit                  | Edit/record form         | inline           | ➖     | fine                                              |
+| `inventory/counts/new/_components/count-create-form.tsx`                                                                            | New inventory count             | Single-step create form  | full-page only   | 🔲     | surface + overlay                                 |
+| `inventory/counts/[id]/_components/count-lines-panel.tsx`                                                                           | Count lines                     | Inline page-body form    | inline           | ➖     | fine                                              |
+| `inventory/lots/new/_components/lot-create-form.tsx`                                                                                | New lot                         | Single-step create form  | full-page only   | 🔲     | surface + overlay                                 |
+| `inventory/suppliers/_components/supplier-create-form.tsx`                                                                          | New supplier                    | Single-step create form  | full-page only   | 🔲     | surface + overlay                                 |
+| `inventory/suppliers/[id]/_components/supplier-edit-form.tsx`                                                                       | Supplier edit                   | Edit/record form         | inline           | ➖     | fine                                              |
+| `inventory/purchase-orders/[id]/receive/_components/receive-form.tsx`                                                               | Receive stock                   | Single-step create form  | full-page only   | 🔲     | surface + overlay (or sheet)                      |
+| `inventory/purchase-orders/[id]/_components/purchase-order-edit-form.tsx`                                                           | PO edit                         | Edit/record form         | inline           | ➖     | fine                                              |
+| `inventory/sources/_components/source-form.tsx` + `new-source-button.tsx` + `source-actions.tsx` + `[id]/source-detail-actions.tsx` | Connect/edit inventory source   | Single-step + edit       | self-owned modal | 🔲     | shared `SourceCreateForm(surface)` → overlay      |
+| `inventory/sources/[id]/_components/agent-panel.tsx`                                                                                | Bridge agent pair/rotate/unpair | Substantive dialog/modal | self-owned modal | ✅     | done (unpair → useConfirm; key-reveal modal kept) |
+| `inventory/sources/[id]/_components/mappings-panel.tsx` / `unmapped-queue.tsx` / `variant-picker.tsx`                               | SKU mappings                    | Inline page-body form    | inline           | ➖     | fine                                              |
+| `inventory/stock/_components/inventory-row-editor.tsx`                                                                              | Adjust / reorder policy         | Inline page-body form    | inline           | ➖     | fine                                              |
+| `inventory/reorder/_components/reorder-board.tsx`                                                                                   | Reorder board                   | Inline page-body form    | inline           | ➖     | fine                                              |
+| `invoicing/documents/[id]/_components/line-grid.tsx` / `payments-panel.tsx`                                                         | Line composer / payments        | Inline page-body form    | inline (detail)  | ➖     | fine                                              |
+| `invoicing/documents/[id]/_components/stage-bar.tsx`                                                                                | Stage bar                       | Confirm                  | inline           | ➖     | `useConfirm`                                      |
+| `invoicing/workflows/new/page.tsx`                                                                                                  | New workflow                    | Single-step create form  | full-page only   | 🔲     | surface + overlay                                 |
+| `invoicing/workflows/[id]/edit/_components/*`                                                                                       | Workflow editor / stage rows    | Settings / edit          | full-page        | ➖     | full-page editor is correct                       |
+| `invoicing/templates/_components/template-row-actions.tsx`                                                                          | Template actions                | Confirm                  | inline           | ➖     | `useConfirm`                                      |
+| `dropship/suppliers/_components/supplier-form.tsx` + `new-supplier-button.tsx` + `supplier-actions.tsx`                             | Connect/edit dropship supplier  | Single-step + edit       | self-owned modal | 🔲     | shared `SupplierCreateForm(surface)` → overlay    |
+| `dropship/suppliers/_components/vendor-picker.tsx`                                                                                  | Vendor picker                   | Picker dialog            | self-owned modal | 🔲     | picker step within overlay                        |
+| `dropship/suppliers/[id]/catalog/_components/import-button.tsx` / `sync-button.tsx`                                                 | Import / sync                   | Bulk/action modal        | inline           | ➖     | fine                                              |
 
 ### CMS & Builder
 
@@ -273,7 +280,7 @@ Dialogs that carry real input (not just confirms):
 | `cms/legal/consent-settings-form.tsx`                                                               | Cookie consent              | Settings form           | inline             | 🔲     | wrap in F-layout                     |
 | `cms/_components/media-picker.tsx` / `reference-picker.tsx`                                         | Media / reference picker    | Picker dialog           | Modal              | ✅     | fine                                 |
 | `cms/redirects/_components/import-redirects-button.tsx` / `cms/media/upload-button.tsx`             | Import / upload             | Bulk/action             | inline             | ✅     | fine                                 |
-| `cms/[id]/revisions/restore-button.tsx`                                                             | Restore revision            | Confirm                 | AlertDialog        | ➖     | normalize to `useConfirm`            |
+| `cms/[id]/revisions/restore-button.tsx`                                                             | Restore revision            | Confirm                 | useConfirm         | ✅     | done (useConfirm, warning tone)      |
 | `cms/[id]/seo-panel.tsx` / `entry-template-picker.tsx`                                              | SEO panel / template picker | Edit/record form        | inline             | ✅     | fine                                 |
 | `builder/**` (inspector, panels, palettes, brand/theme controls, framing/preview/merge-tags modals) | Builder editor surfaces     | Edit / dialog           | inline / Modal     | ✅     | bespoke editor — likely out of scope |
 | `builder/_governance/components/allowlist-center.tsx`                                               | CSS allowlist editor        | Settings form           | inline             | 🔲     | wrap in F-layout                     |
@@ -295,7 +302,7 @@ Dialogs that carry real input (not just confirms):
 | `email/settings/settings-form.tsx`                                                                                                           | Email settings              | Settings form            | inline                   | ✅     | settings page                      |
 | `email/suppressions/_components/add-suppression-form.tsx`                                                                                    | Add suppression             | Single-step create form  | overlay                  | ✅     | surface-aware                      |
 | `email/domains/_components/add-domain-form.tsx`                                                                                              | Add sending domain          | Single-step create form  | overlay                  | ✅     | surface-aware                      |
-| `email/domains/_components/domain-actions.tsx`                                                                                               | Remove domain               | Confirm                  | raw AlertDialog          | ⚙️     | → `useConfirm`                     |
+| `email/domains/_components/domain-actions.tsx`                                                                                               | Remove domain               | Confirm                  | useConfirm               | ✅     | done (useConfirm)                  |
 | `email/broadcasts/_components/broadcast-composer.tsx`                                                                                        | Create broadcast            | Create wizard            | full-page only           | 🔲     | design call (WizardFrame page?)    |
 | `email/broadcasts/[id]/broadcast-actions.tsx`                                                                                                | Schedule / send now         | Bulk/action modal        | inline                   | 🔲     | lift scheduler into dialog         |
 | `email/test-send-form.tsx`                                                                                                                   | Test send (dev)             | Inline page-body form    | inline                   | ➖     | dev tool                           |

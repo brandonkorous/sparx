@@ -17,7 +17,7 @@ import {
  * Model Context Protocol) so the assistant you already use can read and write
  * your live business data. "Bring your own AI."
  *
- * Built on the marketing primitives + the eight module colors (this module's
+ * Built on the marketing primitives + the per-module colors (this module's
  * accent is AI pink). Section backgrounds alternate page → surface for rhythm,
  * with two near-black bands (the safety surface and the close). The single
  * connection endpoint shown is real: services/api-mcp serves Streamable HTTP at
@@ -52,6 +52,7 @@ const MODS = {
   b2b: getModuleColor('b2b'),
   ai: getModuleColor('ai'),
   dropship: getModuleColor('dropship'),
+  scheduling: getModuleColor('scheduling'),
 } as const;
 
 const SANS = 'var(--font-sans)';
@@ -776,6 +777,11 @@ function ToolSurface() {
       module: 'crm',
       label: 'Invoicing & quotes',
       actions: 'Draft and read invoices and quotes — when the Invoicing module is on.',
+    },
+    {
+      module: 'scheduling',
+      label: 'Scheduling & bookings',
+      actions: 'Services, availability, and bookings — create, reschedule, or cancel a booking.',
     },
     {
       module: 'cms',

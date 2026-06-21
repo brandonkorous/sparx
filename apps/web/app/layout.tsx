@@ -89,7 +89,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'sparx — Everything, ignited.',
     description:
-      'Modular content and commerce OS by WizeWorks. Eight pieces, one platform, MCP-native AI. Live in five minutes.',
+      'Modular content and commerce OS by WizeWorks. Nine pieces, one platform, MCP-native AI. Live in five minutes.',
     url: 'https://sparx.works',
     siteName: 'sparx',
     type: 'website',

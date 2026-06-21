@@ -60,7 +60,7 @@ export function GET(): Response {
 
   const body = `# sparx
 
-> sparx (by WizeWorks) is a modular content and commerce operating system: storefront, commerce, CRM, CMS, email, B2B/wholesale, dropship, and a first-class AI/MCP integration in one platform. Tenants activate only the modules they need — a CMS-only publisher, a CRM-only team, and a B2B distributor are all equally first-class.
+> sparx (by WizeWorks) is a modular content and commerce operating system: storefront, commerce, CRM, CMS, email, B2B/wholesale, dropship, scheduling, and a first-class AI/MCP integration in one platform. Tenants activate only the modules they need — a CMS-only publisher, a CRM-only team, and a B2B distributor are all equally first-class.
 
 sparx is content AND/OR commerce — selling is one capability, never the assumption. It is API-first: every feature exists as an API endpoint, and a native Model Context Protocol (MCP) server lets AI agents read and write live business data directly (no exports, no CSVs). Modules are feature-flagged and billed independently. The platform runs on Google Kubernetes Engine with PostgreSQL row-level security enforcing tenant isolation.
 

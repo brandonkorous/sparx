@@ -25,6 +25,8 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Badge,
   Button,
+  Card,
+  CardContent,
   Input,
   Label,
   ModuleProvider,
@@ -549,76 +551,80 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
         nextLoading: submitting,
       }}
     >
-      <div className="flex flex-col gap-5">
-        <div>
-          <Label htmlFor="pw-title">Title</Label>
-          <Input
-            id="pw-title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="What you're selling"
-          />
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <Label htmlFor="pw-type">Product type</Label>
-            <Input
-              id="pw-type"
-              value={productType}
-              onChange={(e) => setProductType(e.target.value)}
-              placeholder="e.g. Apparel, Book, Tool"
-            />
+      <Card variant="module">
+        <CardContent className="py-6">
+          <div className="flex flex-col gap-5">
+            <div>
+              <Label htmlFor="pw-title">Title</Label>
+              <Input
+                id="pw-title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="What you're selling"
+              />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <Label htmlFor="pw-type">Product type</Label>
+                <Input
+                  id="pw-type"
+                  value={productType}
+                  onChange={(e) => setProductType(e.target.value)}
+                  placeholder="e.g. Apparel, Book, Tool"
+                />
+              </div>
+              <div>
+                <Label htmlFor="pw-vendor">Vendor / brand</Label>
+                <Input
+                  id="pw-vendor"
+                  value={vendor}
+                  onChange={(e) => setVendor(e.target.value)}
+                  placeholder="Brand or supplier"
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="pw-desc">Description</Label>
+              <Textarea
+                id="pw-desc"
+                rows={4}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="What it is and why someone wants it."
+              />
+            </div>
+            <div>
+              <Label htmlFor="pw-tags">Tags</Label>
+              <Input
+                id="pw-tags"
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+                placeholder="e.g. featured, sale, new (comma-separated)"
+              />
+            </div>
+            <div>
+              <Label htmlFor="pw-fulfillment">Fulfillment</Label>
+              <NativeSelect
+                id="pw-fulfillment"
+                value={fulfillmentType}
+                onChange={(e) => setFulfillmentType(e.target.value as FulfillmentType)}
+              >
+                <option value="physical">Physical goods</option>
+                <option value="digital">Digital download</option>
+                <option value="service">Service / booking</option>
+              </NativeSelect>
+              <Text size="sm" variant="muted" className="mt-1.5">
+                Physical ships and tracks stock. Digital and service skip shipping.
+              </Text>
+            </div>
+            {error && (
+              <Text size="sm" variant="danger" role="alert">
+                {error}
+              </Text>
+            )}
           </div>
-          <div>
-            <Label htmlFor="pw-vendor">Vendor / brand</Label>
-            <Input
-              id="pw-vendor"
-              value={vendor}
-              onChange={(e) => setVendor(e.target.value)}
-              placeholder="Brand or supplier"
-            />
-          </div>
-        </div>
-        <div>
-          <Label htmlFor="pw-desc">Description</Label>
-          <Textarea
-            id="pw-desc"
-            rows={4}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="What it is and why someone wants it."
-          />
-        </div>
-        <div>
-          <Label htmlFor="pw-tags">Tags</Label>
-          <Input
-            id="pw-tags"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-            placeholder="e.g. featured, sale, new (comma-separated)"
-          />
-        </div>
-        <div>
-          <Label htmlFor="pw-fulfillment">Fulfillment</Label>
-          <NativeSelect
-            id="pw-fulfillment"
-            value={fulfillmentType}
-            onChange={(e) => setFulfillmentType(e.target.value as FulfillmentType)}
-          >
-            <option value="physical">Physical goods</option>
-            <option value="digital">Digital download</option>
-            <option value="service">Service / booking</option>
-          </NativeSelect>
-          <Text size="sm" variant="muted" className="mt-1.5">
-            Physical ships and tracks stock. Digital and service skip shipping.
-          </Text>
-        </div>
-        {error && (
-          <Text size="sm" variant="danger" role="alert">
-            {error}
-          </Text>
-        )}
-      </div>
+        </CardContent>
+      </Card>
     </WizardStep>
   );
 
@@ -638,63 +644,67 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
         nextLoading: submitting,
       }}
     >
-      <div className="flex flex-col gap-5">
-        <div>
-          <Label htmlFor="pw-sku">SKU</Label>
-          <Input
-            id="pw-sku"
-            value={sku}
-            onChange={(e) => setSku(e.target.value)}
-            placeholder="SKU-001"
-          />
-        </div>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div>
-            <Label htmlFor="pw-price">Price (USD)</Label>
-            <Input
-              id="pw-price"
-              inputMode="decimal"
-              value={priceStr}
-              onChange={(e) => setPriceStr(e.target.value)}
-              placeholder="29.00"
-            />
+      <Card variant="module">
+        <CardContent className="py-6">
+          <div className="flex flex-col gap-5">
+            <div>
+              <Label htmlFor="pw-sku">SKU</Label>
+              <Input
+                id="pw-sku"
+                value={sku}
+                onChange={(e) => setSku(e.target.value)}
+                placeholder="SKU-001"
+              />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div>
+                <Label htmlFor="pw-price">Price (USD)</Label>
+                <Input
+                  id="pw-price"
+                  inputMode="decimal"
+                  value={priceStr}
+                  onChange={(e) => setPriceStr(e.target.value)}
+                  placeholder="29.00"
+                />
+              </div>
+              <div>
+                <Label htmlFor="pw-compare">Compare at</Label>
+                <Input
+                  id="pw-compare"
+                  inputMode="decimal"
+                  value={compareAtStr}
+                  onChange={(e) => setCompareAtStr(e.target.value)}
+                  placeholder="39.00"
+                />
+              </div>
+              <div>
+                <Label htmlFor="pw-cost">Cost</Label>
+                <Input
+                  id="pw-cost"
+                  inputMode="decimal"
+                  value={costStr}
+                  onChange={(e) => setCostStr(e.target.value)}
+                  placeholder="12.00"
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="pw-tax">Tax class</Label>
+              <Input
+                id="pw-tax"
+                value={taxClass}
+                onChange={(e) => setTaxClass(e.target.value)}
+                placeholder="standard | food | digital | apparel"
+              />
+            </div>
+            {error && (
+              <Text size="sm" variant="danger" role="alert">
+                {error}
+              </Text>
+            )}
           </div>
-          <div>
-            <Label htmlFor="pw-compare">Compare at</Label>
-            <Input
-              id="pw-compare"
-              inputMode="decimal"
-              value={compareAtStr}
-              onChange={(e) => setCompareAtStr(e.target.value)}
-              placeholder="39.00"
-            />
-          </div>
-          <div>
-            <Label htmlFor="pw-cost">Cost</Label>
-            <Input
-              id="pw-cost"
-              inputMode="decimal"
-              value={costStr}
-              onChange={(e) => setCostStr(e.target.value)}
-              placeholder="12.00"
-            />
-          </div>
-        </div>
-        <div>
-          <Label htmlFor="pw-tax">Tax class</Label>
-          <Input
-            id="pw-tax"
-            value={taxClass}
-            onChange={(e) => setTaxClass(e.target.value)}
-            placeholder="standard | food | digital | apparel"
-          />
-        </div>
-        {error && (
-          <Text size="sm" variant="danger" role="alert">
-            {error}
-          </Text>
-        )}
-      </div>
+        </CardContent>
+      </Card>
     </WizardStep>
   );
 
@@ -713,147 +723,151 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
         nextDisabled: submitting,
       }}
     >
-      <div className="flex flex-col gap-5">
-        <div className="flex items-start justify-between gap-4 rounded-xl border border-[var(--color-border-default)] p-4">
-          <span className="flex flex-col gap-0.5">
-            <Text size="sm" weight="medium">
-              Track inventory
-            </Text>
-            <Text size="sm" variant="muted">
-              Count stock and stop selling at zero. Turn off to always allow purchase.
-            </Text>
-          </span>
-          <Switch
-            checked={trackInventory}
-            onCheckedChange={setTrackInventory}
-            aria-label="Track inventory"
-          />
-        </div>
+      <Card variant="module">
+        <CardContent className="py-6">
+          <div className="flex flex-col gap-5">
+            <div className="flex items-start justify-between gap-4 rounded-xl border border-[var(--color-border-default)] p-4">
+              <span className="flex flex-col gap-0.5">
+                <Text size="sm" weight="medium">
+                  Track inventory
+                </Text>
+                <Text size="sm" variant="muted">
+                  Count stock and stop selling at zero. Turn off to always allow purchase.
+                </Text>
+              </span>
+              <Switch
+                checked={trackInventory}
+                onCheckedChange={setTrackInventory}
+                aria-label="Track inventory"
+              />
+            </div>
 
-        {trackInventory && (
-          <div className="flex flex-col gap-3">
+            {trackInventory && (
+              <div className="flex flex-col gap-3">
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div>
+                    <Label htmlFor="pw-warehouse">Warehouse</Label>
+                    <NativeSelect
+                      id="pw-warehouse"
+                      value={warehouseId}
+                      onChange={(e) => setWarehouseId(e.target.value)}
+                      disabled={warehouses.length === 0}
+                    >
+                      {warehouses.length === 0 ? (
+                        <option value="">No warehouses yet</option>
+                      ) : (
+                        warehouses.map((w) => (
+                          <option key={w.id} value={w.id}>
+                            {w.name} ({w.code})
+                          </option>
+                        ))
+                      )}
+                    </NativeSelect>
+                  </div>
+                  <div>
+                    <Label htmlFor="pw-qty">On hand</Label>
+                    <Input
+                      id="pw-qty"
+                      inputMode="numeric"
+                      value={quantityStr}
+                      onChange={(e) => setQuantityStr(e.target.value)}
+                      placeholder="25"
+                      disabled={warehouses.length === 0}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="pw-reorder">Reorder at</Label>
+                    <Input
+                      id="pw-reorder"
+                      inputMode="numeric"
+                      value={reorderPointStr}
+                      onChange={(e) => setReorderPointStr(e.target.value)}
+                      placeholder="5"
+                      disabled={warehouses.length === 0}
+                    />
+                  </div>
+                </div>
+                {warehouses.length === 0 && (
+                  <Text size="sm" variant="muted">
+                    No warehouse yet — create one here to seed stock without leaving the wizard.
+                  </Text>
+                )}
+                <InlineWarehouseCreate onCreated={(id) => refreshWarehouses(id)} />
+              </div>
+            )}
+
+            <div>
+              <Label htmlFor="pw-weight">Shipping weight (kg)</Label>
+              <Input
+                id="pw-weight"
+                inputMode="decimal"
+                value={weightKgStr}
+                onChange={(e) => setWeightKgStr(e.target.value)}
+                placeholder="8.5"
+              />
+            </div>
             <div className="grid gap-4 sm:grid-cols-3">
               <div>
-                <Label htmlFor="pw-warehouse">Warehouse</Label>
-                <NativeSelect
-                  id="pw-warehouse"
-                  value={warehouseId}
-                  onChange={(e) => setWarehouseId(e.target.value)}
-                  disabled={warehouses.length === 0}
-                >
-                  {warehouses.length === 0 ? (
-                    <option value="">No warehouses yet</option>
-                  ) : (
-                    warehouses.map((w) => (
-                      <option key={w.id} value={w.id}>
-                        {w.name} ({w.code})
-                      </option>
-                    ))
-                  )}
-                </NativeSelect>
-              </div>
-              <div>
-                <Label htmlFor="pw-qty">On hand</Label>
+                <Label htmlFor="pw-length">Length (cm)</Label>
                 <Input
-                  id="pw-qty"
-                  inputMode="numeric"
-                  value={quantityStr}
-                  onChange={(e) => setQuantityStr(e.target.value)}
-                  placeholder="25"
-                  disabled={warehouses.length === 0}
+                  id="pw-length"
+                  inputMode="decimal"
+                  value={lengthCmStr}
+                  onChange={(e) => setLengthCmStr(e.target.value)}
+                  placeholder="30"
                 />
               </div>
               <div>
-                <Label htmlFor="pw-reorder">Reorder at</Label>
+                <Label htmlFor="pw-width">Width (cm)</Label>
                 <Input
-                  id="pw-reorder"
-                  inputMode="numeric"
-                  value={reorderPointStr}
-                  onChange={(e) => setReorderPointStr(e.target.value)}
-                  placeholder="5"
-                  disabled={warehouses.length === 0}
+                  id="pw-width"
+                  inputMode="decimal"
+                  value={widthCmStr}
+                  onChange={(e) => setWidthCmStr(e.target.value)}
+                  placeholder="30"
+                />
+              </div>
+              <div>
+                <Label htmlFor="pw-height">Height (cm)</Label>
+                <Input
+                  id="pw-height"
+                  inputMode="decimal"
+                  value={heightCmStr}
+                  onChange={(e) => setHeightCmStr(e.target.value)}
+                  placeholder="25"
                 />
               </div>
             </div>
-            {warehouses.length === 0 && (
-              <Text size="sm" variant="muted">
-                No warehouse yet — create one here to seed stock without leaving the wizard.
+            <div>
+              <Label htmlFor="pw-hazmat">Shipping classification</Label>
+              <NativeSelect
+                id="pw-hazmat"
+                value={hazmatClass}
+                onChange={(e) => setHazmatClass(e.target.value as HazmatClass)}
+              >
+                <option value="none">Standard — no special handling</option>
+                <option value="flammable_liquid">Flammable liquid</option>
+                <option value="flammable_solid">Flammable solid</option>
+                <option value="gas">Compressed gas</option>
+                <option value="oxidizer">Oxidizer</option>
+                <option value="toxic">Toxic</option>
+                <option value="corrosive">Corrosive</option>
+                <option value="radioactive">Radioactive</option>
+                <option value="misc">Other regulated</option>
+              </NativeSelect>
+              <Text size="sm" variant="muted" className="mt-1.5">
+                Most products are Standard. Set this only for regulated goods (batteries, aerosols,
+                chemicals) so carriers route them correctly.
+              </Text>
+            </div>
+            {error && (
+              <Text size="sm" variant="danger" role="alert">
+                {error}
               </Text>
             )}
-            <InlineWarehouseCreate onCreated={(id) => refreshWarehouses(id)} />
           </div>
-        )}
-
-        <div>
-          <Label htmlFor="pw-weight">Shipping weight (kg)</Label>
-          <Input
-            id="pw-weight"
-            inputMode="decimal"
-            value={weightKgStr}
-            onChange={(e) => setWeightKgStr(e.target.value)}
-            placeholder="8.5"
-          />
-        </div>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div>
-            <Label htmlFor="pw-length">Length (cm)</Label>
-            <Input
-              id="pw-length"
-              inputMode="decimal"
-              value={lengthCmStr}
-              onChange={(e) => setLengthCmStr(e.target.value)}
-              placeholder="30"
-            />
-          </div>
-          <div>
-            <Label htmlFor="pw-width">Width (cm)</Label>
-            <Input
-              id="pw-width"
-              inputMode="decimal"
-              value={widthCmStr}
-              onChange={(e) => setWidthCmStr(e.target.value)}
-              placeholder="30"
-            />
-          </div>
-          <div>
-            <Label htmlFor="pw-height">Height (cm)</Label>
-            <Input
-              id="pw-height"
-              inputMode="decimal"
-              value={heightCmStr}
-              onChange={(e) => setHeightCmStr(e.target.value)}
-              placeholder="25"
-            />
-          </div>
-        </div>
-        <div>
-          <Label htmlFor="pw-hazmat">Shipping classification</Label>
-          <NativeSelect
-            id="pw-hazmat"
-            value={hazmatClass}
-            onChange={(e) => setHazmatClass(e.target.value as HazmatClass)}
-          >
-            <option value="none">Standard — no special handling</option>
-            <option value="flammable_liquid">Flammable liquid</option>
-            <option value="flammable_solid">Flammable solid</option>
-            <option value="gas">Compressed gas</option>
-            <option value="oxidizer">Oxidizer</option>
-            <option value="toxic">Toxic</option>
-            <option value="corrosive">Corrosive</option>
-            <option value="radioactive">Radioactive</option>
-            <option value="misc">Other regulated</option>
-          </NativeSelect>
-          <Text size="sm" variant="muted" className="mt-1.5">
-            Most products are Standard. Set this only for regulated goods (batteries, aerosols,
-            chemicals) so carriers route them correctly.
-          </Text>
-        </div>
-        {error && (
-          <Text size="sm" variant="danger" role="alert">
-            {error}
-          </Text>
-        )}
-      </div>
+        </CardContent>
+      </Card>
     </WizardStep>
   );
 
@@ -877,55 +891,59 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
         ),
       }}
     >
-      <div className="flex flex-col gap-4">
-        <dl className="grid grid-cols-[9rem_1fr] gap-x-4 gap-y-2.5 text-sm">
-          <dt className="text-[var(--color-text-muted)]">Title</dt>
-          <dd className="font-medium">{title.trim() || '—'}</dd>
-          <dt className="text-[var(--color-text-muted)]">Type</dt>
-          <dd className="font-medium">
-            {fulfillmentType}
-            {productType.trim() ? ` · ${productType.trim()}` : ''}
-          </dd>
-          <dt className="text-[var(--color-text-muted)]">SKU</dt>
-          <dd className="font-medium">{sku.trim() || '—'}</dd>
-          <dt className="text-[var(--color-text-muted)]">Price</dt>
-          <dd className="font-medium">
-            {centsToDisplay(dollarsToCents(priceStr))}
-            {dollarsToCents(compareAtStr) !== undefined && (
-              <span className="ml-2 text-[var(--color-text-muted)] line-through">
-                {centsToDisplay(dollarsToCents(compareAtStr))}
-              </span>
-            )}
-          </dd>
-          {isPhysical && trackInventory && (
-            <>
-              <dt className="text-[var(--color-text-muted)]">Initial stock</dt>
+      <Card variant="module">
+        <CardContent className="py-6">
+          <div className="flex flex-col gap-4">
+            <dl className="grid grid-cols-[9rem_1fr] gap-x-4 gap-y-2.5 text-sm">
+              <dt className="text-[var(--color-text-muted)]">Title</dt>
+              <dd className="font-medium">{title.trim() || '—'}</dd>
+              <dt className="text-[var(--color-text-muted)]">Type</dt>
               <dd className="font-medium">
-                {toNonNegInt(quantityStr) ?? 0}
-                {warehouses.find((w) => w.id === warehouseId)
-                  ? ` @ ${warehouses.find((w) => w.id === warehouseId)?.code}`
-                  : ''}
+                {fulfillmentType}
+                {productType.trim() ? ` · ${productType.trim()}` : ''}
               </dd>
-            </>
-          )}
-        </dl>
+              <dt className="text-[var(--color-text-muted)]">SKU</dt>
+              <dd className="font-medium">{sku.trim() || '—'}</dd>
+              <dt className="text-[var(--color-text-muted)]">Price</dt>
+              <dd className="font-medium">
+                {centsToDisplay(dollarsToCents(priceStr))}
+                {dollarsToCents(compareAtStr) !== undefined && (
+                  <span className="ml-2 text-[var(--color-text-muted)] line-through">
+                    {centsToDisplay(dollarsToCents(compareAtStr))}
+                  </span>
+                )}
+              </dd>
+              {isPhysical && trackInventory && (
+                <>
+                  <dt className="text-[var(--color-text-muted)]">Initial stock</dt>
+                  <dd className="font-medium">
+                    {toNonNegInt(quantityStr) ?? 0}
+                    {warehouses.find((w) => w.id === warehouseId)
+                      ? ` @ ${warehouses.find((w) => w.id === warehouseId)?.code}`
+                      : ''}
+                  </dd>
+                </>
+              )}
+            </dl>
 
-        <div className="rounded-xl border border-[var(--color-border-default)] p-4">
-          <Text size="sm" variant="muted">
-            Next, from the product’s tabs you can add{' '}
-            <span className="text-[var(--color-text-primary)]">variants &amp; options</span>,{' '}
-            <span className="text-[var(--color-text-primary)]">media</span>, and{' '}
-            <span className="text-[var(--color-text-primary)]">fitment</span>. These become guided
-            steps here as the wizard is completed.
-          </Text>
-        </div>
+            <div className="rounded-xl border border-[var(--color-border-default)] p-4">
+              <Text size="sm" variant="muted">
+                Next, from the product’s tabs you can add{' '}
+                <span className="text-[var(--color-text-primary)]">variants &amp; options</span>,{' '}
+                <span className="text-[var(--color-text-primary)]">media</span>, and{' '}
+                <span className="text-[var(--color-text-primary)]">fitment</span>. These become
+                guided steps here as the wizard is completed.
+              </Text>
+            </div>
 
-        {error && (
-          <Text size="sm" variant="danger" role="alert">
-            {error}
-          </Text>
-        )}
-      </div>
+            {error && (
+              <Text size="sm" variant="danger" role="alert">
+                {error}
+              </Text>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </WizardStep>
   );
 
@@ -984,15 +1002,6 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
     if (target >= 0 && target <= current) goToStep(key as StepKey);
   };
   const canSelectStep = (_key: string, index: number) => index <= current;
-  const cancelButton = (
-    <button
-      type="button"
-      onClick={() => void onCancel()}
-      className="text-[var(--color-text-muted)] underline-offset-2 hover:underline"
-    >
-      Cancel
-    </button>
-  );
 
   // The live draft summary — the F layout's right-hand column (docs/86). Builds as
   // the merchant fills the spine; the right column earns the modal's width instead
@@ -1033,7 +1042,7 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
       context={railContext}
       onStepSelect={onStepSelect}
       canSelectStep={canSelectStep}
-      footer={cancelButton}
+      onCancel={() => void onCancel()}
       summary={summary}
     >
       {body}

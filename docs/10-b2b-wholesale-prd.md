@@ -1,8 +1,8 @@
 # WizeWorks Platform — B2B & Wholesale PRD
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-21
 
 ---
 
@@ -275,12 +275,23 @@ B2B customers access a dedicated portal (separate from the retail site) that sho
 
 ## 10. Service Scheduling Integration
 
-For businesses like Gillett Diesel that offer repair/service in addition to parts:
+> **Scheduling is its own module.** Appointment booking, service types, resources,
+> availability, recurring/series bookings, classes, waitlists, deposits, calendar sync,
+> and reminder emails all live in the **Scheduling module** (`scheduling`, $29/mo
+> standalone — see [79-scheduling-module-prd.md](79-scheduling-module-prd.md)). B2B does
+> not own a parallel scheduling engine. This section is the **B2B↔Scheduling bridge**:
+> what a tenant gets when both modules are active — not a separate feature set.
 
-- Service types configured by merchant (e.g. "Dyno Tune", "Injector Rebuild", "Turbo Service")
-- Each service type has: duration, capacity per day, pricing, resource requirements
-- Customers book appointments from portal or site
-- Appointment linked to B2B account (for fleet management)
-- Parts from order can be linked to service appointment
-- Service history recorded per vehicle in fleet profile
-- Appointment confirmation and reminder emails automated
+For a parts-and-service business with both **B2B/Fleet** and **Scheduling** activated:
+
+- Service types, durations, capacity, pricing, and resource requirements are configured in
+  the Scheduling module — not duplicated here.
+- Customers book appointments from the portal or public site via the Scheduling booking widget.
+- A booking carries its B2B account context for fleet management.
+- Parts from a B2B order can be linked to a service appointment.
+- Service history is recorded per vehicle in the fleet profile.
+- Appointment confirmation and reminder emails are automated by the Scheduling module's
+  builder-authored email templates.
+
+The legacy B2B fleet-scheduling tables remain in place until they are migrated onto the
+Scheduling engine; all new scheduling capability ships in the Scheduling module.

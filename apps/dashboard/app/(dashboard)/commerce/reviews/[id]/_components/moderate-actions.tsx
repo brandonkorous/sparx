@@ -4,7 +4,18 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, Flag, Trash2, X } from 'lucide-react';
 
-import { Button, Stack, Text, useConfirm } from '@sparx/ui';
+import {
+  Button,
+  Modal,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  Stack,
+  Text,
+  Textarea,
+  useConfirm,
+} from '@sparx/ui';
 
 import { deleteReviewAction, moderateReviewAction } from '../../../review-actions';
 
@@ -15,33 +26,25 @@ export function ModerateActions({ reviewId, status }: { reviewId: string; status
   const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
+  const [rejectOpen, setRejectOpen] = React.useState(false);
+  const [rejectNote, setRejectNote] = React.useState('');
 
-  function moderate(next: Status, requireNote = false, tone: 'danger' | 'warning' = 'warning') {
+  function moderate(next: Status, tone: 'danger' | 'warning' = 'warning') {
     void (async () => {
       const ok = await confirm({
         title: `Mark review as ${next}?`,
         description:
           next === 'approved'
             ? 'Approving publishes the review on the storefront immediately.'
-            : next === 'rejected'
-              ? 'Rejected reviews are hidden from the storefront and the customer.'
-              : 'Flagged reviews stay in the queue and surface in the alerts strip.',
+            : next === 'flagged'
+              ? 'Flagged reviews stay in the queue and surface in the alerts strip.'
+              : '',
         confirmLabel: next.charAt(0).toUpperCase() + next.slice(1),
         tone,
       });
       if (!ok) return;
-      let note: string | undefined;
-      if (requireNote) {
-        const raw = window.prompt('Moderation note (internal)?') ?? '';
-        if (!raw.trim()) return;
-        note = raw.trim();
-      }
       startTransition(async () => {
-        const result = await moderateReviewAction({
-          reviewId,
-          status: next,
-          ...(note ? { moderationNote: note } : {}),
-        });
+        const result = await moderateReviewAction({ reviewId, status: next });
         if (!result.ok) {
           setError(result.error.message);
           return;
@@ -49,6 +52,30 @@ export function ModerateActions({ reviewId, status }: { reviewId: string; status
         router.refresh();
       });
     })();
+  }
+
+  function onRejectSubmit() {
+    const note = rejectNote.trim();
+    if (!note) return;
+    setRejectOpen(false);
+    setRejectNote('');
+    startTransition(async () => {
+      const result = await moderateReviewAction({
+        reviewId,
+        status: 'rejected',
+        moderationNote: note,
+      });
+      if (!result.ok) {
+        setError(result.error.message);
+        return;
+      }
+      router.refresh();
+    });
+  }
+
+  function onRejectCancel() {
+    setRejectOpen(false);
+    setRejectNote('');
   }
 
   function onDelete() {
@@ -88,11 +115,7 @@ export function ModerateActions({ reviewId, status }: { reviewId: string; status
           </Button>
         )}
         {status !== 'rejected' && (
-          <Button
-            variant="ghost"
-            disabled={pending}
-            onClick={() => moderate('rejected', true, 'danger')}
-          >
+          <Button variant="ghost" disabled={pending} onClick={() => setRejectOpen(true)}>
             <X className="h-4 w-4" />
             Reject
           </Button>
@@ -107,6 +130,47 @@ export function ModerateActions({ reviewId, status }: { reviewId: string; status
           {error}
         </Text>
       )}
+
+      <Modal
+        open={rejectOpen}
+        onOpenChange={(open) => {
+          if (!open) onRejectCancel();
+        }}
+      >
+        <ModalContent>
+          <ModalHeader>
+            <ModalTitle>Reject review?</ModalTitle>
+          </ModalHeader>
+          <Stack gap={3} className="px-6 pb-2">
+            <Text size="sm" variant="muted">
+              Rejected reviews are hidden from the storefront and the customer.
+            </Text>
+            <Stack gap={1}>
+              <Text size="sm" as="label">
+                Moderation note (internal)
+              </Text>
+              <Textarea
+                value={rejectNote}
+                onChange={(e) => setRejectNote(e.target.value)}
+                placeholder="Reason for rejecting this review…"
+                rows={3}
+              />
+            </Stack>
+          </Stack>
+          <ModalFooter>
+            <Button variant="ghost" disabled={pending} onClick={onRejectCancel}>
+              Cancel
+            </Button>
+            <Button
+              color="danger"
+              disabled={pending || !rejectNote.trim()}
+              onClick={onRejectSubmit}
+            >
+              {pending ? 'Rejecting…' : 'Reject review'}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Stack>
   );
 }

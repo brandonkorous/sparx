@@ -12,7 +12,7 @@ import {
   toast,
   useConfirm,
 } from '@sparx/ui';
-import { Ban, Check, CheckCheck, LogIn, MoreHorizontal, UserX } from 'lucide-react';
+import { Ban, Check, CheckCheck, LogIn, MoreHorizontal, Users, UserX } from 'lucide-react';
 
 import type { ActionResult } from '../../_lib/actions';
 import {
@@ -22,16 +22,29 @@ import {
   confirmBookingAction,
   noShowBookingAction,
 } from '../../_lib/actions';
-import type { BookingStatus } from '../../_lib/types';
+import type { BookingStatus, BookingType } from '../../_lib/types';
+import { RosterDialog } from './roster-dialog';
 
 const TERMINAL: BookingStatus[] = ['completed', 'cancelled', 'no_show'];
 
-export function BookingActions({ id, status }: { id: string; status: BookingStatus }) {
+export function BookingActions({
+  id,
+  status,
+  bookingType,
+}: {
+  id: string;
+  status: BookingStatus;
+  bookingType?: BookingType;
+}) {
   const router = useRouter();
   const confirm = useConfirm();
   const [busy, setBusy] = useState(false);
+  const [rosterOpen, setRosterOpen] = useState(false);
 
-  if (TERMINAL.includes(status)) {
+  // A class session always exposes its roster (even when terminal — to review who
+  // attended); other booking types hide actions once terminal.
+  const isClass = bookingType === 'class';
+  if (TERMINAL.includes(status) && !isClass) {
     return null;
   }
 
@@ -68,20 +81,42 @@ export function BookingActions({ id, status }: { id: string; status: BookingStat
     if (ok) await run(() => noShowBookingAction(id), 'Marked as no-show');
   }
 
+  const terminal = TERMINAL.includes(status);
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          shape="square"
-          size="sm"
-          aria-label="Booking actions"
-          disabled={busy}
-        >
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            shape="square"
+            size="sm"
+            aria-label="Booking actions"
+            disabled={busy}
+          >
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {isClass ? (
+            <DropdownMenuItem onSelect={() => setRosterOpen(true)}>
+              <Users className="mr-2 h-4 w-4" />
+              Roster
+            </DropdownMenuItem>
+          ) : null}
+          {isClass && !terminal ? <DropdownMenuSeparator /> : null}
+          {!terminal ? renderLifecycle() : null}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      {isClass ? (
+        <RosterDialog bookingId={id} open={rosterOpen} onOpenChange={setRosterOpen} />
+      ) : null}
+    </>
+  );
+
+  function renderLifecycle() {
+    return (
+      <>
         {status === 'requested' ? (
           <DropdownMenuItem
             onSelect={() => void run(() => confirmBookingAction(id), 'Booking confirmed')}
@@ -113,7 +148,7 @@ export function BookingActions({ id, status }: { id: string; status: BookingStat
           <Ban className="mr-2 h-4 w-4" />
           Cancel
         </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
+      </>
+    );
+  }
 }

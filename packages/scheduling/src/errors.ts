@@ -71,6 +71,22 @@ export class InvalidRecurrenceError extends SchedulingError {
   }
 }
 
+export class WaitlistEntryNotFoundError extends SchedulingError {
+  constructor(id: string) {
+    super('WAITLIST_ENTRY_NOT_FOUND', `Waitlist entry ${id} not found`);
+    this.name = 'WaitlistEntryNotFoundError';
+  }
+}
+
+/** A waitlist action isn't valid for the entry's status (e.g. accepting an offer
+ *  that already expired, or offering an entry that's already booked). */
+export class InvalidWaitlistStateError extends SchedulingError {
+  constructor(message: string) {
+    super('INVALID_WAITLIST_STATE', message);
+    this.name = 'InvalidWaitlistStateError';
+  }
+}
+
 /** An action isn't valid for the booking's current status (e.g. checking in a
  *  cancelled booking). */
 export class InvalidBookingStateError extends SchedulingError {

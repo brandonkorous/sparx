@@ -111,3 +111,15 @@ export const UpdateAttendeeInput = z.object({
   partySize: z.number().int().min(1).max(100000).optional(),
 });
 export type UpdateAttendeeInput = z.infer<typeof UpdateAttendeeInput>;
+
+// Join an existing class session (docs/79 §7.2) — add a seat to a session booking.
+// Seats beyond capacity are accepted as `waitlisted` (session-level waitlist) and
+// auto-promoted when a booked seat frees.
+export const JoinSessionInput = z.object({
+  bookingId: Uuid,
+  customerId: OptionalUuid,
+  guestName: z.string().max(255).nullable().optional(),
+  partySize: z.number().int().min(1).max(100000).default(1),
+  intakeSubmissionId: OptionalUuid,
+});
+export type JoinSessionInput = z.infer<typeof JoinSessionInput>;
