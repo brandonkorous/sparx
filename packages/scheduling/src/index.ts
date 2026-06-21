@@ -91,6 +91,14 @@ export {
   outlookCalendarUrl,
 } from './ical';
 export {
+  type Frequency,
+  type RRuleParts,
+  parseRRule,
+  parseIcsInstant,
+  expandRecurrence,
+} from './rrule';
+export { type BusyParseOptions, parseBusyIntervals, parseIcsDuration } from './ical-parse';
+export {
   type DepositType,
   type DepositPolicyInput,
   type DepositPlan,
