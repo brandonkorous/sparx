@@ -99,6 +99,18 @@ export {
 } from './rrule';
 export { type BusyParseOptions, parseBusyIntervals, parseIcsDuration } from './ical-parse';
 export {
+  type CalDavCalendar,
+  extractElements,
+  extractFirst,
+  elementPresent,
+  xmlUnescape,
+  extractHref,
+  parsePrincipalHref,
+  parseCalendarHomeHref,
+  parseCalendarCollections,
+  parseCalendarData,
+} from './caldav-xml';
+export {
   type CreateConnectionData,
   type ConnectionSyncState,
   createCalendarConnection,

@@ -17,6 +17,15 @@ import {
   listCalendarConnectionsAction,
   syncCalendarConnectionAction,
 } from '../../_lib/actions';
+import { CaldavConnectForm } from './caldav-connect-form';
+
+/** A human label for a connection row across kinds (iCal feed vs CalDAV account). */
+function connLabel(c: CalendarConnection): string {
+  if (c.connectionKind === 'caldav') {
+    return c.provider === 'apple_caldav' ? 'Apple iCloud' : 'CalDAV account';
+  }
+  return `${c.provider} feed`;
+}
 
 function relTime(iso: string | null): string {
   if (!iso) return 'never';
@@ -96,7 +105,7 @@ export function CalendarConnectionsSection({ resourceId }: { resourceId: string 
   return (
     <div className="flex flex-col gap-3">
       <div>
-        <p className="text-sm font-medium">Block times from another calendar</p>
+        <p className="text-sm font-medium">Block times from a calendar link</p>
         <p className="text-xs text-[var(--color-muted-foreground)]">
           Paste a read-only iCal/ICS link (Google/Outlook/Apple &ldquo;secret address&rdquo;).
           Events there will block this resource&rsquo;s sparx availability. Imports refresh
@@ -122,6 +131,10 @@ export function CalendarConnectionsSection({ resourceId }: { resourceId: string 
         </Button>
       </div>
 
+      <hr className="border-[var(--color-border)]" />
+
+      <CaldavConnectForm resourceId={resourceId} onConnected={refresh} />
+
       {connections === null ? (
         <p className="text-xs text-[var(--color-muted-foreground)]">Loading…</p>
       ) : connections.length === 0 ? (
@@ -135,7 +148,7 @@ export function CalendarConnectionsSection({ resourceId }: { resourceId: string 
             >
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="truncate text-sm font-medium capitalize">{c.provider} feed</span>
+                  <span className="truncate text-sm font-medium capitalize">{connLabel(c)}</span>
                   <Badge
                     variant="soft"
                     color={

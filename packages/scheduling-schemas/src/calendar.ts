@@ -2,10 +2,12 @@
 //
 // Three connection kinds: `oauth` (platform app or BYO client), `caldav` (Apple
 // app-password / generic), `ical_feed` (read-only subscribe). Secrets (OAuth
-// tokens, app-passwords, the secret feed URL) are NOT stored on the row — the
-// service exchanges/persists them to Secret Manager and keeps only a ref. This
-// input is the non-secret config; transient secrets ride a separate field the
-// service consumes then discards.
+// tokens, app-passwords, the secret feed URL) ride these inputs, and the api-rest
+// service AES-256-GCM-encrypts them into the connection row's `*_enc` columns
+// before persisting (key SCHEDULING_CALENDAR_TOKEN_KEY) — mirroring the Search
+// Console OAuth-token box (docs/79 §8.4, §19). Out-of-band Secret Manager
+// provisioning can't hold runtime-minted/refreshed tokens, so encrypt-at-rest is
+// the platform pattern. The connection's safe view never echoes ciphertext.
 
 import { z } from 'zod';
 
@@ -19,8 +21,8 @@ export const CreateCalendarConnectionInput = z.object({
   direction: SyncDirection.default('two_way'),
   externalCalendarId: z.string().max(255).nullable().optional(),
 
-  // Transient secrets — consumed by the service, written to Secret Manager, then
-  // dropped (never persisted on the row). Which one is present depends on kind:
+  // Transient secrets — consumed by the service, encrypted at rest into the row's
+  // `*_enc` columns (never persisted as plaintext). Which one is present by kind:
   //  - oauth (BYO): oauthClientId + oauthClientSecret + the returned authCode
   //  - oauth (platform): authCode only (platform client is server-side config)
   //  - caldav: caldavUsername + caldavAppPassword
@@ -46,12 +48,27 @@ export const CreateIcalFeedInput = z.object({
 });
 export type CreateIcalFeedInput = z.infer<typeof CreateIcalFeedInput>;
 
+// Layer-3 inbound CalDAV (docs/79 §8.3) — a real account connection (Apple iCloud
+// via an app-specific password, or a generic CalDAV server). The username +
+// app-password are encrypted at rest; the busy import discovers the account's
+// calendars and pulls VEVENTs. `serverUrl` defaults to iCloud for `apple_caldav`
+// and is REQUIRED for generic `caldav` (the route enforces this).
+export const CreateCaldavConnectionInput = z.object({
+  resourceId: Uuid,
+  provider: z.enum(['apple_caldav', 'caldav']).default('apple_caldav'),
+  username: z.string().min(1).max(255),
+  appPassword: z.string().min(1).max(512),
+  serverUrl: z.string().url().max(2048).optional(),
+  label: z.string().max(120).optional(),
+});
+export type CreateCaldavConnectionInput = z.infer<typeof CreateCaldavConnectionInput>;
+
 // Start a platform-app OAuth flow — returns the provider consent URL.
 export const StartCalendarOAuthInput = z.object({
   resourceId: Uuid,
   provider: z.enum(['google', 'microsoft']),
   credentialSource: CredentialSource.default('platform'),
-  // BYO only — the tenant's own client, stored to Secret Manager before redirect.
+  // BYO only — the tenant's own client, encrypted at rest before the redirect.
   oauthClientId: z.string().max(512).optional(),
   oauthClientSecret: z.string().max(512).optional(),
   redirectUri: z.string().url().max(2048),

@@ -160,6 +160,24 @@ export async function createIcalFeedAction(body: {
   }
 }
 
+export async function createCaldavConnectionAction(body: {
+  resourceId: string;
+  provider?: 'apple_caldav' | 'caldav';
+  username: string;
+  appPassword: string;
+  serverUrl?: string;
+}): Promise<ActionResult<CalendarConnection & { sync?: { ok: boolean; error?: string } }>> {
+  try {
+    const data = await api.post<CalendarConnection & { sync?: { ok: boolean; error?: string } }>(
+      '/v1/scheduling/calendar/connections/caldav',
+      body
+    );
+    return { ok: true, data };
+  } catch (err) {
+    return fail(err, 'Failed to connect the calendar');
+  }
+}
+
 export async function syncCalendarConnectionAction(id: string): Promise<ActionResult> {
   try {
     await api.post(`/v1/scheduling/calendar/connections/${id}/sync`, {});

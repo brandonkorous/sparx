@@ -7,9 +7,6 @@
 // error`, raises `calendar.sync_failed`, and the resource simply falls back to
 // sparx-only data — a stale feed never weakens the DB-level no-overlap guard (§8.4).
 
-import { lookup } from 'node:dns/promises';
-import { isIP } from 'node:net';
-
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma } from '@sparx/db';
 import {
@@ -21,6 +18,8 @@ import {
 
 import { decryptCalendarSecret, isCalendarCryptoConfigured } from './scheduling-calendar-crypto.js';
 import { publishBookingEvent } from './scheduling-events.js';
+import { assertPublicHttpsUrl, CalendarFeedError } from './scheduling-url-guard.js';
+import { APPLE_ICLOUD_CALDAV, fetchCalDavBusyIcs } from './caldav-client.js';
 
 const CALENDAR_SYNC_LOCK_KEY = 4242_4246;
 const DEFAULT_INTERVAL_MS = 300_000; // tick every 5 min
@@ -31,53 +30,6 @@ const DEFAULT_EVENT_MS = 60 * 60 * 1000; // span for an event with no end
 const FETCH_TIMEOUT_MS = 12_000;
 const MAX_BYTES = 8 * 1024 * 1024;
 const MAX_REDIRECTS = 3;
-
-/** A user-facing feed error — the message lands in `last_error` + the dashboard. */
-export class CalendarFeedError extends Error {}
-
-function isPrivateAddress(ip: string): boolean {
-  if (isIP(ip) === 4) {
-    const [a, b] = ip.split('.').map(Number);
-    if (a === undefined || b === undefined) return true;
-    if (a === 0 || a === 10 || a === 127) return true;
-    if (a === 169 && b === 254) return true; // link-local incl. cloud metadata 169.254.169.254
-    if (a === 172 && b >= 16 && b <= 31) return true;
-    if (a === 192 && b === 168) return true;
-    if (a === 100 && b >= 64 && b <= 127) return true; // CGNAT
-    return false;
-  }
-  const lower = ip.toLowerCase();
-  if (lower === '::1' || lower === '::') return true;
-  if (lower.startsWith('fc') || lower.startsWith('fd')) return true; // ULA fc00::/7
-  if (lower.startsWith('fe80')) return true; // link-local
-  if (lower.startsWith('::ffff:')) return isPrivateAddress(lower.slice('::ffff:'.length));
-  return false;
-}
-
-/** Validate a feed URL is a public HTTPS endpoint (defeats SSRF: localhost, private
- *  ranges, cloud-metadata, DNS-rebinding). `webcal://` is normalized to https. */
-export async function assertPublicHttpsUrl(raw: string): Promise<URL> {
-  let url: URL;
-  try {
-    url = new URL(raw.trim());
-  } catch {
-    throw new CalendarFeedError('That does not look like a valid calendar URL.');
-  }
-  if (url.protocol === 'webcal:') url.protocol = 'https:';
-  if (url.protocol !== 'https:') throw new CalendarFeedError('Calendar feed URLs must use https.');
-  const host = url.hostname.toLowerCase();
-  if (host === 'localhost' || host.endsWith('.local') || host.endsWith('.internal')) {
-    throw new CalendarFeedError('That calendar URL is not allowed.');
-  }
-  const addresses = isIP(host)
-    ? [host]
-    : (await lookup(host, { all: true }).catch(() => [])).map((a) => a.address);
-  if (addresses.length === 0) throw new CalendarFeedError('That calendar host could not be found.');
-  for (const addr of addresses) {
-    if (isPrivateAddress(addr)) throw new CalendarFeedError('That calendar URL is not allowed.');
-  }
-  return url;
-}
 
 interface FetchResult {
   status: number;
@@ -195,6 +147,65 @@ export async function syncIcalConnection(
   }
 }
 
+/** Sync one CalDAV connection (Apple iCloud app-password, or generic CalDAV).
+ *  Decrypts the app-password, discovers the account's calendars over the network
+ *  (SSRF-guarded), pulls busy VEVENTs, and replaces the resource's busy blocks.
+ *  Same contract as the iCal path: records status either way, never throws. */
+export async function syncCalDavConnection(
+  logger: FastifyBaseLogger,
+  tenantId: string,
+  connectionId: string
+): Promise<CalendarSyncOutcome> {
+  const conn = await getCalendarConnection(tenantId, connectionId).catch(() => null);
+  if (!conn) return { ok: false, error: 'not_found' };
+  if (conn.connectionKind !== 'caldav') return { ok: false, error: 'unsupported_kind' };
+  if (!isCalendarCryptoConfigured() || !conn.appPasswordEnc || !conn.caldavUsername) {
+    await updateConnectionSyncState(tenantId, connectionId, {
+      status: 'error',
+      lastError: 'Calendar sync is missing its credentials or is not configured.',
+      lastSyncedAt: new Date(),
+    });
+    return { ok: false, error: 'not_configured' };
+  }
+
+  const now = Date.now();
+  try {
+    const password = decryptCalendarSecret(conn.appPasswordEnc);
+    const { ics } = await fetchCalDavBusyIcs({
+      serverUrl: conn.caldavUrl ?? APPLE_ICLOUD_CALDAV,
+      auth: { username: conn.caldavUsername, password },
+      windowStart: now - PAST_MS,
+      windowEnd: now + FUTURE_MS,
+    });
+    const blocks = parseBusyIntervals(ics, {
+      windowStart: now - PAST_MS,
+      windowEnd: now + FUTURE_MS,
+      defaultDurationMs: DEFAULT_EVENT_MS,
+    });
+    const count = await replaceExternalBusyBlocks(tenantId, connectionId, conn.resourceId, blocks);
+    await updateConnectionSyncState(tenantId, connectionId, {
+      status: 'active',
+      lastError: null,
+      lastSyncedAt: new Date(now),
+    });
+    return { ok: true, count };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Calendar sync failed.';
+    await updateConnectionSyncState(tenantId, connectionId, {
+      status: 'error',
+      lastError: message,
+      lastSyncedAt: new Date(now),
+    }).catch(() => undefined);
+    await publishBookingEvent('calendar.sync_failed', tenantId, null, {
+      connectionId,
+      resourceId: conn.resourceId,
+      error: message,
+    }).catch(() => undefined);
+    logger.warn({ tenantId, connectionId, err }, 'calendar-sync: caldav sync failed');
+    return { ok: false, error: message };
+  }
+}
+
 interface DueConnection {
   id: string;
   tenant_id: string;
@@ -228,9 +239,14 @@ export async function runCalendarSyncTick(
     let processed = 0;
     let errors = 0;
     for (const row of due) {
-      // Slice 2 handles ical_feed; caldav/oauth pull lands with Layer 3.
-      if (row.connection_kind !== 'ical_feed') continue;
-      const outcome = await syncIcalConnection(logger, row.tenant_id, row.id);
+      // ical_feed (Layer 2) + caldav (Layer 3) pull here; oauth push lands later.
+      let outcome: CalendarSyncOutcome | null = null;
+      if (row.connection_kind === 'ical_feed') {
+        outcome = await syncIcalConnection(logger, row.tenant_id, row.id);
+      } else if (row.connection_kind === 'caldav') {
+        outcome = await syncCalDavConnection(logger, row.tenant_id, row.id);
+      }
+      if (!outcome) continue;
       if (outcome.ok) processed += 1;
       else errors += 1;
     }

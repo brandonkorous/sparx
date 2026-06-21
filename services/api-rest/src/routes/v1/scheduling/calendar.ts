@@ -14,7 +14,7 @@ import type { CalendarConnection } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
 import { badRequest } from '@sparx/api-core/errors';
 import { requireRole } from '@sparx/api-core/auth';
-import { CreateIcalFeedInput } from '@sparx/scheduling-schemas';
+import { CreateCaldavConnectionInput, CreateIcalFeedInput } from '@sparx/scheduling-schemas';
 import {
   createCalendarConnection,
   deleteCalendarConnection,
@@ -27,11 +27,9 @@ import {
   encryptCalendarSecret,
   isCalendarCryptoConfigured,
 } from '../../../lib/scheduling-calendar-crypto.js';
-import {
-  assertPublicHttpsUrl,
-  CalendarFeedError,
-  syncIcalConnection,
-} from '../../../lib/scheduling-calendar-sync.js';
+import { assertPublicHttpsUrl, CalendarFeedError } from '../../../lib/scheduling-url-guard.js';
+import { syncCalDavConnection, syncIcalConnection } from '../../../lib/scheduling-calendar-sync.js';
+import { APPLE_ICLOUD_CALDAV } from '../../../lib/caldav-client.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({ resourceId: z.string().uuid().optional() });
@@ -98,13 +96,57 @@ const schedulingCalendarConnectionRoutes: FastifyPluginAsync = async (app) => {
     return reply.code(201).send(ok({ ...connectionView(fresh), sync: outcome }));
   });
 
+  app.post('/v1/scheduling/calendar/connections/caldav', async (request, reply) => {
+    await requireSchedulingModule(request);
+    requireRole(request, 'editor');
+    const { tenantId } = toSchedulingContext(request);
+    if (!isCalendarCryptoConfigured()) {
+      throw badRequest(
+        'Calendar sync is not configured on this deployment (SCHEDULING_CALENDAR_TOKEN_KEY).'
+      );
+    }
+    const input = CreateCaldavConnectionInput.parse(request.body);
+    // Apple defaults to iCloud; a generic CalDAV connection must name its server.
+    const serverRaw =
+      input.serverUrl ?? (input.provider === 'apple_caldav' ? APPLE_ICLOUD_CALDAV : null);
+    if (!serverRaw) throw badRequest('A CalDAV server URL is required for generic CalDAV.');
+    let serverUrl: string;
+    try {
+      serverUrl = (await assertPublicHttpsUrl(serverRaw)).toString();
+    } catch (err) {
+      throw badRequest(
+        err instanceof CalendarFeedError ? err.message : 'Invalid CalDAV server URL.'
+      );
+    }
+
+    const connection = await createCalendarConnection(tenantId, {
+      resourceId: input.resourceId,
+      provider: input.provider,
+      connectionKind: 'caldav',
+      credentialSource: 'tenant_byo',
+      direction: 'in',
+      fidelity: 'stale_feed',
+      caldavUsername: input.username,
+      appPasswordEnc: encryptCalendarSecret(input.appPassword),
+      caldavUrl: serverUrl,
+    });
+
+    // First sync inline so a bad password / unreachable server surfaces immediately.
+    const outcome = await syncCalDavConnection(request.log, tenantId, connection.id);
+    const fresh = await getCalendarConnection(tenantId, connection.id);
+    return reply.code(201).send(ok({ ...connectionView(fresh), sync: outcome }));
+  });
+
   app.post('/v1/scheduling/calendar/connections/:id/sync', async (request) => {
     await requireSchedulingModule(request);
     requireRole(request, 'editor');
     const { tenantId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
-    await getCalendarConnection(tenantId, id); // 404s a missing/foreign connection
-    const outcome = await syncIcalConnection(request.log, tenantId, id);
+    const conn = await getCalendarConnection(tenantId, id); // 404s a missing/foreign connection
+    const outcome =
+      conn.connectionKind === 'caldav'
+        ? await syncCalDavConnection(request.log, tenantId, id)
+        : await syncIcalConnection(request.log, tenantId, id);
     const fresh = await getCalendarConnection(tenantId, id);
     return ok({ ...connectionView(fresh), sync: outcome });
   });
