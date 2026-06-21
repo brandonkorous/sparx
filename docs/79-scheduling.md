@@ -1,6 +1,6 @@
 # 79 — sparx Scheduling Module Spec
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-20
 
@@ -367,7 +367,8 @@ connect path (§8.5).** Around it sits a **layered** set of complements — BYO 
 iCal — for the cases the platform app can't cover cleanly (Apple has no OAuth; a Microsoft org
 that won't grant admin consent; privacy-conscious tenants; the window while Google
 verification is pending). `CalendarConnection.credentialSource` (`platform | tenant_byo`)
-selects which path a connection uses; all secrets live in Secret Manager.
+selects which path a connection uses; all credentials are **encrypted at rest**
+(AES-256-GCM, key `SCHEDULING_CALENDAR_TOKEN_KEY`) — see §8.4.
 
 > **The verified facts we're building against (2025–2026):**
 >
@@ -433,8 +434,14 @@ selects which path a connection uses; all secrets live in Secret Manager.
 - **The double-booking guarantee (§7.4) is independent of all of this.** External calendars
   are an _additional_ busy-source; the DB-level exclusion constraint protects sparx bookings
   regardless of external-sync fidelity. Degraded sync never degrades the core safety promise.
-- Tokens / app-passwords / feed URLs live in **Secret Manager** (`credentialRef`), never the
-  DB. Push webhooks (Google watch / Graph notifications) post to a receiver in `api-rest`;
+- Tokens / app-passwords / feed URLs are **encrypted at rest** (AES-256-GCM, the platform's
+  `SCHEDULING_CALENDAR_TOKEN_KEY`) in the connection row's `*_enc` columns — opaque ciphertext,
+  never plaintext. This mirrors the Search Console OAuth-token box (77-search-console), **not**
+  the `@sparx/payments` Secret-Manager pattern: GSM there holds secrets _provisioned out-of-band,
+  read-only_, which can't work for calendar OAuth tokens that are minted **and refreshed at
+  runtime**. Encrypt-at-rest is the platform pattern for runtime-minted credentials; a DB leak
+  alone yields no usable grant, and rotating the key invalidates every stored credential. Push
+  webhooks (Google watch / Graph notifications) post to a receiver in `api-rest`;
   Google's one-time **Search Console domain verification** of the webhook host is a
   platform-level setup step (not per-tenant). `syncToken` incremental catch-up on the worker
   is the backstop.
@@ -1146,8 +1153,14 @@ cross-doc updates in §15.
 - **RLS everywhere:** every table `tenant_id` + ENABLE + FORCE + `tenant_isolation`
   (`current_tenant_id()`), hand-edited per [packages/db/CLAUDE.md](../packages/db/CLAUDE.md).
   Public booking endpoints set tenant context from the host/property, never trust client input.
-- **Calendar OAuth tokens** live in Secret Manager (`credentialRef`), never in the DB —
-  same pattern as `@sparx/payments`.
+- **Calendar credentials** (OAuth tokens, CalDAV app-passwords, iCal feed URLs) are encrypted
+  at rest with AES-256-GCM (`SCHEDULING_CALENDAR_TOKEN_KEY`) in the connection row's `*_enc`
+  columns — opaque ciphertext, never plaintext (§8.4). This follows the Search Console
+  OAuth-token box (77-search-console), the platform pattern for runtime-minted/refreshed
+  credentials; `@sparx/payments`' read-only Secret-Manager refs suit out-of-band-provisioned
+  gateway keys, not tokens the app itself mints and rotates. The inbound feed fetch is
+  SSRF-guarded (https-only; private/loopback/link-local/cloud-metadata rejected, with
+  redirect re-validation).
 - **PCI:** card data never touches sparx; deposits/holds use gateway-hosted elements
   (Stripe.js) via `@sparx/payments`. We store only intent ids.
 - **HIPAA:** scoped as a platform program (§11) — supported _workflow_, **not** a delivered
