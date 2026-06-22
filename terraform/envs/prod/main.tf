@@ -225,6 +225,12 @@ module "secrets" {
     "cloudflare-api-token",
     # Better Auth (Layer 1 staff) — its own Postgres URL alongside the app DB.
     "auth-database-url",
+    # Google OAuth (Better Auth social provider) — clientId/secret backing the
+    # "Continue with Google" button. @sparx/auth (server.ts) registers the
+    # provider only when BOTH are present, so the button stays inert until these
+    # land. Redirect URI: ${BETTER_AUTH_URL}/api/auth/callback/google.
+    "google-client-id",
+    "google-client-secret",
     # Mailgun HTTP API key — the email-worker Cloud Run service binds it
     # (serverless.tf). Declared here so the TF that references it also owns it.
     "mailgun-api-key",

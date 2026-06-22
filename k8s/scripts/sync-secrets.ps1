@@ -22,6 +22,8 @@ $secretKeys = @(
     "auth-database-url",
     "redis-url",
     "better-auth-secret",
+    "google-client-id",
+    "google-client-secret",
     "sparx-internal-jwt-secret",
     "stripe-secret-key",
     "stripe-webhook-secret",
