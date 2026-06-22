@@ -36,20 +36,20 @@ It exists for two reasons:
 Eleven activatable modules (`packages/modules` canonical slugs) plus the
 cross-cutting platform that every module shares.
 
-| #   | Module                  | Slug        | Headline                                                                                                               | Status      |
-| --- | ----------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------- | ----------- |
-| 1   | Builder                 | `builder`   | Sites, pages, themes, email — visually authored                                                                        | ✅ Live     |
-| 2   | Commerce                | `commerce`  | Cart, checkout, orders, payments                                                                                       | ✅ Live     |
-| 3   | CMS                     | `cms`       | Words, media, structured content, SEO                                                                                  | ✅ Live     |
-| 4   | CRM                     | `crm`       | Customers, pipeline, segments, activity                                                                                | ✅ Live     |
-| 5   | Email                   | `email`     | Transactional + marketing on your own domain                                                                           | ✅ Live     |
-| 6   | B2B / Wholesale / Fleet | `b2b`       | Accounts, net terms, RFQ, fleet                                                                                        | ✅ Live     |
-| 7   | Invoicing               | `invoicing` | Estimates → work orders → invoices, billing documents                                                                  | 🔨 In build |
-| 8   | Dropship                | `dropship`  | Supplier sync, margin math, order routing                                                                              | ✅ Live     |
-| 9   | Inventory               | `inventory` | Multi-warehouse ledger, reservations, suppliers/POs/receiving, counts/transfers, lots, sync, reporting, MCP, B2B holds | ✅ Live     |
-| 10  | Live Chat               | `chat`      | AI-first site chat + staff inbox                                                                                       | ✅ Live     |
-| 11  | AI / MCP                | `ai`        | First-class MCP server for Claude, ChatGPT, Copilot                                                                    | ✅ Live     |
-| 12  | Scheduling              | `scheduling` | Appointments, classes, reservations, rentals — booking, deposits, reminders, calendar sync                            | ✅ Live     |
+| #   | Module                  | Slug         | Headline                                                                                                               | Status      |
+| --- | ----------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------- | ----------- |
+| 1   | Builder                 | `builder`    | Sites, pages, themes, email — visually authored                                                                        | ✅ Live     |
+| 2   | Commerce                | `commerce`   | Cart, checkout, orders, payments                                                                                       | ✅ Live     |
+| 3   | CMS                     | `cms`        | Words, media, structured content, SEO                                                                                  | ✅ Live     |
+| 4   | CRM                     | `crm`        | Customers, pipeline, segments, activity                                                                                | ✅ Live     |
+| 5   | Email                   | `email`      | Transactional + marketing on your own domain                                                                           | ✅ Live     |
+| 6   | B2B / Wholesale / Fleet | `b2b`        | Accounts, net terms, RFQ, fleet                                                                                        | ✅ Live     |
+| 7   | Invoicing               | `invoicing`  | Estimates → work orders → invoices, billing documents                                                                  | 🔨 In build |
+| 8   | Dropship                | `dropship`   | Supplier sync, margin math, order routing                                                                              | ✅ Live     |
+| 9   | Inventory               | `inventory`  | Multi-warehouse ledger, reservations, suppliers/POs/receiving, counts/transfers, lots, sync, reporting, MCP, B2B holds | ✅ Live     |
+| 10  | Live Chat               | `chat`       | AI-first site chat + staff inbox                                                                                       | ✅ Live     |
+| 11  | AI / MCP                | `ai`         | First-class MCP server for Claude, ChatGPT, Copilot                                                                    | ✅ Live     |
+| 12  | Scheduling              | `scheduling` | Appointments, classes, reservations, rentals — booking, deposits, reminders, calendar sync                             | ✅ Live     |
 
 Cross-cutting platform (§12–§23) ships regardless of which modules a tenant runs:
 search, automation, multi-site, marketplace, auth, billing, onboarding, legal,
