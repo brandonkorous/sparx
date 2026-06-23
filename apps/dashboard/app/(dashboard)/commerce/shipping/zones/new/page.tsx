@@ -1,20 +1,15 @@
 import { PackageOpen } from 'lucide-react';
 
 import { isModuleEnabled, requireSession } from '@sparx/auth';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  Heading,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
 
 import { ModuleStub } from '../../../../../../components/module-stub';
 
 import { NewZoneForm } from './_components/new-zone-form';
+
+// Full-page /new route for a shipping zone. When the Commerce module is enabled
+// we render the create form DIRECTLY on the standard create surface (docs/86) —
+// the embedded WizardFrame supplies the title + toolbar, so no Container /
+// PageHeader / Card wrapper here. When disabled, the module gate shows a stub.
 
 export const dynamic = 'force-dynamic';
 
@@ -33,28 +28,5 @@ export default async function NewShippingZonePage() {
     );
   }
 
-  return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          title="New shipping zone"
-          description="Zones are evaluated highest-priority first. A zone with no countries matches any address and is typically used as a low-priority catch-all."
-        />
-
-        <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>Zone</Heading>
-              <CardDescription>
-                Enter ISO 3166-1 alpha-2 country codes separated by commas (US, CA, GB).
-              </CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
-            <NewZoneForm />
-          </CardContent>
-        </Card>
-      </Stack>
-    </Container>
-  );
+  return <NewZoneForm surface="page" />;
 }

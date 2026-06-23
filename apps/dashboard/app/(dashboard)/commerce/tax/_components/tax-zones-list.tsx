@@ -15,7 +15,8 @@ import { EntityRowLink } from '../../../_components/entity-row-link';
 // (columns/card) that can't cross the server→client boundary, so the server
 // page hands rows + view here and this builds both views. Read-only —
 // `selectable={false}` (no checkboxes / bulk bar); rows open the zone detail
-// (rates) via EntityRowLink in the user's detail-view surface.
+// (rates) via EntityRowLink in the user's detail-view surface. The "New tax
+// zone" launcher lives in the page's PageHeader (EntityCreateButton).
 
 export interface TaxZoneRow {
   id: string;

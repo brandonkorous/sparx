@@ -68,6 +68,14 @@ const CREATE_VIEW_TYPES = new Set<string>([
   'redirect',
   'suppression',
   'sending-domain',
+  // Commerce settings-area entities migrated to the F-shell create surface.
+  // discount has no detail view (stays open / returns to the list); bundle +
+  // shipping zone/profile + tax zone flow into their detail view on success.
+  'discount',
+  'bundle',
+  'shipping-zone',
+  'shipping-profile',
+  'tax-zone',
 ]);
 
 export function hasCreateView(typeId: string): boolean {
@@ -107,6 +115,11 @@ const FULL_BLEED_CREATE_TYPES = new Set<string>([
   'suppression',
   'sending-domain',
   'page',
+  'discount',
+  'bundle',
+  'shipping-zone',
+  'shipping-profile',
+  'tax-zone',
 ]);
 
 export function isFullBleedCreate(typeId: string): boolean {

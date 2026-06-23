@@ -1,20 +1,15 @@
 import { PackageOpen } from 'lucide-react';
 
 import { isModuleEnabled, requireSession } from '@sparx/auth';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  Heading,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
 
 import { ModuleStub } from '../../../../../../components/module-stub';
 
 import { NewProfileForm } from './_components/new-profile-form';
+
+// Full-page /new route for a shipping profile. When the Commerce module is
+// enabled we render the create form DIRECTLY on the standard create surface
+// (docs/86) — the embedded WizardFrame supplies the title + toolbar, so no
+// Container / PageHeader / Card wrapper here. When disabled, the gate shows a stub.
 
 export const dynamic = 'force-dynamic';
 
@@ -33,29 +28,5 @@ export default async function NewShippingProfilePage() {
     );
   }
 
-  return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          title="New shipping profile"
-          description="Profiles let you route different product categories through different carriers. Most merchants start with one general-goods profile and add hazmat or freight profiles only when they need them."
-        />
-
-        <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>Profile</Heading>
-              <CardDescription>
-                Products attach to profiles via Commerce → Products → Shipping. A product may belong
-                to one profile.
-              </CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
-            <NewProfileForm />
-          </CardContent>
-        </Card>
-      </Stack>
-    </Container>
-  );
+  return <NewProfileForm surface="page" />;
 }

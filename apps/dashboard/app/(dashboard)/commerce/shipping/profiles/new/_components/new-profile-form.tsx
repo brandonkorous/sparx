@@ -1,12 +1,35 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Button, Input, Label, Stack, Text, Textarea } from '@sparx/ui';
+import {
+  Card,
+  CardContent,
+  Input,
+  Label,
+  ModuleProvider,
+  Stack,
+  Text,
+  Textarea,
+  WizardFrame,
+  WizardStep,
+  type WizardStepDef,
+} from '@sparx/ui';
 
-import { formBool, formString } from '../../../../../../../lib/forms';
 import { createShippingProfileAction } from '../../../../shipping-actions';
+
+// New shipping-profile form, on the standard create surface (docs/86 F layout).
+// The SAME component renders in both presentations, picked by the host:
+//   - `surface="page"`    → WizardFrame `embedded` at the /new route (contained sheet)
+//   - `surface="overlay"` → WizardFrame `inline` inside the @detail drawer/modal
+//
+// It's a SINGLE-STEP form, so it's a one-step wizard: the frame supplies the
+// title + window controls + the pinned floor toolbar (ghost Cancel + module
+// primary) and hides the MiniProgress; the fields sit in a module-tinted Card.
+//
+// Profiles have a detail view, so create flows INTO it: the overlay swaps the
+// token to the new record (preserving drawer vs modal); the page navigates to it.
 
 const HAZMAT_CLASSES = [
   'none',
@@ -21,11 +44,25 @@ const HAZMAT_CLASSES = [
   'class_9_misc',
 ] as const;
 
-export function NewProfileForm() {
+interface NewProfileFormProps {
+  surface: 'page' | 'overlay';
+}
+
+const STEPS: WizardStepDef[] = [{ key: 'basics', label: 'Basics' }];
+
+export function NewProfileForm({ surface }: NewProfileFormProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
+
+  const [name, setName] = React.useState('');
+  const [description, setDescription] = React.useState('');
+  const [carriersRaw, setCarriersRaw] = React.useState('');
   const [hazmat, setHazmat] = React.useState<Set<string>>(new Set(['none']));
+  const [requiresSignature, setRequiresSignature] = React.useState(false);
+  const [requiresFreight, setRequiresFreight] = React.useState(false);
 
   function toggleHazmat(cls: string) {
     setHazmat((prev) => {
@@ -37,24 +74,49 @@ export function NewProfileForm() {
     });
   }
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  // Where "leave the form" goes. In the overlay it clears the detail token so the
+  // drawer/modal closes in place; the page route returns to the list.
+  const cancel = React.useCallback(() => {
+    if (surface === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+    } else {
+      router.push('/commerce/shipping');
+    }
+  }, [surface, pathname, searchParams, router]);
+
+  // After create: in an overlay, transition the token to the new record's detail
+  // (preserving drawer vs modal); on a page, navigate to it.
+  function onCreated(id: string) {
+    if (surface === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      const mode = next.has('modal') ? 'modal' : 'drawer';
+      next.delete('drawer');
+      next.delete('modal');
+      next.set(mode, `shipping-profile:${id}`);
+      router.replace(`${pathname ?? '/'}?${next.toString()}`);
+      router.refresh();
+      return;
+    }
+    router.push(`/commerce/shipping/profiles/${id}`);
+    router.refresh();
+  }
+
+  function submit() {
     setError(null);
-    const form = new FormData(e.currentTarget);
-    const name = formString(form, 'name').trim();
-    const description = formString(form, 'description').trim();
-    const carriersRaw = formString(form, 'carriers').trim();
+    const trimmedDescription = description.trim();
     const carriers = carriersRaw
       .split(/[,\s]+/)
       .map((c) => c.trim().toLowerCase())
       .filter(Boolean);
-    const requiresSignature = formBool(form, 'requiresSignature');
-    const requiresFreight = formBool(form, 'requiresFreight');
 
     startTransition(async () => {
       const result = await createShippingProfileAction({
-        name,
-        ...(description ? { description } : {}),
+        name: name.trim(),
+        ...(trimmedDescription ? { description: trimmedDescription } : {}),
         allowedCarrierServices: carriers,
         hazmatClassesAllowed: Array.from(hazmat) as (typeof HAZMAT_CLASSES)[number][],
         requiresSignature,
@@ -64,70 +126,108 @@ export function NewProfileForm() {
         setError(result.error.message);
         return;
       }
-      router.push(`/commerce/shipping/profiles/${result.data.id}`);
+      onCreated(result.data.id);
     });
   }
 
   return (
-    <form onSubmit={onSubmit}>
-      <Stack gap={4}>
-        <Stack gap={1}>
-          <Label htmlFor="name">Name *</Label>
-          <Input id="name" name="name" required placeholder="General goods" />
-        </Stack>
-        <Stack gap={1}>
-          <Label htmlFor="description">Description</Label>
-          <Input id="description" name="description" />
-        </Stack>
-        <Stack gap={1}>
-          <Label htmlFor="carriers">Allowed carrier services</Label>
-          <Textarea
-            id="carriers"
-            name="carriers"
-            rows={2}
-            placeholder="usps_priority, ups_ground"
-            className="font-mono text-xs"
-          />
-          <Text size="xs" variant="muted">
-            Carrier service slugs separated by commas. Leave empty to allow any.
-          </Text>
-        </Stack>
-        <Stack gap={2}>
-          <Label>Hazmat classes allowed</Label>
-          <Stack direction="row" gap={2} wrap>
-            {HAZMAT_CLASSES.map((cls) => (
-              <label key={cls} className="flex items-center gap-1.5">
-                <input
-                  type="checkbox"
-                  checked={hazmat.has(cls)}
-                  onChange={() => toggleHazmat(cls)}
-                />
-                <Text size="xs">{cls}</Text>
-              </label>
-            ))}
-          </Stack>
-        </Stack>
-        <Stack direction="row" gap={4}>
-          <label className="flex items-center gap-2">
-            <input type="checkbox" name="requiresSignature" />
-            <Text size="sm">Requires signature</Text>
-          </label>
-          <label className="flex items-center gap-2">
-            <input type="checkbox" name="requiresFreight" />
-            <Text size="sm">Freight only</Text>
-          </label>
-        </Stack>
-        {error && (
-          <Text size="sm" className="text-[var(--color-danger)]">
-            {error}
-          </Text>
-        )}
-        <Stack direction="row" gap={2} justify="end">
-          <Button color="module" type="submit" disabled={pending}>
-            {pending ? 'Creating…' : 'Create profile'}
-          </Button>
-        </Stack>
-      </Stack>
-    </form>
+    <ModuleProvider module="commerce" className="h-full">
+      <WizardFrame
+        variant={surface === 'overlay' ? 'inline' : 'embedded'}
+        title="New shipping profile"
+        steps={STEPS}
+        current={0}
+        onCancel={cancel}
+      >
+        <WizardStep
+          header={{
+            title: 'New shipping profile',
+            supporting: 'Profiles gate which carriers and hazmat classes a product may ship with.',
+          }}
+          actions={{
+            onNext: submit,
+            nextLabel: 'Create profile',
+            nextLoading: pending,
+            nextDisabled: pending,
+          }}
+        >
+          <Card variant="module">
+            <CardContent className="py-6">
+              <Stack gap={4}>
+                <Stack gap={1}>
+                  <Label htmlFor="profile-name">Name *</Label>
+                  <Input
+                    id="profile-name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="General goods"
+                  />
+                </Stack>
+                <Stack gap={1}>
+                  <Label htmlFor="profile-description">Description</Label>
+                  <Input
+                    id="profile-description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                </Stack>
+                <Stack gap={1}>
+                  <Label htmlFor="profile-carriers">Allowed carrier services</Label>
+                  <Textarea
+                    id="profile-carriers"
+                    rows={2}
+                    value={carriersRaw}
+                    onChange={(e) => setCarriersRaw(e.target.value)}
+                    placeholder="usps_priority, ups_ground"
+                    className="font-mono text-xs"
+                  />
+                  <Text size="xs" variant="muted">
+                    Carrier service slugs separated by commas. Leave empty to allow any.
+                  </Text>
+                </Stack>
+                <Stack gap={2}>
+                  <Label>Hazmat classes allowed</Label>
+                  <Stack direction="row" gap={2} wrap>
+                    {HAZMAT_CLASSES.map((cls) => (
+                      <label key={cls} className="flex items-center gap-1.5">
+                        <input
+                          type="checkbox"
+                          checked={hazmat.has(cls)}
+                          onChange={() => toggleHazmat(cls)}
+                        />
+                        <Text size="xs">{cls}</Text>
+                      </label>
+                    ))}
+                  </Stack>
+                </Stack>
+                <Stack direction="row" gap={4}>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={requiresSignature}
+                      onChange={(e) => setRequiresSignature(e.target.checked)}
+                    />
+                    <Text size="sm">Requires signature</Text>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={requiresFreight}
+                      onChange={(e) => setRequiresFreight(e.target.checked)}
+                    />
+                    <Text size="sm">Freight only</Text>
+                  </label>
+                </Stack>
+              </Stack>
+            </CardContent>
+          </Card>
+          {error && (
+            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+              {error}
+            </Text>
+          )}
+        </WizardStep>
+      </WizardFrame>
+    </ModuleProvider>
   );
 }

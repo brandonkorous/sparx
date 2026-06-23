@@ -35,6 +35,12 @@ import { TaxonomyCreateForm } from '../cms/taxonomy/taxonomy-create-form';
 import { RedirectCreateForm } from '../cms/redirects/_components/redirect-create-form';
 import { AddSuppressionForm } from '../email/suppressions/_components/add-suppression-form';
 import { AddDomainForm } from '../email/domains/_components/add-domain-form';
+import { DiscountCreateForm } from '../commerce/discounts/_components/discount-create-form';
+import { BundleEditor } from '../commerce/bundles/_components/bundle-editor';
+import { loadBundleCreateData } from '../commerce/bundles/_components/bundle-create-data';
+import { NewZoneForm } from '../commerce/shipping/zones/new/_components/new-zone-form';
+import { NewProfileForm } from '../commerce/shipping/profiles/new/_components/new-profile-form';
+import { NewTaxZoneForm } from '../commerce/tax/zones/new/_components/new-tax-zone-form';
 import { AuthorDetailContent } from '../cms/authors/[id]/_content';
 import { ContentTypeDetailContent } from '../cms/types/[typeKey]/_content';
 import { ContentEntryDetailContent } from '../cms/types/[typeKey]/[id]/_content';
@@ -168,6 +174,7 @@ const detailModules: Record<string, SparxModule> = {
   // Commerce — create-only overlays (no detail view)
   'gift-card': 'commerce',
   'account-credit': 'commerce',
+  discount: 'commerce',
   // Builder
   'builder-component': 'builder',
 };
@@ -293,12 +300,29 @@ async function AccountCreditCreateOverlay() {
   return <GrantAccountCreditForm surface="overlay" customers={customers} />;
 }
 
+// Bundle create is the surface-aware BundleEditor (single-step F-shell on create,
+// inline on edit). Its wrapper-product + variant pickers need the tenant's
+// products/variants, so a thin server wrapper loads + filters them (the same
+// loader the /new route uses). A created bundle opens into its detail view.
+async function BundleCreateOverlay() {
+  const { products, variants } = await loadBundleCreateData();
+  return <BundleEditor surface="overlay" products={products} variants={variants} />;
+}
+
 const createComponents: Record<string, React.ComponentType> = {
   category: CategoryCreateOverlay,
   // Commerce single-column create overlays (no detail view — stay open with an
   // inline result on success).
   'gift-card': () => <IssueGiftCardForm surface="overlay" />,
   'account-credit': AccountCreditCreateOverlay,
+  // Commerce — single-step F-shell create overlays. discount has no detail view
+  // (stays open / returns to the list); bundle + the shipping/tax zones flow into
+  // their detail view on success.
+  discount: () => <DiscountCreateForm surface="overlay" />,
+  bundle: BundleCreateOverlay,
+  'shipping-zone': () => <NewZoneForm surface="overlay" />,
+  'shipping-profile': () => <NewProfileForm surface="overlay" />,
+  'tax-zone': () => <NewTaxZoneForm surface="overlay" />,
   // CMS — author + taxonomy flow into their detail view on success; redirect
   // has no detail view and stays open.
   author: () => <AuthorCreateForm surface="overlay" />,

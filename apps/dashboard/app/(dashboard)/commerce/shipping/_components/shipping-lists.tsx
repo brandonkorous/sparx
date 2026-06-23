@@ -1,13 +1,11 @@
 'use client';
 
-import Link from 'next/link';
 import { Globe2, Layers, Plus } from 'lucide-react';
 import {
   SelectionList,
   type SelectionCard,
   type SelectionColumn,
   Badge,
-  Button,
   Card,
   CardContent,
   CardDescription,
@@ -18,6 +16,7 @@ import {
   Text,
 } from '@sparx/ui';
 
+import { EntityCreateButton } from '../../../_components/entity-create-button';
 import { EntityRowLink } from '../../../_components/entity-row-link';
 import { ListPager } from '../../../_components/list-pager';
 
@@ -97,12 +96,14 @@ export function ShippingLists({
                 quote shipping.
               </CardDescription>
             </Stack>
-            <Button color="module" asChild>
-              <Link href="/commerce/shipping/zones/new">
-                <Plus className="h-4 w-4" />
-                Add zone
-              </Link>
-            </Button>
+            <EntityCreateButton
+              entityType="shipping-zone"
+              newHref="/commerce/shipping/zones/new"
+              color="module"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New zone
+            </EntityCreateButton>
           </Stack>
         </CardHeader>
         <CardContent>
@@ -112,9 +113,13 @@ export function ShippingLists({
               title="No shipping zones yet"
               description="Add at least one zone covering the countries you sell to."
               action={
-                <Button color="module" asChild>
-                  <Link href="/commerce/shipping/zones/new">Create zone</Link>
-                </Button>
+                <EntityCreateButton
+                  entityType="shipping-zone"
+                  newHref="/commerce/shipping/zones/new"
+                  color="module"
+                >
+                  New zone
+                </EntityCreateButton>
               }
             />
           ) : (
@@ -150,12 +155,14 @@ export function ShippingLists({
                 land in their own profile.
               </CardDescription>
             </Stack>
-            <Button color="module" asChild>
-              <Link href="/commerce/shipping/profiles/new">
-                <Plus className="h-4 w-4" />
-                Add profile
-              </Link>
-            </Button>
+            <EntityCreateButton
+              entityType="shipping-profile"
+              newHref="/commerce/shipping/profiles/new"
+              color="module"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New profile
+            </EntityCreateButton>
           </Stack>
         </CardHeader>
         <CardContent>
@@ -165,9 +172,13 @@ export function ShippingLists({
               title="No shipping profiles yet"
               description="Create one profile per shipping pattern (standard, hazmat, freight)."
               action={
-                <Button color="module" asChild>
-                  <Link href="/commerce/shipping/profiles/new">Create profile</Link>
-                </Button>
+                <EntityCreateButton
+                  entityType="shipping-profile"
+                  newHref="/commerce/shipping/profiles/new"
+                  color="module"
+                >
+                  New profile
+                </EntityCreateButton>
               }
             />
           ) : (

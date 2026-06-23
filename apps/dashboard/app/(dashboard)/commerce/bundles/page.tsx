@@ -52,7 +52,7 @@ export default async function BundlesPage({ searchParams }: PageProps) {
               color="module"
               leftIcon={<Plus className="h-4 w-4" />}
             >
-              New
+              New bundle
             </EntityCreateButton>
           }
         />
@@ -72,7 +72,7 @@ export default async function BundlesPage({ searchParams }: PageProps) {
                   color="module"
                   leftIcon={<Plus className="h-4 w-4" />}
                 >
-                  New
+                  New bundle
                 </EntityCreateButton>
               }
             />

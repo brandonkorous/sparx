@@ -1,20 +1,15 @@
 import { PackageOpen } from 'lucide-react';
 
 import { isModuleEnabled, requireSession } from '@sparx/auth';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  Heading,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
 
 import { ModuleStub } from '../../../../../../components/module-stub';
 
 import { NewTaxZoneForm } from './_components/new-tax-zone-form';
+
+// Full-page /new route for a tax zone. The embedded WizardFrame supplies the
+// title + window controls + floor toolbar, so when the module is enabled we
+// render the form DIRECTLY — no Container/PageHeader/Card wrapper (docs/86).
+// The same component renders in the @detail overlay with surface="overlay".
 
 export const dynamic = 'force-dynamic';
 
@@ -33,30 +28,5 @@ export default async function NewTaxZonePage() {
     );
   }
 
-  return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          title="Add tax zone"
-          description="One zone per (country, region) pair. Leave region empty for country-wide nexus."
-        />
-
-        <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>Zone</Heading>
-              <CardDescription>
-                Nexus type: <code>physical</code> = physical presence, <code>economic</code> = sales
-                threshold met, <code>voluntary</code> = registered for compliance even without
-                threshold.
-              </CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
-            <NewTaxZoneForm />
-          </CardContent>
-        </Card>
-      </Stack>
-    </Container>
-  );
+  return <NewTaxZoneForm surface="page" />;
 }

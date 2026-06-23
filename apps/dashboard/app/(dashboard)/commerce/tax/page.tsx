@@ -1,9 +1,7 @@
-import Link from 'next/link';
 import { FileBadge, Globe2, Plus, Receipt } from 'lucide-react';
 
 import {
   Badge,
-  Button,
   Card,
   CardContent,
   CardDescription,
@@ -18,6 +16,7 @@ import {
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
+import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
@@ -60,12 +59,14 @@ export default async function TaxPage({ searchParams }: PageProps) {
           }
           description="Register a tax zone for every jurisdiction where the merchant has nexus. Manual rates below run when no TaxProvider (Stripe Tax, TaxJar, Avalara) is installed; the provider wins as soon as one is connected from Commerce → Providers. B2B exemption certificates attach per customer or per B2B account."
           actions={
-            <Button color="module" asChild>
-              <Link href="/commerce/tax/zones/new">
-                <Plus className="h-4 w-4" />
-                Add zone
-              </Link>
-            </Button>
+            <EntityCreateButton
+              entityType="tax-zone"
+              newHref="/commerce/tax/zones/new"
+              color="module"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New tax zone
+            </EntityCreateButton>
           }
         />
 
@@ -88,9 +89,13 @@ export default async function TaxPage({ searchParams }: PageProps) {
               title="No tax zones yet"
               description="Add a zone for every jurisdiction with nexus."
               action={
-                <Button color="module" asChild>
-                  <Link href="/commerce/tax/zones/new">Create zone</Link>
-                </Button>
+                <EntityCreateButton
+                  entityType="tax-zone"
+                  newHref="/commerce/tax/zones/new"
+                  color="module"
+                >
+                  New tax zone
+                </EntityCreateButton>
               }
             />
           </Card>
