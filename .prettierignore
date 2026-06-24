@@ -22,6 +22,9 @@ packages/db/prisma/migrations/**
 # Locally-installed Claude Code skills (untracked, regenerated on install)
 .claude/skills/**
 
+# Impeccable skill local cache (git-ignored, regenerated on hook run)
+.impeccable/**
+
 # Agent git worktrees — ephemeral isolated checkouts, formatted on their own branch
 .claude/worktrees/**
 
