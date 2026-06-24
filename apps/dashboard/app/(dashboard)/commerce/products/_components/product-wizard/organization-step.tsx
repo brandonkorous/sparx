@@ -10,7 +10,7 @@
 // router.refresh, which doesn't fit the client wizard).
 
 import * as React from 'react';
-import { Card, CardContent, Checkbox, Label, Spinner, Text, WizardStep } from '@sparx/ui';
+import { Card, CardContent, Checkbox, Label, Spinner, Text, SurfaceStep } from '@sparx/ui';
 
 import { updateProductAction } from '../../../product-actions';
 import { listSitesAction, type SiteOption } from '../../../product-actions';
@@ -98,7 +98,7 @@ export function OrganizationStep({ productId, onBack, onComplete }: Organization
   }
 
   return (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Organize & merchandise',
         supporting:
@@ -176,7 +176,7 @@ export function OrganizationStep({ productId, onBack, onComplete }: Organization
           )}
         </CardContent>
       </Card>
-    </WizardStep>
+    </SurfaceStep>
   );
 }
 

@@ -2,7 +2,7 @@ import { api } from '@/lib/api-rest-client';
 import { GrantAccountCreditForm } from '../_components/grant-account-credit-form';
 
 // Full-page surface for granting account credit. The surface-aware
-// `GrantAccountCreditForm` (docs/86 F layout) renders the SAME WizardFrame here
+// `GrantAccountCreditForm` (docs/86 F layout) renders the SAME SurfaceFrame here
 // (`surface="page"` → the `embedded` contained sheet, filling the dashboard
 // content area with its own title + pinned toolbar) and inside the `@detail`
 // drawer/modal overlay (`surface="overlay"`). Account credit has no detail

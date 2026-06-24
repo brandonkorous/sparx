@@ -13,17 +13,17 @@ import {
   Stack,
   Text,
   Textarea,
-  WizardFrame,
-  WizardStep,
-  type WizardStepDef,
+  SurfaceFrame,
+  SurfaceStep,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 
 import { createDiscountAction } from '../../discount-actions';
 
 // New-discount form, on the standard create surface (docs/86 F layout). The SAME
 // component renders in both presentations, picked by the host:
-//   - `surface="page"`    → WizardFrame `embedded` at the /new route (contained sheet)
-//   - `surface="overlay"` → WizardFrame `inline` inside the @detail drawer/modal
+//   - `surface="page"`    → SurfaceFrame `embedded` at the /new route (contained sheet)
+//   - `surface="overlay"` → SurfaceFrame `inline` inside the @detail drawer/modal
 //
 // It's a SINGLE-STEP form, so it's a one-step wizard: the frame supplies the
 // title + window controls + the pinned floor toolbar (ghost Cancel + module
@@ -43,7 +43,7 @@ const STACKING = [
   'combine_with_all',
 ] as const;
 
-const STEPS: WizardStepDef[] = [{ key: 'discount', label: 'Discount' }];
+const STEPS: SurfaceStepDef[] = [{ key: 'discount', label: 'Discount' }];
 
 export function DiscountCreateForm({ surface }: { surface: 'page' | 'overlay' }) {
   const router = useRouter();
@@ -146,14 +146,14 @@ export function DiscountCreateForm({ surface }: { surface: 'page' | 'overlay' })
 
   return (
     <ModuleProvider module="commerce" className="h-full">
-      <WizardFrame
+      <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New discount"
         steps={STEPS}
         current={0}
         onCancel={cancel}
       >
-        <WizardStep
+        <SurfaceStep
           header={{
             title: 'New discount',
             supporting: 'BOGO and bundle types land later. Conditions can be added after creation.',
@@ -328,8 +328,8 @@ export function DiscountCreateForm({ surface }: { surface: 'page' | 'overlay' })
               {error}
             </Text>
           )}
-        </WizardStep>
-      </WizardFrame>
+        </SurfaceStep>
+      </SurfaceFrame>
     </ModuleProvider>
   );
 }

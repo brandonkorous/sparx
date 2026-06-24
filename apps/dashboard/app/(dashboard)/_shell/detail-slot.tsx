@@ -3,7 +3,12 @@ import * as React from 'react';
 import { ModuleProvider, type SparxModule } from '@sparx/ui';
 import { requireSession } from '@sparx/auth';
 import { api } from '@/lib/api-rest-client';
-import { CREATE_SENTINEL, isFullBleedCreate, parseDetailToken } from './detail-registry';
+import {
+  CREATE_SENTINEL,
+  isFullBleedCreate,
+  isFullBleedDetail,
+  parseDetailToken,
+} from './detail-registry';
 import { ProductWizard } from '../commerce/products/_components/product-wizard';
 import { CustomerFullProfileWizard } from '../crm/customers/new/customer-full-profile-wizard';
 import { loadPipelineOptions } from '../crm/customers/new/pipeline-options';
@@ -41,6 +46,8 @@ import { loadBundleCreateData } from '../commerce/bundles/_components/bundle-cre
 import { NewZoneForm } from '../commerce/shipping/zones/new/_components/new-zone-form';
 import { NewProfileForm } from '../commerce/shipping/profiles/new/_components/new-profile-form';
 import { NewTaxZoneForm } from '../commerce/tax/zones/new/_components/new-tax-zone-form';
+import { NewTemplateForm } from '../commerce/configurator/new/_components/new-template-form';
+import { loadConfiguratorProducts } from '../commerce/configurator/new/_components/configurator-create-data';
 import { AuthorDetailContent } from '../cms/authors/[id]/_content';
 import { ContentTypeDetailContent } from '../cms/types/[typeKey]/_content';
 import { ContentEntryDetailContent } from '../cms/types/[typeKey]/[id]/_content';
@@ -192,7 +199,7 @@ const detailModules: Record<string, SparxModule> = {
 // Forms needing server-fetched data (e.g. select options) would register a
 // thin server wrapper that fetches then renders the client form — these are
 // all self-contained, so they register directly.
-// Content-entry create is the WizardFrame, but its type-picker step needs the
+// Content-entry create is the SurfaceFrame, but its type-picker step needs the
 // tenant's content types — so it registers a thin server wrapper that fetches
 // them (the documented pattern for create overlays needing server data). The
 // overlay always starts at the type picker; the `/new` route carries any
@@ -205,7 +212,7 @@ interface ContentTypeSummary {
   is_singleton: boolean;
 }
 
-// Customer create is the WizardFrame; its optional follow-up task is assigned to
+// Customer create is the SurfaceFrame; its optional follow-up task is assigned to
 // the current user and its optional deal needs the tenant's pipelines, so a thin
 // server wrapper resolves the session + pipelines and passes them through.
 async function CustomerCreateOverlay() {
@@ -227,7 +234,7 @@ async function CategoryCreateOverlay() {
   return <CategoryCreateForm surface="overlay" parents={parents} />;
 }
 
-// Billing-document create is the multi-step WizardFrame. Its detail/editor is a
+// Billing-document create is the multi-step SurfaceFrame. Its detail/editor is a
 // wide, interactive full-page surface (no detail-view drawer), but CREATION opts
 // into the overlay so the user's `defaultDetailView` picks the style. The wizard
 // needs the tenant's workflows, parties, line types and markup rules, so a thin
@@ -238,7 +245,7 @@ async function BillingDocumentCreateOverlay() {
   return <InvoiceWizard presentation="overlay" {...data} />;
 }
 
-// Quote create is the multi-step WizardFrame. Quotes anchor to a customer and/or
+// Quote create is the multi-step SurfaceFrame. Quotes anchor to a customer and/or
 // B2B account, so a thin server wrapper resolves both pickers. No `?customerId=`
 // preselection here — the /new route carries deep-link preselection instead.
 async function QuoteCreateOverlay() {
@@ -246,14 +253,14 @@ async function QuoteCreateOverlay() {
   return <QuoteWizard presentation="overlay" {...data} />;
 }
 
-// Order create is the multi-step WizardFrame; a created order opens into its
+// Order create is the multi-step SurfaceFrame; a created order opens into its
 // detail view. The customer picker needs the tenant's customers.
 async function OrderCreateOverlay() {
   const data = await loadOrderWizardData();
   return <OrderWizard presentation="overlay" {...data} />;
 }
 
-// Purchase-order + transfer create are multi-step WizardFrames; their editors are
+// Purchase-order + transfer create are multi-step SurfaceFrames; their editors are
 // wide full-page surfaces (no detail-view drawer), so only CREATION opens in the
 // overlay. Each needs its option lists (suppliers / warehouses). The wizards guard
 // on missing options themselves.
@@ -309,6 +316,14 @@ async function BundleCreateOverlay() {
   return <BundleEditor surface="overlay" products={products} variants={variants} />;
 }
 
+// Configurator-template create binds a template to a configurable product, so a
+// thin server wrapper loads the product picker options. A created template opens
+// into its detail editor.
+async function ConfiguratorTemplateCreateOverlay() {
+  const products = await loadConfiguratorProducts();
+  return <NewTemplateForm surface="overlay" products={products} />;
+}
+
 const createComponents: Record<string, React.ComponentType> = {
   category: CategoryCreateOverlay,
   // Commerce single-column create overlays (no detail view — stay open with an
@@ -323,6 +338,7 @@ const createComponents: Record<string, React.ComponentType> = {
   'shipping-zone': () => <NewZoneForm surface="overlay" />,
   'shipping-profile': () => <NewProfileForm surface="overlay" />,
   'tax-zone': () => <NewTaxZoneForm surface="overlay" />,
+  'configurator-template': ConfiguratorTemplateCreateOverlay,
   // CMS — author + taxonomy flow into their detail view on success; redirect
   // has no detail view and stays open.
   author: () => <AuthorCreateForm surface="overlay" />,
@@ -332,7 +348,7 @@ const createComponents: Record<string, React.ComponentType> = {
   suppression: () => <AddSuppressionForm surface="overlay" />,
   'sending-domain': () => <AddDomainForm surface="overlay" />,
   collection: () => <CollectionCreateForm surface="overlay" />,
-  // Product create is the multi-step WizardFrame, rendered as its `inline`
+  // Product create is the multi-step SurfaceFrame, rendered as its `inline`
   // variant so the surrounding drawer/modal chrome owns the overlay shell. It's
   // flagged full-bleed (detail-registry `FULL_BLEED_CREATE_TYPES`) so the chrome
   // hands it the whole body. Full page stays at /commerce/products/new.
@@ -341,18 +357,18 @@ const createComponents: Record<string, React.ComponentType> = {
   'price-list': () => <PriceListCreateForm surface="overlay" />,
   customer: CustomerCreateOverlay,
   'b2b-account': () => <B2bAccountWizard presentation="overlay" />,
-  // Quote + Order create are multi-step WizardFrames (full-bleed); their detail
+  // Quote + Order create are multi-step SurfaceFrames (full-bleed); their detail
   // views exist, so a created record opens straight into it.
   quote: QuoteCreateOverlay,
   order: OrderCreateOverlay,
-  // Inventory — multi-step WizardFrame create overlays (editors stay full-page).
+  // Inventory — multi-step SurfaceFrame create overlays (editors stay full-page).
   'purchase-order': PurchaseOrderCreateOverlay,
   transfer: TransferCreateOverlay,
   segment: () => <SegmentCreateForm surface="overlay" />,
   page: () => <PageCreateForm surface="overlay" />,
   'content-type': () => <ContentTypeCreateForm surface="overlay" />,
   'content-entry': ContentEntryCreateOverlay,
-  // Invoicing — multi-step WizardFrame create overlay (the document editor stays
+  // Invoicing — multi-step SurfaceFrame create overlay (the document editor stays
   // full-page; only creation opens in the drawer/modal).
   'billing-document': BillingDocumentCreateOverlay,
 };
@@ -382,8 +398,13 @@ export function renderDetailContent(typeId: string, id: string): React.ReactNode
 
   const Content = detailComponents[typeId];
   if (!Content) return null;
+  // A full-bleed detail view (a single edit form on the SurfaceFrame) fills the
+  // chrome body, so the module wrapper must carry height through rather than
+  // collapse to content — otherwise the inline frame can't fill the panel or pin
+  // its floor toolbar. Tabbed detail views collapse to content as before.
+  const fullBleed = isFullBleedDetail(typeId);
   return (
-    <ModuleProvider module={module}>
+    <ModuleProvider module={module} className={fullBleed ? 'h-full' : undefined}>
       <Content id={id} />
     </ModuleProvider>
   );

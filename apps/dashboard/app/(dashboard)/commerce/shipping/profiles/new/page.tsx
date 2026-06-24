@@ -8,7 +8,7 @@ import { NewProfileForm } from './_components/new-profile-form';
 
 // Full-page /new route for a shipping profile. When the Commerce module is
 // enabled we render the create form DIRECTLY on the standard create surface
-// (docs/86) — the embedded WizardFrame supplies the title + toolbar, so no
+// (docs/86) — the embedded SurfaceFrame supplies the title + toolbar, so no
 // Container / PageHeader / Card wrapper here. When disabled, the gate shows a stub.
 
 export const dynamic = 'force-dynamic';

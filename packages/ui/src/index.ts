@@ -292,17 +292,17 @@ export {
 export { Pagination, type PaginationProps } from './components/navigation/pagination';
 export { Stepper, type StepperProps, type StepperStep } from './components/navigation/stepper';
 export {
-  WizardFrame,
-  WizardStep,
-  WizardSummary,
-  WizardSummaryRow,
-  WizardSummaryDivider,
-  type WizardFrameProps,
-  type WizardStepProps,
-  type WizardStepActions,
-  type WizardStepDef,
-  type WizardVariant,
-} from './components/navigation/wizard-frame';
+  SurfaceFrame,
+  SurfaceStep,
+  SurfaceSummary,
+  SurfaceSummaryRow,
+  SurfaceSummaryDivider,
+  type SurfaceFrameProps,
+  type SurfaceStepProps,
+  type SurfaceStepActions,
+  type SurfaceStepDef,
+  type SurfaceVariant,
+} from './components/navigation/surface-frame';
 export {
   NavigationMenu,
   NavigationMenuList,

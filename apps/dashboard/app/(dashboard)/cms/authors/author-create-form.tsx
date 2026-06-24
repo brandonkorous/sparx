@@ -12,17 +12,17 @@ import {
   Stack,
   Text,
   Textarea,
-  WizardFrame,
-  WizardStep,
-  type WizardStepDef,
+  SurfaceFrame,
+  SurfaceStep,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 
 import { createAuthor } from './actions';
 
 // New-author form, on the standard create surface (docs/86 F layout). The SAME
 // component renders in both presentations, picked by the host:
-//   - `surface="page"`    → WizardFrame `embedded` at the /new route (contained sheet)
-//   - `surface="overlay"` → WizardFrame `inline` inside the @detail drawer/modal
+//   - `surface="page"`    → SurfaceFrame `embedded` at the /new route (contained sheet)
+//   - `surface="overlay"` → SurfaceFrame `inline` inside the @detail drawer/modal
 //
 // It's a SINGLE-STEP form, so it's a one-step wizard: the frame supplies the
 // title + window controls + the pinned floor toolbar (ghost Cancel + module
@@ -34,7 +34,7 @@ interface AuthorCreateFormProps {
   surface: 'page' | 'overlay';
 }
 
-const STEPS: WizardStepDef[] = [{ key: 'details', label: 'Details' }];
+const STEPS: SurfaceStepDef[] = [{ key: 'details', label: 'Details' }];
 
 export function AuthorCreateForm({ surface }: AuthorCreateFormProps) {
   const router = useRouter();
@@ -107,14 +107,14 @@ export function AuthorCreateForm({ surface }: AuthorCreateFormProps) {
 
   return (
     <ModuleProvider module="cms" className="h-full">
-      <WizardFrame
+      <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New author"
         steps={STEPS}
         current={0}
         onCancel={cancel}
       >
-        <WizardStep
+        <SurfaceStep
           header={{
             title: 'Author details',
             supporting:
@@ -183,8 +183,8 @@ export function AuthorCreateForm({ surface }: AuthorCreateFormProps) {
               {generalError}
             </Text>
           )}
-        </WizardStep>
-      </WizardFrame>
+        </SurfaceStep>
+      </SurfaceFrame>
     </ModuleProvider>
   );
 }

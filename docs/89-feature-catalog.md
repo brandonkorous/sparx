@@ -477,7 +477,7 @@ b2b / dropship are consumers. The full six-phase build is shipped — see [docs/
 
 ## 18. Onboarding (cross-cutting)
 
-- 🔨 **Modules-first wizard** — Modules → Template → Workspace → Domain → Payments → Launch (6 steps; WizardFrame primitive).
+- 🔨 **Modules-first wizard** — Modules → Template → Workspace → Domain → Payments → Launch (6 steps; SurfaceFrame primitive).
 - 🔨 **Template gallery** — blueprints filtered by selected modules, with locked hints.
 - 🔨 **Workspace setup** — company name, workspace slug, primary site name.
 - 🔨 **Domain search & purchase** — registrar lookup in-flow (GoDaddy reseller wiring in progress).

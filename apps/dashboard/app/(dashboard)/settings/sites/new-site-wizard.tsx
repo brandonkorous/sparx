@@ -3,7 +3,7 @@
 // New-site create wizard (docs/49 Phase 8b). The single guided flow for spinning
 // up an additional site over the shared back office — it replaces the inline
 // create form on the Sites page. Three journey steps in the platform's modal
-// WizardFrame (docs/86):
+// SurfaceFrame (docs/86):
 //
 //   1. Starting point — a blank site, or a blueprint (a whole themed site:
 //      pages, products, content, emails, theme — installed INTO the new site).
@@ -28,11 +28,11 @@ import {
   Spinner,
   Switch,
   Text,
-  WizardFrame,
-  WizardStep,
+  SurfaceFrame,
+  SurfaceStep,
   cn,
   useConfirm,
-  type WizardStepDef,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 import { ArrowRight, Check, ExternalLink, Globe, PencilRuler } from 'lucide-react';
 
@@ -64,7 +64,7 @@ interface NewSiteWizardProps {
   onCreated: () => void;
 }
 
-const STEPS: WizardStepDef[] = [
+const STEPS: SurfaceStepDef[] = [
   { key: 'template', label: 'Starting point', sublabel: 'Blank or a blueprint' },
   { key: 'details', label: 'Name & address', sublabel: 'Title and handle' },
   { key: 'review', label: 'Review', sublabel: 'Confirm & create' },
@@ -219,7 +219,7 @@ export function NewSiteWizard({
   // ── Step bodies ─────────────────────────────────────────────────────────────
 
   const templateStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'How should this site start?',
         supporting:
@@ -306,11 +306,11 @@ export function NewSiteWizard({
           );
         })}
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const detailsStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Name your site',
         supporting: 'The name shows in your dashboard. The handle anchors its instant web address.',
@@ -353,11 +353,11 @@ export function NewSiteWizard({
           </div>
         </div>
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const reviewStep = (
-    <WizardStep
+    <SurfaceStep
       header={{ title: 'Review & create', supporting: 'One last look before your site is built.' }}
       actions={{
         onBack: () => setStep(1),
@@ -412,12 +412,12 @@ export function NewSiteWizard({
           </Text>
         )}
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   // Builder-module upsell (a 2nd+ site needs Builder). Replaces the review body.
   const upsellPanel = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Additional sites need the Builder module',
         supporting:
@@ -433,12 +433,12 @@ export function NewSiteWizard({
           Not now
         </Button>
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   // Success (or site-created-but-install-failed). No action row — bespoke CTAs.
   const successPanel = result && (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: result.ok ? `“${result.site?.name}” is ready` : `“${result.site?.name}” was created`,
         supporting: result.ok
@@ -491,7 +491,7 @@ export function NewSiteWizard({
           </Button>
         </div>
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   let body: React.ReactNode;
@@ -503,7 +503,7 @@ export function NewSiteWizard({
 
   return (
     <ModuleProvider module="builder">
-      <WizardFrame
+      <SurfaceFrame
         variant="modal"
         title="New site"
         steps={STEPS}
@@ -527,7 +527,7 @@ export function NewSiteWizard({
         }
       >
         {body}
-      </WizardFrame>
+      </SurfaceFrame>
     </ModuleProvider>
   );
 }

@@ -21,7 +21,7 @@ import {
   NativeSelect,
   Spinner,
   Text,
-  WizardStep,
+  SurfaceStep,
   useConfirm,
 } from '@sparx/ui';
 
@@ -219,7 +219,7 @@ export function MediaStep({ productId, onBack, onComplete }: MediaStepProps) {
   }
 
   return (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Photos',
         supporting: multiVariant
@@ -355,6 +355,6 @@ export function MediaStep({ productId, onBack, onComplete }: MediaStepProps) {
         onPick={(a) => void onPick(a)}
         accept={['image/*']}
       />
-    </WizardStep>
+    </SurfaceStep>
   );
 }

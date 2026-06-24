@@ -12,17 +12,17 @@ import {
   Stack,
   Text,
   Textarea,
-  WizardFrame,
-  WizardStep,
-  type WizardStepDef,
+  SurfaceFrame,
+  SurfaceStep,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 
 import { createShippingZoneAction } from '../../../../shipping-actions';
 
 // New shipping-zone form, on the standard create surface (docs/86 F layout). The
 // SAME component renders in both presentations, picked by the host:
-//   - `surface="page"`    → WizardFrame `embedded` at the /new route (contained sheet)
-//   - `surface="overlay"` → WizardFrame `inline` inside the @detail drawer/modal
+//   - `surface="page"`    → SurfaceFrame `embedded` at the /new route (contained sheet)
+//   - `surface="overlay"` → SurfaceFrame `inline` inside the @detail drawer/modal
 //
 // It's a SINGLE-STEP form, so it's a one-step wizard: the frame supplies the
 // title + window controls + the pinned floor toolbar (ghost Cancel + module
@@ -35,7 +35,7 @@ interface NewZoneFormProps {
   surface: 'page' | 'overlay';
 }
 
-const STEPS: WizardStepDef[] = [{ key: 'basics', label: 'Basics' }];
+const STEPS: SurfaceStepDef[] = [{ key: 'basics', label: 'Basics' }];
 
 export function NewZoneForm({ surface }: NewZoneFormProps) {
   const router = useRouter();
@@ -108,14 +108,14 @@ export function NewZoneForm({ surface }: NewZoneFormProps) {
 
   return (
     <ModuleProvider module="commerce" className="h-full">
-      <WizardFrame
+      <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New shipping zone"
         steps={STEPS}
         current={0}
         onCancel={cancel}
       >
-        <WizardStep
+        <SurfaceStep
           header={{
             title: 'New shipping zone',
             supporting:
@@ -189,8 +189,8 @@ export function NewZoneForm({ surface }: NewZoneFormProps) {
               {error}
             </Text>
           )}
-        </WizardStep>
-      </WizardFrame>
+        </SurfaceStep>
+      </SurfaceFrame>
     </ModuleProvider>
   );
 }

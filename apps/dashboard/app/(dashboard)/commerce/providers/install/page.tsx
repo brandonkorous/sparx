@@ -1,22 +1,18 @@
 import { notFound, redirect } from 'next/navigation';
 
 import type { ProviderKind, ProviderMetadata } from '@sparx/commerce-schemas';
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  Heading,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { ensureProvidersRegistered } from '../../../../../lib/providers-bootstrap';
 
 import { InstallProviderForm } from './_components/install-provider-form';
+
+// Catalog-driven deep link: requires `?slug=&kind=` to know WHICH provider to
+// install, then builds its fields from that provider's JSON config schema. This
+// is why the install surface is full-page only and is NOT wired into the generic
+// drawer/modal "New" overlay — a generic create overlay carries no provider
+// context. The embedded SurfaceFrame inside InstallProviderForm supplies the
+// title + chrome, so this route just resolves metadata and renders the form.
 
 export const dynamic = 'force-dynamic';
 
@@ -53,45 +49,13 @@ export default async function InstallProviderPage({
   if (!metadata.kinds.includes(kind as ProviderKind)) redirect('/commerce/providers');
 
   return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          title={`Install ${metadata.displayName}`}
-          badge={
-            <>
-              <Badge variant="outline">{kind}</Badge>
-              {metadata.sandboxAvailable && (
-                <Badge variant="outline" className="text-xs">
-                  sandbox available
-                </Badge>
-              )}
-            </>
-          }
-          description={metadata.description}
-        />
-
-        <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>Configuration</Heading>
-              <CardDescription>
-                Secret values (API keys, signing secrets) should reference Google Secret Manager
-                paths — never paste the literal secret here.
-              </CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
-            <InstallProviderForm
-              providerSlug={metadata.slug}
-              kind={kind as ProviderKind}
-              displayName={metadata.displayName}
-              configSchemaJson={metadata.configSchemaJson}
-              sandboxAvailable={metadata.sandboxAvailable}
-              webhookPathTemplate={metadata.webhookPathTemplate}
-            />
-          </CardContent>
-        </Card>
-      </Stack>
-    </Container>
+    <InstallProviderForm
+      providerSlug={metadata.slug}
+      kind={kind as ProviderKind}
+      displayName={metadata.displayName}
+      configSchemaJson={metadata.configSchemaJson}
+      sandboxAvailable={metadata.sandboxAvailable}
+      webhookPathTemplate={metadata.webhookPathTemplate}
+    />
   );
 }

@@ -10,9 +10,9 @@ import {
   ModuleProvider,
   Stack,
   Text,
-  WizardFrame,
-  WizardStep,
-  type WizardStepDef,
+  SurfaceFrame,
+  SurfaceStep,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 import { ContentBlockEditor, EMPTY_DOC, type CmsDoc } from '@sparx/cms-editor';
 
@@ -20,8 +20,8 @@ import { createPage } from '../actions';
 
 // New-page form, on the standard create surface (docs/86 F layout). The SAME
 // component renders in both presentations, picked by the host:
-//   - `surface="page"`    → WizardFrame `embedded` at the /cms/new route (contained sheet)
-//   - `surface="overlay"` → WizardFrame `inline` inside the @detail drawer/modal
+//   - `surface="page"`    → SurfaceFrame `embedded` at the /cms/new route (contained sheet)
+//   - `surface="overlay"` → SurfaceFrame `inline` inside the @detail drawer/modal
 //
 // It's a SINGLE-STEP form, so it's a one-step wizard: the frame supplies the
 // title + window controls + the pinned floor toolbar (ghost Cancel + module
@@ -36,7 +36,7 @@ interface PageCreateFormProps {
   surface: 'page' | 'overlay';
 }
 
-const STEPS: WizardStepDef[] = [{ key: 'basics', label: 'Basics' }];
+const STEPS: SurfaceStepDef[] = [{ key: 'basics', label: 'Basics' }];
 
 export function PageCreateForm({ surface }: PageCreateFormProps) {
   const router = useRouter();
@@ -102,14 +102,14 @@ export function PageCreateForm({ surface }: PageCreateFormProps) {
 
   return (
     <ModuleProvider module="cms" className="h-full">
-      <WizardFrame
+      <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New page"
         steps={STEPS}
         current={0}
         onCancel={cancel}
       >
-        <WizardStep
+        <SurfaceStep
           header={{
             title: 'Page basics',
             supporting:
@@ -166,8 +166,8 @@ export function PageCreateForm({ surface }: PageCreateFormProps) {
               {error}
             </Text>
           )}
-        </WizardStep>
-      </WizardFrame>
+        </SurfaceStep>
+      </SurfaceFrame>
     </ModuleProvider>
   );
 }

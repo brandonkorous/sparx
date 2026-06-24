@@ -24,9 +24,9 @@ import {
   TableHeader,
   TableRow,
   Text,
-  WizardFrame,
-  WizardStep,
-  type WizardStepDef,
+  SurfaceFrame,
+  SurfaceStep,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 
 import { createBundleAction, updateBundleAction } from '../../configurator-actions';
@@ -58,7 +58,7 @@ export interface ComponentDraft {
 
 const moneyFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
-const CREATE_STEPS: WizardStepDef[] = [{ key: 'configure', label: 'Configure' }];
+const CREATE_STEPS: SurfaceStepDef[] = [{ key: 'configure', label: 'Configure' }];
 
 export function BundleEditor({
   products,
@@ -75,8 +75,8 @@ export function BundleEditor({
   products: BundleProductOption[];
   variants: VariantOption[];
   bundleId?: string;
-  /** Create surface only: `'page'` → embedded WizardFrame at `/new`;
-   *  `'overlay'` → inline WizardFrame inside the @detail drawer/modal. Ignored
+  /** Create surface only: `'page'` → embedded SurfaceFrame at `/new`;
+   *  `'overlay'` → inline SurfaceFrame inside the @detail drawer/modal. Ignored
    *  on the edit path, which always renders the inline `<form>`. */
   surface?: 'page' | 'overlay';
   initialBundleProductId?: string;
@@ -463,19 +463,19 @@ export function BundleEditor({
     );
   }
 
-  // ── CREATE path — the standard F-shell (docs/86). One-step WizardFrame whose
+  // ── CREATE path — the standard F-shell (docs/86). One-step SurfaceFrame whose
   // floor toolbar owns Cancel + the "Create bundle" primary (calling submit()
   // directly — no native form submit). Fields group into module-tinted cards.
   return (
     <ModuleProvider module="commerce" className="h-full">
-      <WizardFrame
+      <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New bundle"
         steps={CREATE_STEPS}
         current={0}
         onCancel={cancel}
       >
-        <WizardStep
+        <SurfaceStep
           header={{
             title: 'Bundle configuration',
             supporting:
@@ -593,8 +593,8 @@ export function BundleEditor({
               {error}
             </Text>
           )}
-        </WizardStep>
-      </WizardFrame>
+        </SurfaceStep>
+      </SurfaceFrame>
     </ModuleProvider>
   );
 }

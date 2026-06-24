@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
-import { Heading, Text, WizardFrame, type WizardStepDef } from '@sparx/ui';
+import { Heading, Text, SurfaceFrame, type SurfaceStepDef } from '@sparx/ui';
 import {
   checkSlugAction,
   completeDomainStepAction,
@@ -53,7 +53,7 @@ export type SlugCheck =
   | { status: 'checking' }
   | { status: 'done'; result: SlugAvailability };
 
-const STEP_DEFS: Record<OnboardingStepKey, WizardStepDef> = {
+const STEP_DEFS: Record<OnboardingStepKey, SurfaceStepDef> = {
   modules: { key: 'modules', label: 'Modules', sublabel: 'What you need' },
   template: { key: 'template', label: 'Blueprint', sublabel: 'A starting point' },
   workspace: { key: 'workspace', label: 'Workspace', sublabel: 'Name your site' },
@@ -464,7 +464,7 @@ export function OnboardingWizard({ initial }: { initial: WizardInitialState }) {
   const head = HEAD[step];
 
   return (
-    <WizardFrame
+    <SurfaceFrame
       variant="page"
       lede={{ title: RAIL[step].title, blurb: RAIL[step].blurb }}
       context={RAIL[step].context}
@@ -504,6 +504,6 @@ export function OnboardingWizard({ initial }: { initial: WizardInitialState }) {
           />
         </div>
       </div>
-    </WizardFrame>
+    </SurfaceFrame>
   );
 }

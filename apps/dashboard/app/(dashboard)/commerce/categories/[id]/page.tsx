@@ -1,12 +1,13 @@
-import { Container, Stack } from '@sparx/ui';
-
 import { CategoryDetailContent } from './_content';
 
 // Full-page surface for a category's detail/edit view. The body lives in the
-// surface-agnostic `CategoryDetailContent` so the SAME component renders here
-// and inside the `@detail` drawer/modal overlay. This route is what `fullPage`
-// / `newTab` detail-view preferences, deep links, and the overlay's "maximize"
-// button resolve to.
+// surface-agnostic `CategoryDetailContent`, which renders the SAME SurfaceFrame
+// here (`surface="page"` → the `embedded` contained sheet, filling the dashboard
+// content area with its own title + pinned toolbar) and inside the `@detail`
+// drawer/modal overlay (`surface="overlay"`). This route is what `fullPage` /
+// `newTab` detail-view preferences, deep links, and the overlay's "maximize"
+// button resolve to — no page-level Container/PageHeader, so the title isn't
+// rendered twice.
 
 export const dynamic = 'force-dynamic';
 
@@ -16,11 +17,5 @@ interface PageProps {
 
 export default async function CategoryDetailPage({ params }: PageProps) {
   const { id } = await params;
-  return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
-        <CategoryDetailContent id={id} />
-      </Stack>
-    </Container>
-  );
+  return <CategoryDetailContent id={id} surface="page" />;
 }

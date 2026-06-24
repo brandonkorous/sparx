@@ -120,7 +120,7 @@ threshold these archive and their tails become kanNINJA cards; under **strict** 
 
 Also in this band (executed ADRs / build-logs you may prefer to keep):
 **75-invoicing-spec.md** (module P1–8 built), **81-automation-module.md** (built through Slice K; Phase 6
-deferred), **84-automation-build-log.md** (build log — spent once committed), **86-wizard-layout-pattern.md**
+deferred), **84-automation-build-log.md** (build log — spent once committed), **86-surface-frame-pattern.md**
 (**CORRECTED** — WizardFrame + wizards shipped), **87-invoicing-and-billing-documents.md** (P1–8 shipped;
 dashboard authoring tail), **90-ADR-automation-migration.md** + **94-ADR-payment-gateway.md** (decisions executed).
 

@@ -86,7 +86,7 @@ export const inventoryManifest: ModuleManifest = {
     },
     // Create-only overlay entities (no `hasDetailView`: their editors are wide,
     // full-page surfaces). The manifest entry gives the create overlay chrome a
-    // label + the "open in full page" href; the multi-step WizardFrame create
+    // label + the "open in full page" href; the multi-step SurfaceFrame create
     // opts into the drawer/modal via CREATE_VIEW_TYPES + detail-slot.
     {
       id: 'purchase-order',

@@ -1,6 +1,6 @@
 'use client';
 
-// B2B account creation wizard (docs/68 Phase B-5, docs/86 WizardFrame).
+// B2B account creation wizard (docs/68 Phase B-5, docs/86 SurfaceFrame).
 // 3 steps:
 //   1. Company  — name (required), tax ID, website, status, tags
 //   2. Pricing  — credit limit, discount %, payment terms, fleet size, tier, notes
@@ -8,7 +8,7 @@
 //
 // Presentation: the `/new` route renders the full-screen `page` variant; the B2B
 // accounts list opens it inside the dashboard's drawer/modal detail chrome
-// (`overlay` → WizardFrame `inline`), picked by the user's `defaultDetailView`.
+// (`overlay` → SurfaceFrame `inline`), picked by the user's `defaultDetailView`.
 // On finish: createB2bAccountAction → navigates to the new account's detail.
 
 import * as React from 'react';
@@ -26,12 +26,12 @@ import {
   SchemaFieldRenderer,
   Stack,
   Text,
-  WizardFrame,
-  WizardStep,
-  WizardSummary,
-  WizardSummaryDivider,
-  WizardSummaryRow,
-  type WizardStepDef,
+  SurfaceFrame,
+  SurfaceStep,
+  SurfaceSummary,
+  SurfaceSummaryDivider,
+  SurfaceSummaryRow,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 import { Plus, Trash2 } from 'lucide-react';
 
@@ -41,7 +41,7 @@ import { createB2bAccountAction } from '../../../crm/b2b-actions';
 
 type StepKey = 'company' | 'pricing' | 'fleet';
 
-const ALL_STEPS: Record<StepKey, WizardStepDef> = {
+const ALL_STEPS: Record<StepKey, SurfaceStepDef> = {
   company: { key: 'company', label: 'Company', sublabel: 'Name & status' },
   pricing: { key: 'pricing', label: 'Pricing', sublabel: 'Credit & terms' },
   fleet: { key: 'fleet', label: 'Fleet', sublabel: 'Engine profiles' },
@@ -200,7 +200,7 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  const steps: WizardStepDef[] = STEP_ORDER.map((k) => ALL_STEPS[k]);
+  const steps: SurfaceStepDef[] = STEP_ORDER.map((k) => ALL_STEPS[k]);
   const current = Math.max(
     0,
     steps.findIndex((s) => s.key === stepKey)
@@ -312,7 +312,7 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
   // ── Step bodies ──────────────────────────────────────────────────────────────
 
   const companyStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Company details',
         supporting: 'The account’s company info. Pricing and credit terms come next.',
@@ -333,11 +333,11 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
         errors={companyErrors}
         disabled={submitting}
       />
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const pricingStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Pricing & credit',
         supporting: 'Pricing tier, credit limit, and payment terms — all optional.',
@@ -355,11 +355,11 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
         onChange={(key, value) => setPricing((prev) => ({ ...prev, [key]: value }))}
         disabled={submitting}
       />
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const fleetStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Fleet engine profiles',
         supporting:
@@ -477,7 +477,7 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
           </Text>
         )}
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   let body: React.ReactNode;
@@ -515,7 +515,7 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
   const money0 = (n: number) => `$${n.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
 
   const summary = (
-    <WizardSummary
+    <SurfaceSummary
       title="Draft summary"
       footer={
         <Badge color="module" variant="soft" size="sm">
@@ -523,22 +523,22 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
         </Badge>
       }
     >
-      <WizardSummaryRow label="Account" value={accountName || '—'} strong />
-      <WizardSummaryRow label="Status" value={statusLabel} />
-      {tier && <WizardSummaryRow label="Tier" value={tier} />}
-      <WizardSummaryDivider />
-      {creditLimit > 0 && <WizardSummaryRow label="Credit limit" value={money0(creditLimit)} />}
-      {discount > 0 && <WizardSummaryRow label="Discount" value={`${discount}%`} />}
-      {termsLabel && <WizardSummaryRow label="Terms" value={termsLabel} />}
-      <WizardSummaryRow label="Engine profiles" value={String(validEngineCount)} />
-    </WizardSummary>
+      <SurfaceSummaryRow label="Account" value={accountName || '—'} strong />
+      <SurfaceSummaryRow label="Status" value={statusLabel} />
+      {tier && <SurfaceSummaryRow label="Tier" value={tier} />}
+      <SurfaceSummaryDivider />
+      {creditLimit > 0 && <SurfaceSummaryRow label="Credit limit" value={money0(creditLimit)} />}
+      {discount > 0 && <SurfaceSummaryRow label="Discount" value={`${discount}%`} />}
+      {termsLabel && <SurfaceSummaryRow label="Terms" value={termsLabel} />}
+      <SurfaceSummaryRow label="Engine profiles" value={String(validEngineCount)} />
+    </SurfaceSummary>
   );
 
   // One top-stepper frame for both presentations: `embedded` fills the dashboard
   // content area at `/new` (sidebar + header stay); `inline` fills the drawer/
   // modal detail panel, which supplies its own chrome.
   return (
-    <WizardFrame
+    <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New B2B account"
       steps={steps}
@@ -550,6 +550,6 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
       summary={summary}
     >
       {body}
-    </WizardFrame>
+    </SurfaceFrame>
   );
 }

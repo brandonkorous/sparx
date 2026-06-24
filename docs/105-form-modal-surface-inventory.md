@@ -1,8 +1,8 @@
 # Form & Modal Surface Inventory
 
-Version: 1.1
+Version: 1.3
 Author: Brandon Korous
-Last Updated: 2026-06-21
+Last Updated: 2026-06-23
 
 A complete census of every **form, create/edit flow, and modal/dialog** in the dashboard app
 (`apps/dashboard/app`), with each one's current presentation and the work needed to bring it onto
@@ -10,7 +10,7 @@ the standard **form surface** — the drawer / modal / full-page detail-view sys
 **F layout** (form column + optional live "draft summary" column, one header, one bottom toolbar).
 
 This is the burn-down list for applying the [`form-surface`](../.claude/skills/form-surface/SKILL.md)
-skill consistently. The design spec is [docs/86](86-wizard-layout-pattern.md); the three-registries
+skill consistently. The design spec is [docs/86](86-surface-frame-pattern.md); the three-registries
 footgun and the procedure live in the skill.
 
 > **Why this exists.** The line-item wizard family (product, quote, order, purchase-order, transfer,
@@ -52,7 +52,108 @@ so each wave is "the same move, N times."
 
 ---
 
+## Commerce — page-by-page walk-through (current focus, 2026-06-21)
+
+**Working mode (changed):** one commerce page at a time **in Playwright** — open it, assess against the
+`SurfaceFrame` standard, apply a focused fix, verify on screen, then move on. NO bulk agent fan-out:
+forcing the whole tail through at once is what produced the `WizardFrame` misnomer and the edit-panel
+confusion. Slow and verified beats fast and misaligned.
+
+**Each page is also scored** via the `surface-review` skill (`/surface-review <route>`): a read-only audit
+agent maps the page and grades it **UI 1–10 · UX 1–10** with a mandatory "gap to 10" list; we verify on
+screen, fix, and re-score. UI = on-system & well-composed; UX = serves the user's job (related data
+loaded, one home per concern, cross-module color wayfinding, no dead ends). Scores land in the
+`Score (UI/UX)` column below and the per-page detail in the **Surface review log**.
+
+**Create surfaces: DONE.** Every commerce create surface is on `SurfaceFrame` and wired (products,
+categories, collections, pricing, discounts, bundles, configurator, gift-cards, account-credit, shipping
+zone/profile, tax zone → overlay; provider install → full-page). So the remaining commerce work is the
+**edit + inline + tool** surfaces. Treatment per the skill §0 edit rule (single-form detail →
+`SurfaceFrame`; tab/panel editor → module-card cleanup inside the detail, NOT a nested frame).
+
+Walk these in order — each is `[ ] open → assess → focused fix → verify`:
+
+| # | Page (route) | Surface(s) | Treatment | Score (UI/UX) |
+| --- | --- | --- | --- | --- |
+| 1 | Categories `/commerce/categories/[id]` | `category-edit-form` (the whole detail body) | single-form detail → **`SurfaceFrame`** (symmetric with create) | UI **9** / UX **9** ✅ |
+| 2 | Collections `/commerce/collections/[id]` | `collection-meta-form` (Metadata tab) | tab panel → `<Card variant="module">` + consistent Save, no `CardFooter` toolbar | — |
+| 3 | Products `/commerce/products/[id]` | `product-edit-form` (Edit tab) + variants/media/fitment/inventory panels; `new-variant-dialog`/`-form` + `options-editor-dialog` (stubs) | tab panels → module-card cleanup; build the two stub dialogs | — |
+| 4 | Pricing `/commerce/pricing/[id]` | `price-list-entries-editor` | assess — likely correct inline; confirm only | — |
+| 5 | Bundles `/commerce/bundles/[id]` | `bundle-editor` EDIT path (renders inline today) | module-card cleanup; decide vs full `SurfaceFrame` | — |
+| 6 | Configurator `/commerce/configurator/[id]` | `template-json-editor` | assess — bespoke JSON editor, likely fine | — |
+| 7 | Returns `/commerce/returns/[id]` | `return-refund-form`, `return-approval-form`, `return-inspection-form` | inline detail forms → module-card cleanup | — |
+| 8 | Reviews `/commerce/reviews/[id]` | `respond-form` | module-card cleanup | — |
+| 9 | Q&A `/commerce/qa/[id]` | `answer-form` | module-card cleanup | — |
+| 10 | Shipping `/commerce/shipping/zones/[id]` + `/profiles/[id]` | `new-rate-form` (add rate) + profile detail | inline add-row → standardize (collapsible / module-card) | — |
+| 11 | Tax `/commerce/tax/zones/[id]` | `new-tax-rate-form` (add rate) | inline add-row → standardize | — |
+| 12 | Markup rules `/commerce/markup-rules` | `RuleForm` (expand-in-place) | inline → overlay or module-card | — |
+| 13 | Surcharges `/commerce/surcharges` | `RuleForm` | same move as markup rules | — |
+| 14 | Fitment `/commerce/fitment` | `fitment-reference-editor` add-rows | standardize the add-forms | — |
+| 15 | Providers `/commerce/providers/[id]` | `provider-actions-bar` | minor — confirm → `useConfirm` | — |
+| 16 | Bulk pricing `/commerce/products/pricing` | `bulk-pricing-tool` | design call — page vs overlay | — |
+
+Skip (read-only or correct as-is): carts, checkout-sessions, wishlists, reports, subscriptions detail,
+settings, import/export dialogs, delete confirms, bulk-price-adjust modal.
+
+> The per-module tables further down are the platform-wide census and lag this section — for commerce,
+> THIS table is the source of truth (the tables still show the now-done create rows as 🔲).
+
+---
+
+## Surface review log
+
+Per-page UI + UX scores from the `surface-review` skill (rubric + heuristics live in the skill). Each
+entry is a punch-list, not an essay; re-scored after a fix lands. **10 is rare** — it means nothing left
+to improve. A gap that recurs across pages is a **platform fix on the primitive**, logged once below.
+
+### Categories `/commerce/categories/[id]` — UI 8→**9**/10 · UX 7→**9**/10 (2026-06-23)
+
+- ✅ Strong: textbook F-layout in all 3 presentations; create/edit symmetric; toolbar order (Cancel
+  leftmost → Delete → Save) correct; single-home (summary read-only facts, form editable) — no
+  duplication; commerce accent consistent everywhere; system fidelity clean.
+- ✅ FIXED (UI): Featured now a themed `@sparx/ui` `Checkbox` (`color="module"`); per-field help added
+  (Parent trail + sibling sort note, Featured purpose).
+- ✅ FIXED (UX): summary enriched — **breadcrumb ancestry** ("Nested under") + **subcategory count**,
+  derived from the already-loaded tree (no extra fetch); fills the column. (No "View N products" link —
+  there's no category-filtered products route yet; kept as a stat rather than ship a broken link.)
+- ✅ FIXED (UX, platform): **dirty-state guard** — see platform section; Categories is the first adopter.
+  Verified on screen: Cancel, host Close (X), and Discard-then-leave / dismiss-then-stay all behave.
+- Decision (not a defect): edit stays open after Save (iterative verify) while create closes — kept on
+  purpose; revisit if a consistent close-on-save is preferred.
+- Remaining (keeps it 9, not 10): no category-filtered products view to link to; Switch-mode discards
+  rather than preserves edits (it remounts the form — guarded, but ideal would preserve); a hard browser
+  nav/refresh isn't guarded (OS-level `beforeunload`, intentionally out of scope).
+- **Post-fix: UI 9 · UX 9** — all triaged gaps closed; the two "remaining" items are minor/deferred.
+
+### Platform gaps surfaced (fix once, on the primitive)
+
+- ✅ **BUILT — Dirty-state guard for form surfaces.** `apps/dashboard/app/(dashboard)/_components/`
+  `unsaved-guard.tsx` — `UnsavedGuardProvider` + `useRegisterLeaveGuard(guard)` (form side) +
+  `useLeaveGuard()` (host side). The active form registers ONE guard (its dirty check + `useConfirm`
+  discard dialog); every leave path routes through it: the frame-owned **Cancel** (the form's own
+  `onCancel`), and the detail-panel host's **Close / Switch / backdrop-Esc** (`InlineDetailContent` +
+  `ModalDetailContent` wrap their body in the provider; `DetailHeader` close/switch + the modal's
+  `onOpenChange` await `runGuard()`). Embedded full-page has no host → the form's Cancel still self-guards.
+  **Every subsequent edit surface adopts it by computing `dirty` + `useRegisterLeaveGuard`.** First
+  adopter: Categories (2026-06-23). _Not covered: hard browser nav (`beforeunload`); switch-mode preserves
+  edits — both deferred._
+- **`SurfaceSummary` has no async/loading slot.** If summaries start loading related-record counts they
+  need a skeleton/`loading` affordance. Not needed for Categories (derived client-side). _Surfaced: Categories (2026-06-23)._
+
+---
+
 ## Progress log
+
+- **2026-06-21 — `WizardFrame` → `SurfaceFrame` rename + commerce create sweep ✅.**
+  - Renamed the primitive end-to-end: file `surface-frame.tsx`, exports `Surface*` (`SurfaceFrame` /
+    `SurfaceStep` / `SurfaceStepDef` / `SurfaceSummary*`), barrel, 67 consumers, docs/86 →
+    `86-surface-frame-pattern.md`, this doc + the `form-surface` skill. It is the ONE form-surface frame
+    — create AND edit, single-step by default, steps are an opt-in (wizard) feature. `@sparx/ui` +
+    `@sparx/dashboard` typecheck + lint clean. (`ProductWizard`/`QuoteWizard`/etc. keep their names —
+    they're genuinely multi-step wizards built on the frame.)
+  - All commerce CREATE surfaces migrated + wired: discount, bundle, shipping zone/profile, tax zone,
+    configurator-template (overlay), provider-install (full-page). Next focus = commerce edit/inline
+    surfaces, worked **page-by-page in Playwright** (see the walk-through above).
 
 - **2026-06-21 — Wave 0 ✅ and Wave 1 ✅ complete.**
   - Wave 0 (cross-cutting cleanups): the two `window.prompt` reason-captures (`return-status-bar`, `moderate-actions`) became proper `@sparx/ui` `Modal` + required `Textarea` dialogs; the raw `AlertDialog`/arm-confirm patterns in `email/domains/domain-actions`, `commerce/pricing/[id]/price-list-status-bar`, `inventory/sources/[id]/agent-panel` (unpair), `b2b/service-types/service-type-actions` (delete), and the CMS confirms (`cms/[id]/edit-form`, `author-edit-form`, `schema-editor`, `types/[typeKey]/[id]/edit-entry-form`, `navigation/menu-editor`, `revisions/restore-button`) now go through `useConfirm`. _Note:_ the CMS edit-form rows stay 🔲 because the **form→overlay** migration (Wave 4) is the real remaining work there — only their confirm sub-fix is done.
@@ -79,7 +180,7 @@ Quick correctness wins that don't touch layout:
 
 ### Wave 1 — wizards that only need a live summary ✅ DONE (2026-06-21)
 
-Already on `WizardFrame`; just add the F-layout summary column (and join `SUMMARY_CREATE_TYPES`):
+Already on `SurfaceFrame`; just add the F-layout summary column (and join `SUMMARY_CREATE_TYPES`):
 
 - `crm/customers/new/customer-full-profile-wizard.tsx`
 - `b2b/accounts/new/b2b-account-wizard.tsx`
@@ -303,22 +404,22 @@ Dialogs that carry real input (not just confirms):
 | `email/suppressions/_components/add-suppression-form.tsx`                                                                                    | Add suppression             | Single-step create form  | overlay                  | ✅     | surface-aware                      |
 | `email/domains/_components/add-domain-form.tsx`                                                                                              | Add sending domain          | Single-step create form  | overlay                  | ✅     | surface-aware                      |
 | `email/domains/_components/domain-actions.tsx`                                                                                               | Remove domain               | Confirm                  | useConfirm               | ✅     | done (useConfirm)                  |
-| `email/broadcasts/_components/broadcast-composer.tsx`                                                                                        | Create broadcast            | Create wizard            | full-page only           | 🔲     | design call (WizardFrame page?)    |
+| `email/broadcasts/_components/broadcast-composer.tsx`                                                                                        | Create broadcast            | Create wizard            | full-page only           | 🔲     | design call (SurfaceFrame page?)    |
 | `email/broadcasts/[id]/broadcast-actions.tsx`                                                                                                | Schedule / send now         | Bulk/action modal        | inline                   | 🔲     | lift scheduler into dialog         |
 | `email/test-send-form.tsx`                                                                                                                   | Test send (dev)             | Inline page-body form    | inline                   | ➖     | dev tool                           |
 | `marketplace/_components/blueprint-card-actions.tsx` / `installs/[id]/_components/review-actions.tsx`                                        | Blueprint install/go-live   | Confirm                  | `useConfirm`             | ➖     | fine                               |
-| `marketplace/installs/[id]/update/page.tsx`                                                                                                  | Blueprint update review     | Edit/record form         | full-page only           | 🔲     | design call (WizardFrame page?)    |
+| `marketplace/installs/[id]/update/page.tsx`                                                                                                  | Blueprint update review     | Edit/record form         | full-page only           | 🔲     | design call (SurfaceFrame page?)    |
 | `seo/_components/search-console-control.tsx`                                                                                                 | Search Console connect/pick | Picker dialog            | inline                   | 🔲     | lift site-picker into overlay      |
 | `seo/_components/seo-report-panel.tsx`                                                                                                       | SEO audit report            | (read-only)              | full-page                | ➖     | read-only                          |
 | `automations/_components/automation-editor.tsx`                                                                                              | Automation create/edit      | Create wizard            | full-page canvas         | ✅     | full-page canvas correct           |
 | `automations/_components/automation-actions.tsx`                                                                                             | Delete automation           | Confirm                  | `useConfirm`             | ➖     | fine                               |
 | `settings/general/general-form.tsx`, `settings/chat/...`, `settings/payments/...`, `settings/modules/...`, `settings/notifications/page.tsx` | Settings forms              | Settings form            | inline                   | ✅     | settings pages                     |
-| `settings/sites/new-site-wizard.tsx`                                                                                                         | New site wizard             | Create wizard            | self-owned modal         | ✅     | WizardFrame modal variant          |
+| `settings/sites/new-site-wizard.tsx`                                                                                                         | New site wizard             | Create wizard            | self-owned modal         | ✅     | SurfaceFrame modal variant          |
 | `settings/sites/sites-manager.tsx`                                                                                                           | Sites manager               | Edit/record form         | inline                   | ✅     | inline cards correct               |
 | `settings/domains/purchase-dialog.tsx`                                                                                                       | Domain purchase / register  | Substantive dialog/modal | self-owned modal         | 🔲     | overlay (two modes)                |
 | `settings/domains/domains-manager.tsx`                                                                                                       | Domains manager             | Edit/record form         | inline                   | ✅     | inline cards correct               |
 | `settings/ai-integrations/_components/issue-key-form.tsx`                                                                                    | Issue API key               | Single-step create form  | inline (settings)        | 🔲     | lift into overlay                  |
-| `(onboarding)/_components/onboarding-wizard.tsx` (+ step-\*)                                                                                 | Onboarding wizard           | Create wizard            | full-page                | ✅     | WizardFrame page variant           |
+| `(onboarding)/_components/onboarding-wizard.tsx` (+ step-\*)                                                                                 | Onboarding wizard           | Create wizard            | full-page                | ✅     | SurfaceFrame page variant           |
 | `(onboarding)/_components/step-domain.tsx`                                                                                                   | Onboarding domain step      | Create wizard step       | inline                   | ⚙️     | shares `purchase-dialog` migration |
 
 ---

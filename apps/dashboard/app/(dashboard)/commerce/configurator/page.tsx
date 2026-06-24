@@ -1,9 +1,10 @@
-import { Settings2 } from 'lucide-react';
+import { Plus, Settings2 } from 'lucide-react';
 
 import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
+import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
@@ -45,6 +46,16 @@ export default async function ConfiguratorPage({ searchParams }: PageProps) {
           title="Configurator"
           badge={<Badge color="module">{total}</Badge>}
           description="Templates drive any configurable product — play structures, beauty gift sets, custom auto parts, configurable dogfood crates. Each template is a set of options + rules + add-ons; the resolver turns a user's selections into a cart line."
+          actions={
+            <EntityCreateButton
+              entityType="configurator-template"
+              newHref="/commerce/configurator/new"
+              color="module"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New template
+            </EntityCreateButton>
+          }
         />
 
         <ListToolbar enableViewToggle searchable={false} />
@@ -55,6 +66,16 @@ export default async function ConfiguratorPage({ searchParams }: PageProps) {
               icon={<Settings2 className="h-5 w-5" />}
               title="No configurators yet"
               description="Open any configurable product (e.g. a play structure or gift-set) and add a configurator template from its detail page."
+              action={
+                <EntityCreateButton
+                  entityType="configurator-template"
+                  newHref="/commerce/configurator/new"
+                  color="module"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New template
+                </EntityCreateButton>
+              }
             />
           </Card>
         ) : (

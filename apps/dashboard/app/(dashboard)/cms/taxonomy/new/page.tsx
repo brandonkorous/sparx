@@ -1,7 +1,7 @@
 import { TaxonomyCreateForm } from '../taxonomy-create-form';
 
 // Full-page surface for creating a taxonomy. The surface-aware `TaxonomyCreateForm`
-// (docs/86 F layout) renders the SAME WizardFrame here (`surface="page"` → the
+// (docs/86 F layout) renders the SAME SurfaceFrame here (`surface="page"` → the
 // `embedded` contained sheet, filling the dashboard content area with its own
 // title + pinned toolbar) and inside the `@detail` drawer/modal overlay
 // (`surface="overlay"`). This static `new` segment wins over the sibling `[key]`

@@ -13,6 +13,11 @@ import { deleteCategoryAction } from '../../category-actions';
 // platform's destructive-action rule. On success we leave the detail surface
 // for the list — navigating to the list route drops the `?drawer`/`?modal`
 // token, so this closes an overlay too.
+//
+// Lives in the SurfaceFrame toolbar's `destructive` slot (far left, away from
+// Save) — never in the read-only summary aside — so it renders at the toolbar's
+// default size with a quiet ghost-danger treatment matching the ghost Cancel
+// beside it.
 
 export function CategoryDeleteButton({ categoryId, name }: { categoryId: string; name: string }) {
   const router = useRouter();
@@ -51,10 +56,9 @@ export function CategoryDeleteButton({ categoryId, name }: { categoryId: string;
       <Button
         type="button"
         color="danger"
-        variant="outline"
-        size="sm"
+        variant="ghost"
         onClick={() => void onDelete()}
-        leftIcon={<Trash className="h-3.5 w-3.5" />}
+        leftIcon={<Trash className="h-4 w-4" />}
         disabled={pending}
       >
         {pending ? 'Deleting…' : 'Delete'}

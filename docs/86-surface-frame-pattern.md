@@ -1,14 +1,19 @@
-# sparx Platform — Form & Wizard Layout Pattern
+# sparx Platform — Form Surface Layout Pattern (`SurfaceFrame`)
 
-**Version:** 3.0
+**Version:** 3.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-20
+**Last Updated:** 2026-06-21
 
 ---
 
 ## 1. Purpose
 
 One layout language for every **form surface** in the platform — create and edit forms, the multi-step create-wizards (Product, Quote, Order, Customer, B2B Account, Document, Content, …), onboarding, blueprint installs, and any future setup sequence.
+
+The primitive is **`SurfaceFrame`** (formerly `WizardFrame` — that name wrongly implied wizard-only and is retired). It is **single-step by default**; the `steps`/stepper machinery is an **opt-in** feature for multi-step flows (a wizard), never the identity. **Create and edit both use it.** Two edit sub-cases — getting this wrong nests a frame inside tabs:
+
+- **The detail view IS a single edit form** (e.g. category — its `[id]/_content.tsx` renders only the form) → render the edit form as a `SurfaceFrame` so create + edit are symmetric. The host chrome supplies the title + window controls; the frame supplies the module-card body + Save/Cancel toolbar.
+- **Editing is one tab/panel of a tabbed detail view** (e.g. collection Metadata, product Edit) → do **not** nest a `SurfaceFrame` inside the tabs. Bring the panel onto the design system: fields in `<Card variant="module">`, a consistent Save + saved/error feedback, no bespoke `<CardFooter>` toolbar.
 
 It ships in **two presentations of the same model**:
 
@@ -45,7 +50,7 @@ This doc owns the **layout**. The **flows** inside it (which steps, which fields
 - **Form column — the variable.** A left-aligned step headline + supporting line, the step body, then the action toolbar. The body **scrolls internally**; header, progress, and toolbar stay put. Content centers on a readable column (`max-w-3xl`). Fields are grouped in module-tinted **`<Card variant="module">`** cards (the 3px module stripe) — the same on every create surface, so the active module reads at a glance and a cross-module flow shows which card belongs to which module. The stripe is automatic via `<ModuleProvider>`; never bare fields or a plain neutral card.
 - **Summary column — the quiet reference (optional).** A module-tinted right column that runs **full height** beside the form, building live as the user fills (e.g. a quote's party, line count, subtotal, total + a draft badge). It turns the horizontal space into something useful instead of a dead gutter. Omit it for forms without a natural summary — the form then fills the width.
 - **Action toolbar (pinned, under the form column only).** **Cancel** and **Back** on the left — **both frame-owned ghost `<Button>`s**, so Cancel always matches Back (pass `onCancel`; never hand-roll a cancel `<button>`). The primary advance is on the right (`color="module"`); Skip sits beside the primary when a step is genuinely optional. The summary column runs to the floor beside it.
-- **Single-step forms are the same surface.** A one-screen create form is a **one-step `WizardFrame`**, not a different shell: pass a single `step`, the **MiniProgress auto-hides**, and the toolbar is **Cancel + the primary** (no Back). Title, window controls (↗ □ ✕, Close last), and the pinned floor toolbar all come from the frame — never a `<CardFooter>` toolbar inside the body and never a page-level title repeated under the chrome (the old double-header). Its `/new` page renders the form directly (no `Container`/`PageHeader`).
+- **Single-step forms are the same surface.** A one-screen create form is a **one-step `SurfaceFrame`**, not a different shell: pass a single `step`, the **MiniProgress auto-hides**, and the toolbar is **Cancel + the primary** (no Back). Title, window controls (↗ □ ✕, Close last), and the pinned floor toolbar all come from the frame — never a `<CardFooter>` toolbar inside the body and never a page-level title repeated under the chrome (the old double-header). Its `/new` page renders the form directly (no `Container`/`PageHeader`).
 
 **Why the F layout:** a centered form in a wide modal/page leaves dead side gutters; a tall frame on a short step leaves a dead vertical void; a dark side-rail competes with the app's own nav. The F layout fixes all three — the form fills its column, the summary earns the rest of the width, and there is one cohesive header and one bottom toolbar.
 
@@ -136,10 +141,10 @@ The full-bleed two-pane frame with a flat module-colored left rail (brand wordma
 
 ## 6. Implementation shape
 
-A single `@sparx/ui` primitive — [`WizardFrame`](../packages/ui/src/components/navigation/wizard-frame.tsx) — backs all presentations so they cannot drift:
+A single `@sparx/ui` primitive — [`SurfaceFrame`](../packages/ui/src/components/navigation/surface-frame.tsx) — backs all presentations so they cannot drift:
 
 ```tsx
-<WizardFrame
+<SurfaceFrame
   variant={presentation === 'overlay' ? 'inline' : 'embedded'} // | 'modal' | 'page'
   title="New quote" // shown by the embedded title strip / self-owned modal
   steps={[{ key, label, sublabel }]}
@@ -147,17 +152,17 @@ A single `@sparx/ui` primitive — [`WizardFrame`](../packages/ui/src/components
   onCancel={close} // F layout: frame renders a ghost Cancel Button in the toolbar
   summary={summaryNode} // F layout: the live right-hand column (optional)
 >
-  <WizardStep header={{ title, supporting }} actions={{ onBack, onNext, onSkip }}>
+  <SurfaceStep header={{ title, supporting }} actions={{ onBack, onNext, onSkip }}>
     …step body…
-  </WizardStep>
-</WizardFrame>
+  </SurfaceStep>
+</SurfaceFrame>
 ```
 
 The summary is composed from exported primitives so every form's summary looks identical:
 
 ```tsx
 const summary = (
-  <WizardSummary
+  <SurfaceSummary
     title="Draft summary"
     footer={
       <Badge color="module" variant="soft" size="sm">
@@ -165,16 +170,16 @@ const summary = (
       </Badge>
     }
   >
-    <WizardSummaryRow label="Quote for" value={party} />
-    <WizardSummaryRow label="Line items" value={String(count)} />
-    <WizardSummaryDivider />
-    <WizardSummaryRow label="Total" value={money(total)} strong />
-  </WizardSummary>
+    <SurfaceSummaryRow label="Quote for" value={party} />
+    <SurfaceSummaryRow label="Line items" value={String(count)} />
+    <SurfaceSummaryDivider />
+    <SurfaceSummaryRow label="Total" value={money(total)} strong />
+  </SurfaceSummary>
 );
 ```
 
 - `inline` / `embedded` render the F layout (`embedded` as a contained centered sheet; `inline` filling its host). `modal` renders the numbered top-stepper shell inside a Radix Dialog. `page` renders the immersive rail grid.
-- `WizardStep` adapts to the frame: the F variants give it a **scrolling body + a pinned bottom toolbar** (the frame-owned ghost Cancel Button seated left, via `onCancel` in context) and stack the summary as a card when narrow; the `page` rail gives it a flowing centered column.
+- `SurfaceStep` adapts to the frame: the F variants give it a **scrolling body + a pinned bottom toolbar** (the frame-owned ghost Cancel Button seated left, via `onCancel` in context) and stack the summary as a card when narrow; the `page` rail gives it a flowing centered column.
 - Module color flows from the surrounding `<ModuleProvider>`; the wrapper carries `h-full` so the frame fills its host.
 - **Who mounts what:** onboarding ([docs/15](15-merchant-onboarding-prd.md)) → `page`. The create-wizards (Product, Quote, Order, …) → `embedded` at `/new`, `inline` in the detail panel (with a `summary` for record-building wizards). The New-site wizard → `modal`.
 
@@ -191,4 +196,4 @@ const summary = (
 
 ## 8. Status
 
-**Built.** `WizardFrame` (`@sparx/ui`) ships the F layout (`inline`/`embedded`) with the `summary` slot + `WizardSummary` primitives, the numbered self-owned `modal`, and the immersive `page` rail. Product and Quote create-wizards pass a live summary; the remaining line-item wizards (Order, PO, Transfer, Billing-document) render the form-only F modal until their summaries are wired.
+**Built.** `SurfaceFrame` (`@sparx/ui`) ships the F layout (`inline`/`embedded`) with the `summary` slot + `SurfaceSummary` primitives, the numbered self-owned `modal`, and the immersive `page` rail. Product and Quote create-wizards pass a live summary; the remaining line-item wizards (Order, PO, Transfer, Billing-document) render the form-only F modal until their summaries are wired.

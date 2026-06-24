@@ -6,7 +6,7 @@ import { authClient } from '@sparx/auth/client';
 
 // The onboarding rail's footer: a help link and a save-and-exit. Lives ON the
 // solid module-color rail, so the links inherit the rail's white/60 tone (set by
-// WizardFrame) and brighten on hover — not @sparx/ui Button colors, which are
+// SurfaceFrame) and brighten on hover — not @sparx/ui Button colors, which are
 // tuned for light surfaces. Progress is persisted server-side after every step,
 // so signing out drops the tenant back on their saved step next time.
 export function RailFooter() {

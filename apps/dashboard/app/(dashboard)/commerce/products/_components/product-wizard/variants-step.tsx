@@ -15,7 +15,7 @@
 // remaining combinations are created fresh.
 
 import * as React from 'react';
-import { Badge, Button, Card, CardContent, Input, Spinner, Text, WizardStep } from '@sparx/ui';
+import { Badge, Button, Card, CardContent, Input, Spinner, Text, SurfaceStep } from '@sparx/ui';
 
 import {
   assignVariantOptionValuesAction,
@@ -181,7 +181,7 @@ export function VariantsStep({
   ).length;
 
   return (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Variants & options',
         supporting:
@@ -358,7 +358,7 @@ export function VariantsStep({
           )}
         </CardContent>
       </Card>
-    </WizardStep>
+    </SurfaceStep>
   );
 }
 

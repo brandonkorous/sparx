@@ -1,6 +1,6 @@
 'use client';
 
-// Quote creation wizard (docs/86 WizardFrame, docs/68). The one-shot quote
+// Quote creation wizard (docs/86 SurfaceFrame, docs/68). The one-shot quote
 // builder — it composes a COMPLETE draft quote in a guided flow:
 //   1. Bill to   — the customer and/or B2B account it's for, plus currency.
 //   2. Line items — the priced lines (SKU, name, qty, unit price, per-line tax
@@ -16,7 +16,7 @@
 // Presentation (like the other create-wizards): the `/new` route renders the
 // in-app `embedded` top stepper (full page inside the dashboard chrome); the
 // Quotes list opens it inside the drawer/modal detail chrome (`overlay` →
-// WizardFrame `inline`), picked by the user's `defaultDetailView`. Finishing
+// SurfaceFrame `inline`), picked by the user's `defaultDetailView`. Finishing
 // navigates to the new quote, which clears the overlay token — closing the
 // drawer/modal on its own.
 
@@ -36,12 +36,12 @@ import {
   Stack,
   Text,
   Textarea,
-  WizardFrame,
-  WizardStep,
-  WizardSummary,
-  WizardSummaryDivider,
-  WizardSummaryRow,
-  type WizardStepDef,
+  SurfaceFrame,
+  SurfaceStep,
+  SurfaceSummary,
+  SurfaceSummaryDivider,
+  SurfaceSummaryRow,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 
 import { createQuoteAction } from '../../../quote-actions';
@@ -69,7 +69,7 @@ type QuoteTerms = '' | 'prepay' | 'net15' | 'net30' | 'net60' | 'net90';
 
 const STEP_ORDER: StepKey[] = ['billto', 'lines', 'terms', 'review'];
 
-const ALL_STEPS: Record<StepKey, WizardStepDef> = {
+const ALL_STEPS: Record<StepKey, SurfaceStepDef> = {
   billto: { key: 'billto', label: 'Bill to', sublabel: 'Customer' },
   lines: { key: 'lines', label: 'Line items', sublabel: 'The quote' },
   terms: { key: 'terms', label: 'Terms', sublabel: 'Shipping & notes' },
@@ -167,7 +167,7 @@ function QuoteWizardInner({
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  const steps: WizardStepDef[] = STEP_ORDER.map((k) => ALL_STEPS[k]);
+  const steps: SurfaceStepDef[] = STEP_ORDER.map((k) => ALL_STEPS[k]);
   const current = Math.max(
     0,
     steps.findIndex((s) => s.key === stepKey)
@@ -248,7 +248,7 @@ function QuoteWizardInner({
   // ── Step bodies ──────────────────────────────────────────────────────────────
 
   const billToStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Who is this quote for?',
         supporting: 'Anchor the quote to a retail customer, a B2B account, or both.',
@@ -325,11 +325,11 @@ function QuoteWizardInner({
           {error}
         </Text>
       )}
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const linesStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Line items',
         supporting:
@@ -350,11 +350,11 @@ function QuoteWizardInner({
           <LineItemsEditor onChange={setItems} initialItems={items} />
         </CardContent>
       </Card>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const termsStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Terms & notes',
         supporting: 'Shipping, payment terms, an expiry, and notes. Everything here is optional.',
@@ -443,11 +443,11 @@ function QuoteWizardInner({
           </CardContent>
         </Card>
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const reviewStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Review & create',
         supporting: 'Confirm the quote and create it. It starts as a draft you can keep editing.',
@@ -496,7 +496,7 @@ function QuoteWizardInner({
           </Text>
         )}
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   let body: React.ReactNode;
@@ -516,7 +516,7 @@ function QuoteWizardInner({
   // The live draft summary — the F layout's right-hand column (docs/86). Mirrors
   // the Review step's totals so the running figures are visible from step one.
   const summary = (
-    <WizardSummary
+    <SurfaceSummary
       title="Draft summary"
       footer={
         <Badge color="module" variant="soft" size="sm">
@@ -524,31 +524,31 @@ function QuoteWizardInner({
         </Badge>
       }
     >
-      <WizardSummaryRow
+      <SurfaceSummaryRow
         label="Quote for"
         value={partyLabel(customerId, b2bAccountId, customers, b2bAccounts)}
       />
-      <WizardSummaryRow label="Currency" value={(currency || 'USD').toUpperCase()} />
-      <WizardSummaryRow label="Line items" value={String(validItems.length)} />
-      <WizardSummaryDivider />
-      <WizardSummaryRow label="Subtotal" value={money(subtotal, currency)} />
+      <SurfaceSummaryRow label="Currency" value={(currency || 'USD').toUpperCase()} />
+      <SurfaceSummaryRow label="Line items" value={String(validItems.length)} />
+      <SurfaceSummaryDivider />
+      <SurfaceSummaryRow label="Subtotal" value={money(subtotal, currency)} />
       {discountTotal > 0 && (
-        <WizardSummaryRow label="Discount" value={`- ${money(discountTotal, currency)}`} />
+        <SurfaceSummaryRow label="Discount" value={`- ${money(discountTotal, currency)}`} />
       )}
-      {taxTotal > 0 && <WizardSummaryRow label="Tax" value={money(taxTotal, currency)} />}
+      {taxTotal > 0 && <SurfaceSummaryRow label="Tax" value={money(taxTotal, currency)} />}
       {shippingNum > 0 && (
-        <WizardSummaryRow label="Shipping" value={money(shippingNum, currency)} />
+        <SurfaceSummaryRow label="Shipping" value={money(shippingNum, currency)} />
       )}
-      <WizardSummaryDivider />
-      <WizardSummaryRow label="Total" value={money(total, currency)} strong />
-    </WizardSummary>
+      <SurfaceSummaryDivider />
+      <SurfaceSummaryRow label="Total" value={money(total, currency)} strong />
+    </SurfaceSummary>
   );
 
   // One top-stepper frame for both presentations: `embedded` fills the dashboard
   // content area at `/new` (sidebar + header stay); `inline` fills the drawer/
   // modal detail panel, which supplies its own chrome.
   return (
-    <WizardFrame
+    <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New quote"
       steps={steps}
@@ -560,7 +560,7 @@ function QuoteWizardInner({
       summary={summary}
     >
       {body}
-    </WizardFrame>
+    </SurfaceFrame>
   );
 }
 

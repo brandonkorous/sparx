@@ -1,6 +1,6 @@
 'use client';
 
-// Inventory-transfer creation wizard (docs/86 WizardFrame, docs/100 P4). Moves
+// Inventory-transfer creation wizard (docs/86 SurfaceFrame, docs/100 P4). Moves
 // stock between two warehouses, composed in a guided flow:
 //   1. Route  — source + destination warehouse (must differ), an optional note.
 //   2. Items  — the variants to move, added by SKU with a quantity each.
@@ -13,7 +13,7 @@
 // Presentation (like the other create-wizards): the `/new` route renders the
 // in-app `embedded` top stepper (full page inside the dashboard chrome); the
 // Transfers list opens it inside the drawer/modal detail chrome (`overlay` →
-// WizardFrame `inline`), picked by the user's `defaultDetailView`. The transfer
+// SurfaceFrame `inline`), picked by the user's `defaultDetailView`. The transfer
 // detail stays full-page; finishing navigates there, clearing the overlay token.
 
 import * as React from 'react';
@@ -36,12 +36,12 @@ import {
   Stack,
   Text,
   Textarea,
-  WizardFrame,
-  WizardStep,
-  WizardSummary,
-  WizardSummaryDivider,
-  WizardSummaryRow,
-  type WizardStepDef,
+  SurfaceFrame,
+  SurfaceStep,
+  SurfaceSummary,
+  SurfaceSummaryDivider,
+  SurfaceSummaryRow,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 
 import { createInventoryTransferAction } from '../../../_lib/transfer-actions';
@@ -74,7 +74,7 @@ type StepKey = 'route' | 'items' | 'review';
 
 const STEP_ORDER: StepKey[] = ['route', 'items', 'review'];
 
-const ALL_STEPS: Record<StepKey, WizardStepDef> = {
+const ALL_STEPS: Record<StepKey, SurfaceStepDef> = {
   route: { key: 'route', label: 'Route', sublabel: 'From & to' },
   items: { key: 'items', label: 'Items', sublabel: 'What to move' },
   review: { key: 'review', label: 'Review', sublabel: 'Create' },
@@ -112,7 +112,7 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  const steps: WizardStepDef[] = STEP_ORDER.map((k) => ALL_STEPS[k]);
+  const steps: SurfaceStepDef[] = STEP_ORDER.map((k) => ALL_STEPS[k]);
   const current = Math.max(
     0,
     steps.findIndex((s) => s.key === stepKey)
@@ -183,7 +183,7 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
   // ── Step bodies ──────────────────────────────────────────────────────────────
 
   const routeStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Route',
         supporting: 'Choose where the stock moves from and to. They must be different warehouses.',
@@ -259,11 +259,11 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
           {error}
         </Text>
       )}
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const itemsStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Items to move',
         supporting:
@@ -336,11 +336,11 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
           </div>
         </CardContent>
       </Card>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const reviewStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Review & create',
         supporting: 'Confirm the transfer and create the draft.',
@@ -372,7 +372,7 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
           </Text>
         )}
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   let body: React.ReactNode;
@@ -410,7 +410,7 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
   // The live draft summary — the F layout's right-hand column (docs/86). A
   // transfer has no money, so the running figures are the route + units to move.
   const summary = (
-    <WizardSummary
+    <SurfaceSummary
       title="Draft summary"
       footer={
         <Badge color="module" variant="soft" size="sm">
@@ -418,16 +418,16 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
         </Badge>
       }
     >
-      <WizardSummaryRow label="From" value={fromLabel} />
-      <WizardSummaryRow label="To" value={toLabel} />
-      <WizardSummaryRow label="Line items" value={String(lines.length)} />
-      <WizardSummaryDivider />
-      <WizardSummaryRow label="Total units" value={String(totalUnits)} strong />
-    </WizardSummary>
+      <SurfaceSummaryRow label="From" value={fromLabel} />
+      <SurfaceSummaryRow label="To" value={toLabel} />
+      <SurfaceSummaryRow label="Line items" value={String(lines.length)} />
+      <SurfaceSummaryDivider />
+      <SurfaceSummaryRow label="Total units" value={String(totalUnits)} strong />
+    </SurfaceSummary>
   );
 
   return (
-    <WizardFrame
+    <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New transfer"
       steps={steps}
@@ -439,7 +439,7 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
       summary={summary}
     >
       {body}
-    </WizardFrame>
+    </SurfaceFrame>
   );
 }
 

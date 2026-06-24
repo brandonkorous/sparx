@@ -1,11 +1,42 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Button, Input, Label, Stack, Text, Textarea } from '@sparx/ui';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label,
+  ModuleProvider,
+  NativeSelect,
+  Stack,
+  Text,
+  Textarea,
+  SurfaceFrame,
+  SurfaceStep,
+  type SurfaceStepDef,
+} from '@sparx/ui';
 
 import { createTemplateAction } from '../../../configurator-actions';
+
+// Surface-aware create form for a configurator template, on the standard create
+// surface (docs/86 F layout). The SAME component renders in both presentations,
+// picked by the host:
+//   - `surface="page"`    → SurfaceFrame `embedded` at the /new route (contained sheet)
+//   - `surface="overlay"` → SurfaceFrame `inline` inside the @detail drawer/modal
+//
+// It's a SINGLE-STEP form, so it's a one-step wizard: the frame supplies the
+// title + window controls + the pinned floor toolbar (ghost Cancel + module
+// primary) and hides the MiniProgress; the two module-tinted Cards (Basics,
+// Definition) sit in the step body. No bespoke card-footer toolbar, no repeated
+// page title — that drift is what docs/86 standardizes away.
+//
+// Templates have a detail view, so create flows INTO it: the overlay swaps the
+// token to the new record (preserving drawer vs modal); the page navigates to it.
 
 export interface ProductOption {
   id: string;
@@ -35,8 +66,17 @@ const STARTER_PAYLOAD = {
   addOns: [],
 };
 
-export function NewTemplateForm({ products }: { products: ProductOption[] }) {
+interface NewTemplateFormProps {
+  products: ProductOption[];
+  surface: 'page' | 'overlay';
+}
+
+const STEPS: SurfaceStepDef[] = [{ key: 'definition', label: 'Definition' }];
+
+export function NewTemplateForm({ products, surface }: NewTemplateFormProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   const [productId, setProductId] = React.useState('');
@@ -44,8 +84,38 @@ export function NewTemplateForm({ products }: { products: ProductOption[] }) {
   const [description, setDescription] = React.useState('');
   const [json, setJson] = React.useState(() => JSON.stringify(STARTER_PAYLOAD, null, 2));
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  // Where "leave the form" goes. In the overlay it clears the detail token so the
+  // drawer/modal closes in place; the page route returns to the list.
+  const cancel = React.useCallback(() => {
+    if (surface === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+    } else {
+      router.push('/commerce/configurator');
+    }
+  }, [surface, pathname, searchParams, router]);
+
+  // After create: in an overlay, transition the token to the new record's detail
+  // (preserving drawer vs modal); on a page, navigate to it.
+  function onCreated(id: string) {
+    if (surface === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      const mode = next.has('modal') ? 'modal' : 'drawer';
+      next.delete('drawer');
+      next.delete('modal');
+      next.set(mode, `configurator-template:${id}`);
+      router.replace(`${pathname ?? '/'}?${next.toString()}`);
+      router.refresh();
+      return;
+    }
+    router.push(`/commerce/configurator/${id}`);
+    router.refresh();
+  }
+
+  function submit() {
     setError(null);
     if (!productId) {
       setError('Pick a product');
@@ -78,71 +148,116 @@ export function NewTemplateForm({ products }: { products: ProductOption[] }) {
         setError(result.error.message);
         return;
       }
-      router.push(`/commerce/configurator/${result.data.id}`);
+      onCreated(result.data.id);
     });
   }
 
   return (
-    <form onSubmit={onSubmit}>
-      <Stack gap={4}>
-        <Stack gap={1}>
-          <Label htmlFor="productId">Product *</Label>
-          <select
-            id="productId"
-            value={productId}
-            onChange={(e) => setProductId(e.target.value)}
-            className="h-9 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 text-sm"
-          >
-            <option value="">— select a product —</option>
-            {products.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.title} ({p.status})
-              </option>
-            ))}
-          </select>
-        </Stack>
-        <Stack gap={1}>
-          <Label htmlFor="name">Template name *</Label>
-          <Input
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Default configuration"
-          />
-        </Stack>
-        <Stack gap={1}>
-          <Label htmlFor="description">Description</Label>
-          <Input
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </Stack>
-        <Stack gap={1}>
-          <Label htmlFor="json">Definition (JSON)</Label>
-          <Textarea
-            id="json"
-            value={json}
-            onChange={(e) => setJson(e.target.value)}
-            rows={20}
-            className="font-mono text-xs"
-          />
-          <Text size="xs" variant="muted">
-            Must validate against CreateConfigurationTemplateInput in @sparx/commerce-schemas. The
-            starter has one option with two choices — edit, then iterate after save.
-          </Text>
-        </Stack>
-        {error && (
-          <Text size="sm" className="text-[var(--color-danger)]">
-            {error}
-          </Text>
-        )}
-        <Stack direction="row" gap={2} justify="end">
-          <Button color="module" type="submit" disabled={pending}>
-            {pending ? 'Creating…' : 'Create template'}
-          </Button>
-        </Stack>
-      </Stack>
-    </form>
+    <ModuleProvider module="commerce" className="h-full">
+      <SurfaceFrame
+        variant={surface === 'overlay' ? 'inline' : 'embedded'}
+        title="New configurator template"
+        steps={STEPS}
+        current={0}
+        onCancel={cancel}
+      >
+        <SurfaceStep
+          header={{
+            title: 'Template basics',
+            supporting:
+              'Bind a template to a configurable product. Start with one option to learn the grammar, then add rules + add-ons from the detail page.',
+          }}
+          actions={{
+            onNext: submit,
+            nextLabel: 'Create template',
+            nextLoading: pending,
+            nextDisabled: pending,
+          }}
+        >
+          <Stack gap={6}>
+            <Card variant="module">
+              <CardHeader>
+                <CardTitle>Basics</CardTitle>
+                <CardDescription>
+                  Pick the configurable product and name this template.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="py-6">
+                <Stack gap={4}>
+                  <Stack gap={1}>
+                    <Label htmlFor="productId" required>
+                      Product
+                    </Label>
+                    <NativeSelect
+                      id="productId"
+                      value={productId}
+                      onChange={(e) => setProductId(e.target.value)}
+                    >
+                      <option value="">— select a product —</option>
+                      {products.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.title} ({p.status})
+                        </option>
+                      ))}
+                    </NativeSelect>
+                  </Stack>
+                  <Stack gap={1}>
+                    <Label htmlFor="name" required>
+                      Template name
+                    </Label>
+                    <Input
+                      id="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Default configuration"
+                    />
+                  </Stack>
+                  <Stack gap={1}>
+                    <Label htmlFor="description">Description</Label>
+                    <Input
+                      id="description"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    />
+                  </Stack>
+                </Stack>
+              </CardContent>
+            </Card>
+
+            <Card variant="module">
+              <CardHeader>
+                <CardTitle>Definition</CardTitle>
+                <CardDescription>
+                  The starter payload below is a minimal valid template. Edit it as JSON, save, then
+                  expand from the detail editor.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="py-6">
+                <Stack gap={2}>
+                  <Label htmlFor="json">Definition (JSON)</Label>
+                  <Textarea
+                    id="json"
+                    value={json}
+                    onChange={(e) => setJson(e.target.value)}
+                    rows={20}
+                    className="font-mono text-xs"
+                  />
+                  <Text size="xs" variant="muted">
+                    Must validate against CreateConfigurationTemplateInput in
+                    @sparx/commerce-schemas. The starter has one option with two choices — edit,
+                    then iterate after save.
+                  </Text>
+                </Stack>
+              </CardContent>
+            </Card>
+            {error && (
+              <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                {error}
+              </Text>
+            )}
+          </Stack>
+        </SurfaceStep>
+      </SurfaceFrame>
+    </ModuleProvider>
   );
 }

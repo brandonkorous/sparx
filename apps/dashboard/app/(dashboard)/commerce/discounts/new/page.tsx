@@ -1,7 +1,7 @@
 import { DiscountCreateForm } from '../_components/discount-create-form';
 
 // Full-page surface for creating a discount. The surface-aware `DiscountCreateForm`
-// (docs/86 F layout) renders the SAME WizardFrame here (`surface="page"` → the
+// (docs/86 F layout) renders the SAME SurfaceFrame here (`surface="page"` → the
 // `embedded` contained sheet, filling the dashboard content area with its own
 // title + pinned toolbar) and inside the `@detail` drawer/modal overlay
 // (`surface="overlay"`). This route is what `fullPage` / `newTab` detail-view

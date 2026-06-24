@@ -15,9 +15,9 @@ import {
   ModuleProvider,
   Stack,
   Text,
-  WizardFrame,
-  WizardStep,
-  type WizardStepDef,
+  SurfaceFrame,
+  SurfaceStep,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 
 import { createSegmentAction, previewSegmentCountAction } from '../../segment-actions';
@@ -25,8 +25,8 @@ import { type Rule, RuleBuilder, defaultRule } from './rule-builder';
 
 // New-segment form, on the standard create surface (docs/86 F layout). The SAME
 // component renders in both presentations, picked by the host:
-//   - `surface="page"`    → WizardFrame `embedded` at the /new route (contained sheet)
-//   - `surface="overlay"` → WizardFrame `inline` inside the @detail drawer/modal
+//   - `surface="page"`    → SurfaceFrame `embedded` at the /new route (contained sheet)
+//   - `surface="overlay"` → SurfaceFrame `inline` inside the @detail drawer/modal
 //
 // It's a SINGLE-STEP form, so it's a one-step wizard: the frame supplies the
 // title + window controls + the pinned floor toolbar (ghost Cancel + module
@@ -45,7 +45,7 @@ interface SegmentCreateFormProps {
   surface: 'page' | 'overlay';
 }
 
-const STEPS: WizardStepDef[] = [{ key: 'details', label: 'Details' }];
+const STEPS: SurfaceStepDef[] = [{ key: 'details', label: 'Details' }];
 
 export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
   const router = useRouter();
@@ -135,14 +135,14 @@ export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
 
   return (
     <ModuleProvider module="crm" className="h-full">
-      <WizardFrame
+      <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New segment"
         steps={STEPS}
         current={0}
         onCancel={cancel}
       >
-        <WizardStep
+        <SurfaceStep
           header={{
             title: 'Segment details',
             supporting:
@@ -240,8 +240,8 @@ export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
               {error}
             </Text>
           )}
-        </WizardStep>
-      </WizardFrame>
+        </SurfaceStep>
+      </SurfaceFrame>
     </ModuleProvider>
   );
 }

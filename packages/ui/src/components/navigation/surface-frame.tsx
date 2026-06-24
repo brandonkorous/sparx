@@ -9,10 +9,13 @@ import { Heading } from '../primitives/heading';
 import { Text } from '../primitives/text';
 import { RAIL_BG, RailWordmark } from '../brand/brand-rail';
 
-// WizardFrame — the platform's one layout language for guided, multi-step flows
-// (docs/86). There are TWO presentations of the same journey model:
+// SurfaceFrame — the platform's one layout language for FORM SURFACES, create &
+// edit alike (docs/86). Single-step by default; the `steps`/stepper machinery is
+// an opt-in feature for multi-step flows (a wizard), never the identity — pass a
+// single step and the progress UI hides itself. There are TWO presentations of
+// the same model:
 //
-//   1. The IN-APP TOP STEPPER (default for every dashboard wizard). A light,
+//   1. The IN-APP TOP STEPPER (default for every dashboard form surface). A light,
 //      module-tinted horizontal stepper above a working pane, on the dashboard's
 //      normal surface language. It sits INSIDE the app chrome rather than taking
 //      it over, so "full page" keeps the sidebar + header and a drawer/modal
@@ -41,7 +44,7 @@ import { RAIL_BG, RailWordmark } from '../brand/brand-rail';
 
 // ── Public types ─────────────────────────────────────────────────────────────
 
-export interface WizardStepDef {
+export interface SurfaceStepDef {
   /** Stable key for this step (matches the consumer's step machine). */
   key: string;
   /** Journey label, e.g. "Modules". */
@@ -50,10 +53,10 @@ export interface WizardStepDef {
   sublabel?: string;
 }
 
-export type WizardVariant = 'page' | 'modal' | 'inline' | 'embedded';
+export type SurfaceVariant = 'page' | 'modal' | 'inline' | 'embedded';
 
-export interface WizardFrameProps {
-  variant?: WizardVariant;
+export interface SurfaceFrameProps {
+  variant?: SurfaceVariant;
   /** Page variant: the brand node at the rail top. Defaults to the inverted
    *  sparx wordmark (white "Spar" + a light tint of the module color "x"). */
   wordmark?: React.ReactNode;
@@ -64,7 +67,7 @@ export interface WizardFrameProps {
    *  consumer changes per step to narrate the journey. */
   lede?: { title: React.ReactNode; blurb?: React.ReactNode };
   /** The full journey. Order is the source of truth for done/current/upcoming. */
-  steps: WizardStepDef[];
+  steps: SurfaceStepDef[];
   /** Zero-based index of the current step. */
   current: number;
   /** A one-line context note. Page variant pins it to the rail bottom; the
@@ -88,7 +91,7 @@ export interface WizardFrameProps {
   /** Label for the frame-owned Cancel button. Defaults to "Cancel". */
   cancelLabel?: string;
   /** F variants (inline/embedded): a live "draft summary" tree (compose with
-   *  WizardSummary / WizardSummaryRow). Renders as the right-hand column when the
+   *  SurfaceSummary / SurfaceSummaryRow). Renders as the right-hand column when the
    *  frame is wide and stacks as a card after the fields when narrow. Omit for
    *  wizards without a natural summary — the form then fills the full width. */
   summary?: React.ReactNode;
@@ -104,8 +107,8 @@ export interface WizardFrameProps {
   onRequestClose?: () => boolean | void;
 }
 
-interface WizardContextValue {
-  variant: WizardVariant;
+interface SurfaceContextValue {
+  variant: SurfaceVariant;
   /** F variants (inline/embedded): the leave action. The frame renders it as a
    *  ghost Cancel Button in the bottom toolbar (matching Back) — never raw JSX. */
   onCancel?: () => void;
@@ -117,7 +120,7 @@ interface WizardContextValue {
   summary?: React.ReactNode;
 }
 
-const WizardContext = React.createContext<WizardContextValue>({ variant: 'page' });
+const SurfaceContext = React.createContext<SurfaceContextValue>({ variant: 'page' });
 
 // The F layout is responsive by CONTAINER width, not viewport: at/above ~720px
 // the frame is two columns (form + summary aside); below it collapses to one and
@@ -136,11 +139,11 @@ const SUMMARY_BG = 'bg-[color-mix(in_oklab,var(--module-active)_6%,var(--color-b
 interface RailProps {
   compact?: boolean;
   brand: React.ReactNode;
-  lede?: WizardFrameProps['lede'];
-  steps: WizardStepDef[];
+  lede?: SurfaceFrameProps['lede'];
+  steps: SurfaceStepDef[];
   current: number;
   context?: React.ReactNode;
-  onStepSelect?: WizardFrameProps['onStepSelect'];
+  onStepSelect?: SurfaceFrameProps['onStepSelect'];
   canSelectStep: (key: string, index: number) => boolean;
   footer?: React.ReactNode;
   className?: string;
@@ -272,7 +275,7 @@ function RailTopBar({
   className,
 }: {
   brand: React.ReactNode;
-  steps: WizardStepDef[];
+  steps: SurfaceStepDef[];
   current: number;
   className?: string;
 }) {
@@ -308,9 +311,9 @@ function RailTopBar({
 // as half-segments per step so the layout stays fluid at any step count / width.
 
 interface TopStepperProps {
-  steps: WizardStepDef[];
+  steps: SurfaceStepDef[];
   current: number;
-  onStepSelect?: WizardFrameProps['onStepSelect'];
+  onStepSelect?: SurfaceFrameProps['onStepSelect'];
   canSelectStep: (key: string, index: number) => boolean;
 }
 
@@ -387,7 +390,13 @@ function TopStepper({ steps, current, onStepSelect, canSelectStep }: TopStepperP
 
 // The header strip above the stepper: the wizard title (left) and the footer /
 // cancel affordance (right). Omitted entirely when neither is supplied.
-function WizardTopHeader({ title, footer }: { title?: React.ReactNode; footer?: React.ReactNode }) {
+function SurfaceTopHeader({
+  title,
+  footer,
+}: {
+  title?: React.ReactNode;
+  footer?: React.ReactNode;
+}) {
   if (!title && !footer) return null;
   return (
     <div className="flex shrink-0 items-center gap-3 border-b border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-6 py-3">
@@ -406,7 +415,7 @@ function WizardTopHeader({ title, footer }: { title?: React.ReactNode; footer?: 
 
 // The shared in-app shell: header + top stepper + working pane. Fills its host
 // (h-full) — the dashboard content area (embedded), a drawer/modal body (inline),
-// or a dialog (modal). The pane is `min-h-0 flex-1` so the child WizardStep owns
+// or a dialog (modal). The pane is `min-h-0 flex-1` so the child SurfaceStep owns
 // the scroll and pins its action row to the bottom edge.
 function TopStepperFrame({
   title,
@@ -420,10 +429,10 @@ function TopStepperFrame({
   children,
 }: {
   title?: React.ReactNode;
-  steps: WizardStepDef[];
+  steps: SurfaceStepDef[];
   current: number;
   context?: React.ReactNode;
-  onStepSelect?: WizardFrameProps['onStepSelect'];
+  onStepSelect?: SurfaceFrameProps['onStepSelect'];
   canSelectStep: (key: string, index: number) => boolean;
   footer?: React.ReactNode;
   className?: string;
@@ -433,7 +442,7 @@ function TopStepperFrame({
     <div
       className={cn('flex h-full flex-col overflow-hidden bg-[var(--color-bg-page)]', className)}
     >
-      <WizardTopHeader title={title} footer={footer} />
+      <SurfaceTopHeader title={title} footer={footer} />
       <TopStepper
         steps={steps}
         current={current}
@@ -465,7 +474,7 @@ function MiniProgress({
   current,
   className,
 }: {
-  steps: WizardStepDef[];
+  steps: SurfaceStepDef[];
   current: number;
   className?: string;
 }) {
@@ -497,11 +506,11 @@ function MiniProgress({
 }
 
 // ── Summary primitives (the live "draft summary" content) ──────────────────────
-// Consumers compose these and pass the tree as WizardFrame's `summary` — the
+// Consumers compose these and pass the tree as SurfaceFrame's `summary` — the
 // frame places it in the right column (wide) or a stacked card (narrow). Keeps
 // every wizard's summary visually identical without each re-rolling the styling.
 
-export function WizardSummary({
+export function SurfaceSummary({
   title,
   children,
   footer,
@@ -522,7 +531,7 @@ export function WizardSummary({
   );
 }
 
-export function WizardSummaryRow({
+export function SurfaceSummaryRow({
   label,
   value,
   strong,
@@ -554,13 +563,13 @@ export function WizardSummaryRow({
   );
 }
 
-export function WizardSummaryDivider() {
+export function SurfaceSummaryDivider() {
   return <div className="my-1.5 border-t border-[var(--color-border-default)]" />;
 }
 
 // The shared F frame. `showHeader` adds the title strip (embedded full page);
 // inline omits it because the host chrome owns the title + window controls.
-function FWizardFrame({
+function FSurfaceFrame({
   variant,
   showHeader,
   title,
@@ -575,7 +584,7 @@ function FWizardFrame({
   variant: 'inline' | 'embedded';
   showHeader: boolean;
   title?: React.ReactNode;
-  steps: WizardStepDef[];
+  steps: SurfaceStepDef[];
   current: number;
   summary?: React.ReactNode;
   onCancel?: () => void;
@@ -615,7 +624,7 @@ function FWizardFrame({
           hasSummary && '@[720px]:grid-cols-[1fr_320px]'
         )}
       >
-        {/* Form column: progress + working pane (WizardStep owns its scroll +
+        {/* Form column: progress + working pane (SurfaceStep owns its scroll +
             the action toolbar pinned at the bottom). A single-step form (one
             step) hides MiniProgress — there's no journey to show. */}
         <div className="flex min-h-0 flex-col">
@@ -627,7 +636,7 @@ function FWizardFrame({
           <div className="flex min-h-0 flex-1 flex-col">{children}</div>
         </div>
         {/* Summary aside — full-height right column, shown only when wide. The
-            narrow (stacked) rendering lives inside WizardStep's scroll body. */}
+            narrow (stacked) rendering lives inside SurfaceStep's scroll body. */}
         {hasSummary && (
           <aside
             className={cn(
@@ -642,19 +651,19 @@ function FWizardFrame({
     </div>
   );
   return (
-    <WizardContext.Provider value={{ variant, onCancel, cancelLabel, summary }}>
+    <SurfaceContext.Provider value={{ variant, onCancel, cancelLabel, summary }}>
       {variant === 'embedded' ? (
         <div className="h-full overflow-hidden bg-[var(--color-bg-page)]">{inner}</div>
       ) : (
         inner
       )}
-    </WizardContext.Provider>
+    </SurfaceContext.Provider>
   );
 }
 
-// ── WizardFrame ──────────────────────────────────────────────────────────────
+// ── SurfaceFrame ──────────────────────────────────────────────────────────────
 
-export function WizardFrame({
+export function SurfaceFrame({
   variant = 'page',
   wordmark,
   title,
@@ -673,7 +682,7 @@ export function WizardFrame({
   open,
   onOpenChange,
   onRequestClose,
-}: WizardFrameProps) {
+}: SurfaceFrameProps) {
   const selectable = React.useCallback(
     (key: string, index: number) => (canSelectStep ? canSelectStep(key, index) : index <= current),
     [canSelectStep, current]
@@ -694,7 +703,7 @@ export function WizardFrame({
       if (onRequestClose && onRequestClose() === false) event.preventDefault();
     };
     return (
-      <WizardContext.Provider value={{ variant: 'modal' }}>
+      <SurfaceContext.Provider value={{ variant: 'modal' }}>
         <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
           <DialogPrimitive.Portal>
             <DialogPrimitive.Overlay
@@ -719,7 +728,7 @@ export function WizardFrame({
               )}
             >
               <DialogPrimitive.Title className="sr-only">
-                {typeof title === 'string' ? title : 'Wizard'}
+                {typeof title === 'string' ? title : 'Form'}
               </DialogPrimitive.Title>
               <TopStepperFrame
                 title={title}
@@ -735,7 +744,7 @@ export function WizardFrame({
             </DialogPrimitive.Content>
           </DialogPrimitive.Portal>
         </DialogPrimitive.Root>
-      </WizardContext.Provider>
+      </SurfaceContext.Provider>
     );
   }
 
@@ -749,7 +758,7 @@ export function WizardFrame({
   // the immersive rail + self-owned modal; the compact MiniProgress is display-only.
   if (variant === 'inline' || variant === 'embedded') {
     return (
-      <FWizardFrame
+      <FSurfaceFrame
         variant={variant}
         showHeader={variant === 'embedded'}
         title={title}
@@ -761,13 +770,13 @@ export function WizardFrame({
         className={className}
       >
         {children}
-      </FWizardFrame>
+      </FSurfaceFrame>
     );
   }
 
   // ── Page variant — the immersive rail (first-run onboarding) ──────────────────
   return (
-    <WizardContext.Provider value={{ variant: 'page' }}>
+    <SurfaceContext.Provider value={{ variant: 'page' }}>
       <div
         className={cn(
           'grid h-screen grid-cols-[340px_1fr] overflow-hidden bg-[var(--color-bg-page)]',
@@ -796,13 +805,13 @@ export function WizardFrame({
           {children}
         </main>
       </div>
-    </WizardContext.Provider>
+    </SurfaceContext.Provider>
   );
 }
 
-// ── WizardStep ───────────────────────────────────────────────────────────────
+// ── SurfaceStep ───────────────────────────────────────────────────────────────
 
-export interface WizardStepActions {
+export interface SurfaceStepActions {
   onBack?: () => void;
   backLabel?: string;
   onNext?: () => void;
@@ -811,29 +820,37 @@ export interface WizardStepActions {
   nextLoading?: boolean;
   onSkip?: () => void;
   skipLabel?: string;
+  /** A destructive action (e.g. a Delete button) seated in the left cluster
+   *  AFTER Cancel/Back — so Cancel stays the leftmost anchor on every surface,
+   *  while the destructive action sits left-of-center, away from the primary so
+   *  it can't be mis-clicked, and never inside the read-only summary aside. Edit
+   *  surfaces pass their delete here; create surfaces omit it. Pass a real
+   *  `@sparx/ui` <Button> at the toolbar's default size (not `size="sm"`) so it
+   *  lines up with Cancel/Save. */
+  destructive?: React.ReactNode;
   /** Extra nodes in the action row, left of Skip/Next (e.g. a secondary link). */
   extra?: React.ReactNode;
 }
 
-export interface WizardStepProps {
+export interface SurfaceStepProps {
   /** Left-aligned step header. No uppercase mono eyebrow (no-eyebrows rule). */
   header?: { title: React.ReactNode; supporting?: React.ReactNode };
   /** The standard Back/Skip/Next action row. Omit for steps that own their
    *  primary action elsewhere (e.g. the Modules plan card, the template gallery). */
-  actions?: WizardStepActions;
+  actions?: SurfaceStepActions;
   /** Working-pane width (centered column). */
   width?: 'narrow' | 'default' | 'wide';
   className?: string;
   children: React.ReactNode;
 }
 
-const WIDTH_CLASS: Record<NonNullable<WizardStepProps['width']>, string> = {
+const WIDTH_CLASS: Record<NonNullable<SurfaceStepProps['width']>, string> = {
   narrow: 'max-w-xl',
   default: 'max-w-4xl',
   wide: 'max-w-6xl',
 };
 
-function StepHeader({ header }: { header: NonNullable<WizardStepProps['header']> }) {
+function StepHeader({ header }: { header: NonNullable<SurfaceStepProps['header']> }) {
   return (
     <div className="flex flex-col gap-2">
       <Heading level={2}>{header.title}</Heading>
@@ -851,7 +868,7 @@ function ActionRow({
   onCancel,
   cancelLabel = 'Cancel',
 }: {
-  actions?: WizardStepActions;
+  actions?: SurfaceStepActions;
   onCancel?: () => void;
   cancelLabel?: string;
 }) {
@@ -864,12 +881,16 @@ function ActionRow({
     nextLoading,
     onSkip,
     skipLabel = 'Skip for now',
+    destructive,
     extra,
   } = actions ?? {};
   return (
     <div className="flex items-center justify-between gap-3">
-      {/* F variants seat Cancel here (leftmost) — a ghost Button matching Back, so
-          the toolbar is one consistent button row (never a hand-rolled link). */}
+      {/* Cancel is ALWAYS the leftmost button — the same anchor on every surface
+          (create, edit, wizard) so a user never hunts for it. Back follows, then
+          any destructive action (Delete), seated left-of-center and away from the
+          primary so it can't be mis-clicked — never buried in the summary aside.
+          All ghost Buttons, one consistent button row (never a hand-rolled link). */}
       <div className="flex items-center gap-2">
         {onCancel && (
           <Button variant="ghost" color="neutral" onClick={onCancel}>
@@ -881,6 +902,7 @@ function ActionRow({
             {backLabel}
           </Button>
         )}
+        {destructive}
       </div>
       <div className="flex items-center gap-2">
         {extra}
@@ -904,14 +926,14 @@ function ActionRow({
   );
 }
 
-export function WizardStep({
+export function SurfaceStep({
   header,
   actions,
   width = 'default',
   className,
   children,
-}: WizardStepProps) {
-  const { variant, onCancel, cancelLabel, summary } = React.useContext(WizardContext);
+}: SurfaceStepProps) {
+  const { variant, onCancel, cancelLabel, summary } = React.useContext(SurfaceContext);
   const isF = variant === 'inline' || variant === 'embedded';
   const topStepper = isF || variant === 'modal';
 
@@ -919,7 +941,7 @@ export function WizardStep({
   // fills the pane — a scrolling body and an action row pinned to the bottom edge,
   // both centered on the same column width. The F variants additionally seat
   // Cancel in the toolbar and, when too narrow for the summary aside, stack the
-  // summary as a card after the fields (container query — see FWizardFrame).
+  // summary as a card after the fields (container query — see FSurfaceFrame).
   if (topStepper) {
     // F variants FILL their column (the drawer / modal / contained sheet width is
     // already the readable bound) so the content spans edge-to-edge with symmetric

@@ -1,31 +1,44 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import {
-  Button,
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  Heading,
+  Checkbox,
   Input,
   Label,
+  ModuleProvider,
   NativeSelect,
   Stack,
+  SurfaceFrame,
+  SurfaceStep,
+  SurfaceSummary,
+  SurfaceSummaryDivider,
+  SurfaceSummaryRow,
   Text,
   Textarea,
+  useConfirm,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 
 import { reparentCategoryAction, updateCategoryAction } from '../../category-actions';
+import { useRegisterLeaveGuard } from '../../../_components/unsaved-guard';
+import { CategoryDeleteButton } from './category-delete-button';
 import type { CategoryParentOption } from './category-create-form';
 
-// Category edit form — the body of the category detail view (§13.1). Rendered
-// the same in the `@detail` drawer/modal overlay and the full-page
-// /commerce/categories/[id] route, so editing is uniform with every other
-// entity instead of inline on the tree.
+// Category edit form — the body of the category detail view (docs/86 edit
+// surface-type rule: a detail view that IS a single edit form renders on the
+// SAME SurfaceFrame as its create sibling, so create + edit are symmetric). The
+// ONE component renders in both presentations, picked by the host:
+//   - `surface="page"`    → SurfaceFrame `embedded` at /commerce/categories/[id]
+//   - `surface="overlay"` → SurfaceFrame `inline` inside the @detail drawer/modal
+//
+// The frame owns the chrome (title + window controls from the host, pinned floor
+// toolbar) and the module-tinted field card; the record's read-only facts (path,
+// product count, timestamps) live in the live summary aside, with the destructive
+// Delete pinned to the summary footer — away from the primary Save.
 //
 // Name / handle / description / featured go through `updateCategoryAction`;
 // parent + position changes route through `reparentCategoryAction` (its own
@@ -43,57 +56,114 @@ export interface CategoryEditData {
   featured: boolean;
 }
 
-interface CategoryEditFormProps {
-  category: CategoryEditData;
-  parents: CategoryParentOption[];
+export interface CategoryEditMeta {
+  productCount: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export function CategoryEditForm({ category, parents }: CategoryEditFormProps) {
+interface CategoryEditFormProps {
+  surface: 'page' | 'overlay';
+  category: CategoryEditData;
+  parents: CategoryParentOption[];
+  meta?: CategoryEditMeta;
+}
+
+const STEPS: SurfaceStepDef[] = [{ key: 'details', label: 'Details' }];
+
+export function CategoryEditForm({ surface, category, parents, meta }: CategoryEditFormProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
   const [savedAt, setSavedAt] = React.useState<string | null>(null);
 
-  // Exclude self + descendants so a merchant can't reparent a node under its
-  // own subtree (the server enforces cycle prevention too — this just keeps the
-  // picker honest).
+  const [name, setName] = React.useState(category.name);
+  const [handle, setHandle] = React.useState(category.handle);
+  const [position, setPosition] = React.useState(String(category.position));
+  const [parentId, setParentId] = React.useState(category.parentId ?? '');
+  const [description, setDescription] = React.useState(category.description ?? '');
+  const [featured, setFeatured] = React.useState(category.featured);
+
+  const confirm = useConfirm();
+
+  // Exclude self + descendants so a merchant can't reparent a node under its own
+  // subtree (the server enforces cycle prevention too — this keeps the picker
+  // honest).
   const parentOptions = parents.filter(
     (p) => p.id !== category.id && !p.path.startsWith(`${category.path}.`)
   );
+  // Read-only context derived from the already-loaded tree (no extra fetch): the
+  // ancestor trail (breadcrumb) and how many direct children this node has.
+  const { ancestors, childCount } = deriveRelated(category, parents);
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  // Unsaved-changes guard. `dirty` compares live state to the loaded record; the
+  // guard confirms a discard before any leave path runs — the frame-owned Cancel
+  // (below) AND the drawer/modal host's Close/Switch/backdrop (via the registered
+  // guard). One confirm, one source of truth.
+  const dirty =
+    name !== category.name ||
+    handle !== category.handle ||
+    position !== String(category.position) ||
+    parentId !== (category.parentId ?? '') ||
+    description !== (category.description ?? '') ||
+    featured !== category.featured;
+
+  const guardLeave = React.useCallback(async (): Promise<boolean> => {
+    if (!dirty) return true;
+    return confirm({
+      title: 'Discard unsaved changes?',
+      description: 'Your edits to this category haven’t been saved. Leaving now will discard them.',
+      confirmLabel: 'Discard changes',
+      tone: 'danger',
+    });
+  }, [dirty, confirm]);
+
+  useRegisterLeaveGuard(guardLeave);
+
+  // Where "leave the form" goes. In the overlay it clears the detail token so the
+  // drawer/modal closes in place; the page route returns to the list. Guarded so a
+  // mis-clicked Cancel can't silently drop edits.
+  const cancel = React.useCallback(async () => {
+    if (!(await guardLeave())) return;
+    if (surface === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+    } else {
+      router.push('/commerce/categories');
+    }
+  }, [guardLeave, surface, pathname, searchParams, router]);
+
+  function submit() {
     setError(null);
     setFieldErrors({});
     setSavedAt(null);
 
-    const form = new FormData(e.currentTarget);
-    const name = stringField(form.get('name')).trim();
-    const handle = stringField(form.get('handle')).trim();
-    const description = stringField(form.get('description')).trim();
-    const positionRaw = stringField(form.get('position')).trim();
-    const newParentId = stringField(form.get('parentId'));
-    const featured = form.get('featured') === 'on';
-
-    if (!name) {
+    const trimmedName = name.trim();
+    if (!trimmedName) {
       setFieldErrors({ name: 'Name is required.' });
       return;
     }
-    const position = Number.parseInt(positionRaw, 10);
-    if (!Number.isFinite(position) || position < 0) {
+    const parsedPosition = Number.parseInt(position, 10);
+    if (!Number.isFinite(parsedPosition) || parsedPosition < 0) {
       setFieldErrors({ position: 'Position must be a non-negative integer.' });
       return;
     }
+    const trimmedHandle = handle.trim();
+    const trimmedDescription = description.trim();
 
     startTransition(async () => {
-      const updatePayload: Record<string, unknown> = {
-        name,
+      const updateResult = await updateCategoryAction(category.id, {
+        name: trimmedName,
         featured,
-        ...(handle && handle !== category.handle ? { handle } : {}),
-        description: description.length > 0 ? description : null,
-      };
-      const updateResult = await updateCategoryAction(category.id, updatePayload);
+        ...(trimmedHandle && trimmedHandle !== category.handle ? { handle: trimmedHandle } : {}),
+        description: trimmedDescription.length > 0 ? trimmedDescription : null,
+      });
       if (!updateResult.ok) {
         if (updateResult.error.code === 'VALIDATION_ERROR' && updateResult.error.details?.length) {
           const fe: Record<string, string> = {};
@@ -104,13 +174,13 @@ export function CategoryEditForm({ category, parents }: CategoryEditFormProps) {
         return;
       }
 
-      const parentChanged = (newParentId || null) !== category.parentId;
-      const positionChanged = position !== category.position;
+      const parentChanged = (parentId || null) !== category.parentId;
+      const positionChanged = parsedPosition !== category.position;
       if (parentChanged || positionChanged) {
         const reparentResult = await reparentCategoryAction({
           categoryId: category.id,
-          newParentId: newParentId.length > 0 ? newParentId : null,
-          newPosition: position,
+          newParentId: parentId.length > 0 ? parentId : null,
+          newPosition: parsedPosition,
         });
         if (!reparentResult.ok) {
           setError(reparentResult.error.message);
@@ -124,112 +194,139 @@ export function CategoryEditForm({ category, parents }: CategoryEditFormProps) {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate>
-      <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Details</Heading>
-            <CardDescription>
-              Rename, reslug, reparent, or reorder. Storefront URLs follow the category&apos;s path.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
-            <Stack direction="row" gap={3} wrap>
-              <Stack gap={1} className="min-w-[12rem] flex-1">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" name="name" defaultValue={category.name} required />
-                {fieldErrors.name && (
-                  <Text size="xs" variant="danger">
-                    {fieldErrors.name}
+    <ModuleProvider module="commerce" className="h-full">
+      <SurfaceFrame
+        variant={surface === 'overlay' ? 'inline' : 'embedded'}
+        title={category.name}
+        steps={STEPS}
+        current={0}
+        onCancel={cancel}
+        summary={
+          <CategorySummary
+            category={category}
+            meta={meta}
+            ancestors={ancestors}
+            childCount={childCount}
+          />
+        }
+      >
+        <SurfaceStep
+          header={{
+            title: 'Category details',
+            supporting:
+              'Rename, reslug, reparent, or reorder. Storefront URLs follow the category’s path, so changing the handle changes its public URL.',
+          }}
+          actions={{
+            onNext: submit,
+            nextLabel: 'Save changes',
+            nextLoading: pending,
+            nextDisabled: pending,
+            destructive: <CategoryDeleteButton categoryId={category.id} name={category.name} />,
+            extra:
+              savedAt && !error ? (
+                <Text size="xs" variant="muted">
+                  Saved {savedAt}
+                </Text>
+              ) : undefined,
+          }}
+        >
+          <Card variant="module">
+            <CardContent className="py-6">
+              <Stack gap={4}>
+                <Stack direction="row" gap={3} wrap>
+                  <Stack gap={2} className="min-w-[12rem] flex-1">
+                    <Label htmlFor="cat-name">Name</Label>
+                    <Input id="cat-name" value={name} onChange={(e) => setName(e.target.value)} />
+                    {fieldErrors.name && (
+                      <Text size="xs" variant="danger">
+                        {fieldErrors.name}
+                      </Text>
+                    )}
+                  </Stack>
+                  <Stack gap={2} className="min-w-[12rem] flex-1">
+                    <Label htmlFor="cat-handle">Handle</Label>
+                    <Input
+                      id="cat-handle"
+                      value={handle}
+                      onChange={(e) => setHandle(e.target.value)}
+                    />
+                    {fieldErrors.handle && (
+                      <Text size="xs" variant="danger">
+                        {fieldErrors.handle}
+                      </Text>
+                    )}
+                  </Stack>
+                  <Stack gap={2} className="w-24">
+                    <Label htmlFor="cat-position">Position</Label>
+                    <Input
+                      id="cat-position"
+                      type="number"
+                      min={0}
+                      step={1}
+                      value={position}
+                      onChange={(e) => setPosition(e.target.value)}
+                    />
+                    {fieldErrors.position && (
+                      <Text size="xs" variant="danger">
+                        {fieldErrors.position}
+                      </Text>
+                    )}
+                  </Stack>
+                </Stack>
+                <Stack gap={2}>
+                  <Label htmlFor="cat-parent">Parent</Label>
+                  <NativeSelect
+                    id="cat-parent"
+                    value={parentId}
+                    onChange={(e) => setParentId(e.target.value)}
+                  >
+                    <option value="">— Top level —</option>
+                    {parentOptions.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {indent(p.depth)}
+                        {p.name}
+                      </option>
+                    ))}
+                  </NativeSelect>
+                  <Text size="xs" variant="muted">
+                    Leave top-level for a root category, or nest it under an existing one. Lower
+                    positions sort first among siblings.
                   </Text>
-                )}
-              </Stack>
-              <Stack gap={1} className="min-w-[12rem] flex-1">
-                <Label htmlFor="handle">Handle</Label>
-                <Input id="handle" name="handle" defaultValue={category.handle} />
-                {fieldErrors.handle && (
-                  <Text size="xs" variant="danger">
-                    {fieldErrors.handle}
+                </Stack>
+                <Stack gap={2}>
+                  <Label htmlFor="cat-description">Description</Label>
+                  <Textarea
+                    id="cat-description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows={3}
+                  />
+                </Stack>
+                <Stack gap={1}>
+                  <Stack direction="row" align="center" gap={2}>
+                    <Checkbox
+                      id="cat-featured"
+                      color="module"
+                      checked={featured}
+                      onCheckedChange={(v) => setFeatured(v === true)}
+                    />
+                    <Label htmlFor="cat-featured">Featured</Label>
+                  </Stack>
+                  <Text size="xs" variant="muted">
+                    Highlights this category in storefront navigation and featured collections.
                   </Text>
-                )}
+                </Stack>
               </Stack>
-              <Stack gap={1} className="w-24">
-                <Label htmlFor="position">Position</Label>
-                <Input
-                  id="position"
-                  name="position"
-                  type="number"
-                  min={0}
-                  step={1}
-                  defaultValue={category.position}
-                />
-                {fieldErrors.position && (
-                  <Text size="xs" variant="danger">
-                    {fieldErrors.position}
-                  </Text>
-                )}
-              </Stack>
-            </Stack>
-            <Stack gap={1}>
-              <Label htmlFor="parentId">Parent</Label>
-              <NativeSelect id="parentId" name="parentId" defaultValue={category.parentId ?? ''}>
-                <option value="">— Top level —</option>
-                {parentOptions.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {indent(p.depth)}
-                    {p.name}
-                  </option>
-                ))}
-              </NativeSelect>
-            </Stack>
-            <Stack gap={1}>
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                name="description"
-                rows={3}
-                defaultValue={category.description ?? ''}
-              />
-            </Stack>
-            <Stack direction="row" align="center" gap={2}>
-              <input
-                type="checkbox"
-                id="featured"
-                name="featured"
-                defaultChecked={category.featured}
-                className="h-4 w-4"
-              />
-              <Label htmlFor="featured">Featured</Label>
-            </Stack>
-          </Stack>
-        </CardContent>
-        <CardFooter>
-          <Stack direction="row" gap={2} justify="between" align="center" className="w-full">
-            {error && (
-              <Text size="sm" variant="danger" role="alert" aria-live="polite">
-                {error}
-              </Text>
-            )}
-            {savedAt && !error && (
-              <Text size="xs" variant="muted">
-                Saved {savedAt}
-              </Text>
-            )}
-            <Button
-              color="module"
-              type="submit"
-              disabled={pending}
-              loading={pending}
-              className="ml-auto"
-            >
-              Save
-            </Button>
-          </Stack>
-        </CardFooter>
-      </Card>
-    </form>
+            </CardContent>
+          </Card>
+          {error && (
+            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+              {error}
+            </Text>
+          )}
+        </SurfaceStep>
+      </SurfaceFrame>
+    </ModuleProvider>
   );
 }
 
@@ -237,6 +334,71 @@ function indent(depth: number): string {
   return depth === 0 ? '' : `${'  '.repeat(depth)}↳ `;
 }
 
-function stringField(value: FormDataEntryValue | null, fallback = ''): string {
-  return typeof value === 'string' ? value : fallback;
+// The read-only summary aside — the record's facts + tree context, no actions
+// (Delete lives in the toolbar's destructive slot). A separate presentational
+// unit from the editable form.
+function CategorySummary({
+  category,
+  meta,
+  ancestors,
+  childCount,
+}: {
+  category: CategoryEditData;
+  meta?: CategoryEditMeta;
+  ancestors: string[];
+  childCount: number;
+}) {
+  return (
+    <SurfaceSummary title="Category">
+      <SurfaceSummaryRow label="Path" value={`/${category.handle}`} />
+      <SurfaceSummaryRow
+        label="Nested under"
+        value={ancestors.length > 0 ? ancestors.join(' › ') : 'Top level'}
+      />
+      <SurfaceSummaryRow
+        label="Subcategories"
+        value={`${childCount} ${childCount === 1 ? 'child' : 'children'}`}
+      />
+      {meta && (
+        <SurfaceSummaryRow
+          label="Products"
+          value={`${meta.productCount} product${meta.productCount === 1 ? '' : 's'}`}
+        />
+      )}
+      {meta && (
+        <>
+          <SurfaceSummaryDivider />
+          <SurfaceSummaryRow label="Created" value={formatDate(meta.createdAt)} />
+          <SurfaceSummaryRow label="Updated" value={formatDate(meta.updatedAt)} />
+        </>
+      )}
+    </SurfaceSummary>
+  );
+}
+
+// Read-only tree context for the summary, derived from the flattened parent list
+// (materialized dot-paths) — no extra fetch. Ancestors = nodes whose path is a
+// strict prefix of this one (the breadcrumb trail, root → parent). Direct
+// children = nodes one level deeper whose path sits under this one.
+function deriveRelated(
+  category: CategoryEditData,
+  parents: CategoryParentOption[]
+): { ancestors: string[]; childCount: number } {
+  const selfDepth =
+    parents.find((p) => p.id === category.id)?.depth ?? category.path.split('.').length - 1;
+  const ancestors = parents
+    .filter((p) => category.path.startsWith(`${p.path}.`))
+    .sort((a, b) => a.depth - b.depth)
+    .map((p) => p.name);
+  const childCount = parents.filter(
+    (p) => p.path.startsWith(`${category.path}.`) && p.depth === selfDepth + 1
+  ).length;
+  return { ancestors, childCount };
+}
+
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime())
+    ? '—'
+    : d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 }

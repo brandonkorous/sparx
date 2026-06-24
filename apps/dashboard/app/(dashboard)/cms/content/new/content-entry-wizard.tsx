@@ -1,6 +1,6 @@
 'use client';
 
-// CMS content-entry creation wizard (docs/68 Phase B-4, docs/86 WizardFrame).
+// CMS content-entry creation wizard (docs/68 Phase B-4, docs/86 SurfaceFrame).
 // The one-shot content wizard — not just the required fields: create the entry
 // AND everything that usually rides with it, without leaving the flow.
 // Steps:
@@ -12,7 +12,7 @@
 //
 // Presentation: the `/new` route renders the full-screen `page` variant; the
 // content list opens it inside the dashboard's drawer/modal detail chrome
-// (`overlay` → WizardFrame `inline`), picked by the user's `defaultDetailView`.
+// (`overlay` → SurfaceFrame `inline`), picked by the user's `defaultDetailView`.
 // On finish: createEntry → navigates to the new entry's detail page.
 
 import * as React from 'react';
@@ -31,9 +31,9 @@ import {
   SchemaFieldRenderer,
   Stack,
   Text,
-  WizardFrame,
-  WizardStep,
-  type WizardStepDef,
+  SurfaceFrame,
+  SurfaceStep,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 import type { FieldDef } from '@sparx/cms-schemas';
 import { CheckCircle2, FileText } from 'lucide-react';
@@ -83,7 +83,7 @@ export interface ContentEntryWizardProps {
 
 type StepKey = 'type' | 'fields' | 'meta' | 'publish';
 
-const STEP_DEFS: Record<StepKey, WizardStepDef> = {
+const STEP_DEFS: Record<StepKey, SurfaceStepDef> = {
   type: { key: 'type', label: 'Type', sublabel: 'Choose a type' },
   fields: { key: 'fields', label: 'Fields', sublabel: 'Required fields' },
   meta: { key: 'meta', label: 'Author & media', sublabel: 'Attribution & images' },
@@ -153,7 +153,7 @@ function ContentEntryWizardInner({
   const stepOrder: StepKey[] = hasTypeStep
     ? ['type', 'fields', 'meta', 'publish']
     : ['fields', 'meta', 'publish'];
-  const steps: WizardStepDef[] = stepOrder.map((k) => STEP_DEFS[k]);
+  const steps: SurfaceStepDef[] = stepOrder.map((k) => STEP_DEFS[k]);
 
   const [stepKey, setStepKey] = React.useState<StepKey>(stepOrder[0] ?? 'fields');
   const current = Math.max(
@@ -327,7 +327,7 @@ function ContentEntryWizardInner({
   // ── Step bodies ──────────────────────────────────────────────────────────────
 
   const typeStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Choose a content type',
         supporting: 'Types define the schema — fields, validation, and URL patterns.',
@@ -370,11 +370,11 @@ function ContentEntryWizardInner({
           </Text>
         )}
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const fieldsStep = typeSchema && (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: `${typeSchema.name} details`,
         supporting:
@@ -415,7 +415,7 @@ function ContentEntryWizardInner({
           </Text>
         )}
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   // The type's optional asset fields (images/files) — surfaced in the Author &
@@ -426,7 +426,7 @@ function ContentEntryWizardInner({
   );
 
   const metaStep = typeSchema && (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Author & media',
         supporting:
@@ -550,11 +550,11 @@ function ContentEntryWizardInner({
           </Text>
         )}
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const publishStep = typeSchema && (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Publish settings',
         supporting: `Choose when this ${typeSchema.name.toLowerCase()} goes live.`,
@@ -637,7 +637,7 @@ function ContentEntryWizardInner({
           </Text>
         )}
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   let body_: React.ReactNode;
@@ -658,7 +658,7 @@ function ContentEntryWizardInner({
   // content area at `/new` (sidebar + header stay); `inline` fills the drawer/
   // modal detail panel, which supplies its own chrome.
   return (
-    <WizardFrame
+    <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New content"
       steps={steps}
@@ -669,6 +669,6 @@ function ContentEntryWizardInner({
       onCancel={close}
     >
       {body_}
-    </WizardFrame>
+    </SurfaceFrame>
   );
 }

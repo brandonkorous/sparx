@@ -1,74 +1,18 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  Heading,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
+import { loadConfiguratorProducts } from './_components/configurator-create-data';
+import { NewTemplateForm } from './_components/new-template-form';
 
-import { api } from '@/lib/api-rest-client';
-
-import { NewTemplateForm, type ProductOption } from './_components/new-template-form';
-
-interface ProductListItem {
-  id: string;
-  title: string;
-  handle: string;
-  status: 'active' | 'draft' | 'archived';
-  vendor: string | null;
-  productType: string | null;
-  variantCount: number;
-  priceMinCents: number | null;
-  priceMaxCents: number | null;
-  imageUrl: string | null;
-  tags: string[];
-  updatedAt: string;
-}
-
-interface ProductListResponse {
-  items: ProductListItem[];
-  total: number;
-}
+// Full-page surface for creating a configurator template. The surface-aware
+// `NewTemplateForm` (docs/86 F layout) renders the SAME SurfaceFrame here
+// (`surface="page"` → the `embedded` contained sheet, filling the dashboard
+// content area with its own title + pinned toolbar) and inside the `@detail`
+// drawer/modal overlay (`surface="overlay"`). This route is what `fullPage` /
+// `newTab` detail-view preferences, deep links, and the overlay's "maximize"
+// button resolve to — no page-level Container/PageHeader, so the title isn't
+// rendered twice.
 
 export const dynamic = 'force-dynamic';
 
 export default async function NewConfiguratorTemplatePage() {
-  const products = await loadProducts();
-
-  return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          title="New configurator template"
-          description="Bind a template to a configurable product. Start with a single option to learn the grammar, then add rules + add-ons from the detail page."
-        />
-
-        <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>Template basics</Heading>
-              <CardDescription>
-                The starter payload below is a minimal valid template. Edit it as JSON, save, then
-                expand from the detail editor.
-              </CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
-            <NewTemplateForm products={products} />
-          </CardContent>
-        </Card>
-      </Stack>
-    </Container>
-  );
-}
-
-async function loadProducts(): Promise<ProductOption[]> {
-  const { items } = await api.get<ProductListResponse>(
-    '/v1/commerce/products?take=250&include_archived=true'
-  );
-  const sorted = [...items].sort((a, b) => a.title.localeCompare(b.title));
-  return sorted.map((p) => ({ id: p.id, title: p.title, handle: p.handle, status: p.status }));
+  const products = await loadConfiguratorProducts();
+  return <NewTemplateForm surface="page" products={products} />;
 }

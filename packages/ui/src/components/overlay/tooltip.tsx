@@ -8,7 +8,7 @@ export const TooltipProvider = TooltipPrimitive.Provider;
 
 // Tooltip Root — self-contained: each instance carries its OWN Provider so a
 // trigger never throws "Tooltip must be used within TooltipProvider", no matter
-// where it mounts (overlay portals, the WizardFrame, the builder canvas, a
+// where it mounts (overlay portals, the SurfaceFrame, the builder canvas, a
 // detached subtree). A shared <TooltipProvider> higher up (the app layout) still
 // works — nested Radix providers are a no-op for the inner subtree — but it's no
 // longer load-bearing for correctness. Mirrors @sparx/site-ui's Tooltip, which

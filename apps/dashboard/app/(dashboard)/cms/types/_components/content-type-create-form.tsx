@@ -15,9 +15,9 @@ import {
   Stack,
   Text,
   Textarea,
-  WizardFrame,
-  WizardStep,
-  type WizardStepDef,
+  SurfaceFrame,
+  SurfaceStep,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 
 import { createContentType } from '../actions';
@@ -25,8 +25,8 @@ import { createContentType } from '../actions';
 // Surface-aware create form for a content TYPE definition (§13.1), on the
 // standard create surface (docs/86 F layout). The SAME component renders in both
 // presentations, picked by the host:
-//   - `surface="page"`    → WizardFrame `embedded` at the /cms/types/new route
-//   - `surface="overlay"` → WizardFrame `inline` inside the @detail drawer/modal
+//   - `surface="page"`    → SurfaceFrame `embedded` at the /cms/types/new route
+//   - `surface="overlay"` → SurfaceFrame `inline` inside the @detail drawer/modal
 //
 // It's a SINGLE-STEP form, so it's a one-step wizard: the frame supplies the
 // title + window controls + the pinned floor toolbar (ghost Cancel + module
@@ -68,7 +68,7 @@ interface ContentTypeCreateFormProps {
   initial?: ContentTypeInitial;
 }
 
-const STEPS: WizardStepDef[] = [{ key: 'definition', label: 'Definition' }];
+const STEPS: SurfaceStepDef[] = [{ key: 'definition', label: 'Definition' }];
 
 export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFormProps) {
   const router = useRouter();
@@ -159,14 +159,14 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
 
   return (
     <ModuleProvider module="cms" className="h-full">
-      <WizardFrame
+      <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New content type"
         steps={STEPS}
         current={0}
         onCancel={cancel}
       >
-        <WizardStep
+        <SurfaceStep
           header={{
             title: 'Content type',
             supporting:
@@ -310,8 +310,8 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
               </Text>
             )}
           </Stack>
-        </WizardStep>
-      </WizardFrame>
+        </SurfaceStep>
+      </SurfaceFrame>
     </ModuleProvider>
   );
 }

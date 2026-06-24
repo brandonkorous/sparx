@@ -21,15 +21,21 @@ import {
   findEntityType,
   fullPageHrefFor,
   isFullBleedCreate,
+  isFullBleedDetail,
   isSummaryCreate,
   parseDetailToken,
 } from '../_shell/detail-registry';
+import { UnsavedGuardProvider, useLeaveGuard } from './unsaved-guard';
 
-// A create overlay whose content fills the body edge-to-edge (it owns its own
-// padding + scroll), rather than the default padded single-scroll column. The
-// product WizardFrame is the first — see `FULL_BLEED_CREATE_TYPES`.
+// A target whose content fills the body edge-to-edge (it owns its own padding +
+// scroll + pinned toolbar), rather than the default padded single-scroll column.
+// Two cases share the treatment: a full-bleed CREATE overlay (the SurfaceFrame
+// create forms — `FULL_BLEED_CREATE_TYPES`) and a full-bleed DETAIL view whose
+// body is a single edit form on the same SurfaceFrame (`FULL_BLEED_DETAIL_TYPES`).
 function isFullBleedTarget(target: DetailTarget): boolean {
-  return target.entityId === CREATE_SENTINEL && isFullBleedCreate(target.typeId);
+  return target.entityId === CREATE_SENTINEL
+    ? isFullBleedCreate(target.typeId)
+    : isFullBleedDetail(target.typeId);
 }
 
 // Client chrome for the dashboard detail view. The detail BODY is rendered
@@ -84,6 +90,16 @@ interface InlineDetailProps {
 }
 
 export function InlineDetailContent({ target, children }: InlineDetailProps) {
+  // The provider wraps BOTH the header chrome and the slot-rendered form so the
+  // form can register its dirty-guard and the header's Close/Switch can consult it.
+  return (
+    <UnsavedGuardProvider>
+      <InlineDetailBody target={target}>{children}</InlineDetailBody>
+    </UnsavedGuardProvider>
+  );
+}
+
+function InlineDetailBody({ target, children }: InlineDetailProps) {
   const fullBleed = isFullBleedTarget(target);
   return (
     <Stack gap={0} className="h-full">
@@ -103,18 +119,42 @@ interface ModalDetailProps {
 }
 
 export function ModalDetailContent({ target, onClose, children }: ModalDetailProps) {
+  // Provider wraps the whole dialog so the body's form can register its guard and
+  // both the header chrome AND the backdrop/Esc close path can consult it.
+  return (
+    <UnsavedGuardProvider>
+      <ModalDetailBody target={target} onClose={onClose}>
+        {children}
+      </ModalDetailBody>
+    </UnsavedGuardProvider>
+  );
+}
+
+function ModalDetailBody({ target, onClose, children }: ModalDetailProps) {
   const fullBleed = isFullBleedTarget(target);
-  // Width by purpose: a record detail wants the full canvas; a create wizard with
-  // a live summary column wants room for form + summary; a plain create form is
-  // narrower so its fields don't stretch (docs/86 F layout).
+  const runGuard = useLeaveGuard();
+  // Width by purpose: a tabbed record detail wants the full canvas; a single-form
+  // edit detail (full-bleed) or a create wizard with a live summary column wants
+  // room for form + summary aside; a plain create form is narrower so its fields
+  // don't stretch (docs/86 F layout).
   const isCreate = target.entityId === CREATE_SENTINEL;
   const widthClass = !isCreate
-    ? 'w-[min(1200px,94vw)] max-w-[min(1200px,94vw)]'
+    ? isFullBleedDetail(target.typeId)
+      ? 'w-[min(960px,94vw)] max-w-[min(960px,94vw)]'
+      : 'w-[min(1200px,94vw)] max-w-[min(1200px,94vw)]'
     : isSummaryCreate(target.typeId)
       ? 'w-[min(960px,94vw)] max-w-[min(960px,94vw)]'
       : 'w-[min(720px,94vw)] max-w-[min(720px,94vw)]';
+  // `open` is always true (the dialog is unmounted by navigating, not by state),
+  // so backdrop / Esc only fire onOpenChange(false) — we run the dirty-guard and
+  // close only when it clears; otherwise the dialog stays put with edits intact.
+  const guardedClose = React.useCallback(() => {
+    void (async () => {
+      if (await runGuard()) onClose();
+    })();
+  }, [runGuard, onClose]);
   return (
-    <Modal open onOpenChange={(open) => !open && onClose()}>
+    <Modal open onOpenChange={(open) => !open && guardedClose()}>
       <ModalContent hideClose className={`max-h-[88vh] overflow-hidden p-0 ${widthClass}`}>
         <ModalTitle className="sr-only">{describeTarget(target)}</ModalTitle>
         <ModalDescription className="sr-only">
@@ -146,6 +186,7 @@ function describeTarget(target: DetailTarget): string {
 function DetailHeader({ target }: { target: DetailTarget }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const runGuard = useLeaveGuard();
   const found = findEntityType(target.typeId);
   if (!found) return null;
   const { manifest } = found;
@@ -154,7 +195,10 @@ function DetailHeader({ target }: { target: DetailTarget }) {
   // any other entity — the maximize button shows for it too.
   const fullPageHref = fullPageHrefFor(target.typeId, target.entityId);
 
-  function close() {
+  // Close + switch both leave (or remount) the form, so they run the dirty-guard
+  // first — the active form blocks the leave if it has unsaved edits.
+  async function close() {
+    if (!(await runGuard())) return;
     const next = new URLSearchParams(searchParams ?? '');
     next.delete('drawer');
     next.delete('modal');
@@ -162,7 +206,8 @@ function DetailHeader({ target }: { target: DetailTarget }) {
     router.replace(qs ? `${window.location.pathname}?${qs}` : window.location.pathname);
   }
 
-  function switchMode() {
+  async function switchMode() {
+    if (!(await runGuard())) return;
     const next = new URLSearchParams(searchParams ?? '');
     const nextMode: 'drawer' | 'modal' = target.mode === 'drawer' ? 'modal' : 'drawer';
     next.delete('drawer');
@@ -198,7 +243,12 @@ function DetailHeader({ target }: { target: DetailTarget }) {
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="sm" aria-label={switchLabel} onClick={switchMode}>
+            <Button
+              variant="ghost"
+              size="sm"
+              aria-label={switchLabel}
+              onClick={() => void switchMode()}
+            >
               <SwitchIcon className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
@@ -207,7 +257,7 @@ function DetailHeader({ target }: { target: DetailTarget }) {
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="sm" aria-label="Close" onClick={close}>
+            <Button variant="ghost" size="sm" aria-label="Close" onClick={() => void close()}>
               <X className="h-4 w-4" />
             </Button>
           </TooltipTrigger>

@@ -1,6 +1,6 @@
 'use client';
 
-// Order creation wizard (docs/86 WizardFrame, docs/68). The manual-order builder
+// Order creation wizard (docs/86 SurfaceFrame, docs/68). The manual-order builder
 // — it composes a COMPLETE order in a guided flow:
 //   1. Customer  — the customer (required), channel, and currency.
 //   2. Line items — the priced lines (SKU, name, qty, unit price, per-line tax
@@ -16,7 +16,7 @@
 // Presentation (like the other create-wizards): the `/new` route renders the
 // in-app `embedded` top stepper (full page inside the dashboard chrome); the
 // Orders list opens it inside the drawer/modal detail chrome (`overlay` →
-// WizardFrame `inline`), picked by the user's `defaultDetailView`. Finishing
+// SurfaceFrame `inline`), picked by the user's `defaultDetailView`. Finishing
 // navigates to the new order, which clears the overlay token — closing the
 // drawer/modal on its own.
 
@@ -36,12 +36,12 @@ import {
   Stack,
   Text,
   Textarea,
-  WizardFrame,
-  WizardStep,
-  WizardSummary,
-  WizardSummaryDivider,
-  WizardSummaryRow,
-  type WizardStepDef,
+  SurfaceFrame,
+  SurfaceStep,
+  SurfaceSummary,
+  SurfaceSummaryDivider,
+  SurfaceSummaryRow,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 
 import { createOrderAction } from '../../../order-actions';
@@ -76,7 +76,7 @@ const CHANNELS: { value: Channel; label: string }[] = [
 
 const STEP_ORDER: StepKey[] = ['customer', 'lines', 'details', 'review'];
 
-const ALL_STEPS: Record<StepKey, WizardStepDef> = {
+const ALL_STEPS: Record<StepKey, SurfaceStepDef> = {
   customer: { key: 'customer', label: 'Customer', sublabel: 'Who & how' },
   lines: { key: 'lines', label: 'Line items', sublabel: 'The order' },
   details: { key: 'details', label: 'Details', sublabel: 'Shipping & notes' },
@@ -152,7 +152,7 @@ function OrderWizardInner({
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  const steps: WizardStepDef[] = STEP_ORDER.map((k) => ALL_STEPS[k]);
+  const steps: SurfaceStepDef[] = STEP_ORDER.map((k) => ALL_STEPS[k]);
   const current = Math.max(
     0,
     steps.findIndex((s) => s.key === stepKey)
@@ -233,7 +233,7 @@ function OrderWizardInner({
   // ── Step bodies ──────────────────────────────────────────────────────────────
 
   const customerStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Who is this order for?',
         supporting: 'An order is placed for a single customer, through a channel.',
@@ -305,11 +305,11 @@ function OrderWizardInner({
           {error}
         </Text>
       )}
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const linesStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Line items',
         supporting:
@@ -330,11 +330,11 @@ function OrderWizardInner({
           <LineItemsEditor onChange={setItems} initialItems={items} />
         </CardContent>
       </Card>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const detailsStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Shipping & notes',
         supporting: 'A source reference, header shipping, and notes. Everything here is optional.',
@@ -408,11 +408,11 @@ function OrderWizardInner({
           </CardContent>
         </Card>
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const reviewStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Review & create',
         supporting: 'Confirm the order and place it.',
@@ -462,7 +462,7 @@ function OrderWizardInner({
           </Text>
         )}
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   let body: React.ReactNode;
@@ -482,7 +482,7 @@ function OrderWizardInner({
   // The live draft summary — the F layout's right-hand column (docs/86). Mirrors
   // the Review step's totals so the running figures are visible from step one.
   const summary = (
-    <WizardSummary
+    <SurfaceSummary
       title="Draft summary"
       footer={
         <Badge color="module" variant="soft" size="sm">
@@ -490,32 +490,32 @@ function OrderWizardInner({
         </Badge>
       }
     >
-      <WizardSummaryRow label="Customer" value={customerLabel} />
-      <WizardSummaryRow
+      <SurfaceSummaryRow label="Customer" value={customerLabel} />
+      <SurfaceSummaryRow
         label="Channel"
         value={CHANNELS.find((c) => c.value === channel)?.label ?? channel}
       />
-      <WizardSummaryRow label="Currency" value={(currency || 'USD').toUpperCase()} />
-      <WizardSummaryRow label="Line items" value={String(validItems.length)} />
-      <WizardSummaryDivider />
-      <WizardSummaryRow label="Subtotal" value={money(subtotal, currency)} />
+      <SurfaceSummaryRow label="Currency" value={(currency || 'USD').toUpperCase()} />
+      <SurfaceSummaryRow label="Line items" value={String(validItems.length)} />
+      <SurfaceSummaryDivider />
+      <SurfaceSummaryRow label="Subtotal" value={money(subtotal, currency)} />
       {discountTotal > 0 && (
-        <WizardSummaryRow label="Discount" value={`- ${money(discountTotal, currency)}`} />
+        <SurfaceSummaryRow label="Discount" value={`- ${money(discountTotal, currency)}`} />
       )}
-      {taxTotal > 0 && <WizardSummaryRow label="Tax" value={money(taxTotal, currency)} />}
+      {taxTotal > 0 && <SurfaceSummaryRow label="Tax" value={money(taxTotal, currency)} />}
       {shippingNum > 0 && (
-        <WizardSummaryRow label="Shipping" value={money(shippingNum, currency)} />
+        <SurfaceSummaryRow label="Shipping" value={money(shippingNum, currency)} />
       )}
-      <WizardSummaryDivider />
-      <WizardSummaryRow label="Total" value={money(total, currency)} strong />
-    </WizardSummary>
+      <SurfaceSummaryDivider />
+      <SurfaceSummaryRow label="Total" value={money(total, currency)} strong />
+    </SurfaceSummary>
   );
 
   // One top-stepper frame for both presentations: `embedded` fills the dashboard
   // content area at `/new` (sidebar + header stay); `inline` fills the drawer/
   // modal detail panel, which supplies its own chrome.
   return (
-    <WizardFrame
+    <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New order"
       steps={steps}
@@ -527,7 +527,7 @@ function OrderWizardInner({
       summary={summary}
     >
       {body}
-    </WizardFrame>
+    </SurfaceFrame>
   );
 }
 

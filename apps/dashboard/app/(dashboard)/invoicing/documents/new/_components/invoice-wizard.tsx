@@ -1,7 +1,7 @@
 'use client';
 
 // Comprehensive invoice / billing-document creation wizard (docs/87, docs/86
-// WizardFrame). The "one-shot" document builder — it creates a COMPLETE billing
+// SurfaceFrame). The "one-shot" document builder — it creates a COMPLETE billing
 // document in a guided flow, not just a header:
 //   1. Bill to   — workflow (the document's lifecycle), the customer or B2B account
 //                  it bills, currency, optional assignee.
@@ -20,7 +20,7 @@
 // Presentation (like the product/customer wizards): the `/new` route renders the
 // in-app `embedded` top stepper (full page inside the dashboard chrome); the
 // Documents list opens it inside the drawer/modal detail chrome (`overlay` →
-// WizardFrame `inline`), picked by the user's `defaultDetailView`. Finishing
+// SurfaceFrame `inline`), picked by the user's `defaultDetailView`. Finishing
 // navigates to the new document, which clears the overlay token — closing the
 // drawer/modal on its own.
 
@@ -42,12 +42,12 @@ import {
   Stack,
   Text,
   Textarea,
-  WizardFrame,
-  WizardStep,
-  WizardSummary,
-  WizardSummaryDivider,
-  WizardSummaryRow,
-  type WizardStepDef,
+  SurfaceFrame,
+  SurfaceStep,
+  SurfaceSummary,
+  SurfaceSummaryDivider,
+  SurfaceSummaryRow,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 
 import {
@@ -129,7 +129,7 @@ type StepKey = 'billto' | 'lines' | 'charges' | 'deposit' | 'review';
 
 const STEP_ORDER: StepKey[] = ['billto', 'lines', 'charges', 'deposit', 'review'];
 
-const ALL_STEPS: Record<StepKey, WizardStepDef> = {
+const ALL_STEPS: Record<StepKey, SurfaceStepDef> = {
   billto: { key: 'billto', label: 'Bill to', sublabel: 'Workflow & party' },
   lines: { key: 'lines', label: 'Line items', sublabel: 'The charges' },
   charges: { key: 'charges', label: 'Charges', sublabel: 'Tax & terms' },
@@ -257,7 +257,7 @@ function InvoiceWizardInner({
   const [createdDocId, setCreatedDocId] = React.useState<string | null>(null);
   const [partialFailures, setPartialFailures] = React.useState<string[]>([]);
 
-  const steps: WizardStepDef[] = STEP_ORDER.map((k) => ALL_STEPS[k]);
+  const steps: SurfaceStepDef[] = STEP_ORDER.map((k) => ALL_STEPS[k]);
   const current = Math.max(
     0,
     steps.findIndex((s) => s.key === stepKey)
@@ -376,7 +376,7 @@ function InvoiceWizardInner({
   // ── Step bodies ──────────────────────────────────────────────────────────────
 
   const billToStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Who and how to bill',
         supporting:
@@ -494,11 +494,11 @@ function InvoiceWizardInner({
           {error}
         </Text>
       )}
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const linesStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Line items',
         supporting:
@@ -598,11 +598,11 @@ function InvoiceWizardInner({
           />
         )}
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const chargesStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Tax, shipping & terms',
         supporting: 'Document-level charges and terms. Everything here is optional.',
@@ -711,11 +711,11 @@ function InvoiceWizardInner({
           total={total}
         />
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const depositStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Take a deposit',
         supporting:
@@ -793,11 +793,11 @@ function InvoiceWizardInner({
           </CardContent>
         </Card>
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const reviewStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: createdDocId ? 'Document created' : 'Review & create',
         supporting: createdDocId
@@ -917,7 +917,7 @@ function InvoiceWizardInner({
           </Text>
         )}
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   let body: React.ReactNode;
@@ -938,7 +938,7 @@ function InvoiceWizardInner({
   // the footer reflects the chosen start stage (it may finalize the document).
   const startStage = stages.find((s) => s.id === startStageId);
   const summary = (
-    <WizardSummary
+    <SurfaceSummary
       title="Draft summary"
       footer={
         <Badge color="module" variant="soft" size="sm">
@@ -948,45 +948,45 @@ function InvoiceWizardInner({
         </Badge>
       }
     >
-      <WizardSummaryRow label="Workflow" value={selectedWorkflow?.name ?? '—'} />
-      <WizardSummaryRow
+      <SurfaceSummaryRow label="Workflow" value={selectedWorkflow?.name ?? '—'} />
+      <SurfaceSummaryRow
         label="Bills"
         value={partyLabel(customerId, b2bAccountId, customers, b2bAccounts)}
       />
-      <WizardSummaryRow label="Line items" value={String(lines.length)} />
-      <WizardSummaryDivider />
-      <WizardSummaryRow label="Subtotal" value={formatMoney(subtotal, currency)} />
+      <SurfaceSummaryRow label="Line items" value={String(lines.length)} />
+      <SurfaceSummaryDivider />
+      <SurfaceSummaryRow label="Subtotal" value={formatMoney(subtotal, currency)} />
       {taxTotal > 0 && (
-        <WizardSummaryRow
+        <SurfaceSummaryRow
           label={`Tax (${taxPct.toFixed(2)}%)`}
           value={formatMoney(taxTotal, currency)}
         />
       )}
       {shippingNum > 0 && (
-        <WizardSummaryRow label="Shipping" value={formatMoney(shippingNum, currency)} />
+        <SurfaceSummaryRow label="Shipping" value={formatMoney(shippingNum, currency)} />
       )}
       {surchargeNum > 0 && (
-        <WizardSummaryRow label="Surcharge" value={formatMoney(surchargeNum, currency)} />
+        <SurfaceSummaryRow label="Surcharge" value={formatMoney(surchargeNum, currency)} />
       )}
-      <WizardSummaryDivider />
-      <WizardSummaryRow label="Total" value={formatMoney(total, currency)} strong />
+      <SurfaceSummaryDivider />
+      <SurfaceSummaryRow label="Total" value={formatMoney(total, currency)} strong />
       {depositNum > 0 && (
         <>
-          <WizardSummaryRow
+          <SurfaceSummaryRow
             label={`Deposit (${depositKind})`}
             value={`- ${formatMoney(depositNum, currency)}`}
           />
-          <WizardSummaryRow label="Balance due" value={formatMoney(balance, currency)} strong />
+          <SurfaceSummaryRow label="Balance due" value={formatMoney(balance, currency)} strong />
         </>
       )}
-    </WizardSummary>
+    </SurfaceSummary>
   );
 
   // One top-stepper frame for both presentations: `embedded` fills the dashboard
   // content area at `/new` (sidebar + header stay); `inline` fills the drawer/
   // modal detail panel, which supplies its own chrome.
   return (
-    <WizardFrame
+    <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New document"
       steps={steps}
@@ -998,7 +998,7 @@ function InvoiceWizardInner({
       summary={summary}
     >
       {body}
-    </WizardFrame>
+    </SurfaceFrame>
   );
 }
 

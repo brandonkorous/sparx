@@ -1,6 +1,6 @@
 'use client';
 
-// Customer full-profile creation wizard (docs/68 Phase B-5, docs/86 WizardFrame).
+// Customer full-profile creation wizard (docs/68 Phase B-5, docs/86 SurfaceFrame).
 // The "one swipe" wizard — create the contact AND everything that usually
 // follows a first touch, without leaving the flow:
 //   1. Contact      — name, email (required), phone, company, job title
@@ -15,7 +15,7 @@
 //
 // Presentation (like the product wizard): the `/new` route renders the in-app
 // `embedded` top stepper (full page inside the dashboard chrome); the CRM list
-// opens it inside the drawer/modal detail chrome (`overlay` → WizardFrame
+// opens it inside the drawer/modal detail chrome (`overlay` → SurfaceFrame
 // `inline`), picked by the user's `defaultDetailView`. On finish: creates the
 // customer, then best-effort
 // applies the address, note, task, deal, and quote, and navigates to the new
@@ -38,12 +38,12 @@ import {
   Stack,
   Text,
   Textarea,
-  WizardFrame,
-  WizardStep,
-  WizardSummary,
-  WizardSummaryDivider,
-  WizardSummaryRow,
-  type WizardStepDef,
+  SurfaceFrame,
+  SurfaceStep,
+  SurfaceSummary,
+  SurfaceSummaryDivider,
+  SurfaceSummaryRow,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 import { UserPlus } from 'lucide-react';
 
@@ -59,7 +59,7 @@ type ActivityKind = 'note' | 'call' | 'meeting';
 type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
 type QuoteTerms = '' | 'prepay' | 'net15' | 'net30' | 'net60' | 'net90';
 
-const ALL_STEPS: Record<StepKey, WizardStepDef> = {
+const ALL_STEPS: Record<StepKey, SurfaceStepDef> = {
   contact: { key: 'contact', label: 'Contact', sublabel: 'Name & email' },
   classify: { key: 'classify', label: 'Classify', sublabel: 'Type & tags' },
   address: { key: 'address', label: 'Address', sublabel: 'Optional' },
@@ -293,7 +293,7 @@ function CustomerWizardInner({
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  const steps: WizardStepDef[] = STEP_ORDER.map((k) => ALL_STEPS[k]);
+  const steps: SurfaceStepDef[] = STEP_ORDER.map((k) => ALL_STEPS[k]);
   const current = Math.max(
     0,
     steps.findIndex((s) => s.key === stepKey)
@@ -489,7 +489,7 @@ function CustomerWizardInner({
   // ── Step bodies ──────────────────────────────────────────────────────────────
 
   const contactStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Contact information',
         supporting:
@@ -521,11 +521,11 @@ function CustomerWizardInner({
           {error}
         </Text>
       )}
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const classifyStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Classify the contact',
         supporting: 'Type, contact preferences, and tags — they drive segments and campaigns.',
@@ -550,11 +550,11 @@ function CustomerWizardInner({
           />
         </CardContent>
       </Card>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const addressStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Primary address',
         supporting: 'Add a primary address now, or skip and add one later from the profile.',
@@ -618,11 +618,11 @@ function CustomerWizardInner({
           </Text>
         )}
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const followupStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Log it & follow up',
         supporting:
@@ -717,11 +717,11 @@ function CustomerWizardInner({
           </Text>
         )}
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const opportunityStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Start the work',
         supporting:
@@ -899,7 +899,7 @@ function CustomerWizardInner({
           </Text>
         )}
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   let body: React.ReactNode;
@@ -935,7 +935,7 @@ function CustomerWizardInner({
   const anyExtra = addressIncluded || noteIncluded || taskIncluded || dealIncluded || quoteIncluded;
 
   const summary = (
-    <WizardSummary
+    <SurfaceSummary
       title="Draft summary"
       footer={
         <Badge color="module" variant="soft" size="sm">
@@ -943,32 +943,32 @@ function CustomerWizardInner({
         </Badge>
       }
     >
-      <WizardSummaryRow label="Name" value={fullName || '—'} />
-      <WizardSummaryRow label="Email" value={email || '—'} strong />
-      {company && <WizardSummaryRow label="Company" value={company} />}
-      <WizardSummaryRow label="Type" value={typeLabel} />
-      <WizardSummaryDivider />
+      <SurfaceSummaryRow label="Name" value={fullName || '—'} />
+      <SurfaceSummaryRow label="Email" value={email || '—'} strong />
+      {company && <SurfaceSummaryRow label="Company" value={company} />}
+      <SurfaceSummaryRow label="Type" value={typeLabel} />
+      <SurfaceSummaryDivider />
       {anyExtra ? (
         <>
           {addressIncluded && (
-            <WizardSummaryRow label="Address" value={str(address.city) || 'Included'} />
+            <SurfaceSummaryRow label="Address" value={str(address.city) || 'Included'} />
           )}
-          {noteIncluded && <WizardSummaryRow label="Activity" value={noteKindLabel} />}
-          {taskIncluded && <WizardSummaryRow label="Task" value={taskTitle.trim()} />}
-          {dealIncluded && <WizardSummaryRow label="Deal" value={dealTitle.trim()} />}
-          {quoteIncluded && <WizardSummaryRow label="Draft quote" value={quoteItemName.trim()} />}
+          {noteIncluded && <SurfaceSummaryRow label="Activity" value={noteKindLabel} />}
+          {taskIncluded && <SurfaceSummaryRow label="Task" value={taskTitle.trim()} />}
+          {dealIncluded && <SurfaceSummaryRow label="Deal" value={dealTitle.trim()} />}
+          {quoteIncluded && <SurfaceSummaryRow label="Draft quote" value={quoteItemName.trim()} />}
         </>
       ) : (
-        <WizardSummaryRow label="On create" value="Contact only" />
+        <SurfaceSummaryRow label="On create" value="Contact only" />
       )}
-    </WizardSummary>
+    </SurfaceSummary>
   );
 
   // One top-stepper frame for both presentations: `embedded` fills the dashboard
   // content area at `/new` (sidebar + header stay); `inline` fills the drawer/
   // modal detail panel, which supplies its own chrome.
   return (
-    <WizardFrame
+    <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New customer"
       steps={steps}
@@ -980,6 +980,6 @@ function CustomerWizardInner({
       summary={summary}
     >
       {body}
-    </WizardFrame>
+    </SurfaceFrame>
   );
 }

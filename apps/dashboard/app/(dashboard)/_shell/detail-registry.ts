@@ -31,22 +31,22 @@ export const CREATE_SENTINEL = 'new';
 const CREATE_VIEW_TYPES = new Set<string>([
   'category',
   'collection',
-  // Product creation is the multi-step WizardFrame flow (docs/86). It opts INTO
+  // Product creation is the multi-step SurfaceFrame flow (docs/86). It opts INTO
   // the drawer/modal overlay so the user's `defaultDetailView` preference picks
   // the style; unlike the single-column create forms it renders as the
-  // WizardFrame `inline` variant and is flagged full-bleed below so the chrome
+  // SurfaceFrame `inline` variant and is flagged full-bleed below so the chrome
   // gives it the whole body. The full page lives at /commerce/products/new.
   'product',
   'warehouse',
   'price-list',
   'customer',
   'b2b-account',
-  // Quote + Order creation are multi-step WizardFrames (full-bleed below); a
+  // Quote + Order creation are multi-step SurfaceFrames (full-bleed below); a
   // created record opens into its detail view. Full pages: /crm/quotes/new,
   // /crm/orders/new.
   'quote',
   'order',
-  // Purchase order + transfer creation are multi-step WizardFrames (full-bleed
+  // Purchase order + transfer creation are multi-step SurfaceFrames (full-bleed
   // below); their editors stay full-page. Full pages live under /inventory/.
   'purchase-order',
   'transfer',
@@ -54,7 +54,7 @@ const CREATE_VIEW_TYPES = new Set<string>([
   'page',
   'content-type',
   'content-entry',
-  // Billing-document creation is the multi-step WizardFrame (full-bleed below).
+  // Billing-document creation is the multi-step SurfaceFrame (full-bleed below).
   // Its detail/editor stays full-page, but create opts into the drawer/modal so
   // the "New" button honors `defaultDetailView`. Full page: /invoicing/documents/new.
   'billing-document',
@@ -76,6 +76,7 @@ const CREATE_VIEW_TYPES = new Set<string>([
   'shipping-zone',
   'shipping-profile',
   'tax-zone',
+  'configurator-template',
 ]);
 
 export function hasCreateView(typeId: string): boolean {
@@ -84,7 +85,7 @@ export function hasCreateView(typeId: string): boolean {
 
 // Create overlays whose content manages its own padding + height and should
 // fill the drawer/modal body edge-to-edge, rather than sitting in the chrome's
-// default padded, single-scroll column. The product WizardFrame (two-pane rail
+// default padded, single-scroll column. The product SurfaceFrame (two-pane rail
 // + working pane) is the first of these. Client-safe so the detail-panel chrome
 // can branch without importing the server-only slot.
 const FULL_BLEED_CREATE_TYPES = new Set<string>([
@@ -98,7 +99,7 @@ const FULL_BLEED_CREATE_TYPES = new Set<string>([
   'purchase-order',
   'transfer',
   // Single-step create forms now render through the same F-shell (docs/86) — a
-  // one-step WizardFrame with the pinned floor toolbar — so they are full-bleed
+  // one-step SurfaceFrame with the pinned floor toolbar — so they are full-bleed
   // too (no padded card-in-body). Converted off the old card+footer shell so far;
   // the rest of the single-step forms join here as each is migrated.
   'category',
@@ -120,18 +121,34 @@ const FULL_BLEED_CREATE_TYPES = new Set<string>([
   'shipping-zone',
   'shipping-profile',
   'tax-zone',
+  'configurator-template',
 ]);
 
 export function isFullBleedCreate(typeId: string): boolean {
   return FULL_BLEED_CREATE_TYPES.has(typeId);
 }
 
-// Create overlays whose WizardFrame renders a live "draft summary" column (the
+// Detail (edit) views whose body IS a single edit form rendered through the same
+// F-shell SurfaceFrame as its create sibling (docs/86 edit surface-type rule: a
+// detail view that is one edit form → render it as a SurfaceFrame so create +
+// edit are symmetric). Like full-bleed creates, the frame owns its own padding,
+// scroll, and pinned floor toolbar, so the drawer/modal/full-page host must hand
+// it the whole body edge-to-edge instead of the default padded scroll column.
+// This is ONLY for single-form detail views — tabbed detail views (product,
+// customer, …) keep the default padded body and clean up their edit PANEL in
+// place. Client-safe so the detail-panel chrome can branch without the slot.
+const FULL_BLEED_DETAIL_TYPES = new Set<string>(['category']);
+
+export function isFullBleedDetail(typeId: string): boolean {
+  return FULL_BLEED_DETAIL_TYPES.has(typeId);
+}
+
+// Create overlays whose SurfaceFrame renders a live "draft summary" column (the
 // F layout — docs/86). These are the record-building wizards where the right
 // column earns the width. The modal host reads this to size the dialog wider
 // (room for form + summary); creates absent from this set use a narrower,
 // form-only modal so a lone form never floats in a too-wide dialog. A wizard
-// joins this set ONLY once it actually passes WizardFrame a `summary` — otherwise
+// joins this set ONLY once it actually passes SurfaceFrame a `summary` — otherwise
 // the wide modal would frame a narrow form with empty gutters. The whole
 // line-item document family now carries a live summary: quote / order bill a
 // party and roll up to a total; purchase-order / transfer build against a

@@ -2,7 +2,7 @@ import { api } from '@/lib/api-rest-client';
 import { ContentTypeCreateForm } from '../_components/content-type-create-form';
 
 // Full-page surface for creating a custom content type. The surface-aware
-// `ContentTypeCreateForm` (docs/86 F layout) renders the SAME WizardFrame here
+// `ContentTypeCreateForm` (docs/86 F layout) renders the SAME SurfaceFrame here
 // (`surface="page"` → the `embedded` contained sheet, filling the dashboard
 // content area with its own title + pinned toolbar) and inside the `@detail`
 // drawer/modal overlay (`surface="overlay"`). This route is what `fullPage` /

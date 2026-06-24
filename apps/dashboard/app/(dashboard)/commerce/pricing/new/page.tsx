@@ -1,7 +1,7 @@
 import { PriceListCreateForm } from '../_components/price-list-create-form';
 
 // Full-page surface for creating a price list. The surface-aware
-// `PriceListCreateForm` (docs/86 F layout) renders the SAME WizardFrame here
+// `PriceListCreateForm` (docs/86 F layout) renders the SAME SurfaceFrame here
 // (`surface="page"` → the `embedded` contained sheet, filling the dashboard
 // content area with its own title + pinned toolbar) and inside the `@detail`
 // drawer/modal overlay (`surface="overlay"`). This route is what `fullPage` /

@@ -24,7 +24,7 @@ import {
   NativeSelect,
   Spinner,
   Text,
-  WizardStep,
+  SurfaceStep,
 } from '@sparx/ui';
 
 import {
@@ -212,7 +212,7 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
   }
 
   return (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Fitment & compatibility',
         supporting: 'List what this product fits or works with. Add as many entries as you need.',
@@ -393,6 +393,6 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
           )}
         </CardContent>
       </Card>
-    </WizardStep>
+    </SurfaceStep>
   );
 }

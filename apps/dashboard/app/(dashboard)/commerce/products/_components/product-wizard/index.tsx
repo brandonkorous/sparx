@@ -1,9 +1,9 @@
 'use client';
 
-// Product creation wizard (docs/68 B-1, docs/86 WizardFrame).
+// Product creation wizard (docs/68 B-1, docs/86 SurfaceFrame).
 //
 // The comprehensive guided flow for adding a catalog product and walking the
-// merchant through its relations, on the platform's full-page WizardFrame.
+// merchant through its relations, on the platform's full-page SurfaceFrame.
 //
 // Architecture (confirmed with the user): the product is created as a DRAFT the
 // moment Basics is completed, then each later step attaches a relation to the
@@ -34,13 +34,13 @@ import {
   Switch,
   Text,
   Textarea,
-  WizardFrame,
-  WizardStep,
-  WizardSummary,
-  WizardSummaryDivider,
-  WizardSummaryRow,
+  SurfaceFrame,
+  SurfaceStep,
+  SurfaceSummary,
+  SurfaceSummaryDivider,
+  SurfaceSummaryRow,
   useConfirm,
-  type WizardStepDef,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 
 import {
@@ -98,7 +98,7 @@ type StepKey =
   | 'organization'
   | 'review';
 
-const ALL_STEPS: Record<StepKey, WizardStepDef> = {
+const ALL_STEPS: Record<StepKey, SurfaceStepDef> = {
   basics: { key: 'basics', label: 'Basics', sublabel: 'Name & type' },
   pricing: { key: 'pricing', label: 'Pricing', sublabel: 'Price & tax' },
   variants: { key: 'variants', label: 'Variants', sublabel: 'Options & SKUs' },
@@ -185,7 +185,7 @@ export interface ProductWizardProps {
    *   • `'page'`    — the `/new` route; the in-app `embedded` top-stepper that
    *                   fills the dashboard content area (sidebar + header stay).
    *   • `'overlay'` — hosted inside the dashboard's drawer/modal detail chrome
-   *                   (docs/86 `WizardFrame` inline variant). The user's
+   *                   (docs/86 `SurfaceFrame` inline variant). The user's
    *                   `defaultDetailView` preference picks drawer vs. modal;
    *                   the chrome supplies the shell + close/switch/maximize
    *                   header, and the wizard fills the body. */
@@ -264,8 +264,8 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
 
   // Active journey — digital/service skip the physical Inventory step; Fitment
   // only appears when the tenant uses it.
-  const steps: WizardStepDef[] = React.useMemo(() => {
-    const journey: WizardStepDef[] = [
+  const steps: SurfaceStepDef[] = React.useMemo(() => {
+    const journey: SurfaceStepDef[] = [
       ALL_STEPS.basics,
       ALL_STEPS.pricing,
       ALL_STEPS.variants,
@@ -539,7 +539,7 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
   // ── Step bodies ────────────────────────────────────────────────────────────────
 
   const basicsStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'What are you selling?',
         supporting: 'Name it and tell us how it ships. We’ll save a draft as soon as you continue.',
@@ -625,11 +625,11 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
           </div>
         </CardContent>
       </Card>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const pricingStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Price it',
         supporting:
@@ -705,11 +705,11 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
           </div>
         </CardContent>
       </Card>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const inventoryStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Stock & shipping',
         supporting: 'Seed initial stock and give the carrier the weight and dimensions.',
@@ -868,11 +868,11 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
           </div>
         </CardContent>
       </Card>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const reviewStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Review & publish',
         supporting:
@@ -944,7 +944,7 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
           </div>
         </CardContent>
       </Card>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   let body: React.ReactNode;
@@ -1007,7 +1007,7 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
   // the merchant fills the spine; the right column earns the modal's width instead
   // of leaving it empty.
   const summary = (
-    <WizardSummary
+    <SurfaceSummary
       title="Draft summary"
       footer={
         <Badge color={published ? 'success' : 'module'} variant="soft" size="sm">
@@ -1015,26 +1015,29 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
         </Badge>
       }
     >
-      <WizardSummaryRow label="Title" value={title.trim() || '—'} />
-      <WizardSummaryRow label="Format" value={FULFILLMENT_LABEL[fulfillmentType]} />
-      {productType.trim() && <WizardSummaryRow label="Type" value={productType.trim()} />}
-      <WizardSummaryRow label="SKU" value={sku.trim() || '—'} />
-      <WizardSummaryDivider />
-      <WizardSummaryRow label="Price" value={centsToDisplay(dollarsToCents(priceStr))} strong />
+      <SurfaceSummaryRow label="Title" value={title.trim() || '—'} />
+      <SurfaceSummaryRow label="Format" value={FULFILLMENT_LABEL[fulfillmentType]} />
+      {productType.trim() && <SurfaceSummaryRow label="Type" value={productType.trim()} />}
+      <SurfaceSummaryRow label="SKU" value={sku.trim() || '—'} />
+      <SurfaceSummaryDivider />
+      <SurfaceSummaryRow label="Price" value={centsToDisplay(dollarsToCents(priceStr))} strong />
       {dollarsToCents(compareAtStr) !== undefined && (
-        <WizardSummaryRow label="Compare at" value={centsToDisplay(dollarsToCents(compareAtStr))} />
+        <SurfaceSummaryRow
+          label="Compare at"
+          value={centsToDisplay(dollarsToCents(compareAtStr))}
+        />
       )}
       {isPhysical && trackInventory && (
-        <WizardSummaryRow label="On hand" value={String(toNonNegInt(quantityStr) ?? 0)} />
+        <SurfaceSummaryRow label="On hand" value={String(toNonNegInt(quantityStr) ?? 0)} />
       )}
-    </WizardSummary>
+    </SurfaceSummary>
   );
 
   // One top-stepper frame for both presentations: `embedded` fills the dashboard
   // content area at the `/new` route (sidebar + header stay); `inline` fills the
   // drawer/modal detail panel, which supplies its own close/switch/maximize chrome.
   return (
-    <WizardFrame
+    <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New product"
       steps={steps}
@@ -1046,6 +1049,6 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
       summary={summary}
     >
       {body}
-    </WizardFrame>
+    </SurfaceFrame>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-// Purchase-order creation wizard (docs/86 WizardFrame, docs/100 P3b). Orders
+// Purchase-order creation wizard (docs/86 SurfaceFrame, docs/100 P3b). Orders
 // stock from a supplier into a warehouse, composed in a guided flow:
 //   1. Details — supplier (required), warehouse (required), currency.
 //   2. Lines   — the variants to order, added by SKU via the shared LineAddRow.
@@ -14,7 +14,7 @@
 //
 // Presentation (like the other create-wizards): the `/new` route renders the
 // in-app `embedded` top stepper (full page inside the dashboard chrome); the PO
-// list opens it inside the drawer/modal detail chrome (`overlay` → WizardFrame
+// list opens it inside the drawer/modal detail chrome (`overlay` → SurfaceFrame
 // `inline`), picked by the user's `defaultDetailView`. The PO detail/editor stays
 // full-page; finishing navigates there, clearing the overlay token.
 
@@ -38,12 +38,12 @@ import {
   Stack,
   Text,
   Textarea,
-  WizardFrame,
-  WizardStep,
-  WizardSummary,
-  WizardSummaryDivider,
-  WizardSummaryRow,
-  type WizardStepDef,
+  SurfaceFrame,
+  SurfaceStep,
+  SurfaceSummary,
+  SurfaceSummaryDivider,
+  SurfaceSummaryRow,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 
 import { createPurchaseOrderAction } from '../../../_lib/purchase-order-actions';
@@ -71,7 +71,7 @@ type StepKey = 'details' | 'lines' | 'terms' | 'review';
 
 const STEP_ORDER: StepKey[] = ['details', 'lines', 'terms', 'review'];
 
-const ALL_STEPS: Record<StepKey, WizardStepDef> = {
+const ALL_STEPS: Record<StepKey, SurfaceStepDef> = {
   details: { key: 'details', label: 'Details', sublabel: 'Supplier & warehouse' },
   lines: { key: 'lines', label: 'Lines', sublabel: 'What to order' },
   terms: { key: 'terms', label: 'Terms', sublabel: 'Shipping & dates' },
@@ -120,7 +120,7 @@ function PurchaseOrderWizardInner({
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  const steps: WizardStepDef[] = STEP_ORDER.map((k) => ALL_STEPS[k]);
+  const steps: SurfaceStepDef[] = STEP_ORDER.map((k) => ALL_STEPS[k]);
   const current = Math.max(
     0,
     steps.findIndex((s) => s.key === stepKey)
@@ -199,7 +199,7 @@ function PurchaseOrderWizardInner({
   // ── Step bodies ──────────────────────────────────────────────────────────────
 
   const detailsStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Order details',
         supporting: 'Who you’re buying from and where it lands.',
@@ -264,11 +264,11 @@ function PurchaseOrderWizardInner({
           {error}
         </Text>
       )}
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const linesStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Lines',
         supporting:
@@ -338,11 +338,11 @@ function PurchaseOrderWizardInner({
           </div>
         </CardContent>
       </Card>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const termsStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Terms & dates',
         supporting: 'Terms default onto the order and can be overridden per line later.',
@@ -413,11 +413,11 @@ function PurchaseOrderWizardInner({
           </div>
         </CardContent>
       </Card>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   const reviewStep = (
-    <WizardStep
+    <SurfaceStep
       header={{
         title: 'Review & create',
         supporting: 'Saved as a draft you can edit before submitting.',
@@ -457,7 +457,7 @@ function PurchaseOrderWizardInner({
           </Text>
         )}
       </div>
-    </WizardStep>
+    </SurfaceStep>
   );
 
   let body: React.ReactNode;
@@ -493,7 +493,7 @@ function PurchaseOrderWizardInner({
   // The live draft summary — the F layout's right-hand column (docs/86). Mirrors
   // the Review step so the supplier, destination, and running cost stay visible.
   const summary = (
-    <WizardSummary
+    <SurfaceSummary
       title="Draft summary"
       footer={
         <Badge color="module" variant="soft" size="sm">
@@ -501,21 +501,21 @@ function PurchaseOrderWizardInner({
         </Badge>
       }
     >
-      <WizardSummaryRow label="Supplier" value={supplierLabel} />
-      <WizardSummaryRow label="Warehouse" value={warehouseLabel} />
-      <WizardSummaryRow label="Currency" value={(currency || 'USD').toUpperCase()} />
-      <WizardSummaryRow label="Lines" value={String(lines.length)} />
-      <WizardSummaryDivider />
-      <WizardSummaryRow
+      <SurfaceSummaryRow label="Supplier" value={supplierLabel} />
+      <SurfaceSummaryRow label="Warehouse" value={warehouseLabel} />
+      <SurfaceSummaryRow label="Currency" value={(currency || 'USD').toUpperCase()} />
+      <SurfaceSummaryRow label="Lines" value={String(lines.length)} />
+      <SurfaceSummaryDivider />
+      <SurfaceSummaryRow
         label="Known subtotal"
         value={`${formatMoney(knownSubtotal, currency)}${hasDefaults ? ' + defaults' : ''}`}
         strong
       />
-    </WizardSummary>
+    </SurfaceSummary>
   );
 
   return (
-    <WizardFrame
+    <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New purchase order"
       steps={steps}
@@ -527,7 +527,7 @@ function PurchaseOrderWizardInner({
       summary={summary}
     >
       {body}
-    </WizardFrame>
+    </SurfaceFrame>
   );
 }
 

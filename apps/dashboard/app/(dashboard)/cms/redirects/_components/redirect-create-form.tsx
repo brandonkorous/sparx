@@ -16,17 +16,17 @@ import {
   SelectValue,
   Stack,
   Text,
-  WizardFrame,
-  WizardStep,
-  type WizardStepDef,
+  SurfaceFrame,
+  SurfaceStep,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 
 import { createRedirect } from '../actions';
 
 // New-redirect form, on the standard create surface (docs/86 F layout). The SAME
 // component renders in both presentations, picked by the host:
-//   - `surface="page"`    → WizardFrame `embedded` at the /new route (contained sheet)
-//   - `surface="overlay"` → WizardFrame `inline` inside the @detail drawer/modal
+//   - `surface="page"`    → SurfaceFrame `embedded` at the /new route (contained sheet)
+//   - `surface="overlay"` → SurfaceFrame `inline` inside the @detail drawer/modal
 //
 // It's a SINGLE-STEP form, so it's a one-step wizard: the frame supplies the
 // title + window controls + the pinned floor toolbar (ghost Cancel + module
@@ -40,7 +40,7 @@ interface RedirectCreateFormProps {
   surface: 'page' | 'overlay';
 }
 
-const STEPS: WizardStepDef[] = [{ key: 'redirect', label: 'Redirect' }];
+const STEPS: SurfaceStepDef[] = [{ key: 'redirect', label: 'Redirect' }];
 
 export function RedirectCreateForm({ surface }: RedirectCreateFormProps) {
   const router = useRouter();
@@ -98,14 +98,14 @@ export function RedirectCreateForm({ surface }: RedirectCreateFormProps) {
 
   return (
     <ModuleProvider module="cms" className="h-full">
-      <WizardFrame
+      <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="Add redirect"
         steps={STEPS}
         current={0}
         onCancel={cancel}
       >
-        <WizardStep
+        <SurfaceStep
           header={{
             title: 'Redirect',
             supporting: 'Paths must begin with a slash. Same-path or loop targets are rejected.',
@@ -167,8 +167,8 @@ export function RedirectCreateForm({ surface }: RedirectCreateFormProps) {
               {message}
             </Text>
           )}
-        </WizardStep>
-      </WizardFrame>
+        </SurfaceStep>
+      </SurfaceFrame>
     </ModuleProvider>
   );
 }
