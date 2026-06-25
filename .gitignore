@@ -63,3 +63,5 @@ apps/dashboard/_marketplace-assets.mjs
 # only the machine-local *.local.json / *.cache.json scratch is ignored.
 **/.impeccable/*.local.json
 **/.impeccable/*.cache.json
+# The live/ runtime dir (server port, sessions, annotations) is per-machine session state.
+**/.impeccable/live/

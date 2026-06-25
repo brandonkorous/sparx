@@ -148,6 +148,23 @@ const EnvSchema = z
     // Scheduling, incl. outbound iCal, is unaffected). Rotating it invalidates
     // every stored calendar credential (tenants reconnect) — never log it.
     SCHEDULING_CALENDAR_TOKEN_KEY: z.string().optional(),
+    // Channel integrations (docs/106) — connect external sales channels (Google
+    // Shopping, Meta, Pinterest, …) so catalog/inventory sync out. Per-tenant OAuth
+    // tokens are AES-256-GCM encrypted at rest in channel_connections, keyed by
+    // CHANNELS_TOKEN_KEY (32 bytes, base64 or hex; rotating it invalidates every
+    // stored channel grant — tenants reconnect — never log it). Each channel stays
+    // INERT until its platform app credentials are set: the connect endpoint reports
+    // it `coming_soon` and the dashboard disables Connect, with no code change when
+    // ops later provisions the approved app.
+    //   Google Shopping reuses GOOGLE_OAUTH_CLIENT_ID/_SECRET (the same Google OAuth
+    //   web client, with the Content API scope added) — no separate key.
+    //   META_APP_ID / _SECRET       — the Meta (Facebook/Instagram) app.
+    //   PINTEREST_APP_ID / _SECRET  — the Pinterest app.
+    CHANNELS_TOKEN_KEY: z.string().optional(),
+    META_APP_ID: z.string().optional(),
+    META_APP_SECRET: z.string().optional(),
+    PINTEREST_APP_ID: z.string().optional(),
+    PINTEREST_APP_SECRET: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     // GCS mode requires both buckets — the public one holds variants,

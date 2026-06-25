@@ -87,6 +87,15 @@ export interface ChannelProductInput {
   imageUrls: string[];
   category: string | null;
   tags: string[];
+  /** Absolute URL of the product's page on the tenant's storefront. REQUIRED by
+   *  every feed channel (Google/Meta/Pinterest) — checkout stays on the tenant's
+   *  site, so the listing must link back. The worker resolves it from the tenant's
+   *  primary site domain + product handle. */
+  productUrl: string;
+  /** ISO currency for `priceCents` (variants share the product currency). */
+  currency: string;
+  /** Brand/vendor — most feed channels want it for matching + ad eligibility. */
+  brand: string | null;
   variants: ChannelProductVariantInput[];
 }
 
@@ -186,6 +195,13 @@ export interface ChannelAdapter {
   readonly name: string;
   /** Gates which optional methods the worker expects (docs/106 §2). */
   readonly shape: ChannelShape;
+
+  /** Whether sparx's PLATFORM OAuth credentials for this channel are configured
+   *  (the app id/secret sparx registered with the channel, read from env). False
+   *  → the channel is registered but not yet connectable; the API reports it
+   *  `coming_soon` and `connectUrl` would be incomplete. Lets a channel light up
+   *  the instant ops sets its env, with no code change (docs/106 §4.6). */
+  isConfigured(): boolean;
 
   // ── install / auth ──
   /** Build the OAuth authorize URL the dashboard redirects to. */

@@ -53,6 +53,7 @@ jobs:
           - dropship-worker
           - billing-worker
           - webhook-worker
+          - channel-sync-worker
     steps:
       - uses: actions/checkout@v4
 

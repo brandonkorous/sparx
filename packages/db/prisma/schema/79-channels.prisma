@@ -5,8 +5,12 @@
 // back-office system of record; the marketplace stays the storefront.
 //
 //   ChannelConnection      — the per-tenant OAuth link to one external shop.
-//                            Tokens live in Secret Manager, NEVER on the row —
-//                            only the secret REF is stored (docs/106 §4.6).
+//                            OAuth tokens are stored AES-256-GCM ENCRYPTED on the
+//                            row, never plaintext (docs/106 §4.6) — boxed via
+//                            @sparx/channels/crypto with CHANNELS_TOKEN_KEY. (Per-
+//                            tenant access tokens rotate hourly; a DB-row cipher
+//                            box rotates with a plain UPDATE, where a Secret-
+//                            Manager ref would churn a billed version per refresh.)
 //   ChannelProductMapping  — links a sparx variant ↔ its external listing; the
 //                            seam for catalog push + order-ingest SKU resolution.
 //
@@ -30,11 +34,12 @@ model ChannelConnection {
   externalId String? @map("external_id") @db.VarChar(255)
   shopName   String? @map("shop_name") @db.VarChar(255)
 
-  // Secret Manager REFERENCES (projects/…/secrets/…) resolved through the
-  // integration-framework SecretReader — raw tokens are NEVER stored on the row
-  // (docs/106 §4.6). Null for feed channels that authenticate per-call.
-  accessTokenRef  String?   @map("access_token_ref") @db.VarChar(512)
-  refreshTokenRef String?   @map("refresh_token_ref") @db.VarChar(512)
+  // OAuth tokens, AES-256-GCM ciphertext (`iv.tag.cipher` base64) — NEVER
+  // plaintext on the row (docs/106 §4.6). Encrypted/decrypted via
+  // @sparx/channels/crypto. Text, not VarChar: a boxed refresh token can exceed
+  // the old 512 ref budget. Null until the OAuth handshake completes.
+  accessTokenEnc  String?   @map("access_token_enc") @db.Text
+  refreshTokenEnc String?   @map("refresh_token_enc") @db.Text
   tokenExpiresAt  DateTime? @map("token_expires_at") @db.Timestamptz
 
   // Granted OAuth scopes — surfaces a re-auth prompt when the required set grows.

@@ -190,10 +190,12 @@ export function CollectionMetaForm(props: Props) {
                   direction="row"
                   align="center"
                   gap={1}
-                  className="text-[var(--color-text-success)]"
+                  className="text-[var(--color-success-text)]"
                 >
                   <Check className="h-4 w-4" />
-                  <Text size="sm">Saved</Text>
+                  <Text size="sm" variant="success">
+                    Saved
+                  </Text>
                 </Stack>
               )}
               <Button type="submit" color="module" disabled={pending || !dirty} loading={pending}>

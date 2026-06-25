@@ -12,6 +12,14 @@
     "./catalog": {
       "types": "./src/catalog.ts",
       "default": "./src/catalog.ts"
+    },
+    "./crypto": {
+      "types": "./src/crypto.ts",
+      "default": "./src/crypto.ts"
+    },
+    "./adapters": {
+      "types": "./src/adapters/index.ts",
+      "default": "./src/adapters/index.ts"
     }
   },
   "scripts": {

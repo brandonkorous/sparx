@@ -27,7 +27,11 @@ import {
   parseDetailToken,
 } from '../_shell/detail-registry';
 import { UnsavedGuardProvider, useLeaveGuard } from './unsaved-guard';
-import { DetailChromeProvider, DetailHeaderSlotTarget } from './detail-header-slot';
+import {
+  DetailChromeProvider,
+  DetailFooterSlotTarget,
+  DetailHeaderSlotTarget,
+} from './detail-header-slot';
 
 // A target whose content fills the body edge-to-edge (it owns its own padding +
 // scroll + pinned toolbar), rather than the default padded single-scroll column.
@@ -105,10 +109,21 @@ export function InlineDetailContent({ target, children }: InlineDetailProps) {
 
 function InlineDetailBody({ target, children }: InlineDetailProps) {
   const fullBleed = isFullBleedTarget(target);
+  const moduleId = findEntityType(target.typeId)?.manifest.id;
   return (
     <Stack gap={0} className="h-full">
       <DetailHeader target={target} />
       <div className={fullBleed ? 'min-h-0 flex-1' : 'flex-1 overflow-y-auto p-6'}>{children}</div>
+      {/* Floored below the scroll body — the body's form teleports its Save here so
+          it pins to the drawer's bottom edge instead of scrolling away. Zero-height
+          until a form supplies one. Wrapped in the entity's ModuleProvider so a
+          teleported `color="module"` action reads the module hue: the portal's DOM
+          lands HERE (outside the body's own provider), and CSS vars cascade by DOM,
+          so without this `--module-active` falls back to the :root indigo and the
+          Save mismatches the header Publish + the full-page surface. */}
+      <ModuleProvider module={moduleId ?? 'platform'} className="shrink-0">
+        <DetailFooterSlotTarget />
+      </ModuleProvider>
     </Stack>
   );
 }
@@ -138,6 +153,7 @@ export function ModalDetailContent({ target, onClose, children }: ModalDetailPro
 
 function ModalDetailBody({ target, onClose, children }: ModalDetailProps) {
   const fullBleed = isFullBleedTarget(target);
+  const moduleId = findEntityType(target.typeId)?.manifest.id;
   const runGuard = useLeaveGuard();
   // Width by purpose: a tabbed record detail wants the full canvas; a single-form
   // edit detail (full-bleed) or a create wizard with a live summary column wants
@@ -185,6 +201,15 @@ function ModalDetailBody({ target, onClose, children }: ModalDetailProps) {
           <div className={fullBleed ? 'min-h-0 flex-1' : 'flex-1 overflow-y-auto p-6'}>
             {children}
           </div>
+          {/* Floored below the scroll body so a teleported Save pins to the modal's
+              bottom edge (a sticky bar inside the scroll body can't). Zero-height
+              until a form supplies one. Wrapped in the entity's ModuleProvider so a
+              teleported `color="module"` action reads the module hue — the portal's
+              DOM lands here, outside the body's provider, so without it the action
+              falls back to the :root indigo (mismatching the header + full page). */}
+          <ModuleProvider module={moduleId ?? 'platform'} className="shrink-0">
+            <DetailFooterSlotTarget />
+          </ModuleProvider>
         </Stack>
       </ModalContent>
     </Modal>

@@ -29,7 +29,7 @@ export function AvailableChannelCard({ channel }: { channel: ChannelCatalogItem 
         setError(res.error.message);
         return;
       }
-      if (res.data.authUrl) window.location.href = res.data.authUrl;
+      window.location.href = res.data.url;
     });
   }
 

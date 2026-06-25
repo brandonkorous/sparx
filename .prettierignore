@@ -24,9 +24,10 @@ packages/db/prisma/migrations/**
 
 # Impeccable local hook consent + cache (regenerated on hook run; git-ignored).
 # The design spec (apps/*/.impeccable/design.json) IS tracked and stays formatted —
-# only the *.local.json / *.cache.json scratch is skipped.
+# only the *.local.json / *.cache.json scratch + the live/ runtime dir are skipped.
 **/.impeccable/*.local.json
 **/.impeccable/*.cache.json
+**/.impeccable/live/**
 
 # Agent git worktrees — ephemeral isolated checkouts, formatted on their own branch
 .claude/worktrees/**

@@ -9,16 +9,18 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   Heading,
   Stack,
   Text,
+  useConfirm,
 } from '@sparx/ui';
 
 import { SeoMetaFields } from '@/components/seo/seo-meta-fields';
 
 import { updateProductAction } from '../../../product-actions';
+import { DetailFooterSlot } from '../../../../_components/detail-header-slot';
+import { useRegisterLeaveGuard } from '../../../../_components/unsaved-guard';
 
 interface Props {
   productId: string;
@@ -55,6 +57,21 @@ export function ProductSeoForm({
 
   const dirty = seoTitleValue !== initialTitle || seoDescriptionValue !== initialDescription;
 
+  // Unsaved-changes guard — same shared channel the overlay chrome's Close /
+  // Switch / backdrop-Esc consult before leaving, so SEO edits aren't silently
+  // dropped on an accidental close.
+  const confirm = useConfirm();
+  const guardLeave = React.useCallback(async (): Promise<boolean> => {
+    if (!dirty) return true;
+    return confirm({
+      title: 'Discard unsaved changes?',
+      description: 'Your SEO edits haven’t been saved. Leaving now will discard them.',
+      confirmLabel: 'Discard changes',
+      tone: 'danger',
+    });
+  }, [dirty, confirm]);
+  useRegisterLeaveGuard(guardLeave);
+
   // What the storefront/search actually renders: SEO field if set, else inherit.
   const previewTitle = seoTitleValue.trim() || title;
   const previewDescription =
@@ -83,10 +100,12 @@ export function ProductSeoForm({
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate>
+    <form id="product-seo-form" onSubmit={onSubmit} noValidate>
       <Card>
         <CardHeader>
-          <Heading level={3}>Search engine listing</Heading>
+          <Heading level={3} as="h2">
+            Search engine listing
+          </Heading>
           <CardDescription>What this product looks like in Google / Bing results.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -115,31 +134,41 @@ export function ProductSeoForm({
               onSeoDescriptionChange={setSeoDescription}
               className="border-t border-[var(--color-border-default)] pt-4"
             />
-
-            {error && (
-              <Text size="sm" variant="danger" role="alert" aria-live="polite">
-                {error}
-              </Text>
-            )}
           </Stack>
         </CardContent>
-        <CardFooter>
+      </Card>
+
+      <DetailFooterSlot>
+        <div className="flex flex-wrap items-center justify-end gap-3 border-t border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-6 py-3">
+          {error && (
+            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mr-auto">
+              {error}
+            </Text>
+          )}
           {savedAt !== null && !dirty && (
             <Stack
               direction="row"
               align="center"
               gap={1}
-              className="text-[var(--color-text-success)]"
+              className="text-[var(--color-success-text)]"
             >
               <Check className="h-4 w-4" />
-              <Text size="sm">Saved</Text>
+              <Text size="sm" variant="success">
+                Saved
+              </Text>
             </Stack>
           )}
-          <Button type="submit" color="module" disabled={pending || !dirty} loading={pending}>
+          <Button
+            type="submit"
+            form="product-seo-form"
+            color="module"
+            disabled={pending || !dirty}
+            loading={pending}
+          >
             Save changes
           </Button>
-        </CardFooter>
-      </Card>
+        </div>
+      </DetailFooterSlot>
     </form>
   );
 }

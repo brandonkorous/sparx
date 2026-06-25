@@ -19,36 +19,36 @@
 
 // ── Resources: anything whose time is consumed by a booking ─────────────────
 model SchedulingResource {
-  id             String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId       String  @map("tenant_id") @db.Uuid
-  kind           String  @db.VarChar(20) // staff | asset | table | space | equipment
-  userId         String? @map("user_id") @db.Uuid // staff → team member (plain ref)
-  locationId     String? @map("location_id") @db.Uuid
-  name           String  @db.VarChar(255)
-  description    String? @db.Text
-  imageUrl       String? @map("image_url") @db.Text // portfolio / photo
-  color          String? @db.VarChar(7)
-  timezone       String  @default("UTC") @db.VarChar(64)
-  exclusive      Boolean @default(true) // false = pooled / overbookable (§7.4)
-  capacity       Int     @default(1) // pooled units, or seats
-  capacityMin    Int?    @map("capacity_min") // party-size min (tables)
-  capacityMax    Int?    @map("capacity_max") // party-size max (tables)
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String   @map("tenant_id") @db.Uuid
+  kind           String   @db.VarChar(20) // staff | asset | table | space | equipment
+  userId         String?  @map("user_id") @db.Uuid // staff → team member (plain ref)
+  locationId     String?  @map("location_id") @db.Uuid
+  name           String   @db.VarChar(255)
+  description    String?  @db.Text
+  imageUrl       String?  @map("image_url") @db.Text // portfolio / photo
+  color          String?  @db.VarChar(7)
+  timezone       String   @default("UTC") @db.VarChar(64)
+  exclusive      Boolean  @default(true) // false = pooled / overbookable (§7.4)
+  capacity       Int      @default(1) // pooled units, or seats
+  capacityMin    Int?     @map("capacity_min") // party-size min (tables)
+  capacityMax    Int?     @map("capacity_max") // party-size max (tables)
   skillTags      String[] @map("skill_tags") // skill-based routing
-  bookableOnline Boolean @default(true) @map("bookable_online")
-  isActive       Boolean @default(true) @map("is_active")
-  settings       Json    @default("{}")
+  bookableOnline Boolean  @default(true) @map("bookable_online")
+  isActive       Boolean  @default(true) @map("is_active")
+  settings       Json     @default("{}")
 
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz
 
-  tenant              Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  location            BusinessLocation?       @relation(fields: [locationId], references: [id], onDelete: SetNull)
-  availabilityWindows AvailabilityWindow[]
+  tenant                 Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  location               BusinessLocation?       @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  availabilityWindows    AvailabilityWindow[]
   availabilityExceptions AvailabilityException[]
-  bookingResources    BookingResource[]
-  calendarConnections CalendarConnection[]
-  externalBusyBlocks  ExternalBusyBlock[]
+  bookingResources       BookingResource[]
+  calendarConnections    CalendarConnection[]
+  externalBusyBlocks     ExternalBusyBlock[]
 
   @@index([tenantId, kind, isActive])
   @@index([tenantId, locationId])
@@ -115,11 +115,11 @@ model Booking {
   // requested | confirmed | in_progress | completed | cancelled | no_show | waitlisted
   status      String  @default("requested") @db.VarChar(20)
 
-  startAt  DateTime @map("start_at") @db.Timestamptz
-  endAt    DateTime @map("end_at") @db.Timestamptz
-  timezone String   @default("UTC") @db.VarChar(64)
-  capacity Int      @default(1) // class session capacity
-  partySize Int?    @map("party_size") // reservations
+  startAt   DateTime @map("start_at") @db.Timestamptz
+  endAt     DateTime @map("end_at") @db.Timestamptz
+  timezone  String   @default("UTC") @db.VarChar(64)
+  capacity  Int      @default(1) // class session capacity
+  partySize Int?     @map("party_size") // reservations
 
   // who — appointment: customerId/b2bAccountId on the row; class: see BookingAttendee
   customerId   String? @map("customer_id") @db.Uuid
@@ -376,15 +376,15 @@ model IntakeSubmission {
 
 // ── Calendar connections — platform OAuth, BYO, or iCal feed (docs/79 §8) ────
 model CalendarConnection {
-  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId         String    @map("tenant_id") @db.Uuid
-  resourceId       String    @map("resource_id") @db.Uuid
-  provider         String    @db.VarChar(20) // google | microsoft | apple_caldav | caldav | ical
-  connectionKind   String    @default("oauth") @map("connection_kind") @db.VarChar(20) // oauth | caldav | ical_feed
+  id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId             String    @map("tenant_id") @db.Uuid
+  resourceId           String    @map("resource_id") @db.Uuid
+  provider             String    @db.VarChar(20) // google | microsoft | apple_caldav | caldav | ical
+  connectionKind       String    @default("oauth") @map("connection_kind") @db.VarChar(20) // oauth | caldav | ical_feed
   // tenant_byo = tenant's own OAuth client / app-password; platform = verified WizeWorks app (§8.5)
-  credentialSource String    @default("tenant_byo") @map("credential_source") @db.VarChar(20)
-  direction        String    @default("two_way") @db.VarChar(10) // in | out | two_way
-  fidelity         String    @default("realtime") @db.VarChar(20) // realtime | stale_feed
+  credentialSource     String    @default("tenant_byo") @map("credential_source") @db.VarChar(20)
+  direction            String    @default("two_way") @db.VarChar(10) // in | out | two_way
+  fidelity             String    @default("realtime") @db.VarChar(20) // realtime | stale_feed
   // Credentials are encrypted at rest (AES-256-GCM; api-rest lib/scheduling-calendar
   // crypto, key SCHEDULING_CALENDAR_TOKEN_KEY) — opaque ciphertext bundles, never
   // plaintext, mirroring the Search Console OAuth-token pattern (77-search-console).
@@ -403,9 +403,9 @@ model CalendarConnection {
   syncToken            String?   @map("sync_token") @db.Text // Google syncToken / CalDAV ctag / iCal ETag
   channelId            String?   @map("channel_id") @db.VarChar(255) // push channel (oauth only)
   channelExpiresAt     DateTime? @map("channel_expires_at") @db.Timestamptz
-  status           String    @default("active") @db.VarChar(20) // active|expired|error
-  lastSyncedAt     DateTime? @map("last_synced_at") @db.Timestamptz
-  lastError        String?   @map("last_error") @db.Text
+  status               String    @default("active") @db.VarChar(20) // active|expired|error
+  lastSyncedAt         DateTime? @map("last_synced_at") @db.Timestamptz
+  lastError            String?   @map("last_error") @db.Text
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz

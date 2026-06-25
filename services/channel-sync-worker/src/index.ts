@@ -5,6 +5,7 @@
 
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import pino from 'pino';
+import { registerBuiltinChannels } from '@sparx/channels/adapters';
 import { env } from './env.js';
 import { handle, parseEvent } from './handler.js';
 
@@ -16,6 +17,11 @@ const logger = pino({
     },
   },
 });
+
+// Register the built-in channel adapters so the dispatch handlers can resolve them
+// (idempotent). Adapters whose platform OAuth creds are unset still register; the
+// dispatch simply finds no connected channel using them.
+registerBuiltinChannels();
 
 interface PubSubPushEnvelope {
   message: {

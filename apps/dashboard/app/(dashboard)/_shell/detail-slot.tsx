@@ -1,6 +1,6 @@
 import 'server-only';
 import * as React from 'react';
-import { ModuleProvider, type SparxModule } from '@sparx/ui';
+import { ModuleProvider, Skeleton, type SparxModule } from '@sparx/ui';
 import { requireSession } from '@sparx/auth';
 import { api } from '@/lib/api-rest-client';
 import {
@@ -426,10 +426,46 @@ export default async function DetailSlot({
   const target = parseDetailToken(token);
   if (!target) return null;
 
+  // The detail body is a server component that fetches everything it needs before
+  // it can render, so the overlay would otherwise open to an empty body for the
+  // whole fetch. A skeleton (not `null`) gives the chrome immediate structure to
+  // paint into. Full-bleed targets own their padding; padded ones sit inside the
+  // chrome's p-6 body, so the skeleton matches.
+  const fullBleed =
+    target.entityId === CREATE_SENTINEL
+      ? isFullBleedCreate(target.typeId)
+      : isFullBleedDetail(target.typeId);
+
   return (
-    <React.Suspense key={`${target.typeId}:${target.entityId}`} fallback={null}>
+    <React.Suspense
+      key={`${target.typeId}:${target.entityId}`}
+      fallback={<DetailContentSkeleton fullBleed={fullBleed} />}
+    >
       {renderDetailContent(target.typeId, target.entityId)}
     </React.Suspense>
+  );
+}
+
+// Loading placeholder for a streaming detail body. Neutral and surface-agnostic:
+// a faux tab strip over a few field blocks, sized to the chassis. Shown only
+// until the body's server fetch resolves.
+function DetailContentSkeleton({ fullBleed }: { fullBleed: boolean }) {
+  return (
+    <div className={fullBleed ? 'space-y-6 p-6' : 'space-y-6'} aria-hidden>
+      <div className="flex flex-wrap gap-2">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Skeleton key={i} className="h-7 w-20" />
+        ))}
+      </div>
+      <div className="space-y-4 rounded-lg border border-[var(--color-border-default)] p-4">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-9 w-full" />
+        <Skeleton className="h-4 w-28" />
+        <Skeleton className="h-9 w-full" />
+        <Skeleton className="h-4 w-20" />
+        <Skeleton className="h-24 w-full" />
+      </div>
+    </div>
   );
 }
 

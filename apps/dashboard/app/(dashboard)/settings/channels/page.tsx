@@ -3,8 +3,9 @@
 // the connections + the available channel catalog; the connect/disconnect client
 // bits live in ./_components. Channels are part of Commerce (the API gates on it).
 
-import { Store } from 'lucide-react';
+import { CheckCircle2, Store } from 'lucide-react';
 import {
+  Alert,
   Card,
   CardContent,
   CardHeader,
@@ -22,11 +23,17 @@ import { ConnectedChannelRow } from './_components/connected-channel-row';
 
 export const dynamic = 'force-dynamic';
 
-export default async function ChannelsPage() {
+export default async function ChannelsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ connected?: string; error?: string }>;
+}) {
+  const { connected, error } = await searchParams;
   const { connections, catalog } = await getChannels();
   const descriptorBySlug = new Map(catalog.map((c) => [c.slug, c]));
   const connectedSlugs = new Set(connections.map((c) => c.channel));
   const available = catalog.filter((c) => !connectedSlugs.has(c.slug));
+  const connectedName = connected ? (descriptorBySlug.get(connected)?.name ?? connected) : null;
 
   return (
     // Channels surface Commerce functionality — tint the page with the Commerce
@@ -39,6 +46,22 @@ export default async function ChannelsPage() {
             title="Sales channels"
             description="Connect the marketplaces and social platforms you already sell on — TikTok Shop, Etsy, Amazon, Meta, Google, and more. Your catalog, orders, and stock stay in sync from one place."
           />
+
+          {connectedName && (
+            <Alert
+              color="success"
+              variant="soft"
+              icon={<CheckCircle2 />}
+              title={`${connectedName} connected`}
+            >
+              Your catalog will start syncing to {connectedName} shortly.
+            </Alert>
+          )}
+          {error && (
+            <Alert color="danger" variant="soft" title="Couldn’t connect that channel">
+              {error}
+            </Alert>
+          )}
 
           {connections.length > 0 && (
             <Card>

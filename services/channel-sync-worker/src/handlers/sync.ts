@@ -1,23 +1,25 @@
 // Channel sync handlers (docs/106 §4.2). Each handler resolves WHAT changed and
 // WHICH connected channels care (querying channel_connections / channel_product_
-// mappings + the order source), then dispatches to the registered adapter.
-//
-// The per-channel API CALL (build the channel payload, resolve the access token
-// via Secret Manager, invoke the adapter, persist the mapping / record the error)
-// lands with the FIRST adapter in P1 — it is inherently per-channel and only
-// testable end-to-end against a real channel API (docs/106 §6). The resolution +
-// dispatch structure here does not change. Until an adapter is registered,
-// `getChannel` returns undefined and the handlers ack with nothing to push.
+// mappings + the order source), resolves the channel's access token, and dispatches
+// to the registered adapter — then persists the resulting external-id mapping or
+// records the failure. The adapters are pure I/O; every DB write lives here.
 
 import type { Logger } from 'pino';
 import { withTenant } from '@sparx/db';
-import { getChannel, type ChannelAdapter, type ChannelSlug } from '@sparx/channels';
+import {
+  getChannel,
+  type ChannelAdapter,
+  type ChannelProductRef,
+  type ChannelSlug,
+} from '@sparx/channels';
+import { buildChannelProduct, sellableForVariant } from '../lib/projection.js';
+import { resolveChannelAuth, type ConnectionTokenRow } from '../lib/auth.js';
 
-// A tenant connection paired with its registered adapter.
-interface ChannelTarget {
-  connectionId: string;
+const msg = (err: unknown): string => (err instanceof Error ? err.message : String(err));
+
+// A tenant connection (with its token material) paired with its registered adapter.
+interface ChannelTarget extends ConnectionTokenRow {
   channel: string;
-  externalId: string | null;
   adapter: ChannelAdapter;
 }
 
@@ -26,22 +28,75 @@ async function resolveTargets(tenantId: string): Promise<ChannelTarget[]> {
   const connections = await withTenant({ tenantId }, (tx) =>
     tx.channelConnection.findMany({
       where: { tenantId, status: 'active' },
-      select: { id: true, channel: true, externalId: true },
+      select: {
+        id: true,
+        channel: true,
+        externalId: true,
+        accessTokenEnc: true,
+        refreshTokenEnc: true,
+        tokenExpiresAt: true,
+      },
     })
   );
   const targets: ChannelTarget[] = [];
   for (const conn of connections) {
     const adapter = getChannel(conn.channel as ChannelSlug);
-    if (adapter) {
-      targets.push({
-        connectionId: conn.id,
-        channel: conn.channel,
-        externalId: conn.externalId,
-        adapter,
-      });
-    }
+    if (adapter) targets.push({ ...conn, adapter });
   }
   return targets;
+}
+
+/** Upsert one mapping row per pushed variant with the channel's returned ids. */
+async function persistMappings(
+  tenantId: string,
+  connectionId: string,
+  channel: string,
+  productId: string,
+  ref: ChannelProductRef
+): Promise<void> {
+  const now = new Date();
+  await withTenant({ tenantId }, async (tx) => {
+    for (const v of ref.variants) {
+      const external = {
+        externalProductId: ref.externalProductId,
+        externalVariantId: v.externalVariantId ?? null,
+        externalSku: v.externalSku ?? null,
+        lastSyncedAt: now,
+        syncError: null,
+      };
+      await tx.channelProductMapping.upsert({
+        where: { connectionId_variantId: { connectionId, variantId: v.variantId } },
+        create: { tenantId, connectionId, channel, productId, variantId: v.variantId, ...external },
+        update: external,
+      });
+    }
+  });
+}
+
+async function markConnectionSynced(tenantId: string, connectionId: string): Promise<void> {
+  await withTenant({ tenantId }, (tx) =>
+    tx.channelConnection.update({ where: { id: connectionId }, data: { lastSyncedAt: new Date() } })
+  );
+}
+
+/** Append a failure to the connection's rolling error trail (capped at 10). */
+async function recordConnectionError(
+  tenantId: string,
+  connectionId: string,
+  message: string
+): Promise<void> {
+  await withTenant({ tenantId }, async (tx) => {
+    const conn = await tx.channelConnection.findUnique({
+      where: { id: connectionId },
+      select: { syncErrors: true },
+    });
+    const prev = Array.isArray(conn?.syncErrors) ? conn.syncErrors : [];
+    const next = [{ at: new Date().toISOString(), message }, ...prev].slice(0, 10);
+    await tx.channelConnection.update({
+      where: { id: connectionId },
+      data: { syncErrors: next },
+    });
+  });
 }
 
 /** product.created / product.updated → push the listing to connected channels. */
@@ -52,19 +107,31 @@ export async function handleCatalogSync(
 ): Promise<void> {
   const targets = await resolveTargets(tenantId);
   if (targets.length === 0) {
-    log.debug(
-      { productId, tenantId },
-      'channel-sync: no connected channel with an adapter — skipping'
-    );
+    log.debug({ productId }, 'channel-sync: no connected channel with an adapter — skipping');
     return;
   }
-  // P1: for each target → build ChannelProductInput (product + variants + sellable
-  // qty net of the safety buffer), resolve auth, adapter.pushProduct, then upsert
-  // ChannelProductMapping with the returned external ids.
-  log.warn(
-    { productId, channels: targets.map((t) => t.channel) },
-    'channel-sync: catalog push not yet wired for registered adapter (P1)'
-  );
+  const product = await buildChannelProduct(tenantId, productId, log);
+  if (!product) return; // projection logged the reason (deleted / no url / no variants)
+
+  for (const t of targets) {
+    const auth = await resolveChannelAuth(tenantId, t, t.adapter, log);
+    if (!auth) continue;
+    try {
+      const ref = await t.adapter.pushProduct(auth, product);
+      await persistMappings(tenantId, t.id, t.channel, productId, ref);
+      await markConnectionSynced(tenantId, t.id);
+      log.info(
+        { productId, channel: t.channel, variants: ref.variants.length },
+        'channel-sync: pushed product'
+      );
+    } catch (err) {
+      await recordConnectionError(tenantId, t.id, msg(err));
+      log.error(
+        { productId, channel: t.channel, err: msg(err) },
+        'channel-sync: product push failed'
+      );
+    }
+  }
 }
 
 /** product.deleted → deactivate the product's listings on each channel. */
@@ -73,25 +140,42 @@ export async function handleCatalogRemoval(
   tenantId: string,
   log: Logger
 ): Promise<void> {
+  const targets = await resolveTargets(tenantId);
+  if (targets.length === 0) return;
+  const byChannel = new Map(targets.map((t) => [t.channel, t]));
+
   const mappings = await withTenant({ tenantId }, (tx) =>
     tx.channelProductMapping.findMany({
       where: { tenantId, productId },
-      select: { channel: true, externalProductId: true, connection: { select: { status: true } } },
+      select: { id: true, channel: true, externalVariantId: true, externalProductId: true },
     })
   );
-  const listed = mappings.filter((m) => m.externalProductId && m.connection.status === 'active');
-  if (listed.length === 0) {
-    log.debug({ productId }, 'channel-sync: product not listed on any active channel — skipping');
+  if (mappings.length === 0) {
+    log.debug({ productId }, 'channel-sync: product not listed on any channel — skipping');
     return;
   }
-  for (const m of listed) {
-    const adapter = getChannel(m.channel as ChannelSlug);
-    if (!adapter) continue;
-    // P1: resolve auth → adapter.removeProduct(auth, externalProductId).
-    log.warn(
-      { productId, channel: m.channel },
-      'channel-sync: catalog removal not yet wired for registered adapter (P1)'
-    );
+
+  for (const m of mappings) {
+    const target = byChannel.get(m.channel);
+    // The per-variant external id is what the channel deletes by (the Google
+    // product id / Meta+Pinterest retailer_id); fall back to the product id.
+    const externalId = m.externalVariantId ?? m.externalProductId;
+    if (!target || !externalId) continue;
+    const auth = await resolveChannelAuth(tenantId, target, target.adapter, log);
+    if (!auth) continue;
+    try {
+      await target.adapter.removeProduct(auth, externalId);
+      await withTenant({ tenantId }, (tx) =>
+        tx.channelProductMapping.delete({ where: { id: m.id } })
+      );
+      log.info({ productId, channel: m.channel }, 'channel-sync: removed listing');
+    } catch (err) {
+      await recordConnectionError(tenantId, target.id, msg(err));
+      log.error(
+        { productId, channel: m.channel, err: msg(err) },
+        'channel-sync: listing removal failed'
+      );
+    }
   }
 }
 
@@ -101,35 +185,55 @@ export async function handleInventorySync(
   tenantId: string,
   log: Logger
 ): Promise<void> {
+  const targets = await resolveTargets(tenantId);
+  if (targets.length === 0) return;
+  const byChannel = new Map(targets.map((t) => [t.channel, t]));
+
   const mappings = await withTenant({ tenantId }, (tx) =>
     tx.channelProductMapping.findMany({
       where: { tenantId, variantId, syncEnabled: true },
-      select: {
-        channel: true,
-        externalSku: true,
-        externalVariantId: true,
-        connection: { select: { status: true } },
-      },
+      select: { channel: true, externalSku: true, externalVariantId: true },
     })
   );
-  const active = mappings.filter((m) => m.connection.status === 'active');
-  if (active.length === 0) {
-    log.debug({ variantId }, 'channel-sync: variant not listed on any active channel — skipping');
+  if (mappings.length === 0) {
+    log.debug({ variantId }, 'channel-sync: variant not listed on any channel — skipping');
     return;
   }
-  for (const m of active) {
-    const adapter = getChannel(m.channel as ChannelSlug);
-    if (!adapter?.pushInventory) continue;
-    // P1: resolve auth + sellable qty (inventory ledger, net of the safety buffer)
-    // → adapter.pushInventory(auth, { externalSku, availableQuantity }).
-    log.warn(
-      { variantId, channel: m.channel },
-      'channel-sync: inventory push not yet wired for registered adapter (P1)'
-    );
+
+  const qty = await sellableForVariant(tenantId, variantId);
+  const availableQuantity = qty ?? 1; // untracked → in stock
+
+  for (const m of mappings) {
+    const target = byChannel.get(m.channel);
+    if (!target?.adapter.pushInventory || !m.externalSku) continue;
+    const auth = await resolveChannelAuth(tenantId, target, target.adapter, log);
+    if (!auth) continue;
+    try {
+      await target.adapter.pushInventory(auth, {
+        externalSku: m.externalSku,
+        externalVariantId: m.externalVariantId ?? undefined,
+        availableQuantity,
+      });
+      log.info(
+        { variantId, channel: m.channel, availableQuantity },
+        'channel-sync: pushed inventory'
+      );
+    } catch (err) {
+      await recordConnectionError(tenantId, target.id, msg(err));
+      log.error(
+        { variantId, channel: m.channel, err: msg(err) },
+        'channel-sync: inventory push failed'
+      );
+    }
   }
 }
 
-/** order.fulfilled → push tracking back to the channel a channel-order came from. */
+/** order.fulfilled → push tracking back to the channel a channel-order came from.
+ *
+ * Feed channels (this phase's scope — Google/Meta/Pinterest) carry no orders, so
+ * their adapters omit `pushFulfillment` and this is a correct no-op for them. The
+ * tracking resolution (load the order's shipment, build ChannelFulfillment) lands
+ * with the first ORDER channel (P2, TikTok), where there is a shipment to push. */
 export async function handleFulfillmentSync(
   orderId: string,
   tenantId: string,
@@ -150,14 +254,14 @@ export async function handleFulfillmentSync(
   if (!adapter?.pushFulfillment) {
     log.debug(
       { orderId, channel: order.source },
-      'channel-sync: no fulfillment-push adapter for channel — skipping'
+      'channel-sync: channel has no fulfillment push (feed channel) — skipping'
     );
     return;
   }
-  // P1: resolve auth + the order's tracking → adapter.pushFulfillment(auth, {
-  // externalOrderId: order.externalId, trackingNumber, carrier }).
+  // P2 (order channels): resolve the connection auth + the order's shipment →
+  // adapter.pushFulfillment(auth, { externalOrderId, trackingNumber, carrier }).
   log.warn(
     { orderId, channel: order.source },
-    'channel-sync: fulfillment push not yet wired for registered adapter (P1)'
+    'channel-sync: fulfillment push lands with the first order channel (P2)'
   );
 }

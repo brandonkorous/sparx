@@ -261,6 +261,16 @@ module "secrets" {
     # The PUBLIC half is non-secret: set it as var.vapid_public_key (worker env)
     # and VAPID_PUBLIC_KEY in k8s/sparx-prod/app-env-configmap.yaml (dashboard).
     "vapid-private-key",
+    # Channel token-encryption key (docs/106 §4.6) — AES-256-GCM key encrypting the
+    # per-tenant channel OAuth grants stored on channel_connections. Bound by the
+    # channel-sync-worker (serverless.tf) AND api-rest (k8s). NOT gated on any
+    # partner approval — generate + add a version now:
+    #   gcloud secrets versions add channels-token-key --data-file=- \
+    #     <<< "$(openssl rand -base64 32)"
+    # The per-channel platform OAuth client SECRETS (google-oauth-client-secret,
+    # meta-app-secret, pinterest-app-secret) land here when each partner app is
+    # approved — they don't exist until then.
+    "channels-token-key",
   ]
 }
 

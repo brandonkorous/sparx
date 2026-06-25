@@ -117,6 +117,22 @@ resource "google_project_iam_member" "commerce_indexer_roles" {
   member  = "serviceAccount:${google_service_account.commerce_indexer.email}"
 }
 
+resource "google_service_account" "channel_sync_worker" {
+  account_id   = "sparx-channel-sync-worker"
+  display_name = "Sparx channel-sync-worker (Cloud Run)"
+  description  = "Runtime SA for the channel-sync-worker Cloud Run service. Reads the DB URL + the channel token-encryption key from Secret Manager; pushes catalog/inventory out to connected sales channels (docs/106)."
+}
+
+resource "google_project_iam_member" "channel_sync_worker_roles" {
+  for_each = toset([
+    "roles/cloudsql.client",
+    "roles/secretmanager.secretAccessor",
+  ])
+  project = var.project_id
+  role    = each.value
+  member  = "serviceAccount:${google_service_account.channel_sync_worker.email}"
+}
+
 resource "google_service_account" "legal_seed_worker" {
   account_id   = "sparx-legal-seed-worker"
   display_name = "Sparx legal-seed-worker (Cloud Run)"
@@ -517,6 +533,89 @@ module "commerce_indexer_cloudrun" {
   depends_on = [
     module.pubsub,
     google_project_iam_member.commerce_indexer_roles,
+    google_service_account_iam_member.pubsub_invoker_token_creator,
+  ]
+}
+
+# ─── channel-sync-worker ──────────────────────────────────────────────────
+#
+# Pushes catalog/inventory/fulfillment out to connected sales channels
+# (Google Shopping, Meta, Pinterest, … — docs/106 §4.2). Subscribes to the SAME
+# product/inventory/order lifecycle topics as commerce-indexer (distinct
+# subscription names), resolves which connected channels care, and dispatches to
+# the registered adapter. A pure no-op until a tenant connects a channel — so it
+# costs nothing (scale-to-zero) until channels go live.
+#
+# SECRET SEQUENCING: the per-channel platform OAuth client secrets
+# (google-oauth-client-secret, meta-app-secret, pinterest-app-secret) + the
+# storefront base (SPARX_SITE_BASE) are added to `secrets`/`env_vars` when each
+# partner app is APPROVED — the same gate that flips the channel `available`. You
+# cannot bind a secret value that does not exist yet, and no channel can be
+# connected (hence nothing to push) before then. `channels-token-key` is bound
+# now: it is a generated 32-byte key (not gated on any partner), provisioned via
+# `gcloud secrets versions add channels-token-key`.
+module "channel_sync_worker_cloudrun" {
+  source = "../../modules/cloud-run-worker"
+
+  name                  = "channel-sync-worker"
+  project_id            = var.project_id
+  region                = var.region
+  image                 = "${var.region}-docker.pkg.dev/${var.project_id}/sparx/channel-sync-worker:latest"
+  service_account_email = google_service_account.channel_sync_worker.email
+  vpc_connector_id      = google_vpc_access_connector.workers.id
+
+  # Light: one Prisma read + one channel API call per event, per connected channel.
+  min_instance_count    = 0
+  max_instance_count    = 10
+  container_concurrency = 8
+  cpu                   = "1"
+  memory                = "512Mi"
+  timeout_seconds       = 120
+
+  env_vars = {
+    NODE_ENV                = "production"
+    SERVICE_NAME            = "channel-sync-worker"
+    LOG_LEVEL               = "info"
+    PUBSUB_INVOKER_SA       = google_service_account.pubsub_invoker.email
+    GCP_PROJECT_ID          = var.project_id
+    GCS_MEDIA_PUBLIC_BUCKET = module.storage.media_public_bucket_name
+    # SPARX_SITE_BASE (storefront base for the absolute product URL feeds require,
+    # {slug} template — mirrors the email path) + the non-secret per-channel OAuth
+    # client IDs (GOOGLE_OAUTH_CLIENT_ID / META_APP_ID / PINTEREST_APP_ID) are added
+    # here when channels go live. Until SPARX_SITE_BASE is set the worker skips
+    # pushes (no absolute URL) rather than feed a broken link — a safe default.
+  }
+
+  secrets = [
+    {
+      name      = "DATABASE_URL"
+      secret_id = "database-url"
+    },
+    {
+      name      = "CHANNELS_TOKEN_KEY"
+      secret_id = "channels-token-key"
+    },
+  ]
+
+  # Primary subscription = product.created; the rest of the catalog/inventory/order
+  # lifecycle attaches as additional subscriptions (distinct names from
+  # commerce-indexer's, so both consume the same topics independently).
+  pubsub_topic                 = "product.created"
+  pubsub_subscription_name     = "product.created.channel-sync-worker-cloudrun"
+  pubsub_invoker_sa_email      = google_service_account.pubsub_invoker.email
+  pubsub_dead_letter_topic_id  = module.pubsub.dead_letter_topic == null ? null : "projects/${var.project_id}/topics/${module.pubsub.dead_letter_topic}"
+  pubsub_max_delivery_attempts = 5
+
+  additional_subscriptions = [
+    { topic = "product.updated", subscription_name = "product.updated.channel-sync-worker-cloudrun" },
+    { topic = "product.deleted", subscription_name = "product.deleted.channel-sync-worker-cloudrun" },
+    { topic = "inventory.adjusted", subscription_name = "inventory.adjusted.channel-sync-worker-cloudrun" },
+    { topic = "order.fulfilled", subscription_name = "order.fulfilled.channel-sync-worker-cloudrun" },
+  ]
+
+  depends_on = [
+    module.pubsub,
+    google_project_iam_member.channel_sync_worker_roles,
     google_service_account_iam_member.pubsub_invoker_token_creator,
   ]
 }

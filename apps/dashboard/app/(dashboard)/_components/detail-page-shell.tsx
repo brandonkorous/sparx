@@ -8,7 +8,11 @@ import { Button, Container, ModuleProvider, Stack } from '@sparx/ui';
 
 import { findEntityType } from '../_shell/detail-registry';
 import { DetailPresentationSwitch } from './detail-panel';
-import { DetailChromeProvider, DetailHeaderSlotTarget } from './detail-header-slot';
+import {
+  DetailChromeProvider,
+  DetailFooterSlotTarget,
+  DetailHeaderSlotTarget,
+} from './detail-header-slot';
 import { UnsavedGuardProvider } from './unsaved-guard';
 
 // Title-case the last path segment of a route for the back-link label
@@ -67,6 +71,10 @@ export function DetailPageShell({
           {children}
         </Stack>
       </Container>
+      {/* The body's form teleports its Save here. On the full page the document
+          scrolls, so the floored bar is sticky to the viewport bottom (parity with
+          the overlay's floored footer). Zero-height until a form supplies one. */}
+      <DetailFooterSlotTarget className="sticky bottom-0 z-10" />
     </Stack>
   );
 

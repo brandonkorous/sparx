@@ -260,10 +260,12 @@ export function CollectionMembershipEditor({
             direction="row"
             align="center"
             gap={1}
-            className="text-[var(--color-text-success)]"
+            className="text-[var(--color-success-text)]"
           >
             <Check className="h-4 w-4" />
-            <Text size="sm">Saved</Text>
+            <Text size="sm" variant="success">
+              Saved
+            </Text>
           </Stack>
         )}
         <Button type="button" color="module" onClick={save} disabled={pending} loading={pending}>

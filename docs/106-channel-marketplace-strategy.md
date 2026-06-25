@@ -1,8 +1,17 @@
 # sparx Platform — Channel & Marketplace Integration Strategy + Build Plan
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-25
+
+> **Implementation status (2026-06-25):** **P0 framework + P1 feed channels are BUILT.** The
+> `@sparx/channels` adapter contract + registry, the `channel-sync-worker` (catalog/inventory push
+> bodies), the OAuth connect/callback + AES-256-GCM token storage (§4.6), Terraform, and the
+> Settings → Channels dashboard are all in place, with concrete **Google Shopping / Meta / Pinterest**
+> feed adapters. Each feed channel is gated `coming_soon` at runtime until its platform OAuth app is
+> approved and its credentials are set in env — it then flips `available` with no code change. Live
+> end-to-end OAuth + push is unverifiable until those partner apps are approved; the code is complete and
+> typecheck/lint-green. **Next: file partner apps; P2 = first order channel (TikTok).**
 
 ---
 
@@ -205,9 +214,9 @@ carries `channel` and `source`. The deltas:
   net revenue reconciles). Extend the `channel`/`source` vocabularies with the channel slugs
   (`tiktok_shop`, `etsy`, `amazon`, `walmart`, `ebay`, `faire`, `meta`, `sparx_market`).
 - **`channel_connections`** (new, FORCE RLS) — `tenant_id`, `channel`, `status`
-  (`active|paused|error|disconnected`), `external_id`/`shop_id`, **token refs** (Secret Manager paths,
-  never raw tokens — §4.6), `token_expires_at`, `shop_name`, `last_synced_at`, `sync_errors` jsonb,
-  `metadata` jsonb.
+  (`active|paused|error|disconnected`), `external_id`/`shop_id`, **encrypted tokens**
+  (`access_token_enc` / `refresh_token_enc` — AES-256-GCM ciphertext, never plaintext — §4.6),
+  `token_expires_at`, `shop_name`, `last_synced_at`, `sync_errors` jsonb, `metadata` jsonb.
 - **`channel_product_mappings`** (new, FORCE RLS) — `tenant_id`, `channel`, `sparx_product_id`,
   `sparx_variant_id`, `external_product_id`, `external_variant_id`, `external_sku`, `sync_enabled`,
   `last_synced_at`, `sync_error`. The **per-variant external-SKU map lives here** (variant grain, N
@@ -224,12 +233,28 @@ that [docs/88 §8 P0](88-integrations-catalog.md) already flags as missing: a ch
 action is **"Add channel"** (OAuth connect), not the provider-adapter **"Connect"**. Adding `shape` to
 `MarketplaceIntegration` routes the install correctly. Build this in Phase 0.
 
-### 4.6 OAuth + secrets — reuse the framework
+### 4.6 OAuth + secrets
 
-Channel auth reuses `@sparx/integration-framework`'s OAuth helper + `SecretReader` (env in dev, Google
-Secret Manager in prod). A channel install is a `channel_connections` row + secrets in Secret Manager —
-the same posture as a provider/connector install. Per-channel app credentials
-(`<CHANNEL>_APP_KEY` / `_APP_SECRET` / `_WEBHOOK_SECRET`) are platform secrets.
+Two distinct secret tiers, stored differently:
+
+- **Platform app credentials** (sparx's own registered OAuth app per channel — `GOOGLE_OAUTH_CLIENT_ID`
+  /`_SECRET`, `META_APP_ID`/`_SECRET`, `PINTEREST_APP_ID`/`_SECRET`) are **platform env / Secret Manager**,
+  low-cardinality and rarely rotated. Google Shopping reuses the existing Search Console Google web client
+  (same client, Content API scope added). An adapter's `isConfigured()` reads these; a channel stays
+  `coming_soon` until its pair is set, lighting up with **no code change**.
+- **Per-tenant OAuth grants** (each tenant's access/refresh tokens) are **AES-256-GCM ciphertext on the
+  `channel_connections` row** (`access_token_enc` / `refresh_token_enc`), keyed by `CHANNELS_TOKEN_KEY`, via
+  `@sparx/channels/crypto` — **not** Secret Manager refs. These rotate constantly (Google access tokens
+  expire hourly); a row cipher box rotates with a plain `UPDATE`, whereas a Secret-Manager ref would churn a
+  billed, version-capped secret version per refresh per tenant. This mirrors the Search Console connector
+  (the proven in-repo pattern). The CORE "never raw tokens on a row" rule is satisfied — the row holds
+  ciphertext, and a DB leak alone yields no usable grant.
+
+The connect flow mirrors Search Console: `GET /v1/channels/:slug/connect-url` signs a short-lived HS256
+state (tenant + user + slug + redirect_uri), the dashboard redirects to the channel's consent screen, and
+the callback route posts code+state to `POST /v1/channels/callback`, which verifies the state, exchanges
+the code via the adapter, encrypts, and upserts the connection. The worker decrypts (and refreshes near
+expiry) before each push.
 
 ### 4.7 sparx.market as a first-party channel (C1)
 
@@ -322,7 +347,9 @@ highest-leverage zero-code action.
 
 - **RLS:** `channel_connections` + `channel_product_mappings` are tenant-scoped, ENABLE+FORCE,
   `tenant_isolation`; hand-edited SQL via the DB Migrate pipeline (mind the FORCE-RLS backfill footgun).
-- **Secrets:** tokens live in Secret Manager via `SecretReader`, never on the row (§4.6).
+- **Secrets:** per-tenant OAuth grants are AES-256-GCM ciphertext on the `channel_connections` row
+  (`@sparx/channels/crypto`, keyed `CHANNELS_TOKEN_KEY`), never plaintext; platform app credentials are
+  env / Secret Manager (§4.6).
 - **Idempotency:** order ingest + inventory commit are idempotency-keyed on the channel's external id, so
   redelivered webhooks apply once — reusing the ledger's `idempotencyKey` (§4.3).
 - **Inventory invariant:** decrement in the sparx ledger first, push out second; failed pushes DLQ-retry,

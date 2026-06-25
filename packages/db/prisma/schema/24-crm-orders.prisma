@@ -30,15 +30,15 @@ model Order {
   propertyId  String? @map("property_id") @db.Uuid
   orderNumber String  @map("order_number") @db.VarChar(63)
 
-  status        String  @default("placed") @db.VarChar(20) // placed | fulfilled | delivered | cancelled | refunded
-  paymentStatus String  @default("unpaid") @map("payment_status") @db.VarChar(20) // unpaid | partially_paid | paid | refunded
+  status          String  @default("placed") @db.VarChar(20) // placed | fulfilled | delivered | cancelled | refunded
+  paymentStatus   String  @default("unpaid") @map("payment_status") @db.VarChar(20) // unpaid | partially_paid | paid | refunded
   // High-level origin bucket. storefront | b2b_portal | admin | import | mcp |
   // marketplace (an external sales channel or sparx.market — docs/106 §4.4).
-  channel       String? @db.VarChar(63)
+  channel         String? @db.VarChar(63)
   // Specific origin within the channel. For channel='marketplace', the channel
   // slug: tiktok_shop | etsy | amazon | walmart | ebay | faire | meta |
   // sparx_market (docs/106 §4.4).
-  source        String? @db.VarChar(63)
+  source          String? @db.VarChar(63)
   // Channel/marketplace order linkage (docs/106 §4.4). externalId = the
   // marketplace's own order id (the idempotency key on re-ingest); externalStatus
   // = its native status (mapped to `status` on ingest); channelFeeCents = the

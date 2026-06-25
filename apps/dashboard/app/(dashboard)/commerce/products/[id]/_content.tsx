@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { ExternalLink } from 'lucide-react';
 
-import { Badge, Stack, Tabs, TabsContent, TabsList, TabsTrigger } from '@sparx/ui';
+import { Badge, Heading, Stack, Tabs, TabsContent, TabsList, TabsTrigger } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { listProperties, type Property } from '@/lib/sites';
@@ -280,6 +280,14 @@ export async function ProductDetailContent({ id }: Props) {
 
   return (
     <>
+      {/* The surface's accessible name. Visually hidden so identity stays "shown
+          once" in the editable Title field (no visible read-only restatement),
+          but screen readers + the document outline still get a real h1 to anchor
+          the h2 section headings beneath it — the frame chrome label is a span. */}
+      <Heading level={1} as="h1" className="sr-only">
+        {product.title}
+      </Heading>
+
       {/* Identity (name + handle) lives ONLY in the editable Title/Handle fields
           on the Overview tab — no read-only header restating them. Status + the
           lifecycle actions teleport into the active frame's header bar. An active

@@ -41,6 +41,52 @@ export async function listChannelConnections(
   }));
 }
 
+export interface ChannelConnectionUpsert {
+  channel: string;
+  externalId: string | null;
+  shopName: string | null;
+  /** AES-256-GCM ciphertext (via @sparx/channels/crypto) — never plaintext. */
+  accessTokenEnc: string;
+  refreshTokenEnc: string | null;
+  tokenExpiresAt: Date | null;
+  scopes: string[];
+}
+
+/** Create or refresh the tenant's connection for one channel after a successful
+ *  OAuth exchange. One connection per (tenant, channel); re-connecting overwrites
+ *  the stored grant and clears the prior sync-error trail. */
+export async function upsertChannelConnection(
+  ctx: ChannelContext,
+  input: ChannelConnectionUpsert
+): Promise<void> {
+  await withTenant({ tenantId: ctx.tenantId }, (tx) =>
+    tx.channelConnection.upsert({
+      where: { tenantId_channel: { tenantId: ctx.tenantId, channel: input.channel } },
+      create: {
+        tenantId: ctx.tenantId,
+        channel: input.channel,
+        status: 'active',
+        externalId: input.externalId,
+        shopName: input.shopName,
+        accessTokenEnc: input.accessTokenEnc,
+        refreshTokenEnc: input.refreshTokenEnc,
+        tokenExpiresAt: input.tokenExpiresAt,
+        scopes: input.scopes,
+      },
+      update: {
+        status: 'active',
+        externalId: input.externalId,
+        shopName: input.shopName,
+        accessTokenEnc: input.accessTokenEnc,
+        refreshTokenEnc: input.refreshTokenEnc,
+        tokenExpiresAt: input.tokenExpiresAt,
+        scopes: input.scopes,
+        syncErrors: [],
+      },
+    })
+  );
+}
+
 /** Remove a channel connection; its product mappings cascade (DB FK). */
 export async function disconnectChannel(ctx: ChannelContext, channel: string): Promise<void> {
   await withTenant({ tenantId: ctx.tenantId }, (tx) =>

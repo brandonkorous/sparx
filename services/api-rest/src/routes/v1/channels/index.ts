@@ -1,14 +1,21 @@
 // Channels API (docs/106). The dashboard's Settings → Channels surface: list the
-// tenant's connections + the available channel catalog, begin a connect flow, and
-// disconnect. Gated on the Commerce module (channels carry no separate fee).
+// tenant's connections + the available channel catalog, begin an OAuth connect,
+// complete the callback, and disconnect. Gated on the Commerce module (channels
+// carry no separate fee).
 //
-//   GET    /v1/channels                  → { connections, catalog }
-//   POST   /v1/channels/:slug/connect    → begins OAuth connect (409 until the
-//                                           channel's adapter ships — P1+)
-//   DELETE /v1/channels/:slug            → disconnect (mappings cascade)
+//   GET    /v1/channels                    → { connections, catalog }
+//   GET    /v1/channels/:slug/connect-url  → { url } — signed-state OAuth authorize
+//                                            URL the dashboard redirects the browser to
+//   POST   /v1/channels/callback           → { connected } — exchange code+state,
+//                                            encrypt + store the grant
+//   DELETE /v1/channels/:slug              → disconnect (mappings cascade)
 //
-// The OAuth authorize-URL build + callback exchange land with the first concrete
-// adapter (P1); until then the registry is empty and connect returns CONFLICT.
+// `availability` in the catalog is computed at runtime (NOT the static catalog's
+// baseline): a channel is connectable only when its adapter is registered AND its
+// platform OAuth credentials + the token-encryption key are configured. So a
+// channel lights up the instant ops provisions its approved app, with no code
+// change (docs/106 §4.6). OAuth tokens are stored AES-256-GCM encrypted on the
+// connection row, never plaintext.
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -16,33 +23,62 @@ import {
   CHANNEL_CATALOG,
   getChannel,
   getChannelDescriptor,
+  type ChannelDescriptor,
   type ChannelSlug,
 } from '@sparx/channels';
+import { registerBuiltinChannels } from '@sparx/channels/adapters';
+import { encryptChannelToken, isChannelTokenCryptoConfigured } from '@sparx/channels/crypto';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
-import { conflict, notFound } from '@sparx/api-core/errors';
+import { badRequest, conflict, notFound } from '@sparx/api-core/errors';
 import { requireChannelsModule, toChannelContext } from '../../../lib/channel-context.js';
-import { disconnectChannel, listChannelConnections } from '../../../lib/channels.js';
+import {
+  disconnectChannel,
+  listChannelConnections,
+  upsertChannelConnection,
+} from '../../../lib/channels.js';
+import { signChannelOAuthState, verifyChannelOAuthState } from '../../../lib/channels-oauth.js';
 
 const CHANNEL_SLUGS = CHANNEL_CATALOG.map((c) => c.slug) as [ChannelSlug, ...ChannelSlug[]];
 const PathSlug = z.object({ slug: z.enum(CHANNEL_SLUGS) });
+const ConnectQuery = z.object({ redirect_uri: z.string().url() });
+const CallbackBody = z.object({ code: z.string().min(1), state: z.string().min(1) });
+
+/** The catalog with availability resolved against the live registry + env. */
+function runtimeCatalog(): ChannelDescriptor[] {
+  const cryptoReady = isChannelTokenCryptoConfigured();
+  return CHANNEL_CATALOG.map((d) => {
+    const adapter = getChannel(d.slug);
+    const available = cryptoReady && !!adapter && adapter.isConfigured();
+    return { ...d, availability: available ? 'available' : 'coming_soon' };
+  });
+}
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const channelRoutes: FastifyPluginAsync = async (app) => {
+  // Register the built-in adapters once when this route module loads (idempotent).
+  registerBuiltinChannels();
+
   app.get('/v1/channels', async (request, reply) => {
     await requireChannelsModule(request);
     requireRole(request, 'viewer');
     const connections = await listChannelConnections(toChannelContext(request));
-    return reply.send(ok({ connections, catalog: CHANNEL_CATALOG }));
+    return reply.send(ok({ connections, catalog: runtimeCatalog() }));
   });
 
-  app.post('/v1/channels/:slug/connect', async (request) => {
+  app.get('/v1/channels/:slug/connect-url', async (request, reply) => {
     await requireChannelsModule(request);
     requireRole(request, 'admin');
     const { slug } = PathSlug.parse(request.params);
+    const { redirect_uri: redirectUri } = ConnectQuery.parse(request.query);
+    const ctx = toChannelContext(request);
+
     const descriptor = getChannelDescriptor(slug);
     if (!descriptor) throw notFound('channel', slug);
 
+    if (!isChannelTokenCryptoConfigured()) {
+      throw conflict('Channel connections are not configured on this deployment yet.', { slug });
+    }
     const adapter = getChannel(slug);
     if (!adapter) {
       throw conflict(
@@ -50,10 +86,61 @@ const channelRoutes: FastifyPluginAsync = async (app) => {
         { slug, phase: descriptor.phase }
       );
     }
-    // An adapter is registered (P1+). Building the signed OAuth state + the
-    // authorize URL (adapter.connectUrl) and the callback exchange land with the
-    // first adapter (docs/106 §4.6); the dispatch above does not change.
-    throw conflict(`${descriptor.name} connect flow is not yet wired.`, { slug });
+    if (!adapter.isConfigured()) {
+      throw conflict(`${descriptor.name} is not available to connect yet.`, { slug });
+    }
+
+    const state = await signChannelOAuthState({
+      slug,
+      tenantId: ctx.tenantId,
+      userId: ctx.userId,
+      redirectUri,
+    });
+    const url = adapter.connectUrl({ tenantId: ctx.tenantId, state, redirectUri, scopes: [] });
+    return reply.send(ok({ url }));
+  });
+
+  app.post('/v1/channels/callback', async (request, reply) => {
+    await requireChannelsModule(request);
+    requireRole(request, 'admin');
+    const { code, state } = CallbackBody.parse(request.body);
+    const ctx = toChannelContext(request);
+
+    const decoded = await verifyChannelOAuthState(state);
+    // CSRF: the signed state must belong to the authenticated tenant.
+    if (decoded.tenantId !== ctx.tenantId) {
+      throw badRequest('Channel connect token does not match the authenticated tenant.');
+    }
+    if (!isChannelTokenCryptoConfigured()) {
+      throw conflict('Channel connections are not configured on this deployment.', {
+        slug: decoded.slug,
+      });
+    }
+    const adapter = getChannel(decoded.slug);
+    if (!adapter) throw conflict('Channel adapter is no longer available.', { slug: decoded.slug });
+
+    const tokens = await adapter.exchangeCode(code, {
+      tenantId: ctx.tenantId,
+      state,
+      redirectUri: decoded.redirectUri,
+      scopes: [],
+    });
+
+    await upsertChannelConnection(ctx, {
+      channel: decoded.slug,
+      externalId: tokens.externalId ?? null,
+      shopName: tokens.shopName ?? null,
+      accessTokenEnc: encryptChannelToken(tokens.accessToken),
+      refreshTokenEnc: tokens.refreshToken ? encryptChannelToken(tokens.refreshToken) : null,
+      tokenExpiresAt: tokens.expiresInSeconds
+        ? new Date(Date.now() + tokens.expiresInSeconds * 1000)
+        : null,
+      scopes: tokens.scope ? tokens.scope.split(/[ ,]+/).filter(Boolean) : [],
+    });
+
+    return reply.send(
+      ok({ connected: true, channel: decoded.slug, externalId: tokens.externalId ?? null })
+    );
   });
 
   app.delete('/v1/channels/:slug', async (request, reply) => {
