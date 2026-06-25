@@ -50,7 +50,7 @@ jobs:
           fi
           echo "Confirmed — proceeding with the blueprint catalog purge."
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Authenticate to GCP via WIF
         id: auth
