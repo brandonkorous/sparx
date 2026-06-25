@@ -15,7 +15,18 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Badge, Button, Card, CardContent, CardHeader, Heading, Stack, Text } from '@sparx/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Heading,
+  Stack,
+  statusLabel,
+  statusTone,
+  Text,
+} from '@sparx/ui';
 import { CalendarClock, History } from 'lucide-react';
 import { PreviewButton } from '../../../[id]/preview-button';
 
@@ -69,7 +80,11 @@ export function EntryStatusBar({
 }: EntryStatusBarProps) {
   const published = status === 'published';
 
-  const statusBadge = <Badge color={published ? 'success' : 'outline'}>{status}</Badge>;
+  const statusBadge = (
+    <Badge color={statusTone(status)} variant="soft">
+      {statusLabel(status)}
+    </Badge>
+  );
 
   const indicator = (
     <AutosaveIndicator
@@ -79,30 +94,46 @@ export function EntryStatusBar({
     />
   );
 
+  // In the header/toolbar (anything but the standalone card) the secondary actions
+  // go icon-only with tooltips so the cluster fits one compact row; the card has
+  // room for full labels.
+  const compact = layout !== 'card';
   const actions = (
     <>
       {routable && (
-        <PreviewButton entryId={entryId} slug={slug} typeKey={typeKey} tenantSlug={tenantSlug} />
+        <PreviewButton
+          iconOnly={compact}
+          entryId={entryId}
+          slug={slug}
+          typeKey={typeKey}
+          tenantSlug={tenantSlug}
+        />
       )}
       <Button
         type="button"
         variant="ghost"
         size="sm"
         asChild
-        leftIcon={<History className="h-3.5 w-3.5" />}
+        aria-label="Revisions"
+        title={compact ? 'Revisions' : undefined}
+        leftIcon={compact ? undefined : <History className="h-3.5 w-3.5" />}
       >
-        <Link href={`/cms/${entryId}/revisions`}>Revisions</Link>
+        <Link href={`/cms/${entryId}/revisions`}>
+          {compact ? <History className="h-3.5 w-3.5" /> : 'Revisions'}
+        </Link>
       </Button>
       {!published && (
         <Button
           type="button"
           variant="ghost"
           size="sm"
-          leftIcon={<CalendarClock className="h-3.5 w-3.5" />}
+          aria-label="Schedule publish"
+          title={compact ? 'Schedule publish' : undefined}
+          leftIcon={compact ? undefined : <CalendarClock className="h-3.5 w-3.5" />}
           onClick={onSchedule}
           disabled={pending}
         >
-          Schedule
+          {compact ? <CalendarClock className="h-3.5 w-3.5" /> : 'Schedule'}
         </Button>
       )}
       <Button
@@ -126,13 +157,6 @@ export function EntryStatusBar({
       <div className="flex flex-wrap items-center justify-end gap-2">
         {statusBadge}
         {indicator}
-        {(publishedAt ?? scheduledAt) && (
-          <Text size="xs" variant="muted" className="hidden 2xl:inline-flex">
-            {scheduledAt
-              ? `Scheduled ${scheduledAt.toLocaleString()}`
-              : `Published ${publishedAt!.toLocaleString()}`}
-          </Text>
-        )}
         {actions}
       </div>
     );

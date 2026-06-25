@@ -6,6 +6,8 @@ import {
   type SelectionColumn,
   SelectionList,
   Stack,
+  statusLabel,
+  statusTone,
   Text,
 } from '@sparx/ui';
 
@@ -33,13 +35,6 @@ interface GiftCardsListProps {
   view: 'table' | 'card';
 }
 
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline'> = {
-  active: 'success',
-  spent: 'outline',
-  expired: 'warning',
-  cancelled: 'warning',
-};
-
 const moneyFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
 function recipientCell(card: GiftCardSummary) {
@@ -58,7 +53,11 @@ function recipientCell(card: GiftCardSummary) {
 }
 
 function statusBadge(card: GiftCardSummary) {
-  return <Badge color={STATUS_VARIANT[card.status] ?? 'outline'}>{card.status}</Badge>;
+  return (
+    <Badge color={statusTone(card.status)} variant="soft" size="sm">
+      {statusLabel(card.status)}
+    </Badge>
+  );
 }
 
 function expiresLabel(card: GiftCardSummary): string {

@@ -48,7 +48,14 @@ export {
   buttonGroupVariants,
   type ButtonGroupProps,
 } from './components/primitives/button-group';
-export { Badge, badgeVariants, type BadgeProps } from './components/primitives/badge';
+export {
+  Badge,
+  badgeVariants,
+  statusTone,
+  statusLabel,
+  type BadgeProps,
+  type StatusTone,
+} from './components/primitives/badge';
 export { Avatar, avatarVariants, type AvatarProps } from './components/primitives/avatar';
 export { Skeleton, type SkeletonProps } from './components/primitives/skeleton';
 export { Switch, type SwitchProps } from './components/primitives/switch';
@@ -133,6 +140,7 @@ export { DatePicker, type DatePickerProps } from './components/form/date-picker'
 export { FileUpload, type FileUploadProps } from './components/form/file-upload';
 export { ColorPicker, type ColorPickerProps } from './components/form/color-picker';
 export { RichTextEditor, type RichTextEditorProps } from './components/form/rich-text-editor';
+export { Combobox, MultiCombobox, type ComboboxOption } from './components/form/combobox';
 export {
   SchemaFieldRenderer,
   type SchemaFieldRendererProps,

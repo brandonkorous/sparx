@@ -8,6 +8,8 @@ import {
   type SelectionColumn,
   type SelectionCard,
   Stack,
+  statusLabel,
+  statusTone,
   Text,
 } from '@sparx/ui';
 
@@ -27,13 +29,6 @@ export interface B2bAccountRow {
   creditUsed: string | number;
   fleetSize: number | null;
 }
-
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline' | 'danger'> = {
-  active: 'success',
-  credit_hold: 'warning',
-  suspended: 'danger',
-  inactive: 'outline',
-};
 
 interface B2bAccountsSelectionTableProps {
   accounts: B2bAccountRow[];
@@ -85,8 +80,8 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
   );
 
   const statusBadge = (a: B2bAccountRow) => (
-    <Badge color={STATUS_VARIANT[a.status] ?? 'outline'} className="text-xs">
-      {a.status}
+    <Badge color={statusTone(a.status)} variant="soft" size="sm">
+      {statusLabel(a.status)}
     </Badge>
   );
 

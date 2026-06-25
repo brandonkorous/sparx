@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowDown, ArrowUp, Check, GripVertical, Plus, X } from 'lucide-react';
 
-import { Badge, Button, Input, Stack, Text } from '@sparx/ui';
+import { Badge, Button, Input, Stack, Text, statusLabel, statusTone } from '@sparx/ui';
 
 import { setCollectionProductsAction } from '../../../collection-actions';
 
@@ -157,8 +157,8 @@ export function CollectionMembershipEditor({
                     {p.vendor ? ` · ${p.vendor}` : ''}
                   </Text>
                 </Stack>
-                <Badge variant="outline" className="text-xs">
-                  {p.status}
+                <Badge color={statusTone(p.status)} variant="soft" size="sm">
+                  {statusLabel(p.status)}
                 </Badge>
                 <Button
                   type="button"
@@ -229,8 +229,8 @@ export function CollectionMembershipEditor({
                     {p.vendor ? ` · ${p.vendor}` : ''}
                   </Text>
                 </Stack>
-                <Badge variant="outline" className="text-xs">
-                  {p.status}
+                <Badge color={statusTone(p.status)} variant="soft" size="sm">
+                  {statusLabel(p.status)}
                 </Badge>
                 <Button
                   type="button"
@@ -291,8 +291,8 @@ function ProductRow({ product }: { product: ProductBrief }) {
           {product.vendor ? ` · ${product.vendor}` : ''}
         </Text>
       </Stack>
-      <Badge variant="outline" className="text-xs">
-        {product.status}
+      <Badge color={statusTone(product.status)} variant="soft" size="sm">
+        {statusLabel(product.status)}
       </Badge>
     </Stack>
   );

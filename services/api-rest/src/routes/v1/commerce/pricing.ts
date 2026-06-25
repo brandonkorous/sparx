@@ -22,6 +22,7 @@ const ListPriceListsQuery = z.object({
   status: z.string().optional(),
   channel: z.string().optional(),
   b2b_account_id: z.string().optional(),
+  q: z.string().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -37,6 +38,7 @@ const pricingRoutes: FastifyPluginAsync = async (app) => {
       ...(q.status ? { status: q.status } : {}),
       ...(q.channel ? { channel: q.channel } : {}),
       ...(q.b2b_account_id ? { b2bAccountId: q.b2b_account_id } : {}),
+      ...(q.q ? { q: q.q } : {}),
       take: q.take,
       skip: q.skip,
     });
@@ -102,6 +104,7 @@ const pricingRoutes: FastifyPluginAsync = async (app) => {
     return ok(
       await pricingService.listBulkTiers(toCommerceContext(request), {
         variantId: q?.variant_id,
+        productId: q?.product_id,
       })
     );
   });

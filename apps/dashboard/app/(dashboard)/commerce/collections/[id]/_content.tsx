@@ -13,10 +13,11 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-  Text,
 } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+
+import { DetailHeaderSlot } from '../../../_components/detail-header-slot';
 
 import { CollectionMembershipEditor } from './_components/collection-membership-editor';
 import { CollectionMetaForm } from './_components/collection-meta-form';
@@ -54,11 +55,6 @@ interface ProductListItem {
   updatedAt: string;
 }
 
-interface ProductListResponse {
-  items: ProductListItem[];
-  total: number;
-}
-
 export const dynamic = 'force-dynamic';
 
 interface Props {
@@ -74,50 +70,41 @@ export async function CollectionDetailContent({ id }: Props) {
     throw err;
   }
 
-  const { items: allProducts } = await api.get<ProductListResponse>(
+  const { data: allProducts } = await api.getPaged<ProductListItem[]>(
     '/v1/commerce/products?take=250'
   );
 
   return (
-    <Stack gap={6}>
-      <Stack direction="row" align="end" justify="between" wrap gap={4}>
-        <Stack gap={2}>
-          <Stack direction="row" align="center" gap={3} wrap>
-            <Heading level={1}>{collection.name}</Heading>
-            <Badge color={collection.type === 'rules' ? 'module' : 'outline'}>
-              {collection.type === 'rules' ? (
-                <>
-                  <Sparkles className="mr-1 h-3 w-3" />
-                  rules
-                </>
-              ) : (
-                'manual'
-              )}
-            </Badge>
-            {collection.featured && (
-              <Badge variant="outline">
-                <Star className="mr-1 h-3 w-3" />
-                featured
-              </Badge>
-            )}
-          </Stack>
-          <Stack direction="row" align="center" gap={2}>
-            <Text size="sm" variant="muted">
-              /{collection.handle}
-            </Text>
-            <Text size="sm" variant="muted">
-              · {collection.productCount} product{collection.productCount === 1 ? '' : 's'}
-            </Text>
-          </Stack>
-        </Stack>
-      </Stack>
+    <>
+      {/* Identity (name + handle) lives ONLY in the editable fields on the
+          Metadata tab — no read-only heading restating them. The type + featured
+          signals teleport into the active frame's header bar; the product count
+          already rides on the Products tab badge. */}
+      <DetailHeaderSlot>
+        <Badge color={collection.type === 'rules' ? 'module' : 'neutral'} variant="soft">
+          {collection.type === 'rules' ? (
+            <>
+              <Sparkles className="mr-1 h-3 w-3" />
+              rules
+            </>
+          ) : (
+            'manual'
+          )}
+        </Badge>
+        {collection.featured && (
+          <Badge color="accent" variant="soft">
+            <Star className="mr-1 h-3 w-3" />
+            featured
+          </Badge>
+        )}
+      </DetailHeaderSlot>
 
       <Tabs defaultValue="products">
         <TabsList>
           <TabsTrigger value="products">
             <Layers className="mr-2 h-4 w-4" />
             Products
-            <Badge variant="outline" className="ml-2 text-xs">
+            <Badge variant="soft" size="sm" className="ml-2">
               {collection.productCount}
             </Badge>
           </TabsTrigger>
@@ -126,7 +113,7 @@ export async function CollectionDetailContent({ id }: Props) {
         </TabsList>
 
         <TabsContent value="products">
-          <Card>
+          <Card variant="module">
             <CardHeader>
               <Stack gap={1}>
                 <Heading level={3}>Membership</Heading>
@@ -168,7 +155,7 @@ export async function CollectionDetailContent({ id }: Props) {
 
         {collection.type === 'rules' && (
           <TabsContent value="rules">
-            <Card>
+            <Card variant="module">
               <CardHeader>
                 <Heading level={3}>Rule editor — Phase 1.5</Heading>
                 <CardDescription>
@@ -187,6 +174,6 @@ export async function CollectionDetailContent({ id }: Props) {
           </TabsContent>
         )}
       </Tabs>
-    </Stack>
+    </>
   );
 }

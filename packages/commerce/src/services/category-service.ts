@@ -50,18 +50,40 @@ export interface CategoryRow {
 export interface CategoryTreeNode extends CategoryRow {
   depth: number;
   children: CategoryTreeNode[];
+  /** Set only on FILTERED results (which come back flat, not nested) — the
+   *  parent category's display name, so the list can show "under {parent}"
+   *  context that the lost hierarchy would otherwise carry. */
+  parentName?: string | null;
+}
+
+/** Read options for {@link tree}. When `q` or `featured` is set the result is a
+ *  FLAT list of matching nodes (a half-tree reads worse than a plain result
+ *  list); otherwise it's the full nested tree. This is the docs/34 §7.1
+ *  "Typesense seam" — the page owns the `q` fetch, and only this query swaps
+ *  when search moves to Typesense. */
+export interface TreeOptions {
+  /** Case-insensitive substring match over name + handle. */
+  q?: string;
+  /** `true` → featured only; `false` → not-featured only; omit → no filter. */
+  featured?: boolean;
 }
 
 // ─── Reads ────────────────────────────────────────────────────────────
 
-export async function tree(ctx: ServiceContext): Promise<CategoryTreeNode[]> {
+export async function tree(
+  ctx: ServiceContext,
+  opts: TreeOptions = {}
+): Promise<CategoryTreeNode[]> {
+  const q = opts.q ?? '';
+  const { featured } = opts;
+  const filtering = q.trim().length > 0 || featured !== undefined;
   return withTenant(ctx, async (tx) => {
     const rows = await tx.productCategory.findMany({
       where: { deletedAt: null },
       orderBy: [{ path: 'asc' }, { position: 'asc' }],
       include: { _count: { select: { products: true } } },
     });
-    return buildTree(rows);
+    return filtering ? buildFiltered(rows, q, featured) : buildTree(rows);
   });
 }
 
@@ -447,6 +469,47 @@ function buildTree(rows: CategoryWithCount[]): CategoryTreeNode[] {
   }
   sortRecursive(roots);
   return roots;
+}
+
+/** The filter predicate behind {@link tree}'s `q`/`featured` read. Pure, so it's
+ *  unit-tested directly (the DB read + RLS are covered by the api-rest suite):
+ *  case-insensitive substring over name + handle, AND the tri-state featured
+ *  flag (`undefined` → no filter). */
+export function categoryMatchesFilter(
+  cat: { name: string; handle: string; featured: boolean },
+  q: string,
+  featured: boolean | undefined
+): boolean {
+  const needle = q.trim().toLowerCase();
+  const matchesQuery =
+    needle.length === 0 ||
+    cat.name.toLowerCase().includes(needle) ||
+    cat.handle.toLowerCase().includes(needle);
+  const matchesFeatured = featured === undefined || cat.featured === featured;
+  return matchesQuery && matchesFeatured;
+}
+
+// Filtered read → a flat list of matching nodes, sorted by name. Each carries
+// `parentName` (resolved from the full row set) so the list can show the
+// "under {parent}" context the flattened-away hierarchy would otherwise give.
+function buildFiltered(
+  rows: CategoryWithCount[],
+  q: string,
+  featured: boolean | undefined
+): CategoryTreeNode[] {
+  const nameById = new Map(rows.map((r) => [r.id, r.name]));
+  const matches: CategoryTreeNode[] = [];
+  for (const row of rows) {
+    if (!categoryMatchesFilter(row, q, featured)) continue;
+    matches.push({
+      ...toCategoryRow(row),
+      depth: row.path.split('.').length - 1,
+      children: [],
+      parentName: row.parentId ? (nameById.get(row.parentId) ?? null) : null,
+    });
+  }
+  matches.sort((a, b) => a.name.localeCompare(b.name));
+  return matches;
 }
 
 function serializeCategory(c: ProductCategory): Record<string, unknown> {

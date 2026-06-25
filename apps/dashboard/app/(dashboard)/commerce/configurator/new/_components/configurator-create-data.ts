@@ -16,13 +16,8 @@ interface ProductListItem {
   status: 'active' | 'draft' | 'archived';
 }
 
-interface ProductListResponse {
-  items: ProductListItem[];
-  total: number;
-}
-
 export async function loadConfiguratorProducts(): Promise<ProductOption[]> {
-  const { items } = await api.get<ProductListResponse>(
+  const { data: items } = await api.getPaged<ProductListItem[]>(
     '/v1/commerce/products?take=250&include_archived=true'
   );
   const sorted = [...items].sort((a, b) => a.title.localeCompare(b.title));

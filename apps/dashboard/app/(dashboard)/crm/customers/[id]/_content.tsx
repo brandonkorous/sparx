@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Building2, Mail, Phone, CreditCard, CheckSquare, AlertCircle } from 'lucide-react';
+import { Building2, Mail, Phone, CreditCard, CheckSquare } from 'lucide-react';
 
 import {
   Badge,
@@ -11,6 +11,8 @@ import {
   CardTitle,
   Heading,
   Stack,
+  statusLabel,
+  statusTone,
   Tabs,
   TabsContent,
   TabsList,
@@ -395,14 +397,14 @@ function B2BAccountCard({
           <Stack gap={1}>
             <Text size="sm">{account.companyName}</Text>
             <Stack direction="row" gap={2}>
-              {account.pricingTier && <Badge variant="outline">{account.pricingTier}</Badge>}
-              {account.status === 'credit_hold' && (
-                <Badge color="warning">
-                  <AlertCircle className="h-3 w-3" />
-                  Credit hold
+              {account.pricingTier && (
+                <Badge color="neutral" variant="soft" size="sm">
+                  {account.pricingTier}
                 </Badge>
               )}
-              {account.status === 'suspended' && <Badge color="warning">Suspended</Badge>}
+              <Badge color={statusTone(account.status)} variant="soft" size="sm">
+                {statusLabel(account.status)}
+              </Badge>
             </Stack>
           </Stack>
           {limit > 0 && (

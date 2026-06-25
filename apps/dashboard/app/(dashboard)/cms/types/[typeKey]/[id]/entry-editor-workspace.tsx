@@ -47,6 +47,10 @@ export type EntryPreview = RecordPreviewBundle & {
 export interface EntryEditorWorkspaceProps {
   form: EditEntryFormProps;
   preview: EntryPreview | null;
+  /** Drawer/modal (no preview): route the status bar into the detail chrome header
+   *  rather than the standalone Status card. Ignored when a preview workspace shows
+   *  (the bar lives in the builder toolbar then). */
+  statusInHeader?: boolean;
 }
 
 interface SegOption<T extends string> {
@@ -117,7 +121,7 @@ const DEVICE_OPTIONS: SegOption<PreviewDevice>[] = [
   { value: 'mobile', title: 'Mobile', icon: <Smartphone className="h-3.5 w-3.5" /> },
 ];
 
-export function EntryEditorWorkspace({ form, preview }: EntryEditorWorkspaceProps) {
+export function EntryEditorWorkspace({ form, preview, statusInHeader }: EntryEditorWorkspaceProps) {
   // `body` is a MIRROR of EditEntryForm's body (it still owns + autosaves it); we
   // only observe it to feed the live preview, so the autosave machinery is untouched.
   const [body, setBody] = React.useState<Record<string, unknown>>(form.initialBody);
@@ -167,9 +171,11 @@ export function EntryEditorWorkspace({ form, preview }: EntryEditorWorkspaceProp
     if (key) setSelectedFieldKey(key);
   }, []);
 
-  // Form-only fast path: no preview to show, so render the form exactly as before.
+  // Form-only fast path: no preview to show. `statusInHeader` (drawer) routes the
+  // status bar into the detail chrome header; the full-page-no-template path leaves it
+  // false so the standalone Status card still appears.
   if (!preview) {
-    return <EditEntryForm {...form} onBody={setBody} />;
+    return <EditEntryForm {...form} onBody={setBody} statusInHeader={statusInHeader} />;
   }
 
   const formPane = (

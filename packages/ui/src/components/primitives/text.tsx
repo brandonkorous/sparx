@@ -16,6 +16,7 @@ const textVariants = cva('', {
       subtle: 'text-[var(--color-text-tertiary)]',
       inverse: 'text-[var(--color-text-inverse)]',
       danger: 'text-[var(--color-danger-text)]',
+      warning: 'text-[var(--color-warning-text)]',
       success: 'text-[var(--color-success-text)]',
     },
     weight: {

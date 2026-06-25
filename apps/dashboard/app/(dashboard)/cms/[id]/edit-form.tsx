@@ -37,6 +37,8 @@ import {
   ModalTitle,
   ModalDescription,
   Stack,
+  statusLabel,
+  statusTone,
   Text,
   toast,
   useConfirm,
@@ -55,6 +57,7 @@ import {
 import { SiteScopeField } from '../../_components/site-scope-field';
 import { SeoPanel, type SeoFields } from './seo-panel';
 import { PreviewButton } from './preview-button';
+import { DetailHeaderSlot } from '../../_components/detail-header-slot';
 
 export interface EditableTenantPage {
   id: string;
@@ -71,6 +74,11 @@ export interface EditableTenantPage {
 
 const ZONE_DOMAIN = process.env.NEXT_PUBLIC_SPARX_ZONE_DOMAIN ?? 'sparx.zone';
 const AUTOSAVE_DEBOUNCE_MS = 600;
+// Autosave is OFF for now: the platform standard is explicit save (a Save button),
+// and running both at once is contradictory. The machinery stays intact behind this
+// env flag (unset ⇒ off) so the planned move to autosave-everywhere is a flip — at
+// which point the Save button should be DROPPED in favor of the indicator, not kept.
+const AUTOSAVE_ENABLED = process.env.NEXT_PUBLIC_CMS_AUTOSAVE === 'true';
 
 function siteOrigin(tenantSlug: string | null): string {
   if (tenantSlug) return `https://${tenantSlug}.${ZONE_DOMAIN}`;
@@ -195,6 +203,7 @@ export function EditPageForm({
   // initial prop hydration doesn't trigger a needless save. Site scope
   // (propertyIds) rides the same PATCH, so a scope change autosaves like any edit.
   React.useEffect(() => {
+    if (!AUTOSAVE_ENABLED) return;
     if (!hydratedRef.current) {
       hydratedRef.current = true;
       return;
@@ -313,97 +322,84 @@ export function EditPageForm({
 
   return (
     <form onSubmit={onSubmit} noValidate>
-      <Stack gap={6}>
-        <Card variant="module">
-          <CardHeader>
-            <Stack direction="row" align="center" justify="between">
-              <Stack direction="row" align="center" gap={2}>
-                <Heading level={3}>Status</Heading>
-                <Badge color={page.status === 'published' ? 'success' : 'outline'}>
-                  {page.status}
-                </Badge>
-                <AutosaveIndicator
-                  state={saveState}
-                  onDiscardMine={() => {
-                    setSaveState({ kind: 'idle' });
-                    router.refresh();
-                  }}
-                  onKeepMine={() => {
-                    // Force save: drop the stale If-Match so the next PATCH
-                    // wins over whatever the other tab wrote. Our local
-                    // state stays — the audit's main concern was that
-                    // Reload destroyed in-progress edits with no warning.
-                    etagRef.current = null;
-                    setSaveState({ kind: 'idle' });
-                    dirtyRef.current = true;
-                    void runAutosave();
-                  }}
-                />
-              </Stack>
-              <Stack direction="row" align="center" gap={2}>
-                <PreviewButton
-                  entryId={page.id}
-                  slug={page.slug}
-                  typeKey={page.typeKey}
-                  tenantSlug={tenantSlug}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  asChild
-                  leftIcon={<History className="h-3.5 w-3.5" />}
-                >
-                  <Link href={`/cms/${page.id}/revisions`}>Revisions</Link>
-                </Button>
-                {page.status !== 'published' && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    leftIcon={<CalendarClock className="h-3.5 w-3.5" />}
-                    onClick={() => setScheduleOpen(true)}
-                    disabled={pending}
-                  >
-                    Schedule
-                  </Button>
-                )}
-                <Button
-                  type="button"
-                  color={page.status === 'published' ? 'neutral' : 'module'}
-                  variant={page.status === 'published' ? 'outline' : 'solid'}
-                  size="sm"
-                  onClick={onTogglePublish}
-                  disabled={pending}
-                >
-                  {page.status === 'published' ? 'Unpublish' : 'Publish'}
-                </Button>
-              </Stack>
-            </Stack>
-          </CardHeader>
-          {(page.publishedAt ?? page.scheduledAt) && (
-            <CardContent>
-              <Stack gap={1}>
-                {page.scheduledAt && (
-                  <Text size="sm" variant="muted">
-                    Scheduled for {page.scheduledAt.toLocaleString()}
-                  </Text>
-                )}
-                {page.publishedAt && (
-                  <Text size="sm" variant="muted">
-                    Last published {page.publishedAt.toLocaleString()}
-                  </Text>
-                )}
-              </Stack>
-            </CardContent>
-          )}
-        </Card>
+      {/* Lifecycle controls live in the detail frame's header (drawer chrome or
+          the full-page shell), not a bespoke Status card atop the form — parity
+          with Product. The form still owns all the state + handlers; this just
+          teleports the cluster up. */}
+      <DetailHeaderSlot>
+        <Badge color={statusTone(page.status)} variant="soft">
+          {statusLabel(page.status)}
+        </Badge>
+        {AUTOSAVE_ENABLED && (
+          <AutosaveIndicator
+            state={saveState}
+            onDiscardMine={() => {
+              setSaveState({ kind: 'idle' });
+              router.refresh();
+            }}
+            onKeepMine={() => {
+              // Force save: drop the stale If-Match so the next PATCH wins over
+              // whatever the other tab wrote. Our local state stays — the audit's
+              // concern was Reload destroying in-progress edits with no warning.
+              etagRef.current = null;
+              setSaveState({ kind: 'idle' });
+              dirtyRef.current = true;
+              void runAutosave();
+            }}
+          />
+        )}
+        <PreviewButton
+          iconOnly
+          entryId={page.id}
+          slug={page.slug}
+          typeKey={page.typeKey}
+          tenantSlug={tenantSlug}
+        />
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          asChild
+          aria-label="Revisions"
+          title="Revisions"
+        >
+          <Link href={`/cms/${page.id}/revisions`}>
+            <History className="h-3.5 w-3.5" />
+          </Link>
+        </Button>
+        {page.status !== 'published' && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            aria-label="Schedule publish"
+            title="Schedule publish"
+            onClick={() => setScheduleOpen(true)}
+            disabled={pending}
+          >
+            <CalendarClock className="h-3.5 w-3.5" />
+          </Button>
+        )}
+        <Button
+          type="button"
+          color={page.status === 'published' ? 'neutral' : 'module'}
+          variant={page.status === 'published' ? 'outline' : 'solid'}
+          size="sm"
+          onClick={onTogglePublish}
+          disabled={pending}
+        >
+          {page.status === 'published' ? 'Unpublish' : 'Publish'}
+        </Button>
+      </DetailHeaderSlot>
 
+      <Stack gap={6}>
         <Card variant="module">
           <CardHeader>
             <Heading level={3}>Content</Heading>
             <CardDescription>
-              Title, slug, and the body block editor. Autosaves every keystroke after a brief pause.
+              {AUTOSAVE_ENABLED
+                ? 'Title, slug, and the body block editor. Autosaves every keystroke after a brief pause.'
+                : 'Title, slug, and the body block editor. Edits are saved when you click Save changes.'}
             </CardDescription>
           </CardHeader>
           <CardContent>

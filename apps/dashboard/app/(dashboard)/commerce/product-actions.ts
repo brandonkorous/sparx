@@ -48,6 +48,20 @@ export async function updateProductAction(
   });
 }
 
+// Mint a short-lived draft-preview token + return the URL parts the button
+// needs to build `<slug>.sparx.zone/products/<handle>?sparxPreview=<token>`.
+export async function mintProductPreviewUrl(
+  productId: string
+): Promise<ActionResult<{ token: string; handle: string; expiresAt: string }>> {
+  return restAction(async () => {
+    const data = await api.post<{ token: string; handle: string; expires_at: string }>(
+      `/v1/commerce/products/${productId}/preview-tokens`,
+      {}
+    );
+    return { token: data.token, handle: data.handle, expiresAt: data.expires_at };
+  });
+}
+
 export async function publishProductAction(
   productId: string
 ): Promise<ActionResult<{ id: string }>> {

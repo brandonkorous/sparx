@@ -1,8 +1,8 @@
 # sparx Platform — Form Surface Layout Pattern (`SurfaceFrame`)
 
-**Version:** 3.1
+**Version:** 3.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-21
+**Last Updated:** 2026-06-25
 
 ---
 
@@ -45,11 +45,11 @@ This doc owns the **layout**. The **flows** inside it (which steps, which fields
 └──────────────────────────────────────────────┴───────────────┘
 ```
 
-- **Header — the constant identity.** The form's title on the left (e.g. "New quote"); window controls on the right with **Close last** (the corner): maximize → switch drawer/modal → close. In the `inline` (drawer/modal) presentation the **host chrome supplies this header**; the `embedded` full page renders just the title (the breadcrumb owns nav, so no window controls).
+- **Header — the constant identity.** The form's title on the left (e.g. "New quote"); window controls on the right with **Close last** (the corner): maximize → switch drawer/modal → close. In the `inline` (drawer/modal) presentation the **host chrome supplies this header**. The `embedded` full page renders the title plus, in a right-aligned **`headerActions`** slot, a **presentation switch** (open this record as a drawer/modal) — parity with the overlay so all three presentations can reach each other. **Close and Maximize stay off the full page**: the breadcrumb + back already close it, and it can't maximize what's already maximized. (Switching is dirty-guarded — see §5.)
 - **MiniProgress (below header) — the progress.** A row of segments filled through the current step, then **"{label} · step _n_ of _N_"**. Display-only and compact; on a multi-step form it orients without competing. (Single-step forms omit it.)
 - **Form column — the variable.** A left-aligned step headline + supporting line, the step body, then the action toolbar. The body **scrolls internally**; header, progress, and toolbar stay put. Content centers on a readable column (`max-w-3xl`). Fields are grouped in module-tinted **`<Card variant="module">`** cards (the 3px module stripe) — the same on every create surface, so the active module reads at a glance and a cross-module flow shows which card belongs to which module. The stripe is automatic via `<ModuleProvider>`; never bare fields or a plain neutral card.
 - **Summary column — the quiet reference (optional).** A module-tinted right column that runs **full height** beside the form, building live as the user fills (e.g. a quote's party, line count, subtotal, total + a draft badge). It turns the horizontal space into something useful instead of a dead gutter. Omit it for forms without a natural summary — the form then fills the width.
-- **Action toolbar (pinned, under the form column only).** **Cancel** and **Back** on the left — **both frame-owned ghost `<Button>`s**, so Cancel always matches Back (pass `onCancel`; never hand-roll a cancel `<button>`). The primary advance is on the right (`color="module"`); Skip sits beside the primary when a step is genuinely optional. The summary column runs to the floor beside it.
+- **Action toolbar (pinned, under the form column only).** **Cancel is ALWAYS the leftmost button** — the same anchor on every surface (create, edit, wizard) so a user never hunts for it — with **Back** beside it; **both frame-owned ghost `<Button>`s** (pass `onCancel`; never hand-roll a cancel `<button>`). An edit form's **destructive action (Delete)** rides the toolbar's **`destructive`** slot in the left cluster **after** Cancel/Back — danger-styled, left-of-center and away from the primary so it can't be mis-clicked, and **never** buried in the read-only summary aside. The primary advance is on the right (`color="module"`); Skip sits beside the primary when a step is genuinely optional. The summary column runs to the floor beside it.
 - **Single-step forms are the same surface.** A one-screen create form is a **one-step `SurfaceFrame`**, not a different shell: pass a single `step`, the **MiniProgress auto-hides**, and the toolbar is **Cancel + the primary** (no Back). Title, window controls (↗ □ ✕, Close last), and the pinned floor toolbar all come from the frame — never a `<CardFooter>` toolbar inside the body and never a page-level title repeated under the chrome (the old double-header). Its `/new` page renders the form directly (no `Container`/`PageHeader`).
 
 **Why the F layout:** a centered form in a wide modal/page leaves dead side gutters; a tall frame on a short step leaves a dead vertical void; a dark side-rail competes with the app's own nav. The F layout fixes all three — the form fills its column, the summary earns the rest of the width, and there is one cohesive header and one bottom toolbar.
@@ -60,11 +60,11 @@ This doc owns the **layout**. The **flows** inside it (which steps, which fields
 
 All three render the identical frame; only the host differs.
 
-| Variant    | Host                                                                                                                  | Header                                | Used by                                                                 |
-| ---------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------- |
-| `embedded` | In-flow, fills the dashboard **content area** as a **contained, centered sheet** (capped width, page bg on the sides) | Title strip (no window controls)      | The full-page `/new` (and `/{id}/edit`) routes — the "full page" option |
-| `inline`   | Fills a **drawer / modal detail panel** that supplies the chrome                                                      | Host chrome (title + window controls) | The create overlays (the `@detail` slot), picked by `defaultDetailView` |
-| `modal`    | A **self-owned Radix dialog** (numbered top stepper, not the F layout)                                                | Own header                            | Stand-alone wizards not wired to the detail panel (e.g. New site)       |
+| Variant    | Host                                                                                                                  | Header                                                | Used by                                                                 |
+| ---------- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------- |
+| `embedded` | In-flow, fills the dashboard **content area** as a **contained, centered sheet** (capped width, page bg on the sides) | Title strip + presentation switch (no Close/Maximize) | The full-page `/new` and `/{id}` detail routes — the "full page" option |
+| `inline`   | Fills a **drawer / modal detail panel** that supplies the chrome                                                      | Host chrome (title + window controls)                 | The create overlays (the `@detail` slot), picked by `defaultDetailView` |
+| `modal`    | A **self-owned Radix dialog** (numbered top stepper, not the F layout)                                                | Own header                                            | Stand-alone wizards not wired to the detail panel (e.g. New site)       |
 
 ### How a form chooses
 
@@ -131,11 +131,23 @@ The full-bleed two-pane frame with a flat module-colored left rail (brand wordma
 
 - **Progress is always visible** on a multi-step flow — MiniProgress (F layout) or the rail journey (onboarding). No floating "Step 2 of 4" badge invented elsewhere.
 - **One headline pattern.** Left-aligned heading + muted supporting line at the top of the pane. No centered hero stacks; **no uppercase mono eyebrows** (no-eyebrows rule) — that includes the summary's heading.
-- **One bottom toolbar.** Cancel left, Back beside it, primary right (`color="module"`), Skip beside the primary. Never a second Cancel/Close in the body when the host chrome already has one.
-- **The summary is a reference, not a step.** It never holds inputs or the primary action; it mirrors what the form is building. It's an optional slot — present it only when the record has a natural running summary.
+- **One bottom toolbar.** **Cancel is the leftmost anchor** (same place on every surface), Back beside it, then any **destructive action** (Delete) in the `destructive` slot — danger-styled, after Cancel/Back, away from the primary; primary right (`color="module"`), Skip beside the primary. Never a second Cancel/Close in the body when the host chrome already has one; never a Delete in the summary aside.
+- **The summary is a reference, not a step.** It never holds inputs **or actions** (no Delete) and never the primary action; it mirrors what the form is building — for an edit, the record's read-only facts/context. It's an optional slot — present it only when the record has a natural running summary.
+- **Status + lifecycle actions live in the frame header, not an in-body card.** A detail surface's status badge and lifecycle actions (Publish / Unpublish / Archive / Restore, plus Preview / Revisions / Schedule) render in the frame header — the drawer/modal chrome or the full-page shell — via the **detail header-slot** (§5.1), never a bespoke "Status" card stacked atop the form. In the header the **status badge + the primary action keep their text label; secondary actions go icon-only with a tooltip** so the cluster fits one row. The bottom toolbar stays for form submission only (Save/Create + Cancel + Delete) — lifecycle is header-only.
+- **Identity appears exactly once.** An entity's name/title (+ slug/handle) lives ONLY in its editable form field — never ALSO as a read-only heading atop the body (the duplication reads as "which one is authoritative?" and wastes the space). The drawer chrome's type label and the full-page back-link carry context; the field carries the value. Applies only where the redundancy exists — **read-only / transaction details** (orders, quotes, carts, inventory ops) have no editable name field, so their identity heading stays; it's the sole place the name lives.
+- **Unsaved edits are guarded (edit surfaces).** A form that can hold unsaved changes registers ONE dirty-guard (its `dirty` check + a `useConfirm` discard dialog) via the dashboard's `UnsavedGuardProvider` / `useRegisterLeaveGuard`; **every** leave path consults it — the frame-owned Cancel, the overlay host's Close/Switch/backdrop-Esc, and the full-page presentation switch. Wired once on the platform, not per page (docs/105 platform gaps). Not covered: a hard browser nav (`beforeunload`).
 - **Motion:** the working-pane content does a small `fadeUp` on step change (~0.3s); the progress/rail is static. Respect `prefers-reduced-motion`.
 - **State is preserved on Back.** Going back never clears entered data.
 - **Tokens only.** Geist; module color via `--module-active` (+ `-tint`, `-content`); neutrals/radii from `@sparx/ui` tokens — no hardcoded colors. The summary tint is `color-mix(module 6%, surface)`.
+
+### 5.1 The detail header slot (teleport)
+
+The detail BODY is server-rendered and mounts in three frames — the drawer chrome, the modal chrome, and the full-page shell — each of which owns the header bar. So the body declares its header content (status + lifecycle actions) ONCE and it renders in whichever frame is active, instead of restating the entity's name/handle as an in-body header (the duplication §5 forbids). The frame renders a `<DetailHeaderSlotTarget>` in its header bar; the body renders `<DetailHeaderSlot>{…}</DetailHeaderSlot>` anywhere and its children **portal** into the target (children-based, not a props API). A `<DetailChromeProvider>` wraps both and holds the portal node — two contexts (one for the setter, one for the node) keep the registering ref stable so a node change can't thrash it.
+
+- **Drawer / modal:** the chrome ([`detail-panel.tsx`](<../apps/dashboard/app/(dashboard)/_components/detail-panel.tsx>)) renders the slot target between its type label and the window controls — backward-compatible, an empty slot is a zero-width flex child.
+- **Full page:** [`DetailPageShell`](<../apps/dashboard/app/(dashboard)/_components/detail-page-shell.tsx>) is the equivalent host the full page otherwise lacks — a back-link to the list, the same slot target, and the drawer/modal presentation switch, all under the module tint + the unsaved-edits guard. `listHref`/`listLabel` override the back-link when `routePrefix` isn't the list route (e.g. CMS `page` lives at `/cms` but lists at `/cms/content`).
+
+It serves **every** detail body — single-form edits (`SurfaceFrame`) AND tabbed detail bodies (product, collection, CMS). Source: [`detail-header-slot.tsx`](<../apps/dashboard/app/(dashboard)/_components/detail-header-slot.tsx>).
 
 ---
 
@@ -196,4 +208,4 @@ const summary = (
 
 ## 8. Status
 
-**Built.** `SurfaceFrame` (`@sparx/ui`) ships the F layout (`inline`/`embedded`) with the `summary` slot + `SurfaceSummary` primitives, the numbered self-owned `modal`, and the immersive `page` rail. Product and Quote create-wizards pass a live summary; the remaining line-item wizards (Order, PO, Transfer, Billing-document) render the form-only F modal until their summaries are wired.
+**Built.** `SurfaceFrame` (`@sparx/ui`) ships the F layout (`inline`/`embedded`) with the `summary` slot + `SurfaceSummary` primitives, the numbered self-owned `modal`, and the immersive `page` rail. Product and Quote create-wizards pass a live summary; the remaining line-item wizards (Order, PO, Transfer, Billing-document) render the form-only F modal until their summaries are wired. The **detail header-slot** (§5.1) + `DetailPageShell` are built and applied to product, collection, and the CMS page/entry editors — their in-body Status cards / identity headings removed, lifecycle actions teleported to the header.

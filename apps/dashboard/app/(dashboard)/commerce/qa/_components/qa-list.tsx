@@ -1,6 +1,14 @@
 'use client';
 
-import { SelectionList, type SelectionCard, type SelectionColumn, Badge, Text } from '@sparx/ui';
+import {
+  SelectionList,
+  type SelectionCard,
+  type SelectionColumn,
+  Badge,
+  statusLabel,
+  statusTone,
+  Text,
+} from '@sparx/ui';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
 
@@ -31,9 +39,11 @@ function truncate(s: string, n: number): string {
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const variant: 'success' | 'outline' | 'danger' =
-    status === 'published' ? 'success' : status === 'rejected' ? 'danger' : 'outline';
-  return <Badge color={variant}>{status}</Badge>;
+  return (
+    <Badge color={statusTone(status)} variant="soft" size="sm">
+      {statusLabel(status)}
+    </Badge>
+  );
 }
 
 export function QaList({ rows, view }: QaListProps) {

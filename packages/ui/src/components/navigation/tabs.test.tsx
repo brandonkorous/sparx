@@ -31,7 +31,7 @@ describe('Tabs', () => {
   });
 
   it('default variant: active trigger uses --module-active for underline + text', () => {
-    render(<Fixture />);
+    render(<Fixture variant="default" />);
     const active = screen.getByRole('tab', { name: 'Overview' });
     expect(active).toHaveAttribute('data-state', 'active');
     expect(active.className).toMatch(/data-\[state=active\]:border-\[var\(--module-active\)\]/);

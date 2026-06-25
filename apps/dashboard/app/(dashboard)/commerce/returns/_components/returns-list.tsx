@@ -6,6 +6,7 @@ import {
   type SelectionColumn,
   Badge,
   Stack,
+  statusLabel,
   Text,
 } from '@sparx/ui';
 
@@ -44,20 +45,27 @@ interface ReturnsListProps {
   view: 'table' | 'card';
 }
 
+// Return-flow tones — a CURATED domain map, not the generic statusTone(): here
+// `refunded` is the happy END state (the return completed), so it's success —
+// the opposite of the order/payment context where statusTone('refunded')=danger.
 function StatusBadge({ status }: { status: ReturnStatus }) {
-  const variant: Record<ReturnStatus, 'success' | 'warning' | 'outline'> = {
+  const tone: Record<ReturnStatus, 'success' | 'warning' | 'info' | 'danger' | 'neutral'> = {
     requested: 'warning',
-    approved: 'outline',
-    denied: 'outline',
-    awaiting_shipment: 'outline',
-    in_transit: 'outline',
-    received: 'outline',
-    inspecting: 'outline',
-    inspected: 'outline',
+    approved: 'info',
+    denied: 'danger',
+    awaiting_shipment: 'warning',
+    in_transit: 'info',
+    received: 'info',
+    inspecting: 'info',
+    inspected: 'info',
     refunded: 'success',
-    cancelled: 'outline',
+    cancelled: 'neutral',
   };
-  return <Badge color={variant[status]}>{status}</Badge>;
+  return (
+    <Badge color={tone[status]} variant="soft" size="sm">
+      {statusLabel(status)}
+    </Badge>
+  );
 }
 
 export function ReturnsList({ rows, view }: ReturnsListProps) {

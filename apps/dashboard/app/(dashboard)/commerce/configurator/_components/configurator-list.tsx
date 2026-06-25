@@ -2,7 +2,15 @@
 
 import Link from 'next/link';
 
-import { Badge, SelectionList, type SelectionCard, type SelectionColumn, Text } from '@sparx/ui';
+import {
+  Badge,
+  SelectionList,
+  type SelectionCard,
+  type SelectionColumn,
+  statusLabel,
+  statusTone,
+  Text,
+} from '@sparx/ui';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
 
@@ -30,12 +38,6 @@ interface ConfiguratorListProps {
   view: 'table' | 'card';
 }
 
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline'> = {
-  active: 'success',
-  draft: 'outline',
-  archived: 'warning',
-};
-
 export function ConfiguratorList({ templates, view }: ConfiguratorListProps) {
   const productLink = (t: ConfigurationTemplateRow) => (
     <Link href={`/commerce/products/${t.productId}`} className="hover:text-[var(--module-active)]">
@@ -55,7 +57,9 @@ export function ConfiguratorList({ templates, view }: ConfiguratorListProps) {
   );
 
   const statusBadge = (t: ConfigurationTemplateRow) => (
-    <Badge color={STATUS_VARIANT[t.status] ?? 'outline'}>{t.status}</Badge>
+    <Badge color={statusTone(t.status)} variant="soft" size="sm">
+      {statusLabel(t.status)}
+    </Badge>
   );
 
   const columns: SelectionColumn<ConfigurationTemplateRow>[] = [

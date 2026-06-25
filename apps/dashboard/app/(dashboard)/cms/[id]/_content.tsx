@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import { Badge, Heading, Stack, Text } from '@sparx/ui';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { listProperties, type Property } from '@/lib/sites';
 import { EditPageForm, type EditableTenantPage } from './edit-form';
@@ -74,30 +73,15 @@ export async function CmsPageDetailContent({ id }: CmsPageDetailContentProps) {
     updatedAt: new Date(entry.updated_at),
   };
 
+  // Identity (title + slug) lives only in the editable fields of EditPageForm;
+  // the form teleports its own status + lifecycle controls into the frame header.
   return (
-    <Stack gap={6}>
-      <Stack gap={2}>
-        <Stack direction="row" align="center" gap={2}>
-          <Heading level={1}>{editable.title || 'Untitled page'}</Heading>
-          <Badge color="module">page</Badge>
-          <Badge color={editable.status === 'published' ? 'success' : 'outline'}>
-            {editable.status}
-          </Badge>
-        </Stack>
-        {editable.slug && (
-          <Text size="sm" variant="muted">
-            <code>/{editable.slug}</code>
-          </Text>
-        )}
-      </Stack>
-
-      <EditPageForm
-        page={editable}
-        tenantSlug={tenant?.slug ?? null}
-        initialEtag={initialEtag}
-        sites={sites}
-        initialPropertyIds={entry.propertyIds ?? []}
-      />
-    </Stack>
+    <EditPageForm
+      page={editable}
+      tenantSlug={tenant?.slug ?? null}
+      initialEtag={initialEtag}
+      sites={sites}
+      initialPropertyIds={entry.propertyIds ?? []}
+    />
   );
 }

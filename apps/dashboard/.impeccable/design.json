@@ -1,0 +1,349 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-23T00:00:00Z",
+  "title": "Design System: Sparx Operator Console",
+  "extensions": {
+    "colorMeta": {
+      "sparx-indigo": {
+        "role": "primary",
+        "displayName": "Sparx Indigo",
+        "canonical": "oklch(0.62 0.19 277)",
+        "tonalRamp": [
+          "oklch(0.22 0.08 277)",
+          "oklch(0.32 0.12 277)",
+          "oklch(0.43 0.16 277)",
+          "oklch(0.53 0.18 277)",
+          "oklch(0.62 0.19 277)",
+          "oklch(0.72 0.15 277)",
+          "oklch(0.84 0.09 277)",
+          "oklch(0.95 0.03 277)"
+        ]
+      },
+      "module-commerce": {
+        "role": "module",
+        "displayName": "Commerce Orange",
+        "canonical": "oklch(0.70 0.19 47)",
+        "tonalRamp": [
+          "oklch(0.28 0.07 47)",
+          "oklch(0.40 0.11 47)",
+          "oklch(0.51 0.15 47)",
+          "oklch(0.61 0.18 47)",
+          "oklch(0.70 0.19 47)",
+          "oklch(0.79 0.15 47)",
+          "oklch(0.88 0.09 47)",
+          "oklch(0.96 0.03 47)"
+        ]
+      },
+      "module-cms": {
+        "role": "module",
+        "displayName": "CMS Teal",
+        "canonical": "oklch(0.70 0.13 184)",
+        "tonalRamp": [
+          "oklch(0.28 0.05 184)",
+          "oklch(0.39 0.07 184)",
+          "oklch(0.50 0.10 184)",
+          "oklch(0.60 0.12 184)",
+          "oklch(0.70 0.13 184)",
+          "oklch(0.79 0.10 184)",
+          "oklch(0.88 0.06 184)",
+          "oklch(0.96 0.02 184)"
+        ]
+      },
+      "module-crm": {
+        "role": "module",
+        "displayName": "CRM Cyan",
+        "canonical": "oklch(0.71 0.13 215)",
+        "tonalRamp": [
+          "oklch(0.29 0.05 215)",
+          "oklch(0.40 0.07 215)",
+          "oklch(0.51 0.10 215)",
+          "oklch(0.61 0.12 215)",
+          "oklch(0.71 0.13 215)",
+          "oklch(0.80 0.10 215)",
+          "oklch(0.88 0.06 215)",
+          "oklch(0.96 0.02 215)"
+        ]
+      },
+      "module-ai": {
+        "role": "module",
+        "displayName": "AI Rose",
+        "canonical": "oklch(0.65 0.22 354)",
+        "tonalRamp": [
+          "oklch(0.27 0.10 354)",
+          "oklch(0.38 0.15 354)",
+          "oklch(0.48 0.19 354)",
+          "oklch(0.57 0.21 354)",
+          "oklch(0.65 0.22 354)",
+          "oklch(0.75 0.17 354)",
+          "oklch(0.85 0.10 354)",
+          "oklch(0.95 0.04 354)"
+        ]
+      },
+      "module-b2b": {
+        "role": "module",
+        "displayName": "B2B Slate",
+        "canonical": "oklch(0.45 0.04 257)",
+        "tonalRamp": [
+          "oklch(0.22 0.02 257)",
+          "oklch(0.30 0.03 257)",
+          "oklch(0.38 0.04 257)",
+          "oklch(0.45 0.04 257)",
+          "oklch(0.55 0.04 257)",
+          "oklch(0.66 0.03 257)",
+          "oklch(0.80 0.02 257)",
+          "oklch(0.93 0.01 257)"
+        ]
+      },
+      "neutral-ink": {
+        "role": "neutral",
+        "displayName": "Neutral Ink",
+        "canonical": "oklch(0.30 0.03 257)",
+        "tonalRamp": [
+          "oklch(0.15 0.00 0)",
+          "oklch(0.27 0.02 257)",
+          "oklch(0.40 0.02 257)",
+          "oklch(0.53 0.01 257)",
+          "oklch(0.66 0.01 257)",
+          "oklch(0.80 0.00 0)",
+          "oklch(0.90 0.00 0)",
+          "oklch(0.98 0.00 0)"
+        ]
+      },
+      "success": {
+        "role": "success",
+        "displayName": "Success Emerald",
+        "canonical": "oklch(0.70 0.15 163)",
+        "tonalRamp": [
+          "oklch(0.28 0.06 163)",
+          "oklch(0.39 0.09 163)",
+          "oklch(0.50 0.12 163)",
+          "oklch(0.60 0.14 163)",
+          "oklch(0.70 0.15 163)",
+          "oklch(0.79 0.12 163)",
+          "oklch(0.88 0.07 163)",
+          "oklch(0.96 0.03 163)"
+        ]
+      },
+      "warning": {
+        "role": "warning",
+        "displayName": "Warning Amber",
+        "canonical": "oklch(0.77 0.16 70)",
+        "tonalRamp": [
+          "oklch(0.30 0.06 70)",
+          "oklch(0.43 0.10 70)",
+          "oklch(0.55 0.13 70)",
+          "oklch(0.66 0.15 70)",
+          "oklch(0.77 0.16 70)",
+          "oklch(0.85 0.13 70)",
+          "oklch(0.91 0.08 70)",
+          "oklch(0.97 0.03 70)"
+        ]
+      },
+      "danger": {
+        "role": "danger",
+        "displayName": "Danger Red",
+        "canonical": "oklch(0.64 0.22 27)",
+        "tonalRamp": [
+          "oklch(0.27 0.10 27)",
+          "oklch(0.38 0.15 27)",
+          "oklch(0.48 0.19 27)",
+          "oklch(0.57 0.21 27)",
+          "oklch(0.64 0.22 27)",
+          "oklch(0.74 0.17 27)",
+          "oklch(0.85 0.10 27)",
+          "oklch(0.95 0.04 27)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Rare — largest page title or empty-state headline."
+      },
+      "headline": { "displayName": "Headline", "purpose": "Page headers." },
+      "title": { "displayName": "Title", "purpose": "Section and card titles." },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Default text and form values; prose caps at 65–75ch."
+      },
+      "label": { "displayName": "Label", "purpose": "Field labels, badges, table column heads." },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Code, IDs, metrics, keyboard hints (Geist Mono)."
+      }
+    },
+    "shadows": [
+      {
+        "name": "sm",
+        "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        "purpose": "Barely-there separation for a resting card that needs a hair of lift."
+      },
+      {
+        "name": "md",
+        "value": "0 2px 8px 0 rgb(0 0 0 / 0.08)",
+        "purpose": "The elevated card variant; popovers."
+      },
+      {
+        "name": "lg",
+        "value": "0 10px 24px -6px rgb(0 0 0 / 0.12)",
+        "purpose": "Modals, drawers, command palette."
+      },
+      {
+        "name": "focus",
+        "value": "0 0 0 3px rgb(99 102 241 / 0.25)",
+        "purpose": "The indigo focus ring — never optional."
+      }
+    ],
+    "motion": [
+      { "name": "fast", "value": "100ms ease", "purpose": "Micro state (hover tint, checkbox)." },
+      {
+        "name": "base",
+        "value": "175ms ease",
+        "purpose": "Default for color/background/border state transitions."
+      },
+      {
+        "name": "slow",
+        "value": "250ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Overlay enter/exit; larger surface changes."
+      },
+      {
+        "name": "bounce",
+        "value": "200ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "purpose": "Reserved; use sparingly for confirmation moments only."
+      }
+    ],
+    "breakpoints": [
+      { "name": "mobile", "value": "640px" },
+      { "name": "desktop", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Solid indigo primary action; the default Button (solid / md).",
+      "html": "<button class=\"ds-btn-primary\">Save changes</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; height: 36px; padding: 0 16px; border: none; border-radius: 6px; background: var(--sparx-primary, #6366f1); color: #fff; font-family: var(--font-sans); font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background-color 175ms ease, filter 175ms ease; } .ds-btn-primary:hover { background: var(--sparx-primary-hover, #4f46e5); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-bg-surface, #fff), 0 0 0 4px var(--color-border-focus, #6366f1); } .ds-btn-primary:disabled { opacity: 0.4; pointer-events: none; }"
+    },
+    {
+      "name": "Soft Button",
+      "kind": "button",
+      "refersTo": "button-soft",
+      "description": "Tinted treatment — derives bg/text from one base via OKLCH color-mix, exactly like the .sx-c-* role vars.",
+      "html": "<button class=\"ds-btn-soft\">Filter</button>",
+      "css": ".ds-btn-soft { display: inline-flex; align-items: center; justify-content: center; height: 36px; padding: 0 16px; border: none; border-radius: 6px; background: color-mix(in oklch, var(--sparx-primary, #6366f1) 14%, transparent); color: color-mix(in oklch, var(--sparx-primary, #6366f1) 60%, var(--color-text-primary, #0a0a0a)); font-family: var(--font-sans); font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background-color 175ms ease; } .ds-btn-soft:hover { background: color-mix(in oklch, var(--sparx-primary, #6366f1) 22%, transparent); } .ds-btn-soft:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-border-focus, #6366f1); }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Neutral bordered treatment for secondary actions.",
+      "html": "<button class=\"ds-btn-outline\">Cancel</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; height: 36px; padding: 0 16px; border: 1px solid var(--color-border-default, #e5e5e5); border-radius: 6px; background: transparent; color: var(--color-text-primary, #0a0a0a); font-family: var(--font-sans); font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background-color 175ms ease, border-color 175ms ease; } .ds-btn-outline:hover { background: var(--color-bg-subtle, #f4f4f5); border-color: var(--color-border-strong, #d4d4d8); } .ds-btn-outline:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-border-focus, #6366f1); }"
+    },
+    {
+      "name": "Module Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Surface card with the signature 3px top stripe in the active module color (squared top corners).",
+      "html": "<div class=\"ds-card-module\"><h3 class=\"ds-card-title\">Order #1043</h3><p class=\"ds-card-desc\">Awaiting fulfillment · 3 items</p></div>",
+      "css": ".ds-card-module { border: 1px solid var(--color-border-default, #e5e5e5); border-top: 3px solid var(--module-active, var(--sparx-primary, #6366f1)); border-radius: 0 0 8px 8px; background: var(--color-bg-surface, #fff); padding: 16px; } .ds-card-module .ds-card-title { margin: 0 0 4px; font-family: var(--font-sans); font-size: 0.9375rem; font-weight: 500; color: var(--color-text-primary, #0a0a0a); } .ds-card-module .ds-card-desc { margin: 0; font-family: var(--font-sans); font-size: 0.8125rem; color: var(--color-text-secondary, #52525b); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Default text field with a leading search icon; hover strengthens the border, focus shows the indigo ring.",
+      "html": "<div class=\"ds-field\"><svg class=\"ds-field-icon\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M7 1a6 6 0 014.9 9.4l3.3 3.3-1.4 1.4-3.3-3.3A6 6 0 117 1zm0 2a4 4 0 100 8 4 4 0 000-8z\" fill=\"currentColor\"/></svg><input class=\"ds-input\" type=\"text\" placeholder=\"Search orders\" /></div>",
+      "css": ".ds-field { position: relative; display: inline-flex; align-items: center; width: 260px; } .ds-field-icon { position: absolute; left: 10px; width: 15px; height: 15px; color: var(--color-text-tertiary, #a1a1aa); pointer-events: none; } .ds-input { width: 100%; height: 36px; padding: 0 12px 0 32px; border: 1px solid var(--color-border-default, #e5e5e5); border-radius: 6px; background: var(--color-bg-surface, #fff); color: var(--color-text-primary, #0a0a0a); font-family: var(--font-sans); font-size: 0.9375rem; transition: border-color 150ms ease; } .ds-input::placeholder { color: var(--color-text-tertiary, #a1a1aa); } .ds-input:hover { border-color: var(--color-border-strong, #d4d4d8); } .ds-input:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-border-focus, #6366f1); }"
+    },
+    {
+      "name": "Status Badge",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Pill badge on the color × variant × size axes; shown as success / soft.",
+      "html": "<span class=\"ds-badge\"><span class=\"ds-badge-dot\"></span>Paid</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 9999px; background: color-mix(in oklch, var(--color-success, #10b981) 14%, transparent); color: color-mix(in oklch, var(--color-success, #10b981) 58%, var(--color-text-primary, #0a0a0a)); font-family: var(--font-sans); font-size: 0.75rem; font-weight: 500; white-space: nowrap; } .ds-badge-dot { width: 6px; height: 6px; border-radius: 9999px; background: var(--color-success, #10b981); }"
+    },
+    {
+      "name": "Sidebar Nav Item (active)",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "Active module nav item — module-tinted pill with module-colored label and a leading indicator dot.",
+      "html": "<a class=\"ds-nav-item ds-nav-item--active\" href=\"#\"><span class=\"ds-nav-dot\"></span>Commerce</a>",
+      "css": ".ds-nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 6px; font-family: var(--font-sans); font-size: 0.875rem; font-weight: 500; text-decoration: none; color: var(--color-text-secondary, #52525b); transition: background-color 150ms ease, color 150ms ease; } .ds-nav-item:hover { background: var(--color-bg-subtle, #f4f4f5); color: var(--color-text-primary, #0a0a0a); } .ds-nav-item--active { background: color-mix(in oklch, var(--module-commerce, #f97316) 14%, transparent); color: color-mix(in oklch, var(--module-commerce, #f97316) 56%, var(--color-text-primary, #0a0a0a)); } .ds-nav-dot { width: 7px; height: 7px; border-radius: 9999px; background: var(--module-commerce, #f97316); }"
+    },
+    {
+      "name": "Sparx Wordmark",
+      "kind": "custom",
+      "refersTo": "wordmark",
+      "description": "The wordmark — Geist 500, tracking -0.03em, with the 'x' always in Sparx Indigo.",
+      "html": "<span class=\"ds-wordmark\">spar<span class=\"ds-wordmark-x\">x</span></span>",
+      "css": ".ds-wordmark { font-family: var(--font-sans); font-weight: 500; font-size: 1.25rem; letter-spacing: -0.03em; color: var(--color-text-primary, #0a0a0a); } .ds-wordmark-x { color: var(--sparx-primary, #6366f1); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Spectrum Operator",
+    "overview": "The dashboard is one neutral, instrument-grade chassis that holds the entire module spectrum — Commerce orange, CMS teal, CRM cyan, Builder indigo, AI rose, and ten more — and focuses down to a single hue the moment you enter a module. The chrome (sidebar, surfaces, type, borders) is a calm, near-monochrome instrument; color is the live signal that tells the operator which module they're operating. Switch modules and the same console re-tints in place — the layout, the affordances, the component vocabulary never change. That is the product thesis made visual: one product, many modules. The personality is confident, modular, and modern: plain-spoken and exact, never decorative for its own sake, but tactile where it counts — surfaces respond crisply, hover and focus are felt, state is immediate. It is built for tenant operators of any vertical, so nothing about it reads as built for one industry. It explicitly rejects generic AI-slop SaaS.",
+    "keyCharacteristics": [
+      "Neutral chassis, colored signal — the active module's color is the only brand color on screen.",
+      "Module color as identity (14 fixed hues), driven automatically by <ModuleProvider>.",
+      "Four-axis components (color × variant × size) from @sparx/ui; feature code never re-skins a control.",
+      "Flat by default — depth is tonal layering, not shadow.",
+      "Geist at two weights (400 / 500), on a fixed rem scale, not fluid type.",
+      "WCAG 2.1 AA, visible focus rings, prefers-reduced-motion honored, structural responsive collapse."
+    ],
+    "rules": [
+      {
+        "name": "The Active-Module Rule",
+        "body": "The chrome stays neutral. The active module's color is the only brand color on a given screen — spent on primary actions, the current selection, the card stripe, and state. Never as background fill or decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Warm-Hue Reservation Rule",
+        "body": "Warm hues (amber, red, orange) are reserved for semantic status — except where a module legitimately owns one (Commerce orange, Inventory amber, SEO yellow). Inside those modules, status must stay distinct: use danger red for alerts so they read against the warm chrome.",
+        "section": "colors"
+      },
+      {
+        "name": "The Dark-Ink-On-Warm Rule",
+        "body": "Amber, SEO yellow, and warning fills use dark ink (#422006), never white — white text fails AA on those hues.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two-Weight Rule",
+        "body": "Only 400 (regular) and 500 (medium) ship. 600 and 700 are forbidden — they read too heavy against the host UI. Hierarchy comes from size, color, and space, not from bold.",
+        "section": "typography"
+      },
+      {
+        "name": "The Fixed-Scale Rule",
+        "body": "The dashboard uses a fixed rem scale, never clamp() fluid type. A fluid h1 that shrinks inside a sidebar looks worse, not better.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Surfaces are flat at rest. If you reach for a shadow to separate two resting elements, use a border or the next tonal layer instead. Shadow means 'this floats above the page' — modal, drawer, popover, focus — and nothing else.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep the chrome neutral and spend the active module's color on primary actions, current selection, the card stripe, and state only.",
+      "Do build every control from @sparx/ui on the color × variant × size axes; let <ModuleProvider> drive color.",
+      "Do stay flat by default — separate resting elements with a border or the next tonal layer, not a shadow.",
+      "Do hold to Geist at two weights (400 / 500) and the fixed 15px-body rem scale.",
+      "Do hit WCAG 2.1 AA: body ≥4.5:1, placeholders at 4.5:1, a visible focus ring on every interactive element, and a prefers-reduced-motion fallback for every animation.",
+      "Do use dark ink (#422006) on amber / SEO-yellow / warning fills.",
+      "Do keep module identity legible without relying on hue alone — pair color with the label/icon for color-blind operators."
+    ],
+    "donts": [
+      "Don't ship generic AI-slop SaaS: no cream/sand/parchment backgrounds, no tiny uppercase tracked eyebrows over every section, no identical icon + heading + text card grids, no big-number hero-metric template, no gradient text.",
+      "Don't let anything read as built for one vertical. A publisher and a parts distributor must feel equally at home.",
+      "Don't re-skin a control in feature code — a background fill paired with a foreground text color, or hand-built hover/focus/disabled states, means you've rebuilt a Button/Input/Badge. Use the variant, or add one to @sparx/ui.",
+      "Don't use a colored border-left / border-right greater than 1px as an accent stripe. The only sanctioned colored stripe is the card's 3px top module stripe — side-stripes stay banned.",
+      "Don't hardcode a color in a component; every value references a token in tokens.css.",
+      "Don't use font weights 600 or 700, and don't use clamp() fluid type in the dashboard.",
+      "Don't put white text on warm fills (amber, SEO yellow, warning) — it fails AA.",
+      "Don't nest cards, and don't reach for a modal as the first thought — exhaust inline / progressive alternatives first."
+    ]
+  }
+}

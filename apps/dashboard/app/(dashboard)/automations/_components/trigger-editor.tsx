@@ -11,6 +11,7 @@
 import * as React from 'react';
 import {
   Button,
+  Combobox,
   Input,
   Label,
   Select,
@@ -22,7 +23,6 @@ import {
 import type { ConditionGroup, ScheduleSpec, Trigger } from '@sparx/automation-schemas';
 import { DAYS_OF_WEEK, SCAN_ENTITIES, SCHEDULE_CADENCES, TRIGGER_EVENTS } from '../_lib/catalog';
 import { ConditionEditor } from './condition-editor';
-import { Combobox } from './combobox';
 
 const EMPTY_WHERE: ConditionGroup = { logic: 'AND', conditions: [] };
 
@@ -124,6 +124,8 @@ export function TriggerEditor({ value, onChange, enabledModules }: Props) {
           <Combobox
             id="trigger-event-type"
             value={value.eventType}
+            mono
+            triggerClassName="w-full max-w-md"
             placeholder="crm.customer.created"
             searchPlaceholder="Search or type an event…"
             customHint="Use this exact event type"

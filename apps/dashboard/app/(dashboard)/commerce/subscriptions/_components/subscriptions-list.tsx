@@ -6,6 +6,8 @@ import {
   type SelectionColumn,
   SelectionList,
   Stack,
+  statusLabel,
+  statusTone,
   Text,
 } from '@sparx/ui';
 
@@ -36,14 +38,11 @@ interface SubscriptionsListProps {
 }
 
 function StatusBadge({ status }: { status: SubscriptionStatus }) {
-  const variant: Record<SubscriptionStatus, 'success' | 'warning' | 'outline'> = {
-    active: 'success',
-    trialing: 'outline',
-    paused: 'outline',
-    past_due: 'warning',
-    cancelled: 'outline',
-  };
-  return <Badge color={variant[status]}>{status}</Badge>;
+  return (
+    <Badge color={statusTone(status)} variant="soft" size="sm">
+      {statusLabel(status)}
+    </Badge>
+  );
 }
 
 function mrr(s: SubscriptionSummary): string {

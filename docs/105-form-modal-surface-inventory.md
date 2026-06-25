@@ -1,8 +1,8 @@
 # Form & Modal Surface Inventory
 
-Version: 1.3
+Version: 1.5
 Author: Brandon Korous
-Last Updated: 2026-06-23
+Last Updated: 2026-06-25
 
 A complete census of every **form, create/edit flow, and modal/dialog** in the dashboard app
 (`apps/dashboard/app`), with each one's current presentation and the work needed to bring it onto
@@ -76,7 +76,7 @@ Walk these in order — each is `[ ] open → assess → focused fix → verify`
 | #   | Page (route)                                                | Surface(s)                                                                                                                               | Treatment                                                                        | Score (UI/UX)          |
 | --- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ---------------------- |
 | 1   | Categories `/commerce/categories/[id]`                      | `category-edit-form` (the whole detail body)                                                                                             | single-form detail → **`SurfaceFrame`** (symmetric with create)                  | UI **9** / UX **9** ✅ |
-| 2   | Collections `/commerce/collections/[id]`                    | `collection-meta-form` (Metadata tab)                                                                                                    | tab panel → `<Card variant="module">` + consistent Save, no `CardFooter` toolbar | —                      |
+| 2   | Collections `/commerce/collections/[id]`                    | `collection-meta-form` (Metadata tab)                                                                                                    | tab panel → `<Card variant="module">` + consistent Save, no `CardFooter` toolbar | UI **9** / UX **9** ✅ |
 | 3   | Products `/commerce/products/[id]`                          | `product-edit-form` (Edit tab) + variants/media/fitment/inventory panels; `new-variant-dialog`/`-form` + `options-editor-dialog` (stubs) | tab panels → module-card cleanup; build the two stub dialogs                     | —                      |
 | 4   | Pricing `/commerce/pricing/[id]`                            | `price-list-entries-editor`                                                                                                              | assess — likely correct inline; confirm only                                     | —                      |
 | 5   | Bundles `/commerce/bundles/[id]`                            | `bundle-editor` EDIT path (renders inline today)                                                                                         | module-card cleanup; decide vs full `SurfaceFrame`                               | —                      |
@@ -125,8 +125,56 @@ to improve. A gap that recurs across pages is a **platform fix on the primitive*
   nav/refresh isn't guarded (OS-level `beforeunload`, intentionally out of scope).
 - **Post-fix: UI 9 · UX 9** — all triaged gaps closed; the two "remaining" items are minor/deferred.
 
+### Collections `/commerce/collections/[id]` — Metadata tab — UI 7→**9**/10 · UX 7→**9**/10 (2026-06-24)
+
+- ✅ Strong: correct tab-panel treatment (NOT a nested frame); SEO already loads a live health chip;
+  type-not-editable guard rail explained in microcopy.
+- ✅ FIXED (UI): Metadata panel now a **`<Card variant="module">`** (commerce stripe; Products + Rules
+  tabs too, so the whole detail reads commerce); Featured is a themed **`@sparx/ui` `Checkbox`** (was a
+  raw `<input type="checkbox">`); Save moved out of the bespoke `CardFooter` into the card body and is
+  **dirty-aware** (disabled until something changes; clears the saved badge on edit).
+- ✅ FIXED (UI, platform): **status pills carry a tone** — membership product pills (active→success,
+  draft→warning, archived→neutral) and the list's type/featured/count badges were bland `neutral`/
+  `outline` (one even passed `color="outline"`, a no-op → grey). Now `<Badge color={statusTone(s)} …>`.
+  See platform section.
+- ✅ FIXED (UX, platform): **SEO transparency** — blank SEO title/desc scored green ("present") because
+  the live site + audit fall back to name/description; the editor never showed that. New `<SeoMetaFields>`
+  makes the inherited value the placeholder + adds per-field "Use name/description". See platform section.
+- Remaining (keeps it 9): the tab panel doesn't register the dirty-guard (full-page tabbed detail isn't
+  wrapped in `UnsavedGuardProvider`; switching tabs/navigating away loses unsaved edits) — deferred until
+  the guard extends to tabbed details; `collection-membership-editor` is 276 lines (warn-only).
+- **Post-fix: UI 9 · UX 9.**
+
 ### Platform gaps surfaced (fix once, on the primitive)
 
+- ✅ **BUILT — Status pills carry semantic color (`statusTone`).** A status pill is just a `<Badge>` with
+  a tone — no `StatusBadge` component. `statusTone(status)` + `statusLabel(status)` ship from `@sparx/ui`
+  (in `primitives/badge.tsx`): a universal status→tone dictionary (success/warning/info/danger/neutral)
+  so every list/detail/picker renders `<Badge color={statusTone(s)} variant="soft" size="sm">` instead of
+  bland neutral/outline pills or hand-rolled `<span>`s. Domain code that reads a word differently passes
+  `color` explicitly (scheduling/automations keep their curated maps). Rule in docs/35 §9; it's a
+  `surface-review` System-fidelity check. First adopter: Collections (2026-06-24).
+  - **✅ SWEEP DONE (2026-06-25).** Replaced the bland/`outline`/local-`STATUS_VARIANT` status pills
+    across the dashboard with `statusTone`/`statusLabel` (or fixed the local map to be semantic where the
+    vocab is domain-specific). Files: commerce products / discounts / configurator / gift-cards /
+    subscriptions / reviews / qa selection lists; CRM orders (list + detail, incl. payment + fulfillment
+    pills) / quotes (list + detail) / b2b accounts (list + detail) / customers' B2B card; CMS
+    entry-status-bar + content selection table; inventory lots serial-count badge. Dictionary extended
+    with the consolidation vocab (placed/submitted/accepted/converted/captured/denied/credit_hold/spent/
+    flagged/received/awaiting_shipment/inspecting/inspected/recovered/abandoned/resolved/posted/reserved/
+    released/consumed/spam/bounced). **Left intentionally** (already-semantic curated maps or non-universal
+    vocab): scheduling, automations, chat, email, fleet-holds, inventory `types.ts` (PO/transfer/count/
+    serial/recall/movement/source/run), invoicing AR, dropship, provider-install (icons), deal pipeline
+    stages, task priority, and boolean active/inactive ternaries. **Returns keeps a curated map** — there
+    `refunded` is the happy END state (success), the opposite of the order/payment reading
+    (`statusTone('refunded')=danger`). 0 type errors, 0 lint errors (only pre-existing `max-lines` warns).
+- ✅ **BUILT — `<SeoMetaFields>` (the standard SEO block).** `apps/dashboard/components/seo/seo-meta-fields.tsx`
+  — title + meta-description pair where the **inherited** value (name / trimmed description) is the
+  field's placeholder and a per-field **"Use name"/"Use description"** button materializes it (fill-empty,
+  never clobber; description trimmed to the ~160-char meta budget). Resolves the "blank field but green
+  score" confusion: the live site + audit already fall back `seoTitle ?? name`, so blank = inherits, and
+  the placeholder now says so. Rule in docs/50 §6. Adopt on every editable surface with SEO fields. First
+  adopter: Collections (2026-06-24).
 - ✅ **BUILT — Dirty-state guard for form surfaces.** `apps/dashboard/app/(dashboard)/_components/`
   `unsaved-guard.tsx` — `UnsavedGuardProvider` + `useRegisterLeaveGuard(guard)` (form side) +
   `useLeaveGuard()` (host side). The active form registers ONE guard (its dirty check + `useConfirm`
@@ -137,8 +185,34 @@ to improve. A gap that recurs across pages is a **platform fix on the primitive*
   **Every subsequent edit surface adopts it by computing `dirty` + `useRegisterLeaveGuard`.** First
   adopter: Categories (2026-06-23). _Not covered: hard browser nav (`beforeunload`); switch-mode preserves
   edits — both deferred._
+- ✅ **BUILT — Full-page presentation switch (drawer/modal parity).** The overlay host (`DetailHeader`)
+  offers Close/Switch/Maximize; the `embedded` full page had none. Added a generic **`headerActions`** slot
+  to `SurfaceFrame`'s embedded title strip + a shared `DetailPresentationSwitch` (in `detail-panel.tsx`)
+  that opens the record as a drawer/modal over its list (route from manifest `routePrefix`), dirty-guarded
+  via `useLeaveGuard`. Close/Maximize stay OFF the full page (breadcrumb + back close it; can't maximize
+  what's maximized). Adopt per page: pass `headerActions` when `surface==='page'` + wrap the page route in
+  `UnsavedGuardProvider`. First adopter: Categories (2026-06-23).
 - **`SurfaceSummary` has no async/loading slot.** If summaries start loading related-record counts they
   need a skeleton/`loading` affordance. Not needed for Categories (derived client-side). _Surfaced: Categories (2026-06-23)._
+- ✅ **BUILT — Detail header-slot teleport + `DetailPageShell` + identity-once.** A detail body declares its
+  header content (status + lifecycle actions) ONCE via `<DetailHeaderSlot>` (children-based portal,
+  `_components/detail-header-slot.tsx`) and it renders in whichever frame is active — the drawer/modal
+  chrome (`detail-panel.tsx`, now carries a slot target) or the new full-page `DetailPageShell`
+  (`_components/detail-page-shell.tsx`: back-link + slot + presentation switch, generalizing the
+  `headerActions` switch above). Two rules ride with it: **identity-once** — an entity's name/slug is its
+  editable field, never ALSO a read-only heading (removed from product / collection / cms page / cms entry;
+  read-only/transaction details keep their heading since they have no name field); and **lifecycle in the
+  header, not an in-body "Status" card** — status badge + primary action keep text, secondary actions go
+  icon-only with tooltips (docs/86 §5.1, docs/34 §4). _Built 2026-06-25 (product, collection, cms page, cms entry)._
+- **DECIDED — CMS editors are explicit-save only.** `cms/[id]/edit-form.tsx` + `cms/types/[typeKey]/[id]/`
+  `edit-entry-form.tsx` had per-keystroke autosave; it's now OFF behind `NEXT_PUBLIC_CMS_AUTOSAVE` (unset ⇒
+  off) so the Save button is the single mechanism, consistent with every other editor. The machinery stays
+  behind the flag; the future direction is one unified platform-wide autosave that DROPS the Save buttons
+  (not kept alongside). _Decided 2026-06-25._
+- **OPEN — leave-guard is not platform-wide.** Only `category-edit-form.tsx` registers
+  `useRegisterLeaveGuard` today; product, the CMS editors, and the rest don't — so with CMS autosave now
+  off, those surfaces can lose edits on an accidental close (same as product). Wire the guard across all
+  explicit-save edit surfaces in one sweep. _Open 2026-06-25._
 
 ---
 
@@ -247,57 +321,57 @@ Dialogs that carry real input (not just confirms):
 
 ### Commerce
 
-| Path                                                                                                | Name                       | Kind                     | Current                | Status | Action                         |
-| --------------------------------------------------------------------------------------------------- | -------------------------- | ------------------------ | ---------------------- | ------ | ------------------------------ |
-| `commerce/products/_components/product-wizard/index.tsx`                                            | Create product             | Create wizard            | overlay                | ✅     | done (F-layout + summary)      |
-| `commerce/products/[id]/_components/product-edit-form.tsx`                                          | Edit product overview      | Edit/record form         | inline (detail tab)    | ✅     | standard detail tab            |
-| `commerce/products/[id]/_components/product-media-panel.tsx`                                        | Product media              | Edit/record form         | inline (detail tab)    | ✅     | fine                           |
-| `commerce/products/[id]/_components/fitment-panel.tsx`                                              | Product fitment            | Edit/record form         | inline (detail tab)    | ✅     | fine                           |
-| `commerce/products/[id]/_components/inventory-panel.tsx`                                            | Inventory adjust / reorder | Inline page-body form    | inline (expand-in-row) | ⚙️     | consider drawer for adjust     |
-| `commerce/products/[id]/_components/new-variant-dialog.tsx`                                         | Add variant (stub)         | Substantive dialog/modal | raw Modal              | 🔲     | build real form in modal       |
-| `commerce/products/[id]/_components/new-variant-form.tsx`                                           | Add variant body           | Single-step create form  | inline                 | 🔲     | wire into the dialog           |
-| `commerce/products/[id]/_components/options-editor-dialog.tsx`                                      | Options editor (stub)      | Substantive dialog/modal | raw Modal              | 🔲     | build real editor in modal     |
-| `commerce/products/[id]/_components/product-status-bar.tsx`                                         | Publish / archive          | Action bar               | inline                 | ➖     | low-risk direct transitions    |
-| `commerce/products/_components/bulk-price-adjust-modal.tsx`                                         | Bulk price adjust          | Bulk/action modal        | Modal                  | ✅     | fine                           |
-| `commerce/products/_components/products-import-export.tsx`                                          | Products import            | Bulk/action modal        | ImportDialog           | ✅     | fine                           |
-| `commerce/products/pricing/_components/bulk-pricing-tool.tsx`                                       | Bulk pricing tool          | Bulk/action modal        | full-page tool         | 🔲     | decide page vs overlay         |
-| `commerce/categories/_components/category-create-form.tsx`                                          | New category               | Single-step create form  | overlay                | ✅     | surface-aware                  |
-| `commerce/categories/_components/category-edit-form.tsx`                                            | Edit category              | Edit/record form         | overlay                | ✅     | fine                           |
-| `commerce/categories/_components/categories-editor.tsx`                                             | Category tree              | (nav)                    | inline                 | ➖     | read-only tree                 |
-| `commerce/collections/_components/collection-create-form.tsx`                                       | New collection             | Single-step create form  | overlay                | ✅     | surface-aware                  |
-| `commerce/collections/[id]/_components/collection-meta-form.tsx`                                    | Edit collection meta       | Edit/record form         | inline (detail tab)    | ✅     | fine                           |
-| `commerce/collections/[id]/_components/collection-membership-editor.tsx`                            | Collection membership      | Edit/record form         | inline (detail tab)    | ✅     | fine                           |
-| `commerce/pricing/_components/price-list-create-form.tsx`                                           | New price list             | Single-step create form  | overlay                | ✅     | surface-aware                  |
-| `commerce/pricing/[id]/_components/price-list-entries-editor.tsx`                                   | Price-list entries         | Edit/record form         | inline (detail tab)    | ✅     | appropriate                    |
-| `commerce/pricing/[id]/_components/price-list-status-bar.tsx`                                       | Price-list archive         | Confirm                  | inline arm/confirm     | ✅     | done (useConfirm)              |
-| `commerce/gift-cards/_components/issue-gift-card-form.tsx`                                          | Issue gift card            | Single-step create form  | overlay                | ✅     | surface-aware                  |
-| `commerce/account-credit/_components/grant-account-credit-form.tsx`                                 | Grant account credit       | Single-step create form  | overlay                | ✅     | surface-aware                  |
-| `commerce/markup-rules/_components/markup-rules-manager.tsx` (RuleForm)                             | Create/edit markup rule    | Edit/record form         | inline expand-in-place | 🔲     | move into overlay              |
-| `commerce/surcharges/_components/surcharges-manager.tsx` (RuleForm)                                 | Create/edit surcharge rule | Edit/record form         | inline expand-in-place | 🔲     | move into overlay              |
-| `commerce/bundles/_components/bundle-editor.tsx` + `bundles/new`                                    | Create/edit bundle         | Create/edit form         | full-page only         | 🔲     | surface + overlay              |
-| `commerce/configurator/new/_components/new-template-form.tsx`                                       | New configurator template  | Single-step create form  | full-page only         | 🔲     | surface + overlay              |
-| `commerce/configurator/[id]/_components/template-json-editor.tsx`                                   | Template JSON editor       | Edit/record form         | inline (detail tab)    | ✅     | fine                           |
-| `commerce/discounts/new/page.tsx`                                                                   | New discount               | Single-step create form  | full-page only         | 🔲     | surface + overlay              |
-| `commerce/discounts/_components/discounts-import-export.tsx`                                        | Discounts import           | Bulk/action modal        | ImportDialog           | ✅     | fine                           |
-| `commerce/fitment/_components/fitment-reference-editor.tsx`                                         | Fitment reference add-rows | Inline page-body form    | inline (tree)          | 🔲     | standardize add-forms          |
-| `commerce/providers/install/_components/install-provider-form.tsx`                                  | Install provider           | Single-step create form  | full-page only         | 🔲     | surface + overlay              |
-| `commerce/providers/[id]/_components/provider-actions-bar.tsx`                                      | Provider enable/uninstall  | Confirm                  | inline                 | ➖     | `useConfirm`                   |
-| `commerce/qa/[id]/_components/answer-form.tsx`                                                      | Post staff answer          | Edit/record form         | inline (detail)        | 🔲     | wrap in card/overlay           |
-| `commerce/qa/[id]/_components/question-moderate-actions.tsx`                                        | Moderate question          | Confirm                  | inline                 | ➖     | `useConfirm`                   |
-| `commerce/returns/[id]/_components/return-approval-form.tsx`                                        | Approve return             | Edit/record form         | inline (detail)        | 🔲     | standard card layout           |
-| `commerce/returns/[id]/_components/return-inspection-form.tsx`                                      | Record inspection          | Edit/record form         | inline (detail)        | 🔲     | standard card layout           |
-| `commerce/returns/[id]/_components/return-refund-form.tsx`                                          | Issue refund               | Edit/record form         | inline (detail)        | 🔲     | standard card layout           |
-| `commerce/returns/[id]/_components/return-status-bar.tsx`                                           | Deny / mark received       | Confirm                  | Modal + reason field   | ✅     | done (Modal + required reason) |
-| `commerce/reviews/[id]/_components/respond-form.tsx`                                                | Respond to review          | Edit/record form         | inline (detail)        | 🔲     | standard card layout           |
-| `commerce/reviews/[id]/_components/moderate-actions.tsx`                                            | Moderate review            | Confirm                  | Modal + note field     | ✅     | done (Modal note + useConfirm) |
-| `commerce/shipping/profiles/new/_components/new-profile-form.tsx`                                   | New shipping profile       | Single-step create form  | full-page only         | 🔲     | surface + overlay              |
-| `commerce/shipping/zones/new/_components/new-zone-form.tsx`                                         | New shipping zone          | Single-step create form  | full-page only         | 🔲     | surface + overlay              |
-| `commerce/shipping/zones/[id]/_components/new-rate-form.tsx`                                        | Add shipping rate          | Single-step create form  | inline (detail)        | 🔲     | overlay or collapsible         |
-| `commerce/tax/zones/new/_components/new-tax-zone-form.tsx`                                          | New tax zone               | Single-step create form  | full-page only         | 🔲     | surface + overlay              |
-| `commerce/tax/zones/[id]/_components/new-tax-rate-form.tsx`                                         | Add tax rate               | Single-step create form  | inline (detail)        | 🔲     | overlay or collapsible         |
-| `commerce/subscriptions/[id]/_components/subscription-actions-bar.tsx`                              | Pause/skip/cancel          | Confirm                  | inline                 | ➖     | `useConfirm`                   |
-| `commerce/settings/_components/site-settings-form.tsx`                                              | Commerce settings          | Settings form            | inline                 | ✅     | settings page                  |
-| _delete buttons_ (`bundle`, `category`, `shipping profile/zone/rate`, `tax zone/rate`, `surcharge`) | Delete X                   | Confirm                  | inline                 | ➖     | `useConfirm`                   |
+| Path                                                                                                | Name                       | Kind                       | Current                | Status | Action                                             |
+| --------------------------------------------------------------------------------------------------- | -------------------------- | -------------------------- | ---------------------- | ------ | -------------------------------------------------- |
+| `commerce/products/_components/product-wizard/index.tsx`                                            | Create product             | Create wizard              | overlay                | ✅     | done (F-layout + summary)                          |
+| `commerce/products/[id]/_components/product-edit-form.tsx`                                          | Edit product overview      | Edit/record form           | inline (detail tab)    | ✅     | standard detail tab                                |
+| `commerce/products/[id]/_components/product-media-panel.tsx`                                        | Product media              | Edit/record form           | inline (detail tab)    | ✅     | fine                                               |
+| `commerce/products/[id]/_components/fitment-panel.tsx`                                              | Product fitment            | Edit/record form           | inline (detail tab)    | ✅     | fine                                               |
+| `commerce/products/[id]/_components/inventory-panel.tsx`                                            | Inventory adjust / reorder | Inline page-body form      | inline (expand-in-row) | ⚙️     | consider drawer for adjust                         |
+| `commerce/products/[id]/_components/new-variant-dialog.tsx`                                         | Add variant (stub)         | Substantive dialog/modal   | raw Modal              | 🔲     | build real form in modal                           |
+| `commerce/products/[id]/_components/new-variant-form.tsx`                                           | Add variant body           | Single-step create form    | inline                 | 🔲     | wire into the dialog                               |
+| `commerce/products/[id]/_components/options-editor-dialog.tsx`                                      | Options editor (stub)      | Substantive dialog/modal   | raw Modal              | 🔲     | build real editor in modal                         |
+| `commerce/products/[id]/_components/product-status-bar.tsx`                                         | Publish / archive          | Action bar                 | inline                 | ➖     | low-risk direct transitions                        |
+| `commerce/products/_components/bulk-price-adjust-modal.tsx`                                         | Bulk price adjust          | Bulk/action modal          | Modal                  | ✅     | fine                                               |
+| `commerce/products/_components/products-import-export.tsx`                                          | Products import            | Bulk/action modal          | ImportDialog           | ✅     | fine                                               |
+| `commerce/products/pricing/_components/bulk-pricing-tool.tsx`                                       | Bulk pricing tool          | Bulk/action modal          | full-page tool         | 🔲     | decide page vs overlay                             |
+| `commerce/categories/_components/category-create-form.tsx`                                          | New category               | Single-step create form    | overlay                | ✅     | surface-aware                                      |
+| `commerce/categories/_components/category-edit-form.tsx`                                            | Edit category              | Edit/record form           | overlay                | ✅     | fine                                               |
+| `commerce/categories/_components/categories-table.tsx`                                              | Category tree-table        | List substrate (read-only) | inline                 | ➖     | not a form surface — edits live in the detail view |
+| `commerce/collections/_components/collection-create-form.tsx`                                       | New collection             | Single-step create form    | overlay                | ✅     | surface-aware                                      |
+| `commerce/collections/[id]/_components/collection-meta-form.tsx`                                    | Edit collection meta       | Edit/record form           | inline (detail tab)    | ✅     | fine                                               |
+| `commerce/collections/[id]/_components/collection-membership-editor.tsx`                            | Collection membership      | Edit/record form           | inline (detail tab)    | ✅     | fine                                               |
+| `commerce/pricing/_components/price-list-create-form.tsx`                                           | New price list             | Single-step create form    | overlay                | ✅     | surface-aware                                      |
+| `commerce/pricing/[id]/_components/price-list-entries-editor.tsx`                                   | Price-list entries         | Edit/record form           | inline (detail tab)    | ✅     | appropriate                                        |
+| `commerce/pricing/[id]/_components/price-list-status-bar.tsx`                                       | Price-list archive         | Confirm                    | inline arm/confirm     | ✅     | done (useConfirm)                                  |
+| `commerce/gift-cards/_components/issue-gift-card-form.tsx`                                          | Issue gift card            | Single-step create form    | overlay                | ✅     | surface-aware                                      |
+| `commerce/account-credit/_components/grant-account-credit-form.tsx`                                 | Grant account credit       | Single-step create form    | overlay                | ✅     | surface-aware                                      |
+| `commerce/markup-rules/_components/markup-rules-manager.tsx` (RuleForm)                             | Create/edit markup rule    | Edit/record form           | inline expand-in-place | 🔲     | move into overlay                                  |
+| `commerce/surcharges/_components/surcharges-manager.tsx` (RuleForm)                                 | Create/edit surcharge rule | Edit/record form           | inline expand-in-place | 🔲     | move into overlay                                  |
+| `commerce/bundles/_components/bundle-editor.tsx` + `bundles/new`                                    | Create/edit bundle         | Create/edit form           | full-page only         | 🔲     | surface + overlay                                  |
+| `commerce/configurator/new/_components/new-template-form.tsx`                                       | New configurator template  | Single-step create form    | full-page only         | 🔲     | surface + overlay                                  |
+| `commerce/configurator/[id]/_components/template-json-editor.tsx`                                   | Template JSON editor       | Edit/record form           | inline (detail tab)    | ✅     | fine                                               |
+| `commerce/discounts/new/page.tsx`                                                                   | New discount               | Single-step create form    | full-page only         | 🔲     | surface + overlay                                  |
+| `commerce/discounts/_components/discounts-import-export.tsx`                                        | Discounts import           | Bulk/action modal          | ImportDialog           | ✅     | fine                                               |
+| `commerce/fitment/_components/fitment-reference-editor.tsx`                                         | Fitment reference add-rows | Inline page-body form      | inline (tree)          | 🔲     | standardize add-forms                              |
+| `commerce/providers/install/_components/install-provider-form.tsx`                                  | Install provider           | Single-step create form    | full-page only         | 🔲     | surface + overlay                                  |
+| `commerce/providers/[id]/_components/provider-actions-bar.tsx`                                      | Provider enable/uninstall  | Confirm                    | inline                 | ➖     | `useConfirm`                                       |
+| `commerce/qa/[id]/_components/answer-form.tsx`                                                      | Post staff answer          | Edit/record form           | inline (detail)        | 🔲     | wrap in card/overlay                               |
+| `commerce/qa/[id]/_components/question-moderate-actions.tsx`                                        | Moderate question          | Confirm                    | inline                 | ➖     | `useConfirm`                                       |
+| `commerce/returns/[id]/_components/return-approval-form.tsx`                                        | Approve return             | Edit/record form           | inline (detail)        | 🔲     | standard card layout                               |
+| `commerce/returns/[id]/_components/return-inspection-form.tsx`                                      | Record inspection          | Edit/record form           | inline (detail)        | 🔲     | standard card layout                               |
+| `commerce/returns/[id]/_components/return-refund-form.tsx`                                          | Issue refund               | Edit/record form           | inline (detail)        | 🔲     | standard card layout                               |
+| `commerce/returns/[id]/_components/return-status-bar.tsx`                                           | Deny / mark received       | Confirm                    | Modal + reason field   | ✅     | done (Modal + required reason)                     |
+| `commerce/reviews/[id]/_components/respond-form.tsx`                                                | Respond to review          | Edit/record form           | inline (detail)        | 🔲     | standard card layout                               |
+| `commerce/reviews/[id]/_components/moderate-actions.tsx`                                            | Moderate review            | Confirm                    | Modal + note field     | ✅     | done (Modal note + useConfirm)                     |
+| `commerce/shipping/profiles/new/_components/new-profile-form.tsx`                                   | New shipping profile       | Single-step create form    | full-page only         | 🔲     | surface + overlay                                  |
+| `commerce/shipping/zones/new/_components/new-zone-form.tsx`                                         | New shipping zone          | Single-step create form    | full-page only         | 🔲     | surface + overlay                                  |
+| `commerce/shipping/zones/[id]/_components/new-rate-form.tsx`                                        | Add shipping rate          | Single-step create form    | inline (detail)        | 🔲     | overlay or collapsible                             |
+| `commerce/tax/zones/new/_components/new-tax-zone-form.tsx`                                          | New tax zone               | Single-step create form    | full-page only         | 🔲     | surface + overlay                                  |
+| `commerce/tax/zones/[id]/_components/new-tax-rate-form.tsx`                                         | Add tax rate               | Single-step create form    | inline (detail)        | 🔲     | overlay or collapsible                             |
+| `commerce/subscriptions/[id]/_components/subscription-actions-bar.tsx`                              | Pause/skip/cancel          | Confirm                    | inline                 | ➖     | `useConfirm`                                       |
+| `commerce/settings/_components/site-settings-form.tsx`                                              | Commerce settings          | Settings form              | inline                 | ✅     | settings page                                      |
+| _delete buttons_ (`bundle`, `category`, `shipping profile/zone/rate`, `tax zone/rate`, `surcharge`) | Delete X                   | Confirm                    | inline                 | ➖     | `useConfirm`                                       |
 
 ### CRM & B2B
 
@@ -362,31 +436,31 @@ Dialogs that carry real input (not just confirms):
 
 ### CMS & Builder
 
-| Path                                                                                                | Name                        | Kind                    | Current            | Status | Action                               |
-| --------------------------------------------------------------------------------------------------- | --------------------------- | ----------------------- | ------------------ | ------ | ------------------------------------ |
-| `cms/content/new/content-entry-wizard.tsx`                                                          | New content entry           | Create wizard           | overlay            | ✅     | F-layout (no summary needed)         |
-| `cms/_components/page-create-form.tsx`                                                              | New page                    | Single-step create form | overlay            | ✅     | surface-aware                        |
-| `cms/types/_components/content-type-create-form.tsx`                                                | New content type            | Single-step create form | overlay            | ✅     | surface-aware                        |
-| `cms/authors/author-create-form.tsx`                                                                | New author                  | Single-step create form | overlay            | ✅     | surface-aware                        |
-| `cms/taxonomy/taxonomy-create-form.tsx`                                                             | New taxonomy                | Single-step create form | overlay            | ✅     | surface-aware                        |
-| `cms/redirects/_components/redirect-create-form.tsx`                                                | Add redirect                | Single-step create form | overlay            | ✅     | surface-aware                        |
-| `cms/types/[typeKey]/new/new-entry-form.tsx`                                                        | New entry (type-scoped)     | Single-step create form | full-page only     | 🔲     | migrate or redirect to wizard        |
-| `cms/[id]/edit-form.tsx`                                                                            | Edit page (autosave)        | Edit/record form        | full-page only     | 🔲     | overlay; delete → `useConfirm`       |
-| `cms/authors/[id]/author-edit-form.tsx`                                                             | Edit author                 | Edit/record form        | full-page only     | 🔲     | overlay; delete → `useConfirm`       |
-| `cms/media/[id]/edit-form.tsx`                                                                      | Edit asset                  | Edit/record form        | full-page only     | 🔲     | overlay                              |
-| `cms/types/[typeKey]/[id]/edit-entry-form.tsx`                                                      | Edit content entry          | Edit/record form        | full-page only     | 🔲     | overlay; delete → `useConfirm`       |
-| `cms/types/[typeKey]/schema/schema-editor.tsx`                                                      | Edit type schema            | Edit/record form        | full-page only     | 🔲     | deliberate (bespoke)                 |
-| `cms/navigation/menu-editor.tsx`                                                                    | Menu editor                 | Edit/record form        | full-page only     | 🔲     | deliberate (tree)                    |
-| `cms/taxonomy/[key]/terms-manager.tsx`                                                              | Terms manager               | Edit/record form        | full-page only     | 🔲     | extract `TermCreateForm`             |
-| `cms/legal/consent-settings-form.tsx`                                                               | Cookie consent              | Settings form           | inline             | 🔲     | wrap in F-layout                     |
-| `cms/_components/media-picker.tsx` / `reference-picker.tsx`                                         | Media / reference picker    | Picker dialog           | Modal              | ✅     | fine                                 |
-| `cms/redirects/_components/import-redirects-button.tsx` / `cms/media/upload-button.tsx`             | Import / upload             | Bulk/action             | inline             | ✅     | fine                                 |
-| `cms/[id]/revisions/restore-button.tsx`                                                             | Restore revision            | Confirm                 | useConfirm         | ✅     | done (useConfirm, warning tone)      |
-| `cms/[id]/seo-panel.tsx` / `entry-template-picker.tsx`                                              | SEO panel / template picker | Edit/record form        | inline             | ✅     | fine                                 |
-| `builder/**` (inspector, panels, palettes, brand/theme controls, framing/preview/merge-tags modals) | Builder editor surfaces     | Edit / dialog           | inline / Modal     | ✅     | bespoke editor — likely out of scope |
-| `builder/_governance/components/allowlist-center.tsx`                                               | CSS allowlist editor        | Settings form           | inline             | 🔲     | wrap in F-layout                     |
-| `builder/components/_components/new-component-button.tsx`                                           | New component               | Single-step create form | AlertDialog prompt | 🔲     | overlay single-step                  |
-| `builder/components/_components/delete-component-button.tsx`                                        | Delete component            | Confirm                 | `useConfirm`       | ✅     | fine                                 |
+| Path                                                                                                | Name                        | Kind                    | Current            | Status | Action                                                                                       |
+| --------------------------------------------------------------------------------------------------- | --------------------------- | ----------------------- | ------------------ | ------ | -------------------------------------------------------------------------------------------- |
+| `cms/content/new/content-entry-wizard.tsx`                                                          | New content entry           | Create wizard           | overlay            | ✅     | F-layout (no summary needed)                                                                 |
+| `cms/_components/page-create-form.tsx`                                                              | New page                    | Single-step create form | overlay            | ✅     | surface-aware                                                                                |
+| `cms/types/_components/content-type-create-form.tsx`                                                | New content type            | Single-step create form | overlay            | ✅     | surface-aware                                                                                |
+| `cms/authors/author-create-form.tsx`                                                                | New author                  | Single-step create form | overlay            | ✅     | surface-aware                                                                                |
+| `cms/taxonomy/taxonomy-create-form.tsx`                                                             | New taxonomy                | Single-step create form | overlay            | ✅     | surface-aware                                                                                |
+| `cms/redirects/_components/redirect-create-form.tsx`                                                | Add redirect                | Single-step create form | overlay            | ✅     | surface-aware                                                                                |
+| `cms/types/[typeKey]/new/new-entry-form.tsx`                                                        | New entry (type-scoped)     | Single-step create form | full-page only     | 🔲     | migrate or redirect to wizard                                                                |
+| `cms/[id]/edit-form.tsx`                                                                            | Edit page (explicit save)   | Edit/record form        | full-page only     | 🔲     | status+lifecycle in header (`DetailHeaderSlot`); autosave off via `NEXT_PUBLIC_CMS_AUTOSAVE` |
+| `cms/authors/[id]/author-edit-form.tsx`                                                             | Edit author                 | Edit/record form        | full-page only     | 🔲     | overlay; delete → `useConfirm`                                                               |
+| `cms/media/[id]/edit-form.tsx`                                                                      | Edit asset                  | Edit/record form        | full-page only     | 🔲     | overlay                                                                                      |
+| `cms/types/[typeKey]/[id]/edit-entry-form.tsx`                                                      | Edit content entry          | Edit/record form        | full-page only     | 🔲     | overlay; delete → `useConfirm`                                                               |
+| `cms/types/[typeKey]/schema/schema-editor.tsx`                                                      | Edit type schema            | Edit/record form        | full-page only     | 🔲     | deliberate (bespoke)                                                                         |
+| `cms/navigation/menu-editor.tsx`                                                                    | Menu editor                 | Edit/record form        | full-page only     | 🔲     | deliberate (tree)                                                                            |
+| `cms/taxonomy/[key]/terms-manager.tsx`                                                              | Terms manager               | Edit/record form        | full-page only     | 🔲     | extract `TermCreateForm`                                                                     |
+| `cms/legal/consent-settings-form.tsx`                                                               | Cookie consent              | Settings form           | inline             | 🔲     | wrap in F-layout                                                                             |
+| `cms/_components/media-picker.tsx` / `reference-picker.tsx`                                         | Media / reference picker    | Picker dialog           | Modal              | ✅     | fine                                                                                         |
+| `cms/redirects/_components/import-redirects-button.tsx` / `cms/media/upload-button.tsx`             | Import / upload             | Bulk/action             | inline             | ✅     | fine                                                                                         |
+| `cms/[id]/revisions/restore-button.tsx`                                                             | Restore revision            | Confirm                 | useConfirm         | ✅     | done (useConfirm, warning tone)                                                              |
+| `cms/[id]/seo-panel.tsx` / `entry-template-picker.tsx`                                              | SEO panel / template picker | Edit/record form        | inline             | ✅     | fine                                                                                         |
+| `builder/**` (inspector, panels, palettes, brand/theme controls, framing/preview/merge-tags modals) | Builder editor surfaces     | Edit / dialog           | inline / Modal     | ✅     | bespoke editor — likely out of scope                                                         |
+| `builder/_governance/components/allowlist-center.tsx`                                               | CSS allowlist editor        | Settings form           | inline             | 🔲     | wrap in F-layout                                                                             |
+| `builder/components/_components/new-component-button.tsx`                                           | New component               | Single-step create form | AlertDialog prompt | 🔲     | overlay single-step                                                                          |
+| `builder/components/_components/delete-component-button.tsx`                                        | Delete component            | Confirm                 | `useConfirm`       | ✅     | fine                                                                                         |
 
 ### Platform (scheduling, email, marketplace, seo, automations, settings, onboarding)
 

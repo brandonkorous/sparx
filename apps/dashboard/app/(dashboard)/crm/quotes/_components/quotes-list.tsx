@@ -6,6 +6,8 @@ import {
   type SelectionColumn,
   type SelectionCard,
   Stack,
+  statusLabel,
+  statusTone,
   Text,
 } from '@sparx/ui';
 
@@ -27,15 +29,6 @@ export interface QuoteRow {
   createdAt: string;
 }
 
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline' | 'danger'> = {
-  draft: 'outline',
-  submitted: 'outline',
-  accepted: 'success',
-  declined: 'danger',
-  expired: 'warning',
-  converted: 'success',
-};
-
 interface QuotesListProps {
   quotes: QuoteRow[];
   view: 'table' | 'card';
@@ -54,8 +47,8 @@ export function QuotesList({ quotes, view }: QuotesListProps) {
   );
 
   const statusBadge = (q: QuoteRow) => (
-    <Badge color={STATUS_VARIANT[q.status] ?? 'outline'} className="text-xs">
-      {q.status}
+    <Badge color={statusTone(q.status)} variant="soft" size="sm">
+      {statusLabel(q.status)}
     </Badge>
   );
 

@@ -15,6 +15,10 @@ interface CategoryTreeNode {
   name: string;
   depth: number;
   path: string;
+  /** Sort priority among siblings — surfaced so the edit form can show sibling
+   *  context for the Priority field. Optional: degrades to "—" if the tree
+   *  endpoint omits it. */
+  position?: number;
   children: CategoryTreeNode[];
 }
 
@@ -29,7 +33,13 @@ export async function loadCategoryParents(): Promise<CategoryParentOption[]> {
   const out: CategoryParentOption[] = [];
   function walk(list: CategoryTreeNode[]): void {
     for (const node of list) {
-      out.push({ id: node.id, name: node.name, depth: node.depth, path: node.path });
+      out.push({
+        id: node.id,
+        name: node.name,
+        depth: node.depth,
+        path: node.path,
+        position: node.position,
+      });
       walk(node.children);
     }
   }

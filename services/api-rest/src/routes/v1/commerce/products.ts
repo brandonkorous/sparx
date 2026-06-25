@@ -1,6 +1,8 @@
 // Commerce — products + variants.
 //
 //   GET    /v1/commerce/products                              → list
+//   GET    /v1/commerce/products/facets                       → type/vendor/tag/tax-class lookups
+//   POST   /v1/commerce/products/:id/preview-tokens           → mint a draft-preview token
 //   POST   /v1/commerce/products                              → create
 //   GET    /v1/commerce/products/:id                          → fetch
 //   PATCH  /v1/commerce/products/:id                          → update
@@ -94,6 +96,38 @@ const productRoutes: FastifyPluginAsync = async (app) => {
       sortBy: q.sort_by,
     });
     return paged(items, { total, per_page: q.take ?? 50 });
+  });
+
+  // Open-ended option sets for the editor's smart lookups (product type, vendor,
+  // tags, tax class). Static path → no conflict with `/:id`.
+  app.get('/v1/commerce/products/facets', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    return ok(await productService.getFacets(toCommerceContext(request)));
+  });
+
+  // Mint a short-lived (15 min) draft-preview token for one product. The
+  // storefront honors `?sparxPreview=<token>` on the PDP, relaxing the
+  // published-only filter for THIS product so an editor can see a draft before
+  // publishing. Signature-and-TTL only (no DB row), mirroring the site-preview
+  // token — `aud: product-preview` keeps it un-replayable as a session token.
+  app.post('/v1/commerce/products/:id/preview-tokens', async (request) => {
+    const auth = requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const { id } = PathId.parse(request.params);
+    // Confirm the product exists (and surface its handle for the preview URL).
+    const product = await productService.get(toCommerceContext(request), id);
+    const ttlSeconds = 15 * 60;
+    const token = app.jwt.sign(
+      { sub: product.id, tid: auth.tenantId, aud: 'product-preview' },
+      { expiresIn: ttlSeconds }
+    );
+    return ok({
+      token,
+      product_id: product.id,
+      handle: product.handle,
+      expires_at: new Date(Date.now() + ttlSeconds * 1000).toISOString(),
+    });
   });
 
   app.post('/v1/commerce/products', async (request, reply) => {

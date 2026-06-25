@@ -10,6 +10,8 @@ import {
   Heading,
   Stack,
   Stat,
+  statusLabel,
+  statusTone,
   Text,
 } from '@sparx/ui';
 
@@ -35,13 +37,6 @@ interface B2bAccount {
 // page.tsx; this component renders content only.
 
 export const dynamic = 'force-dynamic';
-
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline' | 'danger'> = {
-  active: 'success',
-  credit_hold: 'warning',
-  suspended: 'danger',
-  inactive: 'outline',
-};
 
 interface Props {
   id: string;
@@ -69,7 +64,9 @@ export async function B2bAccountDetailContent({ id }: Props) {
           <Stack direction="row" align="center" gap={3} wrap>
             <Building2 className="h-5 w-5" />
             <Heading level={1}>{account.companyName}</Heading>
-            <Badge color={STATUS_VARIANT[account.status] ?? 'outline'}>{account.status}</Badge>
+            <Badge color={statusTone(account.status)} variant="soft">
+              {statusLabel(account.status)}
+            </Badge>
             {account.pricingTier && <Badge color="module">{account.pricingTier}</Badge>}
             {account.website && (
               <a

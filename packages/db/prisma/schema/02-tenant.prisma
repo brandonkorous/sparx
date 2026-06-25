@@ -94,6 +94,10 @@ model Tenant {
   // listings belong to the seeded `sparx` publisher, not a tenant.
   marketplacePublishers MarketplacePublisher[]
 
+  // Channels module (docs/106) — external sales-channel + sparx.market links
+  channelConnections     ChannelConnection[]
+  channelProductMappings ChannelProductMapping[]
+
   // Dashboard shell — per-user pinned/recent navigation state
   userFavorites UserFavorite[]
   userRecents   UserRecent[]

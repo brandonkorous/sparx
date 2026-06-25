@@ -17,6 +17,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  statusLabel,
+  statusTone,
   Text,
 } from '@sparx/ui';
 
@@ -82,14 +84,6 @@ interface CustomerSummary {
 
 export const dynamic = 'force-dynamic';
 
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline' | 'danger'> = {
-  placed: 'outline',
-  fulfilled: 'success',
-  delivered: 'success',
-  cancelled: 'danger',
-  refunded: 'warning',
-};
-
 interface Props {
   id: string;
 }
@@ -115,8 +109,12 @@ export async function OrderDetailContent({ id }: Props) {
       <Stack gap={2}>
         <Stack direction="row" align="center" gap={3} wrap>
           <Heading level={1}>{order.orderNumber}</Heading>
-          <Badge color={STATUS_VARIANT[order.status] ?? 'outline'}>{order.status}</Badge>
-          <Badge variant="outline">{order.paymentStatus}</Badge>
+          <Badge color={statusTone(order.status)} variant="soft">
+            {statusLabel(order.status)}
+          </Badge>
+          <Badge color={statusTone(order.paymentStatus)} variant="soft">
+            {statusLabel(order.paymentStatus)}
+          </Badge>
           {customer && (
             <Link
               href={`/crm/customers/${customer.id}`}
@@ -243,8 +241,8 @@ export async function OrderDetailContent({ id }: Props) {
                         <Text size="sm">{p.processor}</Text>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="text-xs">
-                          {p.status}
+                        <Badge color={statusTone(p.status)} variant="soft" size="sm">
+                          {statusLabel(p.status)}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right tabular-nums">
@@ -301,8 +299,8 @@ export async function OrderDetailContent({ id }: Props) {
                   <Stack key={f.id} gap={1}>
                     <Stack direction="row" justify="between">
                       <Stack direction="row" align="center" gap={2}>
-                        <Badge variant="outline" className="text-xs">
-                          {f.status}
+                        <Badge color={statusTone(f.status)} variant="soft" size="sm">
+                          {statusLabel(f.status)}
                         </Badge>
                         {f.carrier && (
                           <Text size="sm" variant="muted">

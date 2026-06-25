@@ -1,30 +1,25 @@
 import { notFound } from 'next/navigation';
 import { ExternalLink } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  Heading,
-  Stack,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  Text,
-} from '@sparx/ui';
+import { Badge, Stack, Tabs, TabsContent, TabsList, TabsTrigger } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { listProperties, type Property } from '@/lib/sites';
 
+import { DetailHeaderSlot } from '../../../_components/detail-header-slot';
+
 import type { ProductImageRow } from '../../variant-actions';
 
+import { ConfiguratorPanel, type ConfiguratorTemplateRow } from './_components/configurator-panel';
 import { FitmentPanel } from './_components/fitment-panel';
 import { InventoryPanel } from './_components/inventory-panel';
 import { ProductEditForm } from './_components/product-edit-form';
+import type { ProductFacets } from './_components/product-facets';
 import { ProductMediaPanel } from './_components/product-media-panel';
 import { ProductPricingPanel } from './_components/product-pricing-panel';
+import type { BulkTierRow } from './_components/product-bulk-tiers-editor';
+import { ProductPreviewButton } from './_components/product-preview-button';
+import { ProductSeoForm } from './_components/product-seo-form';
 import { ProductStatusBar } from './_components/product-status-bar';
 import { VariantsPanel } from './_components/variants-panel';
 
@@ -183,11 +178,9 @@ interface InventoryLevelRow {
 
 export const dynamic = 'force-dynamic';
 
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline'> = {
-  active: 'success',
-  draft: 'outline',
-  archived: 'warning',
-};
+// Tenant storefronts live at <slug>.sparx.zone (same origin the CMS preview
+// uses). Env-overridable for non-prod zones.
+const ZONE_DOMAIN = process.env.NEXT_PUBLIC_SPARX_ZONE_DOMAIN ?? 'sparx.zone';
 
 interface Props {
   id: string;
@@ -220,6 +213,9 @@ export async function ProductDetailContent({ id }: Props) {
     tenant,
     images,
     supplierName,
+    bulkTiers,
+    facets,
+    configuratorTemplates,
   ] = await Promise.all([
     api.get<OptionRow[]>(`/v1/commerce/products/${id}/variants/options`),
     api.get<VariantRow[]>(`/v1/commerce/products/${id}/variants?include_archived=true`),
@@ -250,6 +246,22 @@ export async function ProductDetailContent({ id }: Props) {
           .then((s) => s.name)
           .catch(() => null)
       : Promise.resolve(null),
+    // Variant-scoped bulk price tiers for the Pricing tab. Defensive — a failed
+    // read degrades to an empty editor rather than breaking the whole detail view.
+    api
+      .get<BulkTierRow[]>(`/v1/commerce/bulk-tiers?product_id=${id}`)
+      .catch(() => [] as BulkTierRow[]),
+    // Open-ended option sets for the Overview tab's smart lookups (type, vendor,
+    // tags, tax class). Defensive — a failed read degrades to empty suggestions
+    // (the lookups still accept free text), never breaking the detail view.
+    api
+      .get<ProductFacets>('/v1/commerce/products/facets')
+      .catch(() => ({ productTypes: [], vendors: [], tags: [], taxClasses: [] })),
+    // Configurator templates bound to this product (docs/09). Defensive — a
+    // failed read or disabled feature degrades to the empty-state CTA.
+    api
+      .get<ConfiguratorTemplateRow[]>(`/v1/commerce/products/${id}/configurator-templates`)
+      .catch(() => [] as ConfiguratorTemplateRow[]),
   ]);
 
   // Only catalog-applying, active rules can price a variant inline.
@@ -267,42 +279,36 @@ export async function ProductDetailContent({ id }: Props) {
   );
 
   return (
-    <Stack gap={6}>
-      <Stack direction="row" align="end" justify="between" wrap gap={4}>
-        <Stack gap={2}>
-          <Stack direction="row" align="center" gap={3} wrap>
-            <Heading level={1}>{product.title}</Heading>
-            <Badge color={STATUS_VARIANT[product.status] ?? 'outline'}>{product.status}</Badge>
-            {product.fulfillmentType !== 'physical' && (
-              <Badge variant="outline">{product.fulfillmentType}</Badge>
-            )}
-            {product.hazmatClass !== 'none' && (
-              <Badge color="warning">hazmat: {product.hazmatClass}</Badge>
-            )}
-          </Stack>
-          <Stack direction="row" align="center" gap={2}>
-            <Text size="sm" variant="muted">
-              /{product.handle}
-            </Text>
-            {product.status === 'active' && (
-              <a
-                href={`https://storefront.placeholder/products/${product.handle}`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1 text-xs text-[var(--color-text-muted)] hover:text-[var(--module-active)]"
-              >
-                View on storefront
-                <ExternalLink className="h-3 w-3" />
-              </a>
-            )}
-          </Stack>
-        </Stack>
+    <>
+      {/* Identity (name + handle) lives ONLY in the editable Title/Handle fields
+          on the Overview tab — no read-only header restating them. Status + the
+          lifecycle actions teleport into the active frame's header bar. An active
+          product gets a live storefront link; a draft/archived one gets a
+          token-based draft Preview (it has no public page yet). */}
+      <DetailHeaderSlot>
         <ProductStatusBar
           productId={product.id}
           status={product.status}
           hasVariants={product.variantCount > 0}
         />
-      </Stack>
+        {product.status === 'active' ? (
+          <a
+            href={`https://${tenant.slug}.${ZONE_DOMAIN}/products/${product.handle}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 text-xs text-[var(--color-text-muted)] hover:text-[var(--module-active)]"
+          >
+            View on storefront
+            <ExternalLink className="h-3 w-3" />
+          </a>
+        ) : (
+          <ProductPreviewButton
+            productId={product.id}
+            handle={product.handle}
+            tenantSlug={tenant.slug}
+          />
+        )}
+      </DetailHeaderSlot>
 
       <Tabs defaultValue="overview">
         <TabsList>
@@ -336,6 +342,7 @@ export async function ProductDetailContent({ id }: Props) {
               product={product}
               sites={sites}
               initialPropertyIds={product.propertyIds ?? []}
+              facets={facets}
             />
           </Stack>
         </TabsContent>
@@ -363,6 +370,7 @@ export async function ProductDetailContent({ id }: Props) {
             variants={variants}
             markupRules={markupRules}
             supplierName={supplierName}
+            tiers={bulkTiers}
           />
         </TabsContent>
 
@@ -390,65 +398,20 @@ export async function ProductDetailContent({ id }: Props) {
         </TabsContent>
 
         <TabsContent value="configurator">
-          <PhaseStub
-            title="Configurator — Phase 4"
-            description="Option matrix + conditional rules + add-ons. Visual rule editor and config sandbox for built-to-order products."
-          />
+          <ConfiguratorPanel productId={product.id} templates={configuratorTemplates} />
         </TabsContent>
 
         <TabsContent value="seo">
-          <ProductSeoPanel product={product} />
+          <ProductSeoForm
+            productId={product.id}
+            title={product.title}
+            handle={product.handle}
+            description={product.description}
+            seoTitle={product.seoTitle}
+            seoDescription={product.seoDescription}
+          />
         </TabsContent>
       </Tabs>
-    </Stack>
-  );
-}
-
-function PhaseStub({ title, description }: { title: string; description: string }) {
-  return (
-    <Card>
-      <CardContent>
-        <Stack gap={2} className="py-6 text-center">
-          <Heading level={4}>{title}</Heading>
-          <Text variant="muted">{description}</Text>
-        </Stack>
-      </CardContent>
-    </Card>
-  );
-}
-
-function ProductSeoPanel({
-  product,
-}: {
-  product: { seoTitle: string | null; seoDescription: string | null; handle: string };
-}) {
-  return (
-    <Card>
-      <CardHeader>
-        <Heading level={3}>Search engine listing</Heading>
-        <Text variant="muted" size="sm">
-          What this product looks like in Google / Bing results.
-        </Text>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={3}>
-          <Stack
-            gap={1}
-            className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3"
-          >
-            <Text size="sm" className="text-blue-700">
-              {product.seoTitle ?? '(set a title to preview)'}
-            </Text>
-            <Text size="xs" variant="muted">
-              storefront.example/products/{product.handle}
-            </Text>
-            <Text size="xs">{product.seoDescription ?? '(set a description to preview)'}</Text>
-          </Stack>
-          <Text size="xs" variant="muted">
-            SEO fields edit alongside the basics on the Overview tab.
-          </Text>
-        </Stack>
-      </CardContent>
-    </Card>
+    </>
   );
 }

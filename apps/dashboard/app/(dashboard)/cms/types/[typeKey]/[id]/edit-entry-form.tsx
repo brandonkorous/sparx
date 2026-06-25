@@ -22,6 +22,7 @@ import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import {
+  Badge,
   Button,
   Card,
   CardContent,
@@ -50,6 +51,7 @@ import { ContentEntryForm, missingRequiredFields } from '../../../_components/co
 import { SiteScopeField } from '../../../../_components/site-scope-field';
 import { SeoPanel, type SeoFields } from '../../../[id]/seo-panel';
 import { EntryStatusBar, type SaveState } from './entry-status-bar';
+import { DetailHeaderSlot } from '../../../../_components/detail-header-slot';
 import { EntryTemplatePicker } from './entry-template-picker';
 import {
   autosaveEntry,
@@ -61,6 +63,10 @@ import {
 
 const ZONE_DOMAIN = process.env.NEXT_PUBLIC_SPARX_ZONE_DOMAIN ?? 'sparx.zone';
 const AUTOSAVE_DEBOUNCE_MS = 600;
+// Autosave is OFF for now (see EditPageForm): the platform standard is explicit save,
+// and running it alongside a Save button is contradictory. The machinery stays behind
+// this env flag (unset ⇒ off) so re-enabling autosave-everywhere later is a flip.
+const AUTOSAVE_ENABLED = process.env.NEXT_PUBLIC_CMS_AUTOSAVE === 'true';
 
 function siteOrigin(tenantSlug: string | null): string {
   if (tenantSlug) return `https://${tenantSlug}.${ZONE_DOMAIN}`;
@@ -109,6 +115,11 @@ export interface EditEntryFormProps {
    *  INTO it (the 'bar' layout) instead of as the standalone Status card. The form
    *  still owns all the state — only the DOM location moves. Undefined ⇒ the card. */
   statusSlot?: HTMLElement | null;
+  /** Drawer/modal surfaces (no live-preview toolbar) route the status bar into the
+   *  detail chrome header instead of the standalone Status card. Full-page surfaces
+   *  with no chrome header (a type with no builder template) leave this false and keep
+   *  the card. */
+  statusInHeader?: boolean;
 }
 
 export function EditEntryForm({
@@ -131,6 +142,7 @@ export function EditEntryForm({
   initialPropertyIds,
   onBody,
   statusSlot,
+  statusInHeader,
 }: EditEntryFormProps) {
   const router = useRouter();
   const confirm = useConfirm();
@@ -239,6 +251,7 @@ export function EditEntryForm({
   // first render so prop hydration doesn't trigger a needless save. Site scope
   // (propertyIds) rides the same PATCH, so a scope change autosaves like any edit.
   React.useEffect(() => {
+    if (!AUTOSAVE_ENABLED) return;
     if (!hydratedRef.current) {
       hydratedRef.current = true;
       return;
@@ -405,16 +418,28 @@ export function EditEntryForm({
       <Stack gap={6}>
         {/* Live-preview surface: status + actions live in the toolbar (portaled into
             the workspace's slot). Otherwise the standalone Status card. */}
-        {embedded && statusSlot
-          ? createPortal(<EntryStatusBar layout="bar" {...statusBarProps} />, statusSlot)
-          : null}
-        {!embedded ? <EntryStatusBar layout="card" {...statusBarProps} /> : null}
+        {embedded ? (
+          statusSlot ? (
+            createPortal(<EntryStatusBar layout="bar" {...statusBarProps} />, statusSlot)
+          ) : null
+        ) : statusInHeader ? (
+          // Drawer/modal: the type signal + status/publish bar teleport into the
+          // detail chrome header (parity with Product), not a Status card atop the form.
+          <DetailHeaderSlot>
+            <Badge color="module">{lowerType}</Badge>
+            <EntryStatusBar layout="bar" {...statusBarProps} />
+          </DetailHeaderSlot>
+        ) : (
+          <EntryStatusBar layout="card" {...statusBarProps} />
+        )}
 
         <Card variant="module">
           <CardHeader>
             <Heading level={3}>Content</Heading>
             <CardDescription>
-              The {lowerType}&apos;s fields. Autosaves every keystroke after a brief pause.
+              {AUTOSAVE_ENABLED
+                ? `The ${lowerType}'s fields. Autosaves every keystroke after a brief pause.`
+                : `The ${lowerType}'s fields. Edits are saved when you click Save changes.`}
             </CardDescription>
           </CardHeader>
           <CardContent>

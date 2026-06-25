@@ -59,6 +59,7 @@ export async function listPriceLists(
     status?: string;
     channel?: string;
     b2bAccountId?: string;
+    q?: string;
     take?: number;
     skip?: number;
   } = {}
@@ -69,6 +70,16 @@ export async function listPriceLists(
       ...(filter.status ? { status: filter.status } : {}),
       ...(filter.channel ? { channel: filter.channel } : {}),
       ...(filter.b2bAccountId ? { b2bAccountId: filter.b2bAccountId } : {}),
+      // Free-text search over the operator-facing fields (name + description),
+      // case-insensitive — mirrors the discount list's `q` handling.
+      ...(filter.q
+        ? {
+            OR: [
+              { name: { contains: filter.q, mode: 'insensitive' } },
+              { description: { contains: filter.q, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
     };
     const [rows, total] = await Promise.all([
       tx.priceList.findMany({
@@ -402,13 +413,15 @@ export async function createBulkTier(
 
 export async function listBulkTiers(
   ctx: ServiceContext,
-  filter: { variantId?: string; priceListId?: string } = {}
+  filter: { variantId?: string; priceListId?: string; productId?: string } = {}
 ): Promise<BulkPriceTierRow[]> {
   return withTenant(ctx, async (tx) => {
     const rows = await tx.bulkPriceTier.findMany({
       where: {
         ...(filter.variantId ? { variantId: filter.variantId } : {}),
         ...(filter.priceListId ? { priceListId: filter.priceListId } : {}),
+        // All variant-scoped tiers for a product (the Product → Pricing tab view).
+        ...(filter.productId ? { variant: { productId: filter.productId } } : {}),
       },
       orderBy: { minQuantity: 'asc' },
       take: 500,

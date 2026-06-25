@@ -267,6 +267,124 @@ export async function getByHandle(
   return toProductDetail(product);
 }
 
+export interface ProductFacets {
+  /** Industry-agnostic baseline product types UNION the tenant's own, sorted. */
+  productTypes: string[];
+  /** The tenant's own distinct vendors, sorted. A vendor is a tenant's own
+   *  supplier/brand — there is no sensible platform-wide vendor list, so this is
+   *  organic (no baseline): empty until the tenant adds products. */
+  vendors: string[];
+  /** Distinct tags across the tenant's products, sorted. */
+  tags: string[];
+  /** Standard tax-class names UNION the ones the tenant already uses on products
+   *  AND the ones their tax rates match against (docs/45 — the tax engine pairs
+   *  `product.taxClass` with `TaxRate.productTaxClass`), so the lookup stays
+   *  aligned with what will actually be taxed. */
+  taxClasses: string[];
+}
+
+/** Platform-curated, vertical-neutral product-type baseline. Data-as-code (not
+ *  seeded rows): available to EVERY tenant — including a brand-new one with zero
+ *  products — without imposing any one vertical's bias. The lookup stays
+ *  creatable, so a tenant whose taxonomy differs just types their own. Keep this
+ *  spanning common startup-ecommerce verticals, NOT any single industry. */
+const COMMON_PRODUCT_TYPES = [
+  'Apparel',
+  'Footwear',
+  'Accessories',
+  'Jewelry',
+  'Bags & Luggage',
+  'Beauty & Personal Care',
+  'Health & Wellness',
+  'Home & Living',
+  'Kitchen & Dining',
+  'Furniture',
+  'Electronics',
+  'Office & Stationery',
+  'Food & Beverage',
+  'Toys & Games',
+  'Baby & Kids',
+  'Pet Supplies',
+  'Sports & Outdoors',
+  'Arts & Crafts',
+  'Books & Media',
+  'Digital Product',
+  'Service',
+  'Subscription',
+] as const;
+
+/** Conventional tax-rate classes, used as a baseline so the lookup is never
+ *  empty before a tenant defines rates. Jurisdiction-specific classes the tenant
+ *  actually uses merge in from their products + tax rates. */
+const STANDARD_TAX_CLASSES = ['standard', 'reduced', 'zero', 'exempt'] as const;
+
+/** Case-insensitive union of a tenant's own values with a code baseline, sorted.
+ *  The tenant's stored casing wins on collision so suggestions match their data. */
+function mergeDistinct(primary: string[], baseline: readonly string[]): string[] {
+  const seen = new Map<string, string>();
+  for (const value of [...primary, ...baseline]) {
+    const key = value.toLowerCase();
+    if (!seen.has(key)) seen.set(key, value);
+  }
+  return Array.from(seen.values()).sort((a, b) => a.localeCompare(b));
+}
+
+/** Open-ended option sets for the product editor's smart lookups (type, vendor,
+ *  tags, tax class). Product type + tax class merge a platform baseline with the
+ *  tenant's own distinct values; vendor + tags are purely the tenant's own. The
+ *  lookups stay creatable, so this seeds suggestions, never constrains. */
+export async function getFacets(ctx: ServiceContext): Promise<ProductFacets> {
+  return withTenant(ctx, async (tx) => {
+    const [typeRows, vendorRows, tagRows, productTaxRows, rateTaxRows] = await Promise.all([
+      tx.product.findMany({
+        where: { deletedAt: null, productType: { not: null } },
+        select: { productType: true },
+        distinct: ['productType'],
+        orderBy: { productType: 'asc' },
+      }),
+      tx.product.findMany({
+        where: { deletedAt: null, vendor: { not: null } },
+        select: { vendor: true },
+        distinct: ['vendor'],
+        orderBy: { vendor: 'asc' },
+      }),
+      // Tags are a String[] column — flatten + dedupe in SQL via unnest. RLS
+      // scopes the raw query to the active tenant exactly like the ORM reads.
+      tx.$queryRaw<{ tag: string }[]>`
+        SELECT DISTINCT unnest(tags) AS tag
+        FROM commerce_products
+        WHERE deleted_at IS NULL
+        ORDER BY tag ASC
+      `,
+      tx.product.findMany({
+        where: { deletedAt: null, taxClass: { not: null } },
+        select: { taxClass: true },
+        distinct: ['taxClass'],
+      }),
+      tx.taxRate.findMany({
+        where: { productTaxClass: { not: null } },
+        select: { productTaxClass: true },
+        distinct: ['productTaxClass'],
+      }),
+    ]);
+
+    const tenantTaxClasses = [
+      ...productTaxRows.map((r) => r.taxClass).filter((v): v is string => !!v),
+      ...rateTaxRows.map((r) => r.productTaxClass).filter((v): v is string => !!v),
+    ];
+
+    return {
+      productTypes: mergeDistinct(
+        typeRows.map((r) => r.productType).filter((v): v is string => !!v),
+        COMMON_PRODUCT_TYPES
+      ),
+      vendors: vendorRows.map((r) => r.vendor).filter((v): v is string => !!v),
+      tags: tagRows.map((r) => r.tag).filter((v) => v.length > 0),
+      taxClasses: mergeDistinct(tenantTaxClasses, STANDARD_TAX_CLASSES),
+    };
+  });
+}
+
 // ─── Writes ───────────────────────────────────────────────────────────
 
 export async function create(

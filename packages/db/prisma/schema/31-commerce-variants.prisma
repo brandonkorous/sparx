@@ -114,6 +114,7 @@ model ProductVariant {
   recomputeReviews      MarkupRecomputeReview[]
   billingDocumentLines  BillingDocumentLine[]
   fleetHolds            B2bFleetHold[]
+  channelMappings       ChannelProductMapping[]
 
   @@unique([tenantId, sku], map: "product_variants_sku_unique")
   @@index([tenantId, productId])

@@ -57,3 +57,9 @@ apps/dashboard/_marketplace-assets.mjs
 
 # Local media storage (LocalStorage MEDIA_LOCAL_DIR — generated, never committed)
 **/.media-tmp/
+
+# Impeccable — local hook consent + session cache (regenerated; never committed).
+# NOTE: the design spec apps/*/.impeccable/design.json IS tracked (pairs with DESIGN.md);
+# only the machine-local *.local.json / *.cache.json scratch is ignored.
+**/.impeccable/*.local.json
+**/.impeccable/*.cache.json

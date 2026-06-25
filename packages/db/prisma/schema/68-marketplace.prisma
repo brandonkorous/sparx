@@ -234,6 +234,12 @@ model MarketplaceIntegration {
   // registry slug); kind buckets it (payment, shipping, tax, …).
   providerSlug String   @map("provider_slug") @db.VarChar(80)
   kind         String   @db.VarChar(40)
+  // The integration SHAPE (docs/88 §3 closed set) — determines the install flow
+  // and acquire action. `provider_adapter` ("Connect") is the default for
+  // back-compat; `sales_channel` ("Add channel", docs/106) routes to the OAuth
+  // channel-connect flow instead of a provider install; `sync_source`/`connector`
+  // per docs/88.
+  shape        String   @default("provider_adapter") @db.VarChar(40)
   scopes       String[] @db.VarChar(60)
   // The install/config schema for a DATA-backed listing; NULL for Sparx-core
   // providers resolved by slug.

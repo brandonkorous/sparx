@@ -132,3 +132,44 @@ export function tryVerifySitePreview(
   }
   return true;
 }
+
+interface ProductPreviewClaims {
+  sub: string;
+  tid: string;
+  aud: string;
+  iat?: number;
+  exp?: number;
+}
+
+// Verify a product *preview* token. Like the site-preview token this is a
+// signature-and-TTL JWT with no per-token DB row (minting requires an
+// authenticated editor and the draft it exposes is the tenant's own), but it is
+// scoped to ONE product by `sub` so a token can't be replayed against another
+// product. Returns the product id when a valid token for `tenantId` is present,
+// null when none is offered. Throws when a token IS offered but invalid — a bad
+// token is a signal, never a silent fall-through to published-only.
+export function tryVerifyProductPreview(
+  app: FastifyInstance,
+  request: FastifyRequest,
+  tenantId: string
+): string | null {
+  const token = extractToken(request);
+  if (!token) return null;
+
+  let claims: ProductPreviewClaims;
+  try {
+    claims = app.jwt.verify<ProductPreviewClaims>(token);
+  } catch {
+    throw Object.assign(new Error('Invalid product preview token.'), {
+      statusCode: 401,
+      code: 'INVALID_PREVIEW_TOKEN',
+    });
+  }
+  if (claims.aud !== 'product-preview' || claims.tid !== tenantId) {
+    throw Object.assign(new Error('Token is not a valid product preview token.'), {
+      statusCode: 401,
+      code: 'INVALID_PREVIEW_TOKEN',
+    });
+  }
+  return claims.sub;
+}

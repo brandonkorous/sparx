@@ -192,20 +192,25 @@ export async function ContentEntryDetailContent({
     );
   }
 
-  // No live preview: the original stacked editor. The full-page route wraps it in
-  // the width-constrained Container + padding the drawer (which also mounts this,
-  // with previewEnabled=false) already provides for itself.
-  const stacked = (
-    <Stack gap={6}>
-      {heading}
-      <EntryEditorWorkspace form={formProps} preview={null} />
-    </Stack>
-  );
-  return previewEnabled ? (
-    <Container size="xl">
-      <Stack className="py-10">{stacked}</Stack>
-    </Container>
-  ) : (
-    stacked
-  );
+  // Full-page WITHOUT a live preview: width-constrained, scrolling stacked editor.
+  // It KEEPS the heading bar — on a full page that bar is the record's identity
+  // (no drawer chrome to host it), and over this builder-style editor it reads as
+  // editor chrome, not a redundant restatement of a nearby field.
+  if (previewEnabled) {
+    return (
+      <Container size="xl">
+        <Stack className="py-10">
+          <Stack gap={6}>
+            {heading}
+            <EntryEditorWorkspace form={formProps} preview={null} />
+          </Stack>
+        </Stack>
+      </Container>
+    );
+  }
+
+  // Drawer / modal: identity (title + slug) lives only in the editable form fields.
+  // The editor teleports its type signal + status/publish bar into the chrome header
+  // (statusInHeader), so there's no in-body heading or Status card.
+  return <EntryEditorWorkspace form={formProps} preview={null} statusInHeader />;
 }

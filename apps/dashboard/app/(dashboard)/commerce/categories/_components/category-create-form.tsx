@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Card,
   CardContent,
+  Checkbox,
   Input,
   Label,
   ModuleProvider,
@@ -42,6 +43,8 @@ export interface CategoryParentOption {
   depth: number;
   /** Materialized tree path — lets the edit form exclude self + descendants. */
   path: string;
+  /** Sort priority among siblings — used by the edit form's sibling context. */
+  position?: number;
 }
 
 interface CategoryCreateFormProps {
@@ -145,9 +148,8 @@ export function CategoryCreateForm({ surface, parents }: CategoryCreateFormProps
             <CardContent className="py-6">
               <Stack gap={4}>
                 <Text size="xs" variant="muted">
-                  Storefront URLs follow the category&apos;s path (
-                  <code>/category/&lt;handle&gt;</code>
-                  ).
+                  The handle is the category&apos;s URL-safe slug — unique across your catalog and
+                  auto-derived from the name if you leave it blank. You can change it later.
                 </Text>
                 <Stack direction="row" gap={3} wrap>
                   <Stack gap={2} className="flex-1">
@@ -208,12 +210,11 @@ export function CategoryCreateForm({ surface, parents }: CategoryCreateFormProps
                   />
                 </Stack>
                 <Stack direction="row" align="center" gap={2}>
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     id="cat-featured"
-                    className="h-4 w-4"
+                    color="module"
                     checked={featured}
-                    onChange={(e) => setFeatured(e.target.checked)}
+                    onCheckedChange={(v) => setFeatured(v === true)}
                   />
                   <Label htmlFor="cat-featured">Featured</Label>
                 </Stack>

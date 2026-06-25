@@ -1,9 +1,13 @@
 # sparx Platform — Dashboard Working-Area Standard
 
-**Version:** 1.5
+**Version:** 1.7
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-06-25
 
+> **1.7 (2026-06-25):** **Record-detail headers carry the body's status + lifecycle actions** (§4 Archetype 3, §5). A detail body teleports its status badge + lifecycle actions (Publish/Archive/Preview/…) into the active frame header via the `DetailHeaderSlot` pattern (docs/86 §5.1) — never a bespoke in-body "Status" card; secondary actions render **icon-only with tooltips**. And **entity identity appears once**: name/slug is the editable field, not also a read-only heading (read-only/transaction details keep their heading). Full-page detail routes get the `DetailPageShell` (back-link + the teleported actions + presentation switch).
+>
+> **1.6 (2026-06-23):** **Search is now standard on every list, not optional** (§7.1). The earlier rule ("show search only where the endpoint supports `q`; hide it on filter-only lists") is reversed: **every table/card list ships the search toolbar**, and where an endpoint lacks text search the fix is to **add a `q` param to that endpoint** — never hide the box or fake it client-side. `searchable={false}` is reserved for the rare list with genuinely no free-text identity (e.g. a date-keyed log). Bringing the remaining opted-out lists onto `q` is a boy-scout migration. First conformant exemplar: `commerce/categories` (a tree endpoint that now accepts `q` + `featured`, returning flat matches when either is set).
+>
 > **1.5 (2026-05-31):** Two consistency gaps closed. **(1) Create surface follows the detail-view preference** (§13.1) — "New X" no longer varies per page (some inline forms, some `/new` routes, some buttons). A new `EntityCreateButton` resolves the user's `defaultDetailView` to the same surface used for _viewing_ a record: drawer/modal open the create form in the `@detail` overlay (token `?drawer=type:new`), `fullPage`/`newTab` route to `/{resource}/new`. Reuses the entire detail substrate — same chrome, same registry — so creating and viewing a record share one experience. **(2) Toolbar visibility no longer depends on data** (§8) — a list either always shows its `ListToolbar` (when it has any control) or never does; the empty/zero-record state never toggles the toolbar off. Piloted on `commerce/collections`.
 >
 > **1.4 (2026-05-31):** Review feedback after the toolbar pilot. **Collection/List pages move to Full width** (§3) — a data table is a work surface that should use the viewport, not a reading column; **overviews and detail pages stay bound** (their KPI/section/panel grids would sprawl). Shipped the `ListToolbar` (`@sparx/ui`) + dashboard URL-sync wrapper — live quick-filters/search/sort, no Apply, rolled across all module list pages (§7.1). Card/grid views use the new `Grid minItemWidth` auto-fill so cards stay a tidy width on full-bleed pages instead of stretching. Search is shown only where the list's endpoint supports text search (`q`); filter-only lists hide it.
@@ -58,14 +62,14 @@ The shell applies no max-width; each page wraps its content in the shared `Conta
 
 ## 4. The Six Archetypes
 
-| #   | Archetype              | Route shape                               | Width   | Header actions                                  | Body                                                                |
-| --- | ---------------------- | ----------------------------------------- | ------- | ----------------------------------------------- | ------------------------------------------------------------------- |
-| 1   | **Module Overview**    | `/{module}`                               | Wide    | Primary create + optional secondary             | Stat grid → SectionCard grid (links to surfaces)                    |
-| 2   | **Collection / List**  | `/{module}/{things}`                      | Full    | Primary create                                  | ListToolbar → DataTable / auto-fill card grid (view toggle) → pager |
-| 3   | **Record Detail**      | `/{module}/{things}/{id}`                 | Wide    | Status-changing secondaries (Publish, Archive…) | Tabs → section Cards                                                |
-| 4   | **Create / Edit Form** | `/{module}/{things}/new`, simple edits    | Focused | — (actions in the form bar)                     | Card(s) → Form fields → action bar                                  |
-| 5   | **Settings Index**     | `/settings`, `/{module}/settings` (index) | Wide    | —                                               | SectionCard grid                                                    |
-| 6   | **Module Preview**     | not-yet-built modules                     | Wide    | —                                               | `ModuleStub`: header + "coming online" panel + "What ships" grid    |
+| #   | Archetype              | Route shape                               | Width   | Header actions                                                                                 | Body                                                                |
+| --- | ---------------------- | ----------------------------------------- | ------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| 1   | **Module Overview**    | `/{module}`                               | Wide    | Primary create + optional secondary                                                            | Stat grid → SectionCard grid (links to surfaces)                    |
+| 2   | **Collection / List**  | `/{module}/{things}`                      | Full    | Primary create                                                                                 | ListToolbar → DataTable / auto-fill card grid (view toggle) → pager |
+| 3   | **Record Detail**      | `/{module}/{things}/{id}`                 | Wide    | Status badge + lifecycle actions from the body (via `DetailHeaderSlot`; secondaries icon-only) | Tabs → section Cards                                                |
+| 4   | **Create / Edit Form** | `/{module}/{things}/new`, simple edits    | Focused | — (actions in the form bar)                                                                    | Card(s) → Form fields → action bar                                  |
+| 5   | **Settings Index**     | `/settings`, `/{module}/settings` (index) | Wide    | —                                                                                              | SectionCard grid                                                    |
+| 6   | **Module Preview**     | not-yet-built modules                     | Wide    | —                                                                                              | `ModuleStub`: header + "coming online" panel + "What ships" grid    |
 
 Everything below specifies the shared pieces these archetypes are built from.
 
@@ -91,6 +95,8 @@ subtitle paragraph (muted, one or two sentences)
 | **Actions**  | Right-aligned. **Exactly one** primary (`Button variant="module"`); zero or more secondaries (`variant="outline"`/`"ghost"`). Empty when the archetype's actions live elsewhere (forms, previews).             |
 
 **Forbidden:** primary actions placed below the header or left-aligned (seen on Discounts, Segments); a second `Create` button duplicated into an empty state; the in-content "← Back to X" link (seen on every `/new` and the product detail) — delete it, the breadcrumb owns up-nav.
+
+**Record-detail headers (Archetype 3) are supplied by the body.** A detail surface's status badge + lifecycle actions (Publish/Unpublish/Archive/Restore, Preview/Revisions/Schedule) don't live in a `PageHeader` action slot or a "Status" card in the body — the body **teleports** them into the active frame's header (the drawer/modal chrome or the full-page `DetailPageShell`) via the `DetailHeaderSlot` pattern (docs/86 §5.1). In the header the status badge + primary action keep text; secondary actions render **icon-only with a tooltip**. Identity (name/slug) is the editable field, never also a read-only heading.
 
 ---
 
@@ -128,7 +134,7 @@ Anatomy (left → right), wrapping responsively:
 
 - **Quick filters, live — no "Apply" button.** Each list surfaces its existing facets (status / type / vendor / …) as inline `Select`s or segmented pills. Changing one updates results immediately (search debounced ~250ms). This is **not** a Notion-style condition-builder (field→operator→value, AND/OR groups) — that is a deferred later phase, not v1.
 - **URL-driven, server-fetch preserved.** `ListToolbar` is a client component whose only job is to sync state into the URL (`router.replace(pathname?…)`, debounced). The page stays a server component that reads `searchParams` and refetches — so "live" filtering needs no client data layer. Active filters render as removable chips below the bar.
-- **Search is the Typesense seam.** The search box binds to `?q=`. The _page_ owns the fetch, so when search moves to Typesense (docs/22) only the page's data source changes for `q` — `ListToolbar` never changes. Build the search input now against the current REST endpoint; keep that swap point isolated. **Show search only where the endpoint supports it** — pass `searchable={false}` on filter-only lists so there's no dead control. (Today only `products`, content `entries`, `media`, `customers`, and `b2b-accounts` accept `q`.)
+- **Search is the Typesense seam, and every list carries it.** The search box binds to `?q=`. The _page_ owns the fetch, so when search moves to Typesense (docs/22) only the page's data source changes for `q` — `ListToolbar` never changes. **Every table/card list ships the search toolbar.** Where an endpoint has no text search yet, the fix is to **add a `q` param to that endpoint** (case-insensitive over the record's natural identity fields — name, handle, code, …), not to hide the box or filter client-side. `searchable={false}` is reserved for the rare list with genuinely no free-text identity (e.g. a date-keyed log); even then, prefer a real filter over a dead control. Endpoints already accepting `q`: `products`, content `entries`, `media`, `customers`, `b2b-accounts`, `collections`, and `categories` (a tree — it returns flat matches when `q`/`featured` is set). Bringing the remaining `searchable={false}` lists onto `q` is a **boy-scout migration** (root [CLAUDE.md](../CLAUDE.md)): add it when you next touch the list.
 - **View toggle (Table / Cards).** A segmented control on the right flips the list rendering. It reads `?view=` (a transient per-view override) falling back to the user's `defaultListView` preference (§7.2). The list still renders the §7 responsive `DataTable` (desktop) / card list (mobile); the toggle lets a user force cards on desktop. Lists where only one rendering makes sense (e.g. Media's thumbnail grid) omit the toggle.
 
 ### 7.2 `defaultListView` preference

@@ -79,7 +79,12 @@ export function NewTemplateForm({ products, surface }: NewTemplateFormProps) {
   const searchParams = useSearchParams();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
-  const [productId, setProductId] = React.useState('');
+  // Pre-select when launched from a product's Configurator tab (?product=<id>),
+  // but only if that product is actually in the configurable list.
+  const [productId, setProductId] = React.useState(() => {
+    const requested = searchParams?.get('product') ?? '';
+    return products.some((p) => p.id === requested) ? requested : '';
+  });
   const [name, setName] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [json, setJson] = React.useState(() => JSON.stringify(STARTER_PAYLOAD, null, 2));

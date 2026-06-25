@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Button,
+  cn,
   Modal,
   ModalContent,
   ModalDescription,
@@ -26,6 +27,7 @@ import {
   parseDetailToken,
 } from '../_shell/detail-registry';
 import { UnsavedGuardProvider, useLeaveGuard } from './unsaved-guard';
+import { DetailChromeProvider, DetailHeaderSlotTarget } from './detail-header-slot';
 
 // A target whose content fills the body edge-to-edge (it owns its own padding +
 // scroll + pinned toolbar), rather than the default padded single-scroll column.
@@ -94,7 +96,9 @@ export function InlineDetailContent({ target, children }: InlineDetailProps) {
   // form can register its dirty-guard and the header's Close/Switch can consult it.
   return (
     <UnsavedGuardProvider>
-      <InlineDetailBody target={target}>{children}</InlineDetailBody>
+      <DetailChromeProvider>
+        <InlineDetailBody target={target}>{children}</InlineDetailBody>
+      </DetailChromeProvider>
     </UnsavedGuardProvider>
   );
 }
@@ -123,9 +127,11 @@ export function ModalDetailContent({ target, onClose, children }: ModalDetailPro
   // both the header chrome AND the backdrop/Esc close path can consult it.
   return (
     <UnsavedGuardProvider>
-      <ModalDetailBody target={target} onClose={onClose}>
-        {children}
-      </ModalDetailBody>
+      <DetailChromeProvider>
+        <ModalDetailBody target={target} onClose={onClose}>
+          {children}
+        </ModalDetailBody>
+      </DetailChromeProvider>
     </UnsavedGuardProvider>
   );
 }
@@ -145,6 +151,13 @@ function ModalDetailBody({ target, onClose, children }: ModalDetailProps) {
     : isSummaryCreate(target.typeId)
       ? 'w-[min(960px,94vw)] max-w-[min(960px,94vw)]'
       : 'w-[min(720px,94vw)] max-w-[min(720px,94vw)]';
+  // Pin the dialog's TOP edge (`top-[6vh] translate-y-0` overrides the base
+  // `top-1/2 -translate-y-1/2` via twMerge) instead of centering it. A centered
+  // overlay that hugs its content grows from the middle when its height changes —
+  // switching detail tabs or stepping a wizard makes the header drift up/down.
+  // Anchoring at 6vh (where the 88vh-capped tallest content already sits) holds
+  // the header fixed and grows the body downward only. Standard for all
+  // detail/create overlays; the base `Modal` (confirm/alert dialogs) stays centered.
   // `open` is always true (the dialog is unmounted by navigating, not by state),
   // so backdrop / Esc only fire onOpenChange(false) — we run the dirty-guard and
   // close only when it clears; otherwise the dialog stays put with edits intact.
@@ -155,7 +168,10 @@ function ModalDetailBody({ target, onClose, children }: ModalDetailProps) {
   }, [runGuard, onClose]);
   return (
     <Modal open onOpenChange={(open) => !open && guardedClose()}>
-      <ModalContent hideClose className={`max-h-[88vh] overflow-hidden p-0 ${widthClass}`}>
+      <ModalContent
+        hideClose
+        className={cn('top-[6vh] max-h-[88vh] translate-y-0 overflow-hidden p-0', widthClass)}
+      >
         <ModalTitle className="sr-only">{describeTarget(target)}</ModalTitle>
         <ModalDescription className="sr-only">
           Detail view for {describeTarget(target)}
@@ -228,6 +244,12 @@ function DetailHeader({ target }: { target: DetailTarget }) {
           {describeTarget(target)}
         </span>
 
+        {/* The detail body teleports its status + lifecycle actions in here so the
+            chrome carries them instead of an in-body header that restates the
+            editable Title/Handle fields. Empty (zero-width) for surfaces that
+            supply none. */}
+        <DetailHeaderSlotTarget className="flex items-center gap-2" />
+
         {fullPageHref && (
           <Tooltip>
             <TooltipTrigger asChild>
@@ -265,5 +287,65 @@ function DetailHeader({ target }: { target: DetailTarget }) {
         </Tooltip>
       </div>
     </ModuleProvider>
+  );
+}
+
+// ── Full-page presentation switch ──────────────────────────
+// The overlay host (DetailHeader) lets a record switch drawer↔modal and close;
+// the full-page route has the breadcrumb + back for "close" and can't "maximize"
+// (it IS maximized), but it had no way to COLLAPSE back into an overlay. This
+// gives that parity: open the same record as a drawer/modal over its list (the
+// list route comes from the manifest `routePrefix`). It rides in the embedded
+// frame's `headerActions` slot. Guarded — if the form is dirty, the shared
+// unsaved-guard confirms before navigating (the page wraps it in the provider).
+export function DetailPresentationSwitch({
+  typeId,
+  entityId,
+}: {
+  typeId: string;
+  entityId: string;
+}) {
+  const router = useRouter();
+  const runGuard = useLeaveGuard();
+  const found = findEntityType(typeId);
+  if (!found) return null;
+  const base = found.entityType.routePrefix;
+
+  function openAs(mode: 'drawer' | 'modal') {
+    void (async () => {
+      if (!(await runGuard())) return;
+      router.push(`${base}?${mode}=${typeId}:${entityId}`);
+    })();
+  }
+
+  return (
+    <>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label="Open as drawer"
+            onClick={() => openAs('drawer')}
+          >
+            <PanelRight className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Open as drawer</TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label="Open as modal"
+            onClick={() => openAs('modal')}
+          >
+            <Square className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Open as modal</TooltipContent>
+      </Tooltip>
+    </>
   );
 }

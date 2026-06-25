@@ -8,6 +8,8 @@ import {
   type SelectionColumn,
   type SelectionCard,
   Stack,
+  statusLabel,
+  statusTone,
   Text,
 } from '@sparx/ui';
 
@@ -29,14 +31,6 @@ export interface OrderRow {
   placedAt: string | null;
   channel: string | null;
 }
-
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline' | 'danger'> = {
-  placed: 'outline',
-  fulfilled: 'success',
-  delivered: 'success',
-  cancelled: 'danger',
-  refunded: 'warning',
-};
 
 interface OrdersSelectionTableProps {
   orders: OrderRow[];
@@ -70,14 +64,14 @@ export function OrdersSelectionTable({ orders, view }: OrdersSelectionTableProps
   );
 
   const statusBadge = (o: OrderRow) => (
-    <Badge color={STATUS_VARIANT[o.status] ?? 'outline'} className="text-xs">
-      {o.status}
+    <Badge color={statusTone(o.status)} variant="soft" size="sm">
+      {statusLabel(o.status)}
     </Badge>
   );
 
   const paymentBadge = (o: OrderRow) => (
-    <Badge variant="outline" className="text-xs">
-      {o.paymentStatus}
+    <Badge color={statusTone(o.paymentStatus)} variant="soft" size="sm">
+      {statusLabel(o.paymentStatus)}
     </Badge>
   );
 

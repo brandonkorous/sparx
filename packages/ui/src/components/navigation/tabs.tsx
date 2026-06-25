@@ -6,25 +6,31 @@ import { cva, type VariantProps } from '../../utils/cva';
 import { cn } from '../../utils/cn';
 
 // Variant lives on the List so a single Tabs can opt in/out of the pill style.
-// `module` variant routes the active indicator/background through
-// --module-active so a wrapping ModuleProvider tints it correctly.
+// The active tab (either variant) routes its indicator/text through
+// --module-active so a wrapping ModuleProvider tints the current selection.
 
 export const Tabs = TabsPrimitive.Root;
 
-const tabsListVariants = cva('inline-flex items-center', {
+// Pills is the house default (a neutral segmented control) — box tabs read as
+// AI slop, so they're not an option. The list spans the full width (`w-full`):
+// the pill track / underline rule runs edge-to-edge of its container, and it
+// WRAPS to additional rows when the tabs can't fit one line (e.g. an 8-tab
+// product detail in a narrow drawer) so every tab stays visible — never clipped
+// off-screen or stranded behind a hidden scrollbar. Responsive at any width.
+const tabsListVariants = cva('flex w-full flex-wrap items-center', {
   variants: {
     variant: {
-      default: 'gap-4 border-b border-[var(--color-border-default)]',
-      pills: 'gap-1 rounded-md bg-[var(--color-bg-subtle)] p-1',
+      default: 'gap-x-4 gap-y-1 border-b border-[var(--color-border-default)]',
+      pills: 'gap-x-1 gap-y-1 rounded-md bg-[var(--color-bg-subtle)] p-1',
     },
   },
-  defaultVariants: { variant: 'default' },
+  defaultVariants: { variant: 'pills' },
 });
 
 type TabsListVariant = NonNullable<VariantProps<typeof tabsListVariants>['variant']>;
 type TabsSize = 'sm' | 'md' | 'lg';
 const TabsListContext = React.createContext<{ variant: TabsListVariant; size: TabsSize }>({
-  variant: 'default',
+  variant: 'pills',
   size: 'md',
 });
 
@@ -38,8 +44,8 @@ export interface TabsListProps
 export const TabsList = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,
   TabsListProps
->(({ className, variant = 'default', size = 'md', children, ...props }, ref) => (
-  <TabsListContext.Provider value={{ variant: variant ?? 'default', size }}>
+>(({ className, variant = 'pills', size = 'md', children, ...props }, ref) => (
+  <TabsListContext.Provider value={{ variant: variant ?? 'pills', size }}>
     <TabsPrimitive.List
       ref={ref}
       className={cn(tabsListVariants({ variant }), className)}
@@ -65,17 +71,20 @@ const SIZE_PILLS: Record<TabsSize, string> = {
 function triggerClasses(variant: TabsListVariant, size: TabsSize): string {
   if (variant === 'pills') {
     return cn(
-      'inline-flex items-center rounded-sm font-medium',
+      'inline-flex shrink-0 items-center rounded-sm font-medium whitespace-nowrap',
       SIZE_PILLS[size],
       'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]',
       'transition-colors duration-150',
       'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none',
       'disabled:pointer-events-none disabled:opacity-40',
-      'data-[state=active]:bg-[var(--color-bg-surface)] data-[state=active]:text-[var(--color-text-primary)] data-[state=active]:shadow-sm'
+      // Active pill: white surface lift + the module hue on the label, so the
+      // current selection carries the active-module color (DESIGN.md) instead of
+      // a flat neutral.
+      'data-[state=active]:bg-[var(--color-bg-surface)] data-[state=active]:text-[var(--module-active-text)] data-[state=active]:shadow-sm'
     );
   }
   return cn(
-    'relative -mb-px inline-flex items-center font-medium',
+    'relative -mb-px inline-flex shrink-0 items-center font-medium whitespace-nowrap',
     SIZE_DEFAULT[size],
     'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]',
     'border-b-2 border-transparent transition-colors duration-150',

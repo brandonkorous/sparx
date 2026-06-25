@@ -166,6 +166,9 @@ const SUMMARY_CREATE_TYPES = new Set<string>([
   // the B2B account wizard shows the account + pricing/credit + fleet size.
   'customer',
   'b2b-account',
+  // Single-step create with a natural scope/status summary: the price list shows
+  // name, channel scope, currency, priority, and its draft status as it's filled.
+  'price-list',
 ]);
 
 export function isSummaryCreate(typeId: string): boolean {

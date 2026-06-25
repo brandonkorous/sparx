@@ -47,20 +47,37 @@ interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
+const STATUS_OPTIONS = [
+  { value: 'active', label: 'Active' },
+  { value: 'draft', label: 'Draft' },
+  { value: 'archived', label: 'Archived' },
+];
+
+const CHANNEL_OPTIONS = [
+  { value: 'storefront', label: 'Storefront' },
+  { value: 'b2b_portal', label: 'B2B portal' },
+  { value: 'admin', label: 'Admin' },
+  { value: 'subscription', label: 'Subscription' },
+];
+
 export default async function PricingPage({ searchParams }: PageProps) {
   const params = await searchParams;
-  // Only the PRIMARY section (price lists) is paged; bulk tiers stay a small,
-  // un-paged fetch.
+  // Only the PRIMARY section (price lists) is paged + filtered; bulk tiers stay a
+  // small, un-paged fetch (no text to search), so the shared toolbar drives the
+  // price-list query.
   const { skip, take } = parsePageParams(params);
+  const q = stringParam(params.q);
+  const status = stringParam(params.status);
+  const channel = stringParam(params.channel);
+
+  const query = new URLSearchParams({ take: String(take), skip: String(skip) });
+  if (q) query.set('q', q);
+  if (status) query.set('status', status);
+  if (channel) query.set('channel', channel);
 
   const [prefs, priceListsPage, bulkTiers] = await Promise.all([
     getUserPreferences(),
-    api.getPaged<PriceListRow[]>(
-      `/v1/commerce/price-lists?${new URLSearchParams({
-        take: String(take),
-        skip: String(skip),
-      }).toString()}`
-    ),
+    api.getPaged<PriceListRow[]>(`/v1/commerce/price-lists?${query.toString()}`),
     api.get<BulkPriceTierRow[]>('/v1/commerce/bulk-tiers'),
   ]);
 
@@ -88,7 +105,14 @@ export default async function PricingPage({ searchParams }: PageProps) {
           }
         />
 
-        <ListToolbar enableViewToggle searchable={false} />
+        <ListToolbar
+          enableViewToggle
+          searchPlaceholder="Search price lists…"
+          filters={[
+            { key: 'status', label: 'Status', options: STATUS_OPTIONS },
+            { key: 'channel', label: 'Channel', options: CHANNEL_OPTIONS },
+          ]}
+        />
 
         <PricingLists
           priceLists={priceLists}

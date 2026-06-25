@@ -8,6 +8,8 @@ import {
   type SelectionColumn,
   type SelectionCard,
   Stack,
+  statusLabel,
+  statusTone,
   Text,
 } from '@sparx/ui';
 
@@ -88,13 +90,13 @@ export function ContentSelectionTable({
   ];
 
   const statusBadge = (e: ApiEntry) => (
-    <Badge color={e.status === 'published' ? 'success' : 'outline'} className="text-xs">
-      {e.status}
+    <Badge color={statusTone(e.status)} variant="soft" size="sm">
+      {statusLabel(e.status)}
     </Badge>
   );
 
   const typeBadge = (e: ApiEntry) => (
-    <Badge color="module" variant="soft" className="text-xs">
+    <Badge color="module" variant="soft" size="sm">
       {typeName[e.type_key] ?? e.type_key}
     </Badge>
   );

@@ -28,7 +28,11 @@ interface ErrorEnvelope {
 async function publicGet<T>(
   path: string,
   query: Record<string, string | number | undefined>,
-  tags: string[]
+  tags: string[],
+  // A draft-preview token (`?sparxPreview=` on the PDP). When present we forward
+  // it as `Authorization: Preview <jwt>` and skip the cache — a preview must
+  // always reflect the live draft, never a 60s-stale published snapshot.
+  previewToken?: string
 ): Promise<{ data: T; meta?: SuccessEnvelope<T>['meta'] }> {
   const params = new URLSearchParams();
   // Model B (docs/49 §3): scope every public commerce read to the active site —
@@ -44,7 +48,9 @@ async function publicGet<T>(
   // commerce reads (revalidateTag is exact-match, not prefix). See app/api/revalidate.
   const coarse = query.tenant ? [`commerce:${String(query.tenant)}`] : [];
   const res = await fetch(`${BASE_URL}${path}?${params.toString()}`, {
-    next: { revalidate: 60, tags: ['sparx-storefront', ...coarse, ...tags] },
+    ...(previewToken
+      ? { cache: 'no-store', headers: { Authorization: `Preview ${previewToken}` } }
+      : { next: { revalidate: 60, tags: ['sparx-storefront', ...coarse, ...tags] } }),
   });
   const json = (await res.json()) as SuccessEnvelope<T> | ErrorEnvelope;
   if (!res.ok || 'error' in json) {
@@ -539,13 +545,17 @@ export async function getCategoryRecordsFull(
 
 export async function getProduct(
   tenantSlug: string,
-  handle: string
+  handle: string,
+  // When set (the editor opened a `?sparxPreview=` link), the read is authorized
+  // to return a DRAFT product and bypasses the cache.
+  previewToken?: string
 ): Promise<PublicProduct | null> {
   try {
     const { data } = await publicGet<PublicProduct>(
       `/v1/public/commerce/products/${encodeURIComponent(handle)}`,
       { tenant: tenantSlug },
-      [`commerce:${tenantSlug}:product:${handle}`]
+      [`commerce:${tenantSlug}:product:${handle}`],
+      previewToken
     );
     return data;
   } catch (err) {

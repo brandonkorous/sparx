@@ -1,8 +1,8 @@
 # @sparx/ui Variant System (multi-axis)
 
-**Version:** 1.0.1
+**Version:** 1.1.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-24
 
 ---
 
@@ -407,3 +407,40 @@ matrix grids collapse to fewer columns on small screens (no fixed desktop-only l
   the site's problem, doc 33 §8).
 - **Scope creep toward full DaisyUI.** Accordion, radial progress, indicator-badge are
   deferred (§5.2); don't pull them in without a trigger.
+
+---
+
+## 9. Status pills — color IS the signal (`statusTone`)
+
+**A status pill is just a `<Badge>` with a semantic color — there is NO separate
+`StatusBadge` component.** A pill that renders every status in the same `neutral`
+tone (or worse, `variant="outline"` with no color) carries zero information at a
+glance — "active" and "draft" look identical and the surface reads bland. The
+binding rule, platform-wide (lists, detail headers, tables, pickers — everywhere a
+status appears):
+
+1. **Every status pill carries a semantic color.** Map the status to one of
+   `success` (live / good / settled), `warning` (needs attention / not-yet-live /
+   partial), `info` (in motion), `danger` (failure / terminal-bad), or `neutral`
+   (inert / retired). Green = good, amber = attention, red = problem, grey = inert.
+2. **Use the canonical resolver.** `statusTone(status)` and `statusLabel(status)`
+   are exported from `@sparx/ui` (defined alongside `Badge` in
+   `primitives/badge.tsx`). The dictionary covers the universal business-status
+   vocabulary, so the default is one line:
+   ```tsx
+   import { Badge, statusTone, statusLabel } from '@sparx/ui';
+   <Badge color={statusTone(s)} variant="soft" size="sm">
+     {statusLabel(s)}
+   </Badge>;
+   ```
+   When a domain reads a word differently than the default (e.g. a _completed_
+   booking is inert, not a win), pass `color` explicitly or keep a small curated
+   map (scheduling, automations already do) — but never hand-pick ad-hoc colors
+   per call site.
+3. **It's a real `<Badge>`, sized by prop.** Never hand-roll a `<span>` pill, and
+   never resize with `className="text-xs"` — use `size="sm"`. A background fill +
+   foreground text color built by hand is the re-skin the ESLint rule flags
+   (§docs/23 §1/§15).
+
+This is a `surface-review` rubric check (System fidelity): a neutral/outline status
+pill where a tone applies is a deduction.

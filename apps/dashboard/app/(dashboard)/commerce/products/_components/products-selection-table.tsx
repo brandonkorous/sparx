@@ -9,6 +9,8 @@ import {
   type SelectionColumn,
   type SelectionCard,
   Stack,
+  statusLabel,
+  statusTone,
   Text,
   toast,
 } from '@sparx/ui';
@@ -42,12 +44,6 @@ interface ProductsSelectionTableProps {
   products: ProductListItem[];
   view: 'table' | 'card';
 }
-
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline'> = {
-  active: 'success',
-  draft: 'outline',
-  archived: 'warning',
-};
 
 export function ProductsSelectionTable({ products, view }: ProductsSelectionTableProps) {
   const [priceModalOpen, setPriceModalOpen] = React.useState(false);
@@ -141,8 +137,8 @@ export function ProductsSelectionTable({ products, view }: ProductsSelectionTabl
   );
 
   const statusBadge = (p: ProductListItem) => (
-    <Badge color={STATUS_VARIANT[p.status] ?? 'outline'} className="text-xs">
-      {p.status}
+    <Badge color={statusTone(p.status)} variant="soft" size="sm">
+      {statusLabel(p.status)}
     </Badge>
   );
 

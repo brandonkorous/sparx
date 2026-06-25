@@ -14,6 +14,7 @@
 
 import {
   Button,
+  Combobox,
   Input,
   Label,
   Select,
@@ -37,7 +38,6 @@ import {
   operatorDef,
   primitiveText,
 } from '../_lib/catalog';
-import { Combobox } from './combobox';
 
 const FIELD_OPTIONS = COMMON_CONDITION_FIELDS.map((f) => ({ value: f }));
 
@@ -90,6 +90,7 @@ function ConditionRow({
         value={condition.field}
         onChange={(field) => onChange({ ...condition, field })}
         options={FIELD_OPTIONS}
+        mono
         placeholder="customer.type"
         searchPlaceholder="Search or type a field…"
         customHint="Use this exact field"

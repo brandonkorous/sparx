@@ -15,6 +15,8 @@ import {
   EmptyState,
   Heading,
   Input,
+  ModuleProvider,
+  NativeSelect,
   Stack,
   Table,
   TableBody,
@@ -58,103 +60,109 @@ export interface InventoryPanelProps {
 }
 
 const REASONS = ['recount', 'receive', 'loss', 'damage', 'manual'] as const;
+const COL_COUNT = 6;
 
+// The product's Inventory tab. Inventory is its own module (rides on Commerce),
+// so the panel wears inventory Amber via a nested ModuleProvider — the
+// cross-module wayfinding cue (docs/35 §9). One standard Card + one table,
+// grouped by variant, instead of a card-per-variant stack.
 export function InventoryPanel({ variantsWithLevels, warehouses }: InventoryPanelProps) {
-  if (warehouses.length === 0) {
-    return (
-      <Card>
-        <CardContent>
-          <EmptyState
-            icon={<Boxes className="h-5 w-5" />}
-            title="No warehouses yet"
-            description="Add a warehouse before tracking inventory."
-            action={
-              <Button color="module" asChild>
-                <Link href="/inventory/warehouses/new">Add warehouse</Link>
-              </Button>
-            }
-          />
-        </CardContent>
-      </Card>
-    );
-  }
-  if (variantsWithLevels.length === 0) {
-    return (
-      <Card>
-        <CardContent>
-          <EmptyState
-            icon={<Boxes className="h-5 w-5" />}
-            title="No variants yet"
-            description="Add at least one variant on the Variants tab before stocking inventory."
-          />
-        </CardContent>
-      </Card>
-    );
-  }
-  return (
-    <Stack gap={4}>
-      {variantsWithLevels.map((v) => (
-        <VariantInventoryCard key={v.variantId} variant={v} warehouses={warehouses} />
-      ))}
-    </Stack>
+  const lowStockCount = variantsWithLevels.reduce(
+    (n, v) =>
+      n + v.levels.filter((l) => l.reorderPoint !== null && l.available <= l.reorderPoint).length,
+    0
   );
-}
 
-function VariantInventoryCard({
-  variant,
-  warehouses,
-}: {
-  variant: VariantWithLevels;
-  warehouses: { id: string; code: string; name: string }[];
-}) {
   return (
-    <Card>
-      <CardHeader>
-        <Stack direction="row" align="end" justify="between" wrap gap={2}>
-          <Stack gap={1}>
-            <Heading level={4}>
-              <span className="font-mono text-sm">{variant.sku}</span>
-              {variant.variantTitle && (
-                <Text variant="muted" className="ml-2 inline">
-                  {variant.variantTitle}
-                </Text>
+    <ModuleProvider module="inventory">
+      {warehouses.length === 0 ? (
+        <Card variant="module">
+          <CardContent>
+            <EmptyState
+              icon={<Boxes className="h-5 w-5" />}
+              title="No warehouses yet"
+              description="Add a warehouse before tracking inventory."
+              action={
+                <Button color="module" asChild>
+                  <Link href="/inventory/warehouses/new">Add warehouse</Link>
+                </Button>
+              }
+            />
+          </CardContent>
+        </Card>
+      ) : variantsWithLevels.length === 0 ? (
+        <Card variant="module">
+          <CardContent>
+            <EmptyState
+              icon={<Boxes className="h-5 w-5" />}
+              title="No variants yet"
+              description="Add at least one variant on the Variants tab before stocking inventory."
+            />
+          </CardContent>
+        </Card>
+      ) : (
+        <Card variant="module">
+          <CardHeader>
+            <Stack direction="row" align="start" justify="between" wrap gap={3}>
+              <Stack gap={1}>
+                <Heading level={3}>Inventory</Heading>
+                <CardDescription>
+                  On hand, allocated, and available per warehouse. Adjustments and reorder edits
+                  record an audit-logged movement.
+                </CardDescription>
+              </Stack>
+              {lowStockCount > 0 && (
+                <Badge color="warning" variant="soft">
+                  {lowStockCount} below reorder
+                </Badge>
               )}
-            </Heading>
-            <CardDescription>
-              On hand, allocated, and available per warehouse. Inline adjust + reorder edits record
-              an audit-logged inventory movement.
-            </CardDescription>
-          </Stack>
-        </Stack>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Warehouse</TableHead>
-              <TableHead className="text-right">On hand</TableHead>
-              <TableHead className="text-right">Allocated</TableHead>
-              <TableHead className="text-right">Available</TableHead>
-              <TableHead>Reorder</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {warehouses.map((w) => {
-              const level = variant.levels.find((l) => l.warehouseId === w.id);
-              return (
-                <VariantInventoryRow
-                  key={w.id}
-                  variantId={variant.variantId}
-                  warehouse={w}
-                  level={level}
-                />
-              );
-            })}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+            </Stack>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Warehouse</TableHead>
+                  <TableHead className="text-right">On hand</TableHead>
+                  <TableHead className="text-right">Allocated</TableHead>
+                  <TableHead className="text-right">Available</TableHead>
+                  <TableHead>Reorder</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {variantsWithLevels.map((v) => (
+                  <React.Fragment key={v.variantId}>
+                    <TableRow className="bg-[var(--color-bg-subtle)] hover:bg-[var(--color-bg-subtle)]">
+                      <TableCell colSpan={COL_COUNT}>
+                        <Stack direction="row" align="center" gap={2} wrap>
+                          <Badge variant="outline" size="sm" className="font-mono">
+                            {v.sku}
+                          </Badge>
+                          {v.variantTitle && (
+                            <Text size="sm" variant="muted">
+                              {v.variantTitle}
+                            </Text>
+                          )}
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                    {warehouses.map((w) => (
+                      <VariantInventoryRow
+                        key={w.id}
+                        variantId={v.variantId}
+                        warehouse={w}
+                        level={v.levels.find((l) => l.warehouseId === w.id)}
+                      />
+                    ))}
+                  </React.Fragment>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+    </ModuleProvider>
   );
 }
 
@@ -210,13 +218,13 @@ function VariantInventoryRow({
     e.preventDefault();
     setError(null);
     const form = new FormData(e.currentTarget);
-    const reorderPoint = Number(stringOr(form.get('reorderPoint'), '0'));
-    const reorderQuantity = Number(stringOr(form.get('reorderQuantity'), '0'));
-    if (!Number.isFinite(reorderPoint) || reorderPoint < 0) {
+    const point = Number(stringOr(form.get('reorderPoint'), '0'));
+    const quantity = Number(stringOr(form.get('reorderQuantity'), '0'));
+    if (!Number.isFinite(point) || point < 0) {
       setError('Reorder point must be 0 or higher');
       return;
     }
-    if (!Number.isFinite(reorderQuantity) || reorderQuantity <= 0) {
+    if (!Number.isFinite(quantity) || quantity <= 0) {
       setError('Reorder quantity must be positive');
       return;
     }
@@ -224,8 +232,8 @@ function VariantInventoryRow({
       const result = await setReorderPolicyAction({
         variantId,
         warehouseId: warehouse.id,
-        reorderPoint,
-        reorderQuantity,
+        reorderPoint: point,
+        reorderQuantity: quantity,
       });
       if (!result.ok) {
         setError(result.error.message);
@@ -241,7 +249,7 @@ function VariantInventoryRow({
       <TableRow>
         <TableCell>
           <Stack gap={0}>
-            <Badge variant="outline" className="font-mono text-xs">
+            <Badge variant="outline" size="sm" className="font-mono">
               {warehouse.code}
             </Badge>
             <Text size="xs" variant="muted">
@@ -252,13 +260,13 @@ function VariantInventoryRow({
         <TableCell className="text-right">{onHand}</TableCell>
         <TableCell className="text-right">{allocated}</TableCell>
         <TableCell className="text-right">
-          <Text className={belowReorder ? 'text-[var(--color-warning)]' : undefined}>
+          <Text className={belowReorder ? 'font-medium text-[var(--color-warning)]' : undefined}>
             {available}
           </Text>
         </TableCell>
         <TableCell>
           {reorderPoint !== null ? (
-            <Badge color={belowReorder ? 'warning' : 'outline'} className="text-xs">
+            <Badge color={belowReorder ? 'warning' : 'neutral'} variant="soft" size="sm">
               ≤ {reorderPoint}
             </Badge>
           ) : (
@@ -268,7 +276,7 @@ function VariantInventoryRow({
           )}
         </TableCell>
         <TableCell>
-          <Stack direction="row" gap={1}>
+          <Stack direction="row" gap={1} justify="end">
             <Button
               variant="ghost"
               size="sm"
@@ -288,7 +296,7 @@ function VariantInventoryRow({
       </TableRow>
       {mode === 'adjust' && (
         <TableRow>
-          <TableCell colSpan={6} className="bg-[var(--color-bg-subtle)]">
+          <TableCell colSpan={COL_COUNT} className="bg-[var(--color-bg-subtle)]">
             <form onSubmit={onAdjust}>
               <Stack direction="row" gap={3} align="end" wrap>
                 <Stack gap={1}>
@@ -301,17 +309,13 @@ function VariantInventoryRow({
                   <Text size="xs" variant="muted">
                     Reason
                   </Text>
-                  <select
-                    name="reason"
-                    defaultValue="manual"
-                    className="h-9 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 text-sm"
-                  >
+                  <NativeSelect name="reason" defaultValue="manual" size="sm" className="w-[10rem]">
                     {REASONS.map((r) => (
                       <option key={r} value={r}>
                         {r}
                       </option>
                     ))}
-                  </select>
+                  </NativeSelect>
                 </Stack>
                 <Stack gap={1} className="min-w-[14rem] flex-1">
                   <Text size="xs" variant="muted">
@@ -323,13 +327,19 @@ function VariantInventoryRow({
                   <Button variant="ghost" size="sm" type="button" onClick={() => setMode('view')}>
                     Cancel
                   </Button>
-                  <Button color="module" size="sm" type="submit" disabled={pending}>
-                    {pending ? 'Saving…' : 'Apply'}
+                  <Button
+                    color="module"
+                    size="sm"
+                    type="submit"
+                    disabled={pending}
+                    loading={pending}
+                  >
+                    Apply
                   </Button>
                 </Stack>
               </Stack>
               {error && (
-                <Text size="xs" className="mt-2 text-[var(--color-danger)]">
+                <Text size="xs" variant="danger" className="mt-2">
                   {error}
                 </Text>
               )}
@@ -339,7 +349,7 @@ function VariantInventoryRow({
       )}
       {mode === 'reorder' && (
         <TableRow>
-          <TableCell colSpan={6} className="bg-[var(--color-bg-subtle)]">
+          <TableCell colSpan={COL_COUNT} className="bg-[var(--color-bg-subtle)]">
             <form onSubmit={onSetReorder}>
               <Stack direction="row" gap={3} align="end" wrap>
                 <Stack gap={1}>
@@ -366,13 +376,19 @@ function VariantInventoryRow({
                   <Button variant="ghost" size="sm" type="button" onClick={() => setMode('view')}>
                     Cancel
                   </Button>
-                  <Button color="module" size="sm" type="submit" disabled={pending}>
-                    {pending ? 'Saving…' : 'Save policy'}
+                  <Button
+                    color="module"
+                    size="sm"
+                    type="submit"
+                    disabled={pending}
+                    loading={pending}
+                  >
+                    Save policy
                   </Button>
                 </Stack>
               </Stack>
               {error && (
-                <Text size="xs" className="mt-2 text-[var(--color-danger)]">
+                <Text size="xs" variant="danger" className="mt-2">
                   {error}
                 </Text>
               )}

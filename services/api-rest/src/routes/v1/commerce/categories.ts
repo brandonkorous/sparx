@@ -11,6 +11,13 @@ import { auditAndStore } from '../../../lib/seo-audit.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 
+const ListCategoriesQuery = z.object({
+  q: z.string().optional(),
+  // Tri-state featured filter (docs/34 §7.1): yes → featured, no → not-featured,
+  // omitted → no filter.
+  featured: z.enum(['yes', 'no']).optional(),
+});
+
 const ListCollectionsQuery = z.object({
   q: z.string().optional(),
   type: z.enum(['manual', 'rules']).optional(),
@@ -25,7 +32,16 @@ const categoryRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/categories', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    return ok(await categoryService.tree(toCommerceContext(request)));
+    const query = ListCategoriesQuery.parse(request.query);
+    // No q/featured → the full nested tree; with either → flat matches (the
+    // service decides). Bare callers (parent pickers, options loaders) pass
+    // nothing and still get the whole tree.
+    return ok(
+      await categoryService.tree(toCommerceContext(request), {
+        q: query.q,
+        featured: query.featured === 'yes' ? true : query.featured === 'no' ? false : undefined,
+      })
+    );
   });
 
   app.get('/v1/commerce/categories/:id', async (request) => {

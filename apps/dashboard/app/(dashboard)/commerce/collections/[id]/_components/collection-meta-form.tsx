@@ -9,8 +9,8 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
+  Checkbox,
   Heading,
   Input,
   Label,
@@ -19,7 +19,7 @@ import {
   Textarea,
 } from '@sparx/ui';
 
-import { SeoScoreChip } from '@/components/seo/seo-score';
+import { SeoMetaFields } from '@/components/seo/seo-meta-fields';
 
 import { updateCollectionAction } from '../../../collection-actions';
 
@@ -33,45 +33,79 @@ interface Props {
   seoDescription: string | null;
 }
 
-// Metadata tab for a collection — name, handle, description, featured
-// flag, SEO. Type is intentionally not editable here (the service refuses
-// type flips because they're destructive of opposite-mode data).
+interface MetaState {
+  name: string;
+  handle: string;
+  description: string;
+  featured: boolean;
+  seoTitle: string;
+  seoDescription: string;
+}
 
-export function CollectionMetaForm({
-  collectionId,
-  name,
-  handle,
-  description,
-  featured,
-  seoTitle,
-  seoDescription,
-}: Props) {
+// Metadata tab for a collection — name, handle, description, featured flag, SEO.
+// This is ONE tab/panel of the tabbed collection detail view, so it is NOT a
+// nested SurfaceFrame (docs/86 edit surface-type rule): it's the panel brought
+// onto the design system — fields in a module-tinted card, a real <Checkbox>,
+// and a consistent Save that disables until something actually changes. Type is
+// intentionally not editable here (the service refuses type flips because they
+// destroy opposite-mode data).
+
+export function CollectionMetaForm(props: Props) {
+  const { collectionId } = props;
   const router = useRouter();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   const [savedAt, setSavedAt] = React.useState<number | null>(null);
 
+  const initial = React.useMemo<MetaState>(
+    () => ({
+      name: props.name,
+      handle: props.handle,
+      description: props.description ?? '',
+      featured: props.featured,
+      seoTitle: props.seoTitle ?? '',
+      seoDescription: props.seoDescription ?? '',
+    }),
+    [
+      props.name,
+      props.handle,
+      props.description,
+      props.featured,
+      props.seoTitle,
+      props.seoDescription,
+    ]
+  );
+
+  const [form, setForm] = React.useState<MetaState>(initial);
+  const [baseline, setBaseline] = React.useState<MetaState>(initial);
+
+  const dirty = React.useMemo(
+    () => (Object.keys(form) as (keyof MetaState)[]).some((k) => form[k] !== baseline[k]),
+    [form, baseline]
+  );
+
+  function set<K extends keyof MetaState>(key: K, value: MetaState[K]) {
+    setForm((prev) => ({ ...prev, [key]: value }));
+    setError(null);
+  }
+
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    setSavedAt(null);
-
-    const form = new FormData(e.currentTarget);
-    const payload = {
-      name: stringField(form.get('name')).trim(),
-      handle: stringField(form.get('handle')).trim(),
-      description: stringOrNull(form.get('description')),
-      featured: form.get('featured') === 'on',
-      seoTitle: stringOrNull(form.get('seoTitle')),
-      seoDescription: stringOrNull(form.get('seoDescription')),
-    };
-
     startTransition(async () => {
-      const result = await updateCollectionAction(collectionId, payload);
+      const result = await updateCollectionAction(collectionId, {
+        name: form.name.trim(),
+        handle: form.handle.trim(),
+        description: form.description.trim() || null,
+        featured: form.featured,
+        seoTitle: form.seoTitle.trim() || null,
+        seoDescription: form.seoDescription.trim() || null,
+      });
       if (!result.ok) {
         setError(result.error.message);
         return;
       }
+      setBaseline(form);
       setSavedAt(Date.now());
       router.refresh();
     });
@@ -79,7 +113,7 @@ export function CollectionMetaForm({
 
   return (
     <form onSubmit={onSubmit} noValidate>
-      <Card>
+      <Card variant="module">
         <CardHeader>
           <Heading level={3}>Metadata</Heading>
           <CardDescription>
@@ -92,89 +126,83 @@ export function CollectionMetaForm({
             <Stack direction="row" gap={4}>
               <Stack gap={2} className="flex-1">
                 <Label htmlFor="name">Name</Label>
-                <Input id="name" name="name" defaultValue={name} required />
+                <Input
+                  id="name"
+                  value={form.name}
+                  onChange={(e) => set('name', e.target.value)}
+                  required
+                />
               </Stack>
               <Stack gap={2} className="flex-1">
                 <Label htmlFor="handle">Handle</Label>
-                <Input id="handle" name="handle" defaultValue={handle} />
+                <Input
+                  id="handle"
+                  value={form.handle}
+                  onChange={(e) => set('handle', e.target.value)}
+                />
               </Stack>
             </Stack>
             <Stack gap={2}>
               <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
-                name="description"
                 rows={4}
-                defaultValue={description ?? ''}
+                value={form.description}
+                onChange={(e) => set('description', e.target.value)}
               />
             </Stack>
-            <Stack direction="row" align="center" gap={2}>
-              <input
-                type="checkbox"
-                id="featured"
-                name="featured"
-                defaultChecked={featured}
-                className="h-4 w-4"
-              />
-              <Label htmlFor="featured">Featured</Label>
+            <Stack gap={1}>
+              <Stack direction="row" align="center" gap={2}>
+                <Checkbox
+                  id="featured"
+                  color="module"
+                  checked={form.featured}
+                  onCheckedChange={(v) => set('featured', v === true)}
+                />
+                <Label htmlFor="featured">Featured</Label>
+              </Stack>
+              <Text size="xs" variant="muted">
+                Featured collections surface in curated storefront slots (hero rails, nav promos).
+              </Text>
             </Stack>
 
-            <Stack gap={2} className="border-t border-[var(--color-border-default)] pt-4">
-              <div className="flex items-center justify-between gap-3">
-                <Heading level={4}>SEO</Heading>
-                {/* Live SEO health for the saved collection; hover for the full report. */}
-                <SeoScoreChip type="collection" id={collectionId} size={30} />
-              </div>
-              <Stack gap={2}>
-                <Label htmlFor="seoTitle">Page title</Label>
-                <Input id="seoTitle" name="seoTitle" defaultValue={seoTitle ?? ''} />
-              </Stack>
-              <Stack gap={2}>
-                <Label htmlFor="seoDescription">Meta description</Label>
-                <Textarea
-                  id="seoDescription"
-                  name="seoDescription"
-                  rows={3}
-                  defaultValue={seoDescription ?? ''}
-                />
-              </Stack>
+            <SeoMetaFields
+              type="collection"
+              id={collectionId}
+              nameSource={form.name}
+              descriptionSource={form.description}
+              seoTitle={form.seoTitle}
+              seoDescription={form.seoDescription}
+              onSeoTitleChange={(v) => set('seoTitle', v)}
+              onSeoDescriptionChange={(v) => set('seoDescription', v)}
+              className="border-t border-[var(--color-border-default)] pt-4"
+            />
+
+            {error && (
+              <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                {error}
+              </Text>
+            )}
+
+            <Stack direction="row" justify="end" align="center" gap={2}>
+              {savedAt !== null && !dirty && (
+                <Stack
+                  direction="row"
+                  align="center"
+                  gap={1}
+                  className="text-[var(--color-text-success)]"
+                >
+                  <Check className="h-4 w-4" />
+                  <Text size="sm">Saved</Text>
+                </Stack>
+              )}
+              <Button type="submit" color="module" disabled={pending || !dirty} loading={pending}>
+                Save changes
+              </Button>
             </Stack>
           </Stack>
         </CardContent>
-        {error && (
-          <CardContent>
-            <Text size="sm" variant="danger" role="alert" aria-live="polite">
-              {error}
-            </Text>
-          </CardContent>
-        )}
-        <CardFooter>
-          {savedAt !== null && (
-            <Stack
-              direction="row"
-              align="center"
-              gap={1}
-              className="text-[var(--color-text-success)]"
-            >
-              <Check className="h-4 w-4" />
-              <Text size="sm">Saved</Text>
-            </Stack>
-          )}
-          <Button type="submit" color="module" disabled={pending} loading={pending}>
-            Save changes
-          </Button>
-        </CardFooter>
       </Card>
     </form>
   );
-}
-
-function stringField(value: FormDataEntryValue | null, fallback = ''): string {
-  return typeof value === 'string' ? value : fallback;
-}
-
-function stringOrNull(value: FormDataEntryValue | null): string | null {
-  if (typeof value !== 'string') return null;
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : null;
 }

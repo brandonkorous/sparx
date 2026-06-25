@@ -1,17 +1,18 @@
 'use client';
 
+import type { ReactNode } from 'react';
+
 import {
   SelectionList,
   type SelectionCard,
   type SelectionColumn,
   Badge,
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
   EmptyState,
   Heading,
   Stack,
+  statusLabel,
+  statusTone,
   Text,
 } from '@sparx/ui';
 import { DollarSign, Plus } from 'lucide-react';
@@ -28,12 +29,6 @@ import { ListPager } from '../../../_components/list-pager';
 // ListToolbar flips BOTH sections together.
 
 const moneyFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
-
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline'> = {
-  active: 'success',
-  draft: 'outline',
-  archived: 'warning',
-};
 
 interface PriceListRow {
   id: string;
@@ -70,19 +65,13 @@ interface PricingListsProps {
 
 export function PricingLists({ priceLists, bulkTiers, view, priceListTotal }: PricingListsProps) {
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Price lists</Heading>
-            <CardDescription>
-              Channel/segment/B2B-targeted price overrides. Higher priority wins when multiple lists
-              are eligible.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          {priceLists.length === 0 ? (
+    <Stack gap={8}>
+      <PricingSection
+        title="Price lists"
+        description="Channel/segment/B2B-targeted price overrides. Higher priority wins when multiple lists are eligible."
+      >
+        {priceLists.length === 0 ? (
+          <Card variant="module" padding="none">
             <EmptyState
               icon={<DollarSign className="h-5 w-5" />}
               title="No price lists yet"
@@ -98,54 +87,78 @@ export function PricingLists({ priceLists, bulkTiers, view, priceListTotal }: Pr
                 </EntityCreateButton>
               }
             />
-          ) : (
-            <SelectionList
-              items={priceLists}
-              view={view}
-              getId={(l) => l.id}
-              selectable={false}
-              entityLabelPlural="price lists"
-              getRowLabel={(l) => l.name}
-              columns={priceListColumns}
-              card={priceListCard}
-            />
-          )}
-          <ListPager total={priceListTotal} />
-        </CardContent>
-      </Card>
+          </Card>
+        ) : (
+          <SelectionList
+            items={priceLists}
+            view={view}
+            getId={(l) => l.id}
+            selectable={false}
+            entityLabelPlural="price lists"
+            getRowLabel={(l) => l.name}
+            columns={priceListColumns}
+            card={priceListCard}
+          />
+        )}
+        <ListPager total={priceListTotal} />
+      </PricingSection>
 
-      <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Bulk price tiers</Heading>
-            <CardDescription>
-              Quantity ramps without a discount code. Variant-scoped tiers override list-scoped
-              tiers when both apply.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          {bulkTiers.length === 0 ? (
+      <PricingSection
+        title="Bulk price tiers"
+        description="Quantity ramps without a discount code. Variant-scoped tiers override list-scoped tiers when both apply."
+      >
+        {bulkTiers.length === 0 ? (
+          <Card variant="module" padding="none">
             <EmptyState
               icon={<DollarSign className="h-5 w-5" />}
               title="No bulk tiers yet"
               description="Add a quantity ramp from a product detail page (Pricing tab) or a price list (Bulk tiers tab)."
             />
-          ) : (
-            <SelectionList
-              items={bulkTiers}
-              view={view}
-              getId={(t) => t.id}
-              selectable={false}
-              entityLabelPlural="bulk tiers"
-              getRowLabel={(t) => (t.variantId ? 'variant' : 'price list')}
-              columns={bulkTierColumns}
-              card={bulkTierCard}
-            />
-          )}
-        </CardContent>
-      </Card>
-    </>
+          </Card>
+        ) : (
+          <SelectionList
+            items={bulkTiers}
+            view={view}
+            getId={(t) => t.id}
+            selectable={false}
+            entityLabelPlural="bulk tiers"
+            getRowLabel={(t) => (t.variantId ? 'variant' : 'price list')}
+            columns={bulkTierColumns}
+            card={bulkTierCard}
+          />
+        )}
+      </PricingSection>
+    </Stack>
+  );
+}
+
+// Pricing carries TWO tables on one page, so each is introduced by a typographic
+// section header (heading + muted lede) and then the BARE SelectionList — never an
+// outer Card. SelectionList already renders the table inside its own
+// `Card padding="none"`, so wrapping it in another Card would nest cards (banned)
+// and box the table differently from every other list surface (products,
+// discounts, …). This is the compliant way to title multiple list sections.
+function PricingSection({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description: string;
+  children: ReactNode;
+}) {
+  return (
+    <Stack gap={4}>
+      <Stack gap={1}>
+        <Heading level={3} as="h2">
+          {title}
+        </Heading>
+        <Text variant="muted" size="sm">
+          {description}
+        </Text>
+      </Stack>
+      {children}
+    </Stack>
   );
 }
 
@@ -169,8 +182,13 @@ const priceListChannel = (list: PriceListRow) =>
     </Text>
   );
 
+// Status pill: color resolved from the canonical statusTone() map (docs/35 §9) so
+// draft/active/archived read the same tone here as on every other surface
+// (draft→warning, active→success, archived→neutral) — never an ad-hoc per-list map.
 const priceListStatus = (list: PriceListRow) => (
-  <Badge color={STATUS_VARIANT[list.status] ?? 'outline'}>{list.status}</Badge>
+  <Badge color={statusTone(list.status)} variant="soft">
+    {statusLabel(list.status)}
+  </Badge>
 );
 
 const priceListColumns: SelectionColumn<PriceListRow>[] = [

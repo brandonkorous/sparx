@@ -6,6 +6,8 @@ import {
   type SelectionColumn,
   SelectionList,
   Stack,
+  statusLabel,
+  statusTone,
   Text,
 } from '@sparx/ui';
 
@@ -44,12 +46,6 @@ interface DiscountsListProps {
   view: 'table' | 'card';
 }
 
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline'> = {
-  active: 'success',
-  draft: 'outline',
-  archived: 'warning',
-};
-
 const moneyFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
 function codeName(d: DiscountRow) {
@@ -86,7 +82,11 @@ function usageLabel(d: DiscountRow): string {
 }
 
 function statusBadge(d: DiscountRow) {
-  return <Badge color={STATUS_VARIANT[d.status] ?? 'outline'}>{d.status}</Badge>;
+  return (
+    <Badge color={statusTone(d.status)} variant="soft" size="sm">
+      {statusLabel(d.status)}
+    </Badge>
+  );
 }
 
 export function DiscountsList({ discounts, view }: DiscountsListProps) {

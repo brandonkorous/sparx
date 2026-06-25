@@ -13,7 +13,7 @@
     "prepare": "node scripts/setup-hooks.mjs || exit 0",
     "postinstall": "pnpm --filter @sparx/db db:generate",
     "build": "turbo run build",
-    "dev": "turbo run dev --concurrency=20",
+    "dev": "turbo run dev --concurrency=30",
     "dev:kill": "node scripts/kill-dev-ports.mjs",
     "lint": "turbo run lint",
     "test": "turbo run test",

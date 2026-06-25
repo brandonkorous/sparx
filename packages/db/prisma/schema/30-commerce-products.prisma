@@ -80,6 +80,7 @@ model Product {
   orderItems             OrderItem[]
   dropshipLinks          DropshipProductLink[]
   billingDocumentLines   BillingDocumentLine[]
+  channelMappings        ChannelProductMapping[]
 
   @@unique([tenantId, handle], map: "products_tenant_handle_unique")
   @@index([tenantId, status])

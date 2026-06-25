@@ -1,4 +1,4 @@
-import { Container, Stack } from '@sparx/ui';
+import { DetailPageShell } from '../../../_components/detail-page-shell';
 import { ProductDetailContent } from './_content';
 
 export const dynamic = 'force-dynamic';
@@ -10,10 +10,8 @@ interface PageProps {
 export default async function ProductDetailPage({ params }: PageProps) {
   const { id } = await params;
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
-        <ProductDetailContent id={id} />
-      </Stack>
-    </Container>
+    <DetailPageShell typeId="product" entityId={id}>
+      <ProductDetailContent id={id} />
+    </DetailPageShell>
   );
 }

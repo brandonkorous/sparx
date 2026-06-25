@@ -7,6 +7,8 @@ import {
   type SelectionColumn,
   SelectionList,
   Stack,
+  statusLabel,
+  statusTone,
   Text,
 } from '@sparx/ui';
 
@@ -60,15 +62,11 @@ function authorLabel(row: ReviewListRow): string {
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const variant: 'success' | 'warning' | 'outline' | 'danger' =
-    status === 'approved'
-      ? 'success'
-      : status === 'flagged'
-        ? 'warning'
-        : status === 'rejected'
-          ? 'danger'
-          : 'outline';
-  return <Badge color={variant}>{status}</Badge>;
+  return (
+    <Badge color={statusTone(status)} variant="soft" size="sm">
+      {statusLabel(status)}
+    </Badge>
+  );
 }
 
 function Stars({ value }: { value: number }) {

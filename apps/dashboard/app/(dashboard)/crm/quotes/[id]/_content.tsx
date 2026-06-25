@@ -17,6 +17,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  statusLabel,
+  statusTone,
   Text,
 } from '@sparx/ui';
 
@@ -71,15 +73,6 @@ interface CustomerSummary {
 
 export const dynamic = 'force-dynamic';
 
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline' | 'danger'> = {
-  draft: 'outline',
-  submitted: 'outline',
-  accepted: 'success',
-  declined: 'danger',
-  expired: 'warning',
-  converted: 'success',
-};
-
 interface Props {
   id: string;
 }
@@ -103,7 +96,9 @@ export async function QuoteDetailContent({ id }: Props) {
         <Stack direction="row" align="center" justify="between" wrap gap={3}>
           <Stack direction="row" align="center" gap={3} wrap>
             <Heading level={1}>{quote.quoteNumber}</Heading>
-            <Badge color={STATUS_VARIANT[quote.status] ?? 'outline'}>{quote.status}</Badge>
+            <Badge color={statusTone(quote.status)} variant="soft">
+              {statusLabel(quote.status)}
+            </Badge>
             {customer && (
               <Link
                 href={`/crm/customers/${customer.id}`}

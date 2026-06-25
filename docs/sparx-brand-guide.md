@@ -1,8 +1,8 @@
 # sparx Brand Guide
 
-**Version:** 1.6
+**Version:** 1.7
 **Author:** Brandon Korous / WizeWorks
-**Last Updated:** 2026-06-17
+**Last Updated:** 2026-06-24
 
 ---
 
@@ -182,11 +182,11 @@ The UI gets out of the way of the tenant's work. Navigation is always visible bu
 
 ### The 3px stripe rule
 
-The single most important UI pattern in the sparx dashboard: every card, panel, and page header within a module context carries a 3px top border in that module's color. It tells the tenant exactly where they are without any additional labeling.
+The single most important UI pattern in the sparx dashboard: every card, panel, and page header carries a 3px top border in **its functionality's** module color. Usually that's the module you're in — but a panel that surfaces _another_ module's functionality (an inventory panel on a product page, an SEO panel on a content entry) wears _that_ module's color, set by wrapping it in its own `<ModuleProvider>`. The stripe tells the tenant exactly what they're looking at, not just where they navigated, without any additional labeling.
 
-### Module isolation
+### Module isolation — color follows functionality
 
-When a tenant is working inside the CMS module, the UI shifts subtly to teal accents. When they switch to AI/MCP, rose. The color transition reinforces the module context and makes the system feel coherent rather than arbitrary.
+When a tenant is working inside the CMS module, the chrome and that module's own content shift subtly to teal accents; switch to AI/MCP and it's rose. The color transition reinforces the active context. But isolation is about the _chrome_, not the whole screen: **color follows functionality**, so a single screen can legibly carry several module hues at once — each panel, badge, or action wearing the color of the functionality it represents — while the chassis stays neutral and the colored signals stay sparse. It's wayfinding by capability, not a single per-page wash. Layered over this is the **semantic status axis** (success/warning/danger/info), used both on status pills and as soft callouts that break dense forms into something scannable.
 
 ### Progressive disclosure
 

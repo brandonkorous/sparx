@@ -34,11 +34,15 @@ export function PreviewButton({
   slug,
   typeKey,
   tenantSlug,
+  iconOnly = false,
 }: {
   entryId: string;
   slug: string;
   typeKey: string;
   tenantSlug: string | null;
+  /** Header use: render just the icon (label via tooltip) and skip the inline
+   *  clipboard-fallback URL — the toast carries the blocked-clipboard message. */
+  iconOnly?: boolean;
 }) {
   const [pending, startTransition] = React.useTransition();
   const [recentlyCopied, setRecentlyCopied] = React.useState(false);
@@ -76,23 +80,31 @@ export function PreviewButton({
     });
   }
 
+  const label = recentlyCopied ? 'Preview link copied' : 'Copy preview link';
+  const button = (
+    <Button
+      type="button"
+      color={recentlyCopied ? 'module' : 'neutral'}
+      variant={recentlyCopied ? 'outline' : 'ghost'}
+      size="sm"
+      leftIcon={
+        recentlyCopied ? <Check className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />
+      }
+      onClick={onClick}
+      disabled={pending}
+      loading={pending}
+      aria-label={label}
+      title={iconOnly ? label : undefined}
+    >
+      {iconOnly ? null : recentlyCopied ? 'Copied' : 'Preview'}
+    </Button>
+  );
+
+  if (iconOnly) return button;
+
   return (
     <Stack gap={1}>
-      <Button
-        type="button"
-        color={recentlyCopied ? 'module' : 'neutral'}
-        variant={recentlyCopied ? 'outline' : 'ghost'}
-        size="sm"
-        leftIcon={
-          recentlyCopied ? <Check className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />
-        }
-        onClick={onClick}
-        disabled={pending}
-        loading={pending}
-        aria-label={recentlyCopied ? 'Preview link copied' : 'Copy preview link'}
-      >
-        {recentlyCopied ? 'Copied' : 'Preview'}
-      </Button>
+      {button}
       {manualCopyUrl && (
         <Text size="xs" variant="muted" aria-live="polite">
           <code className="break-all">{manualCopyUrl}</code>

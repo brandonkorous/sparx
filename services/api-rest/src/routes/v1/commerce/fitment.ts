@@ -215,6 +215,16 @@ const fitmentRoutes: FastifyPluginAsync = async (app) => {
     return ok(await configuratorService.getTemplate(toCommerceContext(request), id));
   });
 
+  // Per-product templates for the product detail's Configurator tab.
+  app.get('/v1/commerce/products/:productId/configurator-templates', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const { productId } = ProductIdParam.parse(request.params);
+    return ok(
+      await configuratorService.listTemplatesForProduct(toCommerceContext(request), productId)
+    );
+  });
+
   app.post('/v1/commerce/configurator-templates', async (request, reply) => {
     requireRole(request, 'editor');
     await requireCommerceModule(request);

@@ -45,7 +45,7 @@ export function CollectionsSelectionTable({ collections, view }: CollectionsSele
   ];
 
   const typeBadge = (c: CollectionSummary) => (
-    <Badge color={c.type === 'rules' ? 'module' : 'outline'} className="text-xs">
+    <Badge color={c.type === 'rules' ? 'module' : 'neutral'} variant="soft" size="sm">
       {c.type === 'rules' ? (
         <>
           <Sparkles className="mr-1 h-3 w-3" />
@@ -58,7 +58,7 @@ export function CollectionsSelectionTable({ collections, view }: CollectionsSele
   );
 
   const featuredBadge = (
-    <Badge variant="outline" className="text-xs">
+    <Badge color="accent" variant="soft" size="sm">
       <Star className="mr-1 h-3 w-3" />
       featured
     </Badge>

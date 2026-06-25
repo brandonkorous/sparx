@@ -9,6 +9,7 @@ import {
   formatDate,
   hazmatLabel,
   recallBadge,
+  serialStatusColor,
   serialStatusLabel,
   type LotDetail,
   type SerialRow,
@@ -89,7 +90,7 @@ export async function LotDetailContent({ id }: { id: string }) {
             Serial status:
           </Text>
           {lot.serialCounts.map((c) => (
-            <Badge key={c.status} variant="outline">
+            <Badge key={c.status} color={serialStatusColor(c.status)} variant="soft">
               {serialStatusLabel(c.status)} · {c.count}
             </Badge>
           ))}

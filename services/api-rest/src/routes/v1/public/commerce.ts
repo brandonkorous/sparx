@@ -25,6 +25,7 @@ import { isModuleEnabled } from '@sparx/auth';
 import { computeAvailability } from '@sparx/inventory';
 import { searchProducts } from '@sparx/search';
 import { resolvePublicPropertyId, productSiteVisibilityWhere } from '../../../lib/property.js';
+import { tryVerifyProductPreview } from '../../../lib/preview.js';
 
 // `property` (a stable site slug) scopes catalog reads to one web PROPERTY
 // (docs/49 Model B). The storefront passes it for non-primary sites; omitted →
@@ -519,15 +520,21 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    // A valid product-preview token (editor minted, 15-min TTL) relaxes the
+    // published-only + site-visibility filter so a DRAFT can be previewed. The
+    // token is scoped to one product by `sub`, asserted against the match below
+    // so it can't be replayed against a different product via the handle.
+    const previewProductId = tryVerifyProductPreview(app, request, tenantId);
     const [result, inventoryActive] = await Promise.all([
       withTenant({ tenantId }, (tx) =>
         tx.product.findFirst({
           // Model B: a product not visible on the active site 404s by URL too.
           where: {
             handle,
-            status: 'active',
             deletedAt: null,
-            ...productSiteVisibilityWhere(propertyId),
+            ...(previewProductId
+              ? {}
+              : { status: 'active', ...productSiteVisibilityWhere(propertyId) }),
           },
           select: FULL_PRODUCT_SELECT,
         })
@@ -535,6 +542,8 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
       isModuleEnabled(tenantId, 'inventory'),
     ]);
     if (!result) throw notFound('Product', handle);
+    // Token is bound to one product — reject a handle that resolves elsewhere.
+    if (previewProductId && previewProductId !== result.id) throw notFound('Product', handle);
     return ok(mapFullProduct(result, inventoryActive));
   });
 

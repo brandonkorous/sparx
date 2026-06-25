@@ -1,8 +1,8 @@
 # 50 — SEO, AIO & Discoverability
 
-Version: 1.3
+Version: 1.4
 Author: Brandon Korous
-Last Updated: 2026-06-04
+Last Updated: 2026-06-24
 
 > Discoverability is a **platform capability**, not a per-app chore. It spans two audiences —
 > traditional search crawlers and the new wave of answer/generative engines (AIO) — and two
@@ -194,6 +194,17 @@ remaining follow-ups live with the feature in §7.6.)
   `robots` groups, not by removing the `llms.txt`/sitemap signals.
 - SEO controls belong in the authoring tool for the surface that owns the content; the render path
   only _consumes_ the stored fields.
+- **SEO title/description inherit, and the editor must SHOW it.** The render path falls back
+  `seoTitle ?? name` and `seoDescription ?? description` (e.g. `apps/site/app/collections/[handle]/page.tsx`
+  `generateMetadata`), and the audit gatherer (`services/api-rest/src/lib/seo-audit.ts`) mirrors that same
+  fallback — so a blank SEO field is **not** "missing", it inherits, and the score legitimately reads
+  "present". That is correct on the live site but _confusing in the editor_ (blank field + green score reads
+  like a bug). Every editable surface therefore renders its SEO pair through the reusable **`<SeoMetaFields>`**
+  (`apps/dashboard/components/seo/seo-meta-fields.tsx`), which makes the inheritance legible: the inherited
+  value is the field's **placeholder**, and a per-field **"Use name" / "Use description"** button materializes
+  it for editing (fill-empty only — it never clobbers a custom value; the description fill is trimmed to the
+  ~160-char meta budget the score grades). Never render a bare SEO title/description input pair, and never a
+  blunt "copy" button that overwrites.
 
 ## 7. SEO Audit Scorecard
 

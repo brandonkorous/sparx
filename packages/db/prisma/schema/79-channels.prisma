@@ -1,0 +1,96 @@
+// Channels module (docs/106) — external sales-channel + first-party marketplace
+// integrations. A tenant one-click-connects an EXISTING seller account (TikTok
+// Shop, Etsy, Amazon, Meta, Google Shopping, Walmart, eBay, Faire, …) so
+// catalog/orders/inventory sync, OR publishes to sparx.market. sparx is the
+// back-office system of record; the marketplace stays the storefront.
+//
+//   ChannelConnection      — the per-tenant OAuth link to one external shop.
+//                            Tokens live in Secret Manager, NEVER on the row —
+//                            only the secret REF is stored (docs/106 §4.6).
+//   ChannelProductMapping  — links a sparx variant ↔ its external listing; the
+//                            seam for catalog push + order-ingest SKU resolution.
+//
+// Both tenant-scoped, FORCE RLS with the canonical tenant_isolation policy. Owned
+// by @sparx/channels, driven by the channel-sync-worker. Part of the Commerce
+// module (no separate fee) — gated with commerce.
+
+model ChannelConnection {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // The channel slug — tiktok_shop | etsy | amazon | walmart | ebay | faire |
+  // meta | google_shopping | pinterest | sparx_market (docs/106 §3).
+  channel String @db.VarChar(40)
+
+  // active | paused | error | disconnected (docs/106 §4.4).
+  status String @default("active") @db.VarChar(20)
+
+  // The channel's own shop/account id (e.g. the TikTok shop_id) + display name,
+  // captured after the OAuth handshake.
+  externalId String? @map("external_id") @db.VarChar(255)
+  shopName   String? @map("shop_name") @db.VarChar(255)
+
+  // Secret Manager REFERENCES (projects/…/secrets/…) resolved through the
+  // integration-framework SecretReader — raw tokens are NEVER stored on the row
+  // (docs/106 §4.6). Null for feed channels that authenticate per-call.
+  accessTokenRef  String?   @map("access_token_ref") @db.VarChar(512)
+  refreshTokenRef String?   @map("refresh_token_ref") @db.VarChar(512)
+  tokenExpiresAt  DateTime? @map("token_expires_at") @db.Timestamptz
+
+  // Granted OAuth scopes — surfaces a re-auth prompt when the required set grows.
+  scopes String[] @default([]) @db.VarChar(80)
+
+  lastSyncedAt DateTime? @map("last_synced_at") @db.Timestamptz
+  // Rolling list of recent failures [{ at, code, message }] for the manage UI.
+  syncErrors   Json      @default("[]") @map("sync_errors")
+  metadata     Json      @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  mappings ChannelProductMapping[]
+
+  // One connection per channel per tenant (one shop per channel for now —
+  // multi-shop relaxes this to (tenant, channel, external_id) later, docs/106 §9).
+  @@unique([tenantId, channel], map: "channel_connections_tenant_channel_unique")
+  @@index([tenantId, status])
+  @@map("channel_connections")
+}
+
+model ChannelProductMapping {
+  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String @map("tenant_id") @db.Uuid
+  connectionId String @map("connection_id") @db.Uuid
+  channel      String @db.VarChar(40)
+
+  // The sparx side — variant grain (a product maps via its variants). productId
+  // is carried for grouping + product-level operations.
+  productId String @map("product_id") @db.Uuid
+  variantId String @map("variant_id") @db.Uuid
+
+  // External listing identifiers, populated on push/import. externalSku is the
+  // reverse-lookup key on order ingest (channel order line → sparx variant).
+  externalProductId String? @map("external_product_id") @db.VarChar(255)
+  externalVariantId String? @map("external_variant_id") @db.VarChar(255)
+  externalSku       String? @map("external_sku") @db.VarChar(255)
+
+  syncEnabled  Boolean   @default(true) @map("sync_enabled")
+  lastSyncedAt DateTime? @map("last_synced_at") @db.Timestamptz
+  syncError    String?   @map("sync_error") @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant     Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  connection ChannelConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  product    Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variant    ProductVariant    @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  // One mapping per variant per connection.
+  @@unique([connectionId, variantId], map: "channel_product_mappings_connection_variant_unique")
+  @@index([tenantId, channel, productId])
+  @@index([tenantId, channel, externalSku])
+  @@index([connectionId])
+  @@map("channel_product_mappings")
+}

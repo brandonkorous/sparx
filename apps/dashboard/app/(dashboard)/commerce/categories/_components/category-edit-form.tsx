@@ -25,6 +25,7 @@ import {
 
 import { reparentCategoryAction, updateCategoryAction } from '../../category-actions';
 import { useRegisterLeaveGuard } from '../../../_components/unsaved-guard';
+import { DetailPresentationSwitch } from '../../../_components/detail-panel';
 import { CategoryDeleteButton } from './category-delete-button';
 import type { CategoryParentOption } from './category-create-form';
 
@@ -36,7 +37,7 @@ import type { CategoryParentOption } from './category-create-form';
 //   - `surface="overlay"` → SurfaceFrame `inline` inside the @detail drawer/modal
 //
 // The frame owns the chrome (title + window controls from the host, pinned floor
-// toolbar) and the module-tinted field card; the record's read-only facts (path,
+// toolbar) and the module-tinted field card; the record's read-only facts (handle,
 // product count, timestamps) live in the live summary aside, with the destructive
 // Delete pinned to the summary footer — away from the primary Save.
 //
@@ -111,6 +112,31 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
     description !== (category.description ?? '') ||
     featured !== category.featured;
 
+  // Clear the stale "Saved" badge the moment the user edits again.
+  React.useEffect(() => {
+    if (dirty) setSavedAt(null);
+  }, [dirty]);
+
+  // The handle is the category's URL-safe slug; flag when it's actually changing
+  // so we can surface the reslug note.
+  const handleChanged = handle.trim().length > 0 && handle.trim() !== category.handle;
+
+  // Sibling context for the Priority field: peers under this category's saved
+  // parent, with their priorities, so the number isn't a blind guess.
+  const livePosition = Number.parseInt(position, 10);
+  const siblings = React.useMemo(() => {
+    const lastDot = category.path.lastIndexOf('.');
+    const parentPrefix = lastDot >= 0 ? category.path.slice(0, lastDot) : null;
+    return parents
+      .filter((p) => {
+        if (p.id === category.id) return false;
+        const d = p.path.lastIndexOf('.');
+        const pp = d >= 0 ? p.path.slice(0, d) : null;
+        return pp === parentPrefix;
+      })
+      .map((p) => ({ id: p.id, name: p.name, position: p.position }));
+  }, [parents, category.id, category.path]);
+
   const guardLeave = React.useCallback(async (): Promise<boolean> => {
     if (!dirty) return true;
     return confirm({
@@ -151,7 +177,7 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
     }
     const parsedPosition = Number.parseInt(position, 10);
     if (!Number.isFinite(parsedPosition) || parsedPosition < 0) {
-      setFieldErrors({ position: 'Position must be a non-negative integer.' });
+      setFieldErrors({ position: 'Priority must be a non-negative integer.' });
       return;
     }
     const trimmedHandle = handle.trim();
@@ -198,6 +224,14 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
       <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title={category.name}
+        // Full-page only: the embedded title strip has no host chrome, so it
+        // carries the drawer/modal presentation switch for parity with the overlay
+        // (the overlay's DetailHeader already supplies switch + close).
+        headerActions={
+          surface === 'page' ? (
+            <DetailPresentationSwitch typeId="category" entityId={category.id} />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}
@@ -207,6 +241,8 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
             meta={meta}
             ancestors={ancestors}
             childCount={childCount}
+            siblings={siblings}
+            livePosition={livePosition}
           />
         }
       >
@@ -214,111 +250,147 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
           header={{
             title: 'Category details',
             supporting:
-              'Rename, reslug, reparent, or reorder. Storefront URLs follow the category’s path, so changing the handle changes its public URL.',
+              'Rename, reslug, reparent, or reorder. The handle is the category’s URL-safe slug.',
           }}
           actions={{
-            onNext: submit,
+            nextForm: 'category-edit-form',
             nextLabel: 'Save changes',
             nextLoading: pending,
-            nextDisabled: pending,
+            nextDisabled: pending || !dirty,
             destructive: <CategoryDeleteButton categoryId={category.id} name={category.name} />,
             extra:
               savedAt && !error ? (
-                <Text size="xs" variant="muted">
+                <Text size="xs" variant="success">
                   Saved {savedAt}
                 </Text>
               ) : undefined,
           }}
         >
-          <Card variant="module">
-            <CardContent className="py-6">
-              <Stack gap={4}>
-                <Stack direction="row" gap={3} wrap>
-                  <Stack gap={2} className="min-w-[12rem] flex-1">
-                    <Label htmlFor="cat-name">Name</Label>
-                    <Input id="cat-name" value={name} onChange={(e) => setName(e.target.value)} />
-                    {fieldErrors.name && (
-                      <Text size="xs" variant="danger">
-                        {fieldErrors.name}
-                      </Text>
-                    )}
+          <form
+            id="category-edit-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (pending || !dirty) return;
+              submit();
+            }}
+          >
+            <Card variant="module">
+              <CardContent className="py-6">
+                <Stack gap={4}>
+                  <Stack direction="row" gap={3} wrap>
+                    <Stack gap={2} className="min-w-[12rem] flex-1">
+                      <Label htmlFor="cat-name">Name</Label>
+                      <Input
+                        id="cat-name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        variant={fieldErrors.name ? 'error' : 'default'}
+                        aria-invalid={fieldErrors.name ? true : undefined}
+                        aria-describedby={fieldErrors.name ? 'cat-name-error' : undefined}
+                      />
+                      {fieldErrors.name && (
+                        <Text id="cat-name-error" size="xs" variant="danger">
+                          {fieldErrors.name}
+                        </Text>
+                      )}
+                    </Stack>
+                    <Stack gap={2} className="min-w-[12rem] flex-1">
+                      <Label htmlFor="cat-handle">Handle</Label>
+                      <Input
+                        id="cat-handle"
+                        value={handle}
+                        onChange={(e) => setHandle(e.target.value)}
+                        variant={fieldErrors.handle ? 'error' : 'default'}
+                        aria-invalid={fieldErrors.handle ? true : undefined}
+                        aria-describedby={fieldErrors.handle ? 'cat-handle-error' : undefined}
+                      />
+                      {fieldErrors.handle && (
+                        <Text id="cat-handle-error" size="xs" variant="danger">
+                          {fieldErrors.handle}
+                        </Text>
+                      )}
+                    </Stack>
+                    <Stack gap={2} className="w-24">
+                      <Label htmlFor="cat-priority">Priority</Label>
+                      <Input
+                        id="cat-priority"
+                        type="number"
+                        min={0}
+                        step={1}
+                        value={position}
+                        onChange={(e) => setPosition(e.target.value)}
+                        variant={fieldErrors.position ? 'error' : 'default'}
+                        aria-invalid={fieldErrors.position ? true : undefined}
+                        aria-describedby={fieldErrors.position ? 'cat-priority-error' : undefined}
+                      />
+                      {fieldErrors.position && (
+                        <Text id="cat-priority-error" size="xs" variant="danger">
+                          {fieldErrors.position}
+                        </Text>
+                      )}
+                    </Stack>
                   </Stack>
-                  <Stack gap={2} className="min-w-[12rem] flex-1">
-                    <Label htmlFor="cat-handle">Handle</Label>
-                    <Input
-                      id="cat-handle"
-                      value={handle}
-                      onChange={(e) => setHandle(e.target.value)}
+
+                  {/* The handle is the category's URL-safe slug. Categories have no
+                    standalone storefront route today — they're surfaced through the
+                    builder, bound by id — so a reslug breaks nothing live; just note
+                    the change. */}
+                  {handleChanged && (
+                    <Text size="xs" variant="muted">
+                      Changing the handle reslugs this category from <code>{category.handle}</code>{' '}
+                      to <code>{handle.trim()}</code>. Categories don’t have a standalone storefront
+                      page yet, so this won’t break any links today.
+                    </Text>
+                  )}
+
+                  <Stack gap={2}>
+                    <Label htmlFor="cat-parent">Parent</Label>
+                    <NativeSelect
+                      id="cat-parent"
+                      value={parentId}
+                      onChange={(e) => setParentId(e.target.value)}
+                    >
+                      <option value="">— Top level —</option>
+                      {parentOptions.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {indent(p.depth)}
+                          {p.name}
+                        </option>
+                      ))}
+                    </NativeSelect>
+                    <Text size="xs" variant="muted">
+                      Leave top-level for a root category, or nest it under an existing one.
+                      Priority orders this category among its siblings — lower numbers sort first
+                      (priority 1 is first).
+                    </Text>
+                  </Stack>
+                  <Stack gap={2}>
+                    <Label htmlFor="cat-description">Description</Label>
+                    <Textarea
+                      id="cat-description"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      rows={3}
                     />
-                    {fieldErrors.handle && (
-                      <Text size="xs" variant="danger">
-                        {fieldErrors.handle}
-                      </Text>
-                    )}
                   </Stack>
-                  <Stack gap={2} className="w-24">
-                    <Label htmlFor="cat-position">Position</Label>
-                    <Input
-                      id="cat-position"
-                      type="number"
-                      min={0}
-                      step={1}
-                      value={position}
-                      onChange={(e) => setPosition(e.target.value)}
-                    />
-                    {fieldErrors.position && (
-                      <Text size="xs" variant="danger">
-                        {fieldErrors.position}
-                      </Text>
-                    )}
+                  <Stack gap={1}>
+                    <Stack direction="row" align="center" gap={2}>
+                      <Checkbox
+                        id="cat-featured"
+                        color="module"
+                        checked={featured}
+                        onCheckedChange={(v) => setFeatured(v === true)}
+                      />
+                      <Label htmlFor="cat-featured">Featured</Label>
+                    </Stack>
+                    <Text size="xs" variant="muted">
+                      Highlights this category in storefront navigation and featured collections.
+                    </Text>
                   </Stack>
                 </Stack>
-                <Stack gap={2}>
-                  <Label htmlFor="cat-parent">Parent</Label>
-                  <NativeSelect
-                    id="cat-parent"
-                    value={parentId}
-                    onChange={(e) => setParentId(e.target.value)}
-                  >
-                    <option value="">— Top level —</option>
-                    {parentOptions.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {indent(p.depth)}
-                        {p.name}
-                      </option>
-                    ))}
-                  </NativeSelect>
-                  <Text size="xs" variant="muted">
-                    Leave top-level for a root category, or nest it under an existing one. Lower
-                    positions sort first among siblings.
-                  </Text>
-                </Stack>
-                <Stack gap={2}>
-                  <Label htmlFor="cat-description">Description</Label>
-                  <Textarea
-                    id="cat-description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    rows={3}
-                  />
-                </Stack>
-                <Stack gap={1}>
-                  <Stack direction="row" align="center" gap={2}>
-                    <Checkbox
-                      id="cat-featured"
-                      color="module"
-                      checked={featured}
-                      onCheckedChange={(v) => setFeatured(v === true)}
-                    />
-                    <Label htmlFor="cat-featured">Featured</Label>
-                  </Stack>
-                  <Text size="xs" variant="muted">
-                    Highlights this category in storefront navigation and featured collections.
-                  </Text>
-                </Stack>
-              </Stack>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </form>
           {error && (
             <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
               {error}
@@ -342,15 +414,19 @@ function CategorySummary({
   meta,
   ancestors,
   childCount,
+  siblings,
+  livePosition,
 }: {
   category: CategoryEditData;
   meta?: CategoryEditMeta;
   ancestors: string[];
   childCount: number;
+  siblings: { id: string; name: string; position?: number }[];
+  livePosition: number;
 }) {
   return (
     <SurfaceSummary title="Category">
-      <SurfaceSummaryRow label="Path" value={`/${category.handle}`} />
+      <SurfaceSummaryRow label="Handle" value={category.handle} />
       <SurfaceSummaryRow
         label="Nested under"
         value={ancestors.length > 0 ? ancestors.join(' › ') : 'Top level'}
@@ -364,6 +440,25 @@ function CategorySummary({
           label="Products"
           value={`${meta.productCount} product${meta.productCount === 1 ? '' : 's'}`}
         />
+      )}
+      {siblings.length > 0 && (
+        <>
+          <SurfaceSummaryDivider />
+          <Text size="sm" variant="muted" className="mb-1">
+            Siblings by priority
+          </Text>
+          {siblings
+            .slice()
+            .sort((a, b) => (a.position ?? Infinity) - (b.position ?? Infinity))
+            .map((s) => (
+              <SurfaceSummaryRow key={s.id} label={s.name} value={s.position ?? '—'} />
+            ))}
+          <SurfaceSummaryRow
+            label={`${category.name} (this)`}
+            value={Number.isFinite(livePosition) ? livePosition : '—'}
+            strong
+          />
+        </>
       )}
       {meta && (
         <>

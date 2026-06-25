@@ -9,6 +9,7 @@ import {
   Plug,
   Settings as SettingsIcon,
   Shield,
+  Store,
   Users,
   Wallet,
 } from 'lucide-react';
@@ -79,6 +80,14 @@ export const SETTINGS_NAV: readonly SettingsNavItem[] = [
     description: 'Accept payments with sparx Pay or your own processor.',
     icon: Wallet,
     href: '/settings/payments',
+    ready: true,
+  },
+  {
+    id: 'channels',
+    label: 'Channels',
+    description: 'Sell on TikTok Shop, Etsy, Amazon, Meta, and more — synced from one place.',
+    icon: Store,
+    href: '/settings/channels',
     ready: true,
   },
   {

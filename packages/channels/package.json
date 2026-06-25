@@ -1,0 +1,23 @@
+{
+  "name": "@sparx/channels",
+  "version": "0.0.0",
+  "private": true,
+  "description": "sparx Channels — ChannelAdapter contract, registry, and normalized types for external sales-channel + sparx.market integrations (docs/106).",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./catalog": {
+      "types": "./src/catalog.ts",
+      "default": "./src/catalog.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

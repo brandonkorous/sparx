@@ -95,6 +95,11 @@ export interface SurfaceFrameProps {
    *  frame is wide and stacks as a card after the fields when narrow. Omit for
    *  wizards without a natural summary — the form then fills the full width. */
   summary?: React.ReactNode;
+  /** `embedded` variant only: right-aligned actions in the title strip — e.g. a
+   *  presentation switch (open this record as a drawer/modal). `inline` ignores it
+   *  because the drawer/modal HOST chrome already owns the window controls; the
+   *  embedded full-page surface has no host, so it carries them here for parity. */
+  headerActions?: React.ReactNode;
   className?: string;
   children: React.ReactNode;
 
@@ -573,6 +578,7 @@ function FSurfaceFrame({
   variant,
   showHeader,
   title,
+  headerActions,
   steps,
   current,
   summary,
@@ -584,6 +590,7 @@ function FSurfaceFrame({
   variant: 'inline' | 'embedded';
   showHeader: boolean;
   title?: React.ReactNode;
+  headerActions?: React.ReactNode;
   steps: SurfaceStepDef[];
   current: number;
   summary?: React.ReactNode;
@@ -611,11 +618,16 @@ function FSurfaceFrame({
         className
       )}
     >
-      {showHeader && title && (
-        <div className="flex h-[52px] shrink-0 items-center border-b border-[var(--color-border-default)] px-7 max-[680px]:px-5">
-          <span className="truncate text-sm font-semibold tracking-tight text-[var(--color-text-primary)]">
-            {title}
-          </span>
+      {showHeader && (title != null || headerActions != null) && (
+        <div className="flex h-[52px] shrink-0 items-center gap-3 border-b border-[var(--color-border-default)] px-7 max-[680px]:px-5">
+          {title && (
+            <span className="min-w-0 flex-1 truncate text-sm font-semibold tracking-tight text-[var(--color-text-primary)]">
+              {title}
+            </span>
+          )}
+          {headerActions && (
+            <div className="ml-auto flex shrink-0 items-center gap-1">{headerActions}</div>
+          )}
         </div>
       )}
       <div
@@ -677,6 +689,7 @@ export function SurfaceFrame({
   onCancel,
   cancelLabel,
   summary,
+  headerActions,
   className,
   children,
   open,
@@ -762,6 +775,7 @@ export function SurfaceFrame({
         variant={variant}
         showHeader={variant === 'embedded'}
         title={title}
+        headerActions={headerActions}
         steps={steps}
         current={current}
         summary={summary}
@@ -818,6 +832,11 @@ export interface SurfaceStepActions {
   nextLabel?: string;
   nextDisabled?: boolean;
   nextLoading?: boolean;
+  /** When set, the primary button becomes a real `type="submit"` associated
+   *  with this form id (via the `form` attribute, since the frame's toolbar sits
+   *  OUTSIDE the form). This is what makes Enter-in-a-field save. With it set,
+   *  `onNext` is unnecessary — the form's own `onSubmit` runs the save. */
+  nextForm?: string;
   onSkip?: () => void;
   skipLabel?: string;
   /** A destructive action (e.g. a Delete button) seated in the left cluster
@@ -879,6 +898,7 @@ function ActionRow({
     nextLabel = 'Continue',
     nextDisabled,
     nextLoading,
+    nextForm,
     onSkip,
     skipLabel = 'Skip for now',
     destructive,
@@ -911,10 +931,12 @@ function ActionRow({
             {skipLabel}
           </Button>
         )}
-        {onNext && (
+        {(onNext != null || nextForm != null) && (
           <Button
             color="module"
-            onClick={onNext}
+            type={nextForm ? 'submit' : 'button'}
+            form={nextForm}
+            onClick={nextForm ? undefined : onNext}
             disabled={(nextDisabled ?? false) || (nextLoading ?? false)}
             loading={nextLoading}
           >

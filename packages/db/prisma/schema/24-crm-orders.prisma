@@ -32,8 +32,20 @@ model Order {
 
   status        String  @default("placed") @db.VarChar(20) // placed | fulfilled | delivered | cancelled | refunded
   paymentStatus String  @default("unpaid") @map("payment_status") @db.VarChar(20) // unpaid | partially_paid | paid | refunded
-  channel       String? @db.VarChar(63) // storefront | b2b_portal | admin | import | mcp
+  // High-level origin bucket. storefront | b2b_portal | admin | import | mcp |
+  // marketplace (an external sales channel or sparx.market — docs/106 §4.4).
+  channel       String? @db.VarChar(63)
+  // Specific origin within the channel. For channel='marketplace', the channel
+  // slug: tiktok_shop | etsy | amazon | walmart | ebay | faire | meta |
+  // sparx_market (docs/106 §4.4).
   source        String? @db.VarChar(63)
+  // Channel/marketplace order linkage (docs/106 §4.4). externalId = the
+  // marketplace's own order id (the idempotency key on re-ingest); externalStatus
+  // = its native status (mapped to `status` on ingest); channelFeeCents = the
+  // marketplace commission so net revenue reconciles. NULL for native orders.
+  externalId      String? @map("external_id") @db.VarChar(255)
+  externalStatus  String? @map("external_status") @db.VarChar(50)
+  channelFeeCents Int?    @map("channel_fee_cents")
 
   subtotal          Decimal @default(0) @db.Decimal(12, 2)
   taxTotal          Decimal @default(0) @map("tax_total") @db.Decimal(12, 2)
@@ -87,5 +99,6 @@ model Order {
   @@index([tenantId, status, placedAt(sort: Desc)])
   @@index([tenantId, paymentStatus])
   @@index([tenantId, placedAt(sort: Desc)])
+  @@index([tenantId, channel, externalId])
   @@map("orders")
 }

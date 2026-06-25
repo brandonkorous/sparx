@@ -77,7 +77,10 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
   // product layout before any real product exists. The layout still resolves
   // from the (draft) snapshot — only the bound data is swapped.
   const sample = isSampleRequested(sp);
-  const product = sample ? SAMPLE_PRODUCT : await getProduct(site.slug, handle);
+  // A `?sparxPreview=<token>` link (minted from the dashboard) authorizes the
+  // read to return a DRAFT product so an editor can preview before publishing.
+  const previewToken = one(sp.sparxPreview);
+  const product = sample ? SAMPLE_PRODUCT : await getProduct(site.slug, handle, previewToken);
   if (!product) {
     if (!sample) await applyRedirect(site.slug, `/products/${handle}`);
     notFound();
