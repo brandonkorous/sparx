@@ -6,7 +6,7 @@
 
 import * as React from 'react';
 import { Copy, Plus } from 'lucide-react';
-import { Button, Input, Label, Stack, Text } from '@sparx/ui';
+import { Button, Checkbox, Input, Label, Stack, Text } from '@sparx/ui';
 
 import { createApiKeyAction } from '../actions';
 
@@ -93,8 +93,8 @@ export function IssueKeyForm() {
           <Stack gap={2}>
             {SCOPE_OPTIONS.map((s) => (
               <label key={s.value} className="flex items-start gap-2 text-sm">
-                <input
-                  type="checkbox"
+                <Checkbox
+                  color="module"
                   name="scopes"
                   value={s.value}
                   defaultChecked={s.value === 'read:crm'}

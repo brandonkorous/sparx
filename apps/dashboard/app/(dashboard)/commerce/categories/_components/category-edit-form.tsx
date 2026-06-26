@@ -19,12 +19,11 @@ import {
   SurfaceSummaryRow,
   Text,
   Textarea,
-  useConfirm,
   type SurfaceStepDef,
 } from '@sparx/ui';
 
 import { reparentCategoryAction, updateCategoryAction } from '../../category-actions';
-import { useRegisterLeaveGuard } from '../../../_components/unsaved-guard';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 import { DetailPresentationSwitch } from '../../../_components/detail-panel';
 import { CategoryDeleteButton } from './category-delete-button';
 import type { CategoryParentOption } from './category-create-form';
@@ -88,8 +87,6 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
   const [description, setDescription] = React.useState(category.description ?? '');
   const [featured, setFeatured] = React.useState(category.featured);
 
-  const confirm = useConfirm();
-
   // Exclude self + descendants so a merchant can't reparent a node under its own
   // subtree (the server enforces cycle prevention too — this keeps the picker
   // honest).
@@ -137,17 +134,7 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
       .map((p) => ({ id: p.id, name: p.name, position: p.position }));
   }, [parents, category.id, category.path]);
 
-  const guardLeave = React.useCallback(async (): Promise<boolean> => {
-    if (!dirty) return true;
-    return confirm({
-      title: 'Discard unsaved changes?',
-      description: 'Your edits to this category haven’t been saved. Leaving now will discard them.',
-      confirmLabel: 'Discard changes',
-      tone: 'danger',
-    });
-  }, [dirty, confirm]);
-
-  useRegisterLeaveGuard(guardLeave);
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'edit', noun: 'category' });
 
   // Where "leave the form" goes. In the overlay it clears the detail token so the
   // drawer/modal closes in place; the page route returns to the list. Guarded so a

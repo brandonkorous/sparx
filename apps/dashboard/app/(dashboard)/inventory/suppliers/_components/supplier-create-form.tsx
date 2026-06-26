@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import {
@@ -11,6 +10,7 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
+  Checkbox,
   Heading,
   Input,
   Label,
@@ -19,6 +19,7 @@ import {
 } from '@sparx/ui';
 
 import { createSupplierAction } from '../../_lib/supplier-actions';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
 // New-supplier form (page surface). Collects the supplier's basics + default
 // purchasing terms; per-variant cost/SKU links are added on the detail page once
@@ -29,6 +30,51 @@ export function SupplierCreateForm() {
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
+
+  // The fields are an uncontrolled native form (read via FormData on submit), so
+  // dirtiness is derived from the live form on every input. A create form starts
+  // empty, so "dirty" is "any text field has been entered" OR the Active checkbox
+  // differs from its default (defaultChecked → 'on').
+  const formRef = React.useRef<HTMLFormElement>(null);
+  const [dirty, setDirty] = React.useState(false);
+  const recomputeDirty = React.useCallback(() => {
+    const form = formRef.current;
+    if (!form) return;
+    const data = new FormData(form);
+    const str = (k: string) => {
+      const v = data.get(k);
+      return typeof v === 'string' ? v.trim() : '';
+    };
+    const next =
+      str('name') !== '' ||
+      str('code') !== '' ||
+      str('contactName') !== '' ||
+      str('email') !== '' ||
+      str('phone') !== '' ||
+      str('website') !== '' ||
+      str('line1') !== '' ||
+      str('line2') !== '' ||
+      str('city') !== '' ||
+      str('region') !== '' ||
+      str('postalCode') !== '' ||
+      str('country') !== '' ||
+      str('paymentTerms') !== '' ||
+      str('leadTimeDays') !== '' ||
+      str('currency') !== '' ||
+      str('notes') !== '' ||
+      data.get('isActive') !== 'on';
+    setDirty(next);
+  }, []);
+
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'supplier' });
+
+  // Guarded leave for the Cancel control: confirm a discard before dropping
+  // entered work, then return to the supplier list.
+  const cancel = React.useCallback(() => {
+    void Promise.resolve(guardLeave()).then((ok) => {
+      if (ok) router.push('/inventory/suppliers');
+    });
+  }, [guardLeave, router]);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -72,7 +118,7 @@ export function SupplierCreateForm() {
   }
 
   return (
-    <form onSubmit={onSubmit}>
+    <form ref={formRef} onSubmit={onSubmit} onInput={recomputeDirty} onChange={recomputeDirty}>
       <Card>
         <CardHeader>
           <Stack gap={1}>
@@ -159,7 +205,7 @@ export function SupplierCreateForm() {
               />
             </Stack>
             <label className="flex items-center gap-2">
-              <input type="checkbox" name="isActive" defaultChecked />
+              <Checkbox color="module" name="isActive" defaultChecked />
               <Text size="sm">Active</Text>
             </label>
           </Stack>
@@ -172,8 +218,8 @@ export function SupplierCreateForm() {
               </Text>
             )}
             <Stack direction="row" gap={2} className="ml-auto">
-              <Button type="button" variant="ghost" asChild>
-                <Link href="/inventory/suppliers">Cancel</Link>
+              <Button type="button" variant="ghost" onClick={cancel}>
+                Cancel
               </Button>
               <Button color="module" type="submit" disabled={pending}>
                 {pending ? 'Saving…' : 'Create supplier'}

@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Input, Label, Stack, Text } from '@sparx/ui';
+import { Button, Checkbox, Input, Label, Stack, Text } from '@sparx/ui';
 
 import { formBool, formNumber, formString } from '../../../../../../../lib/forms';
 import { createTaxRateAction } from '../../../../tax-actions';
@@ -75,7 +75,7 @@ export function NewTaxRateForm({ zoneId }: { zoneId: string }) {
           </Stack>
         </Stack>
         <label className="flex items-center gap-2">
-          <input type="checkbox" name="appliesToShipping" />
+          <Checkbox color="module" name="appliesToShipping" />
           <Text size="sm">Apply this rate to shipping charges too</Text>
         </label>
         {error && (

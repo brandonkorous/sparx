@@ -10,6 +10,7 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
+  Checkbox,
   Heading,
   Input,
   Label,
@@ -18,6 +19,7 @@ import {
 } from '@sparx/ui';
 
 import { updateWarehouseAction } from '../../../_lib/inventory-actions';
+import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
 
 const CHANNELS = ['storefront', 'b2b_portal', 'admin', 'subscription'] as const;
 
@@ -46,6 +48,37 @@ export function WarehouseEditForm({ warehouse }: { warehouse: WarehouseRow }) {
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   const [savedAt, setSavedAt] = React.useState<string | null>(null);
+
+  // The fields are an uncontrolled native form (read via FormData on submit), so
+  // dirtiness is derived from the live form on every input — true when any field
+  // differs from the passed-in warehouse baseline (the same values seeded into the
+  // inputs' defaultValue / defaultChecked).
+  const formRef = React.useRef<HTMLFormElement>(null);
+  const [dirty, setDirty] = React.useState(false);
+  const recomputeDirty = React.useCallback(() => {
+    const form = formRef.current;
+    if (!form) return;
+    const data = new FormData(form);
+    const str = (k: string) => {
+      const v = data.get(k);
+      return typeof v === 'string' ? v.trim() : '';
+    };
+    const next =
+      str('name') !== warehouse.name ||
+      str('line1') !== (warehouse.line1 ?? '') ||
+      str('line2') !== (warehouse.line2 ?? '') ||
+      str('city') !== (warehouse.city ?? '') ||
+      str('region') !== (warehouse.region ?? '') ||
+      str('postalCode') !== (warehouse.postalCode ?? '') ||
+      str('country') !== (warehouse.country ?? '') ||
+      CHANNELS.some(
+        (c) => (data.get(`channel:${c}`) === 'on') !== warehouse.defaultForChannel.includes(c)
+      ) ||
+      (data.get('isActive') === 'on') !== warehouse.isActive;
+    setDirty(next);
+  }, [warehouse]);
+
+  useUnsavedGuard(dirty, { kind: 'edit', noun: 'warehouse' });
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -80,7 +113,7 @@ export function WarehouseEditForm({ warehouse }: { warehouse: WarehouseRow }) {
   }
 
   return (
-    <form onSubmit={onSubmit}>
+    <form ref={formRef} onSubmit={onSubmit} onInput={recomputeDirty} onChange={recomputeDirty}>
       <Card>
         <CardHeader>
           <Stack gap={1}>
@@ -138,8 +171,8 @@ export function WarehouseEditForm({ warehouse }: { warehouse: WarehouseRow }) {
               <Stack direction="row" gap={4} wrap>
                 {CHANNELS.map((c) => (
                   <label key={c} className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
+                    <Checkbox
+                      color="module"
                       name={`channel:${c}`}
                       defaultChecked={warehouse.defaultForChannel.includes(c)}
                     />
@@ -148,7 +181,7 @@ export function WarehouseEditForm({ warehouse }: { warehouse: WarehouseRow }) {
                 ))}
               </Stack>
               <label className="flex items-center gap-2 pt-2">
-                <input type="checkbox" name="isActive" defaultChecked={warehouse.isActive} />
+                <Checkbox color="module" name="isActive" defaultChecked={warehouse.isActive} />
                 <Text size="sm">Active</Text>
               </label>
             </Stack>

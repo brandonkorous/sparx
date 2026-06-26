@@ -21,6 +21,7 @@ import {
 } from '@sparx/ui';
 
 import { createContentType } from '../actions';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
 // Surface-aware create form for a content TYPE definition (§13.1), on the
 // standard create surface (docs/86 F layout). The SAME component renders in both
@@ -119,9 +120,24 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
     router.refresh();
   }
 
-  // Where "leave the form" goes. In the overlay it clears the detail token so the
-  // drawer/modal closes in place; the page route returns to the list.
-  const cancel = React.useCallback(() => {
+  // Unsaved-changes guard. "Dirty" is "the user changed anything from the seeded
+  // initial values" (the form may be prefilled when duplicating a type) — guard a
+  // Cancel / Close / Switch / backdrop so typed work isn't silently dropped.
+  const dirty =
+    key.trim() !== (initial?.key ?? '') ||
+    name.trim() !== (initial?.name ?? '') ||
+    pluralName.trim() !== (initial?.pluralName ?? '') ||
+    description.trim() !== (initial?.description ?? '') ||
+    urlPattern.trim() !== (initial?.urlPattern ?? '') ||
+    schemaText !== (initial?.schema ?? SAMPLE_SCHEMA) ||
+    isSingleton !== (initial?.isSingleton ?? false);
+
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'content type' });
+
+  // Where "leave the form" goes, WITHOUT the guard. In the overlay it clears the
+  // detail token so the drawer/modal closes in place; the page route returns to
+  // the list. Used by the success path and, through `cancel`, by the guarded Cancel.
+  const close = React.useCallback(() => {
     if (surface === 'overlay') {
       const next = new URLSearchParams(searchParams ?? '');
       next.delete('drawer');
@@ -132,6 +148,12 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
       router.push('/cms/types');
     }
   }, [surface, pathname, searchParams, router]);
+
+  // Guarded leave for the frame-owned Cancel: confirm a discard before dropping
+  // entered work.
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
 
   function submit() {
     setError(null);

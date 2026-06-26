@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Plus, Trash2 } from 'lucide-react';
 
@@ -21,6 +20,7 @@ import {
 } from '@sparx/ui';
 
 import { createB2bAccountAction } from '../../b2b-actions';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
 // New-B2B-account form, surface-aware (§13.1). The SAME component renders:
 //   - `surface="page"`   inside the /new route's Container + PageHeader
@@ -64,6 +64,38 @@ export function B2bAccountCreateForm({ surface }: B2bAccountCreateFormProps) {
   const [error, setError] = React.useState<string | null>(null);
   const [engineProfiles, setEngineProfiles] = React.useState<EngineProfileDraft[]>([]);
 
+  // The text/select fields are an uncontrolled native form (read via FormData on
+  // submit), so dirtiness is derived from the live form on every input rather
+  // than from React state. A row in `engineProfiles` is always user-added, so any
+  // length is dirty. Defaults mirror the inputs' `defaultValue`s below.
+  const formRef = React.useRef<HTMLFormElement>(null);
+  const [fieldsDirty, setFieldsDirty] = React.useState(false);
+  const recomputeDirty = React.useCallback(() => {
+    const form = formRef.current;
+    if (!form) return;
+    const data = new FormData(form);
+    const str = (k: string) => {
+      const v = data.get(k);
+      return typeof v === 'string' ? v.trim() : '';
+    };
+    const dirty =
+      str('companyName') !== '' ||
+      str('taxId') !== '' ||
+      str('website') !== '' ||
+      str('pricingTier') !== '' ||
+      str('notes') !== '' ||
+      str('tags') !== '' ||
+      str('status') !== 'active' ||
+      str('creditLimit') !== '0' ||
+      str('discountPercent') !== '0' ||
+      str('paymentTerms') !== '' ||
+      str('fleetSize') !== '';
+    setFieldsDirty(dirty);
+  }, []);
+  const dirty = fieldsDirty || engineProfiles.length > 0;
+
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'B2B account' });
+
   // After create: in an overlay, transition the token to the new record's
   // detail (preserving drawer vs modal); on a page, navigate to it.
   function onCreated(id: string) {
@@ -81,13 +113,26 @@ export function B2bAccountCreateForm({ surface }: B2bAccountCreateFormProps) {
     router.refresh();
   }
 
-  function closeOverlay() {
-    const next = new URLSearchParams(searchParams ?? '');
-    next.delete('drawer');
-    next.delete('modal');
-    const qs = next.toString();
-    router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
-  }
+  // Where "leave the form" goes, WITHOUT the guard. In the overlay it clears the
+  // detail token so the drawer/modal closes in place; the page route returns to
+  // the list. Routed through by the guarded `cancel`.
+  const close = React.useCallback(() => {
+    if (surface === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+    } else {
+      router.push('/crm/b2b');
+    }
+  }, [surface, pathname, searchParams, router]);
+
+  // Guarded leave for the Cancel control: confirm a discard before dropping
+  // entered work.
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -138,7 +183,13 @@ export function B2bAccountCreateForm({ surface }: B2bAccountCreateFormProps) {
         </Stack>
       )}
 
-      <form onSubmit={onSubmit} noValidate>
+      <form
+        ref={formRef}
+        onSubmit={onSubmit}
+        onInput={recomputeDirty}
+        onChange={recomputeDirty}
+        noValidate
+      >
         <Card>
           <CardHeader>
             <CardTitle>Account details</CardTitle>
@@ -357,15 +408,9 @@ export function B2bAccountCreateForm({ surface }: B2bAccountCreateFormProps) {
             </Stack>
           </CardContent>
           <CardFooter>
-            {surface === 'overlay' ? (
-              <Button type="button" variant="ghost" onClick={closeOverlay}>
-                Cancel
-              </Button>
-            ) : (
-              <Button type="button" variant="ghost" asChild>
-                <Link href="/crm/b2b">Cancel</Link>
-              </Button>
-            )}
+            <Button type="button" variant="ghost" onClick={cancel}>
+              Cancel
+            </Button>
             <Button type="submit" color="module" disabled={pending} loading={pending}>
               Create B2B account
             </Button>

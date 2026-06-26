@@ -22,6 +22,7 @@ import {
 } from '@sparx/ui';
 
 import { createDomainAction } from '../actions';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
 // New sending-domain form, on the standard create surface (docs/86 F layout). The
 // SAME component renders in both presentations, picked by the host:
@@ -51,9 +52,17 @@ export function AddDomainForm({ surface }: AddDomainFormProps) {
   const [region, setRegion] = useState('us');
   const [error, setError] = useState<string | null>(null);
 
-  // Where "leave the form" goes. In the overlay it clears the detail token so the
-  // drawer/modal closes in place; the page route returns to the list.
-  function cancel() {
+  // Unsaved-changes guard. A create form starts empty, so "dirty" is simply
+  // "the user has entered anything" — guard a Cancel / Close / Switch / backdrop
+  // so typed work isn't silently dropped.
+  const dirty = domain.trim() !== '' || region !== 'us';
+
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'sending domain' });
+
+  // Where "leave the form" goes, WITHOUT the guard. In the overlay it clears the
+  // detail token so the drawer/modal closes in place; the page route returns to
+  // the list. Used by the success path and, through `cancel`, by the guarded Cancel.
+  function close() {
     if (surface === 'overlay') {
       const next = new URLSearchParams(searchParams ?? '');
       next.delete('drawer');
@@ -63,6 +72,12 @@ export function AddDomainForm({ surface }: AddDomainFormProps) {
     } else {
       router.push('/email/domains');
     }
+  }
+
+  // Guarded leave for the frame-owned Cancel: confirm a discard before dropping
+  // entered work.
+  async function cancel() {
+    if (await guardLeave()) close();
   }
 
   function submit() {

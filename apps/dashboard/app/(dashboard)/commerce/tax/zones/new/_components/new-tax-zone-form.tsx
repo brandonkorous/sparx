@@ -18,6 +18,7 @@ import {
 } from '@sparx/ui';
 
 import { createTaxZoneAction } from '../../../../tax-actions';
+import { useUnsavedGuard } from '../../../../../_components/unsaved-guard';
 
 // New tax-zone form, on the standard create surface (docs/86 F layout). The SAME
 // component renders in both presentations, picked by the host:
@@ -54,9 +55,22 @@ export function NewTaxZoneForm({ surface }: NewTaxZoneFormProps) {
   const [nexusType, setNexusType] = React.useState<(typeof NEXUS)[number]>('physical');
   const [registrationNumber, setRegistrationNumber] = React.useState('');
 
-  // Where "leave the form" goes. In the overlay it clears the detail token so the
-  // drawer/modal closes in place; the page route returns to the list.
-  const cancel = React.useCallback(() => {
+  // Unsaved-changes guard. A create form starts empty, so "dirty" is simply
+  // "the user has entered anything" — guard a Cancel / Close / Switch / backdrop
+  // so typed work isn't silently dropped.
+  const dirty =
+    country.trim() !== '' ||
+    region.trim() !== '' ||
+    nexusType !== 'physical' ||
+    registrationNumber.trim() !== '';
+
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'tax zone' });
+
+  // Where "leave the form" goes, WITHOUT the guard. In the overlay it clears the
+  // detail token so the drawer/modal closes in place; the page route returns to
+  // the list. Used by the success path (a created zone isn't a discard) and,
+  // through `cancel`, by the guarded Cancel.
+  const close = React.useCallback(() => {
     if (surface === 'overlay') {
       const next = new URLSearchParams(searchParams ?? '');
       next.delete('drawer');
@@ -67,6 +81,12 @@ export function NewTaxZoneForm({ surface }: NewTaxZoneFormProps) {
       router.push('/commerce/tax');
     }
   }, [surface, pathname, searchParams, router]);
+
+  // Guarded leave for the frame-owned Cancel: confirm a discard before dropping
+  // entered work.
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
 
   // After create: in an overlay, transition the token to the new zone's detail
   // (preserving drawer vs modal); on a page, navigate to it.

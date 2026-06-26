@@ -9,7 +9,6 @@ import {
   CardHeader,
   Heading,
   Stack,
-  Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
@@ -18,6 +17,7 @@ import {
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
 import { DetailHeaderSlot } from '../../../_components/detail-header-slot';
+import { GuardedTabs } from '../../../_components/guarded-tabs';
 
 import { CollectionMembershipEditor } from './_components/collection-membership-editor';
 import { CollectionMetaForm } from './_components/collection-meta-form';
@@ -99,7 +99,7 @@ export async function CollectionDetailContent({ id }: Props) {
         )}
       </DetailHeaderSlot>
 
-      <Tabs defaultValue="products">
+      <GuardedTabs defaultValue="products">
         <TabsList>
           <TabsTrigger value="products">
             <Layers className="mr-2 h-4 w-4" />
@@ -173,7 +173,7 @@ export async function CollectionDetailContent({ id }: Props) {
             </Card>
           </TabsContent>
         )}
-      </Tabs>
+      </GuardedTabs>
     </>
   );
 }

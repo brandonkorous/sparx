@@ -7,6 +7,7 @@ import type { ProviderEnvironment, ProviderKind } from '@sparx/commerce-schemas'
 import {
   Card,
   CardContent,
+  Checkbox,
   Input,
   Label,
   ModuleProvider,
@@ -251,7 +252,7 @@ function ConfigField({
       </Label>
       {prop.type === 'boolean' ? (
         <label className="flex items-center gap-2">
-          <input id={id} name={id} type="checkbox" defaultChecked={prop.default === true} />
+          <Checkbox color="module" id={id} name={id} defaultChecked={prop.default === true} />
           <Text size="sm" variant="muted">
             {prop.description ?? 'Enable'}
           </Text>

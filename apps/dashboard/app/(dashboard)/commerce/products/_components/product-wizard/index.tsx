@@ -56,6 +56,7 @@ import {
   setReorderPolicyAction,
 } from '../../../../inventory/_lib/inventory-actions';
 import { listFitmentDomainsAction } from '../../../fitment-actions';
+import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
 import { OrganizationStep } from './organization-step';
 import { VariantsStep } from './variants-step';
 import { MediaStep } from './media-step';
@@ -246,6 +247,23 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
   const [heightCmStr, setHeightCmStr] = React.useState('');
 
   const isPhysical = fulfillmentType === 'physical';
+
+  // Unsaved-changes guard. This wizard creates a real DRAFT product the moment
+  // Basics is committed, and `onCancel` already confirms discarding that draft —
+  // so the guard only needs to cover the window BEFORE the draft exists: anything
+  // typed in Basics (or the fulfillment default moved) with no product id yet.
+  // Scoping `dirty` to that window means the guard's confirm never stacks with
+  // the draft-discard confirm, while still registering the guard so the overlay
+  // host's Close / Switch / backdrop consult it for un-committed typed work.
+  const dirty =
+    !productId &&
+    (title.trim() !== '' ||
+      description.trim() !== '' ||
+      productType.trim() !== '' ||
+      vendor.trim() !== '' ||
+      tags.trim() !== '' ||
+      fulfillmentType !== 'physical');
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'product' });
 
   // Fitment is generalized (vehicle / device / breed …) but only meaningful when
   // the tenant has actually set up fitment data — a domain with categories. We
@@ -535,6 +553,13 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
     await deleteProductAction(productId);
     close();
   }
+
+  // Frame-owned Cancel: consult the unsaved-changes guard first (it confirms a
+  // discard when anything's been entered), then run the leave/draft-cleanup path.
+  const guardedCancel = React.useCallback(async () => {
+    if (await guardLeave()) void onCancel();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- onCancel is a stable function declaration
+  }, [guardLeave]);
 
   // ── Step bodies ────────────────────────────────────────────────────────────────
 
@@ -1045,7 +1070,7 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
       context={railContext}
       onStepSelect={onStepSelect}
       canSelectStep={canSelectStep}
-      onCancel={() => void onCancel()}
+      onCancel={() => void guardedCancel()}
       summary={summary}
     >
       {body}

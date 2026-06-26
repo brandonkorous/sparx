@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Card,
   CardContent,
+  Checkbox,
   Input,
   Label,
   ModuleProvider,
@@ -18,6 +19,7 @@ import {
 } from '@sparx/ui';
 
 import { createShippingProfileAction } from '../../../../shipping-actions';
+import { useUnsavedGuard } from '../../../../../_components/unsaved-guard';
 
 // New shipping-profile form, on the standard create surface (docs/86 F layout).
 // The SAME component renders in both presentations, picked by the host:
@@ -74,9 +76,24 @@ export function NewProfileForm({ surface }: NewProfileFormProps) {
     });
   }
 
-  // Where "leave the form" goes. In the overlay it clears the detail token so the
-  // drawer/modal closes in place; the page route returns to the list.
-  const cancel = React.useCallback(() => {
+  // Unsaved-changes guard. A create form starts empty (bar the default hazmat
+  // 'none'), so "dirty" is "the user has changed anything" — guard a Cancel /
+  // Close / Switch / backdrop so typed work isn't silently dropped.
+  const dirty =
+    name.trim() !== '' ||
+    description.trim() !== '' ||
+    carriersRaw.trim() !== '' ||
+    !(hazmat.size === 1 && hazmat.has('none')) ||
+    requiresSignature ||
+    requiresFreight;
+
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'shipping profile' });
+
+  // Where "leave the form" goes, WITHOUT the guard. In the overlay it clears the
+  // detail token so the drawer/modal closes in place; the page route returns to
+  // the list. Used by the success path (a created profile isn't a discard) and,
+  // through `cancel`, by the guarded Cancel.
+  const close = React.useCallback(() => {
     if (surface === 'overlay') {
       const next = new URLSearchParams(searchParams ?? '');
       next.delete('drawer');
@@ -87,6 +104,12 @@ export function NewProfileForm({ surface }: NewProfileFormProps) {
       router.push('/commerce/shipping');
     }
   }, [surface, pathname, searchParams, router]);
+
+  // Guarded leave for the frame-owned Cancel: confirm a discard before dropping
+  // entered work.
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
 
   // After create: in an overlay, transition the token to the new record's detail
   // (preserving drawer vs modal); on a page, navigate to it.
@@ -190,10 +213,10 @@ export function NewProfileForm({ surface }: NewProfileFormProps) {
                   <Stack direction="row" gap={2} wrap>
                     {HAZMAT_CLASSES.map((cls) => (
                       <label key={cls} className="flex items-center gap-1.5">
-                        <input
-                          type="checkbox"
+                        <Checkbox
+                          color="module"
                           checked={hazmat.has(cls)}
-                          onChange={() => toggleHazmat(cls)}
+                          onCheckedChange={() => toggleHazmat(cls)}
                         />
                         <Text size="xs">{cls}</Text>
                       </label>
@@ -202,18 +225,18 @@ export function NewProfileForm({ surface }: NewProfileFormProps) {
                 </Stack>
                 <Stack direction="row" gap={4}>
                   <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
+                    <Checkbox
+                      color="module"
                       checked={requiresSignature}
-                      onChange={(e) => setRequiresSignature(e.target.checked)}
+                      onCheckedChange={(v) => setRequiresSignature(v === true)}
                     />
                     <Text size="sm">Requires signature</Text>
                   </label>
                   <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
+                    <Checkbox
+                      color="module"
                       checked={requiresFreight}
-                      onChange={(e) => setRequiresFreight(e.target.checked)}
+                      onCheckedChange={(v) => setRequiresFreight(v === true)}
                     />
                     <Text size="sm">Freight only</Text>
                   </label>

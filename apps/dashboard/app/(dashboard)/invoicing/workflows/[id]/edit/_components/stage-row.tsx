@@ -12,7 +12,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Trash2 } from 'lucide-react';
 
-import { Badge, Button, Input, Label, Stack, Text, toast, useConfirm } from '@sparx/ui';
+import { Badge, Button, Checkbox, Input, Label, Stack, Text, toast, useConfirm } from '@sparx/ui';
 
 import { deleteWorkflowStageAction, updateWorkflowStageAction } from '../../../../workflow-actions';
 
@@ -178,10 +178,10 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
 
       <Stack direction="row" align="center" gap={4} wrap className="mt-3 px-1">
         <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
-          <input
-            type="checkbox"
+          <Checkbox
+            color="module"
             checked={numberOnEnter}
-            onChange={(e) => setNumberOnEnter(e.target.checked)}
+            onCheckedChange={(v) => setNumberOnEnter(v === true)}
           />
           Mint a number on entry
         </label>
@@ -199,26 +199,26 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
           </Stack>
         )}
         <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
-          <input
-            type="checkbox"
+          <Checkbox
+            color="module"
             checked={snapshotOnEnter}
-            onChange={(e) => setSnapshotOnEnter(e.target.checked)}
+            onCheckedChange={(v) => setSnapshotOnEnter(v === true)}
           />
           Freeze a snapshot
         </label>
         <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
-          <input
-            type="checkbox"
+          <Checkbox
+            color="module"
             checked={locksEditing}
-            onChange={(e) => setLocksEditing(e.target.checked)}
+            onCheckedChange={(v) => setLocksEditing(v === true)}
           />
           Lock editing
         </label>
         <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
-          <input
-            type="checkbox"
+          <Checkbox
+            color="module"
             checked={color !== null}
-            onChange={(e) => setColor(e.target.checked ? (color ?? '#6366f1') : null)}
+            onCheckedChange={(v) => setColor(v === true ? (color ?? '#6366f1') : null)}
           />
           Color
         </label>

@@ -10,6 +10,7 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
+  Checkbox,
   Heading,
   Input,
   Label,
@@ -18,6 +19,7 @@ import {
 } from '@sparx/ui';
 
 import { updateSupplierAction } from '../../../_lib/supplier-actions';
+import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
 
 export interface SupplierDetail {
   id: string;
@@ -46,6 +48,44 @@ export function SupplierEditForm({ supplier }: { supplier: SupplierDetail }) {
   const [error, setError] = React.useState<string | null>(null);
   const [savedAt, setSavedAt] = React.useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
+
+  // The fields are an uncontrolled native form (read via FormData on submit), so
+  // dirtiness is derived from the live form on every input — true when any field
+  // differs from the passed-in supplier baseline (the same values seeded into the
+  // inputs' defaultValue / defaultChecked).
+  const formRef = React.useRef<HTMLFormElement>(null);
+  const [dirty, setDirty] = React.useState(false);
+  const recomputeDirty = React.useCallback(() => {
+    const form = formRef.current;
+    if (!form) return;
+    const data = new FormData(form);
+    const str = (k: string) => {
+      const v = data.get(k);
+      return typeof v === 'string' ? v.trim() : '';
+    };
+    const next =
+      str('name') !== supplier.name ||
+      str('code') !== supplier.code ||
+      str('contactName') !== (supplier.contactName ?? '') ||
+      str('email') !== (supplier.email ?? '') ||
+      str('phone') !== (supplier.phone ?? '') ||
+      str('website') !== (supplier.website ?? '') ||
+      str('line1') !== (supplier.line1 ?? '') ||
+      str('line2') !== (supplier.line2 ?? '') ||
+      str('city') !== (supplier.city ?? '') ||
+      str('region') !== (supplier.region ?? '') ||
+      str('postalCode') !== (supplier.postalCode ?? '') ||
+      str('country') !== (supplier.country ?? '') ||
+      str('paymentTerms') !== (supplier.paymentTerms ?? '') ||
+      str('leadTimeDays') !==
+        (supplier.leadTimeDays !== null ? String(supplier.leadTimeDays) : '') ||
+      str('currency') !== supplier.currency ||
+      str('notes') !== (supplier.notes ?? '') ||
+      (data.get('isActive') === 'on') !== supplier.isActive;
+    setDirty(next);
+  }, [supplier]);
+
+  useUnsavedGuard(dirty, { kind: 'edit', noun: 'supplier' });
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -90,7 +130,7 @@ export function SupplierEditForm({ supplier }: { supplier: SupplierDetail }) {
   }
 
   return (
-    <form onSubmit={onSubmit}>
+    <form ref={formRef} onSubmit={onSubmit} onInput={recomputeDirty} onChange={recomputeDirty}>
       <Card>
         <CardHeader>
           <Stack gap={1}>
@@ -176,7 +216,7 @@ export function SupplierEditForm({ supplier }: { supplier: SupplierDetail }) {
               />
             </Stack>
             <label className="flex items-center gap-2">
-              <input type="checkbox" name="isActive" defaultChecked={supplier.isActive} />
+              <Checkbox color="module" name="isActive" defaultChecked={supplier.isActive} />
               <Text size="sm">Active</Text>
             </label>
           </Stack>

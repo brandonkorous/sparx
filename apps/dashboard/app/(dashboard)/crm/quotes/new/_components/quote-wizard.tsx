@@ -46,6 +46,7 @@ import {
 
 import { createQuoteAction } from '../../../quote-actions';
 import { LineItemsEditor, type LineItem } from '../../../_components/line-items-editor';
+import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
 
 // ─── Public option shape (resolved server-side, passed in) ────────────────────────
 
@@ -183,6 +184,21 @@ function QuoteWizardInner({
   const shippingNum = parseMoney(shipping);
   const total = subtotal - discountTotal + taxTotal + shippingNum;
 
+  // Unsaved-changes guard. A create wizard starts blank, so "dirty" is "the user
+  // entered anything across any step" — guard a Cancel / Close / backdrop so a
+  // half-built quote isn't silently discarded.
+  const dirty =
+    Boolean(customerId) ||
+    Boolean(b2bAccountId) ||
+    currency.trim().toUpperCase() !== 'USD' ||
+    validItems.length > 0 ||
+    shipping.trim() !== '' ||
+    paymentTerms !== '' ||
+    validUntil.trim() !== '' ||
+    customerNote.trim() !== '' ||
+    internalNote.trim() !== '';
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'quote' });
+
   function goToStep(key: StepKey) {
     setError(null);
     setStepKey(key);
@@ -201,6 +217,12 @@ function QuoteWizardInner({
       router.push('/crm/quotes');
     }
   }, [presentation, pathname, searchParams, router]);
+
+  // Guarded leave for the frame-owned Cancel: confirm a discard before dropping
+  // entered work. The create path (router.push) leaves on its own, unguarded.
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
 
   // ── Submit ───────────────────────────────────────────────────────────────────
 
@@ -556,7 +578,7 @@ function QuoteWizardInner({
       context={RAIL[stepKey].context}
       onStepSelect={onStepSelect}
       canSelectStep={canSelectStep}
-      onCancel={close}
+      onCancel={cancel}
       summary={summary}
     >
       {body}

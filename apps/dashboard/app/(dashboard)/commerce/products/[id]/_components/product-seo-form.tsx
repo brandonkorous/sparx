@@ -14,14 +14,13 @@ import {
   ModuleProvider,
   Stack,
   Text,
-  useConfirm,
 } from '@sparx/ui';
 
 import { SeoMetaFields } from '@/components/seo/seo-meta-fields';
 
 import { updateProductAction } from '../../../product-actions';
 import { DetailFooterSlot } from '../../../../_components/detail-header-slot';
-import { useRegisterLeaveGuard } from '../../../../_components/unsaved-guard';
+import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
 
 interface Props {
   productId: string;
@@ -61,17 +60,10 @@ export function ProductSeoForm({
   // Unsaved-changes guard — same shared channel the overlay chrome's Close /
   // Switch / backdrop-Esc consult before leaving, so SEO edits aren't silently
   // dropped on an accidental close.
-  const confirm = useConfirm();
-  const guardLeave = React.useCallback(async (): Promise<boolean> => {
-    if (!dirty) return true;
-    return confirm({
-      title: 'Discard unsaved changes?',
-      description: 'Your SEO edits haven’t been saved. Leaving now will discard them.',
-      confirmLabel: 'Discard changes',
-      tone: 'danger',
-    });
-  }, [dirty, confirm]);
-  useRegisterLeaveGuard(guardLeave);
+  useUnsavedGuard(dirty, {
+    title: 'Discard unsaved changes?',
+    description: 'Your SEO edits haven’t been saved. Leaving now will discard them.',
+  });
 
   // What the storefront/search actually renders: SEO field if set, else inherit.
   const previewTitle = seoTitleValue.trim() || title;

@@ -10,6 +10,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
+  Checkbox,
   Heading,
   Input,
   Label,
@@ -174,7 +175,7 @@ export function SupplierVariantsPanel({
               <AddField label="Cost ($)" name="unitCost" type="number" placeholder="0.00" />
               <AddField label="MOQ" name="minOrderQty" type="number" placeholder="1" />
               <label className="flex items-center gap-2 pb-2">
-                <input type="checkbox" name="isPreferred" />
+                <Checkbox color="module" name="isPreferred" />
                 <Text size="sm">Preferred</Text>
               </label>
               <Button color="module" type="submit" disabled={pending}>

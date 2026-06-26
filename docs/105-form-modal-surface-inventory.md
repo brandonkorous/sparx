@@ -1,6 +1,6 @@
 # Form & Modal Surface Inventory
 
-Version: 1.5
+Version: 1.8
 Author: Brandon Korous
 Last Updated: 2026-06-25
 
@@ -125,6 +125,27 @@ to improve. A gap that recurs across pages is a **platform fix on the primitive*
   nav/refresh isn't guarded (OS-level `beforeunload`, intentionally out of scope).
 - **Post-fix: UI 9 · UX 9** — all triaged gaps closed; the two "remaining" items are minor/deferred.
 
+### Categories — create form + list (revisit) — UI 9/10 · UX 8→**9**/10 (2026-06-25)
+
+Re-ran `/surface-review /commerce/categories` against the **create** form (`category-create-form`) and
+the **list** (`categories-table`) — the 2026-06-23 pass scored the edit detail and assumed the rest rode
+along. Two gaps the first pass missed:
+
+- ✅ FIXED (UX, real): the **create form was never actually guarded.** The 2026-06-23 entry claimed
+  "create/edit symmetric" + "dirty-state guard — first adopter," but only `category-edit-form` registered
+  `useRegisterLeaveGuard`; `category-create-form` had none, so typing a name/description then
+  Cancel / host-Close / backdrop **silently dropped it** (verified on screen — Cancel went straight to the
+  list, no confirm). Now it computes `dirty` (any field entered) + registers a "Discard new category?"
+  confirm; the success path routes through an **unguarded `close()`** (split out of the old `cancel`) so a
+  completed create never self-prompts. Verified on screen: discard dialog fires on Cancel with entered
+  work; **Create category** navigates clean and the new node appears (no false prompt).
+- ✅ FIXED (UI): the list **Featured badge** was `variant="outline" className="text-xs"` — a bland neutral
+  pill + the `text-xs`-instead-of-`size` anti-pattern. Now `color="accent" variant="soft" size="sm"`,
+  matching the **collections** list's featured badge (one convention across the two commerce lists that
+  carry a `featured` flag).
+- **Post-fix: UI 9 · UX 9** — create + edit are now genuinely symmetric on the guard; the list badge is
+  on-system.
+
 ### Collections `/commerce/collections/[id]` — Metadata tab — UI 7→**9**/10 · UX 7→**9**/10 (2026-06-24)
 
 - ✅ Strong: correct tab-panel treatment (NOT a nested frame); SEO already loads a live health chip;
@@ -182,9 +203,45 @@ to improve. A gap that recurs across pages is a **platform fix on the primitive*
   `onCancel`), and the detail-panel host's **Close / Switch / backdrop-Esc** (`InlineDetailContent` +
   `ModalDetailContent` wrap their body in the provider; `DetailHeader` close/switch + the modal's
   `onOpenChange` await `runGuard()`). Embedded full-page has no host → the form's Cancel still self-guards.
-  **Every subsequent edit surface adopts it by computing `dirty` + `useRegisterLeaveGuard`.** First
-  adopter: Categories (2026-06-23). _Not covered: hard browser nav (`beforeunload`); switch-mode preserves
-  edits — both deferred._
+  First adopter: Categories (2026-06-23). _Not covered: hard browser nav (`beforeunload`); switch-mode
+  preserves edits — both deferred._
+  - **✅ `useUnsavedGuard(dirty, copy)` — the one-call adopter (2026-06-25).** The hand-rolled block
+    (`useConfirm` + a `guardLeave` callback + `useRegisterLeaveGuard`) is now ONE hook in `unsaved-guard.tsx`:
+    pass `dirty` + a copy spec (`{ kind: 'create', noun }` / `{ kind: 'edit', noun? }` for house wording, or
+    a full `{ title, description, confirmLabel }`); it registers the guard AND returns `guardLeave` for the
+    form's own Cancel (`const cancel = async () => { if (await guardLeave()) close() }`). **The create-form
+    rule that rides with it:** split `close` (unguarded nav) from the guarded `cancel`, and route the SUCCESS
+    path through `close` — a completed create/save is not a discard, so guarding it false-prompts.
+  - **✅ ROLLOUT DONE — all create forms + create wizards (2026-06-25).** Wired `useUnsavedGuard` across
+    every standard create surface + multi-step create wizard (each a detail-system form: `surface`/
+    `presentation` prop + `onCancel`). **Create forms:** commerce (collection, discount, price-list,
+    gift-card, account-credit, configurator-template, tax-zone, shipping zone/profile) · cms (page,
+    content-type, taxonomy, redirect, author) · crm (segment, b2b-account) · email (suppression, domain) ·
+    inventory (warehouse). **Wizards:** product, quote, order, customer, cms-entry, b2b-account, transfer,
+    purchase-order, invoice. Plus the existing edit adopters refactored onto the hook (category create/edit,
+    product edit/seo). 0 type errors, 0 lint errors (pre-existing `max-lines` warns only); create-form +
+    wizard shapes spot-verified on screen (pristine Cancel = no prompt; dirty Cancel = discard dialog;
+    success = no false prompt).
+  - **✅ `GuardedTabs` — the guard extends to TABBED details (2026-06-25).** `_components/guarded-tabs.tsx`
+    wraps the `@sparx/ui` `<Tabs>` and consults `useLeaveGuard()` before switching tab — a clean switch is
+    instant, a dirty one prompts the discard confirm and only switches on accept. The editable tab panel
+    registers via `useUnsavedGuard`; the detail route's `UnsavedGuardProvider` (already on `DetailPageShell`)
+    is the shared channel. Adopted on the **collection** detail (Metadata tab) and the **product** detail
+    (Edit/SEO tabs already register). **Verified on screen**: editing the collection Metadata Name then
+    clicking the Products tab prompts "Discard unsaved changes?" and only switches on Discard. _(Closes the
+    docs/86 §5.2 / earlier "tabbed-detail guard deferred" gap for these two.)_
+  - **✅ `DetailPageShell` back-link is now guarded (platform, 2026-06-25).** The full-page detail's
+    back-to-list link was a plain `<Link>`; it's now a `DetailBackLink` button that routes through
+    `useLeaveGuard()` before navigating — so leaving a dirty full-page detail for its list confirms, exactly
+    like the presentation switch beside it. Benefits every `DetailPageShell` detail.
+  - **✅ Edit detail bodies wired (2026-06-25):** `bundle-editor` (create + edit paths), inventory
+    `supplier-create` / `supplier-edit` / `warehouse-edit`, `cms/media` edit, `cms/authors` edit — each
+    computes `dirty` (controlled state, or a `formRef` + `onInput` recompute for uncontrolled FormData forms)
+    and calls `useUnsavedGuard`. Inline edit bodies with no Cancel rely on the now-guarded back-link / switch.
+  - **Still to wire (careful pass, NOT mechanical):** the CMS **autosave** editors `cms/[id]/edit-form` +
+    `cms/types/[typeKey]/[id]/edit-entry-form` — their autosave + conflict-resolution machinery wants a
+    deliberate pass, not a `useUnsavedGuard` drop-in (and autosave reduces the loss risk in the interim).
+    Read-only tabbed details (customer activity/orders, etc.) need no guard (no editable panel registers).
 - ✅ **BUILT — Full-page presentation switch (drawer/modal parity).** The overlay host (`DetailHeader`)
   offers Close/Switch/Maximize; the `embedded` full page had none. Added a generic **`headerActions`** slot
   to `SurfaceFrame`'s embedded title strip + a shared `DetailPresentationSwitch` (in `detail-panel.tsx`)
@@ -194,6 +251,19 @@ to improve. A gap that recurs across pages is a **platform fix on the primitive*
   `UnsavedGuardProvider`. First adopter: Categories (2026-06-23).
 - **`SurfaceSummary` has no async/loading slot.** If summaries start loading related-record counts they
   need a skeleton/`loading` affordance. Not needed for Categories (derived client-side). _Surfaced: Categories (2026-06-23)._
+- ✅ **DONE — raw `<input type="checkbox"/"radio">` → themed `@sparx/ui` `Checkbox` /
+  `RadioGroup`+`RadioGroupItem` (`color="module"`).** A system-fidelity gap (un-themed, no module accent)
+  that recurred across ~26 dashboard forms. **Swept** (2026-06-25): commerce (collection create, discount,
+  new-profile, new-variant, return-approval, new-tax-rate, price-list-entries, install-provider, bundle-editor),
+  inventory (warehouse create/edit, suppliers create/edit/variants, lots filter + actions), invoicing
+  (invoice-wizard, line-grid, workflows new/editor/stage-row/add-stage, pipelines), dropship, crm/pipelines,
+  settings/ai-integrations. **FormData-native checkboxes stay submission-safe** — Radix `Checkbox` renders a
+  hidden form input when given `name`, so `form.get(name) === 'on'` is unchanged. **Platform fix that rode
+  with it:** `eslint.config.js` now maps the `@sparx/ui` field components (`Checkbox`/`RadioGroupItem`/
+  `Input`/`NativeSelect`/`Textarea` → their DOM elements) under `settings['jsx-a11y'].components`, so
+  `jsx-a11y/label-has-associated-control` resolves a `<Label>` wrapping a themed control (the native control
+  is nested at runtime) — same approach `apps/site` already uses for its `Sparx*` components. 0 lint errors
+  across dashboard/site/web after the sweep. _Reference: `collection-create-form`._
 - ✅ **BUILT — Detail header-slot teleport + `DetailPageShell` + identity-once.** A detail body declares its
   header content (status + lifecycle actions) ONCE via `<DetailHeaderSlot>` (children-based portal,
   `_components/detail-header-slot.tsx`) and it renders in whichever frame is active — the drawer/modal
@@ -209,10 +279,17 @@ to improve. A gap that recurs across pages is a **platform fix on the primitive*
   off) so the Save button is the single mechanism, consistent with every other editor. The machinery stays
   behind the flag; the future direction is one unified platform-wide autosave that DROPS the Save buttons
   (not kept alongside). _Decided 2026-06-25._
-- **OPEN — leave-guard is not platform-wide.** Only `category-edit-form.tsx` registers
-  `useRegisterLeaveGuard` today; product, the CMS editors, and the rest don't — so with CMS autosave now
-  off, those surfaces can lose edits on an accidental close (same as product). Wire the guard across all
-  explicit-save edit surfaces in one sweep. _Open 2026-06-25._
+- **PARTIAL — leave-guard rollout: create forms + wizards DONE; some EDIT detail bodies remain.** The
+  create/wizard rollout above closed the bulk (the surfaces that silently dropped typed work on an
+  accidental close). **Still to wire (`useUnsavedGuard`, the same one-call adopter):** the single-form edit
+  detail bodies that hand-roll their own `cancel` — `commerce/providers/install/.../install-provider-form`
+  (FormData), `commerce/bundles/.../bundle-editor` (its create/edit paths), `cms/authors/[id]/author-edit-form`,
+  `cms/media/[id]/edit-form`. **Deferred (not a plain hook adoption):** the **tabbed-detail panels**
+  (`collection-meta-form` and peers) — guarding them needs the guard to extend to tabbed details (the
+  full-page tabbed detail isn't wrapped in `UnsavedGuardProvider`); and the **CMS autosave editors**
+  (`cms/[id]/edit-form`, `cms/types/[typeKey]/[id]/edit-entry-form`) — with autosave OFF behind the flag they
+  should adopt the guard, but their conflict/autosave machinery wants a careful pass, not a mechanical wire.
+  _Updated 2026-06-25._
 
 ---
 

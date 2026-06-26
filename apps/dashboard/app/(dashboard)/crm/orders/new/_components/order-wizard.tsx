@@ -46,6 +46,7 @@ import {
 
 import { createOrderAction } from '../../../order-actions';
 import { LineItemsEditor, type LineItem } from '../../../_components/line-items-editor';
+import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
 
 // ─── Public option shape (resolved server-side, passed in) ────────────────────────
 
@@ -169,6 +170,20 @@ function OrderWizardInner({
 
   const customerLabel = customers.find((c) => c.id === customerId)?.label ?? '—';
 
+  // Unsaved-changes guard. A create wizard starts blank, so "dirty" is "the user
+  // entered anything across any step" — guard a Cancel / Close / backdrop so a
+  // half-built order isn't silently discarded.
+  const dirty =
+    Boolean(customerId) ||
+    channel !== 'admin' ||
+    currency.trim().toUpperCase() !== 'USD' ||
+    validItems.length > 0 ||
+    source.trim() !== '' ||
+    shipping.trim() !== '' ||
+    customerNote.trim() !== '' ||
+    internalNote.trim() !== '';
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'order' });
+
   function goToStep(key: StepKey) {
     setError(null);
     setStepKey(key);
@@ -187,6 +202,12 @@ function OrderWizardInner({
       router.push('/crm/orders');
     }
   }, [presentation, pathname, searchParams, router]);
+
+  // Guarded leave for the frame-owned Cancel: confirm a discard before dropping
+  // entered work. The create path (router.push) leaves on its own, unguarded.
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
 
   // ── Submit ───────────────────────────────────────────────────────────────────
 
@@ -523,7 +544,7 @@ function OrderWizardInner({
       context={RAIL[stepKey].context}
       onStepSelect={onStepSelect}
       canSelectStep={canSelectStep}
-      onCancel={close}
+      onCancel={cancel}
       summary={summary}
     >
       {body}

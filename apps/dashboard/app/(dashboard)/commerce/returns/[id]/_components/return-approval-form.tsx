@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Input, Stack, Text } from '@sparx/ui';
+import { Button, Checkbox, Input, Stack, Text } from '@sparx/ui';
 
 import { formBool, formString } from '../../../../../../lib/forms';
 import { approveReturnAction } from '../../../return-actions';
@@ -85,7 +85,7 @@ export function ReturnApprovalForm({
         ))}
         <Stack gap={1}>
           <label className="flex items-center gap-2">
-            <input type="checkbox" name="generateLabel" defaultChecked />
+            <Checkbox color="module" name="generateLabel" defaultChecked />
             <Text size="sm">Generate return label (when ShippingProvider is installed)</Text>
           </label>
         </Stack>

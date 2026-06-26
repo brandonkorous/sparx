@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Card,
   CardContent,
+  Checkbox,
   Input,
   Label,
   ModuleProvider,
@@ -19,6 +20,7 @@ import {
 } from '@sparx/ui';
 
 import { createDiscountAction } from '../../discount-actions';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
 // New-discount form, on the standard create surface (docs/86 F layout). The SAME
 // component renders in both presentations, picked by the host:
@@ -65,9 +67,30 @@ export function DiscountCreateForm({ surface }: { surface: 'page' | 'overlay' })
   const [priority, setPriority] = React.useState('0');
   const [stacking, setStacking] = React.useState<(typeof STACKING)[number]>('none');
 
-  // Where "leave the form" goes. In the overlay it clears the detail token so the
-  // drawer/modal closes in place; the page route returns to the list.
-  const cancel = React.useCallback(() => {
+  // Unsaved-changes guard. A create form starts empty, so "dirty" is simply
+  // "the user has entered anything" — guard a Cancel / Close / Switch / backdrop
+  // so typed work isn't silently dropped.
+  const dirty =
+    name.trim() !== '' ||
+    description.trim() !== '' ||
+    code.trim() !== '' ||
+    isAutomatic ||
+    type !== 'percent' ||
+    valuePercent !== '10' ||
+    valueDollars !== '10' ||
+    currency !== 'USD' ||
+    perCustomerLimit !== '1' ||
+    totalUsageLimit !== '' ||
+    priority !== '0' ||
+    stacking !== 'none';
+
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'discount' });
+
+  // Where "leave the form" goes, WITHOUT the guard. In the overlay it clears the
+  // detail token so the drawer/modal closes in place; the page route returns to
+  // the list. Used by the success path (a created discount isn't a discard) and,
+  // through `cancel`, by the guarded Cancel.
+  const close = React.useCallback(() => {
     if (surface === 'overlay') {
       const next = new URLSearchParams(searchParams ?? '');
       next.delete('drawer');
@@ -79,11 +102,18 @@ export function DiscountCreateForm({ surface }: { surface: 'page' | 'overlay' })
     }
   }, [surface, pathname, searchParams, router]);
 
+  // Guarded leave for the frame-owned Cancel: confirm a discard before dropping
+  // entered work.
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
+
   // After create: discounts have no detail view, so close the overlay (or leave
-  // the /new page) and refresh — the list picks up the new discount.
+  // the /new page) and refresh — the list picks up the new discount. Routes
+  // through the unguarded `close` (a successful create is not a discard).
   function afterCreate() {
     if (surface === 'overlay') {
-      cancel();
+      close();
       router.refresh();
     } else {
       router.push('/commerce/discounts');
@@ -193,12 +223,11 @@ export function DiscountCreateForm({ surface }: { surface: 'page' | 'overlay' })
                     />
                   </Stack>
                   <Stack direction="row" align="center" gap={2}>
-                    <input
-                      type="checkbox"
+                    <Checkbox
+                      color="module"
                       id="disc-automatic"
-                      className="h-4 w-4"
                       checked={isAutomatic}
-                      onChange={(e) => setIsAutomatic(e.target.checked)}
+                      onCheckedChange={(v) => setIsAutomatic(v === true)}
                     />
                     <Label htmlFor="disc-automatic">Automatic — apply without a code</Label>
                   </Stack>

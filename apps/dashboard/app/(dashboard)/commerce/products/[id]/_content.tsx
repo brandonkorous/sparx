@@ -5,7 +5,6 @@ import {
   Heading,
   ModuleProvider,
   Stack,
-  Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
@@ -15,6 +14,7 @@ import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { listProperties, type Property } from '@/lib/sites';
 
 import { DetailHeaderSlot } from '../../../_components/detail-header-slot';
+import { GuardedTabs } from '../../../_components/guarded-tabs';
 
 import type { ProductImageRow } from '../../variant-actions';
 
@@ -365,7 +365,7 @@ export async function ProductDetailContent({ id }: Props) {
       <ModuleProvider module="commerce" className="@container flex h-full min-h-0">
         <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto bg-[var(--color-bg-subtle)]">
           <div className="p-6">
-            <Tabs defaultValue="overview">
+            <GuardedTabs defaultValue="overview">
               <TabsList>
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="variants">
@@ -466,7 +466,7 @@ export async function ProductDetailContent({ id }: Props) {
                   seoDescription={product.seoDescription}
                 />
               </TabsContent>
-            </Tabs>
+            </GuardedTabs>
 
             {/* Narrow host: the aside is hidden, so the summary stacks here under
                 the tabs as a tinted card. */}

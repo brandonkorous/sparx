@@ -18,6 +18,7 @@ import {
 } from '@sparx/ui';
 import { Save, Trash2 } from 'lucide-react';
 import { deleteAuthor, updateAuthor } from '../actions';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
 export interface EditableAuthor {
   id: string;
@@ -33,6 +34,28 @@ export function AuthorEditForm({ author }: { author: EditableAuthor }) {
   const [error, setError] = React.useState<string | null>(null);
   const [errorField, setErrorField] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
+
+  // The fields are an uncontrolled native form (read via FormData on submit), so
+  // dirtiness is recomputed from the live form on every input. Registering it lets
+  // the detail page's guarded back-link / presentation switch confirm before
+  // discarding unsaved author edits (docs/105).
+  const formRef = React.useRef<HTMLFormElement>(null);
+  const [dirty, setDirty] = React.useState(false);
+  const recomputeDirty = React.useCallback(() => {
+    const form = formRef.current;
+    if (!form) return;
+    const data = new FormData(form);
+    const val = (k: string) => {
+      const v = data.get(k);
+      return typeof v === 'string' ? v : '';
+    };
+    setDirty(
+      val('display_name') !== author.displayName ||
+        val('slug') !== author.slug ||
+        val('bio') !== author.bio
+    );
+  }, [author]);
+  useUnsavedGuard(dirty, { kind: 'edit', noun: 'author' });
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -82,7 +105,13 @@ export function AuthorEditForm({ author }: { author: EditableAuthor }) {
   const generalError = errorField ? null : error;
 
   return (
-    <form onSubmit={onSubmit} noValidate>
+    <form
+      ref={formRef}
+      onSubmit={onSubmit}
+      onInput={recomputeDirty}
+      onChange={recomputeDirty}
+      noValidate
+    >
       <Stack gap={5}>
         <Card variant="module">
           <CardHeader>

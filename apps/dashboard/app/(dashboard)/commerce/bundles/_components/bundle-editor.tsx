@@ -12,6 +12,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Checkbox,
   Input,
   Label,
   ModuleProvider,
@@ -30,6 +31,7 @@ import {
 } from '@sparx/ui';
 
 import { createBundleAction, updateBundleAction } from '../../configurator-actions';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
 export interface BundleProductOption {
   id: string;
@@ -145,10 +147,24 @@ export function BundleEditor({
     );
   }
 
-  // Where "leave the create form" goes. In the overlay it clears the detail token
-  // so the drawer/modal closes in place; the page route returns to the list. Only
-  // wired on the CREATE path (the frame owns Cancel); edit has no Cancel.
-  const cancel = React.useCallback(() => {
+  // Unsaved-changes guard. Compares live state to the initial props so both the
+  // create path (frame Cancel) and the edit path (the [id] detail page's guarded
+  // back-link / presentation switch) confirm before discarding edits (docs/105).
+  const dirty =
+    bundleProductId !== (initialBundleProductId ?? '') ||
+    pricingMode !== initialPricingMode ||
+    fixedPriceDollars !==
+      (initialFixedPriceCents != null ? (initialFixedPriceCents / 100).toFixed(2) : '') ||
+    percentOff !== (initialPercentOffSum != null ? String(initialPercentOffSum) : '') ||
+    inventoryMode !== initialInventoryMode ||
+    JSON.stringify(components) !== JSON.stringify(initialComponents);
+
+  const guardLeave = useUnsavedGuard(dirty, { kind: isEdit ? 'edit' : 'create', noun: 'bundle' });
+
+  // Where "leave the create form" goes, WITHOUT the guard. In the overlay it
+  // clears the detail token so the drawer/modal closes in place; the page route
+  // returns to the list. The success path (`onCreated`) navigates on its own.
+  const close = React.useCallback(() => {
     if (surface === 'overlay') {
       const next = new URLSearchParams(searchParams ?? '');
       next.delete('drawer');
@@ -159,6 +175,11 @@ export function BundleEditor({
       router.push('/commerce/bundles');
     }
   }, [surface, pathname, searchParams, router]);
+
+  // Guarded leave for the create frame's Cancel.
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
 
   // After create: bundles flow into their detail view. On a page, navigate to it;
   // in an overlay, swap the detail token to the new record (preserving drawer vs
@@ -330,20 +351,20 @@ export function BundleEditor({
                     />
                   </TableCell>
                   <TableCell>
-                    <input
-                      type="checkbox"
+                    <Checkbox
+                      color="module"
                       checked={c.isRequired}
-                      onChange={(e) => updateComponent(i, { isRequired: e.target.checked })}
+                      onCheckedChange={(v) => updateComponent(i, { isRequired: v === true })}
                     />
                   </TableCell>
                   <TableCell>
-                    <input
-                      type="checkbox"
+                    <Checkbox
+                      color="module"
                       checked={c.isSwappable}
-                      onChange={(e) => updateComponent(i, { isSwappable: e.target.checked })}
+                      onCheckedChange={(v) => updateComponent(i, { isSwappable: v === true })}
                     />
                     {c.isSwappable && (
-                      <Badge variant="outline" className="ml-2 text-xs">
+                      <Badge color="accent" variant="soft" size="sm" className="ml-2">
                         same product
                       </Badge>
                     )}

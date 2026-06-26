@@ -51,6 +51,7 @@ import { addCustomerAddressAction, createCustomerAction } from '../../customer-a
 import { createTaskAction, recordActivityAction } from '../../activity-task-actions';
 import { createDealAction } from '../../deal-actions';
 import { createQuoteAction } from '../../quote-actions';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
 // ─── Steps & rail copy ──────────────────────────────────────────────────────────
 
@@ -302,6 +303,41 @@ function CustomerWizardInner({
   const selectedPipeline = pipelines.find((p) => p.id === dealPipelineId);
   const dealStages = selectedPipeline?.stages ?? [];
 
+  // Unsaved-changes guard. A create wizard starts blank, so "dirty" is "the user
+  // entered or changed anything across any step" — any contact field, a changed
+  // classification, an address, a follow-up note/task, or an opportunity. Guards a
+  // Cancel / Close / backdrop so a half-built profile isn't silently discarded.
+  const filled = (v: unknown) => typeof v === 'string' && v.trim() !== '';
+  const dirty =
+    filled(contact.firstName) ||
+    filled(contact.lastName) ||
+    filled(contact.email) ||
+    filled(contact.phone) ||
+    filled(contact.company) ||
+    filled(contact.jobTitle) ||
+    classify.type !== 'prospect' ||
+    filled(classify.preferredContactMethod) ||
+    classify.doNotContact === true ||
+    filled(classify.tags) ||
+    filled(address.line1) ||
+    filled(address.city) ||
+    filled(address.region) ||
+    filled(address.postalCode) ||
+    filled(address.country) ||
+    filled(address.recipientName) ||
+    filled(address.line2) ||
+    filled(address.phone) ||
+    noteDescription.trim() !== '' ||
+    taskTitle.trim() !== '' ||
+    taskDueAt.trim() !== '' ||
+    dealTitle.trim() !== '' ||
+    dealValue.trim() !== '' ||
+    quoteItemName.trim() !== '' ||
+    quoteSku.trim() !== '' ||
+    quoteUnitPrice.trim() !== '' ||
+    quoteValidUntil.trim() !== '';
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'customer' });
+
   function goToStep(key: StepKey) {
     setError(null);
     setStepKey(key);
@@ -326,6 +362,12 @@ function CustomerWizardInner({
       router.push('/crm/customers');
     }
   }, [presentation, pathname, searchParams, router]);
+
+  // Guarded leave for the frame-owned Cancel: confirm a discard before dropping
+  // entered work. The create path (router.push) leaves on its own, unguarded.
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
 
   // ── Validation ─────────────────────────────────────────────────────────────
 
@@ -976,7 +1018,7 @@ function CustomerWizardInner({
       context={RAIL[stepKey].context}
       onStepSelect={onStepSelect}
       canSelectStep={canSelectStep}
-      onCancel={close}
+      onCancel={cancel}
       summary={summary}
     >
       {body}

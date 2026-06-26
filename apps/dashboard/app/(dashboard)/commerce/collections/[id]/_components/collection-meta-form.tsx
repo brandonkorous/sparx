@@ -22,6 +22,7 @@ import {
 import { SeoMetaFields } from '@/components/seo/seo-meta-fields';
 
 import { updateCollectionAction } from '../../../collection-actions';
+import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
 
 interface Props {
   collectionId: string;
@@ -83,6 +84,11 @@ export function CollectionMetaForm(props: Props) {
     () => (Object.keys(form) as (keyof MetaState)[]).some((k) => form[k] !== baseline[k]),
     [form, baseline]
   );
+
+  // Register the dirty state so switching tabs / the back-link / the presentation
+  // switch all confirm before discarding unsaved metadata (docs/105 — the guard
+  // extends to tabbed details via GuardedTabs, which consults this).
+  useUnsavedGuard(dirty, { kind: 'edit', noun: 'collection' });
 
   function set<K extends keyof MetaState>(key: K, value: MetaState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));

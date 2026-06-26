@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 
 import { Button, cn, Container, ModuleProvider, Stack } from '@sparx/ui';
@@ -13,7 +13,30 @@ import {
   DetailFooterSlotTarget,
   DetailHeaderSlotTarget,
 } from './detail-header-slot';
-import { UnsavedGuardProvider } from './unsaved-guard';
+import { UnsavedGuardProvider, useLeaveGuard } from './unsaved-guard';
+
+// Back-to-list link. A guarded action (not a plain <Link>): a full-page detail's
+// editable body may hold unsaved edits, so leaving for the list routes through
+// the unsaved-edits guard first — exactly like the presentation switch beside it.
+// Rendered INSIDE the shell's UnsavedGuardProvider so it can consult the guard.
+function DetailBackLink({ href, label }: { href: string; label: string }) {
+  const router = useRouter();
+  const runGuard = useLeaveGuard();
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={() => {
+        void Promise.resolve(runGuard()).then((ok) => {
+          if (ok) router.push(href);
+        });
+      }}
+    >
+      <ArrowLeft className="h-4 w-4" />
+      {label}
+    </Button>
+  );
+}
 
 // Title-case the last path segment of a route for the back-link label
 // ("/commerce/products" → "Products"). The manifest stores SINGULAR entity
@@ -60,14 +83,7 @@ export function DetailPageShell({
   const body = (
     <Stack gap={0} className={cn(fullBleed && 'h-full')}>
       <div className="flex h-[52px] shrink-0 items-center gap-2 border-b border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-2">
-        {listHref && (
-          <Button variant="ghost" size="sm" asChild>
-            <Link href={listHref}>
-              <ArrowLeft className="h-4 w-4" />
-              {listLabel}
-            </Link>
-          </Button>
-        )}
+        {listHref && <DetailBackLink href={listHref} label={listLabel ?? ''} />}
         <div className="flex-1" />
         <DetailHeaderSlotTarget className="flex items-center gap-2" />
         <DetailPresentationSwitch typeId={typeId} entityId={entityId} />

@@ -34,6 +34,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  Checkbox,
   Heading,
   Input,
   Label,
@@ -57,6 +58,7 @@ import {
   recordPaymentAction,
 } from '../../../document-actions';
 import { formatMoney } from '../../../_components/format';
+import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
 import {
   freshMarkupState,
   isMarkupMode,
@@ -302,6 +304,35 @@ function InvoiceWizardInner({
     }
   }, [presentation, pathname, searchParams, router]);
 
+  // Unsaved-changes guard. A create wizard starts blank, so "dirty" is "the user
+  // entered or changed anything across any step" — the workflow/party moved off
+  // the defaults, added lines, any charge/term, or a deposit. Guards a Cancel /
+  // Close / backdrop so a half-built document isn't silently discarded. (Once the
+  // document is created — `createdDocId` — the dialog only offers "Open document".)
+  const dirty =
+    !createdDocId &&
+    (workflowId !== (defaultWorkflow?.id ?? '') ||
+      customerId !== (preselectedCustomerId ?? '') ||
+      b2bAccountId !== (preselectedAccountId ?? '') ||
+      assignToMe ||
+      currency.trim().toUpperCase() !== 'USD' ||
+      lines.length > 0 ||
+      taxRatePct.trim() !== '0' ||
+      shipping.trim() !== '' ||
+      surcharge.trim() !== '' ||
+      dueAt.trim() !== '' ||
+      validUntil.trim() !== '' ||
+      notes.trim() !== '' ||
+      depositAmount.trim() !== '' ||
+      depositReference.trim() !== '');
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'document' });
+
+  // Guarded leave for the frame-owned Cancel: confirm a discard before dropping
+  // entered work. The create path (router.push) leaves on its own, unguarded.
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
+
   // ── Submit ───────────────────────────────────────────────────────────────────
 
   async function handleCreate() {
@@ -476,11 +507,10 @@ function InvoiceWizardInner({
               </div>
               {currentUserId && (
                 <label className="flex items-end gap-2 pb-2 text-sm">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4"
+                  <Checkbox
+                    color="module"
                     checked={assignToMe}
-                    onChange={(e) => setAssignToMe(e.target.checked)}
+                    onCheckedChange={(v) => setAssignToMe(v === true)}
                   />
                   Assign this document to me
                 </label>
@@ -994,7 +1024,7 @@ function InvoiceWizardInner({
       context={RAIL[stepKey].context}
       onStepSelect={onStepSelect}
       canSelectStep={canSelectStep}
-      onCancel={close}
+      onCancel={cancel}
       summary={summary}
     >
       {body}
@@ -1201,10 +1231,10 @@ function LineComposer({
           </div>
           <div className="col-span-8 flex items-center gap-2 md:col-span-2 md:justify-end md:pb-2">
             <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
-              <input
-                type="checkbox"
+              <Checkbox
+                color="module"
                 checked={taxable}
-                onChange={(e) => setTaxable(e.target.checked)}
+                onCheckedChange={(v) => setTaxable(v === true)}
               />
               Taxable
             </label>

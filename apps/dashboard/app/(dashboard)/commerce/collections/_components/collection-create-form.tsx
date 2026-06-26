@@ -6,10 +6,13 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Card,
   CardContent,
+  Checkbox,
   Input,
   Label,
   ModuleProvider,
   NativeSelect,
+  RadioGroup,
+  RadioGroupItem,
   Stack,
   Text,
   Textarea,
@@ -19,6 +22,7 @@ import {
 } from '@sparx/ui';
 
 import { createCollectionAction } from '../../collection-actions';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
 // New-collection form, on the standard create surface (docs/86 F layout). The SAME
 // component renders in both presentations, picked by the host:
@@ -57,9 +61,25 @@ export function CollectionCreateForm({ surface }: CollectionCreateFormProps) {
   const [match, setMatch] = React.useState('all');
   const [seedTag, setSeedTag] = React.useState('');
 
-  // Where "leave the form" goes. In the overlay it clears the detail token so the
-  // drawer/modal closes in place; the page route returns to the list.
-  const cancel = React.useCallback(() => {
+  // Unsaved-changes guard. A create form starts empty, so "dirty" is simply
+  // "the user has entered anything" — guard a Cancel / Close / Switch / backdrop
+  // so typed work isn't silently dropped.
+  const dirty =
+    name.trim() !== '' ||
+    handle.trim() !== '' ||
+    description.trim() !== '' ||
+    featured ||
+    type !== 'manual' ||
+    match !== 'all' ||
+    seedTag.trim() !== '';
+
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'collection' });
+
+  // Where "leave the form" goes, WITHOUT the guard. In the overlay it clears the
+  // detail token so the drawer/modal closes in place; the page route returns to
+  // the list. Used by the success path (a created collection isn't a discard) and,
+  // through `cancel`, by the guarded Cancel.
+  const close = React.useCallback(() => {
     if (surface === 'overlay') {
       const next = new URLSearchParams(searchParams ?? '');
       next.delete('drawer');
@@ -70,6 +90,12 @@ export function CollectionCreateForm({ surface }: CollectionCreateFormProps) {
       router.push('/commerce/collections');
     }
   }, [surface, pathname, searchParams, router]);
+
+  // Guarded leave for the frame-owned Cancel: confirm a discard before dropping
+  // entered work.
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
 
   // After create: collections have a detail view, so transition into it.
   // Overlay: swap the detail token to the new record (preserving drawer vs modal).
@@ -198,46 +224,39 @@ export function CollectionCreateForm({ surface }: CollectionCreateFormProps) {
                   />
                 </Stack>
                 <Stack direction="row" align="center" gap={2}>
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     id="col-featured"
-                    className="h-4 w-4"
+                    color="module"
                     checked={featured}
-                    onChange={(e) => setFeatured(e.target.checked)}
+                    onCheckedChange={(v) => setFeatured(v === true)}
                   />
                   <Label htmlFor="col-featured">Featured</Label>
                 </Stack>
                 <Stack gap={3}>
-                  <Stack direction="row" align="center" gap={2}>
-                    <input
-                      type="radio"
-                      id="col-type-manual"
-                      className="h-4 w-4"
-                      checked={type === 'manual'}
-                      onChange={() => setType('manual')}
-                    />
-                    <Stack gap={0}>
-                      <Label htmlFor="col-type-manual">Manual</Label>
-                      <Text size="xs" variant="muted">
-                        Add products by hand on the detail page.
-                      </Text>
+                  <RadioGroup
+                    value={type}
+                    onValueChange={(v) => setType(v as 'manual' | 'rules')}
+                    className="gap-3"
+                  >
+                    <Stack direction="row" align="center" gap={2}>
+                      <RadioGroupItem color="module" value="manual" id="col-type-manual" />
+                      <Stack gap={0}>
+                        <Label htmlFor="col-type-manual">Manual</Label>
+                        <Text size="xs" variant="muted">
+                          Add products by hand on the detail page.
+                        </Text>
+                      </Stack>
                     </Stack>
-                  </Stack>
-                  <Stack direction="row" align="center" gap={2}>
-                    <input
-                      type="radio"
-                      id="col-type-rules"
-                      className="h-4 w-4"
-                      checked={type === 'rules'}
-                      onChange={() => setType('rules')}
-                    />
-                    <Stack gap={0}>
-                      <Label htmlFor="col-type-rules">Rules-driven</Label>
-                      <Text size="xs" variant="muted">
-                        Membership re-projected on the next index flush.
-                      </Text>
+                    <Stack direction="row" align="center" gap={2}>
+                      <RadioGroupItem color="module" value="rules" id="col-type-rules" />
+                      <Stack gap={0}>
+                        <Label htmlFor="col-type-rules">Rules-driven</Label>
+                        <Text size="xs" variant="muted">
+                          Membership re-projected on the next index flush.
+                        </Text>
+                      </Stack>
                     </Stack>
-                  </Stack>
+                  </RadioGroup>
                   {type === 'rules' && (
                     <Stack
                       gap={3}

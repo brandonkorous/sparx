@@ -22,6 +22,7 @@ import {
 } from '@sparx/ui';
 
 import { createTemplateAction } from '../../../configurator-actions';
+import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
 
 // Surface-aware create form for a configurator template, on the standard create
 // surface (docs/86 F layout). The SAME component renders in both presentations,
@@ -66,6 +67,10 @@ const STARTER_PAYLOAD = {
   addOns: [],
 };
 
+// Pretty-printed starter, computed once. Doubles as the textarea's initial value
+// and the dirty-check baseline (an untouched starter is not "entered work").
+const STARTER_JSON = JSON.stringify(STARTER_PAYLOAD, null, 2);
+
 interface NewTemplateFormProps {
   products: ProductOption[];
   surface: 'page' | 'overlay';
@@ -87,11 +92,21 @@ export function NewTemplateForm({ products, surface }: NewTemplateFormProps) {
   });
   const [name, setName] = React.useState('');
   const [description, setDescription] = React.useState('');
-  const [json, setJson] = React.useState(() => JSON.stringify(STARTER_PAYLOAD, null, 2));
+  const [json, setJson] = React.useState(STARTER_JSON);
 
-  // Where "leave the form" goes. In the overlay it clears the detail token so the
-  // drawer/modal closes in place; the page route returns to the list.
-  const cancel = React.useCallback(() => {
+  // Unsaved-changes guard. A create form starts blank (bar the starter JSON), so
+  // "dirty" is "the user has changed anything from the defaults" — guard a Cancel
+  // / Close / Switch / backdrop so typed work isn't silently dropped.
+  const dirty =
+    productId !== '' || name.trim() !== '' || description.trim() !== '' || json !== STARTER_JSON;
+
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'template' });
+
+  // Where "leave the form" goes, WITHOUT the guard. In the overlay it clears the
+  // detail token so the drawer/modal closes in place; the page route returns to
+  // the list. Used by the success path (a created template isn't a discard) and,
+  // through `cancel`, by the guarded Cancel.
+  const close = React.useCallback(() => {
     if (surface === 'overlay') {
       const next = new URLSearchParams(searchParams ?? '');
       next.delete('drawer');
@@ -102,6 +117,12 @@ export function NewTemplateForm({ products, surface }: NewTemplateFormProps) {
       router.push('/commerce/configurator');
     }
   }, [surface, pathname, searchParams, router]);
+
+  // Guarded leave for the frame-owned Cancel: confirm a discard before dropping
+  // entered work.
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
 
   // After create: in an overlay, transition the token to the new record's detail
   // (preserving drawer vs modal); on a page, navigate to it.

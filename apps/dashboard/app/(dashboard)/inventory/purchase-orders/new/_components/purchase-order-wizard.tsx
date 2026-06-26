@@ -49,6 +49,7 @@ import {
 import { createPurchaseOrderAction } from '../../../_lib/purchase-order-actions';
 import { LineAddRow, type ResolvedLine } from '../../_components/line-add-row';
 import { formatMoney } from '../../_components/types';
+import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
 
 // ─── Public option shape (resolved server-side, passed in) ────────────────────────
 
@@ -157,6 +158,28 @@ function PurchaseOrderWizardInner({
       router.push('/inventory/purchase-orders');
     }
   }, [presentation, pathname, searchParams, router]);
+
+  // Unsaved-changes guard. A create wizard starts blank, so "dirty" is "the user
+  // entered or changed anything" — a supplier/warehouse moved off the default,
+  // added lines, a changed currency, or any term. Guards a Cancel / Close /
+  // backdrop so a half-built purchase order isn't silently discarded.
+  const dirty =
+    supplierId !== (suppliers[0]?.id ?? '') ||
+    warehouseId !== (warehouses[0]?.id ?? '') ||
+    currency.trim().toUpperCase() !== 'USD' ||
+    lines.length > 0 ||
+    paymentTerms.trim() !== '' ||
+    reference.trim() !== '' ||
+    expectedArrival.trim() !== '' ||
+    shipping.trim() !== '' ||
+    notes.trim() !== '';
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'purchase order' });
+
+  // Guarded leave for the frame-owned Cancel: confirm a discard before dropping
+  // entered work. The create path (router.push) leaves on its own, unguarded.
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
 
   async function handleCreate() {
     if (!supplierId || !warehouseId) {
@@ -523,7 +546,7 @@ function PurchaseOrderWizardInner({
       context={RAIL[stepKey].context}
       onStepSelect={onStepSelect}
       canSelectStep={canSelectStep}
-      onCancel={close}
+      onCancel={cancel}
       summary={summary}
     >
       {body}

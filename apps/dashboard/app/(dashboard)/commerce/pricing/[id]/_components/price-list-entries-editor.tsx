@@ -9,6 +9,9 @@ import {
   Button,
   EmptyState,
   Input,
+  Label,
+  RadioGroup,
+  RadioGroupItem,
   Stack,
   Table,
   TableBody,
@@ -149,28 +152,20 @@ export function PriceListEntriesEditor({
             <Text size="xs" variant="muted">
               Mode
             </Text>
-            <Stack direction="row" gap={2}>
-              <label className="flex items-center gap-1">
-                <input
-                  type="radio"
-                  name="mode"
-                  value="fixed"
-                  checked={mode === 'fixed'}
-                  onChange={() => setMode('fixed')}
-                />
+            <RadioGroup
+              value={mode}
+              onValueChange={(v) => setMode(v as 'fixed' | 'percent')}
+              className="flex flex-row gap-2"
+            >
+              <Label htmlFor="mode-fixed" className="flex items-center gap-1">
+                <RadioGroupItem color="module" value="fixed" id="mode-fixed" />
                 <Text size="sm">Fixed</Text>
-              </label>
-              <label className="flex items-center gap-1">
-                <input
-                  type="radio"
-                  name="mode"
-                  value="percent"
-                  checked={mode === 'percent'}
-                  onChange={() => setMode('percent')}
-                />
+              </Label>
+              <Label htmlFor="mode-percent" className="flex items-center gap-1">
+                <RadioGroupItem color="module" value="percent" id="mode-percent" />
                 <Text size="sm">Percent off</Text>
-              </label>
-            </Stack>
+              </Label>
+            </RadioGroup>
           </Stack>
           {mode === 'fixed' ? (
             <Stack gap={1} className="w-[8rem]">

@@ -21,13 +21,12 @@ import {
   Stack,
   Text,
   Textarea,
-  useConfirm,
 } from '@sparx/ui';
 
 import type { Property } from '@/lib/sites';
 import { SiteScopeField } from '../../../../_components/site-scope-field';
 import { DetailFooterSlot } from '../../../../_components/detail-header-slot';
-import { useRegisterLeaveGuard } from '../../../../_components/unsaved-guard';
+import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
 
 import { updateProductAction } from '../../../product-actions';
 import type { ProductFacets } from './product-facets';
@@ -122,17 +121,7 @@ export function ProductEditForm({
   // the full-page presentation switch all route through the shared leave guard
   // before they navigate — without this registration those paths silently discard
   // a half-edited product. Mirrors the category edit form (docs/86 + docs/105).
-  const confirm = useConfirm();
-  const guardLeave = React.useCallback(async (): Promise<boolean> => {
-    if (!dirty) return true;
-    return confirm({
-      title: 'Discard unsaved changes?',
-      description: 'Your edits to this product haven’t been saved. Leaving now will discard them.',
-      confirmLabel: 'Discard changes',
-      tone: 'danger',
-    });
-  }, [dirty, confirm]);
-  useRegisterLeaveGuard(guardLeave);
+  useUnsavedGuard(dirty, { kind: 'edit', noun: 'product' });
 
   function set<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));

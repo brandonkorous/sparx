@@ -11,6 +11,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
+  Checkbox,
   Container,
   Input,
   Label,
@@ -90,7 +91,7 @@ export default function NewWorkflowPage() {
                   </Text>
                 </Stack>
                 <Stack direction="row" align="center" gap={2}>
-                  <input type="checkbox" id="isDefault" name="isDefault" className="h-4 w-4" />
+                  <Checkbox color="module" id="isDefault" name="isDefault" />
                   <Label htmlFor="isDefault">Make this the default workflow</Label>
                 </Stack>
 

@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Card, CardContent, Heading, Label, Stack, Text } from '@sparx/ui';
+import { Button, Card, CardContent, Checkbox, Heading, Label, Stack, Text } from '@sparx/ui';
 
 import { clearRecallAction, initiateRecallAction } from '../../../_lib/lot-actions';
 
@@ -113,7 +113,11 @@ export function LotActionsBar({ id, recallStatus }: { id: string; recallStatus: 
             />
           </Stack>
           <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={notify} onChange={(e) => setNotify(e.target.checked)} />
+            <Checkbox
+              color="module"
+              checked={notify}
+              onCheckedChange={(v) => setNotify(v === true)}
+            />
             Flag affected customers to notify
           </label>
           {error && (

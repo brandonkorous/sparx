@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { Button, Heading, Input, Label, NativeSelect, Stack, Text } from '@sparx/ui';
+import { Button, Checkbox, Heading, Input, Label, NativeSelect, Stack, Text } from '@sparx/ui';
 
 import { createVariantAction } from '../../../variant-actions';
 
@@ -173,7 +173,7 @@ export function NewVariantForm({ productId, options, onCreated, onCancel }: Prop
         </Stack>
 
         <Stack direction="row" align="center" gap={2}>
-          <input type="checkbox" id="isDefault" name="isDefault" className="h-4 w-4" />
+          <Checkbox color="module" id="isDefault" name="isDefault" />
           <Label htmlFor="isDefault">Make this the default variant</Label>
         </Stack>
 

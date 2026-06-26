@@ -41,6 +41,7 @@ import { CheckCircle2, FileText } from 'lucide-react';
 import { createEntry, getTypeSchema } from '../../types/actions';
 import { createAuthor } from '../../authors/actions';
 import { ContentEntryForm } from '../../_components/content-entry-form';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -187,6 +188,19 @@ function ContentEntryWizardInner({
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
+  // Unsaved-changes guard. A create wizard starts blank, so "dirty" is "the user
+  // entered or changed anything" — a type they picked (when none was preselected),
+  // any body field, an author, or a changed status/schedule. Guards a Cancel /
+  // Close / backdrop so a half-built entry isn't silently discarded. (Slug is
+  // auto-derived from the body, so a non-empty body already covers it.)
+  const dirty =
+    selectedTypeKey !== (preselectedType?.key ?? null) ||
+    Object.keys(body).length > 0 ||
+    authorId !== '' ||
+    status !== 'draft' ||
+    scheduledAt.trim() !== '';
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'entry' });
+
   function goToStep(key: StepKey) {
     setError(null);
     setStepKey(key);
@@ -203,6 +217,12 @@ function ContentEntryWizardInner({
       router.push('/cms/content');
     }
   }, [presentation, pathname, searchParams, router]);
+
+  // Guarded leave for the frame-owned Cancel: confirm a discard before dropping
+  // entered work. The create path (router.push) leaves on its own, unguarded.
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
 
   // Sync slug from body `title`/`name` when not manually touched.
   React.useEffect(() => {
@@ -666,7 +686,7 @@ function ContentEntryWizardInner({
       context={RAIL[stepKey].context}
       onStepSelect={onStepSelect}
       canSelectStep={canSelectStep}
-      onCancel={close}
+      onCancel={cancel}
     >
       {body_}
     </SurfaceFrame>

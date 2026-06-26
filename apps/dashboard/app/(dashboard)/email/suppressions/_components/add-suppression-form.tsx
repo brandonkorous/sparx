@@ -23,6 +23,7 @@ import {
 } from '@sparx/ui';
 
 import { addSuppressionAction, importSuppressionsAction } from '../actions';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
 // Suppression create form, on the standard create surface (docs/86 F layout). The
 // SAME component renders in both presentations, picked by the host:
@@ -58,9 +59,17 @@ export function AddSuppressionForm({ surface }: AddSuppressionFormProps) {
       .filter(Boolean);
   }
 
-  // Where "leave the form" goes. In the overlay it clears the detail token so the
-  // drawer/modal closes in place; the page route returns to the list.
-  const cancel = useCallback(() => {
+  // Unsaved-changes guard. A create form starts empty, so "dirty" is simply
+  // "the user has entered anything" — guard a Cancel / Close / Switch / backdrop
+  // so typed work isn't silently dropped.
+  const dirty = value.trim() !== '';
+
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'suppression' });
+
+  // Where "leave the form" goes, WITHOUT the guard. In the overlay it clears the
+  // detail token so the drawer/modal closes in place; the page route returns to
+  // the list. Used by the success path and, through `cancel`, by the guarded Cancel.
+  const close = useCallback(() => {
     if (surface === 'overlay') {
       const next = new URLSearchParams(searchParams ?? '');
       next.delete('drawer');
@@ -71,6 +80,12 @@ export function AddSuppressionForm({ surface }: AddSuppressionFormProps) {
       router.push('/email/suppressions');
     }
   }, [surface, pathname, searchParams, router]);
+
+  // Guarded leave for the frame-owned Cancel: confirm a discard before dropping
+  // entered work.
+  const cancel = useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
 
   function submit() {
     const emails = parseEmails(value);

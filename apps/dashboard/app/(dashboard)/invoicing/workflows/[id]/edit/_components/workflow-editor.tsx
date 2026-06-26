@@ -17,6 +17,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  Checkbox,
   Input,
   Label,
   Stack,
@@ -135,12 +136,11 @@ export function WorkflowEditor({ workflow }: WorkflowEditorProps) {
               </Text>
             </Stack>
             <Stack direction="row" align="center" gap={2}>
-              <input
-                type="checkbox"
+              <Checkbox
+                color="module"
                 id="wf-default"
-                className="h-4 w-4"
                 checked={isDefault}
-                onChange={(e) => setIsDefault(e.target.checked)}
+                onCheckedChange={(v) => setIsDefault(v === true)}
               />
               <Label htmlFor="wf-default">
                 Default workflow (preselected in the create wizard)

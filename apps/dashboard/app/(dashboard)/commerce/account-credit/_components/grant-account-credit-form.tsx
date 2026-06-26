@@ -18,6 +18,7 @@ import {
 } from '@sparx/ui';
 
 import { grantAccountCreditAction } from '../../discount-actions';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
 // Grant-account-credit form, on the standard create surface (docs/86 F layout).
 // The SAME component renders in both presentations, picked by the host:
@@ -59,9 +60,17 @@ export function GrantAccountCreditForm({ surface, customers }: GrantAccountCredi
   const [currency, setCurrency] = React.useState('USD');
   const [note, setNote] = React.useState('');
 
-  // Where "leave the form" goes. In the overlay it clears the detail token so the
-  // drawer/modal closes in place; the page route returns to the list.
-  const cancel = React.useCallback(() => {
+  // Unsaved-changes guard. A create form starts empty (bar default amount/currency),
+  // so "dirty" is "the user has changed anything" — guard a Cancel / Close / Switch
+  // / backdrop so typed work isn't silently dropped.
+  const dirty = customerId !== '' || amount !== '25' || currency !== 'USD' || note.trim() !== '';
+
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'account credit' });
+
+  // Where "leave the form" goes, WITHOUT the guard. In the overlay it clears the
+  // detail token so the drawer/modal closes in place; the page route returns to
+  // the list. Used through `cancel` by the guarded Cancel.
+  const close = React.useCallback(() => {
     if (surface === 'overlay') {
       const next = new URLSearchParams(searchParams ?? '');
       next.delete('drawer');
@@ -72,6 +81,12 @@ export function GrantAccountCreditForm({ surface, customers }: GrantAccountCredi
       router.push('/commerce/account-credit');
     }
   }, [surface, pathname, searchParams, router]);
+
+  // Guarded leave for the frame-owned Cancel: confirm a discard before dropping
+  // entered work.
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
 
   function submit() {
     setError(null);

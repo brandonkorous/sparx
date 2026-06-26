@@ -68,6 +68,20 @@ export default tseslint.config(
     },
     settings: {
       react: { version: 'detect' },
+      // Map @sparx/ui field components to the DOM elements they render, so
+      // jsx-a11y resolves a `<Label>`/`<label>` wrapping a `<Checkbox>` /
+      // `<RadioGroupItem>` / `<Input>` / … as an associated control (the native
+      // control is nested at runtime). apps/site does the same for its Sparx*
+      // components; this covers the shared @sparx/ui primitives.
+      'jsx-a11y': {
+        components: {
+          Checkbox: 'input',
+          RadioGroupItem: 'input',
+          Input: 'input',
+          NativeSelect: 'select',
+          Textarea: 'textarea',
+        },
+      },
     },
   },
   // Tests: relax a few typed-linting rules that fight Testing Library patterns.

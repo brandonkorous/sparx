@@ -2,6 +2,8 @@
 
 import * as React from 'react';
 
+import { useConfirm } from '@sparx/ui';
+
 // Unsaved-changes guard for form surfaces in the detail overlay (docs/86 +
 // docs/105 platform gap). A form on `SurfaceFrame` can hold unsaved edits, but
 // the ways OUT of it live in different component trees: the frame-owned Cancel
@@ -61,4 +63,61 @@ export function useRegisterLeaveGuard(guard: LeaveGuard): void {
 export function useLeaveGuard(): LeaveGuard {
   const channel = React.useContext(GuardContext);
   return channel?.run ?? (() => true);
+}
+
+/** Discard-dialog copy. Pass `{ kind: 'create', noun }` / `{ kind: 'edit', noun? }`
+ *  for the house wording, or a full `{ title, description, confirmLabel? }` to
+ *  override. The `noun` is the entity, lower-case ("category", "discount"). */
+export type DiscardCopy =
+  | { kind: 'create'; noun: string }
+  | { kind: 'edit'; noun?: string }
+  | { title: string; description: string; confirmLabel?: string };
+
+function resolveDiscardCopy(copy: DiscardCopy): {
+  title: string;
+  description: string;
+  confirmLabel: string;
+} {
+  if ('kind' in copy) {
+    if (copy.kind === 'create') {
+      return {
+        title: `Discard new ${copy.noun}?`,
+        description: `You haven’t created this ${copy.noun} yet. Leaving now will discard what you’ve entered.`,
+        confirmLabel: 'Discard',
+      };
+    }
+    return {
+      title: 'Discard unsaved changes?',
+      description: copy.noun
+        ? `Your edits to this ${copy.noun} haven’t been saved. Leaving now will discard them.`
+        : 'Your changes haven’t been saved. Leaving now will discard them.',
+      confirmLabel: 'Discard changes',
+    };
+  }
+  return {
+    title: copy.title,
+    description: copy.description,
+    confirmLabel: copy.confirmLabel ?? 'Discard changes',
+  };
+}
+
+/** Form hook: wire the unsaved-changes guard in ONE call. Compute `dirty`, pass
+ *  it + the discard copy, and this (a) registers the leave guard so the overlay
+ *  host's Close / Switch / backdrop consult it, and (b) returns `guardLeave` for
+ *  the form's own Cancel:
+ *
+ *      const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'category' });
+ *      const cancel = async () => { if (await guardLeave()) close(); };
+ *
+ *  Routes the success path (a completed create/save is NOT a discard) through the
+ *  UNGUARDED `close`, never through the guarded Cancel — else it false-prompts. */
+export function useUnsavedGuard(dirty: boolean, copy: DiscardCopy): LeaveGuard {
+  const confirm = useConfirm();
+  const { title, description, confirmLabel } = resolveDiscardCopy(copy);
+  const guardLeave = React.useCallback<LeaveGuard>(async () => {
+    if (!dirty) return true;
+    return confirm({ title, description, confirmLabel, tone: 'danger' });
+  }, [dirty, confirm, title, description, confirmLabel]);
+  useRegisterLeaveGuard(guardLeave);
+  return guardLeave;
 }

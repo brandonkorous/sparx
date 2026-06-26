@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { Button, Input, Label, Stack, Text, Textarea, useConfirm } from '@sparx/ui';
 import { Trash2 } from 'lucide-react';
 import { deleteAsset, patchAsset } from '../actions';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
 export interface AssetEditFormProps {
   assetId: string;
@@ -37,6 +38,15 @@ export function AssetEditForm({
   const [caption, setCaption] = React.useState(initialCaption ?? '');
   const [focal, setFocal] = React.useState(initialFocalPoint);
   const containerRef = React.useRef<HTMLDivElement | null>(null);
+
+  // Register the dirty state so the detail page's guarded back-link / presentation
+  // switch confirm before discarding unsaved asset edits (docs/105).
+  const dirty =
+    altText !== (initialAltText ?? '') ||
+    caption !== (initialCaption ?? '') ||
+    focal.x !== initialFocalPoint.x ||
+    focal.y !== initialFocalPoint.y;
+  useUnsavedGuard(dirty, { kind: 'edit', noun: 'asset' });
 
   function onFocalClick(e: React.MouseEvent<HTMLDivElement>) {
     if (!isImage || !containerRef.current) return;

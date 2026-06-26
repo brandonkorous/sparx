@@ -3,7 +3,17 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Card, CardContent, Input, Label, NativeSelect, Stack, Text } from '@sparx/ui';
+import {
+  Button,
+  Card,
+  CardContent,
+  Checkbox,
+  Input,
+  Label,
+  NativeSelect,
+  Stack,
+  Text,
+} from '@sparx/ui';
 
 import { lookupVariantBySkuAction } from '../../_lib/supplier-actions';
 import { RECALL_FILTER_OPTIONS } from './types';
@@ -123,10 +133,10 @@ export function LotsFilterBar({
           </Stack>
           <Stack direction="row" gap={3} align="center" wrap>
             <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
+              <Checkbox
+                color="module"
                 checked={expiring}
-                onChange={(e) => setExpiring(e.target.checked)}
+                onCheckedChange={(v) => setExpiring(v === true)}
               />
               Expiring within a year
             </label>

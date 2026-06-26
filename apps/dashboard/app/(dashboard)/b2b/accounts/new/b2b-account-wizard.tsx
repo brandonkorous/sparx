@@ -36,6 +36,7 @@ import {
 import { Plus, Trash2 } from 'lucide-react';
 
 import { createB2bAccountAction } from '../../../crm/b2b-actions';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
 // ─── Steps & rail copy ──────────────────────────────────────────────────────────
 
@@ -206,6 +207,26 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
     steps.findIndex((s) => s.key === stepKey)
   );
 
+  // Unsaved-changes guard. A create wizard starts blank, so "dirty" is "the user
+  // entered or changed anything across any step" — company identity, a changed
+  // status, any pricing/credit term, or an added engine profile. Guards a Cancel /
+  // Close / backdrop so a half-built account isn't silently discarded.
+  const filled = (v: unknown) => typeof v === 'string' && v.trim() !== '';
+  const dirty =
+    filled(company.companyName) ||
+    filled(company.taxId) ||
+    filled(company.website) ||
+    filled(company.tags) ||
+    (company.status ?? 'active') !== 'active' ||
+    filled(pricing.pricingTier) ||
+    Number(pricing.creditLimit ?? 0) !== 0 ||
+    Number(pricing.discountPercent ?? 0) !== 0 ||
+    filled(pricing.paymentTerms) ||
+    filled(pricing.notes) ||
+    (pricing.fleetSize != null && pricing.fleetSize !== '' && Number(pricing.fleetSize) !== 0) ||
+    engineProfiles.length > 0;
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'B2B account' });
+
   function goToStep(key: StepKey) {
     setError(null);
     setStepKey(key);
@@ -222,6 +243,12 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
       router.push('/b2b/accounts');
     }
   }, [presentation, pathname, searchParams, router]);
+
+  // Guarded leave for the frame-owned Cancel: confirm a discard before dropping
+  // entered work. The create path (router.push) leaves on its own, unguarded.
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
 
   // ── Validation ─────────────────────────────────────────────────────────────
 
@@ -546,7 +573,7 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
       context={RAIL[stepKey].context}
       onStepSelect={onStepSelect}
       canSelectStep={canSelectStep}
-      onCancel={close}
+      onCancel={cancel}
       summary={summary}
     >
       {body}

@@ -7,7 +7,7 @@
 import * as React from 'react';
 import { Plus } from 'lucide-react';
 
-import { Button, Input, Label, Stack, Text, toast } from '@sparx/ui';
+import { Button, Checkbox, Input, Label, Stack, Text, toast } from '@sparx/ui';
 
 import { createWorkflowStageAction } from '../../../../workflow-actions';
 
@@ -129,10 +129,10 @@ export function AddStageForm({
 
       <Stack direction="row" align="center" gap={4} wrap className="px-1">
         <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
-          <input
-            type="checkbox"
+          <Checkbox
+            color="module"
             checked={numberOnEnter}
-            onChange={(e) => setNumberOnEnter(e.target.checked)}
+            onCheckedChange={(v) => setNumberOnEnter(v === true)}
           />
           Mint a number
         </label>
@@ -147,18 +147,18 @@ export function AddStageForm({
           />
         )}
         <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
-          <input
-            type="checkbox"
+          <Checkbox
+            color="module"
             checked={snapshotOnEnter}
-            onChange={(e) => setSnapshotOnEnter(e.target.checked)}
+            onCheckedChange={(v) => setSnapshotOnEnter(v === true)}
           />
           Freeze a snapshot
         </label>
         <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
-          <input
-            type="checkbox"
+          <Checkbox
+            color="module"
             checked={locksEditing}
-            onChange={(e) => setLocksEditing(e.target.checked)}
+            onCheckedChange={(v) => setLocksEditing(v === true)}
           />
           Lock editing
         </label>

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 import {
   Button,
+  Checkbox,
   Stack,
   Text,
   Input,
@@ -339,11 +340,10 @@ export function SupplierForm({ vendor, supplier, sites, onSuccess, onCancel }: P
         {multiSite && (
           <Stack gap={3}>
             <label className="flex cursor-pointer items-center gap-2">
-              <input
-                type="checkbox"
-                className="rounded"
+              <Checkbox
+                color="module"
                 checked={limitSites}
-                onChange={(e) => setLimitSites(e.target.checked)}
+                onCheckedChange={(v) => setLimitSites(v === true)}
               />
               <Text size="sm" className="font-medium">
                 Limit this connection to specific sites
@@ -358,11 +358,10 @@ export function SupplierForm({ vendor, supplier, sites, onSuccess, onCancel }: P
               <Stack gap={2} className="border-l-2 border-[var(--color-border)] pl-6">
                 {sites.map((s) => (
                   <label key={s.id} className="flex cursor-pointer items-center gap-2">
-                    <input
-                      type="checkbox"
-                      className="rounded"
+                    <Checkbox
+                      color="module"
                       checked={selectedSites.has(s.id)}
-                      onChange={() => toggleSite(s.id)}
+                      onCheckedChange={() => toggleSite(s.id)}
                     />
                     <Text size="sm">
                       {s.name}
@@ -379,11 +378,10 @@ export function SupplierForm({ vendor, supplier, sites, onSuccess, onCancel }: P
 
         <Stack gap={3}>
           <label className="flex cursor-pointer items-center gap-2">
-            <input
-              type="checkbox"
-              className="rounded"
+            <Checkbox
+              color="module"
               checked={hasPricingRule}
-              onChange={(e) => setHasPricingRule(e.target.checked)}
+              onCheckedChange={(v) => setHasPricingRule(v === true)}
             />
             <Text size="sm" className="font-medium">
               Apply pricing rule to imported products
@@ -447,11 +445,10 @@ export function SupplierForm({ vendor, supplier, sites, onSuccess, onCancel }: P
               </Stack>
 
               <label className="flex cursor-pointer items-center gap-2">
-                <input
-                  type="checkbox"
-                  className="rounded"
+                <Checkbox
+                  color="module"
                   checked={capAtMsrp}
-                  onChange={(e) => setCapAtMsrp(e.target.checked)}
+                  onCheckedChange={(v) => setCapAtMsrp(v === true)}
                 />
                 <Text size="sm">Cap retail price at supplier MSRP</Text>
               </label>

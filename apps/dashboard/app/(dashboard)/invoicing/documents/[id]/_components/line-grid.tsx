@@ -25,6 +25,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  Checkbox,
   Input,
   Label,
   Stack,
@@ -360,11 +361,11 @@ function EditableLineRow({
 
       <Stack direction="row" align="center" gap={3} className="mt-2 px-1" wrap>
         <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
-          <input
-            type="checkbox"
+          <Checkbox
+            color="module"
             defaultChecked={line.taxable}
             disabled={pending}
-            onChange={(e) => commit({ taxable: e.target.checked })}
+            onCheckedChange={(v) => commit({ taxable: v === true })}
           />
           Taxable
         </label>

@@ -12,6 +12,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  Checkbox,
   Input,
   Label,
   Stack,
@@ -64,11 +65,10 @@ export function PipelineHeaderCard({
             </Stack>
           </Stack>
           <Stack direction="row" align="center" gap={2}>
-            <input
-              type="checkbox"
+            <Checkbox
+              color="module"
               checked={isDefault}
-              onChange={(e) => setIsDefault(e.target.checked)}
-              className="h-4 w-4"
+              onCheckedChange={(v) => setIsDefault(v === true)}
               id="isDefault-edit"
             />
             <Label htmlFor="isDefault-edit">Default pipeline</Label>

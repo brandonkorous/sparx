@@ -46,6 +46,7 @@ import {
 
 import { createInventoryTransferAction } from '../../../_lib/transfer-actions';
 import { lookupVariantBySkuAction } from '../../../_lib/supplier-actions';
+import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
 
 // ─── Public option shape (resolved server-side, passed in) ────────────────────────
 
@@ -150,6 +151,23 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
       router.push('/inventory/transfers');
     }
   }, [presentation, pathname, searchParams, router]);
+
+  // Unsaved-changes guard. A create wizard starts blank, so "dirty" is "the user
+  // entered or changed anything" — a note, added lines, or a route moved off the
+  // default first/second warehouse. Guards a Cancel / Close / backdrop so a
+  // half-built transfer isn't silently discarded.
+  const dirty =
+    note.trim() !== '' ||
+    lines.length > 0 ||
+    fromId !== (warehouses[0]?.id ?? '') ||
+    toId !== (warehouses[1]?.id ?? '');
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'transfer' });
+
+  // Guarded leave for the frame-owned Cancel: confirm a discard before dropping
+  // entered work. The create path (router.push) leaves on its own, unguarded.
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
 
   async function handleCreate() {
     if (!routeValid) {
@@ -435,7 +453,7 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
       context={RAIL[stepKey].context}
       onStepSelect={onStepSelect}
       canSelectStep={canSelectStep}
-      onCancel={close}
+      onCancel={cancel}
       summary={summary}
     >
       {body}

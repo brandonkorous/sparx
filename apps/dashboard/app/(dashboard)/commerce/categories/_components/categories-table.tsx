@@ -110,8 +110,11 @@ export function CategoriesTable({ tree, view, q, featured }: CategoriesTableProp
     return out;
   }, [tree, expanded, view, filtering]);
 
+  // Matches the collections list's featured badge (accent · soft · sm) — a real
+  // highlight hue, not a bland outline pill, and consistent across the two
+  // commerce lists that carry a `featured` flag.
   const featuredBadge = (
-    <Badge variant="outline" className="text-xs">
+    <Badge color="accent" variant="soft" size="sm">
       <Star className="mr-1 h-3 w-3" />
       featured
     </Badge>
