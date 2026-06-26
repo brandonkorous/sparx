@@ -1,8 +1,8 @@
 'use client';
 
 // The entry's status + publish actions (docs/51 §6). EditEntryForm owns ALL the
-// state (status, autosave, the schedule/conflict machinery); this is purely
-// presentational and gets rendered in one of two places:
+// state (status, the schedule machinery); this is purely presentational and gets
+// rendered in one of two places:
 //
 //   · 'card' — the standalone Status card atop the form. Used on the drawer / any
 //              surface without a live preview (the original layout, unchanged).
@@ -30,19 +30,10 @@ import {
 import { CalendarClock, History } from 'lucide-react';
 import { PreviewButton } from '../../../[id]/preview-button';
 
-export type SaveState =
-  | { kind: 'idle' }
-  | { kind: 'saving' }
-  | { kind: 'saved'; at: Date }
-  | { kind: 'invalid'; count: number }
-  | { kind: 'conflict' }
-  | { kind: 'error'; message: string };
-
 export interface EntryStatusBarProps {
   /** 'card' = the standalone Status card; 'bar' = the toolbar cluster. */
   layout: 'card' | 'bar';
   status: string;
-  saveState: SaveState;
   /** A publish/schedule transition is in flight — disables the action buttons. */
   pending: boolean;
   /** Routable types get a Preview link; non-routable ones (no URL) don't. */
@@ -56,15 +47,11 @@ export interface EntryStatusBarProps {
   onTogglePublish: () => void;
   /** Open the schedule-publish modal (owned by EditEntryForm). */
   onSchedule: () => void;
-  /** Conflict resolution (two-tab edit): drop my edits / force-save over theirs. */
-  onDiscardConflict: () => void;
-  onKeepConflict: () => void;
 }
 
 export function EntryStatusBar({
   layout,
   status,
-  saveState,
   pending,
   routable,
   entryId,
@@ -75,8 +62,6 @@ export function EntryStatusBar({
   scheduledAt,
   onTogglePublish,
   onSchedule,
-  onDiscardConflict,
-  onKeepConflict,
 }: EntryStatusBarProps) {
   const published = status === 'published';
 
@@ -84,14 +69,6 @@ export function EntryStatusBar({
     <Badge color={statusTone(status)} variant="soft">
       {statusLabel(status)}
     </Badge>
-  );
-
-  const indicator = (
-    <AutosaveIndicator
-      state={saveState}
-      onDiscardMine={onDiscardConflict}
-      onKeepMine={onKeepConflict}
-    />
   );
 
   // In the header/toolbar (anything but the standalone card) the secondary actions
@@ -150,13 +127,12 @@ export function EntryStatusBar({
   );
 
   if (layout === 'bar') {
-    // Compact toolbar cluster: status + autosave + actions, right-aligned next to
-    // the workspace's view controls. The publish timestamp rides along only on wide
+    // Compact toolbar cluster: status + actions, right-aligned next to the
+    // workspace's view controls. The publish timestamp rides along only on wide
     // viewports (it's reference, not an action) so the bar stays uncluttered.
     return (
       <div className="flex flex-wrap items-center justify-end gap-2">
         {statusBadge}
-        {indicator}
         {actions}
       </div>
     );
@@ -169,7 +145,6 @@ export function EntryStatusBar({
           <Stack direction="row" align="center" gap={2} wrap>
             <Heading level={3}>Status</Heading>
             {statusBadge}
-            {indicator}
           </Stack>
           <Stack direction="row" align="center" gap={2} wrap>
             {actions}
@@ -193,61 +168,5 @@ export function EntryStatusBar({
         </CardContent>
       )}
     </Card>
-  );
-}
-
-// Status pill next to the Status badge — same contract as the Pages editor's, plus
-// an `invalid` state for the client-side autosave pre-validation skip.
-function AutosaveIndicator({
-  state,
-  onDiscardMine,
-  onKeepMine,
-}: {
-  state: SaveState;
-  onDiscardMine: () => void;
-  onKeepMine: () => void;
-}) {
-  if (state.kind === 'idle') return null;
-  if (state.kind === 'saving') {
-    return (
-      <Text size="xs" variant="muted" aria-live="polite">
-        Saving…
-      </Text>
-    );
-  }
-  if (state.kind === 'saved') {
-    return (
-      <Text size="xs" variant="muted" aria-live="polite">
-        Saved {state.at.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-      </Text>
-    );
-  }
-  if (state.kind === 'invalid') {
-    return (
-      <Text size="xs" variant="muted" aria-live="polite">
-        {state.count === 1 ? '1 field needs attention' : `${state.count} fields need attention`}{' '}
-        before autosave
-      </Text>
-    );
-  }
-  if (state.kind === 'conflict') {
-    return (
-      <Stack direction="row" align="center" gap={2}>
-        <Text size="xs" variant="danger" aria-live="polite">
-          Someone else saved this entry since you started editing.
-        </Text>
-        <Button type="button" variant="ghost" size="xs" onClick={onDiscardMine}>
-          Discard mine
-        </Button>
-        <Button type="button" color="module" variant="outline" size="xs" onClick={onKeepMine}>
-          Keep mine (force save)
-        </Button>
-      </Stack>
-    );
-  }
-  return (
-    <Text size="xs" variant="danger" aria-live="polite">
-      Autosave failed: {state.message}
-    </Text>
   );
 }

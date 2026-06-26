@@ -2,21 +2,17 @@
 
 // Edit container for one content-type entry. The entries analog of the CMS
 // Pages editor's `EditPageForm` — same card layout (Status / Content / SEO /
-// footer) and the same per-keystroke autosave + ETag conflict machinery, so
-// editing a blog post feels identical to editing a page.
+// footer), explicit-save only (one Save button, last-write-wins), so editing a
+// blog post feels identical to editing a page.
 //
-// Two things differ from the Pages editor:
-//   - The body is SCHEMA-DRIVEN. The content type owns its fields, so the
-//     Content card hosts a controlled `<ContentEntryForm>` (one
-//     FieldRenderer per field) rather than a fixed title/slug/rich-text set.
-//     `slug`, `title`, etc. are body keys the schema declares.
-//   - Autosave is PRE-VALIDATED on the client. A schema-invalid body (e.g.
-//     the editor cleared the slug on a routable type) would 422 the whole
-//     PATCH, so we skip the round-trip and show a soft "needs attention"
-//     indicator instead of a scary error/conflict banner.
-//
-// Body + SEO (+ slug) ride in ONE PATCH against ONE ETag cursor — see
-// `autosaveEntry`. SEO reuses the Pages editor's `SeoPanel` verbatim.
+// The body is SCHEMA-DRIVEN: the content type owns its fields, so the Content
+// card hosts a controlled `<ContentEntryForm>` (one FieldRenderer per field)
+// rather than a fixed title/slug/rich-text set — `slug`, `title`, etc. are body
+// keys the schema declares. Body + SEO (+ slug for routable types) save in ONE
+// PATCH via `saveEntry`; SEO reuses the Pages editor's `SeoPanel` verbatim. An
+// unsaved edit registers the leave-guard (docs/105) so closing / navigating away
+// confirms before discarding. (Autosave + ETag conflict detection were removed
+// platform-wide for consistency.)
 
 import * as React from 'react';
 import { createPortal } from 'react-dom';
@@ -44,29 +40,19 @@ import {
   useConfirm,
 } from '@sparx/ui';
 import { Trash2 } from 'lucide-react';
-import { validateBody, type FieldDef } from '@sparx/cms-schemas';
+import { type FieldDef } from '@sparx/cms-schemas';
 import type { BuilderTemplateOption } from '@sparx/builder-schemas';
 import type { Property } from '@/lib/sites';
 import { ContentEntryForm, missingRequiredFields } from '../../../_components/content-entry-form';
 import { SiteScopeField } from '../../../../_components/site-scope-field';
 import { SeoPanel, type SeoFields } from '../../../[id]/seo-panel';
-import { EntryStatusBar, type SaveState } from './entry-status-bar';
+import { EntryStatusBar } from './entry-status-bar';
 import { DetailHeaderSlot } from '../../../../_components/detail-header-slot';
+import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
 import { EntryTemplatePicker } from './entry-template-picker';
-import {
-  autosaveEntry,
-  deleteEntry,
-  saveEntry,
-  scheduleEntryPublish,
-  setEntryStatus,
-} from '../../actions';
+import { deleteEntry, saveEntry, scheduleEntryPublish, setEntryStatus } from '../../actions';
 
 const ZONE_DOMAIN = process.env.NEXT_PUBLIC_SPARX_ZONE_DOMAIN ?? 'sparx.zone';
-const AUTOSAVE_DEBOUNCE_MS = 600;
-// Autosave is OFF for now (see EditPageForm): the platform standard is explicit save,
-// and running it alongside a Save button is contradictory. The machinery stays behind
-// this env flag (unset ⇒ off) so re-enabling autosave-everywhere later is a flip.
-const AUTOSAVE_ENABLED = process.env.NEXT_PUBLIC_CMS_AUTOSAVE === 'true';
 
 function siteOrigin(tenantSlug: string | null): string {
   if (tenantSlug) return `https://${tenantSlug}.${ZONE_DOMAIN}`;
@@ -94,7 +80,6 @@ export interface EditEntryFormProps {
   initialStatus: string;
   publishedAt: Date | null;
   scheduledAt: Date | null;
-  initialEtag: string | null;
   tenantSlug: string | null;
   /** Per-record template override (docs/51 §6). Null when the Builder module is
    *  off or the type has no collection template — the picker then doesn't render. */
@@ -107,8 +92,8 @@ export interface EditEntryFormProps {
   sites: Property[];
   initialPropertyIds: string[];
   /** Mirror every body change up to the editor workspace, so an embedded live
-   *  preview can re-render as you type (docs/51 §6). This component still OWNS +
-   *  autosaves the body; the workspace only observes it. Omitted ⇒ no preview. */
+   *  preview can re-render as you type (docs/51 §6). This component still OWNS the
+   *  body; the workspace only observes it. Omitted ⇒ no preview. */
   onBody?: (body: Record<string, unknown>) => void;
   /** When the editor workspace hosts a builder-style toolbar (the live-preview
    *  surface), it passes a DOM slot here and the status + publish actions render
@@ -134,7 +119,6 @@ export function EditEntryForm({
   initialStatus,
   publishedAt,
   scheduledAt,
-  initialEtag,
   tenantSlug,
   templateOptions,
   currentTemplateId,
@@ -149,6 +133,7 @@ export function EditEntryForm({
   const routable = Boolean(urlPattern);
   const previewOrigin = siteOrigin(tenantSlug);
   const multiSite = sites.length > 1;
+  const lowerType = typeName.toLowerCase();
 
   const [error, setError] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
@@ -159,41 +144,11 @@ export function EditEntryForm({
   const [status, setStatus] = React.useState(initialStatus);
   const [propertyIds, setPropertyIds] = React.useState<string[]>(initialPropertyIds);
 
-  // Autosave bookkeeping (mirrors EditPageForm).
-  const [saveState, setSaveState] = React.useState<SaveState>({ kind: 'idle' });
-  const etagRef = React.useRef<string | null>(initialEtag);
-  const inFlightRef = React.useRef(false);
-  const dirtyRef = React.useRef(false);
-  const hydratedRef = React.useRef(false);
-  // The conflict guard reads save state through a ref so `runAutosave` stays a
-  // STABLE callback. If it depended on `saveState.kind`, its identity would
-  // churn on every save transition, re-arming the debounce effect below and
-  // re-saving an untouched entry in a loop.
-  const saveStateRef = React.useRef(saveState);
-  React.useEffect(() => {
-    saveStateRef.current = saveState;
-  }, [saveState]);
-
   const [scheduleOpen, setScheduleOpen] = React.useState(false);
   const [scheduleAt, setScheduleAt] = React.useState<Date | undefined>(scheduledAt ?? undefined);
 
-  // Stable refs so the debounce closure reads current values without
-  // re-arming the timer on every keystroke.
-  const bodyRef = React.useRef(body);
-  const seoRef = React.useRef(seo);
-  const propertyIdsRef = React.useRef(propertyIds);
-  React.useEffect(() => {
-    bodyRef.current = body;
-  }, [body]);
-  React.useEffect(() => {
-    seoRef.current = seo;
-  }, [seo]);
-  React.useEffect(() => {
-    propertyIdsRef.current = propertyIds;
-  }, [propertyIds]);
-
   const slugFromBody = (): string | undefined => {
-    const s = bodyRef.current.slug;
+    const s = body.slug;
     return routable && typeof s === 'string' && s.length > 0 ? s : undefined;
   };
 
@@ -202,100 +157,48 @@ export function EditEntryForm({
   const slug = str(body.slug) || initialSlug;
   const fallbackTitle = str(body.title);
 
-  const runAutosave = React.useCallback(async () => {
-    if (inFlightRef.current) return;
-    if (saveStateRef.current.kind === 'conflict') return;
-    // Pre-validate: a schema-invalid body (cleared slug, missing required key)
-    // would 422 the PATCH. Skip the round-trip and show a soft indicator so the
-    // editor isn't startled by an error/conflict banner mid-typing.
-    const check = validateBody({ fields: schema.fields }, bodyRef.current);
-    if (!check.ok) {
-      setSaveState({ kind: 'invalid', count: Object.keys(check.errors ?? {}).length });
-      return;
-    }
-    inFlightRef.current = true;
-    dirtyRef.current = false;
-    setSaveState({ kind: 'saving' });
-    const result = await autosaveEntry(
-      id,
-      {
-        body: bodyRef.current,
-        seo: seoRef.current,
-        slug: slugFromBody(),
-        propertyIds: multiSite ? propertyIdsRef.current : undefined,
-      },
-      etagRef.current
-    );
-    inFlightRef.current = false;
-    if (!result.ok) {
-      if (result.error === 'CONFLICT') {
-        setSaveState({ kind: 'conflict' });
-      } else {
-        setSaveState({ kind: 'error', message: result.error ?? 'Autosave failed.' });
-      }
-      return;
-    }
-    etagRef.current = result.data?.etag ?? etagRef.current;
-    setSaveState({ kind: 'saved', at: new Date() });
-    // Catch-up: the editor typed during the save.
-    if (dirtyRef.current) {
-      void runAutosave();
-    }
-    // `schema`/`routable`/`id`/`multiSite` are stable for the editor's lifetime;
-    // conflict state is read via `saveStateRef`. Keeping the dep list free of
-    // changing values is what makes this callback stable (see saveStateRef above).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, routable]);
-
-  // Debounce: mark dirty + schedule a save 600ms after the last edit. Skip the
-  // first render so prop hydration doesn't trigger a needless save. Site scope
-  // (propertyIds) rides the same PATCH, so a scope change autosaves like any edit.
-  React.useEffect(() => {
-    if (!AUTOSAVE_ENABLED) return;
-    if (!hydratedRef.current) {
-      hydratedRef.current = true;
-      return;
-    }
-    dirtyRef.current = true;
-    const handle = setTimeout(() => {
-      void runAutosave();
-    }, AUTOSAVE_DEBOUNCE_MS);
-    return () => {
-      clearTimeout(handle);
-    };
-  }, [body, seo, propertyIds, runAutosave]);
+  // Unsaved-changes guard (docs/105): `dirty` is a RENDER-COMPUTED compare against
+  // the last-saved snapshot — no effect, so it's immune to StrictMode's dev
+  // double-invoke (a "skip first render" ref flips dirty spuriously there) and to
+  // any field's on-mount normalization (an equal value compares equal). The
+  // baseline is a ref advanced on each successful Save rather than the props, so a
+  // JSONB key-reorder on refetch can't make a just-saved entry look dirty. (`slug`
+  // rides inside `body`, so comparing body covers it.)
+  const savedRef = React.useRef({
+    body: initialBody,
+    seo: initialSeo,
+    propertyIds: initialPropertyIds,
+  });
+  const saved = savedRef.current;
+  const dirty =
+    JSON.stringify(body) !== JSON.stringify(saved.body) ||
+    JSON.stringify(seo) !== JSON.stringify(saved.seo) ||
+    JSON.stringify(propertyIds) !== JSON.stringify(saved.propertyIds);
+  useUnsavedGuard(dirty, { kind: 'edit', noun: lowerType });
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setMessage(null);
-    const missing = missingRequiredFields({ fields: schema.fields }, bodyRef.current);
+    const missing = missingRequiredFields({ fields: schema.fields }, body);
     if (missing.length) {
       setError(`Required: ${missing.join(', ')}.`);
       return;
     }
     startTransition(async () => {
-      const result = await saveEntry(
-        id,
-        typeKey,
-        {
-          body: bodyRef.current,
-          seo: seoRef.current,
-          slug: slugFromBody(),
-          propertyIds: multiSite ? propertyIdsRef.current : undefined,
-        },
-        etagRef.current
-      );
+      const result = await saveEntry(id, typeKey, {
+        body,
+        seo,
+        slug: slugFromBody(),
+        propertyIds: multiSite ? propertyIds : undefined,
+      });
       if (!result.ok) {
-        if (result.error === 'CONFLICT') {
-          setSaveState({ kind: 'conflict' });
-          return;
-        }
         setError(result.error ?? 'Could not save changes.');
         return;
       }
-      etagRef.current = result.data?.etag ?? etagRef.current;
-      setSaveState({ kind: 'saved', at: new Date() });
+      // Advance the saved snapshot to what we just persisted, so the guard reads
+      // clean immediately (independent of how the refetch serializes the body).
+      savedRef.current = { body, seo, propertyIds };
       setMessage('Saved.');
       router.refresh();
     });
@@ -343,8 +246,6 @@ export function EditEntryForm({
     });
   }
 
-  const lowerType = typeName.toLowerCase();
-
   async function handleDelete() {
     const ok = await confirm({
       title: `Delete this ${lowerType}?`,
@@ -388,7 +289,6 @@ export function EditEntryForm({
   const embedded = statusSlot !== undefined;
   const statusBarProps = {
     status,
-    saveState,
     pending,
     routable,
     entryId: id,
@@ -399,18 +299,6 @@ export function EditEntryForm({
     scheduledAt,
     onTogglePublish,
     onSchedule: () => setScheduleOpen(true),
-    onDiscardConflict: () => {
-      setSaveState({ kind: 'idle' });
-      router.refresh();
-    },
-    onKeepConflict: () => {
-      // Force save: drop the stale If-Match so the next PATCH wins over whatever the
-      // other tab wrote. Local edits stay.
-      etagRef.current = null;
-      setSaveState({ kind: 'idle' });
-      dirtyRef.current = true;
-      void runAutosave();
-    },
   };
 
   return (
@@ -437,9 +325,7 @@ export function EditEntryForm({
           <CardHeader>
             <Heading level={3}>Content</Heading>
             <CardDescription>
-              {AUTOSAVE_ENABLED
-                ? `The ${lowerType}'s fields. Autosaves every keystroke after a brief pause.`
-                : `The ${lowerType}'s fields. Edits are saved when you click Save changes.`}
+              The fields for this {lowerType}. Edits are saved when you click Save changes.
             </CardDescription>
           </CardHeader>
           <CardContent>

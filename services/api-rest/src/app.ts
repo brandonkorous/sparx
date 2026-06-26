@@ -72,6 +72,7 @@ import siteAnalyticsCronRoutes from './routes/internal/site-analytics-cron.js';
 import seoCronRoutes from './routes/internal/seo-cron.js';
 import inventoryCronRoutes from './routes/internal/inventory-cron.js';
 import channelsCronRoutes from './routes/internal/channels-cron.js';
+import marketCronRoutes from './routes/internal/market-cron.js';
 import acquisitionReportRoutes from './routes/internal/acquisition-report.js';
 import contentTypeRoutes from './routes/v1/content/types.js';
 import entryRoutes from './routes/v1/content/entries.js';
@@ -92,6 +93,7 @@ import sitemapRoutes from './routes/v1/sitemap.js';
 import rssRoutes from './routes/v1/rss.js';
 import publicContentRoutes from './routes/v1/public/content.js';
 import publicCommerceRoutes from './routes/v1/public/commerce.js';
+import publicMarketRoutes from './routes/v1/public/market.js';
 import publicSearchRoutes from './routes/v1/public/search.js';
 import publicCartRoutes from './routes/v1/public/cart.js';
 import publicCheckoutRoutes from './routes/v1/public/checkout.js';
@@ -126,6 +128,7 @@ import builderRoutes from './routes/v1/builder/index.js';
 import commerceRoutes from './routes/v1/commerce/index.js';
 import dropshipRoutes from './routes/v1/dropship/index.js';
 import inventoryRoutes from './routes/v1/inventory/index.js';
+import marketRoutes from './routes/v1/market/index.js';
 import channelRoutes from './routes/v1/channels/index.js';
 import schedulingRoutes from './routes/v1/scheduling/index.js';
 import tenantRoutes from './routes/v1/tenant.js';
@@ -742,6 +745,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(seoCronRoutes);
   await app.register(inventoryCronRoutes);
   await app.register(channelsCronRoutes);
+  await app.register(marketCronRoutes);
   await app.register(acquisitionReportRoutes);
 
   // v1 surface. Each route file owns its own URL prefix so this central
@@ -769,6 +773,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(publicSearchRoutes);
   await app.register(publicCartRoutes);
   await app.register(publicCheckoutRoutes);
+  await app.register(publicMarketRoutes);
   await app.register(publicReviewRoutes);
   await app.register(publicAccountRoutes);
   await app.register(publicB2bPortalRoutes);
@@ -803,6 +808,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(dropshipRoutes);
   await app.register(inventoryRoutes);
   await app.register(channelRoutes);
+  await app.register(marketRoutes);
   await app.register(schedulingRoutes);
   await app.register(tenantRoutes);
   await app.register(billingRoutes);

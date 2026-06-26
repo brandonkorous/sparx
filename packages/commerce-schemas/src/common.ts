@@ -24,7 +24,10 @@ export type SignedMoneyCents = z.infer<typeof SignedMoneyCents>;
 
 // Channel — every cart, order, subscription, and price list is scoped to
 // the surface it was created on. `admin` covers dashboard-manual entries
-// (sales reps), `mcp` covers AI-tool-driven writes.
+// (sales reps), `mcp` covers AI-tool-driven writes. `sparx_market` is the
+// first-party marketplace (docs/106 §4.7) — a cart/checkout on sparx.market,
+// where sparx is merchant-of-record (the order persists as channel='marketplace',
+// source='sparx_market').
 export const Channel = z.enum([
   'storefront',
   'b2b_portal',
@@ -32,6 +35,7 @@ export const Channel = z.enum([
   'subscription',
   'mcp',
   'import',
+  'sparx_market',
 ]);
 export type Channel = z.infer<typeof Channel>;
 

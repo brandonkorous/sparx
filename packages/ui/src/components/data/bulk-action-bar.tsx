@@ -9,7 +9,15 @@ import { cn } from '../../utils/cn';
 
 // BulkActionBar — slides up from the viewport bottom when 1+ rows are
 // selected. Destructive actions automatically gate on useConfirm (no external
-// state needed). Slides back down and unmounts when selection is cleared.
+// state needed). Slides back down + fades, then UNMOUNTS, when the selection
+// is cleared.
+//
+// Why unmount (not just fade): a `position: fixed` bar parked off-screen still
+// counts toward the document's scroll height — opacity/pointer-events only
+// affect painting + hit-testing, not layout/overflow — so an idle "hidden" bar
+// produces a phantom scrollbar + empty strip at the bottom of the page. The
+// only durable fix is to remove it from the DOM while idle. A short
+// mount→animate-in / animate-out→unmount cycle keeps both slide transitions.
 //
 // Usage:
 //   <BulkActionBar
@@ -43,8 +51,32 @@ export function BulkActionBar({ selected, onClear, actions, className }: BulkAct
   const confirm = useConfirm();
   const [activatingIndex, setActivatingIndex] = React.useState<number | null>(null);
 
-  const visible = selected.length > 0;
-  const count = selected.length;
+  const active = selected.length > 0;
+
+  // Mount only while there's a selection (plus a brief exit window so the
+  // slide-out animates before unmount). A `fixed` bar kept mounted in a
+  // translated "hidden" state is what expands the page's scroll height, so it
+  // must leave the DOM when idle — not merely fade. `shown` flips one frame
+  // after mount so the slide-in transition runs.
+  const [mounted, setMounted] = React.useState(active);
+  const [shown, setShown] = React.useState(false);
+
+  React.useEffect(() => {
+    if (active) {
+      setMounted(true);
+      const raf = requestAnimationFrame(() => setShown(true));
+      return () => cancelAnimationFrame(raf);
+    }
+    setShown(false);
+    const timer = window.setTimeout(() => setMounted(false), 200); // match duration-200
+    return () => window.clearTimeout(timer);
+  }, [active]);
+
+  // Freeze the count through the exit so the bar never flashes "0 selected"
+  // once the list clears the selection.
+  const lastCount = React.useRef(selected.length);
+  if (active) lastCount.current = selected.length;
+  const count = active ? selected.length : lastCount.current;
 
   async function handleAction(action: BulkAction, index: number) {
     if (action.requiresConfirm) {
@@ -69,14 +101,16 @@ export function BulkActionBar({ selected, onClear, actions, className }: BulkAct
     }
   }
 
+  if (!mounted) return null;
+
   return (
     <div
       role="toolbar"
       aria-label={`Bulk actions — ${count} selected`}
-      aria-hidden={!visible}
+      aria-hidden={!shown}
       className={cn(
         'fixed bottom-6 left-1/2 z-50 -translate-x-1/2 transition-all duration-200 ease-out',
-        visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-8 opacity-0',
+        shown ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-4 opacity-0',
         className
       )}
     >

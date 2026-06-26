@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@sparx/auth": "workspace:*",
+    "@sparx/channels": "workspace:*",
     "@sparx/commerce-schemas": "workspace:*",
     "@sparx/crm": "workspace:*",
     "@sparx/crm-schemas": "workspace:*",

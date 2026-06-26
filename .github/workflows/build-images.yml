@@ -42,6 +42,7 @@ jobs:
           - api-mcp
           - dashboard
           - site
+          - market # @sparx/market — the first-party sparx.market storefront (docs/106 §4.7)
           - media-worker
           - email-worker
           - push-worker

@@ -56,6 +56,16 @@ model Product {
   averageRating  Float?  @map("average_rating")
   reviewCount    Int     @default(0) @map("review_count")
 
+  // sparx.market product-graph opt-in (docs/106 §4.7, docs/72 §2). A product opts
+  // ITSELF into the first-party marketplace; the global MarketListing projection
+  // (80-market.prisma) is derived from `marketListed && status='active' &&
+  // marketApproved` by the channel-sync-worker. `marketApproved` lets sparx delist
+  // a policy-violating product without the merchant un-listing it.
+  marketListed   Boolean @default(false) @map("market_listed")
+  marketCategory String? @map("market_category") @db.VarChar(50)
+  marketFeatured Boolean @default(false) @map("market_featured")
+  marketApproved Boolean @default(true) @map("market_approved")
+
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt   DateTime? @map("deleted_at") @db.Timestamptz

@@ -15,3 +15,4 @@ resources:
   - search-console-sync.yaml
   - inventory-valuation-snapshot.yaml
   - channel-order-poll.yaml
+  - market-settlement.yaml

@@ -39,6 +39,10 @@ export {
   type ChannelOrderIngestResult,
 } from './channel-order-ingest';
 
+// sparx.market (docs/106 §4.7) — the first-party marketplace: product opt-in +
+// projection, merchant profile/payout, public cross-tenant browse, settlement.
+export * as marketService from './market';
+
 export * as subscriptionService from './subscription-service';
 export * as shippingService from './shipping-service';
 export * as taxService from './tax-service';

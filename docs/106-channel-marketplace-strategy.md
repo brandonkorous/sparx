@@ -1,8 +1,8 @@
 # sparx Platform — Channel & Marketplace Integration Strategy + Build Plan
 
-**Version:** 1.4
+**Version:** 1.6
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-25
+**Last Updated:** 2026-06-26
 
 > **Implementation status (2026-06-25):** **P0 framework + P1 feed channels + P2 first order channel
 > (TikTok Shop) are BUILT.** P0/P1: the `@sparx/channels` adapter contract + registry, the
@@ -40,12 +40,42 @@
 > OAuth2 plus a webhook HMAC, and Walmart client-credentials (per-seller / Solution-Provider keys, not
 > redirect OAuth).
 >
-> Every channel is gated `coming_soon` at runtime until its platform OAuth app is approved and its
+> **P4 Amazon (Selling Partner API) is now BUILT (2026-06-26).** One order-shape `AmazonAdapter` on the
+> same framework — and it dropped into the proven seams with NO framework changes. Outbound (catalog /
+> inventory / fulfillment) goes through the **Feeds API** (the product, inventory-availability, and
+> order-fulfillment feeds), which is token-scoped — so it needs no
+> `selling_partner_id` in any path, sidestepping the one Amazon wrinkle the OAuth callback would
+> otherwise force into the framework. Inbound is **poll-based** (it reuses the P3 `channel-order-poll`
+> CronJob via `fetchOrders`): the Orders API with a `CreatedAfter` cursor, plus a **Restricted Data
+> Token** per order to read the buyer PII + shipping address (Amazon's restricted-PII path). Auth is LWA
+> (Login with Amazon) — no AWS SigV4 (Amazon retired the signing requirement). Regional host + marketplace
+> ride the connection params. SQS/EventBridge order notifications are a documented future optimization;
+> polling is correct + complete for v1. Amazon is additionally gated on Amazon's **restricted-PII security
+> audit**, not just app approval.
+>
+> **P5 sparx.market (the first-party channel) is now BUILT (2026-06-26).** It dropped onto the proven
+> spine: a new `apps/market` storefront (a single-host public Next.js app reading a GLOBAL, cross-tenant
+> `market_listings` / `market_merchants` Postgres projection — same global-read / tenant-write RLS as
+> `channel_shop_links`, no Typesense), a product-graph opt-in (`market_listed` / `market_category` on
+> products, projected synchronously), and a **merchant-of-record** checkout that REUSES the existing
+> checkout state machine via a bounded `channel = 'sparx_market'` branch — the charge is a DIRECT charge
+> on sparx's OWN platform Stripe account (no Connect transfer), and a `MarketSettlement` accrual is
+> recorded atomically with the order. A **weekly settlement run** (a GKE CronJob hitting an internal
+> settle endpoint) rolls each tenant's accrued sales into one ACH payout via a pluggable
+> `MarketPayoutProvider` seam (the working default records the run for out-of-band ACH; an automated rail
+> plugs in at go-live) and emails a settlement report. Commission is a **flat platform rate in basis
+> points with a per-tenant override — NOT a plan tier** (the platform has modules, not tiers; this
+> corrects docs/72's plan-tiered table). sparx.market registers as a `first_party` ChannelAdapter, so it
+> rolls into the same Settings → Channels surface + revenue analytics as every external channel.
+>
+> Every external channel is gated `coming_soon` at runtime until its platform OAuth app is approved and its
 > credentials are set in env (Google reuses the Search-Console client; the rest need their own) — it then
 > flips `available` with no code change. Live end-to-end OAuth + push is unverifiable until those partner
-> apps are approved; the code is complete and typecheck-green. **Next: file the P3 partner apps (Etsy
-> commercial app, Walmart Marketplace / Solution Provider, eBay developer, Faire partner); P4 = Amazon
-> (its own track).**
+> apps are approved; the code is complete and typecheck-green. sparx.market flips `available` the instant
+> ops sets `MARKET_ENABLED=true` (the storefront is deployed + the platform Stripe account is ready).
+> **Next: file the P3 + P4 partner apps (Etsy commercial app, Walmart Marketplace / Solution Provider,
+> eBay developer, Faire partner, Amazon SP-API + the restricted-PII audit); pick the sparx.market ACH
+> disbursement rail (Stripe Treasury / Connect-Custom / a third-party ACH provider) for the payout seam.**
 
 ---
 
@@ -293,19 +323,40 @@ expiry) before each push.
 ### 4.7 sparx.market as a first-party channel (C1)
 
 sparx.market reuses everything above with two differences: orders are **born in sparx** (not ingested),
-and sparx is **merchant-of-record**. Concretely:
+and sparx is **merchant-of-record**. Concretely (**as built, 2026-06-26**):
 
-- The product opt-in (`public_listing`, `market_category` from [docs/72](archive/72-sparx-market-architecture.md))
-  is the channel's "is this product on the channel" toggle — same model as `channel_product_mappings`.
-- Checkout runs through **sparx's own Stripe account**; orders write `source = 'sparx_market'` on the
-  same order spine and decrement the same ledger.
-- A **settlement worker** computes `sales − commission − chargebacks` and ACH-transfers to the tenant
-  weekly, emitting a settlement report (Postal/Mailgun) — the one net-new subsystem sparx.market needs.
-- `apps/market` (the public shopping destination) is a new Next.js app; the `/market` route on apps/web
-  today is the **add-on** marketplace (docs/60), a different surface — do not conflate.
+- The product opt-in is `market_listed` / `market_category` / `market_featured` / `market_approved` on
+  `commerce_products` (the `public_listing` naming in [docs/72](archive/72-sparx-market-architecture.md) §2
+  was renamed `market_listed` for namespace consistency). `market_approved` lets sparx delist a
+  policy-violating product without the merchant un-listing it.
+- The public storefront is **cross-tenant**, but products + merchant identity live in FORCE-RLS tenant
+  tables it cannot read. So eligible products + merchants are projected into two **GLOBAL** tables —
+  `market_listings` (catalog card, product grain) + `market_merchants` (directory, tenant grain) — with
+  **cross-tenant SELECT / tenant-scoped write** RLS, exactly the `channel_shop_links` pattern (§4.4). Search
+  is Postgres FTS (a generated `search_tsv` + GIN index), not Typesense (Phase-1 infra rule). Projection is
+  synchronous from the merchant-driven mutations (a product appears the moment it is listed), with a
+  best-effort refresh in `commerce-indexer` on background product/inventory drift.
+- Checkout runs through **sparx's own platform Stripe account** as a DIRECT charge (no Connect
+  `on_behalf_of` / `transfer_data` — the seller is settled by ACH, separately). It REUSES the existing
+  checkout state machine via a bounded `channel = 'sparx_market'` branch (gateway swap + a settlement
+  accrual on complete), so it inherits real shipping/tax/totals/idempotency. Orders persist as
+  `channel = 'marketplace'`, `source = 'sparx_market'` on the same order spine and decrement the same ledger.
+- A **weekly settlement run** (a GKE CronJob → `POST /internal/market/settle`, mirroring the channel-poll
+  cron) rolls each tenant's `accrued` `MarketSettlement` rows into one `MarketSettlementRun`, disburses the
+  net via a pluggable `MarketPayoutProvider` seam (the working default records the run for out-of-band ACH;
+  a Stripe Treasury / Connect-Custom / third-party rail plugs in at go-live, gated on
+  `MARKET_PAYOUTS_PROVIDER`), and emails a `market-settlement-report` (the standard `email.send` →
+  email-worker path). Bank details are AES-256-GCM ciphertext (the `@sparx/channels/crypto` box).
+- **Commission is a flat platform rate in basis points** (`MARKET_COMMISSION_BPS`, default 200 = 2%) **with
+  an optional per-tenant override** (the "Enterprise: negotiated" case) — **NOT a plan tier**. This
+  corrects docs/72 §4's plan-tiered commission table: the platform has modules, not subscription tiers
+  ([[feedback_modules_not_plans]]), and `tenant.plan` is deprecated/never-read.
+- `apps/market` (the public shopping destination, `sparx.market`) is a new Next.js app (GKE Deployment +
+  Caddy host-match); the `/market` route on apps/web is the **add-on** marketplace (docs/60), a different
+  surface — do not conflate.
 
-Shipping sparx.market last means the order spine, inventory push, and analytics breakdown are already
-battle-tested by the external channels before sparx puts its own name on the merchant-of-record line.
+Shipping sparx.market last means the order spine, inventory push, and analytics breakdown were already
+battle-tested by the external channels before sparx put its own name on the merchant-of-record line.
 
 ---
 
@@ -341,14 +392,14 @@ seam.
 Each phase is independently deployable (deploy-early); the whole surface is committed (phases are a
 deploy order, not a scope cut).
 
-| Phase     | Theme                                  | Ships                                                                                                                                                                            | Gated on            |
-| --------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
-| **P0**    | Framework                              | `@sparx/channels` + registry; `channel-sync-worker`; data-model deltas (§4.4); marketplace `shape` discriminator; OAuth/secrets wiring; channels dashboard (Settings → Channels) | —                   |
-| **P1**    | Feed channels                          | Google Shopping (auto-enroll), Meta catalog feed, Pinterest — catalog-out, no order ingest                                                                                       | P0                  |
-| **P2**    | First order channel — **TikTok Shop**  | Full bidirectional loop: connect → catalog sync → order ingest → fulfillment push → inventory sync → analytics ([docs/27](27-tiktok-shop-integration.md))                        | P0 (+ inventory ✅) |
-| **P3** ✅ | Order-channel breadth                  | Etsy, Walmart, eBay, Faire — each an adapter on the proven framework + the **polling ingest path** (the three webhook-less channels) **— BUILT 2026-06-25**                      | P2                  |
-| **P4**    | **Amazon**                             | SP-API + PII audit + category attributes + FBA/FBM — its own track                                                                                                               | P2                  |
-| **P5**    | **sparx.market** (first-party channel) | `apps/market` destination + product-graph opt-in + sparx-MoR checkout + weekly ACH settlement worker                                                                             | P2 (proven spine)   |
+| Phase     | Theme                                  | Ships                                                                                                                                                                                                                  | Gated on            |
+| --------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| **P0**    | Framework                              | `@sparx/channels` + registry; `channel-sync-worker`; data-model deltas (§4.4); marketplace `shape` discriminator; OAuth/secrets wiring; channels dashboard (Settings → Channels)                                       | —                   |
+| **P1**    | Feed channels                          | Google Shopping (auto-enroll), Meta catalog feed, Pinterest — catalog-out, no order ingest                                                                                                                             | P0                  |
+| **P2**    | First order channel — **TikTok Shop**  | Full bidirectional loop: connect → catalog sync → order ingest → fulfillment push → inventory sync → analytics ([docs/27](27-tiktok-shop-integration.md))                                                              | P0 (+ inventory ✅) |
+| **P3** ✅ | Order-channel breadth                  | Etsy, Walmart, eBay, Faire — each an adapter on the proven framework + the **polling ingest path** (the three webhook-less channels) **— BUILT 2026-06-25**                                                            | P2                  |
+| **P4** ✅ | **Amazon**                             | SP-API on the framework — LWA auth, **Feeds API** outbound (no seller-id), Orders-API **poll + Restricted Data Token** inbound (reuses the P3 poll cron). **BUILT 2026-06-26**; live-gated on the restricted-PII audit | P2                  |
+| **P5** ✅ | **sparx.market** (first-party channel) | `apps/market` destination + product-graph opt-in + sparx-MoR checkout + weekly ACH settlement run. **BUILT 2026-06-26**; live-gated on `MARKET_ENABLED` + a chosen ACH disbursement rail                               | P2 (proven spine)   |
 
 **Deploy gates:** P0 — connect a sandbox channel, see it in Settings → Channels. P1 — a product appears
 in Google Shopping / Meta catalog within the feed SLA. P2 — place a TikTok test order → sparx order

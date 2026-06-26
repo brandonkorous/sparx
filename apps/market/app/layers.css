@@ -1,0 +1,18 @@
+/* Cascade-layer ORDER — must be the first stylesheet the marketplace loads.
+ *
+ * CSS layer precedence is set by the order in which layer names are FIRST seen.
+ * `@sparx/ui` compiles its component rules into `@layer components`. The
+ * marketplace's own semantic chrome classes (`mx-*`) live in `@layer
+ * mx-components`, which we register ABOVE `components` so they can layer on top
+ * of (and intentionally override) the shared @sparx/ui component styles, while
+ * `mx-base` sits just above Tailwind `base` so the marketplace's element
+ * defaults beat preflight without fighting tokens.
+ *
+ * Token `:root` blocks (from @sparx/ui/tokens.css) are UNLAYERED, so this order
+ * never touches them — the sparx brand tokens always win.
+ *
+ * This lives in its own plain-CSS file (NOT globals.css) because globals.css is
+ * the Tailwind v4 entry — Tailwind's compiler rewrites the top-level `@layer`
+ * statement to its own canonical `theme, base, components, utilities`, dropping
+ * any custom order declared there. A standalone file imported first survives. */
+@layer theme, base, mx-base, components, mx-components, utilities;

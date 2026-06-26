@@ -51,3 +51,7 @@ export * from './returns';
 
 // Phase 8 — storefront-level settings + theme.
 export * from './site';
+
+// sparx.market — the first-party marketplace (docs/106 §4.7): category taxonomy,
+// flat commission model, and every market write/browse surface.
+export * from './market';

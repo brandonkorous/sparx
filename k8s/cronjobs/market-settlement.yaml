@@ -1,0 +1,69 @@
+# Weekly sparx.market settlement run (docs/106 §4.7, docs/72 §4). For every
+# commerce-active tenant, rolls its accrued sparx.market sales into one settlement
+# run, disburses the net via the configured payout rail (or leaves it pending for
+# manual ACH), and emails the settlement report.
+#
+# Mondays at 09:00 UTC — a weekly cadence (the doc's "every Monday"); marketplace
+# payout SLAs are weekly, not real-time. Forbid concurrency so a slow run (it loops
+# every tenant + sends email events) can't pile up. computeSettlementRun only ever
+# sweeps `accrued` rows, so a re-run finds nothing left — idempotent in effect. A
+# no-op (and free) for any tenant with no sparx.market sales that week.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: market-settlement
+  namespace: sparx-prod
+  labels:
+    app: market-cron
+    job: market-settlement
+spec:
+  schedule: '0 9 * * 1'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      ttlSecondsAfterFinished: 86400
+      template:
+        metadata:
+          labels:
+            app: market-cron
+            job: market-settlement
+        spec:
+          serviceAccountName: sparx-app
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 540
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://api-rest.sparx-prod.svc.cluster.local:3000/internal/market/settle
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '25m'
+                  memory: '16Mi'
+                limits:
+                  cpu: '100m'
+                  memory: '32Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

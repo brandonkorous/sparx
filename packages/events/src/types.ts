@@ -263,7 +263,8 @@ export interface EmailSendPayload {
     | 'password-reset'
     | 'welcome-merchant'
     | 'email-verification'
-    | 'domain-renewal-reminder';
+    | 'domain-renewal-reminder'
+    | 'market-settlement-report';
   /** Shape is enforced by @sparx/email's TemplateSend.props on render. */
   props: Record<string, unknown>;
   /** Optional From override; defaults to SPARX_EMAIL_FROM env in worker. */

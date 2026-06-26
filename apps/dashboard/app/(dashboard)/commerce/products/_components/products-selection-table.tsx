@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Archive, DollarSign, Trash2 } from 'lucide-react';
+import { Archive, DollarSign, ShoppingBag, Store, Trash2 } from 'lucide-react';
 import {
   Badge,
   type BulkAction,
@@ -17,10 +17,12 @@ import {
 
 import {
   archiveProductAction,
+  bulkSetProductMarketStateAction,
   bulkUpdateProductStatusAction,
   deleteProductAction,
 } from '../../product-actions';
 import { EntityRowLink } from '../../../_components/entity-row-link';
+import { BulkMarketListModal } from './bulk-market-list-modal';
 import { BulkPriceAdjustModal } from './bulk-price-adjust-modal';
 
 // Products table/grid — selection + bulk actions on top of the shared
@@ -48,6 +50,8 @@ interface ProductsSelectionTableProps {
 export function ProductsSelectionTable({ products, view }: ProductsSelectionTableProps) {
   const [priceModalOpen, setPriceModalOpen] = React.useState(false);
   const [priceTargetIds, setPriceTargetIds] = React.useState<string[]>([]);
+  const [marketModalOpen, setMarketModalOpen] = React.useState(false);
+  const [marketTargetIds, setMarketTargetIds] = React.useState<string[]>([]);
 
   const bulkActions: BulkAction[] = [
     {
@@ -85,6 +89,37 @@ export function ProductsSelectionTable({ products, view }: ProductsSelectionTabl
         setPriceTargetIds(ids);
         setPriceModalOpen(true);
         return Promise.resolve();
+      },
+    },
+    {
+      label: 'List on sparx.market',
+      icon: ShoppingBag,
+      onAction: (ids) => {
+        // Listing needs a category for the selection, so it opens a picker
+        // modal rather than firing immediately.
+        setMarketTargetIds(ids);
+        setMarketModalOpen(true);
+        return Promise.resolve();
+      },
+    },
+    {
+      label: 'Remove from sparx.market',
+      icon: Store,
+      requiresConfirm: true,
+      confirmLabel:
+        'Remove {count} product(s) from sparx.market? They’ll disappear from the marketplace immediately. The products themselves are untouched.',
+      onAction: async (ids) => {
+        const res = await bulkSetProductMarketStateAction({ productIds: ids, listed: false });
+        if (!res.ok) {
+          toast.error('Could not remove products from sparx.market', {
+            description: res.error.message,
+          });
+          return;
+        }
+        const n = res.data.updated;
+        toast.success(
+          n === 1 ? 'Product removed from sparx.market' : `${n} products removed from sparx.market`
+        );
       },
     },
     {
@@ -235,12 +270,20 @@ export function ProductsSelectionTable({ products, view }: ProductsSelectionTabl
       card={card}
       bulkActions={bulkActions}
       renderAfter={({ selected }) => (
-        <BulkPriceAdjustModal
-          open={priceModalOpen}
-          onOpenChange={setPriceModalOpen}
-          productIds={priceModalOpen ? priceTargetIds : selected}
-          onApplied={() => setPriceModalOpen(false)}
-        />
+        <>
+          <BulkPriceAdjustModal
+            open={priceModalOpen}
+            onOpenChange={setPriceModalOpen}
+            productIds={priceModalOpen ? priceTargetIds : selected}
+            onApplied={() => setPriceModalOpen(false)}
+          />
+          <BulkMarketListModal
+            open={marketModalOpen}
+            onOpenChange={setMarketModalOpen}
+            productIds={marketModalOpen ? marketTargetIds : selected}
+            onListed={() => setMarketModalOpen(false)}
+          />
+        </>
       )}
     />
   );

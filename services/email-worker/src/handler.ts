@@ -113,6 +113,24 @@ const TemplateSendSchema = z.discriminatedUnion('template', [
       })
     ),
   }),
+  z.object({
+    template: z.literal('market-settlement-report'),
+    ...TemplateMeta,
+    props: z.object({
+      merchantName: z.string().min(1),
+      periodLabel: z.string().min(1),
+      orderCount: z.number().int().nonnegative(),
+      currency: z.string().min(1),
+      grossCents: z.number().int().nonnegative(),
+      commissionCents: z.number().int().nonnegative(),
+      commissionRateLabel: z.string(),
+      refundCents: z.number().int().nonnegative(),
+      netCents: z.number().int(),
+      payoutDestination: z.string(),
+      pendingBankAccount: z.boolean(),
+      settlementUrl: z.string().url(),
+    }),
+  }),
 ]);
 
 // Pre-rendered "raw" send — used by broadcasts (render once, send to many) and

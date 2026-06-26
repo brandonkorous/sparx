@@ -62,7 +62,7 @@ export async function ContentEntryDetailContent({
   const [entryResult, tenant, sites] = await Promise.all([
     (async () => {
       try {
-        return await api.getWithEtag<ApiEntry>(`/v1/content/entries/${entryId}`);
+        return await api.get<ApiEntry>(`/v1/content/entries/${entryId}`);
       } catch (err) {
         const e = err as ApiRestError;
         if (e?.status === 404) notFound();
@@ -72,8 +72,7 @@ export async function ContentEntryDetailContent({
     api.get<{ slug: string }>('/v1/tenant'),
     listProperties().catch(() => [] as Property[]),
   ]);
-  const entry = entryResult.data;
-  const initialEtag = entryResult.etag;
+  const entry = entryResult;
 
   let type: ApiContentType;
   try {
@@ -152,7 +151,6 @@ export async function ContentEntryDetailContent({
     initialStatus: entry.status,
     publishedAt: entry.published_at ? new Date(entry.published_at) : null,
     scheduledAt: entry.scheduled_at ? new Date(entry.scheduled_at) : null,
-    initialEtag,
     tenantSlug: tenant?.slug ?? null,
     templateOptions,
     currentTemplateId,

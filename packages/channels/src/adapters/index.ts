@@ -18,6 +18,8 @@ import { EtsyAdapter } from './etsy.js';
 import { WalmartAdapter } from './walmart.js';
 import { EbayAdapter } from './ebay.js';
 import { FaireAdapter } from './faire.js';
+import { AmazonAdapter } from './amazon.js';
+import { SparxMarketAdapter } from './sparx-market.js';
 
 let registered = false;
 
@@ -36,6 +38,8 @@ export function registerBuiltinChannels(): void {
     new WalmartAdapter(),
     new EbayAdapter(),
     new FaireAdapter(),
+    new AmazonAdapter(),
+    new SparxMarketAdapter(),
   ];
   for (const adapter of adapters) {
     if (!hasChannel(adapter.id)) registerChannel(adapter);
@@ -51,3 +55,5 @@ export { EtsyAdapter } from './etsy.js';
 export { WalmartAdapter } from './walmart.js';
 export { EbayAdapter } from './ebay.js';
 export { FaireAdapter } from './faire.js';
+export { AmazonAdapter } from './amazon.js';
+export { SparxMarketAdapter } from './sparx-market.js';

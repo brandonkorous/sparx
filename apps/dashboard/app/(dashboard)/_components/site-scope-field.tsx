@@ -43,6 +43,7 @@ export function SiteScopeField({
       <div className="flex items-center gap-2">
         <Checkbox
           id={`${baseId}-all`}
+          color="module"
           checked={allSites}
           onCheckedChange={(c) => {
             // Checking "All sites" clears the specific selection; unchecking is a
@@ -58,6 +59,7 @@ export function SiteScopeField({
         <div key={s.id} className="flex items-center gap-2 pl-5">
           <Checkbox
             id={`${baseId}-${s.id}`}
+            color="module"
             checked={value.includes(s.id)}
             onCheckedChange={(c) => toggle(s.id, c === true)}
           />

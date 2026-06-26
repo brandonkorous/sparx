@@ -56,6 +56,10 @@ COPY packages/payments ./packages/payments
 # MCP tools call it), so the inventory package must be in the image. Its workspace
 # deps (@sparx/db, @sparx/commerce-schemas, @sparx/events) are all copied above.
 COPY packages/inventory ./packages/inventory
+# @sparx/commerce's market services (docs/106 §4.7) import @sparx/channels/crypto at
+# module load (payout-account encryption), so channels must be in the image. It is
+# dep-free (node builtins only). Omitting it would crashloop on '@sparx/channels'.
+COPY packages/channels ./packages/channels
 COPY packages/commerce ./packages/commerce
 COPY packages/crm-schemas ./packages/crm-schemas
 COPY packages/crm ./packages/crm

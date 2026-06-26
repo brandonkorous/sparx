@@ -174,6 +174,12 @@ const EnvSchema = z
     //                                 on authorize/exchange when set). Poll ingest.
     //   FAIRE_CLIENT_ID / _SECRET   — the Faire partner app. FAIRE_WEBHOOK_SECRET signs
     //                                 the order webhook (Faire ingests by webhook + poll).
+    //   AMAZON_LWA_CLIENT_ID/_SECRET — the Login-with-Amazon app (SP-API token). AMAZON_SP_APP_ID
+    //                                 is the SP-API application id for the Seller Central consent
+    //                                 URL; AMAZON_MARKETPLACE_ID / AMAZON_REGION default the
+    //                                 marketplace + regional host. Order ingest is poll-based
+    //                                 (Orders API + a Restricted Data Token for buyer PII); gated
+    //                                 additionally on Amazon's restricted-PII security audit.
     CHANNELS_TOKEN_KEY: z.string().optional(),
     META_APP_ID: z.string().optional(),
     META_APP_SECRET: z.string().optional(),
@@ -192,6 +198,23 @@ const EnvSchema = z
     FAIRE_CLIENT_ID: z.string().optional(),
     FAIRE_CLIENT_SECRET: z.string().optional(),
     FAIRE_WEBHOOK_SECRET: z.string().optional(),
+    AMAZON_LWA_CLIENT_ID: z.string().optional(),
+    AMAZON_LWA_CLIENT_SECRET: z.string().optional(),
+    AMAZON_SP_APP_ID: z.string().optional(),
+    AMAZON_MARKETPLACE_ID: z.string().optional(),
+    AMAZON_REGION: z.string().optional(),
+    // sparx.market (docs/106 §4.7) — the first-party marketplace. MARKET_ENABLED
+    // ('true') flips the channel `available` at runtime (the apps/market storefront
+    // is deployed + the platform Stripe account is ready). MARKET_COMMISSION_BPS is
+    // the flat platform commission in basis points (default 200 = 2%); a per-tenant
+    // override on the merchant profile wins. MARKET_PAYOUTS_PROVIDER selects the ACH
+    // disbursement rail (defaults to manual / out-of-band). SPARX_DASHBOARD_URL is
+    // the base for settlement-report email links. The MoR checkout reuses the
+    // platform STRIPE_SECRET_KEY (above) + CHANNELS_TOKEN_KEY (payout encryption).
+    MARKET_ENABLED: z.string().optional(),
+    MARKET_COMMISSION_BPS: z.string().optional(),
+    MARKET_PAYOUTS_PROVIDER: z.string().optional(),
+    SPARX_DASHBOARD_URL: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     // GCS mode requires both buckets — the public one holds variants,

@@ -14,23 +14,31 @@ import type { ReversibleOp } from '../_lib/bulk-price-types';
 
 export function BulkPriceRevertBanner({ op }: { op: ReversibleOp }) {
   const expiresMs = new Date(op.expiresAt).getTime();
-  const [remaining, setRemaining] = React.useState(() => Math.max(0, expiresMs - Date.now()));
+  // `remaining` stays null until after mount. Computing `Date.now()` during
+  // render diverges between the server (SSR clock) and the client (hydration a
+  // few seconds later), which trips React's hydration check — so the live
+  // countdown is filled in by the post-mount tick, with a stable "—"
+  // placeholder rendered identically on the server and the first client paint.
+  const [remaining, setRemaining] = React.useState<number | null>(null);
   const [busy, setBusy] = React.useState(false);
   const [done, setDone] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    const id = window.setInterval(() => {
-      setRemaining(Math.max(0, expiresMs - Date.now()));
-    }, 1000);
+    const tick = () => setRemaining(Math.max(0, expiresMs - Date.now()));
+    tick();
+    const id = window.setInterval(tick, 1000);
     return () => window.clearInterval(id);
   }, [expiresMs]);
 
-  if (done || remaining <= 0) return null;
+  if (done || remaining === 0) return null;
 
-  const mins = Math.floor(remaining / 60000);
-  const secs = Math.floor((remaining % 60000) / 1000);
-  const countdown = `${mins}:${secs.toString().padStart(2, '0')}`;
+  const countdown =
+    remaining === null
+      ? '—'
+      : `${Math.floor(remaining / 60000)}:${Math.floor((remaining % 60000) / 1000)
+          .toString()
+          .padStart(2, '0')}`;
 
   async function undo() {
     setBusy(true);

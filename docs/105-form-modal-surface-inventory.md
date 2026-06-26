@@ -1,8 +1,8 @@
 # Form & Modal Surface Inventory
 
-Version: 1.8
+Version: 1.9
 Author: Brandon Korous
-Last Updated: 2026-06-25
+Last Updated: 2026-06-26
 
 A complete census of every **form, create/edit flow, and modal/dialog** in the dashboard app
 (`apps/dashboard/app`), with each one's current presentation and the work needed to bring it onto
@@ -238,10 +238,19 @@ along. Two gaps the first pass missed:
     `supplier-create` / `supplier-edit` / `warehouse-edit`, `cms/media` edit, `cms/authors` edit — each
     computes `dirty` (controlled state, or a `formRef` + `onInput` recompute for uncontrolled FormData forms)
     and calls `useUnsavedGuard`. Inline edit bodies with no Cancel rely on the now-guarded back-link / switch.
-  - **Still to wire (careful pass, NOT mechanical):** the CMS **autosave** editors `cms/[id]/edit-form` +
-    `cms/types/[typeKey]/[id]/edit-entry-form` — their autosave + conflict-resolution machinery wants a
-    deliberate pass, not a `useUnsavedGuard` drop-in (and autosave reduces the loss risk in the interim).
-    Read-only tabbed details (customer activity/orders, etc.) need no guard (no editable panel registers).
+  - **✅ CMS editors wired — autosave REMOVED (2026-06-26).** Autosave was never consistent with the rest
+    of the platform, so it was deleted end-to-end rather than guarded around: the two editors
+    (`cms/[id]/edit-form`, `cms/types/[typeKey]/[id]/edit-entry-form`) are now plain explicit-save
+    (last-write-wins) and each wires `useUnsavedGuard`. Removed with it: the `autosavePage` / `autosaveEntry`
+    server actions, the `entry-status-bar` `SaveState` + conflict CTA, the `initialEtag` loaders, the
+    `NEXT_PUBLIC_CMS_AUTOSAVE` flag, and `cms-autosave.spec.ts`. The entry editor's explicit save also drops
+    its ETag conflict detection (no other editor had it — last-write-wins is the norm; the generic
+    `patchWithEtag`/`getWithEtag` client methods stay, just unused by CMS). **Dirty is RENDER-COMPUTED**
+    (compare current fields vs a saved-snapshot ref advanced on each Save) — NOT an effect: a "skip first
+    render" ref flips dirty spuriously under StrictMode's dev double-invoke (caught on screen — a clean open
+    falsely prompted), and a value-compare also ignores the block editor's on-mount normalization. Verified
+    on screen (both editors): clean close = no prompt, dirty close = discard dialog, hard Save persists + the
+    list updates. Read-only tabbed details (customer activity/orders, etc.) need no guard.
 - ✅ **BUILT — Full-page presentation switch (drawer/modal parity).** The overlay host (`DetailHeader`)
   offers Close/Switch/Maximize; the `embedded` full page had none. Added a generic **`headerActions`** slot
   to `SurfaceFrame`'s embedded title strip + a shared `DetailPresentationSwitch` (in `detail-panel.tsx`)
@@ -263,7 +272,10 @@ along. Two gaps the first pass missed:
   `Input`/`NativeSelect`/`Textarea` → their DOM elements) under `settings['jsx-a11y'].components`, so
   `jsx-a11y/label-has-associated-control` resolves a `<Label>` wrapping a themed control (the native control
   is nested at runtime) — same approach `apps/site` already uses for its `Sparx*` components. 0 lint errors
-  across dashboard/site/web after the sweep. _Reference: `collection-create-form`._
+  across dashboard/site/web after the sweep. **Follow-up (2026-06-26):** `_components/site-scope-field` (the
+  multi-site "Visible on sites" control on the page + entry editors) already used the themed `Checkbox` but
+  without the module accent — now `color="module"`, so it reads in the active module hue like every other
+  checkbox. _Reference: `collection-create-form`._
 - ✅ **BUILT — Detail header-slot teleport + `DetailPageShell` + identity-once.** A detail body declares its
   header content (status + lifecycle actions) ONCE via `<DetailHeaderSlot>` (children-based portal,
   `_components/detail-header-slot.tsx`) and it renders in whichever frame is active — the drawer/modal
@@ -274,22 +286,18 @@ along. Two gaps the first pass missed:
   read-only/transaction details keep their heading since they have no name field); and **lifecycle in the
   header, not an in-body "Status" card** — status badge + primary action keep text, secondary actions go
   icon-only with tooltips (docs/86 §5.1, docs/34 §4). _Built 2026-06-25 (product, collection, cms page, cms entry)._
-- **DECIDED — CMS editors are explicit-save only.** `cms/[id]/edit-form.tsx` + `cms/types/[typeKey]/[id]/`
-  `edit-entry-form.tsx` had per-keystroke autosave; it's now OFF behind `NEXT_PUBLIC_CMS_AUTOSAVE` (unset ⇒
-  off) so the Save button is the single mechanism, consistent with every other editor. The machinery stays
-  behind the flag; the future direction is one unified platform-wide autosave that DROPS the Save buttons
-  (not kept alongside). _Decided 2026-06-25._
-- **PARTIAL — leave-guard rollout: create forms + wizards DONE; some EDIT detail bodies remain.** The
-  create/wizard rollout above closed the bulk (the surfaces that silently dropped typed work on an
-  accidental close). **Still to wire (`useUnsavedGuard`, the same one-call adopter):** the single-form edit
-  detail bodies that hand-roll their own `cancel` — `commerce/providers/install/.../install-provider-form`
-  (FormData), `commerce/bundles/.../bundle-editor` (its create/edit paths), `cms/authors/[id]/author-edit-form`,
-  `cms/media/[id]/edit-form`. **Deferred (not a plain hook adoption):** the **tabbed-detail panels**
-  (`collection-meta-form` and peers) — guarding them needs the guard to extend to tabbed details (the
-  full-page tabbed detail isn't wrapped in `UnsavedGuardProvider`); and the **CMS autosave editors**
-  (`cms/[id]/edit-form`, `cms/types/[typeKey]/[id]/edit-entry-form`) — with autosave OFF behind the flag they
-  should adopt the guard, but their conflict/autosave machinery wants a careful pass, not a mechanical wire.
-  _Updated 2026-06-25._
+- **DONE — CMS editors are explicit-save only; autosave REMOVED.** `cms/[id]/edit-form.tsx` +
+  `cms/types/[typeKey]/[id]/edit-entry-form.tsx` had per-keystroke autosave behind `NEXT_PUBLIC_CMS_AUTOSAVE`;
+  the flag + all the autosave/ETag/conflict machinery are now deleted (it was never consistent with the rest
+  of the platform). One Save button, last-write-wins, like every other editor. See the leave-guard platform
+  entry above for the full removal list + the StrictMode dirty-tracking footgun. _Decided 2026-06-25; removed
+  2026-06-26._
+- **DONE (one minor edit body remains) — leave-guard rollout.** Create forms + wizards, the edit detail
+  bodies (`bundle-editor`, inventory supplier/warehouse, `cms/media`, `cms/authors`), the tabbed-detail
+  panels (collection + product, via `GuardedTabs`), and the CMS page/entry editors (above) all register
+  `useUnsavedGuard`. **Lone remaining:** `commerce/providers/install/.../install-provider-form` (a FormData
+  edit body that hand-rolls its own `cancel`) — same one-call `useUnsavedGuard` adoption as the others, just
+  not done yet. _Updated 2026-06-26._
 
 ---
 

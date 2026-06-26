@@ -214,6 +214,7 @@ jobs:
             sparx-internal-cron-token
             stripe-secret-key
             stripe-webhook-secret
+            channels-token-key
             godaddy-api-key-ote
             godaddy-api-secret-ote
             godaddy-api-key-prod

@@ -45,6 +45,17 @@ export { normalizeStripeEvent } from './stripe-util';
 export { SparxPayGateway, SPARX_PAY_ID } from './gateways/sparx-pay';
 export { StripeDirectGateway, STRIPE_DIRECT_ID } from './gateways/stripe-direct';
 
+// sparx.market — merchant-of-record direct platform charges (docs/106 §4.7).
+export {
+  SPARX_MARKET_GATEWAY_ID,
+  MarketPaymentsUnconfiguredError,
+  createMarketPaymentIntent,
+  retrieveMarketPaymentIntent,
+  refundMarketPayment,
+  type CreateMarketPaymentIntentParams,
+  type RefundMarketPaymentParams,
+} from './market';
+
 import { SparxPayGateway } from './gateways/sparx-pay';
 import { StripeDirectGateway } from './gateways/stripe-direct';
 import { registerBuiltInGateways } from './registry';

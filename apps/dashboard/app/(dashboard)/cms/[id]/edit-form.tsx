@@ -1,20 +1,10 @@
 'use client';
 
-// Edit-form for one CMS page entry.
-//
-// Autosave model:
-//   - Every controlled field change (title / slug / doc / seo) bumps a
-//     "dirty cursor". A 600ms debounce fires `autosavePage` against
-//     api-rest with the current values + last known ETag.
-//   - Only one autosave in-flight at a time. If the user types during a
-//     save, the post-save effect picks up the newer dirty cursor and
-//     fires again.
-//   - 412 PRECONDITION_FAILED → conflict banner with a Reload CTA. Until
-//     reloaded, autosave is suspended (the next PATCH would also 412).
-//   - Explicit Save button keeps publish/SEO revalidation semantics.
-//
-// We rely on api-rest's `updatedAt` always advancing on PATCH (the route
-// sets it explicitly) so the ETag truly reflects "last write wins" state.
+// Edit-form for one CMS page entry. Explicit-save only (one Save button),
+// last-write-wins — consistent with every other dashboard editor. An unsaved
+// edit registers the leave-guard (docs/105) so closing / navigating away
+// confirms before discarding. (Autosave + ETag conflict detection were removed
+// platform-wide for consistency.)
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
@@ -47,17 +37,12 @@ import { ContentBlockEditor, EMPTY_DOC, type CmsDoc } from '@sparx/cms-editor';
 import Link from 'next/link';
 import { CalendarClock, History, Trash2 } from 'lucide-react';
 import type { Property } from '@/lib/sites';
-import {
-  autosavePage,
-  deletePage,
-  schedulePagePublish,
-  setPageStatus,
-  updatePage,
-} from '../actions';
+import { deletePage, schedulePagePublish, setPageStatus, updatePage } from '../actions';
 import { SiteScopeField } from '../../_components/site-scope-field';
 import { SeoPanel, type SeoFields } from './seo-panel';
 import { PreviewButton } from './preview-button';
 import { DetailHeaderSlot } from '../../_components/detail-header-slot';
+import { useUnsavedGuard } from '../../_components/unsaved-guard';
 
 export interface EditableTenantPage {
   id: string;
@@ -73,35 +58,20 @@ export interface EditableTenantPage {
 }
 
 const ZONE_DOMAIN = process.env.NEXT_PUBLIC_SPARX_ZONE_DOMAIN ?? 'sparx.zone';
-const AUTOSAVE_DEBOUNCE_MS = 600;
-// Autosave is OFF for now: the platform standard is explicit save (a Save button),
-// and running both at once is contradictory. The machinery stays intact behind this
-// env flag (unset ⇒ off) so the planned move to autosave-everywhere is a flip — at
-// which point the Save button should be DROPPED in favor of the indicator, not kept.
-const AUTOSAVE_ENABLED = process.env.NEXT_PUBLIC_CMS_AUTOSAVE === 'true';
 
 function siteOrigin(tenantSlug: string | null): string {
   if (tenantSlug) return `https://${tenantSlug}.${ZONE_DOMAIN}`;
   return process.env.NEXT_PUBLIC_MARKETING_URL ?? 'https://sparx.works';
 }
 
-type SaveState =
-  | { kind: 'idle' }
-  | { kind: 'saving' }
-  | { kind: 'saved'; at: Date }
-  | { kind: 'conflict' }
-  | { kind: 'error'; message: string };
-
 export function EditPageForm({
   page,
   tenantSlug,
-  initialEtag,
   sites,
   initialPropertyIds,
 }: {
   page: EditableTenantPage;
   tenantSlug: string | null;
-  initialEtag: string | null;
   // Multi-site (docs/49 §3) — the tenant's sites + this page's current scope.
   // SiteScopeField hides itself for single-site tenants.
   sites: Property[];
@@ -120,13 +90,6 @@ export function EditPageForm({
   const [seo, setSeo] = React.useState<SeoFields>(page.seo);
   const [propertyIds, setPropertyIds] = React.useState<string[]>(initialPropertyIds);
 
-  // Autosave bookkeeping.
-  const [saveState, setSaveState] = React.useState<SaveState>({ kind: 'idle' });
-  const etagRef = React.useRef<string | null>(initialEtag);
-  const inFlightRef = React.useRef(false);
-  const dirtyRef = React.useRef(false);
-  const hydratedRef = React.useRef(false);
-
   // Schedule dialog (kept in this file so it shares the edit form's local state
   // without prop-drilling). Delete uses useConfirm — no open state needed.
   const [scheduleOpen, setScheduleOpen] = React.useState(false);
@@ -134,88 +97,27 @@ export function EditPageForm({
     page.scheduledAt ?? undefined
   );
 
-  // Stable refs for the current values — the debounce closure reads from
-  // these so we don't re-arm the timer on every keystroke (which would
-  // mean each keystroke pushes the save further out).
-  const titleRef = React.useRef(title);
-  const slugRef = React.useRef(slug);
-  const docRef = React.useRef(doc);
-  const seoRef = React.useRef(seo);
-  const propertyIdsRef = React.useRef(propertyIds);
-  React.useEffect(() => {
-    titleRef.current = title;
-  }, [title]);
-  React.useEffect(() => {
-    slugRef.current = slug;
-  }, [slug]);
-  React.useEffect(() => {
-    docRef.current = doc;
-  }, [doc]);
-  React.useEffect(() => {
-    seoRef.current = seo;
-  }, [seo]);
-  React.useEffect(() => {
-    propertyIdsRef.current = propertyIds;
-  }, [propertyIds]);
-
-  const runAutosave = React.useCallback(async () => {
-    if (inFlightRef.current) return;
-    if (saveState.kind === 'conflict') return;
-    inFlightRef.current = true;
-    dirtyRef.current = false;
-    setSaveState({ kind: 'saving' });
-    const result = await autosavePage(
-      page.id,
-      {
-        title: titleRef.current,
-        slug: slugRef.current,
-        content: docRef.current,
-        seo: {
-          ...(seoRef.current.title ? { title: seoRef.current.title } : {}),
-          ...(seoRef.current.description ? { description: seoRef.current.description } : {}),
-          ...(seoRef.current.canonical ? { canonical: seoRef.current.canonical } : {}),
-          ...(seoRef.current.robots ? { robots: seoRef.current.robots } : {}),
-          ...(seoRef.current.ogImage ? { ogImage: seoRef.current.ogImage } : {}),
-        },
-        propertyIds: multiSite ? propertyIdsRef.current : undefined,
-      },
-      etagRef.current
-    );
-    inFlightRef.current = false;
-    if (!result.ok) {
-      if (result.error === 'CONFLICT') {
-        setSaveState({ kind: 'conflict' });
-      } else {
-        setSaveState({ kind: 'error', message: result.error ?? 'Autosave failed.' });
-      }
-      return;
-    }
-    etagRef.current = result.data?.etag ?? etagRef.current;
-    setSaveState({ kind: 'saved', at: new Date() });
-    // Catch-up: if the user typed during the save, fire another tick.
-    if (dirtyRef.current) {
-      void runAutosave();
-    }
-  }, [page.id, saveState.kind, multiSite]);
-
-  // Debounce: whenever a controlled value changes, mark dirty + schedule
-  // a save 600ms after the last edit. Skips the very first render so the
-  // initial prop hydration doesn't trigger a needless save. Site scope
-  // (propertyIds) rides the same PATCH, so a scope change autosaves like any edit.
-  React.useEffect(() => {
-    if (!AUTOSAVE_ENABLED) return;
-    if (!hydratedRef.current) {
-      hydratedRef.current = true;
-      return;
-    }
-    dirtyRef.current = true;
-    const handle = setTimeout(() => {
-      void runAutosave();
-    }, AUTOSAVE_DEBOUNCE_MS);
-    return () => {
-      clearTimeout(handle);
-    };
-  }, [title, slug, doc, seo, propertyIds, runAutosave]);
+  // Unsaved-changes guard (docs/105): `dirty` is a RENDER-COMPUTED compare against
+  // the last-saved snapshot — no effect, so it's immune to StrictMode's dev
+  // double-invoke (a "skip first render" ref flips dirty spuriously there) and to
+  // the block editor's on-mount normalization (an equal doc compares equal). The
+  // baseline is a ref advanced on each successful Save rather than the props, so a
+  // JSONB key-reorder on refetch can't make a just-saved page look dirty.
+  const savedRef = React.useRef({
+    title: page.title,
+    slug: page.slug,
+    doc: page.body ?? EMPTY_DOC,
+    seo: page.seo,
+    propertyIds: initialPropertyIds,
+  });
+  const saved = savedRef.current;
+  const dirty =
+    title !== saved.title ||
+    slug !== saved.slug ||
+    JSON.stringify(doc) !== JSON.stringify(saved.doc) ||
+    JSON.stringify(seo) !== JSON.stringify(saved.seo) ||
+    JSON.stringify(propertyIds) !== JSON.stringify(saved.propertyIds);
+  useUnsavedGuard(dirty, { kind: 'edit', noun: 'page' });
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -239,6 +141,9 @@ export function EditPageForm({
         setError(result.error ?? 'Could not save changes.');
         return;
       }
+      // Advance the saved snapshot to what we just persisted, so the guard reads
+      // clean immediately (independent of how the refetch serializes the body).
+      savedRef.current = { title, slug, doc, seo, propertyIds };
       setMessage('Saved.');
       router.refresh();
     });
@@ -330,24 +235,6 @@ export function EditPageForm({
         <Badge color={statusTone(page.status)} variant="soft">
           {statusLabel(page.status)}
         </Badge>
-        {AUTOSAVE_ENABLED && (
-          <AutosaveIndicator
-            state={saveState}
-            onDiscardMine={() => {
-              setSaveState({ kind: 'idle' });
-              router.refresh();
-            }}
-            onKeepMine={() => {
-              // Force save: drop the stale If-Match so the next PATCH wins over
-              // whatever the other tab wrote. Our local state stays — the audit's
-              // concern was Reload destroying in-progress edits with no warning.
-              etagRef.current = null;
-              setSaveState({ kind: 'idle' });
-              dirtyRef.current = true;
-              void runAutosave();
-            }}
-          />
-        )}
         <PreviewButton
           iconOnly
           entryId={page.id}
@@ -397,9 +284,7 @@ export function EditPageForm({
           <CardHeader>
             <Heading level={3}>Content</Heading>
             <CardDescription>
-              {AUTOSAVE_ENABLED
-                ? 'Title, slug, and the body block editor. Autosaves every keystroke after a brief pause.'
-                : 'Title, slug, and the body block editor. Edits are saved when you click Save changes.'}
+              Title, slug, and the body block editor. Edits are saved when you click Save changes.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -540,60 +425,5 @@ export function EditPageForm({
         </ModalContent>
       </Modal>
     </form>
-  );
-}
-
-// Small status pill rendered next to the Status badge so the editor
-// always knows whether their last keystroke is safely on the server.
-//
-// Conflict (412) treatment is the careful bit: the audit (F-06) found that
-// the previous "Reload" button silently discarded local edits when another
-// tab/user saved on top of us. We now require the editor to make an explicit
-// call between Discard mine (router.refresh → drop local state for server
-// state) and Keep mine (force-save by dropping If-Match). Either choice is
-// destructive in one direction; surfacing both keeps the editor in control.
-function AutosaveIndicator({
-  state,
-  onDiscardMine,
-  onKeepMine,
-}: {
-  state: SaveState;
-  onDiscardMine: () => void;
-  onKeepMine: () => void;
-}) {
-  if (state.kind === 'idle') return null;
-  if (state.kind === 'saving') {
-    return (
-      <Text size="xs" variant="muted" aria-live="polite">
-        Saving…
-      </Text>
-    );
-  }
-  if (state.kind === 'saved') {
-    return (
-      <Text size="xs" variant="muted" aria-live="polite">
-        Saved {state.at.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-      </Text>
-    );
-  }
-  if (state.kind === 'conflict') {
-    return (
-      <Stack direction="row" align="center" gap={2}>
-        <Text size="xs" variant="danger" aria-live="polite">
-          Someone else saved this page since you started editing.
-        </Text>
-        <Button type="button" variant="ghost" size="xs" onClick={onDiscardMine}>
-          Discard mine
-        </Button>
-        <Button type="button" color="module" variant="outline" size="xs" onClick={onKeepMine}>
-          Keep mine (force save)
-        </Button>
-      </Stack>
-    );
-  }
-  return (
-    <Text size="xs" variant="danger" aria-live="polite">
-      Autosave failed: {state.message}
-    </Text>
   );
 }

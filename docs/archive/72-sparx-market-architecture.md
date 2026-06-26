@@ -1,8 +1,16 @@
 # sparx Platform — sparx.market Marketplace Architecture
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-06-26
+
+> **BUILT 2026-06-26 (P5).** sparx.market shipped as the channel framework's first-party channel —
+> see [docs/106 §4.7](../106-channel-marketplace-strategy.md) for the canonical as-built shape. Two
+> deltas from this original design: (1) the opt-in columns are `market_listed` / `market_category` (not
+> `public_listing`); (2) **commission is a flat platform rate in basis points with a per-tenant override,
+> NOT the plan-tiered table in §4 below** — the platform has modules, not subscription tiers. The
+> Phase-1 checklist in §10 is built; the Phase-2 "Growth" items (multi-merchant cart, reviews, featured
+> program, search ads, mobile app, affiliate) remain the documented next phase.
 
 ---
 

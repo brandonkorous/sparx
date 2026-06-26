@@ -6,6 +6,7 @@
 // merchant to the channel's OAuth screen.
 
 import * as React from 'react';
+import Link from 'next/link';
 import { Badge, Button, Stack, Text } from '@sparx/ui';
 import { connectChannelAction } from '../actions';
 import type { ChannelCatalogItem, ChannelShape } from '../_types';
@@ -20,6 +21,12 @@ export function AvailableChannelCard({ channel }: { channel: ChannelCatalogItem 
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   const comingSoon = channel.availability !== 'available';
+
+  // sparx.market is a FIRST-PARTY channel — it has no OAuth connect flow. It's
+  // managed on its own settings surface, so its card links straight there
+  // instead of trying to "connect" (and is always live, regardless of the
+  // catalog's OAuth-oriented `availability` flag).
+  const isFirstParty = channel.shape === 'first_party';
 
   function onConnect() {
     setError(null);
@@ -40,9 +47,14 @@ export function AvailableChannelCard({ channel }: { channel: ChannelCatalogItem 
         <Badge variant="outline" className="text-xs">
           {SHAPE_LABEL[channel.shape]}
         </Badge>
-        {comingSoon && (
+        {comingSoon && !isFirstParty && (
           <Badge color="neutral" variant="soft" className="text-xs">
             Coming soon
+          </Badge>
+        )}
+        {isFirstParty && (
+          <Badge color="success" variant="soft" className="text-xs">
+            Available
           </Badge>
         )}
       </Stack>
@@ -58,17 +70,23 @@ export function AvailableChannelCard({ channel }: { channel: ChannelCatalogItem 
         </Text>
       )}
       <div>
-        <Button
-          type="button"
-          size="sm"
-          variant="soft"
-          color="primary"
-          disabled={comingSoon || pending}
-          loading={pending}
-          onClick={onConnect}
-        >
-          {comingSoon ? 'Coming soon' : 'Connect'}
-        </Button>
+        {isFirstParty ? (
+          <Button asChild size="sm" variant="soft" color="primary">
+            <Link href="/settings/market">Manage</Link>
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            size="sm"
+            variant="soft"
+            color="primary"
+            disabled={comingSoon || pending}
+            loading={pending}
+            onClick={onConnect}
+          >
+            {comingSoon ? 'Coming soon' : 'Connect'}
+          </Button>
+        )}
       </div>
     </Stack>
   );

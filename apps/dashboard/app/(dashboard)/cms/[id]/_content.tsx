@@ -35,7 +35,7 @@ export async function CmsPageDetailContent({ id }: CmsPageDetailContentProps) {
   const [entryResult, tenant, sites] = await Promise.all([
     (async () => {
       try {
-        return await api.getWithEtag<ApiEntry>(`/v1/content/entries/${id}`);
+        return await api.get<ApiEntry>(`/v1/content/entries/${id}`);
       } catch (err) {
         const e = err as ApiRestError;
         if (e?.status === 404) notFound();
@@ -45,8 +45,7 @@ export async function CmsPageDetailContent({ id }: CmsPageDetailContentProps) {
     api.get<{ slug: string }>('/v1/tenant'),
     listProperties().catch(() => [] as Property[]),
   ]);
-  const entry = entryResult.data;
-  const initialEtag = entryResult.etag;
+  const entry = entryResult;
 
   const docBody =
     entry.body.body && typeof entry.body.body === 'object'
@@ -79,7 +78,6 @@ export async function CmsPageDetailContent({ id }: CmsPageDetailContentProps) {
     <EditPageForm
       page={editable}
       tenantSlug={tenant?.slug ?? null}
-      initialEtag={initialEtag}
       sites={sites}
       initialPropertyIds={entry.propertyIds ?? []}
     />

@@ -217,6 +217,11 @@ export interface ProductDetail {
   optionCount: number;
   categoryIds: string[];
   collectionIds: string[];
+  // sparx.market opt-in (docs/106 §4.7). `marketListed` is the tenant-set flag;
+  // `marketCategory` is the catalog aisle. The product editor's sparx.market
+  // section reads these to seed its List/Category controls.
+  marketListed: boolean;
+  marketCategory: string | null;
   // Model B (docs/49 §3): web PROPERTIES this product is scoped to. EMPTY =
   // visible on ALL sites (the default).
   propertyIds: string[];
@@ -855,6 +860,8 @@ function toProductDetail(p: ProductWithIncludes): ProductDetail {
     optionCount: p._count.options,
     categoryIds: p.categoryLinks.map((c) => c.categoryId),
     collectionIds: p.collectionLinks.map((c) => c.collectionId),
+    marketListed: p.marketListed,
+    marketCategory: p.marketCategory,
     propertyIds: p.propertyLinks.map((l) => l.propertyId),
     createdAt: p.createdAt.toISOString(),
     updatedAt: p.updatedAt.toISOString(),

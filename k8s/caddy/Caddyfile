@@ -169,11 +169,21 @@ sparx.software, www.sparx.software {
   redir https://sparx.works/docs{uri} permanent
 }
 
-sparx.market, www.sparx.market {
+# sparx.market — the first-party marketplace storefront (docs/106 §4.7), a
+# dedicated Next.js app (apps/market). www → apex.
+www.sparx.market {
   tls {
     on_demand
   }
-  redir https://sparx.works/market{uri} permanent
+  redir https://sparx.market{uri} permanent
+}
+
+sparx.market {
+  tls {
+    on_demand
+  }
+  import security_headers
+  reverse_proxy market.sparx-prod.svc.cluster.local:3000
 }
 
 sparx.exchange, www.sparx.exchange {

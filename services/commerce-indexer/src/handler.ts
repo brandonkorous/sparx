@@ -4,6 +4,7 @@
 // state in Typesense.
 
 import {
+  marketService,
   projectAllCollectionRulesForTenant,
   projectCollectionRules,
   projectCustomer,
@@ -83,10 +84,17 @@ export async function handleEvent(
       const { document } = await projectProduct(ctx, productId);
       if (!document) {
         await deleteProduct(tenantId, productId);
+        await refreshMarketListing(ctx, productId, logger);
         logger.info({ tenantId, productId }, 'product not found; deleted from index');
         return { outcome: 'deleted', details: { productId } };
       }
       await upsertProduct(document);
+      // sparx.market (docs/106 §4.7): keep the global market_listings projection
+      // fresh for background drift — a listed product's title/price/image edit
+      // (product.updated) or stock change (inventory.adjusted) re-projects the
+      // card. Best-effort: a market refresh failure must NOT nack the search index
+      // (opt-in itself projects synchronously in api-rest; this is the refresher).
+      await refreshMarketListing(ctx, productId, logger);
       // A product write can also affect rule-driven collection memberships.
       // Cheaper than recompiling every tenant collection: only re-run when
       // the event is `product.created/updated` (variant pings tend to be
@@ -115,6 +123,7 @@ export async function handleEvent(
       const productId = stringProp(event.data, 'productId');
       if (!productId) return { outcome: 'skipped' };
       await deleteProduct(tenantId, productId);
+      await refreshMarketListing(ctx, productId, logger);
       return { outcome: 'deleted', details: { productId } };
     }
 
@@ -222,6 +231,22 @@ export async function handleEvent(
     default:
       logger.debug({ type: event.type }, 'event type not routed; skipping');
       return { outcome: 'skipped' };
+  }
+}
+
+/** Best-effort refresh of a product's sparx.market listing projection (docs/106
+ *  §4.7). projectMarketListing upserts the listing when the product is eligible and
+ *  removes it otherwise — so it self-corrects on un-list / archive / out-of-category.
+ *  Never throws: market freshness must not nack the (primary) search index write. */
+async function refreshMarketListing(
+  ctx: { tenantId: string; userId?: string },
+  productId: string,
+  logger: PinoLogger
+): Promise<void> {
+  try {
+    await marketService.projectMarketListing(ctx, productId);
+  } catch (err) {
+    logger.warn({ err, productId }, 'market listing projection failed (best-effort); continuing');
   }
 }
 

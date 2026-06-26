@@ -9,6 +9,7 @@ import {
   Plug,
   Settings as SettingsIcon,
   Shield,
+  ShoppingBag,
   Store,
   Users,
   Wallet,
@@ -88,6 +89,14 @@ export const SETTINGS_NAV: readonly SettingsNavItem[] = [
     description: 'Sell on TikTok Shop, Etsy, Amazon, Meta, and more — synced from one place.',
     icon: Store,
     href: '/settings/channels',
+    ready: true,
+  },
+  {
+    id: 'market',
+    label: 'sparx.market',
+    description: 'Sell on the first-party marketplace, manage your profile, payouts, and listings.',
+    icon: ShoppingBag,
+    href: '/settings/market',
     ready: true,
   },
   {

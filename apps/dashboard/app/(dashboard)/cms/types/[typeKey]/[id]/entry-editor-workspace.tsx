@@ -122,8 +122,8 @@ const DEVICE_OPTIONS: SegOption<PreviewDevice>[] = [
 ];
 
 export function EntryEditorWorkspace({ form, preview, statusInHeader }: EntryEditorWorkspaceProps) {
-  // `body` is a MIRROR of EditEntryForm's body (it still owns + autosaves it); we
-  // only observe it to feed the live preview, so the autosave machinery is untouched.
+  // `body` is a MIRROR of EditEntryForm's body (it still owns it); we only observe
+  // it to feed the live preview.
   const [body, setBody] = React.useState<Record<string, unknown>>(form.initialBody);
   const [view, setView] = React.useState<View>(preview ? 'split' : 'form');
   const [device, setDevice] = React.useState<PreviewDevice>('desktop');

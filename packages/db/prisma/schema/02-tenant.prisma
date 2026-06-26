@@ -98,6 +98,14 @@ model Tenant {
   channelConnections     ChannelConnection[]
   channelProductMappings ChannelProductMapping[]
 
+  // sparx.market (docs/106 §4.7) — the first-party marketplace. The two GLOBAL
+  // projections (MarketListing / MarketMerchant) are FK-less by design and do NOT
+  // relate here; only the tenant-scoped truth tables do.
+  marketMerchantProfile MarketMerchantProfile?
+  marketPayoutAccount   MarketPayoutAccount?
+  marketSettlements     MarketSettlement[]
+  marketSettlementRuns  MarketSettlementRun[]
+
   // Dashboard shell — per-user pinned/recent navigation state
   userFavorites UserFavorite[]
   userRecents   UserRecent[]

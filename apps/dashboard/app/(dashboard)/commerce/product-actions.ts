@@ -178,6 +178,46 @@ export async function revertBulkPriceAction(
   });
 }
 
+// ─── sparx.market opt-in (docs/106 §4.7) ─────────────────────────────────────
+//
+// List / un-list a product on the first-party marketplace + set its category.
+// Routes through the same Commerce-gated api-rest client; the dashboard product
+// editor (single) and the products-list selection toolbar (bulk) both use these.
+
+export interface ProductMarketState {
+  productId: string;
+  listed: boolean;
+  category: string | null;
+  featured: boolean;
+  approved: boolean;
+}
+
+export async function setProductMarketStateAction(
+  productId: string,
+  input: { listed: boolean; category?: string }
+): Promise<ActionResult<ProductMarketState>> {
+  return restAction(async () => {
+    const state = await api.put<ProductMarketState>(`/v1/market/products/${productId}`, input);
+    revalidatePath('/commerce/products');
+    revalidatePath(`/commerce/products/${productId}`);
+    revalidatePath('/settings/market');
+    return state;
+  });
+}
+
+export async function bulkSetProductMarketStateAction(input: {
+  productIds: string[];
+  listed: boolean;
+  category?: string;
+}): Promise<ActionResult<{ updated: number }>> {
+  return restAction(async () => {
+    const result = await api.post<{ updated: number }>('/v1/market/products/bulk', input);
+    revalidatePath('/commerce/products');
+    revalidatePath('/settings/market');
+    return result;
+  });
+}
+
 // ─── Import / Export (B-2) ───────────────────────────────────────────────────
 
 export async function submitProductImportAction(

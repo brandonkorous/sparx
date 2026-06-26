@@ -101,16 +101,14 @@ export async function updateEntry(
 }
 
 // Per-entry SEO (docs/50). The entry carries a `seo` JSONB the storefront reads
-// (blog post title/description, canonical, OG, indexing) — but it's no longer
-// authored through a standalone commit-on-blur card. It rides the unified
-// autosave below (body + seo + slug in one PATCH), exactly as the Pages editor
-// folds SEO into `autosavePage`. The autosave SEO shape mirrors the Pages
-// editor's `SeoFields`
-// (title/description/canonical/robots/ogImage) so the entry editor can reuse
-// the full `SeoPanel` verbatim — robots is a free directive string, not the
-// boolean `index` of the (now-retired) commit-on-blur EntrySeoSection. Empty
-// fields are dropped so a blank input clears that key rather than pinning "".
-export interface AutosaveSeoInput {
+// (blog post title/description, canonical, OG, indexing). It rides the unified
+// entry save (body + seo + slug in one PATCH), exactly as the Pages editor folds
+// SEO into its update. The SEO shape mirrors the Pages editor's `SeoFields`
+// (title/description/canonical/robots/ogImage) so the entry editor can reuse the
+// full `SeoPanel` verbatim — robots is a free directive string, not the boolean
+// `index` of the (now-retired) commit-on-blur EntrySeoSection. Empty fields are
+// dropped so a blank input clears that key rather than pinning "".
+export interface EntrySeoInput {
   title: string;
   description: string;
   canonical: string;
@@ -118,7 +116,7 @@ export interface AutosaveSeoInput {
   ogImage: string;
 }
 
-function seoPayloadOf(seo: AutosaveSeoInput): Record<string, string> {
+function seoPayloadOf(seo: EntrySeoInput): Record<string, string> {
   return {
     ...(seo.title.trim() ? { title: seo.title.trim() } : {}),
     ...(seo.description.trim() ? { description: seo.description.trim() } : {}),
@@ -128,15 +126,14 @@ function seoPayloadOf(seo: AutosaveSeoInput): Record<string, string> {
   };
 }
 
-// Unified per-keystroke autosave for the entry editor: body + SEO (+ slug for
-// routable types) in ONE PATCH, against ONE ETag cursor — the entries route
-// treats body/seo/slug as independent optionals, and emits a single ETag per
-// write, so a split body/SEO saver would invalidate each other's If-Match and
-// throw spurious 412s. Mirrors `autosavePage`. NO revalidatePath (fires every
-// keystroke); 412 → 'CONFLICT' so the form can offer Discard-/Keep-mine.
-export interface AutosaveEntryInput {
+// Explicit "Save changes" for the entry editor: body + SEO (+ slug for routable
+// types) in ONE PATCH, then revalidate the list + editor routes. The entries
+// route treats body/seo/slug as independent optionals, so a single PATCH carries
+// the whole edit. Last-write-wins, like every other dashboard editor — the CMS
+// no longer runs autosave or ETag conflict detection (platform consistency).
+export interface SaveEntryInput {
   body: Record<string, unknown>;
-  seo: AutosaveSeoInput;
+  seo: EntrySeoInput;
   /** Routable types only; omitted (and ignored server-side) otherwise. */
   slug?: string;
   // Model B per-site scoping (docs/49 §3): the web PROPERTIES this entry shows
@@ -146,11 +143,11 @@ export interface AutosaveEntryInput {
   propertyIds?: string[];
 }
 
-export async function autosaveEntry(
+export async function saveEntry(
   id: string,
-  input: AutosaveEntryInput,
-  ifMatch: string | null
-): Promise<ActionResult<{ etag: string | null; updatedAt: string }>> {
+  typeKey: string,
+  input: SaveEntryInput
+): Promise<ActionResult> {
   const payload: Record<string, unknown> = { body: input.body, seo: seoPayloadOf(input.seo) };
   if (input.slug) {
     const slugParsed = SlugSchema.safeParse(input.slug);
@@ -159,34 +156,13 @@ export async function autosaveEntry(
   }
   if (input.propertyIds !== undefined) payload.property_ids = input.propertyIds;
   try {
-    const result = await api.patchWithEtag<ApiEntry>(
-      `/v1/content/entries/${id}`,
-      payload,
-      ifMatch ? { ifMatch } : {}
-    );
-    return { ok: true, data: { etag: result.etag, updatedAt: result.data.updated_at } };
-  } catch (err) {
-    const e = err as ApiRestError;
-    if (e?.code === 'PRECONDITION_FAILED') return { ok: false, error: 'CONFLICT' };
-    return { ok: false, error: friendly(err) };
-  }
-}
-
-// Explicit "Save changes": the same unified PATCH as autosave, but it
-// revalidates the list + editor routes afterward (autosave skips revalidation
-// because it fires every keystroke). Mirrors how `updatePage` revalidates.
-export async function saveEntry(
-  id: string,
-  typeKey: string,
-  input: AutosaveEntryInput,
-  ifMatch: string | null
-): Promise<ActionResult<{ etag: string | null; updatedAt: string }>> {
-  const res = await autosaveEntry(id, input, ifMatch);
-  if (res.ok) {
+    await api.patch<ApiEntry>(`/v1/content/entries/${id}`, payload);
     revalidatePath(`/cms/types/${typeKey}`);
     revalidatePath(`/cms/types/${typeKey}/${id}`);
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: friendly(err) };
   }
-  return res;
 }
 
 // Schedule a future publish (status → 'scheduled'); the publish route flips

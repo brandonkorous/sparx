@@ -20,6 +20,9 @@ COPY packages/events ./packages/events
 # module load; payments' only workspace dep is @sparx/db (above). Without it the
 # image builds but crashes at runtime with ERR_MODULE_NOT_FOUND on '@sparx/payments'.
 COPY packages/payments ./packages/payments
+# @sparx/commerce's market services (docs/106 §4.7) import @sparx/channels/crypto at
+# module load (payout encryption); channels is dep-free (node builtins only).
+COPY packages/channels ./packages/channels
 COPY packages/commerce ./packages/commerce
 # @sparx/commerce re-exports inventoryService from @sparx/inventory at module load.
 COPY packages/inventory ./packages/inventory

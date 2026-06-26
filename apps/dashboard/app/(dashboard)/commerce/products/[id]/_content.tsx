@@ -23,6 +23,7 @@ import { FitmentPanel } from './_components/fitment-panel';
 import { InventoryPanel } from './_components/inventory-panel';
 import { ProductEditForm } from './_components/product-edit-form';
 import type { ProductFacets } from './_components/product-facets';
+import { ProductMarketPanel } from './_components/product-market-panel';
 import { ProductMediaPanel } from './_components/product-media-panel';
 import { ProductPricingPanel } from './_components/product-pricing-panel';
 import type { BulkTierRow } from './_components/product-bulk-tiers-editor';
@@ -70,6 +71,9 @@ interface ProductDetail {
   optionCount: number;
   categoryIds: string[];
   collectionIds: string[];
+  // sparx.market opt-in (docs/106 §4.7) — the Market tab's List/Category state.
+  marketListed: boolean;
+  marketCategory: string | null;
   createdAt: string;
   updatedAt: string;
   publishedAt: string | null;
@@ -221,6 +225,7 @@ export async function ProductDetailContent({ id }: Props) {
     bulkTiers,
     facets,
     configuratorTemplates,
+    marketEnabled,
   ] = await Promise.all([
     api.get<OptionRow[]>(`/v1/commerce/products/${id}/variants/options`),
     api.get<VariantRow[]>(`/v1/commerce/products/${id}/variants?include_archived=true`),
@@ -267,6 +272,13 @@ export async function ProductDetailContent({ id }: Props) {
     api
       .get<ConfiguratorTemplateRow[]>(`/v1/commerce/products/${id}/configurator-templates`)
       .catch(() => [] as ConfiguratorTemplateRow[]),
+    // Whether the tenant participates in sparx.market (docs/106) — gates the
+    // Market tab's List toggle. Defensive: a failed read degrades to "not
+    // enrolled", which routes the user to Settings → sparx.market.
+    api
+      .get<{ enabled: boolean }>('/v1/market/profile')
+      .then((p) => p.enabled)
+      .catch(() => false),
   ]);
 
   // Only catalog-applying, active rules can price a variant inline.
@@ -389,6 +401,7 @@ export async function ProductDetailContent({ id }: Props) {
                 <TabsTrigger value="fitment">Fitment</TabsTrigger>
                 <TabsTrigger value="configurator">Configurator</TabsTrigger>
                 <TabsTrigger value="seo">SEO</TabsTrigger>
+                <TabsTrigger value="market">Market</TabsTrigger>
               </TabsList>
 
               <TabsContent value="overview">
@@ -464,6 +477,15 @@ export async function ProductDetailContent({ id }: Props) {
                   description={product.description}
                   seoTitle={product.seoTitle}
                   seoDescription={product.seoDescription}
+                />
+              </TabsContent>
+
+              <TabsContent value="market">
+                <ProductMarketPanel
+                  productId={product.id}
+                  marketEnabled={marketEnabled}
+                  initialListed={product.marketListed}
+                  initialCategory={product.marketCategory}
                 />
               </TabsContent>
             </GuardedTabs>

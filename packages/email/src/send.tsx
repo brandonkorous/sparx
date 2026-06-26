@@ -29,6 +29,11 @@ import {
   chatNotificationSubject,
   type ChatNotificationEmailProps,
 } from './templates/chat-notification';
+import {
+  MarketSettlementReportEmail,
+  marketSettlementReportSubject,
+  type MarketSettlementReportEmailProps,
+} from './templates/market-settlement-report';
 
 // Template registry + dispatcher. Two surfaces:
 //
@@ -56,7 +61,8 @@ export type TemplateId =
   | 'welcome-merchant'
   | 'email-verification'
   | 'domain-renewal-reminder'
-  | 'chat-notification';
+  | 'chat-notification'
+  | 'market-settlement-report';
 
 export type TemplateSend =
   | {
@@ -91,6 +97,13 @@ export type TemplateSend =
       template: 'chat-notification';
       to: string;
       props: ChatNotificationEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'market-settlement-report';
+      to: string;
+      props: MarketSettlementReportEmailProps;
       from?: string;
       replyTo?: string;
     };
@@ -198,6 +211,22 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'chat-notification',
+      };
+    }
+    case 'market-settlement-report': {
+      const element = wrap(<MarketSettlementReportEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: marketSettlementReportSubject(input.props.periodLabel),
+        html,
+        text,
+        templateId: 'market-settlement-report',
       };
     }
   }

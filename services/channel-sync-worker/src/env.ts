@@ -42,6 +42,13 @@ const EnvSchema = z.object({
   EBAY_RU_NAME: z.string().optional(),
   FAIRE_CLIENT_ID: z.string().optional(),
   FAIRE_CLIENT_SECRET: z.string().optional(),
+  // Amazon SP-API (P4) — the worker's outbound push uses the Feeds API (token-scoped,
+  // no seller-id). LWA creds refresh the access token; marketplace/region default the
+  // SP-API host when a connection's stored params don't carry them.
+  AMAZON_LWA_CLIENT_ID: z.string().optional(),
+  AMAZON_LWA_CLIENT_SECRET: z.string().optional(),
+  AMAZON_MARKETPLACE_ID: z.string().optional(),
+  AMAZON_REGION: z.string().optional(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

@@ -15,6 +15,7 @@ import {
   type AppliedSurcharge,
   applySurcharges,
   type CheckoutSessionSnapshot,
+  commissionCents,
   CompleteCheckoutInput,
   StartCheckoutInput,
   SubmitContactInput,
@@ -23,11 +24,14 @@ import {
   type SurchargePaymentMethod,
 } from '@sparx/commerce-schemas';
 import {
+  createMarketPaymentIntent,
   GatewayNotFoundError,
+  type PaymentIntent,
   PaymentConfigError,
   type PaymentGateway,
   type PaymentIntentStatus,
   paymentService,
+  SPARX_MARKET_GATEWAY_ID,
 } from '@sparx/payments';
 import { withTenant } from '@sparx/db';
 import type { CheckoutSession, TxClient } from '@sparx/db';
@@ -43,6 +47,7 @@ import { publishCommerceEvent } from '../events';
 import { isInventoryActive } from '../inventory-gate';
 
 import * as discountService from './discount-service';
+import * as marketService from './market';
 import * as surchargeService from './surcharge-service';
 
 function parseDueDays(paymentTerms: string | null | undefined): number {
@@ -337,28 +342,49 @@ export async function createPaymentIntent(
     );
   }
 
-  // Resolve the tenant's active gateway (sparx Pay / Stripe Direct) and open the
-  // intent through PaymentService. The gateway sets metadata.tenantId on the intent so
-  // the payment webhook can resolve the tenant; the platform fee (sparx Pay only) is
-  // recorded on the payment_intents ledger. The intent id IS the paymentRef the
-  // webhook later reconciles against.
-  const gateway = await resolvePaymentGateway(ctx.tenantId);
-  const intent = await paymentService.createPaymentIntent({
-    tenantId: ctx.tenantId,
-    amount: session.totalCents,
-    currency: session.currency.toLowerCase(),
-    metadata: {
-      sparx_checkout_session_id: session.id,
-      sparx_cart_id: session.cartId,
-      sparx_channel: session.channel,
-    },
-  });
+  // Resolve the gateway and open the intent. The gateway sets metadata.tenantId on
+  // the intent so the payment webhook can resolve the tenant; the intent id IS the
+  // paymentRef the webhook later reconciles against.
+  //
+  // sparx.market checkouts (docs/106 §4.7) are MERCHANT-OF-RECORD: instead of the
+  // tenant's gateway, the charge is a direct charge on sparx's OWN platform Stripe
+  // account (no destination/transfer — the seller is settled weekly by ACH). The
+  // commission is recorded on the ledger row; the SAME platform webhook reconciles.
+  const metadata = {
+    sparx_checkout_session_id: session.id,
+    sparx_cart_id: session.cartId,
+    sparx_channel: session.channel,
+  };
+  let providerSlug: string;
+  let intent: PaymentIntent;
+  if (session.channel === 'sparx_market') {
+    const commissionBps = await withTenant(ctx, (tx) =>
+      marketService.resolveTenantCommissionBps(tx, ctx.tenantId)
+    );
+    intent = await createMarketPaymentIntent({
+      tenantId: ctx.tenantId,
+      amountCents: session.totalCents,
+      currency: session.currency.toLowerCase(),
+      commissionCents: commissionCents(session.totalCents, commissionBps),
+      metadata,
+    });
+    providerSlug = SPARX_MARKET_GATEWAY_ID;
+  } else {
+    const gateway = await resolvePaymentGateway(ctx.tenantId);
+    intent = await paymentService.createPaymentIntent({
+      tenantId: ctx.tenantId,
+      amount: session.totalCents,
+      currency: session.currency.toLowerCase(),
+      metadata,
+    });
+    providerSlug = gateway.id;
+  }
 
   await withTenant(ctx, async (tx) => {
     await tx.checkoutSession.update({
       where: { id: session.id },
       data: {
-        paymentProviderSlug: gateway.id,
+        paymentProviderSlug: providerSlug,
         paymentRef: intent.id,
       },
     });
@@ -371,14 +397,14 @@ export async function createPaymentIntent(
       entityType: 'CheckoutSession',
       entityId: session.id,
       diff: {
-        after: { paymentProviderSlug: gateway.id, paymentRef: intent.id },
+        after: { paymentProviderSlug: providerSlug, paymentRef: intent.id },
       },
     });
   });
 
   return {
     paymentRef: intent.id,
-    providerSlug: gateway.id,
+    providerSlug,
     ...(intent.clientSecret ? { clientSecret: intent.clientSecret } : {}),
     amountCents: session.totalCents,
     currency: session.currency,
@@ -486,6 +512,12 @@ export async function complete(
 
     const cart = session.cart;
 
+    // sparx.market checkout (docs/106 §4.7) — sparx is merchant-of-record. The order
+    // persists as channel='marketplace', source='sparx_market'; sparx absorbs card
+    // processing (no buyer surcharge); a settlement accrual is recorded so the seller
+    // is paid `gross − commission` in the weekly ACH run.
+    const isMarket = session.channel === 'sparx_market';
+
     // CRM owns the customer spine. A storefront/guest checkout reaches here with
     // no customerId — link-or-create a customer membership keyed on the contact
     // email and scoped to the order's origin SITE (docs/58 D2), so the order
@@ -527,14 +559,15 @@ export async function complete(
     // Document surcharge (docs/48 §6) — computed AFTER tax, gated by payment
     // method. Card-processor checkouts classify as 'card'; B2B net-terms / no
     // provider as 'account' (no card fee). Basis reads the post-discount amounts.
-    const surchargePaymentMethod = surchargeMethodForSession(session);
-    const surchargeSpecs = await surchargeService.listActiveSpecs(ctx, 'checkout', tx);
-    const surcharge = applySurcharges(surchargeSpecs, {
-      subtotalCents: Math.max(0, session.subtotalCents - session.discountTotalCents),
-      shippingCents: session.shippingTotalCents,
-      taxCents: session.taxTotalCents,
-      paymentMethod: surchargePaymentMethod,
-    });
+    // sparx.market absorbs processing (sparx is MoR) → no buyer-facing surcharge.
+    const surcharge: { totalCents: number; applied: AppliedSurcharge[] } = isMarket
+      ? { totalCents: 0, applied: [] }
+      : applySurcharges(await surchargeService.listActiveSpecs(ctx, 'checkout', tx), {
+          subtotalCents: Math.max(0, session.subtotalCents - session.discountTotalCents),
+          shippingCents: session.shippingTotalCents,
+          taxCents: session.taxTotalCents,
+          paymentMethod: surchargeMethodForSession(session),
+        });
     const surchargeDollars = surcharge.totalCents / 100;
 
     const order = await orderService.create(ctx, {
@@ -542,11 +575,12 @@ export async function complete(
       // Origin site (docs/58 D1) — inherit the cart's property so the order is
       // tagged with the storefront it was placed on.
       propertyId: cart.propertyId ?? undefined,
-      channel:
-        session.channel === 'storefront' || session.channel === 'b2b_portal'
+      channel: isMarket
+        ? 'marketplace'
+        : session.channel === 'storefront' || session.channel === 'b2b_portal'
           ? session.channel
           : 'admin',
-      source: 'commerce_checkout',
+      source: isMarket ? 'sparx_market' : 'commerce_checkout',
       currency: session.currency,
       shippingTotal: shippingDollars,
       taxTotal: taxDollars,
@@ -599,6 +633,21 @@ export async function complete(
       await tx.paymentIntent.updateMany({
         where: { externalId: session.paymentRef },
         data: { orderId: order.id },
+      });
+    }
+
+    // sparx.market: record the settlement accrual atomically with the order so a
+    // marketplace sale never lands without sparx's obligation to pay the seller
+    // (gross − commission). The weekly run groups accruals into one ACH (docs/106
+    // §4.7). Commission is the tenant override or the platform default.
+    if (isMarket) {
+      const commissionBps = await marketService.resolveTenantCommissionBps(tx, ctx.tenantId);
+      await marketService.recordSettlementAccrualOnTx(tx, ctx.tenantId, {
+        orderId: order.id,
+        grossCents: session.totalCents,
+        currency: session.currency,
+        commissionBps,
+        paymentRef: session.paymentRef,
       });
     }
 
