@@ -163,7 +163,7 @@ export function ProductMediaPanel({
   }
 
   return (
-    <Card>
+    <Card variant="module">
       <CardHeader>
         <Stack direction="row" align="center" justify="between" gap={3} wrap>
           <Stack gap={1}>

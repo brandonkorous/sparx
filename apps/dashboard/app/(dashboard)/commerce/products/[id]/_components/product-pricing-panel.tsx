@@ -80,7 +80,7 @@ export function ProductPricingPanel({
 
   if (live.length === 0) {
     return (
-      <Card>
+      <Card variant="module">
         <CardHeader>
           <Heading level={3}>Pricing</Heading>
         </CardHeader>
@@ -106,7 +106,7 @@ export function ProductPricingPanel({
 
   return (
     <Stack gap={6}>
-      <Card>
+      <Card variant="module">
         <CardHeader>
           <Stack direction="row" align="center" justify="between" gap={3} wrap>
             <Stack gap={1}>
@@ -209,7 +209,7 @@ export function ProductPricingPanel({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card variant="module">
         <CardHeader>
           <Stack gap={1}>
             <Heading level={3}>Bulk price tiers</Heading>

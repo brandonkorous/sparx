@@ -128,19 +128,32 @@ export function isFullBleedCreate(typeId: string): boolean {
   return FULL_BLEED_CREATE_TYPES.has(typeId);
 }
 
-// Detail (edit) views whose body IS a single edit form rendered through the same
-// F-shell SurfaceFrame as its create sibling (docs/86 edit surface-type rule: a
-// detail view that is one edit form → render it as a SurfaceFrame so create +
-// edit are symmetric). Like full-bleed creates, the frame owns its own padding,
-// scroll, and pinned floor toolbar, so the drawer/modal/full-page host must hand
-// it the whole body edge-to-edge instead of the default padded scroll column.
-// This is ONLY for single-form detail views — tabbed detail views (product,
-// customer, …) keep the default padded body and clean up their edit PANEL in
-// place. Client-safe so the detail-panel chrome can branch without the slot.
-const FULL_BLEED_DETAIL_TYPES = new Set<string>(['category']);
+// Detail (edit) views whose body owns its own padding, scroll, and height and so
+// must be handed the whole drawer/modal/full-page body edge-to-edge instead of
+// the default padded single-scroll column. Two shapes qualify (docs/86):
+//   - SINGLE-FORM edits rendered on the same F-shell SurfaceFrame as their create
+//     sibling (category) — the frame owns the field card + pinned floor toolbar.
+//   - TABBED record details that run a full-height two-pane: a scrolling tab
+//     column beside a persistent summary aside (product) — the aside only fills
+//     its column edge-to-edge (matching the create wizard) when the body is a
+//     fixed-height frame, which is exactly what full-bleed provides.
+// A tabbed detail withOUT a summary aside (customer, b2b, …) keeps the default
+// padded body. Client-safe so the detail-panel chrome can branch without the slot.
+const FULL_BLEED_DETAIL_TYPES = new Set<string>(['category', 'product']);
 
 export function isFullBleedDetail(typeId: string): boolean {
   return FULL_BLEED_DETAIL_TYPES.has(typeId);
+}
+
+// The narrow subset of full-bleed details: a SINGLE edit form (+ optional summary)
+// that reads best in a tighter dialog so its fields don't stretch. Tabbed
+// full-bleed details (product) instead want the wide canvas — room for the tab
+// content AND the full-height summary aside — so they are deliberately excluded.
+// Drives the modal width only; the body treatment is `isFullBleedDetail`.
+const SINGLE_FORM_DETAIL_TYPES = new Set<string>(['category']);
+
+export function isSingleFormDetail(typeId: string): boolean {
+  return SINGLE_FORM_DETAIL_TYPES.has(typeId);
 }
 
 // Create overlays whose SurfaceFrame renders a live "draft summary" column (the

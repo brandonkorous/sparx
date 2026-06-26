@@ -280,29 +280,23 @@ interface DiscountPerformance {
   byDiscount: DiscountPerfRow[];
   currency: string;
 }
-interface ChannelRow {
+// Consolidated channel revenue (docs/27 §8): marketplace orders split by source
+// (TikTok Shop, Etsy, …) instead of collapsing into one "marketplace" line, with
+// the human `label` precomputed by the service. Only the fields this card reads.
+interface ChannelRevenueRow {
   channel: string;
+  label: string;
   orders: number;
-  revenueCents: number;
+  grossRevenueCents: number;
   sharePct: number;
 }
-interface ChannelBreakdown {
+interface ChannelRevenueReport {
   rangeLabel: string;
   totalOrders: number;
-  totalRevenueCents: number;
-  byChannel: ChannelRow[];
+  totalGrossRevenueCents: number;
+  byChannel: ChannelRevenueRow[];
   currency: string;
 }
-
-// Human labels for the order `channel` enum (storefront | b2b_portal | …).
-const CHANNEL_LABELS: Record<string, string> = {
-  storefront: 'Storefront',
-  b2b_portal: 'B2B portal',
-  admin: 'Admin',
-  import: 'Import',
-  mcp: 'MCP / AI',
-  unknown: 'Other',
-};
 
 export default async function CommercePage() {
   await requireSession();
@@ -341,7 +335,9 @@ export default async function CommercePage() {
     api
       .get<DiscountPerformance>('/v1/commerce/reports/discount-performance?limit=4')
       .catch(() => null),
-    api.get<ChannelBreakdown>(`/v1/commerce/reports/channel-breakdown?${range}`).catch(() => null),
+    api
+      .get<ChannelRevenueReport>(`/v1/commerce/reports/channel-revenue?${range}`)
+      .catch(() => null),
   ]);
   const currency = revenue?.currency ?? 'USD';
 
@@ -801,9 +797,9 @@ export default async function CommercePage() {
                   key={c.channel}
                   icon={<TrendingUp className="h-4 w-4" />}
                   tone="module"
-                  title={CHANNEL_LABELS[c.channel] ?? c.channel}
+                  title={c.label}
                   hint={`${fmtNumber(c.orders)} order${c.orders === 1 ? '' : 's'} · ${c.sharePct}%`}
-                  right={fmtMoneyCents(c.revenueCents, currency)}
+                  right={fmtMoneyCents(c.grossRevenueCents, currency)}
                 />
               ))
             ) : (

@@ -1,8 +1,8 @@
 # @sparx/ui Variant System (multi-axis)
 
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-24
+**Last Updated:** 2026-06-25
 
 ---
 
@@ -63,6 +63,13 @@ _into_ `@sparx/ui`'s `tokens.css` to back the new `color` axis.
 
 `module` is special: it tracks `--module-active` so a `<Button color="module">` inside a
 `<ModuleProvider module="cms">` is teal automatically (existing behaviour, kept).
+
+`<Card variant="module">`'s top stripe works the same way — it reads `--module-active`
+**directly** (not via the shared `--c-bg` role var, which inherits and would let an
+ancestor's color leak into a nested card). So a card's stripe follows the nearest
+`<ModuleProvider>`: wrap a cross-module panel in its provider and its `module` cards
+re-tint with no props. The Card `accent` prop is an **escape hatch** for a one-off color
+with no surrounding provider — not the normal way to color a card.
 
 ### 2.2 `variant` — style / treatment
 
@@ -298,14 +305,14 @@ existing call sites are unaffected.
 
 ### 5.3 Tier C — structural variants (token-driven, no color palette)
 
-| Component                        | change                                                                                                                  |
-| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Card                             | keep `variant` (default/elevated/module/outline); add optional `accent` color for the module top-stripe; `padding` size |
-| Tabs                             | keep `variant` (underline/pills); add `size`                                                                            |
-| Avatar                           | already size × shape — align `shape` naming (circle/square) with Button                                                 |
-| **ButtonGroup** _(new)_          | segmented/joined buttons (DaisyUI `join`); orientation + shared size/color passthrough                                  |
-| **Collapse / Accordion** _(new)_ | Radix Accordion shell; `variant` (bordered/ghost/separated)                                                             |
-| **Kbd** _(new)_                  | keyboard-key chip; `size` only                                                                                          |
+| Component                        | change                                                                                                                                                              |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Card                             | keep `variant` (default/elevated/module/outline); `module` stripe follows the nearest `<ModuleProvider>` (`accent` is a one-off escape hatch, §2.1); `padding` size |
+| Tabs                             | keep `variant` (underline/pills); add `size`                                                                                                                        |
+| Avatar                           | already size × shape — align `shape` naming (circle/square) with Button                                                                                             |
+| **ButtonGroup** _(new)_          | segmented/joined buttons (DaisyUI `join`); orientation + shared size/color passthrough                                                                              |
+| **Collapse / Accordion** _(new)_ | Radix Accordion shell; `variant` (bordered/ghost/separated)                                                                                                         |
+| **Kbd** _(new)_                  | keyboard-key chip; `size` only                                                                                                                                      |
 
 ### 5.4 Unchanged (single-axis where `variant` is genuinely not a color)
 

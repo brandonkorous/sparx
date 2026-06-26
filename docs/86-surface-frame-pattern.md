@@ -1,6 +1,6 @@
 # sparx Platform — Form Surface Layout Pattern (`SurfaceFrame`)
 
-**Version:** 3.3
+**Version:** 3.5
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-25
 
@@ -79,13 +79,14 @@ variant={presentation === 'overlay' ? 'inline' : 'embedded'}
 
 ### Modal width keys off the form, not a constant
 
-The drawer/modal host sizes the dialog by purpose (`detail-registry` `SUMMARY_CREATE_TYPES`):
+The drawer/modal host sizes the dialog by purpose (`detail-registry`):
 
-- **Create + has a summary** → wider dialog (`~960px`) so form + summary both fit.
+- **Create + has a summary** (`SUMMARY_CREATE_TYPES`) → wider dialog (`~960px`) so form + summary both fit.
 - **Create, no summary** → tighter dialog (`~720px`) so a lone form never floats with gutters.
-- **Record detail** → the full canvas (`~1200px`).
+- **Single-form edit detail** (category, `isSingleFormDetail`) → `~960px` so the lone form doesn't stretch.
+- **Tabbed record detail** → the full canvas (`~1200px`); when it carries a context rail (§5.2) it renders full-bleed and takes a **definite** `88vh` height so its inner tab column scrolls correctly (not the content-hug `max-h`).
 
-A form joins `SUMMARY_CREATE_TYPES` **only once it actually passes a `summary`** — otherwise the wide dialog frames a narrow form with empty gutters.
+A create form joins `SUMMARY_CREATE_TYPES` **only once it actually passes a `summary`** — otherwise the wide dialog frames a narrow form with empty gutters.
 
 ### Responsive — by CONTAINER width (the top-2 rule)
 
@@ -132,7 +133,7 @@ The full-bleed two-pane frame with a flat module-colored left rail (brand wordma
 - **Progress is always visible** on a multi-step flow — MiniProgress (F layout) or the rail journey (onboarding). No floating "Step 2 of 4" badge invented elsewhere.
 - **One headline pattern.** Left-aligned heading + muted supporting line at the top of the pane. No centered hero stacks; **no uppercase mono eyebrows** (no-eyebrows rule) — that includes the summary's heading.
 - **One bottom toolbar.** **Cancel is the leftmost anchor** (same place on every surface), Back beside it, then any **destructive action** (Delete) in the `destructive` slot — danger-styled, after Cancel/Back, away from the primary; primary right (`color="module"`), Skip beside the primary. Never a second Cancel/Close in the body when the host chrome already has one; never a Delete in the summary aside.
-- **The summary is a reference, not a step.** It never holds inputs **or actions** (no Delete) and never the primary action; it mirrors what the form is building — for an edit, the record's read-only facts/context. It's an optional slot — present it only when the record has a natural running summary.
+- **The summary is a reference, not a step.** It never holds inputs **or actions** (no Delete) and never the primary action; it mirrors what the form is building — and for an edit, it's a **live summary of the record**: the same values you edit in the fields/tabs (handle, price, status, scope) plus derived rollups (counts, totals, low-stock). "Read-only" describes the **presentation, not the data** — the panel is non-editable, but everything in it is editable in its own field/tab; it's there for orientation, so the whole record stays in view while you work one part. It's an optional slot — present it only when the record has a natural running summary, and it's the **strongest** on complex entities (a product spanning pricing, variants, media, inventory, fitment, and multi-site scope) where the rollup is what makes the parts cohere.
 - **Status + lifecycle actions live in the frame header, not an in-body card.** A detail surface's status badge and lifecycle actions (Publish / Unpublish / Archive / Restore, plus Preview / Revisions / Schedule) render in the frame header — the drawer/modal chrome or the full-page shell — via the **detail header-slot** (§5.1), never a bespoke "Status" card stacked atop the form. In the header the **status badge + the primary action keep their text label; secondary actions go icon-only with a tooltip** so the cluster fits one row. The bottom toolbar stays for form submission only (Save/Create + Cancel + Delete) — lifecycle is header-only.
 - **Identity appears exactly once.** An entity's name/title (+ slug/handle) lives ONLY in its editable form field — never ALSO as a read-only heading atop the body (the duplication reads as "which one is authoritative?" and wastes the space). The drawer chrome's type label and the full-page back-link carry context; the field carries the value. Applies only where the redundancy exists — **read-only / transaction details** (orders, quotes, carts, inventory ops) have no editable name field, so their identity heading stays; it's the sole place the name lives.
 - **Unsaved edits are guarded (edit surfaces).** A form that can hold unsaved changes registers ONE dirty-guard (its `dirty` check + a `useConfirm` discard dialog) via the dashboard's `UnsavedGuardProvider` / `useRegisterLeaveGuard`; **every** leave path consults it — the frame-owned Cancel, the overlay host's Close/Switch/backdrop-Esc, and the full-page presentation switch. Wired once on the platform, not per page (docs/105 platform gaps). Not covered: a hard browser nav (`beforeunload`).
@@ -148,6 +149,16 @@ The detail BODY is server-rendered and mounts in three frames — the drawer chr
 - **Full page:** [`DetailPageShell`](<../apps/dashboard/app/(dashboard)/_components/detail-page-shell.tsx>) is the equivalent host the full page otherwise lacks — a back-link to the list, the same slot target, and the drawer/modal presentation switch, all under the module tint + the unsaved-edits guard. `listHref`/`listLabel` override the back-link when `routePrefix` isn't the list route (e.g. CMS `page` lives at `/cms` but lists at `/cms/content`).
 
 It serves **every** detail body — single-form edits (`SurfaceFrame`) AND tabbed detail bodies (product, collection, CMS). Source: [`detail-header-slot.tsx`](<../apps/dashboard/app/(dashboard)/_components/detail-header-slot.tsx>).
+
+### 5.2 The detail footer slot + the context rail (tabbed records)
+
+Two more pieces complete the detail frame, both on the same teleport substrate as §5.1.
+
+**The footer slot (the floored toolbar).** A detail/edit body's primary action (Save) pins to the frame's **bottom edge**, not scrolling away with the form — and a `position: sticky` bar _inside_ the scroll body can't reach the modal floor. So the body renders `<DetailFooterSlot>{bar}</DetailFooterSlot>` and the bar **portals** to a `<DetailFooterSlotTarget>` the frame floors below the scroll body (zero-height until a form supplies one); the portaled submit button re-associates to its form via the HTML `form="<id>"` attribute. The target is wrapped in the entity's `<ModuleProvider>` so a `color="module"` Save reads the module hue — **CSS vars cascade by DOM, not the React tree**, so a target outside the body's own provider would fall back to `:root` indigo and mismatch the header's Publish. Lifecycle stays in the header (§5.1); the footer carries only Save + its result.
+
+**The context rail (a tabbed record's summary).** A **complex tabbed record** — one spanning many panels (a product: pricing, variants, options, media, inventory, fitment, multi-site) — carries a persistent **context rail**: a full-height summary aside beside the tabs, built from the same `SurfaceSummary` / `SurfaceSummaryRow` / `SurfaceSummaryDivider` primitives and the same `module 6% over surface` tint as the create wizard's draft summary, so the whole record stays in view while you work one tab. It is a **non-editable presentation of editable state** — handle, price, counts, inventory totals, reach — mirrored read-only for orientation; every value is edited in its own tab, never in the rail (§5 "the summary is a reference"). A simple record (a few facts) doesn't need one; the rail earns its width on records whose rollup is what makes the parts cohere.
+
+**Tabbed records render full-bleed so the rail fills.** The rail only fills its column edge-to-edge (instead of floating as a card) when the body is a **fixed-height two-pane**, which is what full-bleed provides. So a tabbed record with a context rail joins `FULL_BLEED_DETAIL_TYPES` (`detail-registry`): the host hands it the whole body edge-to-edge, and `_content` owns a `flex h-full` two-pane — a scrolling tab column on `--color-bg-subtle` + the full-height tinted aside — collapsing to one column with the rail stacked under the tabs on a narrow host. Two consequences in the modal host ([`detail-panel.tsx`](<../apps/dashboard/app/(dashboard)/_components/detail-panel.tsx>)): a tabbed full-bleed detail keeps the **wide** canvas (`~1200px`, gated by `isSingleFormDetail` so single-form edits stay narrow at `960px`), and it takes a **definite height** (`h-[88vh]`, not the content-hug `max-h-[88vh]`) so the inner column has a real height to scroll against — without it the hug-content modal leaves the scroll height indefinite and the form runs _under_ the floored toolbar (the drawer is unaffected — its panel is already a definite `h-full`). Single-form full-bleed details and the create wizards manage their own internal scroll + toolbar, so they keep the content-hug. Source: [`detail-header-slot.tsx`](<../apps/dashboard/app/(dashboard)/_components/detail-header-slot.tsx>), [`detail-registry.ts`](<../apps/dashboard/app/(dashboard)/_shell/detail-registry.ts>).
 
 ---
 

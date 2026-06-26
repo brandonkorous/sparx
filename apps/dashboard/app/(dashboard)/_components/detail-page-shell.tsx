@@ -4,9 +4,9 @@ import * as React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
-import { Button, Container, ModuleProvider, Stack } from '@sparx/ui';
+import { Button, cn, Container, ModuleProvider, Stack } from '@sparx/ui';
 
-import { findEntityType } from '../_shell/detail-registry';
+import { findEntityType, isFullBleedDetail } from '../_shell/detail-registry';
 import { DetailPresentationSwitch } from './detail-panel';
 import {
   DetailChromeProvider,
@@ -51,8 +51,14 @@ export function DetailPageShell({
   const listHref = listHrefProp ?? found?.entityType.routePrefix ?? null;
   const listLabel = listLabelProp ?? (listHref ? listLabelFor(listHref) : null);
 
+  // A full-bleed detail (a single-form SurfaceFrame edit, or a tabbed view with a
+  // full-height summary aside like product) owns its own scroll + height, so the
+  // page becomes a fixed-height frame and hands it the whole area edge-to-edge —
+  // the same shape the create wizard's `embedded` frame uses. Other details keep
+  // the centered, document-flow Container.
+  const fullBleed = isFullBleedDetail(typeId);
   const body = (
-    <Stack gap={0}>
+    <Stack gap={0} className={cn(fullBleed && 'h-full')}>
       <div className="flex h-[52px] shrink-0 items-center gap-2 border-b border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-2">
         {listHref && (
           <Button variant="ghost" size="sm" asChild>
@@ -66,22 +72,33 @@ export function DetailPageShell({
         <DetailHeaderSlotTarget className="flex items-center gap-2" />
         <DetailPresentationSwitch typeId={typeId} entityId={entityId} />
       </div>
-      <Container size="xl">
-        <Stack gap={6} className="py-8">
-          {children}
-        </Stack>
-      </Container>
-      {/* The body's form teleports its Save here. On the full page the document
-          scrolls, so the floored bar is sticky to the viewport bottom (parity with
-          the overlay's floored footer). Zero-height until a form supplies one. */}
-      <DetailFooterSlotTarget className="sticky bottom-0 z-10" />
+      {fullBleed ? (
+        <div className="min-h-0 flex-1 overflow-hidden">{children}</div>
+      ) : (
+        <Container size="xl">
+          <Stack gap={6} className="py-8">
+            {children}
+          </Stack>
+        </Container>
+      )}
+      {/* The body's form teleports its Save here. On a document-flow page the bar
+          is sticky to the viewport bottom (parity with the overlay's floored
+          footer); in a fixed-height frame it's the frame's own bottom rail.
+          Zero-height until a form supplies one. */}
+      <DetailFooterSlotTarget className={cn(fullBleed ? 'shrink-0' : 'sticky bottom-0 z-10')} />
     </Stack>
   );
 
   return (
     <UnsavedGuardProvider>
       <DetailChromeProvider>
-        {moduleId ? <ModuleProvider module={moduleId}>{body}</ModuleProvider> : body}
+        {moduleId ? (
+          <ModuleProvider module={moduleId} className={cn(fullBleed && 'h-full')}>
+            {body}
+          </ModuleProvider>
+        ) : (
+          body
+        )}
       </DetailChromeProvider>
     </UnsavedGuardProvider>
   );

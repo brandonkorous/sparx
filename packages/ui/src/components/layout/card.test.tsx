@@ -21,18 +21,21 @@ describe('Card', () => {
   it('applies the 3px module top stripe on variant="module"', () => {
     const { container } = render(<Card variant="module" data-testid="card" />);
     const card = container.firstElementChild as HTMLElement;
-    // The cardVariants module variant adds these specific token classes;
-    // pinning them is intentional — the stripe is the brand pattern from doc 23 §1.
-    // The stripe reads the `accent` role var with a module-active fallback, so an
-    // un-accented module card still renders the active module color.
+    // The stripe is the brand pattern from doc 23 §1; pinning the classes is
+    // intentional. With no accent the stripe reads --module-active DIRECTLY so it
+    // follows the nearest <ModuleProvider> and is immune to an inherited --c-bg.
     expect(card.className).toMatch(/border-t-\[3px\]/);
-    expect(card.className).toMatch(/border-t-\[var\(--c-bg,var\(--module-active\)\)\]/);
+    expect(card.className).toMatch(/border-t-\[var\(--module-active\)\]/);
+    // It must NOT read the shared --c-bg role var when un-accented (the leak path).
+    expect(card.className).not.toMatch(/var\(--c-bg/);
   });
 
   it('recolors the module stripe via the accent prop', () => {
     const { container } = render(<Card variant="module" accent="commerce" />);
     const card = container.firstElementChild as HTMLElement;
+    // accent sets --c-bg ON this card via its role class, so the stripe reads it.
     expect(card.className).toMatch(/sx-c-commerce/);
+    expect(card.className).toMatch(/border-t-\[var\(--c-bg\)\]/);
   });
 
   it('omits the stripe on the default variant', () => {

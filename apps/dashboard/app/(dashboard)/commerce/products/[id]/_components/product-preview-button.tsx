@@ -51,7 +51,7 @@ export function ProductPreviewButton({
     });
   }
 
-  const label = recentlyCopied ? 'Preview link copied' : 'Copy draft preview link';
+  const label = recentlyCopied ? 'Preview link copied' : 'Copy preview link';
   return (
     <Button
       type="button"
@@ -66,6 +66,8 @@ export function ProductPreviewButton({
       loading={pending}
       aria-label={label}
       title={label}
-    />
+    >
+      {recentlyCopied ? 'Copied' : 'Preview'}
+    </Button>
   );
 }

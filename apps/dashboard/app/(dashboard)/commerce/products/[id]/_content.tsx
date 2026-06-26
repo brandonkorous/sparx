@@ -1,7 +1,15 @@
 import { notFound } from 'next/navigation';
-import { ExternalLink } from 'lucide-react';
 
-import { Badge, Heading, Stack, Tabs, TabsContent, TabsList, TabsTrigger } from '@sparx/ui';
+import {
+  Badge,
+  Heading,
+  ModuleProvider,
+  Stack,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { listProperties, type Property } from '@/lib/sites';
@@ -21,6 +29,7 @@ import type { BulkTierRow } from './_components/product-bulk-tiers-editor';
 import { ProductPreviewButton } from './_components/product-preview-button';
 import { ProductSeoForm } from './_components/product-seo-form';
 import { ProductStatusBar } from './_components/product-status-bar';
+import { ProductSummaryRail } from './_components/product-summary-rail';
 import { VariantsPanel } from './_components/variants-panel';
 
 type ProductStatus = 'active' | 'draft' | 'archived';
@@ -178,10 +187,6 @@ interface InventoryLevelRow {
 
 export const dynamic = 'force-dynamic';
 
-// Tenant storefronts live at <slug>.sparx.zone (same origin the CMS preview
-// uses). Env-overridable for non-prod zones.
-const ZONE_DOMAIN = process.env.NEXT_PUBLIC_SPARX_ZONE_DOMAIN ?? 'sparx.zone';
-
 interface Props {
   id: string;
 }
@@ -278,6 +283,50 @@ export async function ProductDetailContent({ id }: Props) {
     }))
   );
 
+  // Roll up every variant×warehouse level for the context rail. null when the
+  // tenant tracks no warehouses, so the rail drops the section rather than
+  // implying a real zero on-hand. Currency comes off the first priced variant.
+  const inventorySummary =
+    warehouses.length === 0
+      ? null
+      : inventoryLevels.reduce(
+          (acc, v) => {
+            for (const l of v.levels) {
+              acc.onHand += l.onHand;
+              acc.available += l.available;
+              if (l.reorderPoint !== null && l.available <= l.reorderPoint) acc.belowReorder += 1;
+            }
+            return acc;
+          },
+          { onHand: 0, available: 0, belowReorder: 0 }
+        );
+  const railCurrency = variants.find((v) => v.currency)?.currency ?? 'USD';
+
+  // Shared props for the context rail — rendered twice (a full-height aside on a
+  // wide host, a stacked card on a narrow one), same content, mirroring how the
+  // wizard renders its summary in both places.
+  const railProps = {
+    handle: product.handle,
+    productType: product.productType,
+    vendor: product.vendor,
+    priceMinCents: product.priceMinCents,
+    priceMaxCents: product.priceMaxCents,
+    currency: railCurrency,
+    variantCount: product.variantCount,
+    optionCount: product.optionCount,
+    mediaCount: images.length,
+    inventory: inventorySummary,
+    fitmentCount: fitments.length,
+    categoryCount: product.categoryIds.length,
+    collectionCount: product.collectionIds.length,
+    siteScope:
+      sites.length > 1 ? { scoped: (product.propertyIds ?? []).length, total: sites.length } : null,
+    averageRating: product.averageRating,
+    reviewCount: product.reviewCount,
+    createdAt: product.createdAt,
+    updatedAt: product.updatedAt,
+  };
+
   return (
     <>
       {/* The surface's accessible name. Visually hidden so identity stays "shown
@@ -290,136 +339,151 @@ export async function ProductDetailContent({ id }: Props) {
 
       {/* Identity (name + handle) lives ONLY in the editable Title/Handle fields
           on the Overview tab — no read-only header restating them. Status + the
-          lifecycle actions teleport into the active frame's header bar. An active
-          product gets a live storefront link; a draft/archived one gets a
-          token-based draft Preview (it has no public page yet). */}
+          lifecycle actions teleport into the active frame's header bar, plus a
+          Preview that works for any status (the token relaxes the published-only
+          filter, so it shows a draft before it's live and the current state of an
+          active product) — short enough to fit where "View on storefront" didn't. */}
       <DetailHeaderSlot>
         <ProductStatusBar
           productId={product.id}
           status={product.status}
           hasVariants={product.variantCount > 0}
         />
-        {product.status === 'active' ? (
-          <a
-            href={`https://${tenant.slug}.${ZONE_DOMAIN}/products/${product.handle}`}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-1 text-xs text-[var(--color-text-muted)] hover:text-[var(--module-active)]"
-          >
-            View on storefront
-            <ExternalLink className="h-3 w-3" />
-          </a>
-        ) : (
-          <ProductPreviewButton
-            productId={product.id}
-            handle={product.handle}
-            tenantSlug={tenant.slug}
-          />
-        )}
+        <ProductPreviewButton
+          productId={product.id}
+          handle={product.handle}
+          tenantSlug={tenant.slug}
+        />
       </DetailHeaderSlot>
 
-      <Tabs defaultValue="overview">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="variants">
-            Variants
-            {product.variantCount > 0 && (
-              <Badge variant="outline" className="ml-2 text-xs">
-                {product.variantCount}
-              </Badge>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="media">
-            Media
-            {images.length > 0 && (
-              <Badge variant="outline" className="ml-2 text-xs">
-                {images.length}
-              </Badge>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="pricing">Pricing</TabsTrigger>
-          <TabsTrigger value="inventory">Inventory</TabsTrigger>
-          <TabsTrigger value="fitment">Fitment</TabsTrigger>
-          <TabsTrigger value="configurator">Configurator</TabsTrigger>
-          <TabsTrigger value="seo">SEO</TabsTrigger>
-        </TabsList>
+      {/* Tabbed editor (left, scrolls) + a persistent product CONTEXT RAIL (right) —
+          the SAME full-height two-pane the create wizard uses (docs/86), so the
+          summary fills its column edge-to-edge instead of floating as a card. The
+          ModuleProvider is the flex + @container parent and tints the summary
+          Commerce orange. Responsive: two panes on a wide host (modal / full page),
+          collapsing to one (the summary stacks under the tabs) on a narrow drawer. */}
+      <ModuleProvider module="commerce" className="@container flex h-full min-h-0">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto bg-[var(--color-bg-subtle)]">
+          <div className="p-6">
+            <Tabs defaultValue="overview">
+              <TabsList>
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="variants">
+                  Variants
+                  {product.variantCount > 0 && (
+                    <Badge variant="outline" className="ml-2 text-xs">
+                      {product.variantCount}
+                    </Badge>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="media">
+                  Media
+                  {images.length > 0 && (
+                    <Badge variant="outline" className="ml-2 text-xs">
+                      {images.length}
+                    </Badge>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="pricing">Pricing</TabsTrigger>
+                <TabsTrigger value="inventory">Inventory</TabsTrigger>
+                <TabsTrigger value="fitment">Fitment</TabsTrigger>
+                <TabsTrigger value="configurator">Configurator</TabsTrigger>
+                <TabsTrigger value="seo">SEO</TabsTrigger>
+              </TabsList>
 
-        <TabsContent value="overview">
-          <Stack gap={6}>
-            <ProductEditForm
-              product={product}
-              sites={sites}
-              initialPropertyIds={product.propertyIds ?? []}
-              facets={facets}
-            />
-          </Stack>
-        </TabsContent>
+              <TabsContent value="overview">
+                <Stack gap={6}>
+                  <ProductEditForm
+                    product={product}
+                    sites={sites}
+                    initialPropertyIds={product.propertyIds ?? []}
+                    facets={facets}
+                  />
+                </Stack>
+              </TabsContent>
 
-        <TabsContent value="variants">
-          <VariantsPanel
-            productId={product.id}
-            productTitle={product.title}
-            options={options}
-            variants={variants}
-            markupRules={markupRules}
-          />
-        </TabsContent>
+              <TabsContent value="variants">
+                <VariantsPanel
+                  productId={product.id}
+                  productTitle={product.title}
+                  options={options}
+                  variants={variants}
+                  markupRules={markupRules}
+                />
+              </TabsContent>
 
-        <TabsContent value="media">
-          <ProductMediaPanel
-            productId={product.id}
-            tenantSlug={tenant.slug}
-            initialImages={images}
-          />
-        </TabsContent>
+              <TabsContent value="media">
+                <ProductMediaPanel
+                  productId={product.id}
+                  tenantSlug={tenant.slug}
+                  initialImages={images}
+                />
+              </TabsContent>
 
-        <TabsContent value="pricing">
-          <ProductPricingPanel
-            variants={variants}
-            markupRules={markupRules}
-            supplierName={supplierName}
-            tiers={bulkTiers}
-          />
-        </TabsContent>
+              <TabsContent value="pricing">
+                <ProductPricingPanel
+                  variants={variants}
+                  markupRules={markupRules}
+                  supplierName={supplierName}
+                  tiers={bulkTiers}
+                />
+              </TabsContent>
 
-        <TabsContent value="inventory">
-          <InventoryPanel
-            productId={product.id}
-            variantsWithLevels={inventoryLevels}
-            warehouses={warehouses.map((w) => ({ id: w.id, code: w.code, name: w.name }))}
-          />
-        </TabsContent>
+              <TabsContent value="inventory">
+                <InventoryPanel
+                  productId={product.id}
+                  variantsWithLevels={inventoryLevels}
+                  warehouses={warehouses.map((w) => ({ id: w.id, code: w.code, name: w.name }))}
+                />
+              </TabsContent>
 
-        <TabsContent value="fitment">
-          <FitmentPanel
-            productId={product.id}
-            productTitle={product.title}
-            fitments={fitments}
-            domains={domains.map((d) => ({
-              id: d.id,
-              slug: d.slug,
-              displayName: d.displayName,
-              labels: d.labels,
-              rangeUnit: d.rangeUnit,
-            }))}
-          />
-        </TabsContent>
+              <TabsContent value="fitment">
+                <FitmentPanel
+                  productId={product.id}
+                  productTitle={product.title}
+                  fitments={fitments}
+                  domains={domains.map((d) => ({
+                    id: d.id,
+                    slug: d.slug,
+                    displayName: d.displayName,
+                    labels: d.labels,
+                    rangeUnit: d.rangeUnit,
+                  }))}
+                />
+              </TabsContent>
 
-        <TabsContent value="configurator">
-          <ConfiguratorPanel productId={product.id} templates={configuratorTemplates} />
-        </TabsContent>
+              <TabsContent value="configurator">
+                <ConfiguratorPanel productId={product.id} templates={configuratorTemplates} />
+              </TabsContent>
 
-        <TabsContent value="seo">
-          <ProductSeoForm
-            productId={product.id}
-            title={product.title}
-            handle={product.handle}
-            description={product.description}
-            seoTitle={product.seoTitle}
-            seoDescription={product.seoDescription}
-          />
-        </TabsContent>
-      </Tabs>
+              <TabsContent value="seo">
+                <ProductSeoForm
+                  productId={product.id}
+                  title={product.title}
+                  handle={product.handle}
+                  description={product.description}
+                  seoTitle={product.seoTitle}
+                  seoDescription={product.seoDescription}
+                />
+              </TabsContent>
+            </Tabs>
+
+            {/* Narrow host: the aside is hidden, so the summary stacks here under
+                the tabs as a tinted card. */}
+            <div className="mt-6 @[820px]:hidden">
+              <div className="rounded-lg border border-[var(--color-border-default)] bg-[color-mix(in_oklab,var(--module-active)_6%,var(--color-bg-surface))] p-5">
+                <ProductSummaryRail {...railProps} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Wide host: full-height summary aside, edge-to-edge with a left border —
+            the identical treatment to the wizard's draft-summary column. */}
+        <aside className="hidden w-[300px] shrink-0 overflow-y-auto border-l border-[var(--color-border-default)] bg-[color-mix(in_oklab,var(--module-active)_6%,var(--color-bg-surface))] px-6 py-6 @[820px]:block">
+          <ProductSummaryRail {...railProps} />
+        </aside>
+      </ModuleProvider>
     </>
   );
 }

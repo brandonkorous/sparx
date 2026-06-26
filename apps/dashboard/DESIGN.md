@@ -304,8 +304,9 @@ that shifts toward `--c-hover`, a prominent focus ring, immediate 175ms state.
 
 - **Corner Style:** `rounded-lg` (8px).
 - **Background / Border:** `surface (#fff)` on a `1px default border (#e5e5e5)`.
-- **Variants:** `default` · `module` (a **3px top stripe** in the accent/active-module color, top corners squared) · `elevated` (`shadow-md`) · `ghost` (borderless, transparent) · `subtle` (borderless on `#f4f4f5`).
+- **Variants:** `default` · `module` (a **3px top stripe** in the active-module color, top corners squared) · `elevated` (`shadow-md`) · `ghost` (borderless, transparent) · `subtle` (borderless on `#f4f4f5`).
 - **Padding:** `none` · `sm` (12px) · `md` (16px, default) · `lg` (24px). Footers right-align actions above a top border. **Never nest cards.**
+- **The `module` stripe follows the nearest `<ModuleProvider>`.** A commerce page's cards are orange; a panel that surfaces another module's job is wrapped in **its** provider (`<ModuleProvider module="inventory">`), and its `module` cards turn amber automatically — same mechanism that colors the panel's buttons/badges. This is the cross-module wayfinding cue (Color-Follows-Functionality, below). **Don't** pass `accent` to recolor a card when a provider already wraps it — `accent="…"` is only for a one-off color with no surrounding provider. (The stripe reads `--module-active` directly, so it never picks up a leaked role color — wrap the panel and it just works.)
 
 ### Inputs / Fields
 

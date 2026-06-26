@@ -1,9 +1,11 @@
 # sparx Platform — Dashboard Working-Area Standard
 
-**Version:** 1.7
+**Version:** 1.8
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-25
 
+> **1.8 (2026-06-25):** **Complex tabbed records carry a context rail** (§4 Archetype 3, §5). A record spanning many panels (product, and in time customer / B2B) renders a full-height **context rail** beside its tabs — a non-editable summary of its vitals (price, variant/media counts, inventory totals, reach) built on the `SurfaceSummary` primitives, mirroring the create wizard's draft summary. The body renders full-bleed (a two-pane) so the rail **fills its column edge-to-edge** and the Save **floors** below the scroll instead of overlapping it. Full mechanics in [docs/86](86-surface-frame-pattern.md) §5.2.
+>
 > **1.7 (2026-06-25):** **Record-detail headers carry the body's status + lifecycle actions** (§4 Archetype 3, §5). A detail body teleports its status badge + lifecycle actions (Publish/Archive/Preview/…) into the active frame header via the `DetailHeaderSlot` pattern (docs/86 §5.1) — never a bespoke in-body "Status" card; secondary actions render **icon-only with tooltips**. And **entity identity appears once**: name/slug is the editable field, not also a read-only heading (read-only/transaction details keep their heading). Full-page detail routes get the `DetailPageShell` (back-link + the teleported actions + presentation switch).
 >
 > **1.6 (2026-06-23):** **Search is now standard on every list, not optional** (§7.1). The earlier rule ("show search only where the endpoint supports `q`; hide it on filter-only lists") is reversed: **every table/card list ships the search toolbar**, and where an endpoint lacks text search the fix is to **add a `q` param to that endpoint** — never hide the box or fake it client-side. `searchable={false}` is reserved for the rare list with genuinely no free-text identity (e.g. a date-keyed log). Bringing the remaining opted-out lists onto `q` is a boy-scout migration. First conformant exemplar: `commerce/categories` (a tree endpoint that now accepts `q` + `featured`, returning flat matches when either is set).
@@ -66,7 +68,7 @@ The shell applies no max-width; each page wraps its content in the shared `Conta
 | --- | ---------------------- | ----------------------------------------- | ------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | 1   | **Module Overview**    | `/{module}`                               | Wide    | Primary create + optional secondary                                                            | Stat grid → SectionCard grid (links to surfaces)                    |
 | 2   | **Collection / List**  | `/{module}/{things}`                      | Full    | Primary create                                                                                 | ListToolbar → DataTable / auto-fill card grid (view toggle) → pager |
-| 3   | **Record Detail**      | `/{module}/{things}/{id}`                 | Wide    | Status badge + lifecycle actions from the body (via `DetailHeaderSlot`; secondaries icon-only) | Tabs → section Cards                                                |
+| 3   | **Record Detail**      | `/{module}/{things}/{id}`                 | Wide    | Status badge + lifecycle actions from the body (via `DetailHeaderSlot`; secondaries icon-only) | Tabs → section Cards (+ a context rail when complex, §5)            |
 | 4   | **Create / Edit Form** | `/{module}/{things}/new`, simple edits    | Focused | — (actions in the form bar)                                                                    | Card(s) → Form fields → action bar                                  |
 | 5   | **Settings Index**     | `/settings`, `/{module}/settings` (index) | Wide    | —                                                                                              | SectionCard grid                                                    |
 | 6   | **Module Preview**     | not-yet-built modules                     | Wide    | —                                                                                              | `ModuleStub`: header + "coming online" panel + "What ships" grid    |
@@ -97,6 +99,8 @@ subtitle paragraph (muted, one or two sentences)
 **Forbidden:** primary actions placed below the header or left-aligned (seen on Discounts, Segments); a second `Create` button duplicated into an empty state; the in-content "← Back to X" link (seen on every `/new` and the product detail) — delete it, the breadcrumb owns up-nav.
 
 **Record-detail headers (Archetype 3) are supplied by the body.** A detail surface's status badge + lifecycle actions (Publish/Unpublish/Archive/Restore, Preview/Revisions/Schedule) don't live in a `PageHeader` action slot or a "Status" card in the body — the body **teleports** them into the active frame's header (the drawer/modal chrome or the full-page `DetailPageShell`) via the `DetailHeaderSlot` pattern (docs/86 §5.1). In the header the status badge + primary action keep text; secondary actions render **icon-only with a tooltip**. Identity (name/slug) is the editable field, never also a read-only heading.
+
+A **complex tabbed record** (a product, and in time customer / B2B) also carries a full-height **context rail** beside its tabs — a non-editable summary of its vitals (price, variant/media counts, inventory totals, catalog + multi-site reach) that stays in view while you work one tab. It's a read-only _presentation_ of editable state (every value is edited in its own tab), built on the same `SurfaceSummary` primitives as the create wizard's draft summary. The record renders **full-bleed** (a two-pane: scrolling tab column + the tinted aside) so the rail fills its column edge-to-edge and Save floors below the scroll. A simple record (few facts) skips it. Mechanics: [docs/86](86-surface-frame-pattern.md) §5.2.
 
 ---
 

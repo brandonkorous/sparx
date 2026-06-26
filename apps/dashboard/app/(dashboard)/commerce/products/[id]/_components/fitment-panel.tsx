@@ -75,7 +75,7 @@ interface Props {
 export function FitmentPanel({ productId, productTitle, fitments, domains }: Props) {
   return (
     <Stack gap={4}>
-      <Card>
+      <Card variant="module">
         <CardHeader>
           <Stack direction="row" align="center" gap={2}>
             <Boxes className="h-4 w-4 text-[var(--module-active)]" />
@@ -131,7 +131,7 @@ export function FitmentPanel({ productId, productTitle, fitments, domains }: Pro
         </CardContent>
       </Card>
 
-      <Card>
+      <Card variant="module">
         <CardHeader>
           <Stack direction="row" align="center" gap={2}>
             <Plus className="h-4 w-4 text-[var(--module-active)]" />

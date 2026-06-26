@@ -641,7 +641,7 @@ function FSurfaceFrame({
             step) hides MiniProgress — there's no journey to show. */}
         <div className="flex min-h-0 flex-col">
           {steps.length > 1 && (
-            <div className="shrink-0 px-7 pt-4 pb-1 max-[680px]:px-5">
+            <div className="shrink-0 bg-[var(--color-bg-subtle)] px-7 pt-4 pb-1 max-[680px]:px-5">
               <MiniProgress steps={steps} current={current} />
             </div>
           )}
@@ -972,7 +972,11 @@ export function SurfaceStep({
     const colWidth = isF ? '' : WIDTH_CLASS[width];
     return (
       <div className={cn('flex h-full flex-col', className)}>
-        <div className="min-h-0 flex-1 overflow-y-auto">
+        {/* The scrolling work area sits a tonal step below the surface so the
+            module-striped step card pops against it (DESIGN.md tonal layering),
+            instead of white-on-white. The chrome rails — stepper/header above and
+            the action toolbar below — stay on surface, framing this band. */}
+        <div className="min-h-0 flex-1 overflow-y-auto bg-[var(--color-bg-subtle)]">
           {/* F variants left-align the column under the header (px-7); the modal /
               page variants keep it centered. Centering an F body would drift it
               right of the flush-left header on a wide (no-summary) sheet. */}

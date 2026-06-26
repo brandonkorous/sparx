@@ -9,9 +9,9 @@ const cardVariants = cva(
     variants: {
       variant: {
         default: '',
-        // The top stripe reads --c-bg from the `accent` color (falls back to
-        // the active module color when no accent is set).
-        module: 'rounded-t-none border-t-[3px] border-t-[var(--c-bg,var(--module-active))]',
+        // Structure only — the stripe COLOR is applied in the component so it can
+        // read `--module-active` directly (see below).
+        module: 'rounded-t-none border-t-[3px]',
         elevated: 'shadow-md',
         ghost: 'border-transparent bg-transparent',
         subtle: 'border-transparent bg-[var(--color-bg-subtle)]',
@@ -29,19 +29,42 @@ const cardVariants = cva(
 
 export interface CardProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, 'color'>, VariantProps<typeof cardVariants> {
-  /** Recolors the `module` variant's top stripe to any palette/custom color.
-   *  Defaults to the active module color. */
+  /** Pins the `module` variant's top stripe to a specific palette/module color
+   *  (e.g. `accent="inventory"`). Omit it and the stripe follows the nearest
+   *  `<ModuleProvider>` — the normal way to color a card is to wrap the panel in
+   *  its module's provider, NOT to pass accent. Reach for accent only for a
+   *  one-off color that doesn't match the surrounding module. */
   accent?: ColorKey | (string & {});
 }
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant, padding, accent, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn(accent && colorClass(accent), cardVariants({ variant, padding }), className)}
-      {...props}
-    />
-  )
+  ({ className, variant, padding, accent, ...props }, ref) => {
+    // The module stripe color. With no `accent` we read `--module-active`
+    // DIRECTLY so the stripe follows the nearest <ModuleProvider> (a nested
+    // provider on a cross-module panel just works). We deliberately do NOT fall
+    // back through the shared `--c-bg` role var: an ancestor's color recipe can
+    // leak `--c-bg` into this subtree and silently override the active module
+    // (the bug this guards against). An explicit `accent` sets `--c-bg` on THIS
+    // card via its role class, so reading `--c-bg` then is safe and local.
+    const moduleStripe =
+      variant === 'module'
+        ? accent
+          ? 'border-t-[var(--c-bg)]'
+          : 'border-t-[var(--module-active)]'
+        : undefined;
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          accent && colorClass(accent),
+          cardVariants({ variant, padding }),
+          moduleStripe,
+          className
+        )}
+        {...props}
+      />
+    );
+  }
 );
 Card.displayName = 'Card';
 

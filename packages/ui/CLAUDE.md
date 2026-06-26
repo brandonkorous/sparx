@@ -21,6 +21,7 @@ Every color-bearing component uses **four-axis** `color × variant × size` via 
 - `'use client'` is applied **selectively**, only where interactivity needs it.
 - `declaration: false` in tsconfig — no `.d.ts` emit; consumers read source types via project references.
 - The ESLint rule flags the **fill + foreground fingerprint** (a background fill paired with a foreground text color, or hand-built `hover:`/`focus:`/`disabled:` states) — that's re-skinning a control. It does **not** flag raw layout/spacing utilities.
+- **`<Card variant="module">`'s top stripe reads `--module-active` DIRECTLY, not the shared `--c-bg` role var.** This is deliberate: `--c-bg` is set by any `.sx-c-*` color recipe and **inherits**, so an ancestor's module/role color silently leaks into a nested card and overrode the active module (the historical bug). So: **to color a card's stripe, wrap the panel in its `<ModuleProvider module="…">`** — the stripe follows automatically (this is also what colors the panel's buttons/badges). The `accent` prop (`<Card accent="inventory">`) is an **escape hatch** for a one-off color that doesn't match the surrounding module — it sets `--c-bg` on that card only. Don't reach for `accent` when a provider already wraps the panel.
 
 ## The wordmark
 

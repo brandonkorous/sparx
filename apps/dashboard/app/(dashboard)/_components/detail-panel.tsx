@@ -23,6 +23,7 @@ import {
   fullPageHrefFor,
   isFullBleedCreate,
   isFullBleedDetail,
+  isSingleFormDetail,
   isSummaryCreate,
   parseDetailToken,
 } from '../_shell/detail-registry';
@@ -161,18 +162,27 @@ function ModalDetailBody({ target, onClose, children }: ModalDetailProps) {
   const fullBleed = isFullBleedTarget(target);
   const moduleId = findEntityType(target.typeId)?.manifest.id;
   const runGuard = useLeaveGuard();
-  // Width by purpose: a tabbed record detail wants the full canvas; a single-form
-  // edit detail (full-bleed) or a create wizard with a live summary column wants
-  // room for form + summary aside; a plain create form is narrower so its fields
-  // don't stretch (docs/86 F layout).
+  // Width by purpose: a single-form edit detail reads best in a tighter dialog so
+  // its fields don't stretch; every other record detail — a plain tabbed view or a
+  // tabbed view with a full-height summary aside (product) — wants the full canvas.
+  // For creates, a wizard with a live summary column gets the wider dialog; a plain
+  // create form stays narrow (docs/86 F layout).
   const isCreate = target.entityId === CREATE_SENTINEL;
   const widthClass = !isCreate
-    ? isFullBleedDetail(target.typeId)
+    ? isSingleFormDetail(target.typeId)
       ? 'w-[min(960px,94vw)] max-w-[min(960px,94vw)]'
       : 'w-[min(1200px,94vw)] max-w-[min(1200px,94vw)]'
     : isSummaryCreate(target.typeId)
       ? 'w-[min(960px,94vw)] max-w-[min(960px,94vw)]'
       : 'w-[min(720px,94vw)] max-w-[min(720px,94vw)]';
+  // A tabbed full-bleed detail (product) runs an inner two-pane whose left column
+  // scrolls independently — that needs a DEFINITE body height to scroll against, so
+  // this modal takes a fixed 88vh instead of hugging content. Without it the
+  // hug-content modal leaves the inner scroll height indefinite, so the form runs
+  // UNDER the floored toolbar (the drawer is fine — its panel is already a definite
+  // h-full). Single-form full-bleed details (category) and the create wizards manage
+  // their own internal scroll + toolbar, so they keep the content hug.
+  const fixedHeight = fullBleed && !isCreate && !isSingleFormDetail(target.typeId);
   // Pin the dialog's TOP edge (`top-[6vh] translate-y-0` overrides the base
   // `top-1/2 -translate-y-1/2` via twMerge) instead of centering it. A centered
   // overlay that hugs its content grows from the middle when its height changes —
@@ -199,10 +209,11 @@ function ModalDetailBody({ target, onClose, children }: ModalDetailProps) {
           Detail view for {describeTarget(target)}
         </ModalDescription>
         {/* Hug the content, capped at 88vh (scroll within when taller) — a fixed
-            height would leave a tall empty box on short steps. Full-bleed create
-            (the product wizard) drops the padded single-scroll column so its
-            two-pane frame fills the body edge-to-edge and manages its own scroll. */}
-        <Stack gap={0} className="max-h-[88vh]">
+            height would leave a tall empty box on short steps. Exception: a tabbed
+            full-bleed detail (product) takes a fixed 88vh so its inner two-pane has
+            a definite height to scroll against (see `fixedHeight`). Full-bleed
+            creates + single-form details manage their own internal scroll. */}
+        <Stack gap={0} className={fixedHeight ? 'h-[88vh]' : 'max-h-[88vh]'}>
           <DetailHeader target={target} />
           <div
             className={
