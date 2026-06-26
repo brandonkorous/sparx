@@ -31,6 +31,12 @@ const TimeseriesQuery = RangeQuery.extend({
   grain: z.enum(['day', 'week', 'month']).optional(),
 });
 
+// `channel` is a derived channel key — a bucket (storefront, b2b_portal, …) or a
+// marketplace source slug (tiktok_shop, etsy, …).
+const ChannelTopProductsQuery = LimitedRangeQuery.extend({
+  channel: z.string().min(1).max(63),
+});
+
 function resolveRange(input: { from?: string; to?: string }): { from: string; to: string } {
   const to = input.to ?? new Date().toISOString();
   const from = input.from ?? new Date(new Date(to).getTime() - 30 * 24 * 60 * 60_000).toISOString();
@@ -176,6 +182,37 @@ const siteCommerceRoutes: FastifyPluginAsync = async (app) => {
         toCommerceContext(request),
         hasRange ? resolveRange(q) : undefined
       )
+    );
+  });
+
+  // Consolidated revenue across every channel — native + each marketplace split by
+  // source, with channel fees + net-after-fees (docs/27 §8). The richer sibling of
+  // channel-breakdown that powers the channel-performance surface + MCP tools.
+  app.get('/v1/commerce/reports/channel-revenue', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const q = RangeQuery.parse(request.query);
+    const hasRange = q.from !== undefined && q.to !== undefined;
+    return ok(
+      await reportingService.channelComparison(
+        toCommerceContext(request),
+        hasRange ? resolveRange(q) : undefined
+      )
+    );
+  });
+
+  // Top products sold through one channel over the window (docs/27 §8).
+  app.get('/v1/commerce/reports/channel-top-products', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const q = ChannelTopProductsQuery.parse(request.query);
+    const hasRange = q.from !== undefined && q.to !== undefined;
+    return ok(
+      await reportingService.channelTopProducts(toCommerceContext(request), {
+        channel: q.channel,
+        ...(hasRange ? { range: resolveRange(q) } : {}),
+        ...(q.limit ? { limit: q.limit } : {}),
+      })
     );
   });
 };

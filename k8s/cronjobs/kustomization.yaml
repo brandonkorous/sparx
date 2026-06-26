@@ -14,3 +14,4 @@ resources:
   - site-analytics-rollup.yaml
   - search-console-sync.yaml
   - inventory-valuation-snapshot.yaml
+  - channel-order-poll.yaml

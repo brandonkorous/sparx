@@ -71,6 +71,7 @@ import automationCronRoutes from './routes/internal/automation-cron.js';
 import siteAnalyticsCronRoutes from './routes/internal/site-analytics-cron.js';
 import seoCronRoutes from './routes/internal/seo-cron.js';
 import inventoryCronRoutes from './routes/internal/inventory-cron.js';
+import channelsCronRoutes from './routes/internal/channels-cron.js';
 import acquisitionReportRoutes from './routes/internal/acquisition-report.js';
 import contentTypeRoutes from './routes/v1/content/types.js';
 import entryRoutes from './routes/v1/content/entries.js';
@@ -740,6 +741,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(siteAnalyticsCronRoutes);
   await app.register(seoCronRoutes);
   await app.register(inventoryCronRoutes);
+  await app.register(channelsCronRoutes);
   await app.register(acquisitionReportRoutes);
 
   // v1 surface. Each route file owns its own URL prefix so this central

@@ -1,0 +1,70 @@
+# Polls connected order channels that have no reliable order webhook (Etsy,
+# Walmart, eBay; Faire as a backup) and ingests new orders (docs/106 §4.4).
+# Push-style channels (TikTok) ingest via the public webhook instead, so they
+# aren't touched here.
+#
+# Every 5 minutes — marketplace order SLAs tolerate minutes of latency, and
+# polling more often burns the channels' rate limits for little gain. The ingest
+# is idempotent (deterministic order number per externalId), so the per-connection
+# cursor overlap never double-writes. Forbid concurrency so a slow run (it calls
+# external APIs across every tenant + connection) can't pile up. A no-op when no
+# pollable channel is connected, so it costs nothing until a tenant connects one.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: channel-order-poll
+  namespace: sparx-prod
+  labels:
+    app: channels-cron
+    job: channel-order-poll
+spec:
+  schedule: '*/5 * * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 120
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: channels-cron
+            job: channel-order-poll
+        spec:
+          serviceAccountName: sparx-app
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 240
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://api-rest.sparx-prod.svc.cluster.local:3000/internal/channels/poll
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '25m'
+                  memory: '16Mi'
+                limits:
+                  cpu: '100m'
+                  memory: '32Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

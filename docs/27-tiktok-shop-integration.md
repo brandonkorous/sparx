@@ -1,6 +1,6 @@
 # sparx Platform — TikTok Shop Integration Spec
 
-**Version:** 1.2
+**Version:** 1.3
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-25
 
@@ -34,9 +34,18 @@
 >   (`TIKTOK_APP_KEY`/`_SECRET`/`_WEBHOOK_SECRET`). The channel stays `coming_soon`
 >   at runtime until then, with no code change to flip it live.
 >
-> Channel-revenue analytics consolidation (§8) + the MCP tools are the remaining
-> follow-on slice (they aggregate the now-ingested orders by `channel`/`source` and
-> apply to every channel, not just TikTok).
+> **Channel-revenue analytics consolidation (§8) is now BUILT (2026-06-25).** It
+> aggregates the ingested orders by the _derived channel key_ (`marketplace`
+> orders split out by their `source` slug — TikTok Shop, Etsy, … — every other
+> order keyed by its `channel` bucket) and applies to every channel, not just
+> TikTok. The primitive `deriveChannelKey` + the canonical channel labels live in
+> `@sparx/crm-schemas` (one source of truth, shared by REST + MCP + dashboard).
+> Shape: `reportingService.channelComparison` / `channelRevenue` /
+> `channelTopProducts` → `GET /v1/commerce/reports/channel-revenue` +
+> `/channel-top-products` → the `get_channel_revenue` / `get_channel_comparison` /
+> `get_channel_top_products` MCP tools → the Settings → Channels performance
+> surface + the commerce overview's channel section. Net-of-fees reconciles via
+> `channelFeeCents`. See §8.
 
 ## 1. Overview
 
@@ -292,20 +301,66 @@ pubsub.subscribe('inventory.updated', async (event) => {
 
 ## 8. Analytics Consolidation
 
-TikTok Shop revenue surfaces in the sparx analytics dashboard as a channel alongside site and B2B.
+**Status: BUILT (2026-06-25).** TikTok Shop revenue surfaces as a channel alongside
+every other — native (storefront, B2B) and each connected marketplace. It follows
+the house reporting convention (`/v1/commerce/reports/*`, integer cents, gross =
+`order.total`, cancelled excluded) rather than a bespoke `/v1/analytics/*` surface.
 
-```typescript
-// GET /v1/analytics/revenue?breakdown=channel
+The consolidation key is **derived**: a `marketplace` order keys by its `source`
+slug (so TikTok Shop and Etsy are distinct lines instead of collapsing into one
+"marketplace" bucket); every other order keys by its `channel` bucket. The
+primitive `deriveChannelKey(channel, source)` + the canonical channel labels live
+in `@sparx/crm-schemas` — one source of truth shared by the reporting service, the
+REST routes, the MCP tools, and the dashboard. `channelFeeCents` (the marketplace
+commission) is summed so net-after-fees revenue reconciles.
+
+```jsonc
+// GET /v1/commerce/reports/channel-revenue?from=&to=  (defaults to last 30 days)
 {
-  "period": "this_month",
-  "channels": {
-    "site": { "revenue": 48200, "orders": 156 },
-    "tiktok_shop": { "revenue": 12800, "orders": 89 },
-    "b2b": { "revenue": 31400, "orders": 24 }
-  },
-  "total": { "revenue": 92400, "orders": 269 }
+  "rangeLabel": "Last 30 days",
+  "totalOrders": 269,
+  "totalGrossRevenueCents": 9_240_000,
+  "totalChannelFeeCents": 640_000,
+  "totalNetAfterFeesCents": 8_460_000,
+  "byChannel": [
+    {
+      "channel": "storefront",
+      "label": "Storefront",
+      "orders": 156,
+      "grossRevenueCents": 4_820_000,
+      "channelFeeCents": 0,
+      "netAfterFeesCents": 4_820_000,
+      "averageOrderValueCents": 30_897,
+      "sharePct": 52.2,
+    },
+    {
+      "channel": "b2b_portal",
+      "label": "B2B portal",
+      "orders": 24,
+      "grossRevenueCents": 3_140_000,
+      "channelFeeCents": 0,
+      "netAfterFeesCents": 3_140_000,
+      "averageOrderValueCents": 130_833,
+      "sharePct": 34.0,
+    },
+    {
+      "channel": "tiktok_shop",
+      "label": "TikTok Shop",
+      "orders": 89,
+      "grossRevenueCents": 1_280_000,
+      "channelFeeCents": 640_000,
+      "netAfterFeesCents": 640_000,
+      "averageOrderValueCents": 14_382,
+      "sharePct": 13.9,
+    },
+  ],
+  "currency": "USD",
 }
 ```
+
+A single channel's summary (`get_channel_revenue` / `channelRevenue`) and its top
+products (`GET /v1/commerce/reports/channel-top-products?channel=` /
+`channelTopProducts`) drill into one line.
 
 ### GMV Max Advertising (July 2026 Requirement)
 
@@ -318,10 +373,14 @@ Starting July 2026, TikTok requires sellers to allocate 1.5–5% of TikTok Shop 
 ### MCP Tools
 
 ```
-get_channel_revenue({ channel: 'tiktok_shop', period: 'this_month' })
-get_tiktok_top_products({ period: 'this_month', limit: 10 })
-get_channel_comparison({ period: 'this_month' })
+get_channel_revenue({ channel: 'tiktok_shop', range? })       // one channel: gross/fees/net/AOV
+get_channel_comparison({ range? })                            // every channel, ranked, with shares
+get_channel_top_products({ channel: 'tiktok_shop', range?, limit? })  // best sellers on a channel
 ```
+
+`get_channel_top_products` is the generic form of the originally-sketched
+`get_tiktok_top_products` — it takes a `channel` key so it works for any channel,
+not just TikTok. `range` is optional everywhere and defaults to the last 30 days.
 
 Example AI interaction:
 
@@ -427,11 +486,11 @@ All TikTok API calls go through a rate-limit-aware client with automatic backoff
 - [ ] Implement fulfillment push (Pub/Sub consumer)
 - [ ] Implement inventory sync (Pub/Sub consumer)
 - [ ] Implement analytics fetch from TikTok Finance API
-- [ ] Add channel revenue breakdown to analytics API
-- [ ] Add MCP tools: get_channel_revenue, get_tiktok_top_products
-- [ ] Build Channels UI: connection flow, sync status, quick stats
+- [x] Add channel revenue breakdown to analytics API (`/v1/commerce/reports/channel-revenue` + `/channel-top-products`, 2026-06-25)
+- [x] Add MCP tools: `get_channel_revenue`, `get_channel_comparison`, `get_channel_top_products` (2026-06-25)
+- [x] Build Channels UI: connection flow, sync status, quick stats (per-channel 30-day GMV/Orders/AOV + Revenue-by-channel card, 2026-06-25)
 - [ ] Add TikTok status badges to product list
-- [ ] Add channel filter to order list
+- [x] Add channel filter to order list
 - [ ] Add TikTok source badge to order cards
 - [ ] Add GMV Max budget tracker to analytics
 - [ ] Webhook signature verification

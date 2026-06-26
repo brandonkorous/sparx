@@ -4,6 +4,7 @@
 // bits live in ./_components. Channels are part of Commerce (the API gates on it).
 
 import { CheckCircle2, Store } from 'lucide-react';
+import { channelKeyLabel } from '@sparx/crm-schemas';
 import {
   Alert,
   Card,
@@ -17,23 +18,37 @@ import {
   Text,
 } from '@sparx/ui';
 
-import { getChannels } from './actions';
+import { getChannelRevenue, getChannelTopProducts, getChannels } from './actions';
 import { AvailableChannelCard } from './_components/available-channel-card';
 import { ConnectedChannelRow } from './_components/connected-channel-row';
+import { ChannelRevenuePanel, ChannelTopProductsPanel } from './_components/channel-revenue-panel';
+import type { ChannelRevenueRow } from './_types';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ChannelsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ connected?: string; error?: string }>;
+  searchParams: Promise<{ connected?: string; error?: string; channel?: string }>;
 }) {
-  const { connected, error } = await searchParams;
-  const { connections, catalog } = await getChannels();
+  const { connected, error, channel: selectedChannel } = await searchParams;
+  const [{ connections, catalog }, revenue] = await Promise.all([
+    getChannels(),
+    getChannelRevenue(),
+  ]);
   const descriptorBySlug = new Map(catalog.map((c) => [c.slug, c]));
   const connectedSlugs = new Set(connections.map((c) => c.channel));
   const available = catalog.filter((c) => !connectedSlugs.has(c.slug));
   const connectedName = connected ? (descriptorBySlug.get(connected)?.name ?? connected) : null;
+
+  // Per-channel 30-day metrics matched by derived key: a marketplace connection's
+  // slug IS its derived channel key (docs/27 §9).
+  const revenueByKey = new Map<string, ChannelRevenueRow>(
+    (revenue?.byChannel ?? []).map((r) => [r.channel, r])
+  );
+  // Channel drill-down: top products on the selected channel (server-fetched only
+  // when a `?channel=` is chosen from the comparison table).
+  const topProducts = selectedChannel ? await getChannelTopProducts(selectedChannel) : null;
 
   return (
     // Channels surface Commerce functionality — tint the page with the Commerce
@@ -70,14 +85,55 @@ export default async function ChannelsPage({
               </CardHeader>
               <CardContent>
                 <Stack gap={2}>
-                  {connections.map((c) => (
-                    <ConnectedChannelRow
-                      key={c.id}
-                      connection={c}
-                      descriptor={descriptorBySlug.get(c.channel)}
-                    />
-                  ))}
+                  {connections.map((c) => {
+                    const m = revenueByKey.get(c.channel);
+                    return (
+                      <ConnectedChannelRow
+                        key={c.id}
+                        connection={c}
+                        descriptor={descriptorBySlug.get(c.channel)}
+                        metrics={
+                          m
+                            ? {
+                                grossRevenueCents: m.grossRevenueCents,
+                                orders: m.orders,
+                                averageOrderValueCents: m.averageOrderValueCents,
+                                currency: revenue?.currency ?? 'USD',
+                              }
+                            : undefined
+                        }
+                      />
+                    );
+                  })}
                 </Stack>
+              </CardContent>
+            </Card>
+          )}
+
+          {revenue && revenue.byChannel.length > 0 && (
+            <Card>
+              <CardHeader>
+                <Stack direction="row" align="center" justify="between" gap={2}>
+                  <CardTitle>Revenue by channel</CardTitle>
+                  <Text size="xs" variant="muted">
+                    {revenue.rangeLabel}
+                  </Text>
+                </Stack>
+              </CardHeader>
+              <CardContent>
+                <ChannelRevenuePanel report={revenue} selectedChannel={selectedChannel} />
+              </CardContent>
+            </Card>
+          )}
+
+          {selectedChannel && topProducts && (
+            <Card>
+              <CardContent className="pt-6">
+                <ChannelTopProductsPanel
+                  label={channelKeyLabel(selectedChannel)}
+                  products={topProducts}
+                  currency={revenue?.currency ?? 'USD'}
+                />
               </CardContent>
             </Card>
           )}

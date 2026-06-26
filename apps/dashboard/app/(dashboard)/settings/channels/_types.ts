@@ -32,4 +32,37 @@ export interface ChannelsPayload {
   catalog: ChannelCatalogItem[];
 }
 
+// Channel revenue consolidation (docs/27 §8) — mirrors the reportingService DTOs
+// surfaced by GET /v1/commerce/reports/channel-revenue + /channel-top-products.
+export interface ChannelRevenueRow {
+  channel: string;
+  label: string;
+  orders: number;
+  grossRevenueCents: number;
+  refundedCents: number;
+  netRevenueCents: number;
+  channelFeeCents: number;
+  netAfterFeesCents: number;
+  averageOrderValueCents: number;
+  sharePct: number;
+}
+
+export interface ChannelRevenueReport {
+  rangeLabel: string;
+  totalOrders: number;
+  totalGrossRevenueCents: number;
+  totalRefundedCents: number;
+  totalChannelFeeCents: number;
+  totalNetAfterFeesCents: number;
+  byChannel: ChannelRevenueRow[];
+  currency: string;
+}
+
+export interface ChannelTopProduct {
+  productId: string;
+  productTitle: string;
+  unitsSold: number;
+  revenueCents: number;
+}
+
 export type ActionResult<T> = { ok: true; data: T } | { ok: false; error: { message: string } };

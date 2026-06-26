@@ -164,6 +164,16 @@ const EnvSchema = z
     //   TIKTOK_WEBHOOK_SECRET       — order-webhook signature key (defaults to the
     //                                 app secret when unset; set it if TikTok issues
     //                                 a distinct webhook secret).
+    //   ETSY_API_KEY / _SECRET      — the Etsy app keystring (= OAuth client_id +
+    //                                 x-api-key header) + shared secret. Order ingest
+    //                                 is poll-based (Etsy has no order webhooks).
+    //   WALMART_CLIENT_ID / _SECRET — the Walmart Marketplace API keys (client-creds
+    //                                 token; per-seller / Solution-Provider). Poll ingest.
+    //   EBAY_CLIENT_ID / _SECRET    — the eBay App ID / Cert ID. EBAY_RU_NAME is the
+    //                                 registered Redirect-URL name (sent as redirect_uri
+    //                                 on authorize/exchange when set). Poll ingest.
+    //   FAIRE_CLIENT_ID / _SECRET   — the Faire partner app. FAIRE_WEBHOOK_SECRET signs
+    //                                 the order webhook (Faire ingests by webhook + poll).
     CHANNELS_TOKEN_KEY: z.string().optional(),
     META_APP_ID: z.string().optional(),
     META_APP_SECRET: z.string().optional(),
@@ -172,6 +182,16 @@ const EnvSchema = z
     TIKTOK_APP_KEY: z.string().optional(),
     TIKTOK_APP_SECRET: z.string().optional(),
     TIKTOK_WEBHOOK_SECRET: z.string().optional(),
+    ETSY_API_KEY: z.string().optional(),
+    ETSY_API_SECRET: z.string().optional(),
+    WALMART_CLIENT_ID: z.string().optional(),
+    WALMART_CLIENT_SECRET: z.string().optional(),
+    EBAY_CLIENT_ID: z.string().optional(),
+    EBAY_CLIENT_SECRET: z.string().optional(),
+    EBAY_RU_NAME: z.string().optional(),
+    FAIRE_CLIENT_ID: z.string().optional(),
+    FAIRE_CLIENT_SECRET: z.string().optional(),
+    FAIRE_WEBHOOK_SECRET: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     // GCS mode requires both buckets — the public one holds variants,

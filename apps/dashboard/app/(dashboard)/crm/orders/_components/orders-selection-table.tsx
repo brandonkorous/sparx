@@ -1,6 +1,7 @@
 'use client';
 
 import { XCircle } from 'lucide-react';
+import { channelDisplayName } from '@sparx/crm-schemas';
 import {
   Badge,
   type BulkAction,
@@ -35,32 +36,11 @@ export interface OrderRow {
   source: string | null;
 }
 
-// Human labels for the order's high-level channel + the specific marketplace source
-// (docs/106 §4.4). A marketplace order badges its real channel name (TikTok Shop),
-// not the bare "marketplace" bucket.
-const CHANNEL_LABELS: Record<string, string> = {
-  marketplace: 'Marketplace',
-  storefront: 'Storefront',
-  b2b_portal: 'B2B portal',
-  admin: 'Admin',
-  import: 'Import',
-  mcp: 'MCP',
-};
-const SOURCE_LABELS: Record<string, string> = {
-  tiktok_shop: 'TikTok Shop',
-  etsy: 'Etsy',
-  amazon: 'Amazon',
-  walmart: 'Walmart',
-  ebay: 'eBay',
-  faire: 'Faire',
-  sparx_market: 'sparx.market',
-};
-
+// A marketplace order badges its real channel name (TikTok Shop), not the bare
+// "marketplace" bucket. Labels come from the canonical map in @sparx/crm-schemas
+// (docs/106 §4.4) — never re-hardcode them here. Null channel → no badge ("—").
 function channelLabel(o: OrderRow): string | null {
-  if (o.channel === 'marketplace') {
-    return o.source ? (SOURCE_LABELS[o.source] ?? o.source) : 'Marketplace';
-  }
-  return o.channel ? (CHANNEL_LABELS[o.channel] ?? o.channel) : null;
+  return o.channel ? channelDisplayName(o.channel, o.source) : null;
 }
 
 interface OrdersSelectionTableProps {

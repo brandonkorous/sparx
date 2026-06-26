@@ -143,6 +143,13 @@ export interface ChannelOrderCustomer {
   phone?: string | null;
 }
 
+/** The polling cursor handed to {@link ChannelAdapter.fetchOrders}: pull orders
+ *  created/updated at or after `since` (ISO). The poller derives it from the
+ *  connection's last successful poll (with a small overlap; ingest is idempotent). */
+export interface ChannelOrderPollCursor {
+  since: string; // ISO
+}
+
 export interface NormalizedChannelOrder {
   /** The channel's own order id — the idempotency key on ingest (docs/106 §4.3). */
   externalId: string;
@@ -229,6 +236,12 @@ export interface ChannelAdapter {
   // ── order shape only — bidirectional ──
   /** Normalize an inbound order webhook/poll payload into the sparx order spine. */
   ingestOrder?(auth: ChannelAuth, payload: unknown): Promise<NormalizedChannelOrder>;
+  /** Pull orders placed/updated since a cursor — the POLLING ingest path for order
+   *  channels without reliable order webhooks (Etsy/Walmart/eBay; Faire offers both).
+   *  The scheduled poller advances the cursor per connection. Channels that ingest
+   *  purely by webhook (TikTok) omit it. Returns the orders normalized like
+   *  `ingestOrder`, ready for the same idempotent commit. */
+  fetchOrders?(auth: ChannelAuth, opts: ChannelOrderPollCursor): Promise<NormalizedChannelOrder[]>;
   /** Push tracking back to the channel when a sparx order is fulfilled. */
   pushFulfillment?(auth: ChannelAuth, fulfillment: ChannelFulfillment): Promise<void>;
   /** Push a new sellable quantity for one mapped SKU. */

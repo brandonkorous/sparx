@@ -95,3 +95,73 @@ export const CancelOrderInput = z.object({
   reason: z.string().max(500).optional(),
 });
 export type CancelOrderInput = z.infer<typeof CancelOrderInput>;
+
+// ─── Channel display + consolidation (docs/106 §4.4, docs/27 §8) ──────────────
+//
+// An order carries a high-level `channel` bucket plus, for marketplace orders, a
+// specific `source` slug (tiktok_shop, etsy, …). For revenue analytics we
+// consolidate to ONE "channel key": a marketplace order keys by its source slug
+// (so TikTok Shop and Etsy are distinct lines), every other order keys by its
+// bucket. `deriveChannelKey` is that primitive; the label maps render it. This is
+// the single source of truth shared by the reporting service (REST + MCP) and the
+// dashboard — never re-hardcode these maps in a feature.
+
+/** Human labels for the high-level order `channel` bucket. */
+export const ORDER_CHANNEL_LABELS: Record<string, string> = {
+  storefront: 'Storefront',
+  b2b_portal: 'B2B portal',
+  admin: 'Admin',
+  import: 'Import',
+  mcp: 'MCP / AI',
+  marketplace: 'Marketplace',
+  unknown: 'Other',
+};
+
+/** Human labels for the specific marketplace `source` slug (docs/106 §4.4). */
+export const MARKETPLACE_SOURCE_LABELS: Record<string, string> = {
+  tiktok_shop: 'TikTok Shop',
+  etsy: 'Etsy',
+  amazon: 'Amazon',
+  walmart: 'Walmart',
+  ebay: 'eBay',
+  faire: 'Faire',
+  meta: 'Meta',
+  google: 'Google',
+  pinterest: 'Pinterest',
+  sparx_market: 'sparx.market',
+};
+
+/** The fixed high-level `channel` buckets (the enum values plus the `unknown`
+ *  fallback used when an order has no channel). Everything NOT in this set is a
+ *  marketplace source slug — which keeps channel routing robust against a new
+ *  marketplace whose slug isn't in MARKETPLACE_SOURCE_LABELS yet. */
+export const ORDER_CHANNEL_BUCKETS: ReadonlySet<string> = new Set<string>([
+  ...OrderChannel.options,
+  'unknown',
+]);
+
+/**
+ * The analytics channel KEY for an order: marketplace orders key by their
+ * `source` slug (tiktok_shop, etsy, …) so each marketplace is its own line;
+ * everything else keys by its `channel` bucket. `unknown` when neither is set.
+ */
+export function deriveChannelKey(channel?: string | null, source?: string | null): string {
+  if (channel === 'marketplace') return source ?? 'marketplace';
+  return channel ?? 'unknown';
+}
+
+/** Display name for a raw order's (channel, source) pair — for order rows. */
+export function channelDisplayName(channel?: string | null, source?: string | null): string {
+  if (channel === 'marketplace') {
+    if (source) return MARKETPLACE_SOURCE_LABELS[source] ?? source;
+    return ORDER_CHANNEL_LABELS.marketplace ?? 'Marketplace';
+  }
+  const key = channel ?? 'unknown';
+  return ORDER_CHANNEL_LABELS[key] ?? key;
+}
+
+/** Display name for an already-derived channel key (a bucket OR a source slug).
+ *  Bucket/source slugs are disjoint, so source labels win the lookup safely. */
+export function channelKeyLabel(key: string): string {
+  return MARKETPLACE_SOURCE_LABELS[key] ?? ORDER_CHANNEL_LABELS[key] ?? key;
+}

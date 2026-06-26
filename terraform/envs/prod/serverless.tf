@@ -589,6 +589,14 @@ module "channel_sync_worker_cloudrun" {
     # here when channels go live; TIKTOK_APP_KEY / TIKTOK_APP_SECRET ride `secrets`
     # below. Until SPARX_SITE_BASE is set the worker skips catalog pushes (no
     # absolute URL) rather than feed a broken link — a safe default.
+    #
+    # P3 order channels (Etsy / Walmart / eBay / Faire) add their app credentials
+    # the same way at go-live, each partner-approval-gated — ETSY_API_KEY/_SECRET,
+    # WALMART_CLIENT_ID/_SECRET, EBAY_CLIENT_ID/_SECRET (+ EBAY_RU_NAME),
+    # FAIRE_CLIENT_ID/_SECRET. The worker signs OUTBOUND push with them; inbound
+    # order ingest runs in api-rest (Faire webhook + the channel-order-poll CronJob
+    # for Etsy/Walmart/eBay). Not bound now — can't bind a secret value that doesn't
+    # exist yet; each channel stays coming_soon until its creds land, no code change.
   }
 
   secrets = [

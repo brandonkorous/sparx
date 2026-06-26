@@ -29,6 +29,19 @@ const EnvSchema = z.object({
   // the approved app creds.
   TIKTOK_APP_KEY: z.string().optional(),
   TIKTOK_APP_SECRET: z.string().optional(),
+  // P3 order-channel app credentials — the worker's outbound push (catalog /
+  // inventory / fulfillment) signs/authorizes calls with them, read directly by the
+  // @sparx/channels adapters. Unset → a connected shop's pushes fail with a recorded
+  // sync error until ops sets the approved app creds (the channel stays coming_soon).
+  ETSY_API_KEY: z.string().optional(),
+  ETSY_API_SECRET: z.string().optional(),
+  WALMART_CLIENT_ID: z.string().optional(),
+  WALMART_CLIENT_SECRET: z.string().optional(),
+  EBAY_CLIENT_ID: z.string().optional(),
+  EBAY_CLIENT_SECRET: z.string().optional(),
+  EBAY_RU_NAME: z.string().optional(),
+  FAIRE_CLIENT_ID: z.string().optional(),
+  FAIRE_CLIENT_SECRET: z.string().optional(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

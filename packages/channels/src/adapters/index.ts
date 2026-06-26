@@ -14,6 +14,10 @@ import { GoogleShoppingAdapter } from './google-shopping.js';
 import { MetaAdapter } from './meta.js';
 import { PinterestAdapter } from './pinterest.js';
 import { TikTokShopAdapter } from './tiktok-shop.js';
+import { EtsyAdapter } from './etsy.js';
+import { WalmartAdapter } from './walmart.js';
+import { EbayAdapter } from './ebay.js';
+import { FaireAdapter } from './faire.js';
 
 let registered = false;
 
@@ -28,6 +32,10 @@ export function registerBuiltinChannels(): void {
     new MetaAdapter(),
     new PinterestAdapter(),
     new TikTokShopAdapter(),
+    new EtsyAdapter(),
+    new WalmartAdapter(),
+    new EbayAdapter(),
+    new FaireAdapter(),
   ];
   for (const adapter of adapters) {
     if (!hasChannel(adapter.id)) registerChannel(adapter);
@@ -39,3 +47,7 @@ export { GoogleShoppingAdapter } from './google-shopping.js';
 export { MetaAdapter } from './meta.js';
 export { PinterestAdapter } from './pinterest.js';
 export { TikTokShopAdapter } from './tiktok-shop.js';
+export { EtsyAdapter } from './etsy.js';
+export { WalmartAdapter } from './walmart.js';
+export { EbayAdapter } from './ebay.js';
+export { FaireAdapter } from './faire.js';

@@ -11,6 +11,7 @@
 // consistently so the dashboard doesn't have to juggle two formats.
 
 import { Prisma, withTenant, type TxClient } from '@sparx/db';
+import { ORDER_CHANNEL_BUCKETS, channelKeyLabel, deriveChannelKey } from '@sparx/crm-schemas';
 
 import type { ServiceContext } from '../errors';
 
@@ -88,44 +89,55 @@ export interface TopProductRow {
   revenueCents: number;
 }
 
+// Shared by topProducts (all orders) + channelTopProducts (one channel). OrderItem
+// has a nullable productId pointing at the Commerce product spine; group by it,
+// sum units + revenue over the (already date/status-filtered) orders matching
+// `orderWhere`, then join back to Product for the title.
+async function topProductsForOrders(
+  tx: TxClient,
+  orderWhere: Prisma.OrderWhereInput,
+  range: { from: Date; to: Date },
+  limit: number
+): Promise<TopProductRow[]> {
+  const groups = await tx.orderItem.groupBy({
+    by: ['productId'],
+    where: {
+      productId: { not: null },
+      order: {
+        ...orderWhere,
+        placedAt: { gte: range.from, lte: range.to },
+        status: { not: 'cancelled' },
+      },
+    },
+    _sum: { quantity: true, lineTotal: true },
+    orderBy: { _sum: { lineTotal: 'desc' } },
+    take: limit,
+  });
+
+  const productIds = groups.map((g) => g.productId).filter((id): id is string => id !== null);
+  if (productIds.length === 0) return [];
+
+  const products = await tx.product.findMany({
+    where: { id: { in: productIds } },
+    select: { id: true, title: true },
+  });
+  const titleById = new Map(products.map((p) => [p.id, p.title]));
+
+  return groups.map((g) => ({
+    productId: g.productId ?? '',
+    productTitle: g.productId ? (titleById.get(g.productId) ?? '—') : '—',
+    unitsSold: g._sum?.quantity ?? 0,
+    revenueCents: decimalToCents(g._sum?.lineTotal ?? null),
+  }));
+}
+
 export async function topProducts(
   ctx: ServiceContext,
   input: { range: DateRange; limit?: number }
 ): Promise<TopProductRow[]> {
   const { from, to } = bounds(input.range);
   const limit = input.limit ?? 10;
-
-  return withTenant(ctx, async (tx) => {
-    // OrderItem has a nullable productId that points at the Commerce
-    // product spine. We group by that, sum units + revenue, then join
-    // back to Product for the title.
-    const groups = await tx.orderItem.groupBy({
-      by: ['productId'],
-      where: {
-        productId: { not: null },
-        order: { placedAt: { gte: from, lte: to }, status: { not: 'cancelled' } },
-      },
-      _sum: { quantity: true, lineTotal: true },
-      orderBy: { _sum: { lineTotal: 'desc' } },
-      take: limit,
-    });
-
-    const productIds = groups.map((g) => g.productId).filter((id): id is string => id !== null);
-    if (productIds.length === 0) return [];
-
-    const products = await tx.product.findMany({
-      where: { id: { in: productIds } },
-      select: { id: true, title: true },
-    });
-    const titleById = new Map(products.map((p) => [p.id, p.title]));
-
-    return groups.map((g) => ({
-      productId: g.productId ?? '',
-      productTitle: g.productId ? (titleById.get(g.productId) ?? '—') : '—',
-      unitsSold: g._sum?.quantity ?? 0,
-      revenueCents: decimalToCents(g._sum?.lineTotal ?? null),
-    }));
-  });
+  return withTenant(ctx, (tx) => topProductsForOrders(tx, {}, { from, to }, limit));
 }
 
 // ─── Top customers ───────────────────────────────────────────────────
@@ -1502,4 +1514,202 @@ export async function channelBreakdown(
       currency: DEFAULT_CURRENCY,
     };
   });
+}
+
+// ─── Channel revenue consolidation (docs/27 §8, docs/106 §4.4) ────────────────
+//
+// The richer sibling of channelBreakdown: it CONSOLIDATES every sales channel —
+// native (storefront, b2b_portal, …) AND each external marketplace — into one
+// revenue picture. The key difference is the derived channel key: a marketplace
+// order keys by its `source` slug (tiktok_shop, etsy, …), so TikTok Shop and Etsy
+// are distinct lines instead of collapsing into one "marketplace" bucket. It also
+// surfaces `channelFeeCents` (the marketplace commission) so net-of-fees revenue
+// reconciles. Powers GET /v1/commerce/reports/channel-revenue + the get_channel_*
+// MCP tools + the Settings → Channels performance surface.
+
+interface ChannelTotals {
+  orders: number;
+  grossCents: number;
+  refundedCents: number;
+  feeCents: number;
+}
+
+function emptyChannelTotals(): ChannelTotals {
+  return { orders: 0, grossCents: 0, refundedCents: 0, feeCents: 0 };
+}
+
+function defaultedBounds(range?: DateRange): { from: Date; to: Date; label: string } {
+  const to = range ? new Date(range.to) : new Date();
+  const from = range
+    ? new Date(range.from)
+    : new Date(Date.now() - CHANNEL_DEFAULT_DAYS * 86_400_000);
+  const label = range ? rangeLabel(range) : `Last ${CHANNEL_DEFAULT_DAYS} days`;
+  return { from, to, label };
+}
+
+/** Translate a derived channel key back into the order WHERE that produced it.
+ *  A key that isn't one of the fixed buckets is a marketplace source slug (robust
+ *  against a new marketplace whose slug isn't labelled yet). */
+function channelKeyWhere(key: string): Prisma.OrderWhereInput {
+  if (!ORDER_CHANNEL_BUCKETS.has(key)) return { channel: 'marketplace', source: key };
+  if (key === 'unknown') return { channel: null };
+  if (key === 'marketplace') return { channel: 'marketplace', source: null };
+  return { channel: key };
+}
+
+export interface ChannelRevenueRow {
+  /** Derived channel key — a bucket (storefront, b2b_portal, …) or a marketplace
+   *  source slug (tiktok_shop, etsy, …). */
+  channel: string;
+  /** Human label for the key (e.g. "TikTok Shop"). */
+  label: string;
+  orders: number;
+  grossRevenueCents: number;
+  refundedCents: number;
+  netRevenueCents: number;
+  /** Marketplace commission withheld (0 for native channels). */
+  channelFeeCents: number;
+  /** Net revenue after refunds AND channel fees — what the tenant keeps. */
+  netAfterFeesCents: number;
+  averageOrderValueCents: number;
+  /** Share of total gross revenue across all channels (0–100, one decimal). */
+  sharePct: number;
+}
+
+export interface ChannelRevenueReport {
+  rangeLabel: string;
+  totalOrders: number;
+  totalGrossRevenueCents: number;
+  totalRefundedCents: number;
+  totalChannelFeeCents: number;
+  totalNetAfterFeesCents: number;
+  byChannel: ChannelRevenueRow[];
+  currency: string;
+}
+
+/** Revenue split across every channel for the window (marketplace orders broken
+ *  out by source). Defaults to the last 30 days when no range is given. */
+export async function channelComparison(
+  ctx: ServiceContext,
+  range?: DateRange
+): Promise<ChannelRevenueReport> {
+  const { from, to, label } = defaultedBounds(range);
+
+  return withTenant(ctx, async (tx) => {
+    const groups = await tx.order.groupBy({
+      by: ['channel', 'source'],
+      where: { placedAt: { gte: from, lte: to }, status: { not: 'cancelled' } },
+      _count: { _all: true },
+      _sum: { total: true, refundTotal: true, channelFeeCents: true },
+    });
+
+    // Fold the (channel, source) groups onto the derived key so every marketplace
+    // source is its own line and the native buckets stay whole.
+    const acc = new Map<string, ChannelTotals>();
+    for (const g of groups) {
+      const key = deriveChannelKey(g.channel, g.source);
+      const cur = acc.get(key) ?? emptyChannelTotals();
+      cur.orders += g._count._all;
+      cur.grossCents += decimalToCents(g._sum.total);
+      cur.refundedCents += decimalToCents(g._sum.refundTotal);
+      cur.feeCents += g._sum.channelFeeCents ?? 0;
+      acc.set(key, cur);
+    }
+
+    const totalGross = [...acc.values()].reduce((s, v) => s + v.grossCents, 0);
+    const byChannel: ChannelRevenueRow[] = [...acc.entries()]
+      .map(([key, v]) => ({
+        channel: key,
+        label: channelKeyLabel(key),
+        orders: v.orders,
+        grossRevenueCents: v.grossCents,
+        refundedCents: v.refundedCents,
+        netRevenueCents: v.grossCents - v.refundedCents,
+        channelFeeCents: v.feeCents,
+        netAfterFeesCents: v.grossCents - v.refundedCents - v.feeCents,
+        averageOrderValueCents: v.orders > 0 ? Math.round(v.grossCents / v.orders) : 0,
+        sharePct: totalGross > 0 ? +((v.grossCents / totalGross) * 100).toFixed(1) : 0,
+      }))
+      .sort((a, b) => b.grossRevenueCents - a.grossRevenueCents);
+
+    const totals = [...acc.values()].reduce(
+      (s, v) => {
+        s.orders += v.orders;
+        s.refunded += v.refundedCents;
+        s.fee += v.feeCents;
+        return s;
+      },
+      { orders: 0, refunded: 0, fee: 0 }
+    );
+
+    return {
+      rangeLabel: label,
+      totalOrders: totals.orders,
+      totalGrossRevenueCents: totalGross,
+      totalRefundedCents: totals.refunded,
+      totalChannelFeeCents: totals.fee,
+      totalNetAfterFeesCents: totalGross - totals.refunded - totals.fee,
+      byChannel,
+      currency: DEFAULT_CURRENCY,
+    };
+  });
+}
+
+// A single channel's view omits `sharePct` — share-of-total is only meaningful in
+// the comparison, which queries every channel together.
+export interface ChannelRevenueSummary extends Omit<ChannelRevenueRow, 'sharePct'> {
+  rangeLabel: string;
+  currency: string;
+}
+
+/** One channel's revenue for the window. `channel` is a derived key — a bucket or
+ *  a marketplace source slug. Defaults to the last 30 days. */
+export async function channelRevenue(
+  ctx: ServiceContext,
+  input: { channel: string; range?: DateRange }
+): Promise<ChannelRevenueSummary> {
+  const { from, to, label } = defaultedBounds(input.range);
+
+  return withTenant(ctx, async (tx) => {
+    const agg = await tx.order.aggregate({
+      where: {
+        ...channelKeyWhere(input.channel),
+        placedAt: { gte: from, lte: to },
+        status: { not: 'cancelled' },
+      },
+      _count: { _all: true },
+      _sum: { total: true, refundTotal: true, channelFeeCents: true },
+    });
+
+    const gross = decimalToCents(agg._sum.total);
+    const refunded = decimalToCents(agg._sum.refundTotal);
+    const fee = agg._sum.channelFeeCents ?? 0;
+    const orders = agg._count._all;
+
+    return {
+      channel: input.channel,
+      label: channelKeyLabel(input.channel),
+      rangeLabel: label,
+      orders,
+      grossRevenueCents: gross,
+      refundedCents: refunded,
+      netRevenueCents: gross - refunded,
+      channelFeeCents: fee,
+      netAfterFeesCents: gross - refunded - fee,
+      averageOrderValueCents: orders > 0 ? Math.round(gross / orders) : 0,
+      currency: DEFAULT_CURRENCY,
+    };
+  });
+}
+
+/** Top products sold through one channel for the window. */
+export async function channelTopProducts(
+  ctx: ServiceContext,
+  input: { channel: string; range?: DateRange; limit?: number }
+): Promise<TopProductRow[]> {
+  const { from, to } = defaultedBounds(input.range);
+  const limit = input.limit ?? 10;
+  return withTenant(ctx, (tx) =>
+    topProductsForOrders(tx, channelKeyWhere(input.channel), { from, to }, limit)
+  );
 }

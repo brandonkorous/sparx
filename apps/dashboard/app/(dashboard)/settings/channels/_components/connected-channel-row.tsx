@@ -10,12 +10,26 @@ import { Badge, Button, Stack, Text, statusTone, useConfirm } from '@sparx/ui';
 import { disconnectChannelAction } from '../actions';
 import type { ChannelCatalogItem, ChannelConnectionView } from '../_types';
 
+/** The connected channel's last-30-day performance, matched from the channel
+ *  revenue report by derived key (docs/27 §9). Absent until it has sales. */
+export interface ChannelRowMetrics {
+  grossRevenueCents: number;
+  orders: number;
+  averageOrderValueCents: number;
+  currency: string;
+}
+
 interface Props {
   connection: ChannelConnectionView;
   descriptor?: ChannelCatalogItem;
+  metrics?: ChannelRowMetrics;
 }
 
-export function ConnectedChannelRow({ connection, descriptor }: Props) {
+function fmtCents(cents: number, currency: string): string {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(cents / 100);
+}
+
+export function ConnectedChannelRow({ connection, descriptor, metrics }: Props) {
   const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
@@ -58,6 +72,13 @@ export function ConnectedChannelRow({ connection, descriptor }: Props) {
             ? ` · last synced ${new Date(connection.lastSyncedAt).toLocaleString()}`
             : ' · not synced yet'}
         </Text>
+        {metrics && metrics.orders > 0 && (
+          <Text size="xs" variant="muted">
+            Last 30 days · {fmtCents(metrics.grossRevenueCents, metrics.currency)} ·{' '}
+            {metrics.orders.toLocaleString()} order{metrics.orders === 1 ? '' : 's'} ·{' '}
+            {fmtCents(metrics.averageOrderValueCents, metrics.currency)} AOV
+          </Text>
+        )}
         {error && (
           <Text size="xs" variant="danger" role="alert">
             {error}

@@ -239,11 +239,73 @@ const previewMarkup: McpToolDefinition = {
   },
 };
 
+// Channel revenue consolidation (docs/27 §8). `channel` is the derived channel
+// key: a high-level bucket (storefront, b2b_portal, admin) OR a marketplace source
+// slug (tiktok_shop, etsy, amazon, walmart, ebay, faire, sparx_market). Range is
+// optional everywhere and defaults to the last 30 days.
+const OptionalDateRange = DateRange.optional();
+const ChannelKey = z
+  .string()
+  .min(1)
+  .max(63)
+  .describe(
+    'Channel key: a bucket (storefront | b2b_portal | admin) or a marketplace slug (tiktok_shop | etsy | amazon | walmart | ebay | faire | sparx_market).'
+  );
+
+const getChannelRevenue: McpToolDefinition = {
+  name: 'get_channel_revenue',
+  description:
+    'Revenue for one sales channel over a date range: gross, refunds, net, marketplace fees, net-after-fees, order count, and AOV. Range defaults to the last 30 days.',
+  scope: 'read:commerce',
+  confirmation: false,
+  input: z.object({ channel: ChannelKey, range: OptionalDateRange }),
+  run: (ctx, input) =>
+    reportingService.channelRevenue(
+      ctx,
+      input as { channel: string; range?: { from: string; to: string } }
+    ),
+};
+
+const getChannelComparison: McpToolDefinition = {
+  name: 'get_channel_comparison',
+  description:
+    'Revenue compared across every sales channel for a date range — each native channel and each connected marketplace (TikTok Shop, Etsy, …) as its own line with gross, fees, net, orders, AOV, and share of total. Range defaults to the last 30 days.',
+  scope: 'read:commerce',
+  confirmation: false,
+  input: z.object({ range: OptionalDateRange }),
+  run: (ctx, input) =>
+    reportingService.channelComparison(
+      ctx,
+      (input as { range?: { from: string; to: string } }).range
+    ),
+};
+
+const getChannelTopProducts: McpToolDefinition = {
+  name: 'get_channel_top_products',
+  description:
+    'Top products by revenue sold through one channel over a date range (e.g. best sellers on TikTok Shop). Range defaults to the last 30 days.',
+  scope: 'read:commerce',
+  confirmation: false,
+  input: z.object({
+    channel: ChannelKey,
+    range: OptionalDateRange,
+    limit: z.number().int().min(1).max(100).default(10),
+  }),
+  run: (ctx, input) =>
+    reportingService.channelTopProducts(
+      ctx,
+      input as { channel: string; range?: { from: string; to: string }; limit: number }
+    ),
+};
+
 export const readTools: AnyMcpTool[] = [
   getProducts,
   getProduct,
   getRevenueSummary,
   getTopProducts,
+  getChannelRevenue,
+  getChannelComparison,
+  getChannelTopProducts,
   getTopCustomers,
   getConversionFunnel,
   getAbandonedCarts,

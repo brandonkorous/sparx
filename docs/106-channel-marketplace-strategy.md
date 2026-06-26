@@ -1,6 +1,6 @@
 # sparx Platform — Channel & Marketplace Integration Strategy + Build Plan
 
-**Version:** 1.2
+**Version:** 1.4
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-25
 
@@ -18,11 +18,34 @@
 > the worker's `order.fulfilled` → tracking push-back, and the dashboard Orders channel badge + filter.
 > Inbound ingest runs in api-rest; outbound push stays in the worker.
 >
+> **Channel-revenue analytics consolidation is now BUILT (2026-06-25).** `reportingService`
+> `channelComparison`/`channelRevenue`/`channelTopProducts` consolidate every channel by a _derived
+> key_ (marketplace orders split by `source` slug, native orders by `channel` bucket — primitive +
+> canonical labels in `@sparx/crm-schemas`), surfacing gross/fees/net-after-fees/AOV/share via
+> `GET /v1/commerce/reports/channel-revenue` + `/channel-top-products`, the `get_channel_revenue`/
+> `get_channel_comparison`/`get_channel_top_products` MCP tools, the Settings → Channels performance
+> surface (per-connection 30-day GMV/Orders/AOV + a Revenue-by-channel card + a top-products drill), and
+> the commerce overview's channel section (now source-split). Applies to every channel, not just TikTok.
+>
+> **P3 order-channel breadth (Etsy, Walmart, eBay, Faire) is now BUILT (2026-06-25).** Four order-shape
+> adapters on the proven framework — fetch-only, no DB, registered in `registerBuiltinChannels()`.
+> Crucially, only **Faire** has reliable order webhooks; **Etsy / Walmart / eBay are poll-based**, so P3
+> added the **polling ingest path**: a `fetchOrders(auth, {since})` contract method, a
+> `POST /internal/channels/poll` internal endpoint (cron-token auth, per-tenant loop) that pulls orders
+> since a per-connection cursor (stored on `channel_connections.metadata.lastOrderPolledAt`, no
+> migration) and ingests each through the SAME idempotent `ingestChannelOrder` as the webhook, and a
+> `channel-order-poll` k8s CronJob (every 5 min). Outbound push (catalog/inventory/fulfillment) needed
+> NO new infra — the existing worker pushes to any registered adapter. Connect specifics: Etsy uses
+> OAuth2 with PKCE (a stateless verifier derived from the signed state), eBay OAuth2 with a RuName, Faire
+> OAuth2 plus a webhook HMAC, and Walmart client-credentials (per-seller / Solution-Provider keys, not
+> redirect OAuth).
+>
 > Every channel is gated `coming_soon` at runtime until its platform OAuth app is approved and its
-> credentials are set in env (Google reuses the Search-Console client; Meta/Pinterest/TikTok need their
-> own) — it then flips `available` with no code change. Live end-to-end OAuth + push is unverifiable
-> until those partner apps are approved; the code is complete and typecheck/lint-green. **Next: file
-> partner apps; channel-revenue analytics consolidation (§8 + MCP); P3 = Etsy/Walmart/eBay/Faire.**
+> credentials are set in env (Google reuses the Search-Console client; the rest need their own) — it then
+> flips `available` with no code change. Live end-to-end OAuth + push is unverifiable until those partner
+> apps are approved; the code is complete and typecheck-green. **Next: file the P3 partner apps (Etsy
+> commercial app, Walmart Marketplace / Solution Provider, eBay developer, Faire partner); P4 = Amazon
+> (its own track).**
 
 ---
 
@@ -318,14 +341,14 @@ seam.
 Each phase is independently deployable (deploy-early); the whole surface is committed (phases are a
 deploy order, not a scope cut).
 
-| Phase  | Theme                                  | Ships                                                                                                                                                                            | Gated on            |
-| ------ | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
-| **P0** | Framework                              | `@sparx/channels` + registry; `channel-sync-worker`; data-model deltas (§4.4); marketplace `shape` discriminator; OAuth/secrets wiring; channels dashboard (Settings → Channels) | —                   |
-| **P1** | Feed channels                          | Google Shopping (auto-enroll), Meta catalog feed, Pinterest — catalog-out, no order ingest                                                                                       | P0                  |
-| **P2** | First order channel — **TikTok Shop**  | Full bidirectional loop: connect → catalog sync → order ingest → fulfillment push → inventory sync → analytics ([docs/27](27-tiktok-shop-integration.md))                        | P0 (+ inventory ✅) |
-| **P3** | Order-channel breadth                  | Etsy, Walmart, eBay, Faire — each an adapter on the proven framework                                                                                                             | P2                  |
-| **P4** | **Amazon**                             | SP-API + PII audit + category attributes + FBA/FBM — its own track                                                                                                               | P2                  |
-| **P5** | **sparx.market** (first-party channel) | `apps/market` destination + product-graph opt-in + sparx-MoR checkout + weekly ACH settlement worker                                                                             | P2 (proven spine)   |
+| Phase     | Theme                                  | Ships                                                                                                                                                                            | Gated on            |
+| --------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| **P0**    | Framework                              | `@sparx/channels` + registry; `channel-sync-worker`; data-model deltas (§4.4); marketplace `shape` discriminator; OAuth/secrets wiring; channels dashboard (Settings → Channels) | —                   |
+| **P1**    | Feed channels                          | Google Shopping (auto-enroll), Meta catalog feed, Pinterest — catalog-out, no order ingest                                                                                       | P0                  |
+| **P2**    | First order channel — **TikTok Shop**  | Full bidirectional loop: connect → catalog sync → order ingest → fulfillment push → inventory sync → analytics ([docs/27](27-tiktok-shop-integration.md))                        | P0 (+ inventory ✅) |
+| **P3** ✅ | Order-channel breadth                  | Etsy, Walmart, eBay, Faire — each an adapter on the proven framework + the **polling ingest path** (the three webhook-less channels) **— BUILT 2026-06-25**                      | P2                  |
+| **P4**    | **Amazon**                             | SP-API + PII audit + category attributes + FBA/FBM — its own track                                                                                                               | P2                  |
+| **P5**    | **sparx.market** (first-party channel) | `apps/market` destination + product-graph opt-in + sparx-MoR checkout + weekly ACH settlement worker                                                                             | P2 (proven spine)   |
 
 **Deploy gates:** P0 — connect a sandbox channel, see it in Settings → Channels. P1 — a product appears
 in Google Shopping / Meta catalog within the feed SLA. P2 — place a TikTok test order → sparx order
