@@ -7,9 +7,12 @@
 # provisions the topic + subscription, no code change is needed here beyond the
 # subscription block (marked below).
 #
-# Connection: sparx_app via the `database-url` secret — the engine's cross-tenant
-# discovery runs through SECURITY DEFINER helpers (migration 20260731000000), so
-# NO owner/BYPASSRLS connection is required (docs/16 §4: no ambient RLS bypass).
+# Connection: sparx_app via the `database-url-cloudrun` secret (the Cloud-Run
+# variant of `database-url` — same creds, PgBouncer internal-LB host instead of
+# the kube-DNS name Cloud Run can't resolve; see main.tf). The engine's
+# cross-tenant discovery runs through SECURITY DEFINER helpers (migration
+# 20260731000000), so NO owner/BYPASSRLS connection is required (docs/16 §4: no
+# ambient RLS bypass).
 #
 # Auth model:
 #   - Cloud Scheduler authenticates to Cloud Run with an OIDC token minted as the
@@ -148,7 +151,10 @@ resource "google_cloud_run_v2_service" "automation_worker" {
         name = "DATABASE_URL"
         value_source {
           secret_key_ref {
-            secret  = "database-url"
+            # Cloud-Run-reachable DB URL (PgBouncer internal-LB IP, not the
+            # in-cluster kube-DNS name Cloud Run can't resolve). See the
+            # `database-url-cloudrun` note in main.tf.
+            secret  = "database-url-cloudrun"
             version = "latest"
           }
         }

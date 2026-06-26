@@ -250,8 +250,10 @@ module "email_worker_cloudrun" {
 
   secrets = [
     {
-      name      = "DATABASE_URL"
-      secret_id = "database-url"
+      name = "DATABASE_URL"
+      # Cloud-Run-reachable DB URL (PgBouncer internal-LB IP, not the kube-DNS
+      # name). See the `database-url-cloudrun` note in main.tf.
+      secret_id = "database-url-cloudrun"
     },
     {
       name      = "SPARX_MAILGUN_API_KEY"
@@ -304,8 +306,10 @@ module "push_worker_cloudrun" {
 
   secrets = [
     {
-      name      = "DATABASE_URL"
-      secret_id = "database-url"
+      name = "DATABASE_URL"
+      # Cloud-Run-reachable DB URL (PgBouncer internal-LB IP, not the kube-DNS
+      # name). See the `database-url-cloudrun` note in main.tf.
+      secret_id = "database-url-cloudrun"
     },
     {
       name      = "VAPID_PRIVATE_KEY"
@@ -358,8 +362,10 @@ module "markup_recompute_worker_cloudrun" {
 
   secrets = [
     {
-      name      = "DATABASE_URL"
-      secret_id = "database-url"
+      name = "DATABASE_URL"
+      # Cloud-Run-reachable DB URL (PgBouncer internal-LB IP, not the kube-DNS
+      # name). See the `database-url-cloudrun` note in main.tf.
+      secret_id = "database-url-cloudrun"
     },
   ]
 
@@ -410,8 +416,10 @@ module "media_worker_cloudrun" {
 
   secrets = [
     {
-      name      = "DATABASE_URL"
-      secret_id = "database-url"
+      name = "DATABASE_URL"
+      # Cloud-Run-reachable DB URL (PgBouncer internal-LB IP, not the kube-DNS
+      # name). See the `database-url-cloudrun` note in main.tf.
+      secret_id = "database-url-cloudrun"
     },
   ]
 
@@ -482,8 +490,10 @@ module "commerce_indexer_cloudrun" {
 
   secrets = [
     {
-      name      = "DATABASE_URL"
-      secret_id = "database-url"
+      name = "DATABASE_URL"
+      # Cloud-Run-reachable DB URL (PgBouncer internal-LB IP, not the kube-DNS
+      # name). See the `database-url-cloudrun` note in main.tf.
+      secret_id = "database-url-cloudrun"
     },
     {
       name      = "TYPESENSE_API_KEY"
@@ -597,12 +607,33 @@ module "channel_sync_worker_cloudrun" {
     # order ingest runs in api-rest (Faire webhook + the channel-order-poll CronJob
     # for Etsy/Walmart/eBay). Not bound now — can't bind a secret value that doesn't
     # exist yet; each channel stays coming_soon until its creds land, no code change.
+    #
+    # P4 Amazon (SP-API) — AMAZON_LWA_CLIENT_ID/_SECRET (Login-with-Amazon token),
+    # AMAZON_MARKETPLACE_ID + AMAZON_REGION (host defaults). Outbound push uses the
+    # Feeds API (token-scoped, no seller-id); inbound is the channel-order-poll CronJob
+    # (Orders API + a Restricted Data Token for buyer PII). Additionally gated on
+    # Amazon's restricted-PII security audit, not just app approval. AMAZON_SP_APP_ID
+    # (the consent-URL app id) is api-rest-only. Same coming_soon-until-creds default.
+    #
+    # P5 sparx.market (docs/106 §4.7) — the FIRST-PARTY channel adds NO new Cloud Run
+    # worker + NO new secret: the apps/market storefront is a GKE Deployment
+    # (k8s/apps/market.yaml), the weekly payout runs on a GKE CronJob
+    # (k8s/cronjobs/market-settlement.yaml → POST /internal/market/settle), and the
+    # MoR checkout reuses the platform STRIPE_SECRET_KEY (charge) + CHANNELS_TOKEN_KEY
+    # (payout-account encryption) above. Its toggles are plain GKE-configmap env on
+    # api-rest + the market app (NOT Cloud Run, so they aren't set here): MARKET_ENABLED
+    # ('true' flips the channel available at go-live), MARKET_COMMISSION_BPS (flat
+    # platform rate, default 200=2%), MARKET_PAYOUTS_PROVIDER (ACH rail; defaults to
+    # manual/out-of-band), SPARX_DASHBOARD_URL (settlement-email links). Stays
+    # coming_soon until MARKET_ENABLED is set — no code change.
   }
 
   secrets = [
     {
-      name      = "DATABASE_URL"
-      secret_id = "database-url"
+      name = "DATABASE_URL"
+      # Cloud-Run-reachable DB URL (PgBouncer internal-LB IP, not the kube-DNS
+      # name). See the `database-url-cloudrun` note in main.tf.
+      secret_id = "database-url-cloudrun"
     },
     {
       name      = "CHANNELS_TOKEN_KEY"
@@ -667,8 +698,10 @@ module "legal_seed_worker_cloudrun" {
 
   secrets = [
     {
-      name      = "DATABASE_URL"
-      secret_id = "database-url"
+      name = "DATABASE_URL"
+      # Cloud-Run-reachable DB URL (PgBouncer internal-LB IP, not the kube-DNS
+      # name). See the `database-url-cloudrun` note in main.tf.
+      secret_id = "database-url-cloudrun"
     },
   ]
 
@@ -754,8 +787,10 @@ module "domain_worker_cloudrun" {
 
   secrets = [
     {
-      name      = "DATABASE_URL"
-      secret_id = "database-url"
+      name = "DATABASE_URL"
+      # Cloud-Run-reachable DB URL (PgBouncer internal-LB IP, not the kube-DNS
+      # name). See the `database-url-cloudrun` note in main.tf.
+      secret_id = "database-url-cloudrun"
     },
     # NODE_ENV=production selects the *_PROD GoDaddy pair for the DNS-config retry.
     {

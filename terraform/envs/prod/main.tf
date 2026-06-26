@@ -213,6 +213,20 @@ module "secrets" {
   # sparx-db-owner-password (DB setup), postal-* (decommissioned), mailgun SMTP creds.
   secret_ids = [
     "database-url",
+    # Cloud-Run-only DATABASE_URL. Identical to `database-url` EXCEPT the host:
+    # `database-url` points at the in-cluster PgBouncer kube-DNS name
+    # (pgbouncer.sparx-prod.svc.cluster.local), which Cloud Run cannot resolve
+    # over the VPC connector. This one points at the PgBouncer internal-LB IP
+    # (google_compute_address.pgbouncer_internal = 10.0.0.55). The Cloud Run
+    # worker fleet (serverless.tf + automation.tf) binds THIS secret; in-cluster
+    # pods keep `database-url`. NOT synced into k8s sparx-app-secrets — it is
+    # bound directly via Secret Manager → Cloud Run env, so it stays OUT of the
+    # bootstrap KEYS list. Add the value out-of-band, host-swapped from the
+    # existing secret so the password is never printed:
+    #   gcloud secrets versions access latest --secret=database-url \
+    #     | sed 's#@pgbouncer.sparx-prod.svc.cluster.local:5432#@10.0.0.55:5432#' \
+    #     | gcloud secrets versions add database-url-cloudrun --data-file=-
+    "database-url-cloudrun",
     "redis-url",
     "better-auth-secret",
     "stripe-secret-key",
@@ -301,6 +315,25 @@ resource "google_compute_address" "typesense_internal" {
   region       = var.region
   address_type = "INTERNAL"
   subnetwork   = module.vpc.subnet_self_link
+}
+
+# Stable internal IP for the PgBouncer internal-LB Service. Same rationale as
+# typesense_internal: in-cluster app pods reach the pooler over its ClusterIP /
+# kube-DNS name, but the Cloud Run worker fleet reaches the cluster only over
+# the VPC connector — where kube-DNS names and ClusterIPs aren't routable. The
+# internal LoadBalancer (k8s/pgbouncer/service-internal.yaml) pins this address
+# via `loadBalancerIP`, and the workers' DATABASE_URL (the `database-url-cloudrun`
+# secret) points at it.
+#
+# Unlike typesense_internal, `address` is PINNED so the Terraform reservation and
+# the k8s Service's loadBalancerIP are guaranteed to match (no manual reconcile).
+# Pulled from the node subnet's primary range, one above the Typesense LB (.54).
+resource "google_compute_address" "pgbouncer_internal" {
+  name         = "${local.name_prefix}-pgbouncer-internal"
+  region       = var.region
+  address_type = "INTERNAL"
+  subnetwork   = module.vpc.subnet_self_link
+  address      = "10.0.0.55"
 }
 
 # Workload Identity GSA for application pods (apps + workers).

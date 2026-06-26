@@ -1,0 +1,30 @@
+# Internal LoadBalancer for PgBouncer, exposing the pooler on a stable private
+# VPC IP so Cloud Run workers can reach it over the VPC connector — the
+# in-cluster ClusterIP (service.yaml) and kube-DNS name
+# (pgbouncer.sparx-prod.svc.cluster.local) aren't routable from there.
+#
+# This mirrors k8s/typesense/service-internal.yaml. In-cluster app pods keep
+# using the ClusterIP/kube-DNS Service; only the Cloud Run worker fleet
+# (commerce-indexer, automation-worker, channel-sync-worker, …) targets this
+# address, via the `database-url-cloudrun` secret whose host is set to it.
+#
+# loadBalancerIP is the reserved internal address from Terraform
+# (google_compute_address.pgbouncer_internal in terraform/envs/prod/main.tf).
+# Both are pinned to the SAME value so the reservation and the LB can't drift.
+# Internal-only — never assigned a public IP.
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgbouncer-internal
+  namespace: sparx-prod
+  annotations:
+    networking.gke.io/load-balancer-type: 'Internal'
+spec:
+  type: LoadBalancer
+  loadBalancerIP: '10.0.0.55'
+  ports:
+    - name: pgbouncer
+      port: 5432
+      targetPort: 5432
+  selector:
+    app: pgbouncer
