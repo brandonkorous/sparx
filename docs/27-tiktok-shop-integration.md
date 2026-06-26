@@ -1,10 +1,42 @@
 # sparx Platform — TikTok Shop Integration Spec
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-25
 
 ---
+
+> **Implementation status (2026-06-25, P2):** TikTok Shop is built as the FIRST
+> order channel on the generic channel-integration framework (docs/106), not the
+> per-column approach the original §5/§13 pseudocode sketched. The real shape:
+>
+> - **Adapter, not bespoke routes.** `TikTokShopAdapter` (`@sparx/channels`,
+>   `shape: 'order'`) implements the full contract — signed Open-Platform calls,
+>   OAuth + shop-cipher resolution, `pushProduct`/`removeProduct`, `ingestOrder`,
+>   `pushFulfillment`, `pushInventory`, `getAnalytics`, `verifyWebhook`.
+> - **No per-channel columns.** Listings map via the generic `ChannelProductMapping`
+>   table (variant ↔ TikTok product/sku id); there is no `tiktokEnabled`/
+>   `tiktokSkuId` on products/variants.
+> - **Tokens are AES-256-GCM on the connection row** (`@sparx/channels/crypto`,
+>   `CHANNELS_TOKEN_KEY`), not Secret Manager refs — OAuth tokens rotate hourly and
+>   a row cipher box rotates with a plain `UPDATE`. The shop cipher rides the
+>   connection `metadata` and surfaces as `ChannelAuth.params`.
+> - **Inbound orders ingest in api-rest, outbound push in the worker.** The app-level
+>   webhook `POST /v1/public/webhooks/channels/:slug` verifies the signature,
+>   resolves the tenant via the global `channel_shop_links` directory (shop_id →
+>   tenant; the secret-bearing connection table stays tenant-isolated), normalizes
+>   via `adapter.ingestOrder`, and writes the order + decrements inventory in ONE
+>   transaction (`ingestChannelOrder`, idempotent on a deterministic order number).
+>   `channel-sync-worker` owns catalog/inventory/fulfillment PUSH off the existing
+>   `product.*`/`inventory.adjusted`/`order.fulfilled` events.
+> - **Live verification is partner-gated.** The code is complete + typecheck/lint
+>   green; end-to-end OAuth + push needs the ISV app approved and its creds set
+>   (`TIKTOK_APP_KEY`/`_SECRET`/`_WEBHOOK_SECRET`). The channel stays `coming_soon`
+>   at runtime until then, with no code change to flip it live.
+>
+> Channel-revenue analytics consolidation (§8) + the MCP tools are the remaining
+> follow-on slice (they aggregate the now-ingested orders by `channel`/`source` and
+> apply to every channel, not just TikTok).
 
 ## 1. Overview
 

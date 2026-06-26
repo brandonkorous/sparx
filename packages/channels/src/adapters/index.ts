@@ -13,6 +13,7 @@ import { hasChannel, registerChannel } from '../registry.js';
 import { GoogleShoppingAdapter } from './google-shopping.js';
 import { MetaAdapter } from './meta.js';
 import { PinterestAdapter } from './pinterest.js';
+import { TikTokShopAdapter } from './tiktok-shop.js';
 
 let registered = false;
 
@@ -22,7 +23,12 @@ let registered = false;
  *  `adapter.isConfigured()` so a channel lights up the instant ops sets its env. */
 export function registerBuiltinChannels(): void {
   if (registered) return;
-  const adapters = [new GoogleShoppingAdapter(), new MetaAdapter(), new PinterestAdapter()];
+  const adapters = [
+    new GoogleShoppingAdapter(),
+    new MetaAdapter(),
+    new PinterestAdapter(),
+    new TikTokShopAdapter(),
+  ];
   for (const adapter of adapters) {
     if (!hasChannel(adapter.id)) registerChannel(adapter);
   }
@@ -32,3 +38,4 @@ export function registerBuiltinChannels(): void {
 export { GoogleShoppingAdapter } from './google-shopping.js';
 export { MetaAdapter } from './meta.js';
 export { PinterestAdapter } from './pinterest.js';
+export { TikTokShopAdapter } from './tiktok-shop.js';

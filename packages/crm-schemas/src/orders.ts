@@ -15,7 +15,16 @@ export type OrderStatus = z.infer<typeof OrderStatus>;
 export const OrderPaymentStatus = z.enum(['unpaid', 'partially_paid', 'paid', 'refunded']);
 export type OrderPaymentStatus = z.infer<typeof OrderPaymentStatus>;
 
-export const OrderChannel = z.enum(['storefront', 'b2b_portal', 'admin', 'import', 'mcp']);
+// `marketplace` is the high-level bucket for external sales channels + sparx.market
+// (the specific channel lives in `source`, e.g. tiktok_shop) — docs/106 §4.4.
+export const OrderChannel = z.enum([
+  'storefront',
+  'b2b_portal',
+  'admin',
+  'import',
+  'mcp',
+  'marketplace',
+]);
 export type OrderChannel = z.infer<typeof OrderChannel>;
 
 // CreateOrderInput — full order header + initial line items in one shot.

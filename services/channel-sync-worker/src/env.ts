@@ -22,6 +22,13 @@ const EnvSchema = z.object({
   SPARX_MEDIA_CDN_URL: z.string().optional(),
   GCS_MEDIA_PUBLIC_BUCKET: z.string().optional(),
   GCS_MEDIA_BUCKET: z.string().optional(),
+  // TikTok Shop ISV app credentials — the order-channel adapter signs every
+  // outbound call (catalog/inventory/fulfillment push) with them. Read directly by
+  // @sparx/channels' TikTok adapter; declared here for boot visibility. Unset →
+  // a connected TikTok shop's pushes fail with a recorded sync error until ops sets
+  // the approved app creds.
+  TIKTOK_APP_KEY: z.string().optional(),
+  TIKTOK_APP_SECRET: z.string().optional(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

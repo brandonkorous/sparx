@@ -37,6 +37,15 @@ const PAYMENT_STATUS_OPTIONS = [
   { value: 'refunded', label: 'Refunded' },
 ];
 
+// High-level origin bucket (docs/106 §4.4) — 'marketplace' surfaces every external
+// sales-channel order (TikTok Shop, …); the row badge names the specific channel.
+const CHANNEL_OPTIONS = [
+  { value: 'marketplace', label: 'Marketplace' },
+  { value: 'storefront', label: 'Storefront' },
+  { value: 'b2b_portal', label: 'B2B portal' },
+  { value: 'admin', label: 'Admin' },
+];
+
 // Typesense order search document (the subset this list needs). Returned by
 // /v1/search/orders — typo-tolerant across order number + customer + items.
 interface OrderSearchDoc {
@@ -55,6 +64,7 @@ export default async function OrdersPage({ searchParams }: PageProps) {
   const { page, perPage, skip, take } = parsePageParams(params);
   const status = stringParam(params.status);
   const paymentStatus = stringParam(params.paymentStatus);
+  const channel = stringParam(params.channel);
   const q = stringParam(params.q);
   // Origin-site filter (docs/58 D1) — follows the global site switcher: absent →
   // the active site; `all` → the whole tenant; an id → that site.
@@ -88,6 +98,9 @@ export default async function OrdersPage({ searchParams }: PageProps) {
       amountPaid: Number.NaN, // not indexed — rendered as —
       placedAt: new Date(d.placed_at * 1000).toISOString(),
       channel: d.channel ?? null,
+      // The marketplace source isn't indexed in Typesense — the browse list below
+      // carries it; search rows badge by channel only.
+      source: null,
     }));
     total = (meta?.total as number | undefined) ?? orders.length;
   } else {
@@ -98,6 +111,7 @@ export default async function OrdersPage({ searchParams }: PageProps) {
     });
     if (status) query.set('status', status);
     if (paymentStatus) query.set('payment_status', paymentStatus);
+    if (channel) query.set('channel', channel);
     if (propertyFilter) query.set('property', propertyFilter);
     const res = await api.getPaged<OrderRow[]>(`/v1/crm/orders?${query.toString()}`);
     orders = res.data;
@@ -152,6 +166,7 @@ export default async function OrdersPage({ searchParams }: PageProps) {
           filters={[
             { key: 'status', label: 'Statuses', options: STATUS_OPTIONS },
             { key: 'paymentStatus', label: 'Payment', options: PAYMENT_STATUS_OPTIONS },
+            { key: 'channel', label: 'Channel', options: CHANNEL_OPTIONS },
             ...siteFilter,
           ]}
           enableViewToggle
@@ -162,7 +177,7 @@ export default async function OrdersPage({ searchParams }: PageProps) {
             <EmptyState
               icon={<ShoppingCart className="h-5 w-5" />}
               title="No orders match"
-              description="Orders placed through the storefront, B2B portal, or admin appear here. Adjust filters above or place a new order manually."
+              description="Orders placed through your storefront, B2B portal, admin, or a connected sales channel (TikTok Shop, …) appear here. Adjust filters above or place a new order manually."
             />
           </Card>
         ) : (

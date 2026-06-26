@@ -113,7 +113,13 @@ function InlineDetailBody({ target, children }: InlineDetailProps) {
   return (
     <Stack gap={0} className="h-full">
       <DetailHeader target={target} />
-      <div className={fullBleed ? 'min-h-0 flex-1' : 'flex-1 overflow-y-auto p-6'}>{children}</div>
+      <div
+        className={
+          fullBleed ? 'min-h-0 flex-1' : 'flex-1 overflow-y-auto bg-[var(--color-bg-subtle)] p-6'
+        }
+      >
+        {children}
+      </div>
       {/* Floored below the scroll body — the body's form teleports its Save here so
           it pins to the drawer's bottom edge instead of scrolling away. Zero-height
           until a form supplies one. Wrapped in the entity's ModuleProvider so a
@@ -198,7 +204,13 @@ function ModalDetailBody({ target, onClose, children }: ModalDetailProps) {
             two-pane frame fills the body edge-to-edge and manages its own scroll. */}
         <Stack gap={0} className="max-h-[88vh]">
           <DetailHeader target={target} />
-          <div className={fullBleed ? 'min-h-0 flex-1' : 'flex-1 overflow-y-auto p-6'}>
+          <div
+            className={
+              fullBleed
+                ? 'min-h-0 flex-1'
+                : 'flex-1 overflow-y-auto bg-[var(--color-bg-subtle)] p-6'
+            }
+          >
             {children}
           </div>
           {/* Floored below the scroll body so a teleported Save pins to the modal's

@@ -55,6 +55,11 @@ export interface ChannelTokens {
   /** The shop/account id the channel returns post-auth. */
   externalId?: string;
   shopName?: string;
+  /** Channel-specific extras that every later API call needs but that aren't the
+   *  token itself (TikTok's `shopCipher` + region, Amazon's marketplace id). The
+   *  worker/api-rest persist these on the connection and surface them back as
+   *  {@link ChannelAuth.params} on every adapter call. */
+  params?: Record<string, string>;
 }
 
 export interface ChannelConnectContext {
@@ -163,6 +168,10 @@ export interface ChannelFulfillment {
 export interface ChannelInventoryUpdate {
   externalSku: string;
   externalVariantId?: string;
+  /** The channel's product id (mapping.externalProductId). Required by channels
+   *  whose inventory endpoint is product-scoped (TikTok updates stock by
+   *  product_id + sku_id); omitted by sku-only channels. */
+  externalProductId?: string;
   /** New sellable quantity after the safety buffer (docs/106 §4.3). */
   availableQuantity: number;
 }
@@ -230,4 +239,8 @@ export interface ChannelAdapter {
   getAnalytics?(auth: ChannelAuth, period: ChannelPeriod): Promise<ChannelAnalytics>;
   /** Verify an inbound webhook signature. Returns true when the signature is valid. */
   verifyWebhook?(req: ChannelWebhookRequest): boolean;
+  /** Extract the routing shop/account id from a webhook payload. An order channel's
+   *  webhook URL is app-level (one URL for every tenant), so the public webhook
+   *  resolves the tenant from this id via the shop directory (docs/106 §4.4). */
+  webhookShopId?(payload: unknown): string | null;
 }

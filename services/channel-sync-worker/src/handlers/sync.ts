@@ -35,6 +35,7 @@ async function resolveTargets(tenantId: string): Promise<ChannelTarget[]> {
         accessTokenEnc: true,
         refreshTokenEnc: true,
         tokenExpiresAt: true,
+        metadata: true,
       },
     })
   );
@@ -71,6 +72,18 @@ async function persistMappings(
       });
     }
   });
+}
+
+/** The order's latest fulfillment that carries a tracking number — a fulfillment can
+ *  be recorded before tracking is attached, so we push the most recent tracked one. */
+function latestTrackedFulfillment(tenantId: string, orderId: string) {
+  return withTenant({ tenantId }, (tx) =>
+    tx.orderFulfillment.findFirst({
+      where: { orderId, trackingNumber: { not: null } },
+      orderBy: { createdAt: 'desc' },
+      select: { trackingNumber: true, carrier: true, trackingUrl: true },
+    })
+  );
 }
 
 async function markConnectionSynced(tenantId: string, connectionId: string): Promise<void> {
@@ -192,7 +205,12 @@ export async function handleInventorySync(
   const mappings = await withTenant({ tenantId }, (tx) =>
     tx.channelProductMapping.findMany({
       where: { tenantId, variantId, syncEnabled: true },
-      select: { channel: true, externalSku: true, externalVariantId: true },
+      select: {
+        channel: true,
+        externalSku: true,
+        externalVariantId: true,
+        externalProductId: true,
+      },
     })
   );
   if (mappings.length === 0) {
@@ -212,6 +230,7 @@ export async function handleInventorySync(
       await target.adapter.pushInventory(auth, {
         externalSku: m.externalSku,
         externalVariantId: m.externalVariantId ?? undefined,
+        externalProductId: m.externalProductId ?? undefined,
         availableQuantity,
       });
       log.info(
@@ -230,10 +249,9 @@ export async function handleInventorySync(
 
 /** order.fulfilled → push tracking back to the channel a channel-order came from.
  *
- * Feed channels (this phase's scope — Google/Meta/Pinterest) carry no orders, so
- * their adapters omit `pushFulfillment` and this is a correct no-op for them. The
- * tracking resolution (load the order's shipment, build ChannelFulfillment) lands
- * with the first ORDER channel (P2, TikTok), where there is a shipment to push. */
+ * Feed channels (Google/Meta/Pinterest) carry no orders, so their adapters omit
+ * `pushFulfillment` and this is a correct no-op for them. Order channels (TikTok, …)
+ * push the order's latest tracked shipment back so the marketplace marks it shipped. */
 export async function handleFulfillmentSync(
   orderId: string,
   tenantId: string,
@@ -250,18 +268,43 @@ export async function handleFulfillmentSync(
     log.debug({ orderId }, 'channel-sync: not a channel order — skipping fulfillment push');
     return;
   }
-  const adapter = getChannel(order.source as ChannelSlug);
-  if (!adapter?.pushFulfillment) {
+
+  const targets = await resolveTargets(tenantId);
+  const target = targets.find((t) => t.channel === order.source);
+  if (!target?.adapter.pushFulfillment) {
     log.debug(
       { orderId, channel: order.source },
-      'channel-sync: channel has no fulfillment push (feed channel) — skipping'
+      'channel-sync: channel has no fulfillment push (feed channel / not connected) — skipping'
     );
     return;
   }
-  // P2 (order channels): resolve the connection auth + the order's shipment →
-  // adapter.pushFulfillment(auth, { externalOrderId, trackingNumber, carrier }).
-  log.warn(
-    { orderId, channel: order.source },
-    'channel-sync: fulfillment push lands with the first order channel (P2)'
-  );
+
+  const fulfillment = await latestTrackedFulfillment(tenantId, orderId);
+  if (!fulfillment?.trackingNumber) {
+    log.debug(
+      { orderId, channel: order.source },
+      'channel-sync: order fulfilled without tracking yet — skipping push'
+    );
+    return;
+  }
+
+  const auth = await resolveChannelAuth(tenantId, target, target.adapter, log);
+  if (!auth) return;
+  try {
+    await target.adapter.pushFulfillment(auth, {
+      externalOrderId: order.externalId,
+      trackingNumber: fulfillment.trackingNumber,
+      // The adapter maps our carrier code → the channel's provider id (best-effort).
+      carrier: fulfillment.carrier ?? '',
+      trackingUrl: fulfillment.trackingUrl ?? undefined,
+    });
+    await markConnectionSynced(tenantId, target.id);
+    log.info({ orderId, channel: order.source }, 'channel-sync: pushed fulfillment tracking');
+  } catch (err) {
+    await recordConnectionError(tenantId, target.id, msg(err));
+    log.error(
+      { orderId, channel: order.source, err: msg(err) },
+      'channel-sync: fulfillment push failed'
+    );
+  }
 }

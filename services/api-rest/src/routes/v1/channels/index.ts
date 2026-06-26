@@ -136,6 +136,7 @@ const channelRoutes: FastifyPluginAsync = async (app) => {
         ? new Date(Date.now() + tokens.expiresInSeconds * 1000)
         : null,
       scopes: tokens.scope ? tokens.scope.split(/[ ,]+/).filter(Boolean) : [],
+      params: tokens.params,
     });
 
     return reply.send(

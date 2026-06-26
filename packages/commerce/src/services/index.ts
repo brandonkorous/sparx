@@ -29,6 +29,16 @@ export * as configuratorService from './configurator-service';
 // Phase 5 — cart, checkout, subscriptions, shipping, tax, providers
 export * as cartService from './cart-service';
 export * as checkoutService from './checkout-service';
+
+// Channels (docs/106) — inbound marketplace order ingest (order + inventory).
+export {
+  ingestChannelOrder,
+  type ChannelOrderIngestInput,
+  type ChannelOrderIngestLine,
+  type ChannelOrderIngestAddress,
+  type ChannelOrderIngestResult,
+} from './channel-order-ingest';
+
 export * as subscriptionService from './subscription-service';
 export * as shippingService from './shipping-service';
 export * as taxService from './tax-service';

@@ -13,10 +13,20 @@
 //                            Manager ref would churn a billed version per refresh.)
 //   ChannelProductMapping  — links a sparx variant ↔ its external listing; the
 //                            seam for catalog push + order-ingest SKU resolution.
+//   ChannelShopLink        — a GLOBAL shop_id → tenant routing directory. An
+//                            order channel's webhook URL is app-level (ONE URL for
+//                            every tenant), so the inbound webhook must resolve the
+//                            tenant from the payload's shop_id with no session. The
+//                            secret-bearing channel_connections table stays strictly
+//                            tenant-isolated; this minimal, secret-free directory
+//                            carries cross-tenant SELECT so the webhook can route
+//                            (mirrors how the Stripe webhook resolves the tenant via
+//                            the global tenants.stripe_account_id). docs/106 §4.4.
 //
-// Both tenant-scoped, FORCE RLS with the canonical tenant_isolation policy. Owned
-// by @sparx/channels, driven by the channel-sync-worker. Part of the Commerce
-// module (no separate fee) — gated with commerce.
+// channel_connections / channel_product_mappings are tenant-scoped (FORCE RLS,
+// canonical tenant_isolation). channel_shop_links is global-read / tenant-write.
+// Owned by @sparx/channels, driven by the channel-sync-worker + the api-rest
+// webhook. Part of the Commerce module (no separate fee) — gated with commerce.
 
 model ChannelConnection {
   id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -98,4 +108,31 @@ model ChannelProductMapping {
   @@index([tenantId, channel, externalSku])
   @@index([connectionId])
   @@map("channel_product_mappings")
+}
+
+model ChannelShopLink {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  // The channel slug + the channel's own shop/account id (the TikTok shop_id, the
+  // Amazon seller id). Globally unique per channel: an app-level webhook URL
+  // carries this id and must resolve to exactly one tenant connection.
+  channel    String @db.VarChar(40)
+  externalId String @map("external_id") @db.VarChar(255)
+
+  // The routing answer — which tenant + connection owns this shop. tenantId is the
+  // RLS write-scope column (a tenant may only write its own rows); reads are global
+  // so the unauthenticated webhook can resolve the tenant.
+  tenantId     String @map("tenant_id") @db.Uuid
+  connectionId String @map("connection_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  // No FK relations: this is a GLOBAL directory (cross-tenant readable) kept
+  // consistent explicitly by the connect/disconnect path, not by tenant-scoped
+  // cascade (which interacts awkwardly with FORCE RLS). A purged tenant's stale
+  // row routes to a tenant with no active connection → a graceful ingest no-op.
+  @@unique([channel, externalId], map: "channel_shop_links_channel_external_unique")
+  @@index([tenantId])
+  @@map("channel_shop_links")
 }

@@ -141,6 +141,7 @@ import emailTestRoutes from './routes/v1/email/test.js';
 import emailRoutes from './routes/v1/email/index.js';
 import emailWebhookRoutes from './routes/v1/public/email-webhook.js';
 import emailUnsubscribeRoutes from './routes/v1/public/email-unsubscribe.js';
+import channelWebhookRoutes from './routes/v1/public/channel-webhooks.js';
 import dashboardRoutes from './routes/v1/dashboard.js';
 import searchRoutes from './routes/v1/search.js';
 import seoAuditRoutes from './routes/v1/seo/audit.js';
@@ -758,6 +759,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(stripeBillingWebhookRoutes);
   await app.register(providerWebhookRoutes);
   await app.register(paymentWebhookRoutes);
+  await app.register(channelWebhookRoutes);
   await app.register(sitemapRoutes);
   await app.register(rssRoutes);
   await app.register(publicContentRoutes);

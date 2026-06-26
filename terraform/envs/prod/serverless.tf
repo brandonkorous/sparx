@@ -547,13 +547,17 @@ module "commerce_indexer_cloudrun" {
 # costs nothing (scale-to-zero) until channels go live.
 #
 # SECRET SEQUENCING: the per-channel platform OAuth client secrets
-# (google-oauth-client-secret, meta-app-secret, pinterest-app-secret) + the
-# storefront base (SPARX_SITE_BASE) are added to `secrets`/`env_vars` when each
-# partner app is APPROVED — the same gate that flips the channel `available`. You
-# cannot bind a secret value that does not exist yet, and no channel can be
-# connected (hence nothing to push) before then. `channels-token-key` is bound
-# now: it is a generated 32-byte key (not gated on any partner), provisioned via
-# `gcloud secrets versions add channels-token-key`.
+# (google-oauth-client-secret, meta-app-secret, pinterest-app-secret,
+# tiktok-app-key, tiktok-app-secret) + the storefront base (SPARX_SITE_BASE) are
+# added to `secrets`/`env_vars` when each partner app is APPROVED — the same gate
+# that flips the channel `available`. You cannot bind a secret value that does not
+# exist yet, and no channel can be connected (hence nothing to push) before then.
+# `channels-token-key` is bound now: it is a generated 32-byte key (not gated on any
+# partner), provisioned via `gcloud secrets versions add channels-token-key`.
+#
+# TikTok Shop (order channel) signs every outbound catalog/inventory/fulfillment
+# call with tiktok-app-key/tiktok-app-secret, so BOTH are bound here at go-live (the
+# inbound order webhook + ingest run in api-rest, which carries the same creds).
 module "channel_sync_worker_cloudrun" {
   source = "../../modules/cloud-run-worker"
 
@@ -582,8 +586,9 @@ module "channel_sync_worker_cloudrun" {
     # SPARX_SITE_BASE (storefront base for the absolute product URL feeds require,
     # {slug} template — mirrors the email path) + the non-secret per-channel OAuth
     # client IDs (GOOGLE_OAUTH_CLIENT_ID / META_APP_ID / PINTEREST_APP_ID) are added
-    # here when channels go live. Until SPARX_SITE_BASE is set the worker skips
-    # pushes (no absolute URL) rather than feed a broken link — a safe default.
+    # here when channels go live; TIKTOK_APP_KEY / TIKTOK_APP_SECRET ride `secrets`
+    # below. Until SPARX_SITE_BASE is set the worker skips catalog pushes (no
+    # absolute URL) rather than feed a broken link — a safe default.
   }
 
   secrets = [

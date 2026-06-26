@@ -41,6 +41,10 @@ const ListQuery = z.object({
   customer_id: z.string().uuid().optional(),
   b2b_account_id: z.string().uuid().optional(),
   status: z.string().optional(),
+  payment_status: z.string().optional(),
+  // High-level origin bucket — storefront | b2b_portal | admin | import | mcp |
+  // marketplace (docs/106 §4.4). The dashboard Orders "Channel" filter.
+  channel: z.string().optional(),
   // Origin-site filter (docs/58 D1) — the dashboard Orders Site filter. Omitted
   // → the whole tenant; an id → orders placed on that site (null-origin orders
   // are excluded, so they only appear under "All sites").
@@ -59,6 +63,8 @@ const orderRoutes: FastifyPluginAsync = (app) => {
       customerId: q.customer_id,
       b2bAccountId: q.b2b_account_id,
       status: q.status,
+      paymentStatus: q.payment_status,
+      channel: q.channel,
       propertyId: q.property,
       take: q.take,
       skip: q.skip,

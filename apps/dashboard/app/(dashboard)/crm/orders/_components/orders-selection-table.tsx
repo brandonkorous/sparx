@@ -30,6 +30,37 @@ export interface OrderRow {
   amountPaid: string | number;
   placedAt: string | null;
   channel: string | null;
+  /** The specific origin within the channel — for channel='marketplace', the
+   *  channel slug (tiktok_shop, etsy, …) so the row badges the real marketplace. */
+  source: string | null;
+}
+
+// Human labels for the order's high-level channel + the specific marketplace source
+// (docs/106 §4.4). A marketplace order badges its real channel name (TikTok Shop),
+// not the bare "marketplace" bucket.
+const CHANNEL_LABELS: Record<string, string> = {
+  marketplace: 'Marketplace',
+  storefront: 'Storefront',
+  b2b_portal: 'B2B portal',
+  admin: 'Admin',
+  import: 'Import',
+  mcp: 'MCP',
+};
+const SOURCE_LABELS: Record<string, string> = {
+  tiktok_shop: 'TikTok Shop',
+  etsy: 'Etsy',
+  amazon: 'Amazon',
+  walmart: 'Walmart',
+  ebay: 'eBay',
+  faire: 'Faire',
+  sparx_market: 'sparx.market',
+};
+
+function channelLabel(o: OrderRow): string | null {
+  if (o.channel === 'marketplace') {
+    return o.source ? (SOURCE_LABELS[o.source] ?? o.source) : 'Marketplace';
+  }
+  return o.channel ? (CHANNEL_LABELS[o.channel] ?? o.channel) : null;
 }
 
 interface OrdersSelectionTableProps {
@@ -75,6 +106,24 @@ export function OrdersSelectionTable({ orders, view }: OrdersSelectionTableProps
     </Badge>
   );
 
+  // Channel/source pill — marketplace orders wear an `info` tone so externally
+  // sourced orders (TikTok Shop, …) stand out from native storefront/B2B orders.
+  const channelBadge = (o: OrderRow) => {
+    const label = channelLabel(o);
+    if (!label) {
+      return (
+        <Text size="sm" variant="muted">
+          —
+        </Text>
+      );
+    }
+    return (
+      <Badge color={o.channel === 'marketplace' ? 'info' : 'neutral'} variant="soft" size="sm">
+        {label}
+      </Badge>
+    );
+  };
+
   const totalText = (o: OrderRow) => `${o.currency} ${Number(o.total).toLocaleString()}`;
   const paidText = (o: OrderRow) =>
     Number.isNaN(Number(o.amountPaid))
@@ -101,11 +150,7 @@ export function OrdersSelectionTable({ orders, view }: OrdersSelectionTableProps
     },
     {
       header: 'Channel',
-      cell: (o) => (
-        <Text size="sm" variant="muted">
-          {o.channel ?? '—'}
-        </Text>
-      ),
+      cell: channelBadge,
     },
   ];
 
@@ -127,10 +172,12 @@ export function OrdersSelectionTable({ orders, view }: OrdersSelectionTableProps
             {totalText(o)}
           </Text>
         </Stack>
-        <Text size="xs" variant="muted">
-          Paid {paidText(o)}
-          {o.channel ? ` · ${o.channel}` : ''}
-        </Text>
+        <Stack direction="row" align="center" justify="between" gap={2}>
+          <Text size="xs" variant="muted">
+            Paid {paidText(o)}
+          </Text>
+          {channelLabel(o) ? channelBadge(o) : null}
+        </Stack>
       </>
     ),
   };

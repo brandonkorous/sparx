@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Boxes } from 'lucide-react';
+import { Bell, Boxes, SlidersHorizontal } from 'lucide-react';
 
 import {
   Badge,
@@ -136,9 +136,9 @@ export function InventoryPanel({ variantsWithLevels, warehouses }: InventoryPane
                     <TableRow className="bg-[var(--color-bg-subtle)] hover:bg-[var(--color-bg-subtle)]">
                       <TableCell colSpan={COL_COUNT}>
                         <Stack direction="row" align="center" gap={2} wrap>
-                          <Badge variant="outline" size="sm" className="font-mono">
+                          <Text size="sm" weight="medium" className="font-mono">
                             {v.sku}
-                          </Badge>
+                          </Text>
                           {v.variantTitle && (
                             <Text size="sm" variant="muted">
                               {v.variantTitle}
@@ -249,38 +249,47 @@ function VariantInventoryRow({
       <TableRow>
         <TableCell>
           <Stack gap={0}>
-            <Badge variant="outline" size="sm" className="font-mono">
+            <Text size="sm" weight="medium" className="font-mono">
               {warehouse.code}
-            </Badge>
+            </Text>
             <Text size="xs" variant="muted">
               {warehouse.name}
             </Text>
           </Stack>
         </TableCell>
-        <TableCell className="text-right">{onHand}</TableCell>
-        <TableCell className="text-right">{allocated}</TableCell>
-        <TableCell className="text-right">
-          <Text className={belowReorder ? 'font-medium text-[var(--color-warning)]' : undefined}>
-            {available}
-          </Text>
-        </TableCell>
-        <TableCell>
-          {reorderPoint !== null ? (
-            <Badge color={belowReorder ? 'warning' : 'neutral'} variant="soft" size="sm">
-              ≤ {reorderPoint}
-            </Badge>
-          ) : (
-            <Text size="xs" variant="muted">
-              none
+        <TableCell className="text-right tabular-nums">{onHand}</TableCell>
+        <TableCell className="text-right tabular-nums">{allocated}</TableCell>
+        <TableCell className="text-right tabular-nums">
+          {belowReorder ? (
+            <Text as="span" variant="warning" weight="medium">
+              {available}
             </Text>
+          ) : (
+            available
           )}
         </TableCell>
         <TableCell>
+          {reorderPoint === null ? (
+            <Text size="xs" variant="muted">
+              none
+            </Text>
+          ) : belowReorder ? (
+            <Badge color="warning" variant="soft" size="sm">
+              ≤ {reorderPoint}
+            </Badge>
+          ) : (
+            <Text size="sm" variant="muted" className="tabular-nums">
+              ≤ {reorderPoint}
+            </Text>
+          )}
+        </TableCell>
+        <TableCell className="text-right">
           <Stack direction="row" gap={1} justify="end">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setMode(mode === 'adjust' ? 'view' : 'adjust')}
+              leftIcon={<SlidersHorizontal className="h-3.5 w-3.5" />}
             >
               Adjust
             </Button>
@@ -288,6 +297,7 @@ function VariantInventoryRow({
               variant="ghost"
               size="sm"
               onClick={() => setMode(mode === 'reorder' ? 'view' : 'reorder')}
+              leftIcon={<Bell className="h-3.5 w-3.5" />}
             >
               Reorder
             </Button>

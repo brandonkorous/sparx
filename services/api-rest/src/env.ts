@@ -160,11 +160,18 @@ const EnvSchema = z
     //   web client, with the Content API scope added) — no separate key.
     //   META_APP_ID / _SECRET       — the Meta (Facebook/Instagram) app.
     //   PINTEREST_APP_ID / _SECRET  — the Pinterest app.
+    //   TIKTOK_APP_KEY / _SECRET    — the TikTok Shop ISV app (signs every call).
+    //   TIKTOK_WEBHOOK_SECRET       — order-webhook signature key (defaults to the
+    //                                 app secret when unset; set it if TikTok issues
+    //                                 a distinct webhook secret).
     CHANNELS_TOKEN_KEY: z.string().optional(),
     META_APP_ID: z.string().optional(),
     META_APP_SECRET: z.string().optional(),
     PINTEREST_APP_ID: z.string().optional(),
     PINTEREST_APP_SECRET: z.string().optional(),
+    TIKTOK_APP_KEY: z.string().optional(),
+    TIKTOK_APP_SECRET: z.string().optional(),
+    TIKTOK_WEBHOOK_SECRET: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     // GCS mode requires both buckets — the public one holds variants,

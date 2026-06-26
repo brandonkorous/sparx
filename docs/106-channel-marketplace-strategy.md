@@ -1,17 +1,28 @@
 # sparx Platform — Channel & Marketplace Integration Strategy + Build Plan
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-25
 
-> **Implementation status (2026-06-25):** **P0 framework + P1 feed channels are BUILT.** The
-> `@sparx/channels` adapter contract + registry, the `channel-sync-worker` (catalog/inventory push
-> bodies), the OAuth connect/callback + AES-256-GCM token storage (§4.6), Terraform, and the
-> Settings → Channels dashboard are all in place, with concrete **Google Shopping / Meta / Pinterest**
-> feed adapters. Each feed channel is gated `coming_soon` at runtime until its platform OAuth app is
-> approved and its credentials are set in env — it then flips `available` with no code change. Live
-> end-to-end OAuth + push is unverifiable until those partner apps are approved; the code is complete and
-> typecheck/lint-green. **Next: file partner apps; P2 = first order channel (TikTok).**
+> **Implementation status (2026-06-25):** **P0 framework + P1 feed channels + P2 first order channel
+> (TikTok Shop) are BUILT.** P0/P1: the `@sparx/channels` adapter contract + registry, the
+> `channel-sync-worker` (catalog/inventory push), OAuth connect/callback + AES-256-GCM token storage
+> (§4.6), Terraform, the Settings → Channels dashboard, and the **Google Shopping / Meta / Pinterest**
+> feed adapters.
+>
+> **P2 (TikTok Shop — the first bidirectional ORDER channel):** the `TikTokShopAdapter` (signed Open-
+> Platform calls, full contract), a global `channel_shop_links` shop_id→tenant directory (cross-tenant
+> read / tenant-scoped write) so the app-level webhook can route, the public webhook
+> `POST /v1/public/webhooks/channels/:slug` (verify → resolve tenant → `ingestOrder`), the
+> `ingestChannelOrder` service (order + inventory decrement in ONE idempotent transaction, in api-rest),
+> the worker's `order.fulfilled` → tracking push-back, and the dashboard Orders channel badge + filter.
+> Inbound ingest runs in api-rest; outbound push stays in the worker.
+>
+> Every channel is gated `coming_soon` at runtime until its platform OAuth app is approved and its
+> credentials are set in env (Google reuses the Search-Console client; Meta/Pinterest/TikTok need their
+> own) — it then flips `available` with no code change. Live end-to-end OAuth + push is unverifiable
+> until those partner apps are approved; the code is complete and typecheck/lint-green. **Next: file
+> partner apps; channel-revenue analytics consolidation (§8 + MCP); P3 = Etsy/Walmart/eBay/Faire.**
 
 ---
 

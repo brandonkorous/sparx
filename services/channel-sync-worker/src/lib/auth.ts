@@ -6,6 +6,7 @@
 
 import type { Logger } from 'pino';
 import { withTenant } from '@sparx/db';
+import type { Prisma } from '@sparx/db';
 import { decryptChannelToken, encryptChannelToken } from '@sparx/channels/crypto';
 import type { ChannelAdapter, ChannelAuth } from '@sparx/channels';
 
@@ -18,6 +19,21 @@ export interface ConnectionTokenRow {
   accessTokenEnc: string | null;
   refreshTokenEnc: string | null;
   tokenExpiresAt: Date | null;
+  /** Connection metadata carrying the channel-specific params (TikTok shopCipher). */
+  metadata: Prisma.JsonValue;
+}
+
+/** Read the channel-specific params (TikTok shopCipher/region) back off the
+ *  connection metadata so they ride every outbound adapter call as ChannelAuth.params. */
+function paramsFromMetadata(metadata: Prisma.JsonValue): Record<string, string> | undefined {
+  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) return undefined;
+  const raw = (metadata as Record<string, unknown>).channelParams;
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return undefined;
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+    if (typeof v === 'string') out[k] = v;
+  }
+  return Object.keys(out).length ? out : undefined;
 }
 
 export async function resolveChannelAuth(
@@ -74,5 +90,9 @@ export async function resolveChannelAuth(
     }
   }
 
-  return { externalId: connection.externalId, accessToken };
+  return {
+    externalId: connection.externalId,
+    accessToken,
+    params: paramsFromMetadata(connection.metadata),
+  };
 }
