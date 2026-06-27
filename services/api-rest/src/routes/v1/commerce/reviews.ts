@@ -10,6 +10,19 @@ import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-
 const PathId = z.object({ id: z.string().uuid() });
 const ProductIdParam = z.object({ productId: z.string().uuid() });
 
+const BulkModerateReviews = z.object({
+  reviewIds: z.array(z.string().uuid()).min(1).max(200),
+  status: z.enum(['approved', 'rejected', 'flagged']),
+  moderationNote: z.string().max(2000).optional(),
+});
+const BulkDeleteReviews = z.object({
+  reviewIds: z.array(z.string().uuid()).min(1).max(200),
+});
+const BulkModerateQuestions = z.object({
+  questionIds: z.array(z.string().uuid()).min(1).max(200),
+  status: z.enum(['published', 'rejected']),
+});
+
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const reviewRoutes: FastifyPluginAsync = async (app) => {
   // Reviews
@@ -65,6 +78,28 @@ const reviewRoutes: FastifyPluginAsync = async (app) => {
     reply.code(204);
   });
 
+  // Bulk moderation — one status applied to many reviews from the moderation
+  // queue. Stale/missing ids are skipped; the response reports how many changed.
+  app.post('/v1/commerce/reviews/bulk-moderate', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const body = BulkModerateReviews.parse(request.body ?? {});
+    const result = await reviewService.moderateMany(toCommerceContext(request), {
+      reviewIds: body.reviewIds,
+      status: body.status,
+      ...(body.moderationNote ? { moderationNote: body.moderationNote } : {}),
+    });
+    return ok(result);
+  });
+
+  app.post('/v1/commerce/reviews/bulk-delete', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const body = BulkDeleteReviews.parse(request.body ?? {});
+    const result = await reviewService.deleteReviews(toCommerceContext(request), body.reviewIds);
+    return ok(result);
+  });
+
   // Q&A
   app.get('/v1/commerce/questions/pending', async (request) => {
     requireRole(request, 'viewer');
@@ -82,6 +117,17 @@ const reviewRoutes: FastifyPluginAsync = async (app) => {
       status: body.status,
     });
     return ok({ id, moderated: true });
+  });
+
+  app.post('/v1/commerce/questions/bulk-moderate', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const body = BulkModerateQuestions.parse(request.body ?? {});
+    const result = await reviewService.moderateQuestionMany(toCommerceContext(request), {
+      questionIds: body.questionIds,
+      status: body.status,
+    });
+    return ok(result);
   });
 
   app.post('/v1/commerce/questions/:id/answer', async (request) => {

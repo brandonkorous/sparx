@@ -9,6 +9,8 @@ import {
   CardHeader,
   Heading,
   Stack,
+  statusLabel,
+  statusTone,
   Text,
 } from '@sparx/ui';
 
@@ -18,12 +20,6 @@ import { PriceListStatusBar } from './_components/price-list-status-bar';
 import { PriceListEntriesEditor } from './_components/price-list-entries-editor';
 
 export const dynamic = 'force-dynamic';
-
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline'> = {
-  active: 'success',
-  draft: 'outline',
-  archived: 'warning',
-};
 
 interface Props {
   id: string;
@@ -94,8 +90,10 @@ export async function PriceListDetailContent({ id }: Props) {
           <Stack direction="row" align="center" gap={3} wrap>
             <DollarSign className="h-5 w-5" />
             <Heading level={1}>{priceList.name}</Heading>
-            <Badge color={STATUS_VARIANT[priceList.status] ?? 'outline'}>{priceList.status}</Badge>
-            <Badge variant="outline" className="font-mono text-xs">
+            <Badge color={statusTone(priceList.status)} variant="soft" size="sm">
+              {statusLabel(priceList.status)}
+            </Badge>
+            <Badge variant="outline" size="sm" className="font-mono">
               {priceList.currency}
             </Badge>
             {priceList.channel && <Badge variant="outline">{priceList.channel}</Badge>}

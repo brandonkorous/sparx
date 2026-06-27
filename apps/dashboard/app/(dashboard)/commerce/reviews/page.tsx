@@ -49,12 +49,13 @@ export default async function ReviewsPage({
   const statusParam = stringParam(params.status);
   const productId = stringParam(params.productId);
   const viewParam = stringParam(params.view);
+  const search = stringParam(params.q);
   const filter = parseFilter(statusParam);
   const pageWindow = parsePageParams(params);
 
   const [prefs, { rows, total, paged }] = await Promise.all([
     getUserPreferences(),
-    fetchRows(filter, productId, pageWindow),
+    fetchRows(filter, productId, search, pageWindow),
   ]);
 
   const view = (viewParam ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
@@ -76,7 +77,7 @@ export default async function ReviewsPage({
         />
 
         <ListToolbar
-          searchable={false}
+          searchPlaceholder="Search by review text, author, or product…"
           filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }]}
           enableViewToggle
         />
@@ -123,8 +124,24 @@ interface FetchedReviews {
 async function fetchRows(
   filter: Filter,
   productId: string | undefined,
+  search: string | undefined,
   window: { skip: number; take: number }
 ): Promise<FetchedReviews> {
+  // Text search always runs against the tenant-wide paged endpoint (the queue +
+  // per-product branches have no `q`). A concrete status filter still narrows it;
+  // searching from the default queue widens to all reviews.
+  if (search) {
+    const params = new URLSearchParams({
+      q: search,
+      take: String(window.take),
+      skip: String(window.skip),
+    });
+    if (filter.kind === 'status') params.set('status', filter.status);
+    const { data, meta } = await api.getPaged<ReviewListRow[]>(
+      `/v1/commerce/reviews?${params.toString()}`
+    );
+    return { rows: data, total: (meta?.total as number | undefined) ?? data.length, paged: true };
+  }
   if (filter.kind === 'queue') {
     const rows = await api.get<ReviewListRow[]>('/v1/commerce/reviews/pending');
     return { rows, total: rows.length, paged: false };

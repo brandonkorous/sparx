@@ -13,10 +13,11 @@ import {
   Text,
   Wordmark,
 } from '@sparx/ui';
-import { Gauge, Home, Plus, Search, Settings, Store, Workflow } from 'lucide-react';
+import { Gauge, Home, Landmark, Plus, Search, Settings, Store, Workflow } from 'lucide-react';
 import { getManifestForPath, moduleManifests } from '../_shell/registry';
 import type { FavoriteRow, RecentRow } from '../_shell/service';
 import { FavoritesSection } from './favorites-section';
+import { FinanceSectionItems } from './finance-section-nav';
 import { ModuleSectionItems } from './module-section-nav';
 import { RecentsSection } from './recents-section';
 import { SettingsSectionItems } from './settings-section-nav';
@@ -42,6 +43,7 @@ export function MobileNav({ pathname, enabledModules, favorites, recents }: Mobi
   const manifest = pathname ? getManifestForPath(pathname) : undefined;
   const activeModule = manifest && enabledModules.includes(manifest.id) ? manifest : undefined;
   const inSettings = pathname === '/settings' || (pathname?.startsWith('/settings/') ?? false);
+  const inFinance = pathname === '/finance' || (pathname?.startsWith('/finance/') ?? false);
 
   // One ambient "Add a module" pointer (Option A), shown only when a billable
   // module is inactive. `storefront` is the `builder` alias, not a separate
@@ -151,6 +153,24 @@ export function MobileNav({ pathname, enabledModules, favorites, recents }: Mobi
             <Link href="/marketplace">Marketplace</Link>
           </SidebarItem>
         </SidebarSection>
+
+        {/* Finance — a first-class platform area (docs/109). Mirrors Settings: a
+            link when you're elsewhere, its money-flow-split section list when
+            you're inside it. Neutral (platform-level, no module hue). */}
+        {inFinance ? (
+          <ModuleProvider module="platform">
+            <SidebarSection>
+              <SidebarSectionLabel>Finance</SidebarSectionLabel>
+              <FinanceSectionItems pathname={pathname} />
+            </SidebarSection>
+          </ModuleProvider>
+        ) : (
+          <SidebarSection>
+            <SidebarItem asChild icon={<Landmark className="h-4 w-4" />}>
+              <Link href="/finance">Finance</Link>
+            </SidebarItem>
+          </SidebarSection>
+        )}
 
         {inSettings ? (
           <ModuleProvider module="platform">

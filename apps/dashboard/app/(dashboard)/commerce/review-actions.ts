@@ -36,6 +36,32 @@ export async function deleteReviewAction(reviewId: string): Promise<ActionResult
   });
 }
 
+export async function bulkModerateReviewsAction(
+  reviewIds: string[],
+  status: 'approved' | 'rejected' | 'flagged'
+): Promise<ActionResult<{ count: number }>> {
+  return restAction(async () => {
+    const result = await api.post<{ count: number }>('/v1/commerce/reviews/bulk-moderate', {
+      reviewIds,
+      status,
+    });
+    revalidatePath('/commerce/reviews');
+    return result;
+  });
+}
+
+export async function bulkDeleteReviewsAction(
+  reviewIds: string[]
+): Promise<ActionResult<{ count: number }>> {
+  return restAction(async () => {
+    const result = await api.post<{ count: number }>('/v1/commerce/reviews/bulk-delete', {
+      reviewIds,
+    });
+    revalidatePath('/commerce/reviews');
+    return result;
+  });
+}
+
 export async function moderateQuestionAction(input: {
   questionId: string;
   status: 'published' | 'rejected';
@@ -44,6 +70,20 @@ export async function moderateQuestionAction(input: {
     await api.post<{ id: string }>(`/v1/commerce/questions/${input.questionId}/moderate`, input);
     revalidatePath('/commerce/qa');
     revalidatePath(`/commerce/qa/${input.questionId}`);
+  });
+}
+
+export async function bulkModerateQuestionsAction(
+  questionIds: string[],
+  status: 'published' | 'rejected'
+): Promise<ActionResult<{ count: number }>> {
+  return restAction(async () => {
+    const result = await api.post<{ count: number }>('/v1/commerce/questions/bulk-moderate', {
+      questionIds,
+      status,
+    });
+    revalidatePath('/commerce/qa');
+    return result;
   });
 }
 

@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Input, Stack, Text } from '@sparx/ui';
+import { Button, Checkbox, Input, NativeSelect, Stack, Text } from '@sparx/ui';
 import type { RecordReturnInspectionInput } from '@sparx/commerce-schemas';
 
 import { recordReturnInspectionAction } from '../../../return-actions';
@@ -100,23 +100,23 @@ export function ReturnInspectionForm({
               <Text size="xs" className="w-32 font-mono">
                 {it.orderItemId.slice(0, 8)}
               </Text>
-              <select
+              <NativeSelect
                 value={line.condition}
                 onChange={(e) => update(it.id, { condition: e.target.value as Condition })}
                 disabled={disabled}
-                className="h-9 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 text-sm"
+                className="w-44"
               >
                 {CONDITIONS.map((c) => (
                   <option key={c} value={c}>
-                    {c}
+                    {c.replace(/_/g, ' ')}
                   </option>
                 ))}
-              </select>
+              </NativeSelect>
               <label className="flex items-center gap-1.5">
-                <input
-                  type="checkbox"
+                <Checkbox
+                  color="module"
                   checked={line.restockable}
-                  onChange={(e) => update(it.id, { restockable: e.target.checked })}
+                  onCheckedChange={(checked) => update(it.id, { restockable: checked === true })}
                   disabled={disabled}
                 />
                 <Text size="xs">restock</Text>
@@ -132,7 +132,7 @@ export function ReturnInspectionForm({
           );
         })}
         {error && (
-          <Text size="sm" className="text-[var(--color-danger)]">
+          <Text size="sm" variant="danger" role="alert" aria-live="polite">
             {error}
           </Text>
         )}

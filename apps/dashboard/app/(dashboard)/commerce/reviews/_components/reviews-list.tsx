@@ -1,8 +1,10 @@
 'use client';
 
-import { Star } from 'lucide-react';
+import Link from 'next/link';
+import { Check, Flag, Star, Trash2, X } from 'lucide-react';
 import {
   Badge,
+  type BulkAction,
   type SelectionCard,
   type SelectionColumn,
   SelectionList,
@@ -12,13 +14,14 @@ import {
   Text,
 } from '@sparx/ui';
 
+import { bulkDeleteReviewsAction, bulkModerateReviewsAction } from '../../review-actions';
 import { EntityRowLink } from '../../../_components/entity-row-link';
 
 // Client wrapper for the reviews moderation list. SelectionList takes render
 // functions (columns/card), which can't cross the server→client boundary, so
-// the server page hands rows + view here and this builds both views. Read-only —
-// `selectable={false}` (no checkboxes / bulk bar); rows open the full review via
-// EntityRowLink in the user's detail-view surface.
+// the server page hands rows + view here and this builds both views. Rows are
+// selectable so a moderator can approve/flag/reject/delete a whole batch from
+// the bulk bar; a single row still opens the full review via EntityRowLink.
 
 interface ReviewCustomer {
   id: string;
@@ -49,6 +52,17 @@ interface ReviewsListProps {
   view: 'table' | 'card';
 }
 
+// Titles are optional on the storefront form, so most reviews have none. Lead
+// with the title when present, otherwise a trimmed snippet of the body — never
+// a blank, unclickable cell.
+function reviewLabel(row: ReviewListRow): string {
+  const title = row.title.trim();
+  if (title) return title;
+  const body = row.body.trim();
+  if (!body) return 'Untitled review';
+  return body.length > 60 ? `${body.slice(0, 60).trimEnd()}…` : body;
+}
+
 function authorLabel(row: ReviewListRow): string {
   if (row.displayName) return row.displayName;
   if (row.customer) {
@@ -58,13 +72,21 @@ function authorLabel(row: ReviewListRow): string {
     return 'Customer';
   }
   if (row.customerId) return 'Customer';
-  return 'Anon';
+  return 'Anonymous';
 }
 
 function StatusBadge({ status }: { status: string }) {
   return (
     <Badge color={statusTone(status)} variant="soft" size="sm">
       {statusLabel(status)}
+    </Badge>
+  );
+}
+
+function VerifiedBadge() {
+  return (
+    <Badge color="success" variant="soft" size="sm">
+      Verified
     </Badge>
   );
 }
@@ -87,6 +109,43 @@ function Stars({ value }: { value: number }) {
 }
 
 export function ReviewsList({ rows, view }: ReviewsListProps) {
+  const bulkActions: BulkAction[] = [
+    {
+      label: 'Approve',
+      icon: Check,
+      onAction: async (ids) => {
+        await bulkModerateReviewsAction(ids, 'approved');
+      },
+    },
+    {
+      label: 'Flag',
+      icon: Flag,
+      onAction: async (ids) => {
+        await bulkModerateReviewsAction(ids, 'flagged');
+      },
+    },
+    {
+      label: 'Reject',
+      icon: X,
+      requiresConfirm: true,
+      confirmLabel:
+        'Reject {count} review{count === 1 ? "" : "s"}? They are hidden from the storefront.',
+      onAction: async (ids) => {
+        await bulkModerateReviewsAction(ids, 'rejected');
+      },
+    },
+    {
+      label: 'Delete',
+      icon: Trash2,
+      variant: 'destructive',
+      requiresConfirm: true,
+      confirmLabel: 'Delete {count} review{count === 1 ? "" : "s"}? This cannot be undone.',
+      onAction: async (ids) => {
+        await bulkDeleteReviewsAction(ids);
+      },
+    },
+  ];
+
   const titleLink = (r: ReviewListRow, className: string) => (
     <EntityRowLink
       href={`/commerce/reviews/${r.id}`}
@@ -94,32 +153,41 @@ export function ReviewsList({ rows, view }: ReviewsListProps) {
       entityId={r.id}
       className={className}
     >
-      {r.title}
+      {reviewLabel(r)}
     </EntityRowLink>
   );
 
-  const productCell = (r: ReviewListRow) => (
-    <Text size="sm">
-      {r.productTitle ?? <span className="font-mono text-xs">{r.productId.slice(0, 8)}</span>}
-    </Text>
-  );
-
-  const verifiedCell = (r: ReviewListRow) =>
-    r.verifiedPurchase ? (
-      <Badge color="success">verified</Badge>
+  const productCell = (r: ReviewListRow) =>
+    r.productTitle ? (
+      <Link
+        href={`/commerce/products/${r.productId}`}
+        className="text-sm hover:text-[var(--module-active)] hover:underline"
+      >
+        {r.productTitle}
+      </Link>
     ) : (
-      <Text size="xs" variant="muted">
-        —
+      <Text size="sm" variant="muted">
+        Deleted product
       </Text>
     );
 
   const columns: SelectionColumn<ReviewListRow>[] = [
     { header: 'Rating', cell: (r) => <Stars value={r.rating} /> },
-    { header: 'Title', cell: (r) => titleLink(r, 'hover:text-[var(--module-active)]') },
+    { header: 'Review', cell: (r) => titleLink(r, 'hover:text-[var(--module-active)]') },
     { header: 'Product', cell: productCell },
     { header: 'Author', cell: (r) => authorLabel(r) },
     { header: 'Status', cell: (r) => <StatusBadge status={r.status} /> },
-    { header: 'Verified', cell: verifiedCell },
+    {
+      header: 'Verified',
+      cell: (r) =>
+        r.verifiedPurchase ? (
+          <VerifiedBadge />
+        ) : (
+          <Text size="xs" variant="muted">
+            —
+          </Text>
+        ),
+    },
     { header: 'Submitted', cell: (r) => new Date(r.createdAt).toLocaleDateString() },
   ];
 
@@ -138,7 +206,7 @@ export function ReviewsList({ rows, view }: ReviewsListProps) {
           {authorLabel(r)}
         </Text>
         <Stack direction="row" gap={2} align="center">
-          {r.verifiedPurchase ? <Badge color="success">verified</Badge> : null}
+          {r.verifiedPurchase ? <VerifiedBadge /> : null}
           <Text size="xs" variant="muted">
             {new Date(r.createdAt).toLocaleDateString()}
           </Text>
@@ -152,11 +220,11 @@ export function ReviewsList({ rows, view }: ReviewsListProps) {
       items={rows}
       view={view}
       getId={(r) => r.id}
-      selectable={false}
-      getRowLabel={(r) => r.title}
+      getRowLabel={(r) => reviewLabel(r)}
       entityLabelPlural="reviews"
       columns={columns}
       card={card}
+      bulkActions={bulkActions}
     />
   );
 }

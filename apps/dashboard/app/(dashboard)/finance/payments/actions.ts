@@ -24,10 +24,25 @@ export interface PaymentConfigState {
   sparxPay: SparxPayStatus;
 }
 
+export interface SparxPayBalance {
+  currency: string;
+  availableCents: number;
+  pendingCents: number;
+  payoutInterval: string | null;
+}
+
 export type RedirectResult = { ok: true; url: string } | { ok: false; error: string };
 
 export async function getPaymentConfig(): Promise<PaymentConfigState> {
   return api.get<PaymentConfigState>('/v1/commerce/payments/config');
+}
+
+/** sparx Pay connected-account balance (docs/110 GAP A). Degrades to null when not
+ *  onboarded / the platform key is unset, so callers render a calm empty state. */
+export async function getSparxPayBalance(): Promise<SparxPayBalance | null> {
+  return api
+    .get<SparxPayBalance | null>('/v1/commerce/payments/sparx-pay/balance')
+    .catch(() => null);
 }
 
 export async function selectGateway(gatewayId: PaymentGatewayId): Promise<PaymentConfigState> {

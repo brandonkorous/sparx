@@ -56,7 +56,7 @@ export function TemplateJsonEditor({
         className="font-mono text-xs"
       />
       {error && (
-        <Text size="sm" className="text-[var(--color-danger)]">
+        <Text size="sm" variant="danger" role="alert" aria-live="polite">
           {error}
         </Text>
       )}

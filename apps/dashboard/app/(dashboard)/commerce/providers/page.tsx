@@ -13,10 +13,16 @@ import { ListToolbar } from '../../_components/list-toolbar';
 import { getUserPreferences } from '../../_shell/preferences';
 import { ProvidersLists } from './_components/providers-lists';
 
-// Providers — payment / tax / shipping / subscription / dropship registry,
-// grouped by kind. A standard Collection/List surface (docs/34 §7): one
-// ListToolbar view toggle flips every kind's Installed list together. The
-// "Available to install" rail (bespoke provider cards) is preserved as-is.
+// Providers — tax / shipping / subscription / dropship registry, grouped by kind.
+// A standard Collection/List surface (docs/34 §7): one ListToolbar view toggle flips
+// every kind's Installed list together. The "Available to install" rail (bespoke
+// provider cards) is preserved as-is.
+//
+// PAYMENT acceptance is NOT here (docs/110 Slice 5): it lives in Finance → Payments,
+// the single door for how a merchant gets paid. The `payment` kind is dropped from
+// the display order below; PayPal (the one payment-kind provider) is re-homed into
+// the Payments surface. The provider registration stays registered (checkout + the
+// install flow still resolve it) — only the duplicate management surface is folded.
 
 interface InstallationRow {
   id: string;
@@ -35,13 +41,9 @@ interface InstallationRow {
 
 export const dynamic = 'force-dynamic';
 
-const KIND_ORDER: ProviderKind[] = [
-  'payment',
-  'tax',
-  'shipping',
-  'subscription_billing',
-  'dropship',
-];
+// `payment` is intentionally absent — payment acceptance lives in Finance → Payments
+// (docs/110 Slice 5), not in the generic provider registry.
+const KIND_ORDER: ProviderKind[] = ['tax', 'shipping', 'subscription_billing', 'dropship'];
 
 interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -84,7 +86,7 @@ export default async function ProvidersPage({ searchParams }: PageProps) {
               {installed.length} installed · {available.length} available
             </Badge>
           }
-          description="Pick a payment / tax / shipping / subscription provider per environment. sparx-branded options wrap a real provider underneath (Stripe for sparx Pay, Shippo for sparx Shipping) so a merchant who doesn't want to manage carrier accounts can still transact. Sandbox installs run real provider calls against the provider's test environment."
+          description="Pick a tax / shipping / subscription provider per environment. sparx-branded options wrap a real provider underneath (Shippo for sparx Shipping) so a merchant who doesn't want to manage carrier accounts can still transact. Sandbox installs run real provider calls against the provider's test environment. Looking to accept payments? That's in Finance → Payments."
         />
 
         <ListToolbar enableViewToggle searchable={false} />

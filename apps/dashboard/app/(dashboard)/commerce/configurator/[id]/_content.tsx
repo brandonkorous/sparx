@@ -17,6 +17,8 @@ import {
   TableHeader,
   TableRow,
   Text,
+  statusLabel,
+  statusTone,
 } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -97,12 +99,6 @@ interface ConfigurationTemplateDetail {
 
 export const dynamic = 'force-dynamic';
 
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline'> = {
-  active: 'success',
-  draft: 'outline',
-  archived: 'warning',
-};
-
 interface Props {
   id: string;
 }
@@ -125,7 +121,9 @@ export async function ConfiguratorTemplateDetailContent({ id }: Props) {
           <Stack direction="row" align="center" gap={3} wrap>
             <Settings2 className="h-5 w-5" />
             <Heading level={1}>{template.name}</Heading>
-            <Badge color={STATUS_VARIANT[template.status] ?? 'outline'}>{template.status}</Badge>
+            <Badge color={statusTone(template.status)} variant="soft" size="sm">
+              {statusLabel(template.status)}
+            </Badge>
           </Stack>
           <Text size="sm" variant="muted">
             Product:{' '}

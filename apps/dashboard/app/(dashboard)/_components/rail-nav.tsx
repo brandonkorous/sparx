@@ -3,7 +3,18 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { ModuleProvider, useRailExpanded, Wordmark } from '@sparx/ui';
-import { Clock, Gauge, Home, Plus, Search, Settings, Star, Store, Workflow } from 'lucide-react';
+import {
+  Clock,
+  Gauge,
+  Home,
+  Landmark,
+  Plus,
+  Search,
+  Settings,
+  Star,
+  Store,
+  Workflow,
+} from 'lucide-react';
 import {
   moduleManifests,
   findFavoritableById,
@@ -59,8 +70,8 @@ function tileIconClass(active: boolean) {
 // the glyph adopts that module's color (a CRM favorite reads cyan, a Commerce
 // one orange). Automations and SEO are platform surfaces (not in moduleManifests)
 // but each owns a brand color, so they're wrapped in a ModuleProvider and use this
-// too (fuchsia / yellow). Only the true neutral shortcuts (Home/Search/Settings/
-// Marketplace) keep the neutral tileIconClass since they have no module color.
+// too (fuchsia / yellow). Only the true neutral shortcuts (Home/Search/Finance/
+// Marketplace/Settings) keep the neutral tileIconClass since they have no module color.
 const MODULE_TILE_ICON =
   'inline-flex h-4 w-4 shrink-0 items-center justify-center text-[var(--module-active)]';
 
@@ -260,6 +271,23 @@ export function RailNav({ pathname, enabledModules, favorites, recents }: RailNa
           {expanded && <span className="flex-1 truncate text-left">Add a module</span>}
         </Link>
       )}
+
+      {/* Finance — a first-class platform area (docs/109): the one place to manage
+          how you get paid, where your money lands, and what you pay sparx. Like
+          Marketplace/Settings it's platform-level (not a module), so it pins to the
+          bottom cluster and keeps the neutral tile (the hub chrome is neutral; its
+          sections wear the hue of the money they surface). */}
+      <Link
+        href="/finance"
+        title="Finance"
+        aria-label="Finance"
+        className={tileClass(isActivePath(pathname, '/finance'), expanded)}
+      >
+        <span className={tileIconClass(isActivePath(pathname, '/finance'))}>
+          <Landmark className="h-4 w-4" />
+        </span>
+        {expanded && <span className="flex-1 truncate text-left">Finance</span>}
+      </Link>
 
       {/* Marketplace — blueprints now, integrations soon (docs/54): one-click
           install of a whole themed site, with more categories to come. Platform-

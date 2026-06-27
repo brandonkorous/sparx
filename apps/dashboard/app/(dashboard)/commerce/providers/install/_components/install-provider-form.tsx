@@ -22,6 +22,7 @@ import {
 
 import { formString } from '../../../../../../lib/forms';
 import { installProviderAction } from '../../../provider-actions';
+import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
 
 // Install-provider create surface, on the standard create shell (docs/86 F layout).
 // FULL-PAGE ONLY (variant="embedded") and intentionally NOT in the drawer/modal
@@ -50,6 +51,16 @@ interface JsonSchema {
 }
 
 const STEPS: SurfaceStepDef[] = [{ key: 'configure', label: 'Configure' }];
+
+// Stable serialization of a native form's current values, for the unsaved-changes
+// compare (docs/105). Sorted so field order can't make an unchanged form look dirty;
+// unchecked checkboxes drop out of FormData, so toggling one changes the string.
+function serializeForm(form: HTMLFormElement): string {
+  return Array.from(new FormData(form).entries())
+    .map(([k, v]) => `${k}=${typeof v === 'string' ? v : ''}`)
+    .sort()
+    .join('&');
+}
 
 export function InstallProviderForm({
   providerSlug,
@@ -83,9 +94,28 @@ export function InstallProviderForm({
   const required = new Set(schema.required ?? []);
   const propertyKeys = Object.keys(properties);
 
-  const cancel = React.useCallback(() => {
-    router.push('/commerce/providers');
-  }, [router]);
+  // Unsaved-changes guard (docs/105). The fields are an uncontrolled native form
+  // (read via FormData on submit) that starts pre-filled with provider defaults, so
+  // dirtiness is a compare against the initial serialized form (captured once on
+  // mount) rather than "any field non-empty" — leaving with only the defaults must
+  // not prompt. Recomputed on every input; the success path navigates directly (not
+  // via `cancel`), so a completed install never self-prompts.
+  const initialFormRef = React.useRef<string | null>(null);
+  const [dirty, setDirty] = React.useState(false);
+  const recomputeDirty = React.useCallback(() => {
+    const form = formRef.current;
+    if (!form || initialFormRef.current === null) return;
+    setDirty(serializeForm(form) !== initialFormRef.current);
+  }, []);
+  React.useEffect(() => {
+    const form = formRef.current;
+    if (form && initialFormRef.current === null) initialFormRef.current = serializeForm(form);
+  }, []);
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'provider installation' });
+
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) router.push('/commerce/providers');
+  }, [guardLeave, router]);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -147,7 +177,12 @@ export function InstallProviderForm({
             nextDisabled: pending,
           }}
         >
-          <form ref={formRef} onSubmit={onSubmit}>
+          <form
+            ref={formRef}
+            onSubmit={onSubmit}
+            onInput={recomputeDirty}
+            onChange={recomputeDirty}
+          >
             <Stack gap={4}>
               <Card variant="module">
                 <CardContent className="py-6">

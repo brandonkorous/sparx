@@ -1,8 +1,10 @@
-// Channel revenue consolidation surface (docs/27 §8). Server components — no
-// interactivity beyond links, so the channel drill is a plain `?channel=` query.
-// Reads the consolidated report from GET /v1/commerce/reports/channel-revenue:
-// every native channel + each connected marketplace as its own line, with gross,
-// channel fees, net-after-fees, AOV, and share of total.
+// Channel revenue consolidation surface (docs/27 §8) — the financial rollup, now in
+// Finance → Channels (docs/110 Slice 4b). Server components — no interactivity beyond
+// links, so the channel drill is a plain `?channel=` query that stays within
+// /finance/channels. Reads the consolidated report from GET
+// /v1/commerce/reports/channel-revenue: every native channel + each connected
+// marketplace as its own line, with gross, channel fees, net-after-fees, AOV, and
+// share of total.
 
 import Link from 'next/link';
 import {
@@ -79,7 +81,7 @@ export function ChannelRevenuePanel({
               >
                 <TableCell className="font-medium">
                   <Link
-                    href={`/settings/channels?channel=${encodeURIComponent(row.channel)}#channel-top-products`}
+                    href={`/finance/channels?channel=${encodeURIComponent(row.channel)}#channel-top-products`}
                     className="hover:underline"
                     aria-current={active ? 'true' : undefined}
                   >

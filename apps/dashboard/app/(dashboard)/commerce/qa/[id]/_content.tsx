@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import {
@@ -9,6 +10,8 @@ import {
   Heading,
   Stack,
   Text,
+  statusLabel,
+  statusTone,
 } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -71,16 +74,8 @@ export async function QuestionDetailContent({ id }: Props) {
         <Stack gap={1}>
           <Heading level={1}>Question</Heading>
           <Stack direction="row" gap={2} align="center">
-            <Badge
-              color={
-                detail.status === 'published'
-                  ? 'success'
-                  : detail.status === 'rejected'
-                    ? 'danger'
-                    : 'outline'
-              }
-            >
-              {detail.status}
+            <Badge color={statusTone(detail.status)} variant="soft" size="sm">
+              {statusLabel(detail.status)}
             </Badge>
             <Text size="sm" variant="muted">
               {displayCustomer(detail.customer)} · {new Date(detail.createdAt).toLocaleString()}
@@ -95,7 +90,17 @@ export async function QuestionDetailContent({ id }: Props) {
           <Stack gap={1}>
             <Heading level={3}>Question body</Heading>
             <CardDescription>
-              Product: {detail.productTitle ?? detail.productId.slice(0, 8)}
+              Product:{' '}
+              {detail.productTitle ? (
+                <Link
+                  href={`/commerce/products/${detail.productId}`}
+                  className="hover:text-[var(--module-active)] hover:underline"
+                >
+                  {detail.productTitle}
+                </Link>
+              ) : (
+                'Deleted product'
+              )}
             </CardDescription>
           </Stack>
         </CardHeader>
@@ -104,7 +109,7 @@ export async function QuestionDetailContent({ id }: Props) {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card variant="module">
         <CardHeader>
           <Stack gap={1}>
             <Heading level={3}>Answers</Heading>
@@ -124,9 +129,13 @@ export async function QuestionDetailContent({ id }: Props) {
                 <Stack key={a.id} gap={1}>
                   <Stack direction="row" gap={2} align="center">
                     {a.isOfficial ? (
-                      <Badge color="success">staff</Badge>
+                      <Badge color="success" variant="soft" size="sm">
+                        Staff
+                      </Badge>
                     ) : (
-                      <Badge variant="outline">customer</Badge>
+                      <Badge variant="outline" size="sm">
+                        Customer
+                      </Badge>
                     )}
                     <Text size="xs" variant="muted">
                       {new Date(a.createdAt).toLocaleString()}

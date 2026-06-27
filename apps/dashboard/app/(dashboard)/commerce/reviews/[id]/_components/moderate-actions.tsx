@@ -126,7 +126,7 @@ export function ModerateActions({ reviewId, status }: { reviewId: string; status
         </Button>
       </Stack>
       {error && (
-        <Text size="xs" className="text-[var(--color-danger)]">
+        <Text size="xs" variant="danger" role="alert" aria-live="polite">
           {error}
         </Text>
       )}

@@ -33,6 +33,10 @@ import { publishCommerceEvent } from '../events';
 export interface ReviewRow {
   id: string;
   productId: string;
+  // Resolved product identity so every surface (moderation queue, detail, the
+  // per-product list) can show a human name + deep-link instead of a raw GUID.
+  productTitle: string | null;
+  productHandle: string | null;
   variantId: string | null;
   customerId: string | null;
   orderId: string | null;
@@ -50,6 +54,13 @@ export interface ReviewRow {
   createdAt: string;
 }
 
+// Shared include so every review query that maps through `toReviewRow` carries
+// the same media + product-identity shape.
+const REVIEW_INCLUDE = {
+  media: { orderBy: { position: 'asc' } },
+  product: { select: { title: true, handle: true } },
+} satisfies Prisma.ProductReviewInclude;
+
 export async function listReviewsForProduct(
   ctx: ServiceContext,
   productId: string,
@@ -64,7 +75,7 @@ export async function listReviewsForProduct(
     const [rows, total, agg] = await Promise.all([
       tx.productReview.findMany({
         where,
-        include: { media: { orderBy: { position: 'asc' } } },
+        include: REVIEW_INCLUDE,
         orderBy: { createdAt: 'desc' },
         take: filter.take ?? 50,
         skip: filter.skip ?? 0,
@@ -87,7 +98,7 @@ export async function listPendingModeration(ctx: ServiceContext): Promise<Review
   return withTenant(ctx, async (tx) => {
     const rows = await tx.productReview.findMany({
       where: { status: { in: ['pending', 'flagged'] }, deletedAt: null },
-      include: { media: { orderBy: { position: 'asc' } } },
+      include: REVIEW_INCLUDE,
       orderBy: { createdAt: 'asc' },
       take: 200,
     });
@@ -99,7 +110,7 @@ export async function getReview(ctx: ServiceContext, reviewId: string): Promise<
   const row = await withTenant(ctx, async (tx) => {
     return tx.productReview.findFirst({
       where: { id: reviewId, deletedAt: null },
-      include: { media: { orderBy: { position: 'asc' } } },
+      include: REVIEW_INCLUDE,
     });
   });
   if (!row) throw new CommerceNotFoundError('ProductReview', reviewId);
@@ -430,11 +441,56 @@ export async function deleteReview(ctx: ServiceContext, reviewId: string): Promi
   });
 }
 
+// Bulk moderation — apply one status to many reviews. Loops the single-review
+// path so every id still fires its events, audit log, and rating recompute;
+// a missing/stale id is skipped rather than aborting the batch. Returns how
+// many actually changed.
+export async function moderateMany(
+  ctx: ServiceContext,
+  input: { reviewIds: string[]; status: ReviewModerationStatus; moderationNote?: string }
+): Promise<{ count: number }> {
+  let count = 0;
+  for (const reviewId of input.reviewIds) {
+    try {
+      await moderate(ctx, {
+        reviewId,
+        status: input.status,
+        ...(input.moderationNote ? { moderationNote: input.moderationNote } : {}),
+      });
+      count += 1;
+    } catch (err) {
+      if (err instanceof CommerceNotFoundError) continue;
+      throw err;
+    }
+  }
+  return { count };
+}
+
+// Bulk soft-delete. Same resilient-skip semantics as moderateMany.
+export async function deleteReviews(
+  ctx: ServiceContext,
+  reviewIds: string[]
+): Promise<{ count: number }> {
+  let count = 0;
+  for (const reviewId of reviewIds) {
+    try {
+      await deleteReview(ctx, reviewId);
+      count += 1;
+    } catch (err) {
+      if (err instanceof CommerceNotFoundError) continue;
+      throw err;
+    }
+  }
+  return { count };
+}
+
 // ─── Q&A ──────────────────────────────────────────────────────────────
 
 export interface QuestionRow {
   id: string;
   productId: string;
+  productTitle: string | null;
+  productHandle: string | null;
   customerId: string | null;
   displayName: string | null;
   body: string;
@@ -443,6 +499,12 @@ export interface QuestionRow {
   createdAt: string;
   answers: AnswerRow[];
 }
+
+// Shared include for question queries mapping through `toQuestionRow`.
+const QUESTION_INCLUDE = {
+  answers: { orderBy: [{ isOfficial: 'desc' }, { createdAt: 'asc' }] },
+  product: { select: { title: true, handle: true } },
+} satisfies Prisma.ProductQuestionInclude;
 
 export interface AnswerRow {
   id: string;
@@ -466,7 +528,7 @@ export async function listQuestionsForProduct(
         productId,
         ...(filter.status ? { status: filter.status } : {}),
       },
-      include: { answers: { orderBy: [{ isOfficial: 'desc' }, { createdAt: 'asc' }] } },
+      include: QUESTION_INCLUDE,
       orderBy: { createdAt: 'desc' },
       take: filter.take ?? 100,
     });
@@ -478,7 +540,7 @@ export async function listPendingQuestions(ctx: ServiceContext): Promise<Questio
   return withTenant(ctx, async (tx) => {
     const rows = await tx.productQuestion.findMany({
       where: { status: 'pending' },
-      include: { answers: true },
+      include: QUESTION_INCLUDE,
       orderBy: { createdAt: 'asc' },
       take: 200,
     });
@@ -566,6 +628,25 @@ export async function moderateQuestion(
       data: { questionId: input.questionId, productId: change.productId },
     });
   }
+}
+
+// Bulk question moderation — publish/reject many. Loops the single path so each
+// fires its event + audit; a stale id is skipped. Returns how many changed.
+export async function moderateQuestionMany(
+  ctx: ServiceContext,
+  input: { questionIds: string[]; status: 'published' | 'rejected' }
+): Promise<{ count: number }> {
+  let count = 0;
+  for (const questionId of input.questionIds) {
+    try {
+      await moderateQuestion(ctx, { questionId, status: input.status });
+      count += 1;
+    } catch (err) {
+      if (err instanceof CommerceNotFoundError) continue;
+      throw err;
+    }
+  }
+  return { count };
 }
 
 export async function submitAnswer(
@@ -817,10 +898,14 @@ export async function topWishlistedVariants(
 
 // ─── helpers ──────────────────────────────────────────────────────────
 
-function toReviewRow(row: Prisma.ProductReviewGetPayload<{ include: { media: true } }>): ReviewRow {
+function toReviewRow(
+  row: Prisma.ProductReviewGetPayload<{ include: typeof REVIEW_INCLUDE }>
+): ReviewRow {
   return {
     id: row.id,
     productId: row.productId,
+    productTitle: row.product?.title ?? null,
+    productHandle: row.product?.handle ?? null,
     variantId: row.variantId,
     customerId: row.customerId,
     orderId: row.orderId,
@@ -840,11 +925,13 @@ function toReviewRow(row: Prisma.ProductReviewGetPayload<{ include: { media: tru
 }
 
 function toQuestionRow(
-  row: Prisma.ProductQuestionGetPayload<{ include: { answers: true } }>
+  row: Prisma.ProductQuestionGetPayload<{ include: typeof QUESTION_INCLUDE }>
 ): QuestionRow {
   return {
     id: row.id,
     productId: row.productId,
+    productTitle: row.product?.title ?? null,
+    productHandle: row.product?.handle ?? null,
     customerId: row.customerId,
     displayName: row.displayName,
     body: row.body,

@@ -9,12 +9,7 @@
 import 'server-only';
 import { revalidatePath } from 'next/cache';
 import { api } from '@/lib/api-rest-client';
-import type {
-  ActionResult,
-  ChannelRevenueReport,
-  ChannelTopProduct,
-  ChannelsPayload,
-} from './_types';
+import type { ActionResult, ChannelRevenueReport, ChannelsPayload } from './_types';
 
 const DASHBOARD_URL = process.env.NEXT_PUBLIC_DASHBOARD_URL ?? '';
 const CALLBACK_PATH = '/settings/channels/callback';
@@ -23,19 +18,12 @@ export async function getChannels(): Promise<ChannelsPayload> {
   return api.get<ChannelsPayload>('/v1/channels');
 }
 
-/** Revenue consolidated across every channel (last 30 days). Returns null when the
- *  Commerce reports aren't reachable (e.g. module off) so the page degrades. */
+/** Revenue consolidated across every channel (last 30 days), used here for the
+ *  per-connection metric. The full compare-and-drill rollup lives in Finance →
+ *  Channels (docs/110 Slice 4b). Returns null when the Commerce reports aren't
+ *  reachable (e.g. module off) so the page degrades. */
 export async function getChannelRevenue(): Promise<ChannelRevenueReport | null> {
   return api.get<ChannelRevenueReport>('/v1/commerce/reports/channel-revenue').catch(() => null);
-}
-
-/** Top products for one channel key (last 30 days), for the channel drill-down. */
-export async function getChannelTopProducts(channel: string): Promise<ChannelTopProduct[]> {
-  return api
-    .get<
-      ChannelTopProduct[]
-    >(`/v1/commerce/reports/channel-top-products?channel=${encodeURIComponent(channel)}&limit=5`)
-    .catch(() => []);
 }
 
 export async function connectChannelAction(slug: string): Promise<ActionResult<{ url: string }>> {

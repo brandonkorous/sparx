@@ -64,11 +64,7 @@ export function BundlesList({ bundles, view }: BundlesListProps) {
     </>
   );
 
-  const inventoryBadge = (b: BundleRow) => (
-    <Badge variant="outline" className="text-xs">
-      {b.inventoryMode}
-    </Badge>
-  );
+  const inventoryBadge = (b: BundleRow) => <Badge variant="outline">{b.inventoryMode}</Badge>;
 
   const columns: SelectionColumn<BundleRow>[] = [
     { header: 'Bundle product', cell: (b) => titleLink(b) },

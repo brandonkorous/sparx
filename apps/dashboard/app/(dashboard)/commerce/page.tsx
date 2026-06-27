@@ -558,7 +558,7 @@ export default async function CommercePage() {
               right="$320.00"
             />
             <Button asChild variant="outline" size="sm" className="mt-4 w-full">
-              <Link href="/settings/payments">View payout schedule</Link>
+              <Link href="/finance/payments">View payout schedule</Link>
             </Button>
           </OverviewCard>
         </div>

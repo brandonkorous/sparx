@@ -72,6 +72,7 @@ export default async function QaPage({
   const params = await searchParams;
   const statusParam = stringParam(params.status);
   const viewParam = stringParam(params.view);
+  const search = stringParam(params.q);
   const { skip, take } = parsePageParams(params);
 
   const prefs = await getUserPreferences();
@@ -79,7 +80,8 @@ export default async function QaPage({
 
   let rows: DisplayRow[] = [];
   let total: number;
-  if (statusParam === undefined) {
+  let paged = false;
+  if (search === undefined && statusParam === undefined) {
     // Pending moderation queue — its own (non-paginated) endpoint; the pager is
     // hidden for this view since the queue is the full pending set.
     const list = await api.get<QuestionListRow[]>('/v1/commerce/questions/pending');
@@ -95,8 +97,11 @@ export default async function QaPage({
     }));
     total = rows.length;
   } else {
+    // Search and/or a concrete status filter both go through the tenant-wide
+    // paged endpoint; searching from the default queue widens to all questions.
     const query = new URLSearchParams({ take: String(take), skip: String(skip) });
-    if (statusParam !== 'all') query.set('status', statusParam);
+    if (statusParam && statusParam !== 'all') query.set('status', statusParam);
+    if (search) query.set('q', search);
     const { data: list, meta } = await api.getPaged<QuestionListRow[]>(
       `/v1/commerce/questions?${query.toString()}`
     );
@@ -111,6 +116,7 @@ export default async function QaPage({
       answerCount: null,
     }));
     total = (meta?.total as number | undefined) ?? rows.length;
+    paged = true;
   }
 
   return (
@@ -124,7 +130,7 @@ export default async function QaPage({
         />
 
         <ListToolbar
-          searchable={false}
+          searchPlaceholder="Search by question text, author, or product…"
           filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }]}
           enableViewToggle
         />
@@ -158,8 +164,8 @@ export default async function QaPage({
         )}
 
         {/* The pending queue is the full pending set (its own endpoint), so the
-            pager only applies to the status-filtered list. */}
-        {statusParam !== undefined ? <ListPager total={total} /> : null}
+            pager only applies to the paged (search / status-filtered) list. */}
+        {paged ? <ListPager total={total} /> : null}
       </Stack>
     </Container>
   );

@@ -136,7 +136,7 @@ async function sendSettlementReport(
       netCents: run.netCents,
       payoutDestination,
       pendingBankAccount,
-      settlementUrl: `${dashboardBase()}/settings/market`,
+      settlementUrl: `${dashboardBase()}/finance/payouts`,
     },
   };
 

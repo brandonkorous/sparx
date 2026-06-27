@@ -1,7 +1,9 @@
-// Billing settings (docs/67 §5) — plan snapshot + a door to the Stripe Customer
-// Portal. The plan is derived from the tenant's active modules, so this page is
-// meaningful even before the platform billing ops (Stripe products, price IDs,
-// webhook) are live; once they are, status + the portal light up.
+// sparx subscription (docs/67 §5, docs/109 §4) — the "you pay sparx" side of Finance:
+// a plan snapshot + a door to the Stripe Customer Portal. The plan is derived from the
+// tenant's active modules, so this page is meaningful even before the platform billing
+// ops (Stripe products, price IDs, webhook) are live; once they are, status + the
+// portal light up. Lives under Finance, not Settings (docs/110 Slice 4a) — rendered
+// neutral, never a commerce hue, because this is money OUT to sparx, not money in.
 
 import { CreditCard } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
@@ -73,8 +75,8 @@ export default async function BillingSettingsPage() {
       <Stack gap={6} className="py-10">
         <PageHeader
           icon={<CreditCard className="h-5 w-5" />}
-          title="Billing"
-          description="Pay only for the modules you activate. Manage your payment method, switch monthly or annual, download invoices, and cancel anytime through the secure Stripe portal."
+          title="sparx subscription"
+          description="What you pay sparx — one bill for every module you activate. Manage your payment method, switch monthly or annual, download invoices, and cancel anytime through the secure Stripe portal."
         />
 
         <TrialStatusBanner state={state} canManage={canManage} />

@@ -44,7 +44,7 @@ export function AnswerForm({ questionId }: { questionId: string }) {
       />
       <Stack direction="row" gap={2} justify="between" align="center">
         {error && (
-          <Text size="xs" className="text-[var(--color-danger)]">
+          <Text size="xs" variant="danger" role="alert" aria-live="polite">
             {error}
           </Text>
         )}

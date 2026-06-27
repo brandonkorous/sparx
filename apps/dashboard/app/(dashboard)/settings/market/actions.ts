@@ -11,14 +11,14 @@ import { api } from '@/lib/api-rest-client';
 import type {
   ActionResult,
   MarketListedProducts,
-  MarketPayoutAccount,
   MarketProfile,
-  MarketSettlementRun,
-  MarketSettlementSummary,
   ProductMarketState,
 } from './_types';
 
 const MARKET_PATH = '/settings/market';
+
+// Settlement earnings + the ACH payout account moved to Finance → Payouts (docs/110
+// Slice 3) — their reads + the payout-account write now live in finance/payouts/actions.ts.
 
 // ── Reads ─────────────────────────────────────────────────────────────────────
 
@@ -26,23 +26,8 @@ export async function getMarketProfile(): Promise<MarketProfile> {
   return api.get<MarketProfile>('/v1/market/profile');
 }
 
-/** The masked payout account, or null when none is on file. */
-export async function getMarketPayoutAccount(): Promise<MarketPayoutAccount | null> {
-  return api.get<MarketPayoutAccount | null>('/v1/market/payout-account');
-}
-
 export async function getMarketListedProducts(take = 100): Promise<MarketListedProducts> {
   return api.get<MarketListedProducts>(`/v1/market/products?take=${take}&skip=0`);
-}
-
-/** Settlement aggregates. Degrades to null so the page still renders if the
- *  reports read is briefly unreachable. */
-export async function getMarketSettlementSummary(): Promise<MarketSettlementSummary | null> {
-  return api.get<MarketSettlementSummary>('/v1/market/settlement/summary').catch(() => null);
-}
-
-export async function getMarketSettlementRuns(take = 24): Promise<MarketSettlementRun[]> {
-  return api.get<MarketSettlementRun[]>(`/v1/market/settlement/runs?take=${take}`).catch(() => []);
 }
 
 // ── Writes ──────────────────────────────────────────────────────────────────────
@@ -61,26 +46,6 @@ export async function updateMarketProfileAction(
 ): Promise<ActionResult<MarketProfile>> {
   try {
     const data = await api.put<MarketProfile>('/v1/market/profile', input);
-    revalidatePath(MARKET_PATH);
-    return { ok: true, data };
-  } catch (err) {
-    return { ok: false, error: { message: err instanceof Error ? err.message : String(err) } };
-  }
-}
-
-export interface PayoutAccountInput {
-  accountHolderName: string;
-  bankName?: string;
-  routingNumber: string;
-  accountNumber: string;
-  accountType: 'checking' | 'savings';
-}
-
-export async function updatePayoutAccountAction(
-  input: PayoutAccountInput
-): Promise<ActionResult<MarketPayoutAccount>> {
-  try {
-    const data = await api.put<MarketPayoutAccount>('/v1/market/payout-account', input);
     revalidatePath(MARKET_PATH);
     return { ok: true, data };
   } catch (err) {

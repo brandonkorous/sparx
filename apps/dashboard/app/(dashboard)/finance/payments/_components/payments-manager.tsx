@@ -6,7 +6,15 @@
 // live (and re-synced when the merchant returns from onboarding).
 
 import * as React from 'react';
-import { Banknote, CheckCircle2, CreditCard, ExternalLink, Wallet } from 'lucide-react';
+import Link from 'next/link';
+import {
+  Banknote,
+  CheckCircle2,
+  CircleDollarSign,
+  CreditCard,
+  ExternalLink,
+  Wallet,
+} from 'lucide-react';
 import { Badge, Button, Card, CardContent, Stack, Text, cn, toast } from '@sparx/ui';
 
 import {
@@ -174,6 +182,42 @@ export function PaymentsManager({
           </CardContent>
         </Card>
       ) : null}
+
+      <PayPalConnectCard />
+    </Stack>
+  );
+}
+
+// PayPal — re-homed into the Payments door (docs/110 Slice 5). It isn't a selectable
+// gateway yet (the full PayPal gateway is wired on demand, ADR 94 §12), so it connects
+// through the existing provider-install flow rather than the gateway picker above. This
+// is the single place a merchant reaches PayPal now — it no longer lives in the
+// /commerce/providers registry.
+function PayPalConnectCard(): React.JSX.Element {
+  return (
+    <Stack gap={3}>
+      <Text size="sm" weight="medium" className="text-[var(--color-text-secondary)]">
+        More ways to accept payments
+      </Text>
+      <Card>
+        <CardContent>
+          <Stack direction="row" align="start" gap={4} className="py-1">
+            <CircleDollarSign className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-text-tertiary)]" />
+            <Stack gap={1} className="min-w-0 flex-1">
+              <Text weight="medium">PayPal</Text>
+              <Text size="sm" variant="muted">
+                Connect your PayPal Business account to accept PayPal and card payments. sparx
+                routes checkout to PayPal; you manage your money in PayPal.
+              </Text>
+            </Stack>
+            <Button color="module" variant="outline" size="sm" asChild>
+              <Link href="/commerce/providers/install?slug=paypal&kind=payment">
+                Connect PayPal
+              </Link>
+            </Button>
+          </Stack>
+        </CardContent>
+      </Card>
     </Stack>
   );
 }
@@ -190,7 +234,7 @@ function SparxPayPanel({
 
   function onboard(): void {
     startTransition(async () => {
-      const base = `${window.location.origin}/settings/payments`;
+      const base = `${window.location.origin}/finance/payments`;
       const res = await startSparxPayOnboarding(
         `${base}?onboarding=complete`,
         `${base}?onboarding=refresh`

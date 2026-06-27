@@ -8,6 +8,7 @@
 //   POST /v1/commerce/payments/sparx-pay/onboard       { returnUrl, refreshUrl } → { url }
 //   GET  /v1/commerce/payments/sparx-pay/status        → live account status (synced)
 //   POST /v1/commerce/payments/sparx-pay/dashboard-link → Express dashboard URL
+//   GET  /v1/commerce/payments/sparx-pay/balance       → connected-account balance
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -19,6 +20,7 @@ import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-
 import {
   PAYMENT_GATEWAYS,
   getPaymentConfig,
+  getSparxPayBalance,
   refreshSparxPayStatus,
   selectGateway,
   sparxPayDashboardLink,
@@ -70,6 +72,15 @@ const paymentsRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const ctx = toCommerceContext(request);
     return ok({ url: await sparxPayDashboardLink(ctx.tenantId) });
+  });
+
+  // Connected-account balance (available + pending) for the Finance Overview/Payouts.
+  // Null when sparx Pay isn't onboarded or the platform key is unset (clean dev no-op).
+  app.get('/v1/commerce/payments/sparx-pay/balance', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const ctx = toCommerceContext(request);
+    return ok(await getSparxPayBalance(ctx.tenantId));
   });
 
   return Promise.resolve();

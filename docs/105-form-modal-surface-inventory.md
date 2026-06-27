@@ -1,6 +1,6 @@
 # Form & Modal Surface Inventory
 
-Version: 1.9
+Version: 1.14
 Author: Brandon Korous
 Last Updated: 2026-06-26
 
@@ -73,24 +73,24 @@ zone/profile, tax zone → overlay; provider install → full-page). So the rema
 
 Walk these in order — each is `[ ] open → assess → focused fix → verify`:
 
-| #   | Page (route)                                                | Surface(s)                                                                                                                               | Treatment                                                                        | Score (UI/UX)          |
-| --- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ---------------------- |
-| 1   | Categories `/commerce/categories/[id]`                      | `category-edit-form` (the whole detail body)                                                                                             | single-form detail → **`SurfaceFrame`** (symmetric with create)                  | UI **9** / UX **9** ✅ |
-| 2   | Collections `/commerce/collections/[id]`                    | `collection-meta-form` (Metadata tab)                                                                                                    | tab panel → `<Card variant="module">` + consistent Save, no `CardFooter` toolbar | UI **9** / UX **9** ✅ |
-| 3   | Products `/commerce/products/[id]`                          | `product-edit-form` (Edit tab) + variants/media/fitment/inventory panels; `new-variant-dialog`/`-form` + `options-editor-dialog` (stubs) | tab panels → module-card cleanup; build the two stub dialogs                     | —                      |
-| 4   | Pricing `/commerce/pricing/[id]`                            | `price-list-entries-editor`                                                                                                              | assess — likely correct inline; confirm only                                     | —                      |
-| 5   | Bundles `/commerce/bundles/[id]`                            | `bundle-editor` EDIT path (renders inline today)                                                                                         | module-card cleanup; decide vs full `SurfaceFrame`                               | —                      |
-| 6   | Configurator `/commerce/configurator/[id]`                  | `template-json-editor`                                                                                                                   | assess — bespoke JSON editor, likely fine                                        | —                      |
-| 7   | Returns `/commerce/returns/[id]`                            | `return-refund-form`, `return-approval-form`, `return-inspection-form`                                                                   | inline detail forms → module-card cleanup                                        | —                      |
-| 8   | Reviews `/commerce/reviews/[id]`                            | `respond-form`                                                                                                                           | module-card cleanup                                                              | —                      |
-| 9   | Q&A `/commerce/qa/[id]`                                     | `answer-form`                                                                                                                            | module-card cleanup                                                              | —                      |
-| 10  | Shipping `/commerce/shipping/zones/[id]` + `/profiles/[id]` | `new-rate-form` (add rate) + profile detail                                                                                              | inline add-row → standardize (collapsible / module-card)                         | —                      |
-| 11  | Tax `/commerce/tax/zones/[id]`                              | `new-tax-rate-form` (add rate)                                                                                                           | inline add-row → standardize                                                     | —                      |
-| 12  | Markup rules `/commerce/markup-rules`                       | `RuleForm` (expand-in-place)                                                                                                             | inline → overlay or module-card                                                  | —                      |
-| 13  | Surcharges `/commerce/surcharges`                           | `RuleForm`                                                                                                                               | same move as markup rules                                                        | —                      |
-| 14  | Fitment `/commerce/fitment`                                 | `fitment-reference-editor` add-rows                                                                                                      | standardize the add-forms                                                        | —                      |
-| 15  | Providers `/commerce/providers/[id]`                        | `provider-actions-bar`                                                                                                                   | minor — confirm → `useConfirm`                                                   | —                      |
-| 16  | Bulk pricing `/commerce/products/pricing`                   | `bulk-pricing-tool`                                                                                                                      | design call — page vs overlay                                                    | —                      |
+| #   | Page (route)                                                | Surface(s)                                                                                                                                                       | Treatment                                                                                                                                                                                                                      | Score (UI/UX)          |
+| --- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------- |
+| 1   | Categories `/commerce/categories/[id]`                      | `category-edit-form` (the whole detail body)                                                                                                                     | single-form detail → **`SurfaceFrame`** (symmetric with create)                                                                                                                                                                | UI **9** / UX **9** ✅ |
+| 2   | Collections `/commerce/collections/[id]`                    | `collection-meta-form` (Metadata tab)                                                                                                                            | tab panel → `<Card variant="module">` + consistent Save, no `CardFooter` toolbar                                                                                                                                               | UI **9** / UX **9** ✅ |
+| 3   | Products `/commerce/products/[id]`                          | `product-edit-form` (Edit tab) + variants/media/fitment/inventory panels; inline `new-variant-form` + `options-editor` (`-dialog` stubs were dead code, removed) | reviewed — strong as-is; cross-module accent finding overruled; 2 dead stubs cut                                                                                                                                               | UI **8** / UX **8** ✅ |
+| 4   | Pricing `/commerce/pricing/[id]`                            | `price-list-entries-editor` + `price-list-status-bar`                                                                                                            | reviewed — entries editor clean; status badge → `statusTone` (was `color="outline"` no-op)                                                                                                                                     | UI **8** / UX **7** ✅ |
+| 5   | Bundles `/commerce/bundles/[id]`                            | `bundle-editor` (already guarded + themed) + `bundles-list`                                                                                                      | list badge `text-xs`→size; detail sound in code, on-screen review pending a seed bundle                                                                                                                                        | UI **7** / UX **7** 🔶 |
+| 6   | Configurator `/commerce/configurator/[id]`                  | `template-json-editor` + `template-status-bar`                                                                                                                   | reviewed — status badge → `statusTone`; danger-text/error-span → `<Text variant="danger">`; **raw-JSON editor = wrong for non-tech audience → structured editor DEFERRED**                                                     | UI **7** / UX **5** 🔶 |
+| 7   | Returns `/commerce/returns/[id]`                            | `return-refund-form`, `return-approval-form`, `return-inspection-form`, `return-status-bar`                                                                      | reviewed — status badge → `returnTone`; 4× danger-text → `variant`; raw `select`→`NativeSelect`; 2 raw checkboxes → themed; action cards → `variant="module"`                                                                  | UI **8** / UX **8** ✅ |
+| 8   | Reviews `/commerce/reviews` + `/[id]`                       | list + detail + `respond-form` + `moderate-actions`                                                                                                              | **FULL REMEDIATION** — queue showed product GUIDs + empty titles, no search, no bulk. BE: product-title joins on queue/detail, `q` search, bulk-moderate endpoints. FE: empty-title fallback, product links, search, bulk bar. | UI **8** / UX **8** ✅ |
+| 9   | Q&A `/commerce/qa` + `/[id]`                                | list + detail + `answer-form` + `question-moderate-actions`                                                                                                      | **FULL REMEDIATION** — same gaps as Reviews (shared service/shape): product-title joins, `q` search, bulk-moderate. FE: product links, search, bulk bar.                                                                       | UI **8** / UX **8** ✅ |
+| 10  | Shipping `/commerce/shipping/zones/[id]` + `/profiles/[id]` | `new-rate-form` (add rate) + profile detail                                                                                                                      | inline add-row → standardize (collapsible / module-card)                                                                                                                                                                       | —                      |
+| 11  | Tax `/commerce/tax/zones/[id]`                              | `new-tax-rate-form` (add rate)                                                                                                                                   | inline add-row → standardize                                                                                                                                                                                                   | —                      |
+| 12  | Markup rules `/commerce/markup-rules`                       | `RuleForm` (expand-in-place)                                                                                                                                     | inline → overlay or module-card                                                                                                                                                                                                | —                      |
+| 13  | Surcharges `/commerce/surcharges`                           | `RuleForm`                                                                                                                                                       | same move as markup rules                                                                                                                                                                                                      | —                      |
+| 14  | Fitment `/commerce/fitment`                                 | `fitment-reference-editor` add-rows                                                                                                                              | standardize the add-forms                                                                                                                                                                                                      | —                      |
+| 15  | Providers `/commerce/providers/[id]`                        | `provider-actions-bar`                                                                                                                                           | minor — confirm → `useConfirm`                                                                                                                                                                                                 | —                      |
+| 16  | Bulk pricing `/commerce/products/pricing`                   | `bulk-pricing-tool`                                                                                                                                              | design call — page vs overlay                                                                                                                                                                                                  | —                      |
 
 Skip (read-only or correct as-is): carts, checkout-sessions, wishlists, reports, subscriptions detail,
 settings, import/export dialogs, delete confirms, bulk-price-adjust modal.
@@ -165,6 +165,128 @@ along. Two gaps the first pass missed:
   wrapped in `UnsavedGuardProvider`; switching tabs/navigating away loses unsaved edits) — deferred until
   the guard extends to tabbed details; `collection-membership-editor` is 276 lines (warn-only).
 - **Post-fix: UI 9 · UX 9.**
+
+### Products `/commerce/products/[id]` — UI **8**/10 · UX **8**/10 (2026-06-26)
+
+Tabbed record (Overview / Variants / Media / Pricing / Inventory / Fitment / Configurator / SEO / Market) +
+full-height context rail. The read-only audit drafted 7/7; verifying against the screen RAISED it — the
+audit's headline gap was wrong.
+
+- ✅ Strong: textbook F-layout + a context rail that fills its column with a real rollup (handle, type,
+  vendor, price, variant/media counts, inventory on-hand/available/below-reorder, category/collection/site
+  counts, rating). Identity once (title/handle editable on Overview; visually-hidden `h1` for SR only). SEO
+  consolidated to its own tab (single home). Lifecycle (Unpublish/Archive/Preview) in the frame header.
+  Leave-guard wired on the editable forms (`product-edit-form`, `product-seo-form`).
+- ❌ OVERRULED (audit's #1 UI gap): _"Fitment / Configurator / Market panels lack their own `<ModuleProvider>`
+  wrap → wrong accent."_ There is **no `fitment` / `configurator` / `market` module** in `SparxModule`
+  (`module-provider.tsx`) — those are commerce FEATURES, so commerce orange is correct, and `module="fitment"`
+  wouldn't even typecheck. Verified on screen that the panels mapping to REAL modules wear the right hue
+  (Inventory = amber, SEO = yellow). Cross-module wayfinding works as designed. _(Why we verify: the agent
+  maps code, the screen + the type system are the truth.)_
+- ✅ FIXED (cleanup): removed two **dead stub dialogs** (`new-variant-dialog`, `options-editor-dialog`) — zero
+  imports app-wide; variant creation + the option-lattice editor already work as inline forms
+  (`new-variant-form`, `options-editor`, rendered by `variants-panel`). The "Stubs to build" list is corrected.
+- Considered, left as-is: no footer **Cancel** on the Edit/SEO tab panels — for a tabbed detail the drawer
+  Close (X) + leave-guard cover "leave without saving"; the §5 single-form anchor rule doesn't transfer to a
+  §5.2 tabbed panel. Inventory/Media/Fitment panels persist edits immediately (audit-logged movements) —
+  operational lists where immediate persistence is correct, not the explicit-save form pattern.
+- **UI 8 · UX 8** — strong, on-system, task-complete; the gap to 9–10 is only the minor inline-vs-footer
+  options-editor pattern, nothing structural.
+
+### Pricing `/commerce/pricing/[id]` — UI **8**/10 · UX **7**/10 (2026-06-26)
+
+Small, focused price-list detail (identity heading + lifecycle bar, then the per-variant entries editor). docs
+flagged it "confirm only"; found one real System-fidelity miss + minors.
+
+- ✅ Strong: the entries editor is clean (variant picker + Fixed/Percent-off mode + min/max qty ladder), good
+  empty state, helptext explains the resolution order; Archive is `useConfirm` (warning tone), Activate is
+  `color="module"`. Identity heading is fine here — there's no editable name field on this detail, so it's a
+  read-only-style identity (the transaction-detail exception), not an identity-twice violation.
+- ✅ FIXED (System fidelity): the status badge used a local `STATUS_VARIANT` map that passed
+  **`color="outline"` — a no-op → bland grey** for `draft`, with a raw lowercase label. Now
+  `<Badge color={statusTone(status)} variant="soft" size="sm">{statusLabel(status)}</Badge>` (Draft → warning
+  amber, verified on screen). Currency pill `text-xs` → `size="sm"`. Pricing had been missed by the 2026-06-25
+  statusTone sweep; now consistent.
+- Gap to 10 (UX): the price list's **name / priority / channel / validity aren't editable** after creation —
+  the detail only edits entries + status, so renaming means delete+recreate. A small meta-edit form (or an
+  editable heading name) would close it.
+- Gap to 10 (UI): status + lifecycle render inline in the body heading, not teleported to the drawer chrome
+  header via `DetailHeaderSlot` (docs/86 §5.1) — the older pattern; reads fine but isn't the house teleport.
+  Deferred (larger refactor, out of scope for a confirm pass).
+- **UI 8 · UX 7.**
+
+### Bundles `/commerce/bundles/[id]` — UI **7**/10 · UX **7**/10 · 🔶 partial (2026-06-26)
+
+⚠️ **On-screen review blocked: zero seed bundles** (the list is empty — "No bundles yet"). This pass is
+code-level + the list; the detail wants a seeded bundle for a real eyes-on pass.
+
+- ✅ Strong (code): read-only identity heading (bundle wraps a product whose title isn't editable here — the
+  transaction-detail exception); `BundleDeleteButton` uses `useConfirm` (danger tone); the `BundleEditor` was
+  already guarded (`useUnsavedGuard`) + checkbox-themed + same-product badge fixed in the 2026-06-25 sweep.
+- ✅ FIXED: `bundles-list` inventory badge used `className="text-xs"` (the size-via-className anti-pattern) →
+  now plain `<Badge variant="outline">`, matching the pricing-mode badge in the same table.
+- Gap to 10 (UI/microcopy): the detail + list mode badges render **raw snake_case enums**
+  (`sum_of_components`, `decrement_components`) — dev-speak; should humanize via the editor's own option
+  labels. NOT fixed blind — wants screen verification + the canonical label vocabulary (deferred to a seeded
+  pass).
+- Gap to 10 (UI): the Configuration card is a plain `<Card>`, not `<Card variant="module">` — misses the
+  commerce stripe (same as Pricing's cards). A cross-detail consistency opportunity, deferred.
+- **UI 7 · UX 7 (provisional, code-level).** Re-verify on screen once a bundle is seeded.
+
+### Configurator `/commerce/configurator/[id]` — UI **7**/10 · UX **5**/10 · 🔶 partial (2026-06-26)
+
+The read-only summary (Options / Rules / Add-ons tables + lifecycle status-bar) is sound; the **edit
+path is a raw-JSON textarea**, which is the dominant gap.
+
+- ✅ FIXED (system fidelity): `_content.tsx` had a local `STATUS_VARIANT` map passing `color="outline"`
+  (a no-op → grey) with `archived: 'warning'` (wrong tone) + a raw lowercase status string → now
+  `<Badge color={statusTone(s)} variant="soft" size="sm">{statusLabel(s)}</Badge>` (same fix as Pricing).
+- ✅ FIXED (danger affordances): the JSON editor's error used `className="text-[var(--color-danger)]"`
+  and the status-bar error was a hand-rolled `<span className="text-xs text-[...danger]">` → both now
+  `<Text variant="danger" role="alert" aria-live="polite">`. Icon-only Delete got `aria-label`/`title`.
+- 🔴 **Gap to 10 (UX, the big one — DEFERRED):** the template is authored as **raw JSON**
+  (`template-json-editor`). sparx's audience is non-technical business owners who don't know what JSON is —
+  this is a target-audience mismatch, not a styling nit. Needs a **structured/visual editor** over the
+  template schema (options → choices → rules → add-ons), with raw-JSON demoted to an advanced escape view.
+  The in-product CardDescription already concedes "the visual rule editor is on the roadmap." Tracked in
+  memory + the active-work index; **flagged by the user 2026-06-26, fix scheduled later.**
+- Gap to 10 (UX): the Add-ons table shows a **truncated raw `variantId`** (`a1b2c3d4…`) — needs the API to
+  resolve variant/product titles; a business user can't read a UUID. Backend-dependent, deferred.
+- Gap to 10 (UI/structure): the page is a **bespoke full-page layout**, not on `DetailPageShell` /
+  `DetailHeaderSlot` — lifecycle lives in an in-body status-bar and the JSON editor has no leave-guard host.
+  Both fold naturally into the deferred structured-editor rebuild rather than a patch now.
+- **UI 7 · UX 5.** The JSON-as-primary-authoring surface caps UX until the structured editor lands; the
+  chrome itself is now system-clean.
+
+### Returns `/commerce/returns/[id]` — UI **8**/10 · UX **8**/10 (2026-06-26)
+
+A read-only **transaction detail** (identity heading is correct — no editable name) with three
+status-gated inline action forms (Approve / Record inspection / Issue refund) + a status-bar. The flow
+itself is well-modelled (forms appear only in the valid lifecycle state); the gaps were all
+system-fidelity, now fixed.
+
+- ✅ FIXED (status): header badge was `<Badge variant="outline">{status}</Badge>` (raw, untoned) →
+  `<Badge color={returnTone(s)} variant="soft" size="sm">{statusLabel(s)}</Badge>`. The returns lifecycle
+  is fully covered by `statusTone`, with one **justified domain override** (`returnTone`): a _refunded_
+  return is the happy terminal state, so it reads green — the shared dictionary reads bare `refunded` as
+  danger (order money-out), which the dictionary's own comment sanctions overriding per-domain.
+- ✅ FIXED (danger affordances): **four** error renders used `className="text-[var(--color-danger)]"` (one
+  even a hand-rolled `<span>`) → all now `<Text variant="danger" role="alert" aria-live="polite">`.
+- ✅ FIXED (re-skinned controls): the inspection form hand-built a **raw `<select>`** (border/bg
+  utilities) and a **raw `<input type="checkbox">`**; the refund form had another raw checkbox →
+  `NativeSelect` + themed `<Checkbox color="module">` (the same control-fidelity fix flagged for the site
+  scope checkboxes). Condition `<option>`s now humanize (`used_good` → `used good`).
+- ✅ FIXED (module-card cleanup, the row's named intent): the three **action** cards now wear
+  `<Card variant="module">` (commerce stripe) while the read-only tables (Requested items / Inspection
+  history / Settlement) stay plain — a deliberate signal that striped = an editable commerce action.
+- Gap to 10 (UX): line-item rows show **truncated raw UUIDs** (`orderItemId`/`returnLineItemId`
+  `.slice(0,8)`) — a merchant can't read those; wants the API to resolve order-item/product labels.
+  Backend-dependent, deferred (same shape as the configurator Add-ons gap).
+- Gap to 10 (UI): the "Deny return" reason capture is a **self-owned `Modal`** (correct primitive, Cancel
+  - danger primary) rather than the standard overlay — acceptable as a small reason-capture; noted not
+    migrated.
+- **UI 8 · UX 8.** Verified via typecheck/lint (every fix is a proven platform pattern); on-screen pass
+  pending a seeded return in each gated status.
 
 ### Platform gaps surfaced (fix once, on the primitive)
 
@@ -292,12 +414,13 @@ along. Two gaps the first pass missed:
   of the platform). One Save button, last-write-wins, like every other editor. See the leave-guard platform
   entry above for the full removal list + the StrictMode dirty-tracking footgun. _Decided 2026-06-25; removed
   2026-06-26._
-- **DONE (one minor edit body remains) — leave-guard rollout.** Create forms + wizards, the edit detail
-  bodies (`bundle-editor`, inventory supplier/warehouse, `cms/media`, `cms/authors`), the tabbed-detail
-  panels (collection + product, via `GuardedTabs`), and the CMS page/entry editors (above) all register
-  `useUnsavedGuard`. **Lone remaining:** `commerce/providers/install/.../install-provider-form` (a FormData
-  edit body that hand-rolls its own `cancel`) — same one-call `useUnsavedGuard` adoption as the others, just
-  not done yet. _Updated 2026-06-26._
+- **✅ DONE — leave-guard rollout COMPLETE.** Create forms + wizards, the edit detail bodies (`bundle-editor`,
+  inventory supplier/warehouse, `cms/media`, `cms/authors`), the tabbed-detail panels (collection + product,
+  via `GuardedTabs`), the CMS page/entry editors, and `commerce/providers/install/.../install-provider-form`
+  (the last full-page FormData **create** surface) all register `useUnsavedGuard`. The install form's dirty is
+  a compare against the **initial serialized form** captured on mount — it ships pre-filled with provider
+  defaults, so "any field non-empty" would false-prompt; only a change from those defaults counts. Every
+  create/edit form surface that can silently drop typed work is now guarded. _Completed 2026-06-26._
 
 ---
 
@@ -388,8 +511,10 @@ Dialogs that carry real input (not just confirms):
 
 ### Stubs to build (form doesn't exist yet)
 
-- `commerce/products/[id]/new-variant-dialog.tsx` + `new-variant-form.tsx` (placeholder)
-- `commerce/products/[id]/options-editor-dialog.tsx` (placeholder)
+- ~~`commerce/products/[id]/new-variant-dialog.tsx` + `options-editor-dialog.tsx`~~ — **NOT stubs**: variant
+  creation + the option-lattice editor already work as INLINE forms (`new-variant-form.tsx`,
+  `options-editor.tsx`, rendered by `variants-panel.tsx`). The `-dialog.tsx` wrappers were vestigial
+  placeholders with zero imports app-wide — **deleted 2026-06-26** (Products surface review).
 - `b2b/accounts/[id]/b2b-account-overrides-table.tsx` ("Add override" is disabled)
 
 ### Design calls (likely keep as-is — confirm intent before touching)

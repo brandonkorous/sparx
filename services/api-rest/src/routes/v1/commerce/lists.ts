@@ -11,6 +11,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import type { Prisma } from '@sparx/db';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -39,12 +40,14 @@ const ListCheckoutSessionsQuery = z.object({
 
 const ListQuestionsQuery = z.object({
   status: z.string().optional(),
+  q: z.string().trim().min(1).max(200).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
 
 const ListReviewsQuery = z.object({
   status: z.string().optional(),
+  q: z.string().trim().min(1).max(200).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -268,7 +271,20 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
     const q = ListReviewsQuery.parse(request.query);
-    const where = { ...(q.status ? { status: q.status } : {}) };
+    const where: Prisma.ProductReviewWhereInput = {
+      deletedAt: null,
+      ...(q.status ? { status: q.status } : {}),
+      ...(q.q
+        ? {
+            OR: [
+              { title: { contains: q.q, mode: 'insensitive' } },
+              { body: { contains: q.q, mode: 'insensitive' } },
+              { displayName: { contains: q.q, mode: 'insensitive' } },
+              { product: { is: { title: { contains: q.q, mode: 'insensitive' } } } },
+            ],
+          }
+        : {}),
+    };
 
     const { rows, total } = await withRequestTenant(request, async (tx) => {
       const [rows, total] = await Promise.all([
@@ -326,7 +342,18 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
     const q = ListQuestionsQuery.parse(request.query);
     const take = q.take ?? 100;
     const skip = q.skip ?? 0;
-    const where = { ...(q.status ? { status: q.status } : {}) };
+    const where: Prisma.ProductQuestionWhereInput = {
+      ...(q.status ? { status: q.status } : {}),
+      ...(q.q
+        ? {
+            OR: [
+              { body: { contains: q.q, mode: 'insensitive' } },
+              { displayName: { contains: q.q, mode: 'insensitive' } },
+              { product: { is: { title: { contains: q.q, mode: 'insensitive' } } } },
+            ],
+          }
+        : {}),
+    };
 
     const { rows, total } = await withRequestTenant(request, async (tx) => {
       const [rows, total] = await Promise.all([

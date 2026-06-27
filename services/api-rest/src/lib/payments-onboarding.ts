@@ -35,6 +35,18 @@ export interface PaymentConfigState {
   sparxPay: SparxPayStatus;
 }
 
+/** sparx Pay balance on the connected account (docs/110 GAP A). The money that has
+ *  settled to the merchant's Connect account but not yet hit their bank (pending),
+ *  plus what is ready to pay out (available). Currency + cents to match the rest of
+ *  the money UI. `payoutInterval` is the account's payout cadence (daily/weekly/…). */
+export interface SparxPayBalance {
+  currency: string;
+  availableCents: number;
+  pendingCents: number;
+  /** 'manual' | 'daily' | 'weekly' | 'monthly', or null if not set. */
+  payoutInterval: string | null;
+}
+
 export class PaymentsUnconfiguredError extends Error {
   constructor() {
     super('sparx Pay is unavailable — the platform Stripe key is not configured.');
@@ -198,6 +210,35 @@ export async function refreshSparxPayStatus(tenantId: string): Promise<PaymentCo
     }
   }
   return getPaymentConfig(tenantId);
+}
+
+/** The connected account's Stripe balance — available + pending in the account's
+ *  default currency — plus its payout cadence (docs/110 GAP A). Null on a clean
+ *  no-op: no platform key (dev/test) or no connected account yet. Surfaces on the
+ *  Finance Overview + Payouts so the merchant sees real money without leaving for
+ *  the Stripe-hosted dashboard. */
+export async function getSparxPayBalance(tenantId: string): Promise<SparxPayBalance | null> {
+  const stripe = getPlatformStripe();
+  if (!stripe) return null;
+
+  const accountId = await tenantAccountId(tenantId);
+  if (!accountId) return null;
+
+  const [account, balance] = await Promise.all([
+    stripe.accounts.retrieve(accountId),
+    stripe.balance.retrieve({}, { stripeAccount: accountId }),
+  ]);
+
+  const currency = (account.default_currency ?? 'usd').toLowerCase();
+  const sumIn = (entries: { amount: number; currency: string }[]): number =>
+    entries.filter((e) => e.currency === currency).reduce((n, e) => n + e.amount, 0);
+
+  return {
+    currency: currency.toUpperCase(),
+    availableCents: sumIn(balance.available),
+    pendingCents: sumIn(balance.pending),
+    payoutInterval: account.settings?.payouts?.schedule?.interval ?? null,
+  };
 }
 
 /** A single-use link into the Stripe-hosted Express dashboard (payouts, balance,

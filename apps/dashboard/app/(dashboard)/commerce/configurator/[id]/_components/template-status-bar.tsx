@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
 
-import { Button, Stack, useConfirm } from '@sparx/ui';
+import { Button, Stack, Text, useConfirm } from '@sparx/ui';
 
 import { deleteTemplateAction, updateTemplateAction } from '../../../configurator-actions';
 
@@ -49,7 +49,11 @@ export function TemplateStatusBar({ templateId, status }: { templateId: string; 
 
   return (
     <Stack direction="row" gap={2} align="center">
-      {error && <span className="text-xs text-[var(--color-danger)]">{error}</span>}
+      {error && (
+        <Text size="xs" variant="danger" role="alert" aria-live="polite">
+          {error}
+        </Text>
+      )}
       {status !== 'active' && (
         <Button variant="outline" disabled={pending} onClick={() => updateStatus('active')}>
           Activate
@@ -65,7 +69,13 @@ export function TemplateStatusBar({ templateId, status }: { templateId: string; 
           Archive
         </Button>
       )}
-      <Button variant="ghost" disabled={pending} onClick={onDelete}>
+      <Button
+        variant="ghost"
+        disabled={pending}
+        onClick={onDelete}
+        aria-label="Delete template"
+        title="Delete template"
+      >
         <Trash2 className="h-4 w-4" />
       </Button>
     </Stack>

@@ -38,6 +38,11 @@ const config = {
     return [
       // /cms/pages was the single-type list; it's now the unified content list.
       { source: '/cms/pages', destination: '/cms/content', permanent: true },
+      // Finance hub (docs/109/110): Payments + Billing moved out of Settings into
+      // the first-class Finance area. Keep deep links, bookmarks, and the Connect
+      // onboarding hand-off working.
+      { source: '/settings/payments', destination: '/finance/payments', permanent: true },
+      { source: '/settings/billing', destination: '/finance/subscription', permanent: true },
       // Builder cutover (docs/builder/07 §2.2): the three split editors are now
       // zones of the one unified editor at /builder/studio. /builder/page carries
       // its `?page=<id>` deep link through automatically (no query on the

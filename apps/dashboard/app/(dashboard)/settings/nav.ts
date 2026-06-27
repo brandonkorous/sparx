@@ -1,7 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import {
   Bell,
-  CreditCard,
   Globe,
   GlobeLock,
   KeyRound,
@@ -12,7 +11,6 @@ import {
   ShoppingBag,
   Store,
   Users,
-  Wallet,
 } from 'lucide-react';
 
 // The settings surface, in one place. Settings is not a module (no manifest, no
@@ -68,22 +66,6 @@ export const SETTINGS_NAV: readonly SettingsNavItem[] = [
     ready: true,
   },
   {
-    id: 'billing',
-    label: 'Billing',
-    description: 'Subscription, invoices, payment method.',
-    icon: CreditCard,
-    href: '/settings/billing',
-    ready: true,
-  },
-  {
-    id: 'payments',
-    label: 'Payments',
-    description: 'Accept payments with sparx Pay or your own processor.',
-    icon: Wallet,
-    href: '/settings/payments',
-    ready: true,
-  },
-  {
     id: 'channels',
     label: 'Channels',
     description: 'Sell on TikTok Shop, Etsy, Amazon, Meta, and more — synced from one place.',
@@ -94,7 +76,7 @@ export const SETTINGS_NAV: readonly SettingsNavItem[] = [
   {
     id: 'market',
     label: 'sparx.market',
-    description: 'Sell on the first-party marketplace, manage your profile, payouts, and listings.',
+    description: 'Sell on the first-party marketplace, manage your profile and listings.',
     icon: ShoppingBag,
     href: '/settings/market',
     ready: true,

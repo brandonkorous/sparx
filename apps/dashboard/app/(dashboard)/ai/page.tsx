@@ -692,7 +692,7 @@ export default async function AiPage() {
             title="Usage & cost"
             icon={<Zap className="h-4 w-4" />}
             description="Model mix · this month"
-            right={<CardLink href="/settings/billing">Billing</CardLink>}
+            right={<CardLink href="/finance/subscription">Subscription</CardLink>}
           >
             <BarList
               items={[

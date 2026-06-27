@@ -15,6 +15,9 @@ import {
   TableHeader,
   TableRow,
   Text,
+  statusLabel,
+  statusTone,
+  type StatusTone,
 } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -25,6 +28,14 @@ import { ReturnRefundForm } from './_components/return-refund-form';
 import { ReturnStatusBar } from './_components/return-status-bar';
 
 export const dynamic = 'force-dynamic';
+
+// A *refunded* return is the happy terminal state (money returned as the customer
+// wanted), so it reads green here — the platform status dictionary treats a bare
+// "refunded" as danger (order money-out), which is the wrong reading in the returns
+// domain. Everything else follows the shared tone map.
+function returnTone(status: string): StatusTone {
+  return status === 'refunded' ? 'success' : statusTone(status);
+}
 
 interface Props {
   id: string;
@@ -107,8 +118,12 @@ export async function ReturnDetailContent({ id }: Props) {
             <Heading level={1} className="font-mono text-2xl">
               {ret.id.slice(0, 8)}
             </Heading>
-            <Badge variant="outline">{ret.status}</Badge>
-            <Badge variant="outline">prefer {ret.preferredOutcome}</Badge>
+            <Badge color={returnTone(ret.status)} variant="soft" size="sm">
+              {statusLabel(ret.status)}
+            </Badge>
+            <Badge variant="outline" size="sm">
+              prefer {ret.preferredOutcome.replace(/_/g, ' ')}
+            </Badge>
           </Stack>
           <Text variant="muted">
             Order{' '}
@@ -176,7 +191,7 @@ export async function ReturnDetailContent({ id }: Props) {
       </Card>
 
       {ret.status === 'requested' && (
-        <Card>
+        <Card variant="module">
           <CardHeader>
             <Stack gap={1}>
               <Heading level={3}>Approve</Heading>
@@ -192,7 +207,7 @@ export async function ReturnDetailContent({ id }: Props) {
       )}
 
       {(ret.status === 'received' || ret.status === 'inspecting') && (
-        <Card>
+        <Card variant="module">
           <CardHeader>
             <Stack gap={1}>
               <Heading level={3}>Record inspection</Heading>
@@ -208,7 +223,7 @@ export async function ReturnDetailContent({ id }: Props) {
       )}
 
       {(ret.status === 'inspected' || ret.status === 'received') && (
-        <Card>
+        <Card variant="module">
           <CardHeader>
             <Stack gap={1}>
               <Heading level={3}>Issue refund</Heading>

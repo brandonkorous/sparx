@@ -2,11 +2,12 @@
 
 import * as React from 'react';
 import { ModuleProvider, SidebarNav, Text, usePanelCollapsed } from '@sparx/ui';
-import { Settings as SettingsIcon } from 'lucide-react';
+import { Landmark, Settings as SettingsIcon } from 'lucide-react';
 import type { ModuleManifest } from '@sparx/ui/shell';
 import { getManifestForPath } from '../_shell/registry';
 import { ModuleSectionItems } from './module-section-nav';
 import { SettingsSectionItems } from './settings-section-nav';
+import { FinanceSectionItems } from './finance-section-nav';
 
 // The contextual panel — the second column of the shell nav (docs/24 §5). It is
 // purely about the current context:
@@ -28,10 +29,15 @@ interface ContextualPanelProps {
 export type PanelContext =
   | { kind: 'module'; manifest: ModuleManifest }
   | { kind: 'settings' }
+  | { kind: 'finance' }
   | { kind: 'none' };
 
 function isSettingsPath(pathname: string | null): boolean {
   return pathname === '/settings' || (pathname?.startsWith('/settings/') ?? false);
+}
+
+function isFinancePath(pathname: string | null): boolean {
+  return pathname === '/finance' || (pathname?.startsWith('/finance/') ?? false);
 }
 
 // What the contextual panel should render for a given route. Shared with the
@@ -45,6 +51,9 @@ export function resolvePanelContext(
   const manifest = pathname ? getManifestForPath(pathname) : undefined;
   if (manifest && enabledModules.includes(manifest.id)) {
     return { kind: 'module', manifest };
+  }
+  if (isFinancePath(pathname)) {
+    return { kind: 'finance' };
   }
   if (isSettingsPath(pathname)) {
     return { kind: 'settings' };
@@ -104,6 +113,29 @@ export function ContextualPanel({ pathname, enabledModules, tenantName }: Contex
             className={collapsed ? 'items-center gap-0.5 px-1.5 pb-3' : 'gap-0.5 px-2 pb-3'}
           >
             <ModuleSectionItems manifest={ctx.manifest} pathname={pathname} />
+          </SidebarNav>
+        </div>
+      </ModuleProvider>
+    );
+  }
+
+  if (ctx.kind === 'finance') {
+    // Finance is a first-class platform area (no module color of its own) — wrap in
+    // the neutral "platform" provider so the active row picks up a sensible
+    // highlight, matching Settings. The money-flow split lives inside the items.
+    return (
+      <ModuleProvider module="platform" className="flex h-full flex-col">
+        {collapsed ? (
+          <PanelHeadIcon icon={Landmark} label="Finance" />
+        ) : (
+          <PanelHead eyebrow="Finance" title={tenantName} />
+        )}
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <SidebarNav
+            label="Finance"
+            className={collapsed ? 'items-center gap-0.5 px-1.5 pb-3' : 'gap-0.5 px-2 pb-3'}
+          >
+            <FinanceSectionItems pathname={pathname} />
           </SidebarNav>
         </div>
       </ModuleProvider>

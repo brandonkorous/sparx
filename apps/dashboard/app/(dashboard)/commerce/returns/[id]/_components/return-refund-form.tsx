@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Input, Stack, Text } from '@sparx/ui';
+import { Button, Checkbox, Input, Stack, Text } from '@sparx/ui';
 
 import { formBool, formNumber } from '../../../../../../lib/forms';
 import { issueReturnRefundAction } from '../../../return-actions';
@@ -65,15 +65,15 @@ export function ReturnRefundForm({
           </Stack>
         </Stack>
         <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
+          <Checkbox
+            color="module"
             name="asAccountCredit"
             defaultChecked={preferredOutcome === 'account_credit'}
           />
           <Text size="sm">Issue as account credit instead of refunding to original payment</Text>
         </label>
         {error && (
-          <Text size="sm" className="text-[var(--color-danger)]">
+          <Text size="sm" variant="danger" role="alert" aria-live="polite">
             {error}
           </Text>
         )}

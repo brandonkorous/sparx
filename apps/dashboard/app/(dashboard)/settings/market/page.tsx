@@ -1,11 +1,12 @@
-// sparx.market settings (docs/106 §4.7) — the canonical surface where a seller
-// manages their first-party-marketplace participation: the enable/disable toggle,
-// settlement earnings + payout history, the public merchant profile, the ACH
-// payout bank account, and the products they've listed. The weekly settlement
-// email links here. sparx.market is part of the Commerce module (no separate fee),
-// so the page is tinted with the Commerce hue per color-follows-functionality, and
-// every /v1/market read is gated on Commerce server-side.
+// sparx.market settings (docs/106 §4.7) — where a seller manages their first-party-
+// marketplace participation: the enable/disable toggle, the public merchant profile,
+// and the products they've listed. The MONEY — settlement earnings, payout history,
+// and the ACH payout bank account — lives in Finance → Payouts (docs/109 §5); this
+// page links there. sparx.market is part of the Commerce module (no separate fee), so
+// the page is tinted with the Commerce hue per color-follows-functionality, and every
+// /v1/market read is gated on Commerce server-side.
 
+import Link from 'next/link';
 import { Store } from 'lucide-react';
 import {
   Card,
@@ -19,35 +20,20 @@ import {
   Text,
 } from '@sparx/ui';
 
-import {
-  getMarketListedProducts,
-  getMarketPayoutAccount,
-  getMarketProfile,
-  getMarketSettlementRuns,
-  getMarketSettlementSummary,
-} from './actions';
+import { getMarketListedProducts, getMarketProfile } from './actions';
 import { ListedProductsTable } from './_components/listed-products-table';
 import { ParticipationToggle } from './_components/participation-toggle';
-import { PayoutAccountForm } from './_components/payout-account-form';
 import { ProfileForm } from './_components/profile-form';
-import { SettlementPanel } from './_components/settlement-panel';
 
 export const dynamic = 'force-dynamic';
 
 export default async function MarketSettingsPage() {
   const profile = await getMarketProfile();
 
-  // Only fetch the seller-only data once participation is on — a disabled seller
-  // has no settlement, no listings, and no need for a payout account yet, so the
-  // page stays a focused "join sparx.market" pitch until they enable it.
-  const [account, listed, summary, runs] = profile.enabled
-    ? await Promise.all([
-        getMarketPayoutAccount(),
-        getMarketListedProducts(),
-        getMarketSettlementSummary(),
-        getMarketSettlementRuns(),
-      ])
-    : [null, { rows: [], total: 0 }, null, []];
+  // Only fetch the seller-only data once participation is on — a disabled seller has
+  // no listings yet, so the page stays a focused "join sparx.market" pitch until they
+  // enable it. Earnings + payout account are fetched in Finance → Payouts, not here.
+  const listed = profile.enabled ? await getMarketListedProducts() : { rows: [], total: 0 };
 
   return (
     <ModuleProvider module="commerce">
@@ -79,7 +65,26 @@ export default async function MarketSettingsPage() {
 
           {profile.enabled && (
             <>
-              <SettlementPanel summary={summary} runs={runs} />
+              <Card variant="module">
+                <CardHeader>
+                  <CardTitle>Earnings & payouts</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Stack gap={3}>
+                    <Text size="sm" variant="muted" className="max-w-prose">
+                      Your marketplace settlement earnings, weekly payout history, and the bank
+                      account sparx pays you to all live in Finance — alongside the rest of your
+                      money.
+                    </Text>
+                    <Link
+                      href="/finance/payouts"
+                      className="text-sm font-medium text-[var(--module-active-text)] hover:underline"
+                    >
+                      Go to Finance → Payouts →
+                    </Link>
+                  </Stack>
+                </CardContent>
+              </Card>
 
               <Card variant="module">
                 <CardHeader>
@@ -87,15 +92,6 @@ export default async function MarketSettingsPage() {
                 </CardHeader>
                 <CardContent>
                   <ProfileForm profile={profile} />
-                </CardContent>
-              </Card>
-
-              <Card variant="module">
-                <CardHeader>
-                  <CardTitle>Payout account</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <PayoutAccountForm account={account} />
                 </CardContent>
               </Card>
 

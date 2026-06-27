@@ -96,7 +96,7 @@ export function ReturnApprovalForm({
           <Input name="staffNote" placeholder="Optional internal note" />
         </Stack>
         {error && (
-          <Text size="sm" className="text-[var(--color-danger)]">
+          <Text size="sm" variant="danger" role="alert" aria-live="polite">
             {error}
           </Text>
         )}

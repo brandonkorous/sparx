@@ -25,7 +25,7 @@ export function ManageBillingButton({
 
   function onClick(): void {
     startTransition(async () => {
-      const returnUrl = `${window.location.origin}/settings/billing`;
+      const returnUrl = `${window.location.origin}/finance/subscription`;
       const res = await openBillingPortal(returnUrl);
       if (res.ok) {
         window.location.href = res.url;

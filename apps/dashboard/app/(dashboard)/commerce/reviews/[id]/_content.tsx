@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Star } from 'lucide-react';
 
@@ -10,6 +11,8 @@ import {
   Heading,
   Stack,
   Text,
+  statusLabel,
+  statusTone,
 } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -28,6 +31,8 @@ type ReviewStatus = 'pending' | 'approved' | 'rejected' | 'flagged';
 interface ReviewDetail {
   id: string;
   productId: string;
+  productTitle: string | null;
+  productHandle: string | null;
   variantId: string | null;
   customerId: string | null;
   orderId: string | null;
@@ -60,11 +65,17 @@ export async function ReviewDetailContent({ id }: Props) {
         <Stack gap={1}>
           <Stack direction="row" align="center" gap={2}>
             <Stars value={review.rating} />
-            <Heading level={1}>{review.title}</Heading>
+            <Heading level={1}>{headingFor(review)}</Heading>
           </Stack>
           <Stack direction="row" gap={2} align="center">
-            <Badge color={statusVariant(review.status)}>{review.status}</Badge>
-            {review.verifiedPurchase && <Badge color="success">verified purchase</Badge>}
+            <Badge color={statusTone(review.status)} variant="soft" size="sm">
+              {statusLabel(review.status)}
+            </Badge>
+            {review.verifiedPurchase && (
+              <Badge color="success" variant="soft" size="sm">
+                Verified purchase
+              </Badge>
+            )}
             <Text size="sm" variant="muted">
               {review.displayName ?? (review.customerId ? 'Customer' : 'Anonymous')} ·{' '}
               {new Date(review.createdAt).toLocaleString()}
@@ -104,14 +115,24 @@ export async function ReviewDetailContent({ id }: Props) {
                 Unhelpful: {review.unhelpfulCount}
               </Text>
               <Text size="xs" variant="muted">
-                Product: {review.productId.slice(0, 8)}
+                Product:{' '}
+                {review.productTitle ? (
+                  <Link
+                    href={`/commerce/products/${review.productId}`}
+                    className="text-[var(--color-text-secondary)] hover:text-[var(--module-active)] hover:underline"
+                  >
+                    {review.productTitle}
+                  </Link>
+                ) : (
+                  'Deleted product'
+                )}
               </Text>
             </Stack>
           </Stack>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card variant="module">
         <CardHeader>
           <Stack gap={1}>
             <Heading level={3}>Merchant response</Heading>
@@ -132,13 +153,14 @@ export async function ReviewDetailContent({ id }: Props) {
   );
 }
 
-function statusVariant(
-  status: 'pending' | 'approved' | 'rejected' | 'flagged'
-): 'success' | 'warning' | 'outline' | 'danger' {
-  if (status === 'approved') return 'success';
-  if (status === 'flagged') return 'warning';
-  if (status === 'rejected') return 'danger';
-  return 'outline';
+// Titles are optional, so lead the heading with the title when present,
+// otherwise a trimmed snippet of the body — never an empty <h1>.
+function headingFor(review: ReviewDetail): string {
+  const title = review.title.trim();
+  if (title) return title;
+  const body = review.body.trim();
+  if (!body) return 'Untitled review';
+  return body.length > 70 ? `${body.slice(0, 70).trimEnd()}…` : body;
 }
 
 function Stars({ value }: { value: number }) {

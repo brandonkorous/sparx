@@ -1,7 +1,10 @@
 'use client';
 
+import Link from 'next/link';
+import { Check, X } from 'lucide-react';
 import {
   SelectionList,
+  type BulkAction,
   type SelectionCard,
   type SelectionColumn,
   Badge,
@@ -10,13 +13,14 @@ import {
   Text,
 } from '@sparx/ui';
 
+import { bulkModerateQuestionsAction } from '../../review-actions';
 import { EntityRowLink } from '../../../_components/entity-row-link';
 
 // Client wrapper for the Q&A moderation list. SelectionList takes render
 // functions (columns/card), which can't cross the server→client boundary, so
-// the server page maps rows + hands view here and this builds the views.
-// Read-only — `selectable={false}` (no checkboxes / bulk bar); rows open the
-// moderation detail via EntityRowLink in the user's detail-view surface.
+// the server page maps rows + hands view here and this builds the views. Rows
+// are selectable so a moderator can publish/reject a whole batch from the bulk
+// bar; a single row opens the moderation detail via EntityRowLink.
 
 export interface DisplayRow {
   id: string;
@@ -47,6 +51,26 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export function QaList({ rows, view }: QaListProps) {
+  const bulkActions: BulkAction[] = [
+    {
+      label: 'Publish',
+      icon: Check,
+      onAction: async (ids) => {
+        await bulkModerateQuestionsAction(ids, 'published');
+      },
+    },
+    {
+      label: 'Reject',
+      icon: X,
+      requiresConfirm: true,
+      confirmLabel:
+        'Reject {count} question{count === 1 ? "" : "s"}? They stay off the storefront.',
+      onAction: async (ids) => {
+        await bulkModerateQuestionsAction(ids, 'rejected');
+      },
+    },
+  ];
+
   const questionLink = (q: DisplayRow, className: string) => (
     <EntityRowLink
       href={`/commerce/qa/${q.id}`}
@@ -58,11 +82,19 @@ export function QaList({ rows, view }: QaListProps) {
     </EntityRowLink>
   );
 
-  const productCell = (q: DisplayRow) => (
-    <Text size="sm">
-      {q.productTitle ?? <span className="font-mono text-xs">{q.productId.slice(0, 8)}</span>}
-    </Text>
-  );
+  const productCell = (q: DisplayRow) =>
+    q.productTitle ? (
+      <Link
+        href={`/commerce/products/${q.productId}`}
+        className="text-sm hover:text-[var(--module-active)] hover:underline"
+      >
+        {q.productTitle}
+      </Link>
+    ) : (
+      <Text size="sm" variant="muted">
+        Deleted product
+      </Text>
+    );
 
   const columns: SelectionColumn<DisplayRow>[] = [
     { header: 'Question', cell: (q) => questionLink(q, 'hover:text-[var(--module-active)]') },
@@ -77,7 +109,7 @@ export function QaList({ rows, view }: QaListProps) {
     title: (q) => questionLink(q, 'truncate hover:text-[var(--module-active)]'),
     subtitle: (q) => (
       <Text size="xs" variant="muted">
-        {q.productTitle ?? q.productId.slice(0, 8)}
+        {q.productTitle ?? 'Deleted product'}
       </Text>
     ),
     badge: (q) => <StatusBadge status={q.status} />,
@@ -96,9 +128,9 @@ export function QaList({ rows, view }: QaListProps) {
       getId={(q) => q.id}
       getRowLabel={(q) => truncate(q.body, 40)}
       entityLabelPlural="questions"
-      selectable={false}
       columns={columns}
       card={card}
+      bulkActions={bulkActions}
     />
   );
 }

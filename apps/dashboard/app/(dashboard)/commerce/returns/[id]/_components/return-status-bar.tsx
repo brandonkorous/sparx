@@ -76,7 +76,7 @@ export function ReturnStatusBar({ returnId, status }: { returnId: string; status
         )}
       </Stack>
       {error && (
-        <Text size="xs" className="text-[var(--color-danger)]">
+        <Text size="xs" variant="danger" role="alert" aria-live="polite">
           {error}
         </Text>
       )}

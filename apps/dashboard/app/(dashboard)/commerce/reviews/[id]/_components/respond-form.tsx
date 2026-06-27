@@ -56,12 +56,12 @@ export function RespondForm({
             </Text>
           )}
           {error && (
-            <Text size="xs" className="text-[var(--color-danger)]">
+            <Text size="xs" variant="danger" role="alert" aria-live="polite">
               {error}
             </Text>
           )}
           {saved && !error && (
-            <Text size="xs" className="text-[var(--color-success-text)]">
+            <Text size="xs" variant="success" role="status" aria-live="polite">
               Saved
             </Text>
           )}

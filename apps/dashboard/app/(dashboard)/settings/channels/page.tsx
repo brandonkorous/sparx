@@ -2,9 +2,12 @@
 // tenant already sells on, and manage the connections. Server component fetches
 // the connections + the available channel catalog; the connect/disconnect client
 // bits live in ./_components. Channels are part of Commerce (the API gates on it).
+// The revenue ROLLUP (compare-by-channel + top-products drill) lives in Finance →
+// Channels (docs/110 Slice 4b); this page keeps the lightweight per-connection
+// 30-day metric and links across for the full breakdown.
 
+import Link from 'next/link';
 import { CheckCircle2, Store } from 'lucide-react';
-import { channelKeyLabel } from '@sparx/crm-schemas';
 import {
   Alert,
   Card,
@@ -18,10 +21,9 @@ import {
   Text,
 } from '@sparx/ui';
 
-import { getChannelRevenue, getChannelTopProducts, getChannels } from './actions';
+import { getChannelRevenue, getChannels } from './actions';
 import { AvailableChannelCard } from './_components/available-channel-card';
 import { ConnectedChannelRow } from './_components/connected-channel-row';
-import { ChannelRevenuePanel, ChannelTopProductsPanel } from './_components/channel-revenue-panel';
 import type { ChannelRevenueRow } from './_types';
 
 export const dynamic = 'force-dynamic';
@@ -29,9 +31,9 @@ export const dynamic = 'force-dynamic';
 export default async function ChannelsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ connected?: string; error?: string; channel?: string }>;
+  searchParams: Promise<{ connected?: string; error?: string }>;
 }) {
-  const { connected, error, channel: selectedChannel } = await searchParams;
+  const { connected, error } = await searchParams;
   const [{ connections, catalog }, revenue] = await Promise.all([
     getChannels(),
     getChannelRevenue(),
@@ -42,13 +44,12 @@ export default async function ChannelsPage({
   const connectedName = connected ? (descriptorBySlug.get(connected)?.name ?? connected) : null;
 
   // Per-channel 30-day metrics matched by derived key: a marketplace connection's
-  // slug IS its derived channel key (docs/27 §9).
+  // slug IS its derived channel key (docs/27 §9). Kept here as connection-health
+  // context; the full compare-and-drill rollup is in Finance → Channels.
   const revenueByKey = new Map<string, ChannelRevenueRow>(
     (revenue?.byChannel ?? []).map((r) => [r.channel, r])
   );
-  // Channel drill-down: top products on the selected channel (server-fetched only
-  // when a `?channel=` is chosen from the comparison table).
-  const topProducts = selectedChannel ? await getChannelTopProducts(selectedChannel) : null;
+  const hasRevenue = (revenue?.byChannel.length ?? 0) > 0;
 
   return (
     // Channels surface Commerce functionality — tint the page with the Commerce
@@ -110,32 +111,17 @@ export default async function ChannelsPage({
             </Card>
           )}
 
-          {revenue && revenue.byChannel.length > 0 && (
-            <Card>
-              <CardHeader>
-                <Stack direction="row" align="center" justify="between" gap={2}>
-                  <CardTitle>Revenue by channel</CardTitle>
-                  <Text size="xs" variant="muted">
-                    {revenue.rangeLabel}
-                  </Text>
-                </Stack>
-              </CardHeader>
-              <CardContent>
-                <ChannelRevenuePanel report={revenue} selectedChannel={selectedChannel} />
-              </CardContent>
-            </Card>
-          )}
-
-          {selectedChannel && topProducts && (
-            <Card>
-              <CardContent className="pt-6">
-                <ChannelTopProductsPanel
-                  label={channelKeyLabel(selectedChannel)}
-                  products={topProducts}
-                  currency={revenue?.currency ?? 'USD'}
-                />
-              </CardContent>
-            </Card>
+          {hasRevenue && (
+            <Text size="sm" variant="muted">
+              See the full revenue breakdown — gross, fees, net, and top products by channel — in{' '}
+              <Link
+                href="/finance/channels"
+                className="font-medium text-[var(--module-active-text)] hover:underline"
+              >
+                Finance → Channels
+              </Link>
+              .
+            </Text>
           )}
 
           <Card>
