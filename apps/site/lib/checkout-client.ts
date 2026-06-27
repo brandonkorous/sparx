@@ -49,7 +49,11 @@ export interface CheckoutSession {
 export interface PaymentIntentResult {
   paymentRef: string;
   providerSlug: string;
+  /** Inline (Stripe-family) gateways confirm with this in the browser. */
   clientSecret?: string;
+  /** Hosted-redirect gateways: the vendor page to send the shopper to. When a token
+   *  also rides in `clientSecret` (Authorize.net), POST it to this URL instead of GET. */
+  redirectUrl?: string;
   amountCents: number;
   currency: string;
   status: string;
@@ -144,11 +148,12 @@ export function submitShipping(
 
 export function createPaymentIntent(
   tenantSlug: string,
-  sessionId: string
+  sessionId: string,
+  returnUrl?: string
 ): Promise<PaymentIntentResult> {
   return call(`/v1/public/commerce/checkout/${sessionId}/payment-intent`, tenantSlug, {
     method: 'POST',
-    json: {},
+    json: returnUrl ? { returnUrl } : {},
   });
 }
 

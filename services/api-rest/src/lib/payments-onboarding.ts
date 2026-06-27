@@ -12,10 +12,22 @@
 // records the gateway SELECTION + onboarding status (it is FORCE-RLS — only ever read
 // or written with a tenant context).
 
-import { getPlatformStripe } from '@sparx/payments';
+import { getGatewayDescriptor, getPlatformStripe } from '@sparx/payments';
 import { prisma, withTenant } from '@sparx/db';
 
-export const PAYMENT_GATEWAYS = ['sparx_pay', 'stripe_direct', 'manual'] as const;
+import { hasActiveCredentials } from './gateway-credentials.js';
+
+// Every catalog gateway is selectable (docs/111). sparx Pay / Stripe Direct keep their
+// existing behavior; the bring-your-own gateways activate once their credentials land.
+export const PAYMENT_GATEWAYS = [
+  'sparx_pay',
+  'stripe_direct',
+  'square',
+  'authorize_net',
+  'first_pay',
+  'custom',
+  'manual',
+] as const;
 export type PaymentGatewayId = (typeof PAYMENT_GATEWAYS)[number];
 
 export interface SparxPayStatus {
@@ -126,18 +138,43 @@ export async function selectGateway(
   gatewayId: PaymentGatewayId
 ): Promise<PaymentConfigState> {
   await ensureConfig(tenantId);
-  const manual = gatewayId === 'manual';
+  const desc = getGatewayDescriptor(gatewayId);
+
+  // Activation by onboarding style: manual is on at once; an api-key gateway is on once
+  // its credentials are captured; sparx Pay (sparx_hosted) stays off until Connect
+  // onboarding flips charges-enabled (refreshSparxPayStatus).
+  let isActive = false;
+  if (desc?.onboarding === 'manual') isActive = true;
+  else if (desc?.onboarding === 'api_keys')
+    isActive = await hasActiveCredentials(tenantId, gatewayId);
+
   await withTenant({ tenantId }, (tx) =>
     tx.tenantPaymentConfig.update({
       where: { tenantId },
       data: {
         gatewayId,
-        isActive: manual,
-        ...(manual ? { onboardedAt: new Date() } : {}),
+        isActive,
+        ...(isActive ? { onboardedAt: new Date() } : {}),
       },
     })
   );
   return getPaymentConfig(tenantId);
+}
+
+/** After capturing credentials, flip the config active iff this gateway is the one the
+ *  tenant has selected (so configuring a not-yet-selected gateway doesn't switch them). */
+export async function activateGatewayIfSelected(
+  tenantId: string,
+  gatewayId: string
+): Promise<void> {
+  const config = await ensureConfig(tenantId);
+  if (config.gatewayId !== gatewayId) return;
+  await withTenant({ tenantId }, (tx) =>
+    tx.tenantPaymentConfig.update({
+      where: { tenantId },
+      data: { isActive: true, onboardedAt: new Date() },
+    })
+  );
 }
 
 /** Get the connected account, creating an Express account on first use and persisting

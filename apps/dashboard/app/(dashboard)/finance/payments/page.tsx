@@ -9,7 +9,7 @@ import { Container, PageHeader, Stack } from '@sparx/ui';
 
 import { requireModuleOrUpsell } from '@/components/module-gate';
 
-import { getPaymentConfig } from './actions';
+import { getGatewayCatalog, getGatewayCredentials, getPaymentConfig } from './actions';
 import { PaymentsManager } from './_components/payments-manager';
 
 export const dynamic = 'force-dynamic';
@@ -18,7 +18,11 @@ export default async function PaymentsSettingsPage(): Promise<React.JSX.Element>
   const upsell = await requireModuleOrUpsell('commerce');
   if (upsell) return <>{upsell}</>;
 
-  const config = await getPaymentConfig();
+  const [config, catalog, credentials] = await Promise.all([
+    getPaymentConfig(),
+    getGatewayCatalog(),
+    getGatewayCredentials(),
+  ]);
 
   return (
     <Container size="lg">
@@ -26,9 +30,9 @@ export default async function PaymentsSettingsPage(): Promise<React.JSX.Element>
         <PageHeader
           icon={<Wallet className="h-5 w-5" />}
           title="Payments"
-          description="Choose how you accept payments. sparx Pay sets you up in minutes — sparx handles disputes, settlement, and PCI, and takes a flat 0.5% per transaction. Or connect your own processor and keep sparx out of the money flow."
+          description="Choose how you accept payments. sparx Pay sets you up in minutes — sparx handles disputes, settlement, and PCI, for a flat 0.5% per transaction. Prefer your own processor? Bring Stripe, Square, Authorize.net, 1stPayGateway, or any custom gateway — sparx stays out of the money flow and takes no fee."
         />
-        <PaymentsManager initialConfig={config} />
+        <PaymentsManager initialConfig={config} catalog={catalog} credentials={credentials} />
       </Stack>
     </Container>
   );

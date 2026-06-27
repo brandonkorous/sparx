@@ -55,6 +55,33 @@ model PaymentIntent {
   @@map("payment_intents")
 }
 
+/// Encrypted credentials for a tenant's bring-your-own gateway (docs/111 §2). The
+/// merchant pastes API keys in the dashboard; the secret bundle is AES-256-GCM
+/// ciphertext (@sparx/channels/crypto box), never plaintext — a DB leak alone yields
+/// no usable key. `publicMeta` holds the non-secret captured fields (public client
+/// key, location id, hosted URL) safe to render + hand the client SDK. One row per
+/// (tenant, gateway) so switching the active gateway keeps each one's keys.
+model TenantGatewayCredential {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String  @map("tenant_id") @db.Uuid
+  gatewayId   String  @map("gateway_id") @db.VarChar(50)
+  environment String  @default("production") @db.VarChar(20)
+  // ^ sandbox | production
+  secretEnc   String? @map("secret_enc") @db.Text
+  // ^ AES-256-GCM ciphertext (iv.tag.cipher base64) of the JSON secret-field object
+  publicMeta  Json    @default("{}") @map("public_meta")
+  status      String  @default("unverified") @db.VarChar(20)
+  // ^ unverified | active | disabled
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, gatewayId], map: "tenant_gateway_credentials_tenant_gateway")
+  @@map("tenant_gateway_credentials")
+}
+
 /// A normalized gateway webhook event (dedupe + audit). The unique on
 /// (gateway_id, external_id) makes redelivery idempotent.
 model PaymentEvent {

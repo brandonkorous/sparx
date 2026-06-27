@@ -301,7 +301,12 @@ export async function submitPayment(ctx: ServiceContext, rawInput: unknown): Pro
 export interface CreatePaymentIntentResult {
   paymentRef: string;
   providerSlug: string;
+  /** Inline (Stripe-family) gateways — confirm in the browser with Elements. */
   clientSecret?: string;
+  /** Hosted-redirect gateways (Square / Authorize.net / 1stPay / custom, docs/111 D4)
+   *  — the vendor page the storefront sends the shopper to. When a token also rides in
+   *  `clientSecret` (Authorize.net Accept Hosted), the storefront POSTs it. */
+  redirectUrl?: string;
   amountCents: number;
   currency: string;
   status: PaymentIntentStatus;
@@ -324,7 +329,7 @@ async function resolvePaymentGateway(tenantId: string): Promise<PaymentGateway> 
 
 export async function createPaymentIntent(
   ctx: ServiceContext,
-  input: { sessionId: string; idempotencyKey?: string }
+  input: { sessionId: string; idempotencyKey?: string; returnUrl?: string; cancelUrl?: string }
 ): Promise<CreatePaymentIntentResult> {
   const session = await withTenant(ctx, (tx) =>
     tx.checkoutSession.findFirst({ where: { id: input.sessionId } })
@@ -376,6 +381,8 @@ export async function createPaymentIntent(
       amount: session.totalCents,
       currency: session.currency.toLowerCase(),
       metadata,
+      ...(input.returnUrl ? { returnUrl: input.returnUrl } : {}),
+      ...(input.cancelUrl ? { cancelUrl: input.cancelUrl } : {}),
     });
     providerSlug = gateway.id;
   }
@@ -406,6 +413,7 @@ export async function createPaymentIntent(
     paymentRef: intent.id,
     providerSlug,
     ...(intent.clientSecret ? { clientSecret: intent.clientSecret } : {}),
+    ...(intent.redirectUrl ? { redirectUrl: intent.redirectUrl } : {}),
     amountCents: session.totalCents,
     currency: session.currency,
     status: intent.status,

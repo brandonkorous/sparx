@@ -12,10 +12,32 @@ export type {
   RefundResult,
   WebhookEvent,
   ParsedWebhookEvent,
+  NormalizedPaymentData,
   CreatePaymentIntentParams,
   RefundParams,
   CreatePaymentLinkParams,
 } from './gateway';
+
+export {
+  GATEWAY_CATALOG,
+  CATALOG_GATEWAY_IDS,
+  getGatewayDescriptor,
+  isApiKeyGateway,
+  type GatewayDescriptor,
+  type GatewayCapabilities,
+  type CredentialField,
+  type GatewayOnboarding,
+  type GatewayCheckout,
+} from './catalog';
+
+export {
+  type GatewayCredentials,
+  type GatewayCredentialReader,
+  GatewayCredentialsMissingError,
+  setGatewayCredentialReader,
+  getGatewayCredentialReader,
+  requireGatewayCredentials,
+} from './credentials';
 
 export { gatewayRegistry, registerBuiltInGateways, GatewayNotFoundError } from './registry';
 
@@ -44,6 +66,14 @@ export { normalizeStripeEvent } from './stripe-util';
 
 export { SparxPayGateway, SPARX_PAY_ID } from './gateways/sparx-pay';
 export { StripeDirectGateway, STRIPE_DIRECT_ID } from './gateways/stripe-direct';
+export { SquareGateway, SQUARE_ID, normalizeSquareEvent } from './gateways/square';
+export {
+  AuthorizeNetGateway,
+  AUTHORIZE_NET_ID,
+  normalizeAuthorizeNetEvent,
+} from './gateways/authorize-net';
+export { FirstPayGateway, FIRST_PAY_ID, normalizeFirstPayEvent } from './gateways/first-pay';
+export { CustomRedirectGateway, CUSTOM_ID, normalizeCustomEvent } from './gateways/custom-redirect';
 
 // sparx.market — merchant-of-record direct platform charges (docs/106 §4.7).
 export {
@@ -58,9 +88,23 @@ export {
 
 import { SparxPayGateway } from './gateways/sparx-pay';
 import { StripeDirectGateway } from './gateways/stripe-direct';
+import { SquareGateway } from './gateways/square';
+import { AuthorizeNetGateway } from './gateways/authorize-net';
+import { FirstPayGateway } from './gateways/first-pay';
+import { CustomRedirectGateway } from './gateways/custom-redirect';
 import { registerBuiltInGateways } from './registry';
 
-/** Register the built-in gateways. Call once at host boot. */
+/** Register the built-in gateways. Call once at host boot. A developer PLUGIN
+ *  (docs/111 D6) registers its own adapter the same way — `gatewayRegistry.register(
+ *  new MyGateway())` at boot + a GATEWAY_CATALOG descriptor — and it lights up across
+ *  checkout, invoices, and B2B with zero flow changes. */
 export function registerSparxGateways(): void {
-  registerBuiltInGateways([new SparxPayGateway(), new StripeDirectGateway()]);
+  registerBuiltInGateways([
+    new SparxPayGateway(),
+    new StripeDirectGateway(),
+    new SquareGateway(),
+    new AuthorizeNetGateway(),
+    new FirstPayGateway(),
+    new CustomRedirectGateway(),
+  ]);
 }

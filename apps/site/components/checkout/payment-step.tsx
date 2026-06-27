@@ -66,14 +66,6 @@ export function PaymentStep({
 
   const stripe = useMemo(() => getStripe(), []);
 
-  if (!PUBLISHABLE_KEY) {
-    return (
-      <SparxAlert color="danger">
-        Payments aren’t configured for this store yet (missing Stripe publishable key).
-      </SparxAlert>
-    );
-  }
-
   if (error) {
     return (
       <div className="st-form">
@@ -85,7 +77,30 @@ export function PaymentStep({
     );
   }
 
-  if (!intent?.clientSecret) {
+  if (!intent) {
+    return (
+      <div className="st-form">
+        <h2 className="st-h2">Payment</h2>
+        <div className="st-skeleton" style={{ height: 180 }} />
+      </div>
+    );
+  }
+
+  // Hosted-redirect gateways (Square / Authorize.net / 1stPay / custom, docs/111 D4):
+  // the shopper pays on the vendor's own page. No Stripe key / Elements involved.
+  if (intent.redirectUrl) {
+    return <RedirectPay intent={intent} session={session} onBack={onBack} />;
+  }
+
+  if (!PUBLISHABLE_KEY) {
+    return (
+      <SparxAlert color="danger">
+        Payments aren’t configured for this store yet (missing Stripe publishable key).
+      </SparxAlert>
+    );
+  }
+
+  if (!intent.clientSecret) {
     return (
       <div className="st-form">
         <h2 className="st-h2">Payment</h2>
@@ -108,6 +123,67 @@ export function PaymentStep({
         onPaid={onPaid}
       />
     </Elements>
+  );
+}
+
+// Hosted-redirect handoff: send the shopper to the vendor's hosted payment page. Most
+// gateways take a plain GET redirect; Authorize.net Accept Hosted needs a form POST of
+// the token (carried in `clientSecret`). The order is reconciled by the gateway webhook
+// + completed on return (docs/111 §4 — exercised per-vendor at go-live).
+function RedirectPay({
+  intent,
+  session,
+  onBack,
+}: {
+  intent: PaymentIntentResult;
+  session: CheckoutSession;
+  onBack: () => void;
+}) {
+  const [busy, setBusy] = useState(false);
+
+  function go() {
+    if (!intent.redirectUrl) return;
+    setBusy(true);
+    if (intent.clientSecret) {
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = intent.redirectUrl;
+      const field = document.createElement('input');
+      field.type = 'hidden';
+      field.name = 'token';
+      field.value = intent.clientSecret;
+      form.appendChild(field);
+      document.body.appendChild(form);
+      form.submit();
+      return;
+    }
+    window.location.href = intent.redirectUrl;
+  }
+
+  return (
+    <div className="st-form">
+      <h2 className="st-h2">Payment</h2>
+      <SparxAlert color="info">
+        You’ll finish paying securely on your payment provider’s page, then return here.
+      </SparxAlert>
+      <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <SparxButton type="button" color="neutral" variant="ghost" onClick={onBack} disabled={busy}>
+          ← Back
+        </SparxButton>
+        <SparxButton
+          type="button"
+          color="primary"
+          size="lg"
+          style={{ flex: 1 }}
+          onClick={go}
+          disabled={busy}
+        >
+          {busy
+            ? 'Redirecting…'
+            : `Continue to pay ${formatMoney(session.totals.totalCents, session.currency)}`}
+        </SparxButton>
+      </div>
+    </div>
   );
 }
 

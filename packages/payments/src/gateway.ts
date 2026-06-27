@@ -13,8 +13,11 @@ export type PaymentIntentStatus =
 
 export interface PaymentIntent {
   id: string;
-  /** For client-side confirmation (Stripe.js / Elements). */
+  /** For client-side confirmation (Stripe.js / Elements) — `inline` checkout gateways. */
   clientSecret: string;
+  /** For `redirect` checkout gateways (Square / Authorize.net / 1stPay / custom): the
+   *  vendor-hosted payment page the storefront sends the shopper to. Empty for inline. */
+  redirectUrl?: string;
   /** Amount in cents. */
   amount: number;
   currency: string;
@@ -44,6 +47,29 @@ export interface WebhookEvent {
   signature: string;
 }
 
+/** The vendor-neutral payment facts the reconciler needs (docs/111 §1 D5). Every
+ *  gateway's `parseWebhook` fills this for payment.* events so a Square / Authorize.net
+ *  / 1stPay event reconciles through the SAME path as Stripe — the reconciler reads
+ *  this, never a `Stripe.PaymentIntent`. */
+export interface NormalizedPaymentData {
+  /** The gateway charge / intent id — matches `payment_intents.external_id` and
+   *  `order_payments.processor_ref` (what create stamped). */
+  chargeId: string;
+  /** Amount in cents (received amount for a success). */
+  amountCents: number;
+  currency: string;
+  /** Stamped by the platform on create, echoed back by the gateway. */
+  orderId?: string;
+  invoiceId?: string;
+  bookingId?: string;
+  /** payment.refunded specifics. */
+  refundId?: string;
+  refundedCents?: number;
+  /** payment.failed specifics. */
+  failureCode?: string;
+  failureMessage?: string;
+}
+
 /** The normalized event every gateway produces — the only payment vocabulary the
  *  rest of the platform sees (commerce/invoicing subscribe to these, never raw
  *  gateway webhooks). */
@@ -62,6 +88,8 @@ export interface ParsedWebhookEvent {
   externalId: string;
   /** The provider's raw event type (e.g. `payment_intent.succeeded`), for the log. */
   providerEventType: string;
+  /** Vendor-neutral facts for payment.* events; absent for account/dispute/ignored. */
+  data?: NormalizedPaymentData;
   payload: unknown;
 }
 
@@ -77,6 +105,11 @@ export interface CreatePaymentIntentParams {
   customerId?: string;
   metadata?: Record<string, string>;
   captureMethod?: 'automatic' | 'manual';
+  /** Where the vendor-hosted page returns the shopper after paying — required by the
+   *  `redirect` checkout gateways (Square / Authorize.net / 1stPay / custom); ignored
+   *  by inline (Stripe) gateways. */
+  returnUrl?: string;
+  cancelUrl?: string;
 }
 
 export interface RefundParams {

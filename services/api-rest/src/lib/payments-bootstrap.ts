@@ -24,9 +24,12 @@ import { prisma } from '@sparx/db';
 import {
   PaymentSecretNotFoundError,
   registerSparxGateways,
+  setGatewayCredentialReader,
   setPaymentSecretReader,
   type PaymentSecretReader,
 } from '@sparx/payments';
+
+import { buildGatewayCredentialReader } from './gateway-credentials.js';
 
 // payments/{uuid}/sparx_pay/stripe_account_id — the non-secret connected account id.
 const SPARX_PAY_ACCOUNT_REF = /^payments\/([0-9a-f-]{36})\/sparx_pay\/stripe_account_id$/i;
@@ -48,6 +51,9 @@ export function bootstrapPayments(): void {
     if (!(err instanceof Error) || !/already registered/i.test(err.message)) throw err;
   }
   setPaymentSecretReader(buildPaymentSecretReader());
+  // Bring-your-own gateway credentials decrypt from the row, not Secret Manager
+  // (docs/111 §2). Wired here so the adapters resolve merchant keys at runtime.
+  setGatewayCredentialReader(buildGatewayCredentialReader());
 }
 
 function buildPaymentSecretReader(): PaymentSecretReader {

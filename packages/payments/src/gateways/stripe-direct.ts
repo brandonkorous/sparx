@@ -16,6 +16,7 @@ import type {
   RefundResult,
   WebhookEvent,
 } from '../gateway';
+import { getGatewayCredentialReader } from '../credentials';
 import { credentialRef, getPaymentSecretReader } from '../secrets';
 import { normalizeStripeEvent, toPaymentIntent } from '../stripe-util';
 
@@ -25,18 +26,23 @@ export class StripeDirectGateway implements PaymentGateway {
   readonly id = STRIPE_DIRECT_ID;
   readonly name = 'Stripe (your account)';
 
+  /** Resolve a credential field: the dashboard-captured encrypted row first (docs/111
+   *  D2), then the original out-of-band Secret Manager ref (backward compatible with
+   *  GSM-provisioned tenants). */
+  private async cred(tenantId: string, field: string): Promise<string> {
+    const creds = await getGatewayCredentialReader().read(tenantId, STRIPE_DIRECT_ID);
+    const fromRow = creds?.secrets[field] ?? creds?.publicMeta[field];
+    if (fromRow) return fromRow;
+    return getPaymentSecretReader().read(credentialRef(tenantId, STRIPE_DIRECT_ID, field));
+  }
+
   private async stripeFor(tenantId: string): Promise<Stripe> {
-    const key = await getPaymentSecretReader().read(
-      credentialRef(tenantId, STRIPE_DIRECT_ID, 'secret_key')
-    );
-    return stripeForKey(key);
+    return stripeForKey(await this.cred(tenantId, 'secret_key'));
   }
 
   /** The merchant's webhook signing secret (their account, their endpoint). */
   private async webhookSecret(tenantId: string): Promise<string> {
-    return getPaymentSecretReader().read(
-      credentialRef(tenantId, STRIPE_DIRECT_ID, 'webhook_secret')
-    );
+    return this.cred(tenantId, 'webhook_secret');
   }
 
   async createPaymentIntent(params: CreatePaymentIntentParams): Promise<PaymentIntent> {

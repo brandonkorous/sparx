@@ -66,6 +66,12 @@ const ShippingBody = z.object({
   shippingProviderSlug: z.string().min(1).max(63),
 });
 
+const IntentBody = z.object({
+  // The storefront's post-payment return URL for hosted-redirect gateways (docs/111 D4).
+  returnUrl: z.string().url().max(2048).optional(),
+  cancelUrl: z.string().url().max(2048).optional(),
+});
+
 const PaymentBody = z.object({
   paymentProviderSlug: z.string().min(1).max(63),
   paymentRef: z.string().min(1).max(255),
@@ -227,17 +233,25 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
     return ok(await checkoutService.get(ctx, sessionId));
   });
 
-  // Create the payment intent — returns the Stripe clientSecret the storefront
-  // confirms client-side with Stripe.js.
+  // Create the payment intent. Inline (Stripe-family) gateways return a clientSecret
+  // the storefront confirms with Stripe.js; hosted-redirect gateways (docs/111 D4)
+  // return a redirectUrl the storefront sends the shopper to. The storefront passes its
+  // post-payment returnUrl for the hosted gateways.
   app.post('/v1/public/commerce/checkout/:sessionId/payment-intent', async (request) => {
     const { sessionId } = SessionParam.parse(request.params);
+    const body = IntentBody.parse(request.body ?? {});
     const { tenantId, ctx } = await publicCommerceContext(request);
     await assertSessionOwner(request, ctx, tenantId, sessionId);
-    const intent = await checkoutService.createPaymentIntent(ctx, { sessionId });
+    const intent = await checkoutService.createPaymentIntent(ctx, {
+      sessionId,
+      ...(body.returnUrl ? { returnUrl: body.returnUrl } : {}),
+      ...(body.cancelUrl ? { cancelUrl: body.cancelUrl } : {}),
+    });
     return ok({
       paymentRef: intent.paymentRef,
       providerSlug: intent.providerSlug,
       ...(intent.clientSecret ? { clientSecret: intent.clientSecret } : {}),
+      ...(intent.redirectUrl ? { redirectUrl: intent.redirectUrl } : {}),
       amountCents: intent.amountCents,
       currency: intent.currency,
       status: intent.status,

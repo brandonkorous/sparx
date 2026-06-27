@@ -236,7 +236,15 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
             session={session}
             onBack={() => setStep('shipping')}
             onPaid={handlePaid}
-            createIntent={() => createPaymentIntent(tenantSlug, session.sessionId)}
+            createIntent={() =>
+              createPaymentIntent(
+                tenantSlug,
+                session.sessionId,
+                typeof window !== 'undefined'
+                  ? `${window.location.origin}${window.location.pathname}?paid=${session.sessionId}`
+                  : undefined
+              )
+            }
           />
         ) : null}
       </div>

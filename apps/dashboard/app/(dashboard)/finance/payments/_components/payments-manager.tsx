@@ -1,9 +1,12 @@
 'use client';
 
-// Settings → Payments (docs/94 ADR §13). Pick a gateway and drive Stripe's hosted
-// Connect flows. We render no onboarding or account UI — "Set up" and "Manage payouts"
-// redirect to Stripe-hosted pages (Stripe-hosted-first). sparx Pay status is pulled
-// live (and re-synced when the merchant returns from onboarding).
+// Finance → Payments (docs/94 + docs/111). The payment-acceptance door, rendered from
+// the gateway CATALOG: sparx Pay (recommended, hosted Connect onboarding), the
+// merchant's own Stripe, Square / Authorize.net / 1stPayGateway / a custom gateway
+// (bring-your-own, API keys captured + encrypted), and manual. Picking a gateway sets
+// it active; an api-key gateway shows a credential form generated from its schema. We
+// render no card form here — sparx Pay + Stripe confirm inline via Elements; the
+// bring-your-own gateways send shoppers to the vendor's hosted page (SAQ-A).
 
 import * as React from 'react';
 import Link from 'next/link';
@@ -13,11 +16,14 @@ import {
   CircleDollarSign,
   CreditCard,
   ExternalLink,
+  Globe,
   Wallet,
 } from 'lucide-react';
 import { Badge, Button, Card, CardContent, Stack, Text, cn, toast } from '@sparx/ui';
 
 import {
+  type GatewayDescriptor,
+  type MaskedGatewayCredential,
   type PaymentConfigState,
   type PaymentGatewayId,
   openSparxPayDashboard,
@@ -25,48 +31,35 @@ import {
   selectGateway,
   startSparxPayOnboarding,
 } from '../actions';
+import { GatewayCredentialForm } from './gateway-credential-form';
 
-const GATEWAYS: {
-  id: PaymentGatewayId;
-  name: string;
-  icon: typeof Wallet;
-  tagline?: string;
-  blurb: string;
-}[] = [
-  {
-    id: 'sparx_pay',
-    name: 'sparx Pay',
-    icon: Wallet,
-    tagline: 'Recommended',
-    blurb:
-      'Accept cards in minutes. sparx handles disputes, settlement, and PCI. Flat 0.5% per transaction — no monthly fee.',
-  },
-  {
-    id: 'stripe_direct',
-    name: 'Your own Stripe',
-    icon: CreditCard,
-    blurb:
-      'Route checkout to your own Stripe account. No sparx fee — you own disputes, PCI, and payouts.',
-  },
-  {
-    id: 'manual',
-    name: 'Manual payments',
-    icon: Banknote,
-    blurb:
-      'Record check, cash, wire, or ACH by hand. No online payments and no fee — you mark orders and invoices paid.',
-  },
-];
+const GATEWAY_ICON: Record<string, typeof Wallet> = {
+  sparx_pay: Wallet,
+  stripe_direct: CreditCard,
+  square: CircleDollarSign,
+  authorize_net: CreditCard,
+  first_pay: CreditCard,
+  custom: Globe,
+  manual: Banknote,
+};
 
 export function PaymentsManager({
   initialConfig,
+  catalog,
+  credentials,
 }: {
   initialConfig: PaymentConfigState;
+  catalog: GatewayDescriptor[];
+  credentials: MaskedGatewayCredential[];
 }): React.JSX.Element {
   const [config, setConfig] = React.useState(initialConfig);
   const [pending, startTransition] = React.useTransition();
+  const credByGateway = React.useMemo(
+    () => new Map(credentials.map((c) => [c.gatewayId, c])),
+    [credentials]
+  );
 
-  // When the merchant returns from hosted onboarding, pull the live status once so the
-  // panel reflects charges-enabled without a manual refresh.
+  // When the merchant returns from sparx Pay hosted onboarding, pull live status once.
   React.useEffect(() => {
     const needsSync =
       config.gatewayId === 'sparx_pay' && config.sparxPay.accountId !== null && !config.isActive;
@@ -82,7 +75,6 @@ export function PaymentsManager({
     return () => {
       cancelled = true;
     };
-    // Run once on mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -97,12 +89,21 @@ export function PaymentsManager({
     });
   }
 
+  function isConnected(g: GatewayDescriptor): boolean {
+    if (g.onboarding === 'manual') return true;
+    if (g.onboarding === 'api_keys') return credByGateway.get(g.id)?.status === 'active';
+    return g.id === config.gatewayId && config.isActive; // sparx Pay
+  }
+
+  const active = catalog.find((g) => g.id === config.gatewayId);
+
   return (
     <Stack gap={6}>
       <Stack gap={3}>
-        {GATEWAYS.map((g) => {
+        {catalog.map((g) => {
           const selected = config.gatewayId === g.id;
-          const Icon = g.icon;
+          const Icon = GATEWAY_ICON[g.id] ?? CreditCard;
+          const connected = isConnected(g);
           return (
             <Card
               key={g.id}
@@ -125,11 +126,16 @@ export function PaymentsManager({
                 <Stack direction="row" align="start" gap={4} className="py-1">
                   <Icon className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-module-base)]" />
                   <Stack gap={1} className="min-w-0 flex-1">
-                    <Stack direction="row" align="center" gap={2}>
+                    <Stack direction="row" align="center" gap={2} wrap>
                       <Text weight="medium">{g.name}</Text>
                       {g.tagline ? (
                         <Badge color="module" variant="soft">
                           {g.tagline}
+                        </Badge>
+                      ) : null}
+                      {connected ? (
+                        <Badge color="success" variant="soft">
+                          Connected
                         </Badge>
                       ) : null}
                     </Stack>
@@ -147,29 +153,25 @@ export function PaymentsManager({
         })}
       </Stack>
 
-      {config.gatewayId === 'sparx_pay' ? (
+      {active?.onboarding === 'sparx_hosted' ? (
         <SparxPayPanel config={config} onChange={setConfig} />
       ) : null}
 
-      {config.gatewayId === 'stripe_direct' ? (
+      {active?.onboarding === 'api_keys' ? (
         <Card>
           <CardContent>
-            <Stack gap={2} className="py-1">
-              <Text weight="medium">Connect your Stripe account</Text>
-              <Text size="sm" variant="muted">
-                Your Stripe secret key and webhook signing secret are stored securely and are
-                provisioned during setup. Point your Stripe webhook at{' '}
-                <code className="rounded bg-[var(--color-surface-sunken)] px-1 py-0.5 text-xs">
-                  /v1/public/webhooks/stripe-direct/&lt;your-tenant-id&gt;
-                </code>
-                . sparx takes no fee on this path.
-              </Text>
+            <Stack gap={4} className="py-1">
+              <Text weight="medium">Connect {active.name}</Text>
+              <GatewayCredentialForm
+                descriptor={active}
+                credential={credByGateway.get(active.id)}
+              />
             </Stack>
           </CardContent>
         </Card>
       ) : null}
 
-      {config.gatewayId === 'manual' ? (
+      {active?.id === 'manual' ? (
         <Card>
           <CardContent>
             <Stack gap={2} className="py-1">
@@ -184,40 +186,6 @@ export function PaymentsManager({
       ) : null}
 
       <PayPalConnectCard />
-    </Stack>
-  );
-}
-
-// PayPal — re-homed into the Payments door (docs/110 Slice 5). It isn't a selectable
-// gateway yet (the full PayPal gateway is wired on demand, ADR 94 §12), so it connects
-// through the existing provider-install flow rather than the gateway picker above. This
-// is the single place a merchant reaches PayPal now — it no longer lives in the
-// /commerce/providers registry.
-function PayPalConnectCard(): React.JSX.Element {
-  return (
-    <Stack gap={3}>
-      <Text size="sm" weight="medium" className="text-[var(--color-text-secondary)]">
-        More ways to accept payments
-      </Text>
-      <Card>
-        <CardContent>
-          <Stack direction="row" align="start" gap={4} className="py-1">
-            <CircleDollarSign className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-text-tertiary)]" />
-            <Stack gap={1} className="min-w-0 flex-1">
-              <Text weight="medium">PayPal</Text>
-              <Text size="sm" variant="muted">
-                Connect your PayPal Business account to accept PayPal and card payments. sparx
-                routes checkout to PayPal; you manage your money in PayPal.
-              </Text>
-            </Stack>
-            <Button color="module" variant="outline" size="sm" asChild>
-              <Link href="/commerce/providers/install?slug=paypal&kind=payment">
-                Connect PayPal
-              </Link>
-            </Button>
-          </Stack>
-        </CardContent>
-      </Card>
     </Stack>
   );
 }
@@ -268,7 +236,6 @@ function SparxPayPanel({
     });
   }
 
-  // Not started.
   if (!accountId) {
     return (
       <Card>
@@ -298,7 +265,6 @@ function SparxPayPanel({
     );
   }
 
-  // Active — charges enabled.
   if (chargesEnabled) {
     return (
       <Card>
@@ -342,7 +308,6 @@ function SparxPayPanel({
     );
   }
 
-  // In progress — account created, not yet charging.
   return (
     <Card>
       <CardContent>
@@ -389,5 +354,37 @@ function StatusChip({ on, label }: { on: boolean; label: string }): React.JSX.El
     <Badge color={on ? 'success' : 'neutral'} variant="soft">
       {label}
     </Badge>
+  );
+}
+
+// PayPal — re-homed into the Payments door (docs/110 Slice 5). It isn't a selectable
+// gateway yet (the full PayPal gateway is wired on demand, ADR 94 §12), so it connects
+// through the existing provider-install flow rather than the gateway picker above.
+function PayPalConnectCard(): React.JSX.Element {
+  return (
+    <Stack gap={3}>
+      <Text size="sm" weight="medium" className="text-[var(--color-text-secondary)]">
+        More ways to accept payments
+      </Text>
+      <Card>
+        <CardContent>
+          <Stack direction="row" align="start" gap={4} className="py-1">
+            <CircleDollarSign className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-text-tertiary)]" />
+            <Stack gap={1} className="min-w-0 flex-1">
+              <Text weight="medium">PayPal</Text>
+              <Text size="sm" variant="muted">
+                Connect your PayPal Business account to accept PayPal and card payments. sparx
+                routes checkout to PayPal; you manage your money in PayPal.
+              </Text>
+            </Stack>
+            <Button color="module" variant="outline" size="sm" asChild>
+              <Link href="/commerce/providers/install?slug=paypal&kind=payment">
+                Connect PayPal
+              </Link>
+            </Button>
+          </Stack>
+        </CardContent>
+      </Card>
+    </Stack>
   );
 }

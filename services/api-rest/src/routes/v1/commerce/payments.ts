@@ -15,10 +15,13 @@ import { z } from 'zod';
 
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
+import { badRequest } from '@sparx/api-core/errors';
+import { GATEWAY_CATALOG } from '@sparx/payments';
 
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
 import {
   PAYMENT_GATEWAYS,
+  activateGatewayIfSelected,
   getPaymentConfig,
   getSparxPayBalance,
   refreshSparxPayStatus,
@@ -26,12 +29,24 @@ import {
   sparxPayDashboardLink,
   startSparxPayOnboarding,
 } from '../../../lib/payments-onboarding.js';
+import {
+  GatewayCredentialError,
+  captureGatewayCredentials,
+  deleteGatewayCredentials,
+  listGatewayCredentials,
+} from '../../../lib/gateway-credentials.js';
 
 const GatewayBody = z.object({ gatewayId: z.enum(PAYMENT_GATEWAYS) });
 const OnboardBody = z.object({
   returnUrl: z.string().url(),
   refreshUrl: z.string().url(),
 });
+const CredentialBody = z.object({
+  gatewayId: z.string().min(1),
+  environment: z.enum(['sandbox', 'production']),
+  fields: z.record(z.string(), z.string()),
+});
+const GatewayParams = z.object({ gatewayId: z.string().min(1) });
 
 const paymentsRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/payments/config', async (request) => {
@@ -81,6 +96,49 @@ const paymentsRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const ctx = toCommerceContext(request);
     return ok(await getSparxPayBalance(ctx.tenantId));
+  });
+
+  // ── Bring-your-own gateways (docs/111) ─────────────────────────────────────────
+
+  // The gateway catalog — the data-driven list the dashboard renders cards + forms from.
+  app.get('/v1/commerce/payments/catalog', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    return ok(GATEWAY_CATALOG);
+  });
+
+  // The tenant's configured bring-your-own credentials, MASKED (never secrets).
+  app.get('/v1/commerce/payments/credentials', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const ctx = toCommerceContext(request);
+    return ok(await listGatewayCredentials(ctx.tenantId));
+  });
+
+  // Capture / replace a gateway's API keys (encrypted at rest). Activates the gateway
+  // if it's the one the tenant has selected.
+  app.put('/v1/commerce/payments/credentials', async (request) => {
+    requireRole(request, 'admin');
+    await requireCommerceModule(request);
+    const body = CredentialBody.parse(request.body);
+    const ctx = toCommerceContext(request);
+    try {
+      const masked = await captureGatewayCredentials(ctx.tenantId, body);
+      await activateGatewayIfSelected(ctx.tenantId, body.gatewayId);
+      return ok(masked);
+    } catch (err) {
+      if (err instanceof GatewayCredentialError) throw badRequest(err.message);
+      throw err;
+    }
+  });
+
+  app.delete('/v1/commerce/payments/credentials/:gatewayId', async (request) => {
+    requireRole(request, 'admin');
+    await requireCommerceModule(request);
+    const { gatewayId } = GatewayParams.parse(request.params);
+    const ctx = toCommerceContext(request);
+    await deleteGatewayCredentials(ctx.tenantId, gatewayId);
+    return ok({ gatewayId });
   });
 
   return Promise.resolve();

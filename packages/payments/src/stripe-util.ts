@@ -5,6 +5,7 @@
 import type Stripe from 'stripe';
 
 import type {
+  NormalizedPaymentData,
   ParsedWebhookEvent,
   PaymentIntent,
   PaymentIntentStatus,
@@ -61,23 +62,66 @@ export function toPaymentResult(intent: Stripe.PaymentIntent): PaymentResult {
   };
 }
 
+function meta(obj: unknown): Record<string, string> {
+  return (obj as { metadata?: Record<string, string> } | null)?.metadata ?? {};
+}
+
+function intentData(intent: Stripe.PaymentIntent): NormalizedPaymentData {
+  const m = intent.metadata ?? {};
+  const err = intent.last_payment_error;
+  return {
+    chargeId: intent.id,
+    amountCents: intent.amount_received ?? intent.amount,
+    currency: intent.currency,
+    ...(m.orderId ? { orderId: m.orderId } : {}),
+    ...(m.invoiceId ? { invoiceId: m.invoiceId } : {}),
+    ...(m.booking_id ? { bookingId: m.booking_id } : {}),
+    ...(err?.code ? { failureCode: err.code } : {}),
+    ...(err?.message ? { failureMessage: err.message } : {}),
+  };
+}
+
+function chargeRefundData(charge: Stripe.Charge): NormalizedPaymentData {
+  const refund = charge.refunds?.data?.[0];
+  const pi =
+    typeof charge.payment_intent === 'string' ? charge.payment_intent : charge.payment_intent?.id;
+  return {
+    chargeId: pi ?? charge.id,
+    amountCents: charge.amount,
+    currency: charge.currency,
+    ...(refund?.id ? { refundId: refund.id } : {}),
+    ...(refund ? { refundedCents: refund.amount } : {}),
+  };
+}
+
 /** Normalize a verified raw Stripe event into the platform's payment vocabulary.
- *  The tenant id rides in metadata.tenantId (set by the gateways on create). */
+ *  The tenant id rides in metadata.tenantId (set by the gateways on create); the
+ *  vendor-neutral `data` lets the reconciler stay off Stripe types (docs/111 D5). */
 export function normalizeStripeEvent(event: Stripe.Event): ParsedWebhookEvent {
   const base = { externalId: event.id, providerEventType: event.type, payload: event };
 
-  const metaTenant = (obj: unknown): string | undefined => {
-    const meta = (obj as { metadata?: Record<string, string> } | null)?.metadata;
-    return meta?.tenantId;
-  };
-
   switch (event.type) {
     case 'payment_intent.succeeded':
-      return { ...base, type: 'payment.succeeded', tenantId: metaTenant(event.data.object) };
+      return {
+        ...base,
+        type: 'payment.succeeded',
+        tenantId: meta(event.data.object).tenantId,
+        data: intentData(event.data.object),
+      };
     case 'payment_intent.payment_failed':
-      return { ...base, type: 'payment.failed', tenantId: metaTenant(event.data.object) };
+      return {
+        ...base,
+        type: 'payment.failed',
+        tenantId: meta(event.data.object).tenantId,
+        data: intentData(event.data.object),
+      };
     case 'charge.refunded':
-      return { ...base, type: 'payment.refunded', tenantId: metaTenant(event.data.object) };
+      return {
+        ...base,
+        type: 'payment.refunded',
+        tenantId: meta(event.data.object).tenantId,
+        data: chargeRefundData(event.data.object),
+      };
     case 'charge.dispute.created':
       return { ...base, type: 'dispute.created' };
     case 'charge.dispute.closed':

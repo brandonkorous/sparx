@@ -383,9 +383,10 @@ model Tenant {
   billingSubscriptionItems BillingSubscriptionItem[]
 
   // Payment gateway abstraction (docs/94) — tenant→shopper payments
-  paymentConfig  TenantPaymentConfig?
-  paymentIntents PaymentIntent[]
-  paymentEvents  PaymentEvent[]
+  paymentConfig      TenantPaymentConfig?
+  paymentIntents     PaymentIntent[]
+  paymentEvents      PaymentEvent[]
+  gatewayCredentials TenantGatewayCredential[]
 
   // Analytics rollups (docs/97) — pre-aggregated reporting summaries
   rollupCommerceDailyRevenue    RollupCommerceDailyRevenue[]
