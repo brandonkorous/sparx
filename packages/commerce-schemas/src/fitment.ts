@@ -19,7 +19,13 @@
 
 import { z } from 'zod';
 
-import { Uuid } from '@sparx/crm-schemas';
+// Fitment reference ids accept the platform's sentinel global-domain UUID
+// (00000000-0000-0000-0000-000000000001) — a valid Postgres uuid whose
+// version/variant bits are zero, so crm-schemas' strict `Uuid`
+// (z.string().uuid(), RFC-9562) rejects it. z.guid() validates the
+// 8-4-4-4-12 shape without version pedantry, so e.g. creating a tenant make
+// under the global Vehicle domain (body.domainId = sentinel) still validates.
+const Uuid = z.guid();
 
 // ─── Domain ──────────────────────────────────────────────────────────
 
@@ -62,6 +68,14 @@ export type CreateFitmentDomainInput = z.infer<typeof CreateFitmentDomainInput>;
 
 export const UpdateFitmentDomainInput = CreateFitmentDomainInput.partial();
 export type UpdateFitmentDomainInput = z.infer<typeof UpdateFitmentDomainInput>;
+
+// Install a platform fitment dictionary (see ./fitment-dictionaries) as a
+// tenant-scoped copy. `slug` is the dictionary slug, not a domain id — the
+// service stamps the whole tree under the tenant.
+export const InstallFitmentDictionaryParams = z.object({
+  slug: SlugString,
+});
+export type InstallFitmentDictionaryParams = z.infer<typeof InstallFitmentDictionaryParams>;
 
 // ─── Category (L1) ───────────────────────────────────────────────────
 

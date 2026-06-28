@@ -7,11 +7,14 @@
 // is produced by Better Auth's own hasher (scrypt, via better-auth/crypto) so
 // the seeded credential row verifies against the live sign-in flow.
 
+import { randomUUID } from 'node:crypto';
+
 import { PrismaClient, type Prisma } from '@prisma/client';
 import { hashPassword } from 'better-auth/crypto';
 import { listBlueprints, type Blueprint } from '@sparx/blueprints';
 import { LEGAL_TEMPLATES, legalEntryBody } from '@sparx/legal-templates';
 import { PLATFORM_CATALOG } from '@sparx/builder-schemas';
+import { getFitmentDictionary, planFitmentDictionaryRows } from '@sparx/commerce-schemas';
 
 const prisma = new PrismaClient();
 
@@ -2132,6 +2135,1415 @@ async function seedDemoScheduling(tenantId: string): Promise<void> {
   });
 }
 
+// ─── Demo commerce operations ─────────────────────────────────────────
+// Reviews, Q&A, bundles, configurator, shipping/tax config, markup +
+// surcharge rules, and a wholesale price list — all hung off whatever
+// catalog the inventory seed created (queried at run time) so the
+// moderation queues, pricing, and shipping/tax surfaces show real, varied
+// data locally (docs/105 walk-through). Pairs with seedDemoFitment +
+// seedDemoOrders (wave 2): when those have run first, customer-authored
+// reviews here pin to a settled order → "Verified purchase".
+// Idempotent: clears the tenant's prior demo ops, recreates.
+interface ReviewSpec {
+  rating: number;
+  title: string;
+  body: string;
+  status: string;
+  author: string | null;
+  useCustomer?: boolean;
+  response?: string;
+  helpful: number;
+  daysAgo: number;
+}
+
+// A deliberate spread of statuses (the queue = pending + flagged), empty vs.
+// present titles (titles are optional on the storefront form), guest vs.
+// customer authors, and a few merchant responses.
+const REVIEW_SPECS: ReviewSpec[] = [
+  {
+    rating: 5,
+    title: 'Exactly what I needed',
+    body: 'Showed up a day early and works perfectly. Would buy again without hesitation.',
+    status: 'approved',
+    author: 'Marcus T.',
+    response: 'Thanks so much, Marcus — glad it landed early!',
+    helpful: 8,
+    daysAgo: 21,
+  },
+  {
+    rating: 4,
+    title: '',
+    body: 'Works great. Shipping was a little slow but no real complaints for the price.',
+    status: 'approved',
+    author: 'Priya R.',
+    helpful: 3,
+    daysAgo: 18,
+  },
+  {
+    rating: 2,
+    title: 'Smaller than I expected',
+    body: 'The listing photos made it look bigger. It’s fine, just measure first.',
+    status: 'flagged',
+    author: 'J. Rivera',
+    helpful: 1,
+    daysAgo: 14,
+  },
+  {
+    rating: 5,
+    title: '',
+    body: 'Second one I’ve bought. Love it.',
+    status: 'pending',
+    author: 'anon shopper',
+    helpful: 0,
+    daysAgo: 6,
+  },
+  {
+    rating: 1,
+    title: 'Arrived damaged',
+    body: 'Box was crushed and the item was cracked. Disappointed.',
+    status: 'pending',
+    author: 'Dana K.',
+    helpful: 0,
+    daysAgo: 4,
+  },
+  {
+    rating: 3,
+    title: 'It’s okay',
+    body: 'Does the job but nothing special. Middle of the road.',
+    status: 'pending',
+    author: null,
+    useCustomer: true,
+    helpful: 2,
+    daysAgo: 3,
+  },
+  {
+    rating: 5,
+    title: 'Best purchase this year',
+    body: 'Genuinely impressed with the quality. Recommending to everyone.',
+    status: 'approved',
+    author: null,
+    useCustomer: true,
+    response: 'You made our day — thank you!',
+    helpful: 11,
+    daysAgo: 25,
+  },
+  {
+    rating: 4,
+    title: '',
+    body: 'check out cheapdeals dot example for coupons!!',
+    status: 'rejected',
+    author: 'promo123',
+    helpful: 0,
+    daysAgo: 9,
+  },
+  {
+    rating: 5,
+    title: 'Highly recommend',
+    body: 'Exceeded expectations. Packaging was thoughtful too.',
+    status: 'approved',
+    author: 'Sam W.',
+    helpful: 5,
+    daysAgo: 16,
+  },
+  {
+    rating: 2,
+    title: '',
+    body: 'Color didn’t match the photos at all — more grey than blue.',
+    status: 'flagged',
+    author: 'Lee H.',
+    helpful: 4,
+    daysAgo: 11,
+  },
+  {
+    rating: 4,
+    title: 'Solid',
+    body: 'Good build quality, fair price. Took off one star for the instructions.',
+    status: 'pending',
+    author: 'Chris P.',
+    helpful: 1,
+    daysAgo: 2,
+  },
+  {
+    rating: 5,
+    title: 'Will buy again',
+    body: 'Third order from this shop and they never miss. Fast and reliable.',
+    status: 'approved',
+    author: null,
+    useCustomer: true,
+    response: 'We appreciate the loyalty!',
+    helpful: 7,
+    daysAgo: 28,
+  },
+];
+
+interface QuestionSpec {
+  body: string;
+  status: string;
+  author: string | null;
+  useCustomer?: boolean;
+  answer?: string;
+  daysAgo: number;
+}
+
+const QUESTION_SPECS: QuestionSpec[] = [
+  {
+    body: 'Does this come with batteries, or do I need to buy them separately?',
+    status: 'published',
+    author: 'Renee',
+    answer: 'Great question — two AA batteries are included in the box.',
+    daysAgo: 20,
+  },
+  { body: 'Is this dishwasher safe?', status: 'pending', author: 'Tom B.', daysAgo: 5 },
+  {
+    body: 'What does the warranty cover and how long is it?',
+    status: 'published',
+    author: null,
+    useCustomer: true,
+    answer: 'It carries a 1-year limited warranty covering manufacturing defects.',
+    daysAgo: 17,
+  },
+  {
+    body: 'Can I use this outdoors / is it weather resistant?',
+    status: 'pending',
+    author: 'Gabriela',
+    daysAgo: 3,
+  },
+  {
+    body: 'BUY FOLLOWERS cheap — click my profile',
+    status: 'rejected',
+    author: 'spammer',
+    daysAgo: 8,
+  },
+  {
+    body: 'Do you ship to Canada, and how long does it usually take?',
+    status: 'published',
+    author: 'Marc',
+    answer: 'Yes — we ship across North America; Canada is typically 7–12 business days.',
+    daysAgo: 13,
+  },
+  {
+    body: 'How big is it exactly? The dimensions aren’t in the description.',
+    status: 'pending',
+    author: null,
+    useCustomer: true,
+    daysAgo: 2,
+  },
+  {
+    body: 'Is a refill available to buy on its own later?',
+    status: 'pending',
+    author: 'Yusuf',
+    daysAgo: 1,
+  },
+];
+
+async function seedDemoCommerceOps(tenantId: string): Promise<void> {
+  await prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+
+    const products = await tx.product.findMany({
+      where: { tenantId, deletedAt: null },
+      include: { variants: { where: { deletedAt: null }, orderBy: { createdAt: 'asc' } } },
+      orderBy: { createdAt: 'asc' },
+      take: 30,
+    });
+    const catalog = products.filter((p) => p.variants.length > 0);
+    if (catalog.length === 0) {
+      console.warn('[seed] commerce-ops skipped: no products with variants');
+      return;
+    }
+    const owner = await tx.user.findFirst({ where: { tenantId, role: 'owner' } });
+    const customers = await tx.customer.findMany({
+      where: { tenantId },
+      orderBy: { createdAt: 'asc' },
+      take: 8,
+    });
+
+    // Verified-purchase linkage (wave 2): pull settled orders + their line
+    // items so customer-authored reviews can carry an orderId + be pinned to
+    // a product the reviewer actually bought (→ "Verified purchase" badge).
+    // Falls back gracefully when the orders seed hasn't run.
+    const settledOrders = await tx.order.findMany({
+      where: { tenantId, status: { in: ['delivered', 'fulfilled'] } },
+      include: {
+        items: { where: { productId: { not: null } }, take: 5, orderBy: { createdAt: 'asc' } },
+      },
+      orderBy: { placedAt: 'desc' },
+      take: 16,
+    });
+    const ordersByCustomer = new Map<string, typeof settledOrders>();
+    for (const o of settledOrders) {
+      const arr = ordersByCustomer.get(o.customerId) ?? [];
+      arr.push(o);
+      ordersByCustomer.set(o.customerId, arr);
+    }
+    // Customers who actually have a settled order — every customer-authored
+    // review pins to one of these (cycled), so each carries a real orderId →
+    // "Verified purchase". Falls back to any customer when none have orders.
+    const buyerCustomers =
+      ordersByCustomer.size > 0
+        ? await tx.customer.findMany({
+            where: { tenantId, id: { in: [...ordersByCustomer.keys()] } },
+          })
+        : [];
+    let buyerCursor = 0;
+
+    // Idempotent reset (FK cascades clear children: media/votes/log,
+    // components, options/rules/add-ons, rates, entries).
+    await tx.productReview.deleteMany({ where: { tenantId } });
+    await tx.productQuestion.deleteMany({ where: { tenantId } });
+    await tx.bundle.deleteMany({ where: { tenantId } });
+    await tx.configurationTemplate.deleteMany({ where: { tenantId } });
+    await tx.shippingRate.deleteMany({ where: { tenantId } });
+    await tx.shippingZone.deleteMany({ where: { tenantId } });
+    await tx.shippingProfile.deleteMany({ where: { tenantId } });
+    await tx.taxZone.deleteMany({ where: { tenantId } });
+    await tx.markupRule.deleteMany({ where: { tenantId } });
+    await tx.surchargeRule.deleteMany({ where: { tenantId } });
+    await tx.priceList.deleteMany({ where: { tenantId } });
+
+    // ── Reviews ──────────────────────────────────────────────────────
+    for (let i = 0; i < REVIEW_SPECS.length; i++) {
+      const s = REVIEW_SPECS[i]!;
+      const customer = !s.useCustomer
+        ? undefined
+        : buyerCustomers.length > 0
+          ? buyerCustomers[buyerCursor++ % buyerCustomers.length]!
+          : customers.length > 0
+            ? customers[i % customers.length]
+            : undefined;
+
+      // Verified purchase: if the chosen customer has a settled order, pin
+      // the review to a product they actually bought + carry the orderId.
+      let productId = catalog[i % catalog.length]!.id;
+      let orderId: string | null = null;
+      const custOrders = customer ? ordersByCustomer.get(customer.id) : undefined;
+      if (custOrders && custOrders.length > 0) {
+        const o = custOrders[i % custOrders.length]!;
+        const boughtProductId = o.items.find((it) => it.productId)?.productId;
+        if (boughtProductId) {
+          productId = boughtProductId;
+          orderId = o.id;
+        }
+      }
+
+      const moderated = s.status !== 'pending';
+      await tx.productReview.create({
+        data: {
+          tenantId,
+          productId,
+          orderId,
+          rating: s.rating,
+          title: s.title,
+          body: s.body,
+          status: s.status,
+          displayName: customer ? null : s.author,
+          customerId: customer?.id ?? null,
+          helpfulCount: s.helpful,
+          ...(moderated
+            ? {
+                moderatedAt: daysAgoDate(Math.max(s.daysAgo - 1, 0)),
+                moderatedBy: owner?.id ?? null,
+              }
+            : {}),
+          ...(s.response
+            ? {
+                response: s.response,
+                responseAuthorId: owner?.id ?? null,
+                respondedAt: daysAgoDate(Math.max(s.daysAgo - 2, 0)),
+              }
+            : {}),
+          createdAt: daysAgoDate(s.daysAgo),
+        },
+      });
+    }
+
+    // ── Q&A ──────────────────────────────────────────────────────────
+    for (let i = 0; i < QUESTION_SPECS.length; i++) {
+      const s = QUESTION_SPECS[i]!;
+      const product = catalog[i % catalog.length]!;
+      const customer =
+        s.useCustomer && customers.length > 0 ? customers[i % customers.length] : undefined;
+      const question = await tx.productQuestion.create({
+        data: {
+          tenantId,
+          productId: product.id,
+          body: s.body,
+          status: s.status,
+          displayName: customer ? null : s.author,
+          customerId: customer?.id ?? null,
+          createdAt: daysAgoDate(s.daysAgo),
+        },
+      });
+      if (s.answer) {
+        await tx.productAnswer.create({
+          data: {
+            tenantId,
+            questionId: question.id,
+            body: s.answer,
+            isOfficial: true,
+            authorUserId: owner?.id ?? null,
+            createdAt: daysAgoDate(Math.max(s.daysAgo - 1, 0)),
+          },
+        });
+      }
+    }
+
+    // ── Bundles ──────────────────────────────────────────────────────
+    // Use distinct products as wrappers; pull components from other products'
+    // first variants. Scales down gracefully on a thin catalog.
+    const bundlePlans = [
+      {
+        pricingMode: 'fixed',
+        fixedPriceCents: 4999,
+        percentOffSum: null,
+        inventoryMode: 'decrement_components',
+      },
+      {
+        pricingMode: 'percent_off_sum',
+        fixedPriceCents: null,
+        percentOffSum: 15,
+        inventoryMode: 'decrement_components',
+      },
+      {
+        pricingMode: 'sum_of_components',
+        fixedPriceCents: null,
+        percentOffSum: null,
+        inventoryMode: 'decrement_bundle_sku',
+      },
+    ];
+    for (let b = 0; b < bundlePlans.length && b < catalog.length; b++) {
+      const wrapper = catalog[b]!;
+      const componentProducts = catalog.filter((_, idx) => idx !== b).slice(0, 3);
+      if (componentProducts.length === 0) break;
+      const plan = bundlePlans[b]!;
+      const bundle = await tx.bundle.create({
+        data: {
+          tenantId,
+          bundleProductId: wrapper.id,
+          pricingMode: plan.pricingMode,
+          fixedPriceCents: plan.fixedPriceCents,
+          percentOffSum: plan.percentOffSum,
+          inventoryMode: plan.inventoryMode,
+        },
+      });
+      for (let c = 0; c < componentProducts.length; c++) {
+        await tx.bundleComponent.create({
+          data: {
+            tenantId,
+            bundleId: bundle.id,
+            variantId: componentProducts[c]!.variants[0]!.id,
+            defaultQuantity: c === 0 ? 2 : 1,
+            isRequired: c < 2,
+            isSwappable: c === 2,
+            position: c,
+          },
+        });
+      }
+    }
+
+    // ── Configurator ─────────────────────────────────────────────────
+    const configProduct = catalog[catalog.length - 1]!;
+    const template = await tx.configurationTemplate.create({
+      data: {
+        tenantId,
+        productId: configProduct.id,
+        name: `Build your ${configProduct.title}`,
+        description: 'Pick a size and finish; rules apply add-ons and price adjustments.',
+        status: 'active',
+        layout: { steps: [{ key: 'options', label: 'Options' }] },
+      },
+    });
+    await tx.configurationOption.create({
+      data: {
+        tenantId,
+        templateId: template.id,
+        key: 'size',
+        label: 'Size',
+        type: 'single_choice',
+        required: true,
+        defaultChoiceKeys: ['m'],
+        position: 0,
+        choices: [
+          { key: 's', label: 'Small', position: 0 },
+          { key: 'm', label: 'Medium', position: 1 },
+          { key: 'l', label: 'Large', position: 2 },
+          { key: 'xl', label: 'Extra Large', position: 3, priceDeltaCents: 300 },
+        ],
+      },
+    });
+    await tx.configurationOption.create({
+      data: {
+        tenantId,
+        templateId: template.id,
+        key: 'finish',
+        label: 'Finish',
+        type: 'color_swatch',
+        required: true,
+        defaultChoiceKeys: ['matte-black'],
+        position: 1,
+        choices: [
+          { key: 'matte-black', label: 'Matte Black', swatchHex: '#111111', position: 0 },
+          { key: 'silver', label: 'Brushed Silver', swatchHex: '#C0C0C0', position: 1 },
+          { key: 'navy', label: 'Navy', swatchHex: '#1e3a8a', position: 2 },
+        ],
+      },
+    });
+    await tx.configurationRule.create({
+      data: {
+        tenantId,
+        templateId: template.id,
+        name: 'XL upcharge',
+        match: 'all',
+        conditions: [{ optionKey: 'size', op: 'in', value: ['xl'] }],
+        actions: [{ kind: 'price_adjust', deltaCents: 300, label: 'XL size' }],
+        priority: 0,
+      },
+    });
+    await tx.configurationAddOn.create({
+      data: {
+        tenantId,
+        templateId: template.id,
+        variantId: configProduct.variants[0]!.id,
+        defaultIncluded: false,
+        priceOverrideCents: 500,
+        position: 0,
+      },
+    });
+
+    // ── Shipping ─────────────────────────────────────────────────────
+    const domesticZone = await tx.shippingZone.create({
+      data: { tenantId, name: 'Domestic (US)', priority: 0, targeting: { countries: ['US'] } },
+    });
+    const intlZone = await tx.shippingZone.create({
+      data: {
+        tenantId,
+        name: 'International',
+        priority: 1,
+        targeting: { countries: ['CA', 'GB', 'AU'] },
+      },
+    });
+    const stdProfile = await tx.shippingProfile.create({
+      data: {
+        tenantId,
+        name: 'Standard parcel',
+        description: 'Default profile for non-hazmat parcel shipments.',
+        allowedCarrierServices: [],
+        hazmatClassesAllowed: ['none'],
+        requiresSignature: false,
+        requiresFreight: false,
+      },
+    });
+    await tx.shippingRate.createMany({
+      data: [
+        {
+          tenantId,
+          zoneId: domesticZone.id,
+          profileId: stdProfile.id,
+          name: 'Standard',
+          type: 'flat',
+          amountCents: 599,
+          currency: 'USD',
+          carrier: 'usps',
+          estimatedDeliveryDays: 5,
+        },
+        {
+          tenantId,
+          zoneId: domesticZone.id,
+          profileId: stdProfile.id,
+          name: 'Free over $50',
+          type: 'free_above_threshold',
+          freeAboveCents: 5000,
+          currency: 'USD',
+          estimatedDeliveryDays: 5,
+        },
+        {
+          tenantId,
+          zoneId: domesticZone.id,
+          profileId: stdProfile.id,
+          name: 'Express',
+          type: 'flat',
+          amountCents: 1499,
+          currency: 'USD',
+          carrier: 'ups',
+          estimatedDeliveryDays: 2,
+        },
+        {
+          tenantId,
+          zoneId: intlZone.id,
+          profileId: stdProfile.id,
+          name: 'International flat',
+          type: 'flat',
+          amountCents: 2499,
+          currency: 'USD',
+          estimatedDeliveryDays: 12,
+        },
+      ],
+    });
+
+    // ── Tax ──────────────────────────────────────────────────────────
+    const taxZones = [
+      {
+        region: 'US-CA',
+        nexusType: 'physical',
+        name: 'California Sales Tax',
+        rateBasisPoints: 825,
+      },
+      { region: 'US-TX', nexusType: 'economic', name: 'Texas Sales Tax', rateBasisPoints: 625 },
+      { region: 'US-NY', nexusType: 'economic', name: 'New York Sales Tax', rateBasisPoints: 400 },
+    ];
+    for (const z of taxZones) {
+      const zone = await tx.taxZone.create({
+        data: { tenantId, country: 'US', region: z.region, nexusType: z.nexusType, isActive: true },
+      });
+      await tx.taxRate.create({
+        data: {
+          tenantId,
+          zoneId: zone.id,
+          name: z.name,
+          rateBasisPoints: z.rateBasisPoints,
+          appliesToShipping: false,
+        },
+      });
+    }
+
+    // ── Markup rules ─────────────────────────────────────────────────
+    await tx.markupRule.createMany({
+      data: [
+        {
+          tenantId,
+          name: 'Standard catalog markup',
+          method: 'percentage',
+          value: 40,
+          costBasis: 'variant_cost',
+          appliesTo: 'catalog',
+          priority: 0,
+          isActive: true,
+          recomputeMode: 'auto',
+        },
+        {
+          tenantId,
+          name: 'Premium line — 2× cost',
+          method: 'multiplier',
+          value: 2.0,
+          costBasis: 'variant_cost',
+          appliesTo: 'scope',
+          priority: 10,
+          isActive: true,
+          recomputeMode: 'auto',
+        },
+        {
+          tenantId,
+          name: 'Clearance — 15% margin target',
+          method: 'margin_target',
+          value: 15,
+          costBasis: 'variant_cost',
+          floorMargin: 10,
+          appliesTo: 'catalog',
+          priority: 5,
+          isActive: false,
+          recomputeMode: 'review',
+        },
+      ],
+    });
+
+    // ── Surcharge rules ──────────────────────────────────────────────
+    await tx.surchargeRule.createMany({
+      data: [
+        {
+          tenantId,
+          name: 'Card processing surcharge',
+          type: 'percentage',
+          value: 2.9,
+          basis: 'total',
+          paymentMethods: ['card'],
+          appliesTo: 'both',
+          label: 'Processing fee',
+          capCents: 1000,
+          isActive: true,
+        },
+        {
+          tenantId,
+          name: 'Small order handling',
+          type: 'flat',
+          value: 2.5,
+          basis: 'subtotal',
+          paymentMethods: ['card'],
+          appliesTo: 'checkout',
+          label: 'Handling fee',
+          isActive: false,
+        },
+      ],
+    });
+
+    // ── Wholesale price list ─────────────────────────────────────────
+    const priceList = await tx.priceList.create({
+      data: {
+        tenantId,
+        name: 'Wholesale tier',
+        description: 'B2B portal pricing for approved wholesale accounts.',
+        currency: 'USD',
+        channel: 'b2b_portal',
+        priority: 10,
+        status: 'active',
+      },
+    });
+    const entryVariants = catalog.flatMap((p) => p.variants).slice(0, 5);
+    for (let i = 0; i < entryVariants.length; i++) {
+      await tx.priceListEntry.create({
+        data: {
+          tenantId,
+          priceListId: priceList.id,
+          variantId: entryVariants[i]!.id,
+          percentOffList: i % 2 === 0 ? 20 : null,
+          fixedPriceCents: i % 2 === 0 ? null : 1999,
+          minQuantity: i % 2 === 0 ? 1 : 12,
+        },
+      });
+    }
+
+    console.log(
+      `[seed] commerce-ops: ${REVIEW_SPECS.length} reviews, ${QUESTION_SPECS.length} questions, bundles, configurator, shipping/tax, markup/surcharge, price list`
+    );
+  });
+}
+
+// ─── Demo fitment (wave 3) ──────────────────────────────────
+// Install the Vehicle dictionary tenant-scoped on the diesel tenant — the
+// SAME platform dictionary (@sparx/commerce-schemas FITMENT_DICTIONARIES) and
+// the SAME stamping codepath (planFitmentDictionaryRows) the dashboard install
+// uses, so the seeded tree and an installed tree are identical. There is no
+// platform-global Vehicle domain anymore; nothing fitment-shaped exists until a
+// tenant installs a dictionary. Then link the diesel catalog to vehicle fitment
+// rows (keyword → make/model/engine) via ProductFitment.
+
+// Catalog → vehicle fitment rules. Matched at runtime by a keyword in the
+// product title; absent item/variant widen the rule (fluids fit a whole
+// make). Years are the generation spans for each engine platform.
+interface FitmentRule {
+  keyword: string;
+  makeSlug: string;
+  modelSlug?: string;
+  engineSlug?: string;
+  yearMin: number;
+  yearMax: number;
+}
+const FITMENT_RULES: FitmentRule[] = [
+  {
+    keyword: '6.7L Power Stroke',
+    makeSlug: 'ford',
+    modelSlug: 'f-250-super-duty',
+    engineSlug: '6-7l-power-stroke',
+    yearMin: 2011,
+    yearMax: 2022,
+  },
+  {
+    keyword: '6.0L Power Stroke',
+    makeSlug: 'ford',
+    modelSlug: 'f-250-super-duty',
+    engineSlug: '6-0l-power-stroke',
+    yearMin: 2003,
+    yearMax: 2007,
+  },
+  {
+    keyword: '7.3L Power Stroke',
+    makeSlug: 'ford',
+    modelSlug: 'f-350-super-duty',
+    engineSlug: '7-3l-power-stroke',
+    yearMin: 1999,
+    yearMax: 2003,
+  },
+  {
+    keyword: '6.7L Cummins',
+    makeSlug: 'ram',
+    modelSlug: '2500',
+    engineSlug: '6-7l-cummins',
+    yearMin: 2007,
+    yearMax: 2018,
+  },
+  {
+    keyword: 'Duramax LML',
+    makeSlug: 'chevrolet',
+    modelSlug: 'silverado-2500hd',
+    engineSlug: '6-6l-duramax-lml',
+    yearMin: 2011,
+    yearMax: 2016,
+  },
+  {
+    keyword: '6.6L Duramax',
+    makeSlug: 'chevrolet',
+    modelSlug: 'silverado-2500hd',
+    engineSlug: '6-6l-duramax-l5p',
+    yearMin: 2017,
+    yearMax: 2024,
+  },
+  // Fluids / belts fit the whole make (category-only rule, no item/variant).
+  { keyword: 'Diesel Engine Oil', makeSlug: 'ford', yearMin: 1999, yearMax: 2024 },
+  { keyword: 'Coolant', makeSlug: 'ram', yearMin: 2003, yearMax: 2024 },
+];
+
+async function seedDemoFitment(tenantId: string): Promise<void> {
+  const vehicle = getFitmentDictionary('vehicle');
+  if (!vehicle) throw new Error('[seed] vehicle fitment dictionary missing');
+
+  await prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+
+    // Idempotent reset: drop this tenant's product links + fitment domains
+    // (cascades categories/items/variants). Nothing is global to clear.
+    await tx.productFitment.deleteMany({ where: { tenantId } });
+    await tx.fitmentDomain.deleteMany({ where: { tenantId } });
+
+    // Stamp the Vehicle dictionary as a tenant-scoped tree via the shared
+    // planner — identical to installFitmentDictionary's codepath.
+    const planned = planFitmentDictionaryRows(vehicle, tenantId, () => randomUUID());
+    await tx.fitmentDomain.create({
+      data: {
+        id: planned.domain.id,
+        tenantId,
+        slug: planned.domain.slug,
+        displayName: planned.domain.displayName,
+        description: planned.domain.description,
+        iconKey: planned.domain.iconKey,
+        labels: planned.domain.labels,
+        rangeUnit: planned.domain.rangeUnit,
+        position: planned.domain.position,
+      },
+    });
+    await tx.fitmentCategory.createMany({
+      data: planned.categories.map((c) => ({
+        id: c.id,
+        tenantId,
+        domainId: c.domainId,
+        name: c.name,
+        slug: c.slug,
+        attributes: c.attributes,
+        position: c.position,
+      })),
+    });
+    await tx.fitmentItem.createMany({
+      data: planned.items.map((i) => ({
+        id: i.id,
+        tenantId,
+        categoryId: i.categoryId,
+        name: i.name,
+        slug: i.slug,
+        attributes: i.attributes,
+        position: i.position,
+      })),
+    });
+    await tx.fitmentVariant.createMany({
+      data: planned.variants.map((v) => ({
+        id: v.id,
+        tenantId,
+        itemId: v.itemId,
+        name: v.name,
+        slug: v.slug,
+        attributes: v.attributes,
+        position: v.position,
+      })),
+    });
+
+    // Link the diesel catalog to vehicle fitment by title keyword. Scope to the
+    // inventory demo products so stray test products don't pick up fitment.
+    const inventoryProducts = await tx.product.findMany({
+      where: { tenantId, deletedAt: null, metadata: { path: ['demo'], equals: 'inventory' } },
+      select: { id: true, title: true },
+    });
+    const products =
+      inventoryProducts.length > 0
+        ? inventoryProducts
+        : await tx.product.findMany({
+            where: { tenantId, deletedAt: null },
+            select: { id: true, title: true },
+          });
+
+    let linkCount = 0;
+    for (const product of products) {
+      for (const rule of FITMENT_RULES) {
+        if (!product.title.includes(rule.keyword)) continue;
+        const categoryId = planned.index.categoryIdBySlug[rule.makeSlug];
+        if (!categoryId) continue;
+        const itemId = rule.modelSlug
+          ? (planned.index.itemIdByKey[`${rule.makeSlug}/${rule.modelSlug}`] ?? null)
+          : null;
+        const variantId =
+          rule.modelSlug && rule.engineSlug
+            ? (planned.index.variantIdByKey[
+                `${rule.makeSlug}/${rule.modelSlug}/${rule.engineSlug}`
+              ] ?? null)
+            : null;
+        await tx.productFitment.create({
+          data: {
+            tenantId,
+            productId: product.id,
+            domainId: planned.index.domainId,
+            categoryId,
+            itemId,
+            variantId,
+            rangeMin: rule.yearMin,
+            rangeMax: rule.yearMax,
+            notes: itemId
+              ? null
+              : `Universal fit across all ${rule.makeSlug.toUpperCase()} diesel platforms`,
+          },
+        });
+        linkCount += 1;
+      }
+    }
+
+    console.log(
+      `[seed] fitment: installed Vehicle dictionary (${planned.categories.length} makes, ${planned.variants.length} engines), ${linkCount} product links`
+    );
+  });
+}
+
+// ─── Demo orders + returns (wave 2) ───────────────────────────────────
+// A retail customer → order → line-item → return chain off the seeded
+// catalog so the Orders, Returns, and Customers surfaces show real data —
+// and so reviews can be Verified purchases (seedDemoCommerceOps reads these
+// back). Orders span the lifecycle (placed/fulfilled/delivered/cancelled/
+// refunded); returns span requested→approved→received→inspecting→refunded
+// with inspections + a shipping label on the settled ones. Denormalized
+// customer stats (totalSpent/orderCount/…) are computed here because no
+// order-event consumer runs against a seed DB — without it the CRM list
+// reads zeros. Idempotent: clears prior demo orders + all returns, recreates.
+interface OrderCustomerSpec {
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  line1: string;
+  city: string;
+  region: string;
+  postalCode: string;
+}
+const ORDER_CUSTOMERS: OrderCustomerSpec[] = [
+  {
+    email: 'marcus.bell@fleetlogix.example',
+    firstName: 'Marcus',
+    lastName: 'Bell',
+    phone: '+1-208-555-0142',
+    line1: '1840 Industrial Pkwy',
+    city: 'Boise',
+    region: 'ID',
+    postalCode: '83702',
+  },
+  {
+    email: 'dana.whitfield@example.com',
+    firstName: 'Dana',
+    lastName: 'Whitfield',
+    phone: '+1-509-555-0188',
+    line1: '67 Cedar Hollow Rd',
+    city: 'Spokane',
+    region: 'WA',
+    postalCode: '99201',
+  },
+  {
+    email: 'rafael.ortiz@haulpro.example',
+    firstName: 'Rafael',
+    lastName: 'Ortiz',
+    phone: '+1-505-555-0119',
+    line1: '2204 Mesa Verde Blvd',
+    city: 'Albuquerque',
+    region: 'NM',
+    postalCode: '87102',
+  },
+  {
+    email: 'priya.nair@example.com',
+    firstName: 'Priya',
+    lastName: 'Nair',
+    phone: '+1-512-555-0173',
+    line1: '915 Lakeline Dr',
+    city: 'Austin',
+    region: 'TX',
+    postalCode: '78717',
+  },
+  {
+    email: 'glen.hartman@summitfreight.example',
+    firstName: 'Glen',
+    lastName: 'Hartman',
+    phone: '+1-701-555-0156',
+    line1: '430 Prairie Ridge Ave',
+    city: 'Fargo',
+    region: 'ND',
+    postalCode: '58103',
+  },
+  {
+    email: 'tessa.boone@example.com',
+    firstName: 'Tessa',
+    lastName: 'Boone',
+    phone: '+1-615-555-0124',
+    line1: '78 Riverbend Ct',
+    city: 'Nashville',
+    region: 'TN',
+    postalCode: '37209',
+  },
+];
+
+interface OrderSpec {
+  customerIdx: number;
+  status: string;
+  paymentStatus: string;
+  daysAgo: number;
+  lineCount: number;
+  shipFlat: number;
+}
+// Lifecycle spread; the delivered/fulfilled ones (≥1 per buyer) back the
+// returns + verified reviews.
+const ORDER_SPECS: OrderSpec[] = [
+  {
+    customerIdx: 0,
+    status: 'delivered',
+    paymentStatus: 'paid',
+    daysAgo: 34,
+    lineCount: 2,
+    shipFlat: 14.5,
+  },
+  {
+    customerIdx: 0,
+    status: 'delivered',
+    paymentStatus: 'paid',
+    daysAgo: 12,
+    lineCount: 1,
+    shipFlat: 9.95,
+  },
+  {
+    customerIdx: 1,
+    status: 'delivered',
+    paymentStatus: 'paid',
+    daysAgo: 27,
+    lineCount: 3,
+    shipFlat: 0,
+  },
+  {
+    customerIdx: 2,
+    status: 'delivered',
+    paymentStatus: 'paid',
+    daysAgo: 19,
+    lineCount: 2,
+    shipFlat: 14.5,
+  },
+  {
+    customerIdx: 3,
+    status: 'fulfilled',
+    paymentStatus: 'paid',
+    daysAgo: 6,
+    lineCount: 2,
+    shipFlat: 14.5,
+  },
+  {
+    customerIdx: 4,
+    status: 'fulfilled',
+    paymentStatus: 'paid',
+    daysAgo: 4,
+    lineCount: 1,
+    shipFlat: 9.95,
+  },
+  {
+    customerIdx: 5,
+    status: 'placed',
+    paymentStatus: 'paid',
+    daysAgo: 2,
+    lineCount: 2,
+    shipFlat: 14.5,
+  },
+  {
+    customerIdx: 1,
+    status: 'placed',
+    paymentStatus: 'unpaid',
+    daysAgo: 1,
+    lineCount: 1,
+    shipFlat: 9.95,
+  },
+  {
+    customerIdx: 2,
+    status: 'cancelled',
+    paymentStatus: 'unpaid',
+    daysAgo: 9,
+    lineCount: 2,
+    shipFlat: 14.5,
+  },
+  {
+    customerIdx: 3,
+    status: 'refunded',
+    paymentStatus: 'refunded',
+    daysAgo: 22,
+    lineCount: 1,
+    shipFlat: 9.95,
+  },
+];
+
+interface ReturnSpec {
+  orderIdx: number;
+  status: string;
+  preferredOutcome: string;
+  requestedBy: string;
+  reasonCode: string;
+  daysAgo: number;
+  refund?: { restockingFeeCents: number; issuedAs: string };
+  inspection?: { condition: string; restockable: boolean; note: string };
+  label?: { provider: string; tracking: string };
+}
+const RETURN_SPECS: ReturnSpec[] = [
+  {
+    orderIdx: 0,
+    status: 'requested',
+    preferredOutcome: 'refund',
+    requestedBy: 'customer',
+    reasonCode: 'wrong_item',
+    daysAgo: 5,
+  },
+  {
+    orderIdx: 2,
+    status: 'approved',
+    preferredOutcome: 'exchange',
+    requestedBy: 'customer',
+    reasonCode: 'defective',
+    daysAgo: 8,
+    label: { provider: 'ups', tracking: '1Z999AA10123456784' },
+  },
+  {
+    orderIdx: 3,
+    status: 'received',
+    preferredOutcome: 'refund',
+    requestedBy: 'customer',
+    reasonCode: 'not_as_described',
+    daysAgo: 11,
+    label: { provider: 'fedex', tracking: '7712 3456 7890' },
+  },
+  {
+    orderIdx: 1,
+    status: 'inspecting',
+    preferredOutcome: 'account_credit',
+    requestedBy: 'staff',
+    reasonCode: 'damaged_in_transit',
+    daysAgo: 6,
+    inspection: {
+      condition: 'damaged',
+      restockable: false,
+      note: 'Housing cracked in transit; not resellable.',
+    },
+  },
+  {
+    orderIdx: 0,
+    status: 'refunded',
+    preferredOutcome: 'refund',
+    requestedBy: 'customer',
+    reasonCode: 'no_longer_needed',
+    daysAgo: 30,
+    refund: { restockingFeeCents: 500, issuedAs: 'original_payment' },
+    inspection: {
+      condition: 'unopened',
+      restockable: true,
+      note: 'Sealed, returned to MAIN stock.',
+    },
+  },
+];
+
+async function seedDemoOrders(tenantId: string): Promise<void> {
+  await prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+
+    // Prefer the coherent diesel inventory catalog (metadata.demo='inventory')
+    // so orders read as a real auto-parts shop's; fall back to the broad
+    // catalog only if the inventory seed hasn't populated it.
+    const inventoryProducts = await tx.product.findMany({
+      where: { tenantId, deletedAt: null, metadata: { path: ['demo'], equals: 'inventory' } },
+      include: { variants: { where: { deletedAt: null }, orderBy: { createdAt: 'asc' } } },
+      orderBy: { createdAt: 'asc' },
+    });
+    const broadProducts =
+      inventoryProducts.length > 0
+        ? inventoryProducts
+        : await tx.product.findMany({
+            where: { tenantId, deletedAt: null },
+            include: { variants: { where: { deletedAt: null }, orderBy: { createdAt: 'asc' } } },
+            orderBy: { createdAt: 'asc' },
+            take: 30,
+          });
+    const catalog = broadProducts.filter((p) => p.variants.length > 0);
+    if (catalog.length === 0) {
+      console.warn('[seed] orders skipped: no products with variants');
+      return;
+    }
+    const property = await tx.property.findFirst({
+      where: { tenantId, isPrimary: true },
+      select: { id: true },
+    });
+    const propertyId = property?.id ?? null;
+    const round2 = (n: number): number => Math.round(n * 100) / 100;
+    const TAX_RATE = 0.0825;
+
+    // Idempotent reset: all returns (cascades line items/inspections/labels),
+    // then this seed's orders (metadata marker; cascades order items).
+    await tx.returnRequest.deleteMany({ where: { tenantId } });
+    await tx.order.deleteMany({
+      where: { tenantId, metadata: { path: ['source'], equals: 'orders-demo' } },
+    });
+
+    // Customers + a default address (find-or-create by email; idempotent).
+    const customerIds: string[] = [];
+    for (const c of ORDER_CUSTOMERS) {
+      let customer = await tx.customer.findFirst({
+        where: { email: c.email },
+        select: { id: true },
+      });
+      customer ??= await tx.customer.create({
+        data: {
+          tenantId,
+          propertyId,
+          type: 'retail',
+          email: c.email,
+          firstName: c.firstName,
+          lastName: c.lastName,
+          phone: c.phone,
+          metadata: { source: 'orders-demo' },
+        },
+        select: { id: true },
+      });
+      customerIds.push(customer.id);
+      const hasAddress = await tx.customerAddress.findFirst({
+        where: { customerId: customer.id },
+        select: { id: true },
+      });
+      if (!hasAddress) {
+        await tx.customerAddress.create({
+          data: {
+            tenantId,
+            customerId: customer.id,
+            type: 'both',
+            isDefault: true,
+            recipientName: `${c.firstName} ${c.lastName}`,
+            line1: c.line1,
+            city: c.city,
+            region: c.region,
+            postalCode: c.postalCode,
+            country: 'US',
+            phone: c.phone,
+          },
+        });
+      }
+    }
+
+    // Orders + line items.
+    interface CreatedOrder {
+      id: string;
+      customerId: string;
+      status: string;
+      total: number;
+      placedAt: Date;
+      itemIds: { id: string; productId: string | null; name: string }[];
+    }
+    const created: CreatedOrder[] = [];
+    for (let i = 0; i < ORDER_SPECS.length; i++) {
+      const spec = ORDER_SPECS[i]!;
+      const customerIdx = spec.customerIdx % customerIds.length;
+      const customerId = customerIds[customerIdx]!;
+      const cust = ORDER_CUSTOMERS[customerIdx]!;
+      const placedAt = daysAgoDate(spec.daysAgo);
+
+      const lines = Array.from({ length: spec.lineCount }, (_, j) => {
+        const product = catalog[(i + j) % catalog.length]!;
+        const variant = product.variants[0]!;
+        const quantity = ((i + j) % 2) + 1;
+        const unitPrice = round2(variant.priceCents / 100);
+        const lineSubtotal = round2(unitPrice * quantity);
+        const taxAmount = round2(lineSubtotal * TAX_RATE);
+        return {
+          productId: product.id,
+          variantId: variant.id,
+          sku: variant.sku,
+          name: variant.title ? `${product.title} — ${variant.title}` : product.title,
+          quantity,
+          unitPrice,
+          lineSubtotal,
+          taxAmount,
+          lineTotal: round2(lineSubtotal + taxAmount),
+        };
+      });
+
+      const subtotal = round2(lines.reduce((s, l) => s + l.lineSubtotal, 0));
+      const taxTotal = round2(lines.reduce((s, l) => s + l.taxAmount, 0));
+      const total = round2(subtotal + taxTotal + spec.shipFlat);
+      const paid = spec.paymentStatus === 'paid';
+      const refunded = spec.status === 'refunded';
+      const fulfilledStates = ['fulfilled', 'delivered'];
+      const shippingAddress = {
+        recipientName: `${cust.firstName} ${cust.lastName}`,
+        line1: cust.line1,
+        city: cust.city,
+        region: cust.region,
+        postalCode: cust.postalCode,
+        country: 'US',
+      };
+
+      const order = await tx.order.create({
+        data: {
+          tenantId,
+          customerId,
+          propertyId,
+          orderNumber: `SO-${1001 + i}`,
+          status: spec.status,
+          paymentStatus: spec.paymentStatus,
+          channel: 'storefront',
+          source: 'sparx_market',
+          subtotal,
+          taxTotal,
+          shippingTotal: spec.shipFlat,
+          total,
+          amountPaid: paid ? total : 0,
+          refundTotal: refunded ? total : 0,
+          currency: 'USD',
+          shippingAddress,
+          billingAddress: shippingAddress,
+          placedAt,
+          paidAt: paid ? placedAt : null,
+          fulfilledAt: fulfilledStates.includes(spec.status) ? daysAgoDate(spec.daysAgo - 1) : null,
+          deliveredAt: spec.status === 'delivered' ? daysAgoDate(spec.daysAgo - 3) : null,
+          cancelledAt: spec.status === 'cancelled' ? daysAgoDate(spec.daysAgo - 1) : null,
+          cancelledReason: spec.status === 'cancelled' ? 'Customer changed order' : null,
+          refundedAt: refunded ? daysAgoDate(spec.daysAgo - 2) : null,
+          metadata: { source: 'orders-demo' },
+          createdAt: placedAt,
+          items: {
+            create: lines.map((l) => ({
+              tenantId,
+              productId: l.productId,
+              variantId: l.variantId,
+              sku: l.sku,
+              name: l.name,
+              quantity: l.quantity,
+              unitPrice: l.unitPrice,
+              lineSubtotal: l.lineSubtotal,
+              taxAmount: l.taxAmount,
+              lineTotal: l.lineTotal,
+              quantityFulfilled: fulfilledStates.includes(spec.status) ? l.quantity : 0,
+            })),
+          },
+        },
+        select: { id: true, items: { select: { id: true, productId: true, name: true } } },
+      });
+      created.push({
+        id: order.id,
+        customerId,
+        status: spec.status,
+        total,
+        placedAt,
+        itemIds: order.items,
+      });
+    }
+
+    // Denormalized customer stats from settled (paid, non-cancelled) orders.
+    for (const customerId of customerIds) {
+      const own = created.filter(
+        (o) => o.customerId === customerId && o.status !== 'cancelled' && o.status !== 'refunded'
+      );
+      if (own.length === 0) continue;
+      const totalSpent = round2(own.reduce((s, o) => s + o.total, 0));
+      const dates = own.map((o) => o.placedAt).sort((a, b) => a.getTime() - b.getTime());
+      await tx.customer.update({
+        where: { id: customerId },
+        data: {
+          orderCount: own.length,
+          totalSpent,
+          firstOrderAt: dates[0],
+          lastOrderAt: dates[dates.length - 1],
+        },
+      });
+    }
+
+    // Returns referencing real orders + order items.
+    const owner = await tx.user.findFirst({ where: { tenantId, role: 'owner' } });
+    let returnCount = 0;
+    for (const spec of RETURN_SPECS) {
+      const order = created[spec.orderIdx];
+      if (!order || order.itemIds.length === 0) continue;
+      const line = order.itemIds[0]!;
+      const settled = spec.status === 'refunded';
+      const approvedStates = ['approved', 'received', 'inspecting', 'inspected', 'refunded'];
+      const isApproved = approvedStates.includes(spec.status);
+      const requestedAt = daysAgoDate(spec.daysAgo);
+      const lineUnitCents = Math.round((order.total / Math.max(order.itemIds.length, 1)) * 100);
+
+      const ret = await tx.returnRequest.create({
+        data: {
+          tenantId,
+          orderId: order.id,
+          requestedBy: spec.requestedBy,
+          status: spec.status,
+          preferredOutcome: spec.preferredOutcome,
+          staffNote:
+            spec.requestedBy === 'staff' ? 'Opened by support after the customer called in.' : null,
+          ...(settled
+            ? {
+                refundedAmountCents: Math.max(
+                  lineUnitCents - (spec.refund?.restockingFeeCents ?? 0),
+                  0
+                ),
+                restockingFeeCents: spec.refund?.restockingFeeCents ?? 0,
+                refundIssuedAs: spec.refund?.issuedAs ?? 'original_payment',
+                refundedAt: daysAgoDate(spec.daysAgo - 4),
+              }
+            : {}),
+          ...(isApproved
+            ? { approvedBy: owner?.id ?? null, approvedAt: daysAgoDate(spec.daysAgo - 1) }
+            : {}),
+          ...(['received', 'inspecting', 'inspected', 'refunded'].includes(spec.status)
+            ? { receivedAt: daysAgoDate(spec.daysAgo - 2) }
+            : {}),
+          createdAt: requestedAt,
+          items: {
+            create: [
+              {
+                tenantId,
+                orderItemId: line.id,
+                quantity: 1,
+                approvedQuantity: isApproved ? 1 : 0,
+                reasonCode: spec.reasonCode,
+                customerNote: 'Please advise on next steps — thanks.',
+              },
+            ],
+          },
+        },
+        select: { id: true, items: { select: { id: true } } },
+      });
+
+      if (spec.inspection && ret.items[0]) {
+        await tx.returnInspection.create({
+          data: {
+            tenantId,
+            returnId: ret.id,
+            returnLineItemId: ret.items[0].id,
+            condition: spec.inspection.condition,
+            restockable: spec.inspection.restockable,
+            note: spec.inspection.note,
+            inspectedBy: owner?.id ?? null,
+            createdAt: daysAgoDate(spec.daysAgo - 3),
+          },
+        });
+      }
+      if (spec.label) {
+        await tx.returnLabel.create({
+          data: {
+            tenantId,
+            returnId: ret.id,
+            providerSlug: spec.label.provider,
+            labelRef: `RMA-${order.id.slice(0, 8)}`,
+            trackingNumber: spec.label.tracking,
+            costCents: 895,
+            createdAt: daysAgoDate(spec.daysAgo - 1),
+          },
+        });
+      }
+      returnCount += 1;
+    }
+
+    console.log(
+      `[seed] orders: ${ORDER_CUSTOMERS.length} retail customers, ${created.length} orders, ${returnCount} returns`
+    );
+  });
+}
+
 async function main(): Promise<void> {
   // tenants has no RLS — safe to upsert outside a tenant context. Default
   // settings (incl. the module activation registry read by
@@ -2259,6 +3671,40 @@ async function main(): Promise<void> {
   } catch (err) {
     console.warn(
       `[seed] demo inventory seed skipped: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
+
+  // Demo fitment (docs/105 wave 2) — populates the global Vehicle hierarchy +
+  // tenant Device/Pet/Apparel domains, then links the catalog. Runs after the
+  // inventory catalog (needs products) and before commerce-ops. Idempotent.
+  try {
+    await seedDemoFitment(tenant.id);
+  } catch (err) {
+    console.warn(
+      `[seed] demo fitment seed skipped: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
+
+  // Demo orders + returns (docs/105 wave 2) — retail customers → orders → line
+  // items → returns off the catalog. Runs before commerce-ops so reviews can
+  // link a settled order (Verified purchase). Idempotent.
+  try {
+    await seedDemoOrders(tenant.id);
+  } catch (err) {
+    console.warn(
+      `[seed] demo orders seed skipped: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
+
+  // Demo commerce operations (reviews, Q&A, bundles, configurator, shipping/tax
+  // config, markup/surcharge rules, wholesale price list) hung off the inventory
+  // catalog so the moderation queues + pricing/shipping surfaces show real data.
+  // Idempotent; wrapped so a hiccup never blocks the rest of the seed.
+  try {
+    await seedDemoCommerceOps(tenant.id);
+  } catch (err) {
+    console.warn(
+      `[seed] demo commerce-ops seed skipped: ${err instanceof Error ? err.message : String(err)}`
     );
   }
 

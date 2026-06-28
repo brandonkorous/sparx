@@ -1,8 +1,8 @@
 # Form & Modal Surface Inventory
 
-Version: 1.14
+Version: 1.16
 Author: Brandon Korous
-Last Updated: 2026-06-26
+Last Updated: 2026-06-27
 
 A complete census of every **form, create/edit flow, and modal/dialog** in the dashboard app
 (`apps/dashboard/app`), with each one's current presentation and the work needed to bring it onto
@@ -84,13 +84,13 @@ Walk these in order — each is `[ ] open → assess → focused fix → verify`
 | 7   | Returns `/commerce/returns/[id]`                            | `return-refund-form`, `return-approval-form`, `return-inspection-form`, `return-status-bar`                                                                      | reviewed — status badge → `returnTone`; 4× danger-text → `variant`; raw `select`→`NativeSelect`; 2 raw checkboxes → themed; action cards → `variant="module"`                                                                  | UI **8** / UX **8** ✅ |
 | 8   | Reviews `/commerce/reviews` + `/[id]`                       | list + detail + `respond-form` + `moderate-actions`                                                                                                              | **FULL REMEDIATION** — queue showed product GUIDs + empty titles, no search, no bulk. BE: product-title joins on queue/detail, `q` search, bulk-moderate endpoints. FE: empty-title fallback, product links, search, bulk bar. | UI **8** / UX **8** ✅ |
 | 9   | Q&A `/commerce/qa` + `/[id]`                                | list + detail + `answer-form` + `question-moderate-actions`                                                                                                      | **FULL REMEDIATION** — same gaps as Reviews (shared service/shape): product-title joins, `q` search, bulk-moderate. FE: product links, search, bulk bar.                                                                       | UI **8** / UX **8** ✅ |
-| 10  | Shipping `/commerce/shipping/zones/[id]` + `/profiles/[id]` | `new-rate-form` (add rate) + profile detail                                                                                                                      | inline add-row → standardize (collapsible / module-card)                                                                                                                                                                       | —                      |
-| 11  | Tax `/commerce/tax/zones/[id]`                              | `new-tax-rate-form` (add rate)                                                                                                                                   | inline add-row → standardize                                                                                                                                                                                                   | —                      |
-| 12  | Markup rules `/commerce/markup-rules`                       | `RuleForm` (expand-in-place)                                                                                                                                     | inline → overlay or module-card                                                                                                                                                                                                | —                      |
-| 13  | Surcharges `/commerce/surcharges`                           | `RuleForm`                                                                                                                                                       | same move as markup rules                                                                                                                                                                                                      | —                      |
-| 14  | Fitment `/commerce/fitment`                                 | `fitment-reference-editor` add-rows                                                                                                                              | standardize the add-forms                                                                                                                                                                                                      | —                      |
-| 15  | Providers `/commerce/providers/[id]`                        | `provider-actions-bar`                                                                                                                                           | minor — confirm → `useConfirm`                                                                                                                                                                                                 | —                      |
-| 16  | Bulk pricing `/commerce/products/pricing`                   | `bulk-pricing-tool`                                                                                                                                              | design call — page vs overlay                                                                                                                                                                                                  | —                      |
+| 10  | Shipping `/commerce/shipping/zones/[id]` + `/profiles/[id]` | `new-rate-form` (add rate) + profile detail                                                                                                                      | reviewed — 2 raw `select`→`NativeSelect`; danger-text→`variant`; "Manual rates" action card→`variant="module"`                                                                                                                 | UI **8** / UX **8** ✅ |
+| 11  | Tax `/commerce/tax/zones/[id]`                              | `new-tax-rate-form` (add rate)                                                                                                                                   | reviewed — danger-text→`variant`; action card→`variant="module"`; surfaced unused `isActive` as `statusTone` badge                                                                                                             | UI **8** / UX **8** ✅ |
+| 12  | Markup rules `/commerce/markup-rules`                       | `RuleForm` (expand-in-place)                                                                                                                                     | reviewed — already excellent (NativeSelect, live preview, `useConfirm`); status badge→`statusTone` soft; themed checkbox                                                                                                       | UI **9** / UX **9** ✅ |
+| 13  | Surcharges `/commerce/surcharges`                           | `RuleForm`                                                                                                                                                       | reviewed — same polish as markup; status badge→`statusTone` soft; themed checkbox                                                                                                                                              | UI **9** / UX **9** ✅ |
+| 14  | Fitment `/commerce/fitment`                                 | `fitment-reference-editor` add-rows                                                                                                                              | reviewed — clean lazy tree; fixed 4× `color="outline"` no-op global/tenant badges + `text-xs`→`size` sweep                                                                                                                     | UI **8** / UX **8** ✅ |
+| 15  | Providers `/commerce/providers/[id]`                        | `provider-actions-bar`                                                                                                                                           | reviewed — `useConfirm` already in place (note was stale); hand-rolled muted `<span>`→`<Text>`                                                                                                                                 | UI **8** / UX **8** ✅ |
+| 16  | Bulk pricing `/commerce/products/pricing`                   | `bulk-pricing-tool`                                                                                                                                              | reviewed — excellent tool; **page is the right shell** (preview table + scope pickers); themed picker checkbox                                                                                                                 | UI **9** / UX **9** ✅ |
 
 Skip (read-only or correct as-is): carts, checkout-sessions, wishlists, reports, subscriptions detail,
 settings, import/export dialogs, delete confirms, bulk-price-adjust modal.
@@ -287,6 +287,43 @@ system-fidelity, now fixed.
     migrated.
 - **UI 8 · UX 8.** Verified via typecheck/lint (every fix is a proven platform pattern); on-screen pass
   pending a seeded return in each gated status.
+
+### Reviews + Q&A — verified on screen (2026-06-27)
+
+After the full remediation + the commerce-ops seed, the Reviews queue was confirmed live: **product
+names resolve** (no GUIDs), the **empty-title fallback** renders body snippets, **search** + **bulk
+selection** are present, and the **bulk bar** (Approve/Flag/Reject/Delete) slides up on selection. Q&A
+shares the identical components. Closes the on-screen gap that empty seed data had blocked.
+
+### Rows 10–16 — Shipping · Tax · Markup · Surcharges · Fitment · Providers · Bulk pricing (2026-06-27)
+
+Consolidated pass (we're in the fix stage, not the documentation stage). The back half of the commerce
+walk-through was **higher quality than the front half** — the rule managers + bulk-pricing tool are
+already exemplary (NativeSelect, `useConfirm`, live previews, `variant`-typed errors). Fixes were
+mostly the recurring platform nits:
+
+- **Re-skinned `<select>`** → `NativeSelect` (shipping add-rate, 2×).
+- **`className="text-[var(--color-danger)]"` errors** → `<Text variant="danger" role="alert">` (shipping + tax add-rate forms).
+- **Status badges** → `statusTone`/semantic-soft (markup + surcharge Active/Paused/Off; new tax-zone `isActive` badge).
+- **`color="outline"` no-op** (a variant passed as a color → silent grey) fixed on fitment's 4 global/tenant badges; `text-xs`→`size` sweep there.
+- **Module-card cleanup** — shipping + tax "Manual rates" action cards wear `variant="module"`.
+- **Themed checkboxes** (`color="module"`) on the markup/surcharge/bulk-pricing pickers.
+- **Hand-rolled muted `<span>`** → `<Text>` (provider test-result readout). Providers' `useConfirm` was already in place (the walk-through note was stale).
+- **Design calls settled:** bulk-pricing **stays a full page** (preview table + scope pickers earn it); the inline add-rate rows **stay inline** (lightweight, consistent with returns).
+- **typecheck 0 · lint 0 errors · prettier clean.** Scores: Shipping/Tax/Fitment/Providers UI 8·UX 8; Markup/Surcharges/Bulk-pricing UI 9·UX 9. **Commerce walk-through (rows 1–16) COMPLETE.**
+
+### Seed wave 2 — fitment + orders/returns, and two bugs it exposed (2026-06-27)
+
+Seeded the surfaces that wave 1 left empty so they could be eyes-on verified (`packages/db/prisma/seed.ts`):
+
+- **`seedDemoFitment`** — populates the platform-**global Vehicle** domain (Ford/RAM/Chevrolet → models → engines + Year) so it stops showing an empty tree, adds tenant **Device/Pet/Apparel** domains (exercises the 1/2/3-level generalized model), and links the diesel catalog via `ProductFitment`.
+- **`seedDemoOrders`** — retail customers + addresses → orders (full lifecycle: placed/fulfilled/delivered/cancelled/refunded) → line items → **returns** (requested→approved→received→inspecting→refunded, with inspections + shipping labels). Computes denormalized customer stats (no order-event consumer runs against a seed DB). Scoped to the coherent diesel inventory catalog so totals read like a real parts shop.
+- **Verified-purchase reviews** — customer-authored reviews now pin to a settled order → "Verified purchase" badge.
+
+Two real bugs surfaced **because** the data finally existed (exactly the point of seeding) — both fixed:
+
+- 🐞 **Fitment was missing from the commerce sidebar.** `/commerce/fitment` is a full first-class surface but had no nav entry — reachable only by typing the URL. Added `{ id: 'fitment', label: 'Fitment', icon: Boxes }` to `packages/commerce/src/manifest.ts` (between Collections and Pricing).
+- 🐞 **Global Vehicle domain's categories 400'd — the tree was never browsable.** The seeded global domain uses a sentinel id `00000000-0000-0000-0000-000000000001` (set by the fitment migration) whose version/variant bits are zero: a valid Postgres `uuid` that **Zod 4's strict `.uuid()` (RFC-9562) rejects**. So `GET /v1/commerce/fitment/domains/:domainId/categories` failed request validation and the editor silently rendered an empty domain under a "3 makes" badge. Pre-existing latent bug — invisible only because the domain had no categories before. Fixed by accepting the UUID **shape** (`z.guid()`) for fitment reference ids in `services/api-rest/.../commerce/fitment.ts` (path params) + `packages/commerce-schemas/src/fitment.ts` (input ids); product / product-fitment ids stay strict `.uuid()`. Verified on screen: Vehicle → Ford → F-250 → 6.7L/6.0L Power Stroke now renders end to end.
 
 ### Platform gaps surfaced (fix once, on the primitive)
 

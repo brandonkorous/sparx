@@ -23,14 +23,18 @@
 // The `labels` jsonb on FitmentDomain renames the level headers in the
 // dashboard + storefront filter UI — same code, merchant-appropriate copy.
 //
-// Sparx seeds Vehicle as a global domain (tenantId IS NULL); tenants
-// can extend within it (custom modifications, racing builds) and add
-// their own domains entirely (a fishing-tackle store builds a "Species"
-// domain, a phone-case shop builds a "Device" domain, etc.).
+// Every fitment row is tenant-scoped — there is NO platform-global domain.
+// The platform ships a LIBRARY of installable "fitment dictionaries"
+// (packages/commerce-schemas/src/fitment-dictionaries.ts, a 🟣 starter-config
+// brick per docs/104); a tenant installs one as their own tenant-scoped copy
+// when relevant (a vehicle-parts shop installs Vehicle, a phone-case shop
+// installs Device). Nothing fitment-shaped shows by default, so the platform
+// never reads as auto-parts software. All four reference tables are
+// tenant_id NOT NULL + FORCE RLS, like every other tenant table.
 
 model FitmentDomain {
   id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId    String? @map("tenant_id") @db.Uuid // null = platform-seeded global
+  tenantId    String  @map("tenant_id") @db.Uuid
   slug        String  @db.VarChar(63)
   displayName String  @map("display_name") @db.VarChar(127)
   description String? @db.Text
@@ -49,7 +53,7 @@ model FitmentDomain {
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz
 
-  tenant     Tenant?           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant     Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   categories FitmentCategory[]
   fitments   ProductFitment[]
 
@@ -60,7 +64,7 @@ model FitmentDomain {
 
 model FitmentCategory {
   id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId    String? @map("tenant_id") @db.Uuid // null = platform-seeded
+  tenantId    String  @map("tenant_id") @db.Uuid
   domainId    String  @map("domain_id") @db.Uuid
   name        String  @db.VarChar(127)
   slug        String  @db.VarChar(127)
@@ -74,7 +78,7 @@ model FitmentCategory {
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz
 
-  tenant   Tenant?          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant   Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   domain   FitmentDomain    @relation(fields: [domainId], references: [id], onDelete: Cascade)
   items    FitmentItem[]
   fitments ProductFitment[]
@@ -87,7 +91,7 @@ model FitmentCategory {
 
 model FitmentItem {
   id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId   String? @map("tenant_id") @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
   categoryId String  @map("category_id") @db.Uuid
   name       String  @db.VarChar(127)
   slug       String  @db.VarChar(127)
@@ -100,7 +104,7 @@ model FitmentItem {
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz
 
-  tenant   Tenant?          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant   Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   category FitmentCategory  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   variants FitmentVariant[]
   fitments ProductFitment[]
@@ -113,7 +117,7 @@ model FitmentItem {
 
 model FitmentVariant {
   id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId   String? @map("tenant_id") @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
   itemId     String  @map("item_id") @db.Uuid
   name       String  @db.VarChar(127)
   slug       String  @db.VarChar(127)
@@ -126,8 +130,8 @@ model FitmentVariant {
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz
 
-  tenant   Tenant?          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  item     FitmentItem      @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  tenant   Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  item     FitmentItem     @relation(fields: [itemId], references: [id], onDelete: Cascade)
   fitments ProductFitment[]
 
   @@unique([itemId, slug], map: "fitment_variants_item_slug_unique")

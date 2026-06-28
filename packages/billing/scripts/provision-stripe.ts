@@ -19,7 +19,7 @@
 import Stripe from 'stripe';
 
 import { MODULE_MONTHLY_CENTS } from '../src/price-catalog';
-import type { ModuleSlug } from '@sparx/modules';
+import { BUNDLED_FREE, type ModuleSlug } from '@sparx/modules';
 
 const API_VERSION = '2024-11-20.acacia';
 const DRY_RUN = process.argv.includes('--dry-run');
@@ -47,6 +47,12 @@ const WEBHOOK_EVENTS: Stripe.WebhookEndpointCreateParams.EnabledEvent[] = [
   'invoice.payment_succeeded',
   'invoice.payment_failed',
 ];
+
+// Stripe hard-caps the customer-portal switch list at 10 products ("A
+// PortalConfiguration can display a maximum of 10 products") — and the cap can't be
+// raised via the API. With more billable modules than that, the portal lists the
+// standalone-billable set and excludes BUNDLED_FREE capabilities (§ main).
+const PORTAL_PRODUCT_LIMIT = 10;
 
 // Collected for the closing env-block printout.
 const envOut: Record<string, string> = {};
@@ -127,13 +133,39 @@ async function ensurePrice(stripe: Stripe, spec: PriceSpec): Promise<string> {
   return created.id;
 }
 
+/** The portal switch list: the standalone-billable modules, trimmed to Stripe's
+ *  PORTAL_PRODUCT_LIMIT. BUNDLED_FREE capabilities (invoicing, inventory) ride their
+ *  Commerce/B2B parent for most tenants, so they're excluded rather than competing
+ *  for one of the 10 slots; a hard slice then guarantees we never exceed the cap as
+ *  the module roster grows. Logs what it excluded/truncated. */
+function portalSwitchProducts(
+  moduleProducts: { slug: ModuleSlug; product: string; prices: string[] }[]
+): { product: string; prices: string[] }[] {
+  const standalone = moduleProducts.filter((m) => BUNDLED_FREE[m.slug] === undefined);
+  const droppedBundled = moduleProducts
+    .filter((m) => BUNDLED_FREE[m.slug] !== undefined)
+    .map((m) => m.slug);
+  const selected = standalone.slice(0, PORTAL_PRODUCT_LIMIT);
+  if (droppedBundled.length || selected.length < standalone.length) {
+    const truncated = standalone.length - selected.length;
+    log(
+      `  portal  ⓘ switch list ${selected.length}/${moduleProducts.length}` +
+        ` (cap ${PORTAL_PRODUCT_LIMIT}; bundled-free excluded: ${droppedBundled.join(', ') || 'none'}` +
+        (truncated > 0 ? `; +${truncated} truncated to fit` : '') +
+        ')'
+    );
+  }
+  return selected.map(({ product, prices }) => ({ product, prices }));
+}
+
 /** Find-or-create the customer-portal configuration (docs/92 §6, §C4). Marked with
  *  `sparx_managed` so re-runs find it. Without one, `/v1/billing/portal` errors.
- *  `subscription_update` is enabled over the module products (both intervals) so a
- *  tenant can switch monthly↔annual and swap modules self-serve in the portal — the
- *  "choose plan" capability, done the Stripe-native way (no custom billing UI). The
- *  transaction-fee + managed-hosting prices are deliberately excluded so a tenant
- *  can't self-remove the fee rail or self-add enterprise hosting. */
+ *  `subscription_update` is enabled over the passed products (both intervals) so a
+ *  tenant can switch monthly↔annual self-serve in the portal — the "choose plan"
+ *  capability, done the Stripe-native way (no custom billing UI). Stripe caps this
+ *  list at 10 products, so the caller passes a trimmed set (the 10 standalone-
+ *  billable modules); managed hosting is excluded so a tenant can't self-add
+ *  enterprise hosting. */
 async function ensurePortalConfig(
   stripe: Stripe,
   moduleProducts: { product: string; prices: string[] }[]
@@ -206,7 +238,7 @@ async function main(): Promise<void> {
 
   // 1) Module products + monthly/annual prices.
   log('Modules:');
-  const moduleProducts: { product: string; prices: string[] }[] = [];
+  const moduleProducts: { slug: ModuleSlug; product: string; prices: string[] }[] = [];
   for (const [slug, monthly] of Object.entries(MODULE_MONTHLY_CENTS) as [ModuleSlug, number][]) {
     const name = MODULE_NAMES[slug] ?? slug;
     const product = await ensureProduct(stripe, `sparx_${slug}`, `sparx ${name}`);
@@ -224,7 +256,7 @@ async function main(): Promise<void> {
     });
     envOut[`STRIPE_PRICE_${slug.toUpperCase()}_MONTHLY`] = monthlyId;
     envOut[`STRIPE_PRICE_${slug.toUpperCase()}_ANNUAL`] = annualId;
-    moduleProducts.push({ product, prices: [monthlyId, annualId] });
+    moduleProducts.push({ slug, product, prices: [monthlyId, annualId] });
   }
 
   // 2) Managed hosting (enterprise, Phase 8).
@@ -244,7 +276,7 @@ async function main(): Promise<void> {
 
   // 3) Portal config + webhook.
   log('\nPortal & webhook:');
-  await ensurePortalConfig(stripe, moduleProducts);
+  await ensurePortalConfig(stripe, portalSwitchProducts(moduleProducts));
   if (apiUrl) {
     await ensureWebhook(stripe, apiUrl);
   } else {

@@ -601,7 +601,7 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
     const rows = await prisma.fitmentDomain.findMany({
-      where: { OR: [{ tenantId: null }, { tenantId }], deletedAt: null },
+      where: { tenantId, deletedAt: null },
       orderBy: [{ position: 'asc' }, { displayName: 'asc' }],
       select: {
         id: true,
@@ -611,7 +611,6 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
         iconKey: true,
         labels: true,
         rangeUnit: true,
-        tenantId: true,
       },
     });
     return ok(
@@ -623,7 +622,6 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
         iconKey: r.iconKey,
         labels: r.labels,
         rangeUnit: r.rangeUnit,
-        isGlobal: r.tenantId === null,
       }))
     );
   });
@@ -635,11 +633,11 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const rows = await prisma.fitmentCategory.findMany({
       where: {
         domainId,
-        OR: [{ tenantId: null }, { tenantId }],
+        tenantId,
         deletedAt: null,
       },
       orderBy: [{ position: 'asc' }, { name: 'asc' }],
-      select: { id: true, name: true, slug: true, iconMediaId: true, tenantId: true },
+      select: { id: true, name: true, slug: true, iconMediaId: true },
     });
     return ok(
       rows.map((r) => ({
@@ -647,7 +645,6 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
         name: r.name,
         slug: r.slug,
         iconMediaId: r.iconMediaId,
-        isGlobal: r.tenantId === null,
       }))
     );
   });
@@ -659,18 +656,17 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const rows = await prisma.fitmentItem.findMany({
       where: {
         categoryId,
-        OR: [{ tenantId: null }, { tenantId }],
+        tenantId,
         deletedAt: null,
       },
       orderBy: [{ position: 'asc' }, { name: 'asc' }],
-      select: { id: true, name: true, slug: true, tenantId: true },
+      select: { id: true, name: true, slug: true },
     });
     return ok(
       rows.map((r) => ({
         id: r.id,
         name: r.name,
         slug: r.slug,
-        isGlobal: r.tenantId === null,
       }))
     );
   });
@@ -682,11 +678,11 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const rows = await prisma.fitmentVariant.findMany({
       where: {
         itemId,
-        OR: [{ tenantId: null }, { tenantId }],
+        tenantId,
         deletedAt: null,
       },
       orderBy: [{ position: 'asc' }, { name: 'asc' }],
-      select: { id: true, name: true, slug: true, attributes: true, tenantId: true },
+      select: { id: true, name: true, slug: true, attributes: true },
     });
     return ok(
       rows.map((r) => ({
@@ -694,7 +690,6 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
         name: r.name,
         slug: r.slug,
         attributes: r.attributes,
-        isGlobal: r.tenantId === null,
       }))
     );
   });

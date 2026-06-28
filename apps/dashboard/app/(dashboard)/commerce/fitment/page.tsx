@@ -1,58 +1,36 @@
 import { Boxes } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  EmptyState,
-  Heading,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
+import { Badge, Container, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
-import { FitmentReferenceEditor } from './_components/fitment-reference-editor';
+import type { FitmentDictionarySummary, FitmentDomainRow } from '../fitment-actions';
+import { FitmentManager } from './_components/fitment-manager';
 
-interface FitmentDomainRow {
-  id: string;
-  slug: string;
-  displayName: string;
-  description: string | null;
-  iconKey: string | null;
-  labels: { l1: string; l2?: string; l3?: string; range?: string };
-  rangeUnit: string | null;
-  isGlobal: boolean;
-  categoryCount: number;
-}
-
-// Fitment reference data — the "what your products are compatible with"
-// dictionary. Generalized across domains: sparx seeds the Vehicle domain
-// (Make → Model → Engine + Year) globally; tenants can register their
-// own (Pet: Species → Breed; Device: Brand → Model; Apparel: Size; ...)
-// or extend the Vehicle domain with custom marques.
+// Fitment dictionaries — the "what your products are compatible with"
+// surface. Generalized across domains: a vehicle shop installs Vehicle
+// (Make → Model → Engine + Year), a pet store installs Pet (Species → Breed +
+// Weight), an apparel store installs Apparel sizes. There is NO platform-global
+// default — every domain is tenant-scoped, installed from the dictionary
+// library or built from scratch.
 //
-// Per-product fitment assignment lives on the product detail page's
-// Fitment tab — this page is the merchant's "manage the compatibility
-// dictionary" surface.
+// Per-product fitment assignment lives on the product detail page's Fitment
+// tab — this page manages the compatibility dictionary itself.
 
 export const dynamic = 'force-dynamic';
 
 export default async function FitmentReferencePage() {
-  const domains = await api.get<FitmentDomainRow[]>('/v1/commerce/fitment/domains');
-
-  const globalCount = domains.filter((d) => d.isGlobal).length;
-  const tenantCount = domains.length - globalCount;
+  const [domains, dictionaries] = await Promise.all([
+    api.get<FitmentDomainRow[]>('/v1/commerce/fitment/domains'),
+    api.get<FitmentDictionarySummary[]>('/v1/commerce/fitment/dictionaries'),
+  ]);
 
   return (
     <Container size="full">
       <Stack gap={6} className="py-10">
         <PageHeader
           icon={<Boxes className="h-5 w-5" />}
-          title="Fitment reference"
+          title="Fitment dictionaries"
           badge={
             <Badge color="module">
               {domains.length} domain{domains.length === 1 ? '' : 's'}
@@ -60,38 +38,15 @@ export default async function FitmentReferencePage() {
           }
           description={
             <>
-              The compatibility dictionary your products fit. Platform-seeded domains ({globalCount}
-              ) are read-only and shared across all tenants; tenant-defined domains ({tenantCount})
-              are yours alone. A vehicle store uses Make/Model/Engine + Year; a pet store uses
-              Species/Breed + Weight; a phone-case shop uses Brand/Model. Each domain owns its own
-              vocabulary.
+              The compatibility dictionaries your products fit — Make/Model/Engine + Year for a
+              vehicle shop, Species/Breed + Weight for a pet store, Size for apparel. Install one
+              from the library or build your own; each is yours alone to edit, nothing is shared
+              across tenants.
             </>
           }
         />
 
-        <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>Domains</Heading>
-              <CardDescription>
-                Expand a domain to manage its categories, items, and variants. A product&apos;s
-                fitment rule can target any depth — just the category (fits any Ford), category +
-                item (fits an F-250), or all three (fits an F-250 with a 6.7L Power Stroke).
-              </CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
-            {domains.length === 0 ? (
-              <EmptyState
-                icon={<Boxes className="h-5 w-5" />}
-                title="No fitment domains yet"
-                description="The platform seeds the Vehicle domain on first install. If you don't see it yet, run the fitment seed from the dashboard staff settings."
-              />
-            ) : (
-              <FitmentReferenceEditor domains={domains} />
-            )}
-          </CardContent>
-        </Card>
+        <FitmentManager domains={domains} dictionaries={dictionaries} />
       </Stack>
     </Container>
   );

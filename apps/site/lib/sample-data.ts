@@ -216,7 +216,6 @@ export const SAMPLE_PRODUCT_EXTRAS: {
       iconKey: null,
       labels: { l1: 'Make', l2: 'Model', l3: 'Engine', range: 'Year' },
       rangeUnit: 'year',
-      isGlobal: true,
     },
   },
 };

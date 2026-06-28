@@ -3,18 +3,16 @@
 // products are filtered by what they're compatible with: vehicles,
 // pets, devices, apparel, industrial gear.
 //
-// The reference tables (FitmentDomain/Category/Item/Variant) are
-// dual-scoped: rows with tenant_id IS NULL are platform-seeded baselines
-// visible to every tenant; rows with tenant_id = current tenant are
-// per-merchant additions. The RLS policy on these tables (migration
-// 20260606000000_fitment_generalize) encodes
-//   tenant_id IS NULL OR tenant_id = current_tenant_id()
-// on both USING + WITH CHECK — globals are read-only to tenants, and
-// the platform seed inserts run outside the RLS context.
-//
-// ProductFitment rows are pure tenant-scoped — a Gillett-specific
-// applicability rule never leaks even when it references a globally
-// seeded Category.
+// Everything here is tenant-scoped — there is NO platform-global fitment
+// domain. The platform ships a LIBRARY of installable dictionaries
+// (@sparx/commerce-schemas FITMENT_DICTIONARIES); installFitmentDictionary
+// stamps a chosen dictionary as the tenant's own domain → category → item →
+// variant tree. The single stamping codepath (planFitmentDictionaryRows) is
+// shared with the demo seed, so an installed tree and a seeded tree are
+// identical. All four reference tables carry the standard tenant_id NOT NULL +
+// FORCE RLS posture (20260923000000_fitment_remove_global_vehicle).
+
+import { randomUUID } from 'node:crypto';
 
 import {
   BulkAssignFitmentInput,
@@ -23,8 +21,13 @@ import {
   CreateFitmentItemInput,
   CreateFitmentVariantInput,
   FitmentLookupQuery,
+  getFitmentDictionary,
+  InstallFitmentDictionaryParams,
+  listFitmentDictionarySummaries,
+  planFitmentDictionaryRows,
   ProductFitmentInput,
 } from '@sparx/commerce-schemas';
+import type { FitmentDictionarySummary } from '@sparx/commerce-schemas';
 import { withTenant } from '@sparx/db';
 import type {
   FitmentCategory,
@@ -38,9 +41,6 @@ import { writeAuditLog } from '../audit';
 import { CommerceConflictError, CommerceNotFoundError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
-
-// sparx-seeded global Vehicle domain — UUID matches the migration.
-export const VEHICLE_DOMAIN_ID = '00000000-0000-0000-0000-000000000001';
 
 // ─── Public shapes ────────────────────────────────────────────────────
 
@@ -58,7 +58,6 @@ export interface FitmentDomainRow {
   };
   rangeUnit: string | null;
   position: number;
-  isGlobal: boolean;
   categoryCount: number;
 }
 
@@ -70,7 +69,6 @@ export interface FitmentCategoryRow {
   attributes: Record<string, unknown>;
   iconMediaId: string | null;
   position: number;
-  isGlobal: boolean;
   itemCount: number;
 }
 
@@ -81,7 +79,6 @@ export interface FitmentItemRow {
   slug: string;
   attributes: Record<string, unknown>;
   position: number;
-  isGlobal: boolean;
   variantCount: number;
 }
 
@@ -92,7 +89,6 @@ export interface FitmentVariantRow {
   slug: string;
   attributes: Record<string, unknown>;
   position: number;
-  isGlobal: boolean;
 }
 
 export interface ProductFitmentRow {
@@ -129,7 +125,6 @@ export async function listDomains(ctx: ServiceContext): Promise<FitmentDomainRow
       labels: (d.labels ?? {}) as FitmentDomainRow['labels'],
       rangeUnit: d.rangeUnit,
       position: d.position,
-      isGlobal: d.tenantId === null,
       categoryCount: d._count.categories,
     }));
   });
@@ -154,7 +149,6 @@ export async function getDomain(
       labels: (d.labels ?? {}) as FitmentDomainRow['labels'],
       rangeUnit: d.rangeUnit,
       position: d.position,
-      isGlobal: d.tenantId === null,
       categoryCount: d._count.categories,
     };
   });
@@ -206,6 +200,122 @@ export async function createDomain(
   });
 
   return { id: result.id };
+}
+
+// ─── Dictionary library (install a platform fitment dictionary) ───────
+
+/**
+ * The platform's installable fitment dictionaries (Vehicle, Apparel, Pet, …) —
+ * picker metadata only, no DB. A tenant installs one as their own tenant-scoped
+ * tree via installFitmentDictionary.
+ */
+export function listFitmentDictionaries(): FitmentDictionarySummary[] {
+  return listFitmentDictionarySummaries();
+}
+
+/**
+ * Stamp a platform dictionary as a tenant-scoped domain → category → item →
+ * variant tree. Conflict is by slug: installing a dictionary whose slug the
+ * tenant already uses is a 409, so the merchant chooses whether to extend the
+ * existing domain or pick a different dictionary. The stamping codepath
+ * (planFitmentDictionaryRows) is shared with the demo seed.
+ */
+export async function installFitmentDictionary(
+  ctx: ServiceContext,
+  rawSlug: unknown
+): Promise<{ id: string }> {
+  const { slug } = InstallFitmentDictionaryParams.parse({ slug: rawSlug });
+  const dict = getFitmentDictionary(slug);
+  if (!dict) throw new CommerceNotFoundError('FitmentDictionary', slug);
+
+  return withTenant(ctx, async (tx) => {
+    const collision = await tx.fitmentDomain.findFirst({
+      where: { tenantId: ctx.tenantId, slug: dict.slug, deletedAt: null },
+      select: { id: true },
+    });
+    if (collision) {
+      throw new CommerceConflictError(
+        `Fitment domain "${dict.slug}" already exists for this tenant`,
+        'slug'
+      );
+    }
+
+    const planned = planFitmentDictionaryRows(dict, ctx.tenantId, () => randomUUID());
+
+    await tx.fitmentDomain.create({
+      data: {
+        id: planned.domain.id,
+        tenantId: planned.domain.tenantId,
+        slug: planned.domain.slug,
+        displayName: planned.domain.displayName,
+        description: planned.domain.description,
+        iconKey: planned.domain.iconKey,
+        labels: planned.domain.labels as Prisma.InputJsonValue,
+        rangeUnit: planned.domain.rangeUnit,
+        position: planned.domain.position,
+      },
+    });
+    if (planned.categories.length > 0) {
+      await tx.fitmentCategory.createMany({
+        data: planned.categories.map((c) => ({
+          id: c.id,
+          tenantId: c.tenantId,
+          domainId: c.domainId,
+          name: c.name,
+          slug: c.slug,
+          attributes: c.attributes as Prisma.InputJsonValue,
+          position: c.position,
+        })),
+      });
+    }
+    if (planned.items.length > 0) {
+      await tx.fitmentItem.createMany({
+        data: planned.items.map((i) => ({
+          id: i.id,
+          tenantId: i.tenantId,
+          categoryId: i.categoryId,
+          name: i.name,
+          slug: i.slug,
+          attributes: i.attributes as Prisma.InputJsonValue,
+          position: i.position,
+        })),
+      });
+    }
+    if (planned.variants.length > 0) {
+      await tx.fitmentVariant.createMany({
+        data: planned.variants.map((v) => ({
+          id: v.id,
+          tenantId: v.tenantId,
+          itemId: v.itemId,
+          name: v.name,
+          slug: v.slug,
+          attributes: v.attributes as Prisma.InputJsonValue,
+          position: v.position,
+        })),
+      });
+    }
+
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'commerce.fitment.dictionary_installed',
+      entityType: 'FitmentDomain',
+      entityId: planned.domain.id,
+      diff: {
+        after: {
+          dictionary: dict.slug,
+          displayName: dict.name,
+          categories: planned.categories.length,
+          items: planned.items.length,
+          variants: planned.variants.length,
+        },
+      },
+    });
+
+    return { id: planned.domain.id };
+  });
 }
 
 // ─── Category (L1) ────────────────────────────────────────────────────
@@ -658,7 +768,6 @@ function toCategoryRow(c: FitmentCategory & { _count: { items: number } }): Fitm
     attributes: (c.attributes ?? {}) as Record<string, unknown>,
     iconMediaId: c.iconMediaId,
     position: c.position,
-    isGlobal: c.tenantId === null,
     itemCount: c._count.items,
   };
 }
@@ -671,7 +780,6 @@ function toItemRow(i: FitmentItem & { _count: { variants: number } }): FitmentIt
     slug: i.slug,
     attributes: (i.attributes ?? {}) as Record<string, unknown>,
     position: i.position,
-    isGlobal: i.tenantId === null,
     variantCount: i._count.variants,
   };
 }
@@ -684,7 +792,6 @@ function toVariantRow(v: FitmentVariant): FitmentVariantRow {
     slug: v.slug,
     attributes: (v.attributes ?? {}) as Record<string, unknown>,
     position: v.position,
-    isGlobal: v.tenantId === null,
   };
 }
 

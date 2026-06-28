@@ -33,7 +33,9 @@ export type ReturnStatus =
 export interface ReturnSummary {
   id: string;
   orderId: string;
+  orderNumber: string | null;
   customerId: string | null;
+  customerName: string | null;
   status: ReturnStatus;
   preferredOutcome: string;
   itemCount: number;
@@ -81,8 +83,10 @@ export function ReturnsList({ rows, view }: ReturnsListProps) {
   );
 
   const customerCell = (r: ReturnSummary) =>
-    r.customerId ? (
-      <Text size="xs" className="font-mono">
+    r.customerName ? (
+      <Text size="sm">{r.customerName}</Text>
+    ) : r.customerId ? (
+      <Text size="xs" variant="muted" className="font-mono">
         {r.customerId.slice(0, 8)}
       </Text>
     ) : (
@@ -94,8 +98,8 @@ export function ReturnsList({ rows, view }: ReturnsListProps) {
     {
       header: 'Order',
       cell: (r) => (
-        <Text size="xs" className="font-mono">
-          {r.orderId.slice(0, 8)}
+        <Text size="sm" className="font-mono">
+          {r.orderNumber ?? r.orderId.slice(0, 8)}
         </Text>
       ),
     },
@@ -103,7 +107,11 @@ export function ReturnsList({ rows, view }: ReturnsListProps) {
     { header: 'Items', cell: (r) => <>{r.itemCount}</> },
     {
       header: 'Preferred outcome',
-      cell: (r) => <Badge variant="outline">{r.preferredOutcome}</Badge>,
+      cell: (r) => (
+        <Badge color="info" variant="soft" size="sm">
+          {statusLabel(r.preferredOutcome)}
+        </Badge>
+      ),
     },
     { header: 'Status', cell: (r) => <StatusBadge status={r.status} /> },
     { header: 'Requested', cell: (r) => <>{new Date(r.requestedAt).toLocaleDateString()}</> },
@@ -112,21 +120,23 @@ export function ReturnsList({ rows, view }: ReturnsListProps) {
   const card: SelectionCard<ReturnSummary> = {
     title: (r) => idLink(r),
     subtitle: (r) => (
-      <Text size="xs" variant="muted" className="font-mono">
-        order {r.orderId.slice(0, 8)}
+      <Text size="xs" variant="muted">
+        order <span className="font-mono">{r.orderNumber ?? r.orderId.slice(0, 8)}</span>
       </Text>
     ),
     badge: (r) => <StatusBadge status={r.status} />,
     body: (r) => (
       <>
         <Stack direction="row" align="center" justify="between" gap={2}>
-          <Badge variant="outline">{r.preferredOutcome}</Badge>
+          <Badge color="info" variant="soft" size="sm">
+            {statusLabel(r.preferredOutcome)}
+          </Badge>
           <Text size="sm">
             {r.itemCount} item{r.itemCount === 1 ? '' : 's'}
           </Text>
         </Stack>
         <Text size="xs" variant="muted">
-          {r.customerId ? `customer ${r.customerId.slice(0, 8)} · ` : ''}requested{' '}
+          {r.customerName ? `${r.customerName} · ` : ''}requested{' '}
           {new Date(r.requestedAt).toLocaleDateString()}
         </Text>
       </>

@@ -157,7 +157,6 @@ interface FitmentDomainRow {
   iconKey: string | null;
   labels: { l1: string; l2?: string; l3?: string; range?: string };
   rangeUnit: string | null;
-  isGlobal: boolean;
   categoryCount: number;
 }
 

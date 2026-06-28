@@ -13,10 +13,17 @@ import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
 
-const PathId = z.object({ id: z.string().uuid() });
-const DomainParam = z.object({ domainId: z.string().uuid() });
-const CategoryParam = z.object({ categoryId: z.string().uuid() });
-const ItemParam = z.object({ itemId: z.string().uuid() });
+// Fitment reference entities (domain/category/item) can be platform globals,
+// and the seeded global Vehicle domain uses a sentinel id
+// (00000000-0000-0000-0000-000000000001) whose version/variant bits are zero
+// — a valid Postgres uuid that Zod's strict .uuid() (RFC-9562) rejects. Use
+// z.guid() for those path ids so the global tree stays browsable; product /
+// product-fitment ids are always tenant-minted v4, so they keep strict .uuid().
+const FitmentId = z.guid();
+const PathId = z.object({ id: FitmentId });
+const DomainParam = z.object({ domainId: FitmentId });
+const CategoryParam = z.object({ categoryId: FitmentId });
+const ItemParam = z.object({ itemId: FitmentId });
 const ProductIdParam = z.object({ productId: z.string().uuid() });
 const FitmentParam = z.object({ fitmentId: z.string().uuid() });
 
@@ -33,6 +40,25 @@ const ListTemplatesQuery = z.object({
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const fitmentRoutes: FastifyPluginAsync = async (app) => {
+  // ─── Dictionaries (installable platform fitment libraries) ────────
+  // The platform's library of fitment dictionaries (Vehicle, Apparel, Pet, …);
+  // installing one stamps a tenant-scoped domain → category → item → variant
+  // tree. Nothing is global — a tenant installs only what its catalog needs.
+  app.get('/v1/commerce/fitment/dictionaries', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    return ok(fitmentService.listFitmentDictionaries());
+  });
+
+  app.post('/v1/commerce/fitment/dictionaries/:slug/install', async (request, reply) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const { slug } = z.object({ slug: z.string().min(1).max(63) }).parse(request.params);
+    const created = await fitmentService.installFitmentDictionary(toCommerceContext(request), slug);
+    reply.code(201);
+    return ok(created);
+  });
+
   // ─── Domains ──────────────────────────────────────────────────────
   app.get('/v1/commerce/fitment/domains', async (request) => {
     requireRole(request, 'viewer');

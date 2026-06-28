@@ -37,6 +37,21 @@ function returnTone(status: string): StatusTone {
   return status === 'refunded' ? 'success' : statusTone(status);
 }
 
+// Inspection condition has a natural quality gradient, so the badge carries a
+// semantic tone (resaleable → success, used → warning, write-off → danger)
+// rather than a flat tag — it lets staff scan restock-worthiness at a glance.
+const CONDITION_TONE: Record<string, StatusTone> = {
+  unopened: 'success',
+  like_new: 'success',
+  used_good: 'warning',
+  used_acceptable: 'warning',
+  damaged: 'danger',
+  destroyed: 'danger',
+};
+function conditionTone(condition: string): StatusTone {
+  return CONDITION_TONE[condition] ?? 'neutral';
+}
+
 interface Props {
   id: string;
 }
@@ -56,6 +71,7 @@ type ReturnStatus =
 interface ReturnItem {
   id: string;
   orderItemId: string;
+  orderItemName: string | null;
   quantity: number;
   approvedQuantity: number;
   reasonCode: string;
@@ -66,9 +82,11 @@ interface ReturnItem {
 interface ReturnInspection {
   id: string;
   returnLineItemId: string;
+  lineItemName: string | null;
   condition: string;
   restockable: boolean;
   warehouseId: string | null;
+  warehouseName: string | null;
   note: string | null;
 }
 
@@ -83,7 +101,9 @@ interface ReturnLabel {
 interface ReturnDetail {
   id: string;
   orderId: string;
+  orderNumber: string | null;
   customerId: string | null;
+  customerName: string | null;
   status: ReturnStatus;
   preferredOutcome: string;
   itemCount: number;
@@ -121,21 +141,23 @@ export async function ReturnDetailContent({ id }: Props) {
             <Badge color={returnTone(ret.status)} variant="soft" size="sm">
               {statusLabel(ret.status)}
             </Badge>
-            <Badge variant="outline" size="sm">
-              prefer {ret.preferredOutcome.replace(/_/g, ' ')}
+            <Badge color="info" variant="soft" size="sm">
+              {statusLabel(ret.preferredOutcome)}
             </Badge>
           </Stack>
           <Text variant="muted">
             Order{' '}
-            <Text className="font-mono" size="sm">
-              {ret.orderId.slice(0, 8)}
+            <Text as="span" className="font-mono" size="sm">
+              {ret.orderNumber ?? ret.orderId.slice(0, 8)}
             </Text>
-            {ret.customerId && (
+            {(ret.customerName ?? ret.customerId) && (
               <>
-                {' · '}customer{' '}
-                <Text className="font-mono" size="sm">
-                  {ret.customerId.slice(0, 8)}
-                </Text>
+                {' · '}
+                {ret.customerName ?? (
+                  <Text as="span" className="font-mono" size="sm">
+                    {ret.customerId!.slice(0, 8)}
+                  </Text>
+                )}
               </>
             )}
           </Text>
@@ -167,14 +189,18 @@ export async function ReturnDetailContent({ id }: Props) {
               {ret.items.map((it) => (
                 <TableRow key={it.id}>
                   <TableCell>
-                    <Text size="xs" className="font-mono">
-                      {it.orderItemId.slice(0, 8)}
-                    </Text>
+                    {it.orderItemName ?? (
+                      <Text size="xs" variant="muted" className="font-mono">
+                        {it.orderItemId.slice(0, 8)}
+                      </Text>
+                    )}
                   </TableCell>
                   <TableCell>{it.quantity}</TableCell>
                   <TableCell>{it.approvedQuantity}</TableCell>
                   <TableCell>
-                    <Badge variant="outline">{it.reasonCode}</Badge>
+                    <Badge color="neutral" variant="soft" size="sm">
+                      {statusLabel(it.reasonCode)}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     {it.customerNote ?? (
@@ -261,22 +287,20 @@ export async function ReturnDetailContent({ id }: Props) {
                 {ret.inspections.map((ins) => (
                   <TableRow key={ins.id}>
                     <TableCell>
-                      <Text size="xs" className="font-mono">
-                        {ins.returnLineItemId.slice(0, 8)}
-                      </Text>
+                      {ins.lineItemName ?? (
+                        <Text size="xs" variant="muted" className="font-mono">
+                          {ins.returnLineItemId.slice(0, 8)}
+                        </Text>
+                      )}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{ins.condition}</Badge>
+                      <Badge color={conditionTone(ins.condition)} variant="soft" size="sm">
+                        {statusLabel(ins.condition)}
+                      </Badge>
                     </TableCell>
                     <TableCell>{ins.restockable ? 'yes' : 'no'}</TableCell>
                     <TableCell>
-                      {ins.warehouseId ? (
-                        <Text size="xs" className="font-mono">
-                          {ins.warehouseId.slice(0, 8)}
-                        </Text>
-                      ) : (
-                        '—'
-                      )}
+                      {ins.warehouseName ?? ins.warehouseId?.slice(0, 8) ?? '—'}
                     </TableCell>
                     <TableCell>
                       {ins.note ?? (
@@ -318,7 +342,10 @@ export async function ReturnDetailContent({ id }: Props) {
                     : '—'
                 }
               />
-              <Row label="Issued as" value={ret.refundIssuedAs ?? '—'} />
+              <Row
+                label="Issued as"
+                value={ret.refundIssuedAs ? statusLabel(ret.refundIssuedAs) : '—'}
+              />
               <Row
                 label="Refunded at"
                 value={ret.refundedAt ? new Date(ret.refundedAt).toLocaleString() : '—'}

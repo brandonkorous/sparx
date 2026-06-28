@@ -1042,6 +1042,9 @@ importers:
       '@sparx/builder-schemas':
         specifier: workspace:*
         version: link:../builder-schemas
+      '@sparx/commerce-schemas':
+        specifier: workspace:*
+        version: link:../commerce-schemas
       '@sparx/legal-templates':
         specifier: workspace:*
         version: link:../legal-templates

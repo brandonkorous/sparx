@@ -181,7 +181,6 @@ export interface PublicFitmentDomain {
   iconKey: string | null;
   labels: { l1?: string; l2?: string; l3?: string; range?: string };
   rangeUnit: string | null;
-  isGlobal: boolean;
 }
 
 export interface PublicFitmentCategory {
@@ -189,26 +188,23 @@ export interface PublicFitmentCategory {
   name: string;
   slug: string;
   iconMediaId: string | null;
-  isGlobal: boolean;
 }
 
 export interface PublicFitmentItem {
   id: string;
   name: string;
   slug: string;
-  isGlobal: boolean;
 }
 
 export interface PublicFitmentVariant {
   id: string;
   name: string;
   slug: string;
-  isGlobal: boolean;
 }
 
 /** Back-compat alias — storefront callers used `PublicVehicleMake` when
  *  fitment was vehicle-only. The shape is now a generic fitment category
- *  with `name`/`slug`/`isGlobal`. New code should use
+ *  with `name`/`slug`. New code should use
  *  PublicFitmentCategory directly. */
 export type PublicVehicleMake = PublicFitmentCategory;
 

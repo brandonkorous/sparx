@@ -445,13 +445,9 @@ export function MarkupRulesManager({
                     </TableCell>
                     <TableCell className="text-right">{r.boundVariantCount}</TableCell>
                     <TableCell>
-                      {r.isActive ? (
-                        <Badge color="success" variant="outline">
-                          Active
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline">Paused</Badge>
-                      )}
+                      <Badge color={r.isActive ? 'success' : 'neutral'} variant="soft" size="sm">
+                        {r.isActive ? 'Active' : 'Paused'}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <Stack direction="row" gap={1} justify="end">
@@ -1011,6 +1007,7 @@ function CollectionPicker({
       {collections.map((c) => (
         <label key={c.id} className="flex cursor-pointer items-center gap-2">
           <Checkbox
+            color="module"
             checked={selected.includes(c.id)}
             onCheckedChange={() => toggle(c.id)}
             aria-label={c.name}

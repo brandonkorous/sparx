@@ -7,6 +7,7 @@
 import type { ModuleManifest } from '@sparx/ui/shell';
 import {
   BarChart3,
+  Boxes,
   CreditCard,
   FolderTree,
   Gift,
@@ -39,6 +40,7 @@ export const commerceManifest: ModuleManifest = {
     { id: 'products', label: 'Products', icon: Package, href: '/commerce/products' },
     { id: 'categories', label: 'Categories', icon: FolderTree, href: '/commerce/categories' },
     { id: 'collections', label: 'Collections', icon: LayoutGrid, href: '/commerce/collections' },
+    { id: 'fitment', label: 'Fitment', icon: Boxes, href: '/commerce/fitment' },
     { id: 'pricing', label: 'Pricing', icon: Tag, href: '/commerce/pricing' },
     { id: 'discounts', label: 'Discounts', icon: Percent, href: '/commerce/discounts' },
     // Inventory + warehouses moved to the Inventory module (docs/100 P1e).

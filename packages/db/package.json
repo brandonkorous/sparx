@@ -45,6 +45,7 @@
   "devDependencies": {
     "@sparx/blueprints": "workspace:*",
     "@sparx/builder-schemas": "workspace:*",
+    "@sparx/commerce-schemas": "workspace:*",
     "@sparx/legal-templates": "workspace:*",
     "@sparx/marketplace-schemas": "workspace:*",
     "@types/node": "^25.9.1",

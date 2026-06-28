@@ -444,6 +444,7 @@ function CollectionPicker({
       {collections.map((c) => (
         <label key={c.id} className="flex cursor-pointer items-center gap-2">
           <Checkbox
+            color="module"
             checked={selected.includes(c.id)}
             onCheckedChange={() => toggle(c.id)}
             aria-label={c.name}

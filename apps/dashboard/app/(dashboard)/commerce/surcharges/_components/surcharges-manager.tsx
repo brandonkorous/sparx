@@ -174,13 +174,9 @@ export function SurchargesManager({ initialRules }: { initialRules: SurchargeRul
                       <Text size="sm">{r.label}</Text>
                     </TableCell>
                     <TableCell>
-                      {r.isActive ? (
-                        <Badge color="success" variant="outline">
-                          Active
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline">Off</Badge>
-                      )}
+                      <Badge color={r.isActive ? 'success' : 'neutral'} variant="soft" size="sm">
+                        {r.isActive ? 'Active' : 'Off'}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <Stack direction="row" gap={1} justify="end">
@@ -360,6 +356,7 @@ function RuleForm({
                 {ALL_METHODS.map((m) => (
                   <label key={m} className="inline-flex items-center gap-2">
                     <Checkbox
+                      color="module"
                       checked={methods.includes(m)}
                       onCheckedChange={() => toggleMethod(m)}
                       aria-label={METHOD_LABELS[m]}

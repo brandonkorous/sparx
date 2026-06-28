@@ -14,6 +14,7 @@ import {
   listFitmentItemsAction,
   listFitmentVariantsAction,
 } from '../../fitment-actions';
+import { pluralizeLabel } from './pluralize';
 
 interface DomainLabels {
   l1: string;
@@ -30,7 +31,6 @@ interface DomainRow {
   iconKey: string | null;
   labels: DomainLabels;
   rangeUnit: string | null;
-  isGlobal: boolean;
   categoryCount: number;
 }
 
@@ -39,7 +39,6 @@ interface CategoryRow {
   domainId: string;
   name: string;
   slug: string;
-  isGlobal: boolean;
   itemCount: number;
 }
 
@@ -48,7 +47,6 @@ interface ItemRow {
   categoryId: string;
   name: string;
   slug: string;
-  isGlobal: boolean;
   variantCount: number;
 }
 
@@ -58,7 +56,6 @@ interface VariantRow {
   name: string;
   slug: string;
   attributes: Record<string, unknown>;
-  isGlobal: boolean;
 }
 
 interface Props {
@@ -126,23 +123,21 @@ function DomainRowComponent({ domain }: { domain: DomainRow }) {
             {domain.rangeUnit ? ` · narrow by ${domain.labels.range ?? domain.rangeUnit}` : ''}
           </Text>
         </Stack>
-        <Badge color={domain.isGlobal ? 'outline' : 'module'} className="text-xs">
-          {domain.isGlobal ? 'global' : 'tenant'}
-        </Badge>
-        <Badge variant="outline" className="text-xs">
-          {domain.categoryCount} {plural(domain.labels.l1.toLowerCase(), domain.categoryCount)}
+        <Badge color="module" variant="soft" size="sm">
+          {domain.categoryCount}{' '}
+          {pluralizeLabel(domain.labels.l1.toLowerCase(), domain.categoryCount)}
         </Badge>
       </Stack>
       {expanded && (
         <Stack gap={1} className="px-3 pb-3 pl-8">
           {loading && (
             <Text size="xs" variant="muted">
-              Loading {domain.labels.l1.toLowerCase()}s…
+              Loading {pluralizeLabel(domain.labels.l1.toLowerCase(), 2)}…
             </Text>
           )}
           {!loading && categories?.length === 0 && (
             <Text size="xs" variant="muted">
-              No {domain.labels.l1.toLowerCase()}s yet.
+              No {pluralizeLabel(domain.labels.l1.toLowerCase(), 2)} yet.
             </Text>
           )}
           {categories?.map((c) => (
@@ -214,12 +209,10 @@ function CategoryRowComponent({
         <Text size="xs" variant="muted">
           /{category.slug}
         </Text>
-        <Badge color={category.isGlobal ? 'outline' : 'module'} className="text-xs">
-          {category.isGlobal ? 'global' : 'tenant'}
-        </Badge>
         {hasL2 && (
-          <Badge variant="outline" className="text-xs">
-            {category.itemCount} {plural((labels.l2 ?? 'item').toLowerCase(), category.itemCount)}
+          <Badge color="module" variant="soft" size="sm">
+            {category.itemCount}{' '}
+            {pluralizeLabel((labels.l2 ?? 'item').toLowerCase(), category.itemCount)}
           </Badge>
         )}
       </Stack>
@@ -227,12 +220,12 @@ function CategoryRowComponent({
         <Stack gap={1} className="pb-2 pl-8">
           {loading && (
             <Text size="xs" variant="muted">
-              Loading {(labels.l2 ?? 'items').toLowerCase()}…
+              Loading {pluralizeLabel((labels.l2 ?? 'item').toLowerCase(), 2)}…
             </Text>
           )}
           {!loading && items?.length === 0 && (
             <Text size="xs" variant="muted">
-              No {(labels.l2 ?? 'items').toLowerCase()} yet.
+              No {pluralizeLabel((labels.l2 ?? 'item').toLowerCase(), 2)} yet.
             </Text>
           )}
           {items?.map((item) => (
@@ -305,12 +298,10 @@ function ItemRowComponent({
         <Text size="xs" variant="muted">
           /{item.slug}
         </Text>
-        <Badge color={item.isGlobal ? 'outline' : 'module'} className="text-xs">
-          {item.isGlobal ? 'global' : 'tenant'}
-        </Badge>
         {hasL3 && (
-          <Badge variant="outline" className="text-xs">
-            {item.variantCount} {plural((labels.l3 ?? 'variant').toLowerCase(), item.variantCount)}
+          <Badge color="module" variant="soft" size="sm">
+            {item.variantCount}{' '}
+            {pluralizeLabel((labels.l3 ?? 'variant').toLowerCase(), item.variantCount)}
           </Badge>
         )}
       </Stack>
@@ -318,12 +309,12 @@ function ItemRowComponent({
         <Stack gap={1} className="pb-2 pl-6">
           {loading && (
             <Text size="xs" variant="muted">
-              Loading {(labels.l3 ?? 'variants').toLowerCase()}…
+              Loading {pluralizeLabel((labels.l3 ?? 'variant').toLowerCase(), 2)}…
             </Text>
           )}
           {!loading && variants?.length === 0 && (
             <Text size="xs" variant="muted">
-              No {(labels.l3 ?? 'variants').toLowerCase()} yet.
+              No {pluralizeLabel((labels.l3 ?? 'variant').toLowerCase(), 2)} yet.
             </Text>
           )}
           {variants?.map((v) => (
@@ -332,13 +323,10 @@ function ItemRowComponent({
                 {v.name}
               </Text>
               {summarizeAttributes(v.attributes, rangeUnit).map((tag) => (
-                <Badge key={tag} variant="outline" className="text-xs">
+                <Badge key={tag} variant="soft" size="sm">
                   {tag}
                 </Badge>
               ))}
-              <Badge color={v.isGlobal ? 'outline' : 'module'} className="text-xs">
-                {v.isGlobal ? 'global' : 'tenant'}
-              </Badge>
             </Stack>
           ))}
           {labels.l3 && (
@@ -566,10 +554,6 @@ function stringField(value: FormDataEntryValue | null): string {
 function labelChain(labels: DomainLabels): string {
   const parts = [labels.l1, labels.l2, labels.l3].filter(Boolean);
   return parts.join(' → ');
-}
-
-function plural(word: string, n: number): string {
-  return n === 1 ? word : `${word}s`;
 }
 
 // Summarize variant attributes for display. Generic — picks the most

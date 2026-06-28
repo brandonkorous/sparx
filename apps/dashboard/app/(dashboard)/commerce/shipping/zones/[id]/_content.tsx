@@ -151,7 +151,7 @@ export async function ShippingZoneDetailContent({ id }: Props) {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card variant="module">
         <CardHeader>
           <Stack gap={1}>
             <Stack direction="row" align="center" gap={2}>

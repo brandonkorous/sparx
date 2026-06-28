@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Input, Label, Stack, Text } from '@sparx/ui';
+import { Button, Input, Label, NativeSelect, Stack, Text } from '@sparx/ui';
 import type { CreateShippingRateInput } from '@sparx/commerce-schemas';
 
 import { formNumber, formString } from '../../../../../../../lib/forms';
@@ -84,34 +84,28 @@ export function NewRateForm({ zoneId, profiles }: { zoneId: string; profiles: Pr
           </Stack>
           <Stack gap={1} className="min-w-[12rem]">
             <Label htmlFor="profileId">Profile *</Label>
-            <select
-              id="profileId"
-              name="profileId"
-              required
-              className="h-9 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 text-sm"
-            >
+            <NativeSelect id="profileId" name="profileId" required>
               {profiles.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
                 </option>
               ))}
-            </select>
+            </NativeSelect>
           </Stack>
           <Stack gap={1} className="min-w-[8rem]">
             <Label htmlFor="type">Type *</Label>
-            <select
+            <NativeSelect
               id="type"
               name="type"
               value={type}
               onChange={(e) => setType(e.target.value as CreateShippingRateInput['type'])}
-              className="h-9 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 text-sm"
             >
               {TYPES.map((t) => (
                 <option key={t} value={t}>
-                  {t}
+                  {t.replace(/_/g, ' ')}
                 </option>
               ))}
-            </select>
+            </NativeSelect>
           </Stack>
         </Stack>
         <Stack direction="row" gap={3} wrap>
@@ -144,7 +138,7 @@ export function NewRateForm({ zoneId, profiles }: { zoneId: string; profiles: Pr
           </Stack>
         </Stack>
         {error && (
-          <Text size="sm" className="text-[var(--color-danger)]">
+          <Text size="sm" variant="danger" role="alert" aria-live="polite">
             {error}
           </Text>
         )}

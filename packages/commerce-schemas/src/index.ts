@@ -18,6 +18,7 @@ export * from './common';
 export * from './products';
 export * from './categories';
 export * from './fitment';
+export * from './fitment-dictionaries';
 
 // Phase 2 — inventory (warehouses, levels, lots, serials).
 export * from './inventory';

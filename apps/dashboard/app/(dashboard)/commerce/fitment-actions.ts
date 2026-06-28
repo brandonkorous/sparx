@@ -9,10 +9,10 @@ import { restAction } from './_rest-action';
 // surfaces the tree using domain.labels (e.g. Make/Model/Engine for
 // vehicle, Brand/Model for device) and domain.rangeUnit for narrowing.
 //
-// sparx seeds a global "vehicle" domain so the Gillett case works
-// out-of-the-box; tenants register their own domains for other catalog
-// shapes (pet store registers Species → Breed, phone case shop
-// registers Brand → Model, etc.).
+// Every domain is tenant-scoped — there is no global "vehicle" default.
+// The platform ships a LIBRARY of installable dictionaries; a tenant installs
+// the ones its catalog needs (a vehicle-parts shop installs Vehicle, a phone
+// case shop installs Device) as their own tenant-scoped tree.
 
 export interface FitmentDomainRow {
   id: string;
@@ -22,7 +22,6 @@ export interface FitmentDomainRow {
   iconKey: string | null;
   labels: { l1: string; l2?: string; l3?: string; range?: string };
   rangeUnit: string | null;
-  isGlobal: boolean;
   categoryCount: number;
 }
 
@@ -31,7 +30,6 @@ export interface FitmentCategoryRow {
   domainId: string;
   name: string;
   slug: string;
-  isGlobal: boolean;
   itemCount: number;
 }
 
@@ -40,7 +38,6 @@ export interface FitmentItemRow {
   categoryId: string;
   name: string;
   slug: string;
-  isGlobal: boolean;
   variantCount: number;
 }
 
@@ -50,7 +47,20 @@ export interface FitmentVariantRow {
   name: string;
   slug: string;
   attributes: Record<string, unknown>;
-  isGlobal: boolean;
+}
+
+// One installable dictionary, picker-summary shape (no tree).
+export interface FitmentDictionarySummary {
+  slug: string;
+  name: string;
+  description: string;
+  iconKey: string;
+  tags: string[];
+  labels: { l1: string; l2?: string; l3?: string; range?: string };
+  rangeUnit: string | null;
+  levelCount: number;
+  categoryCount: number;
+  sampleCategories: string[];
 }
 
 export interface ProductFitmentRow {
@@ -104,6 +114,27 @@ export async function listFitmentVariantsAction(
   return restAction(async () =>
     api.get<FitmentVariantRow[]>(`/v1/commerce/fitment/items/${itemId}/variants`)
   );
+}
+
+export async function listFitmentDictionariesAction(): Promise<
+  ActionResult<FitmentDictionarySummary[]>
+> {
+  return restAction(async () =>
+    api.get<FitmentDictionarySummary[]>('/v1/commerce/fitment/dictionaries')
+  );
+}
+
+export async function installFitmentDictionaryAction(
+  slug: string
+): Promise<ActionResult<{ id: string }>> {
+  return restAction(async () => {
+    const result = await api.post<{ id: string }>(
+      `/v1/commerce/fitment/dictionaries/${slug}/install`,
+      {}
+    );
+    revalidatePath('/commerce/fitment');
+    return result;
+  });
 }
 
 export async function createFitmentDomainAction(

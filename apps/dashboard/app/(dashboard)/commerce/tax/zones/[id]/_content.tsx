@@ -17,6 +17,8 @@ import {
   TableHeader,
   TableRow,
   Text,
+  statusLabel,
+  statusTone,
 } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -70,7 +72,16 @@ export async function TaxZoneDetailContent({ id }: Props) {
             {zone.region ? ` — ${zone.region}` : ''}
           </Heading>
           <Stack direction="row" gap={2} align="center">
-            <Badge variant="outline">{zone.nexusType}</Badge>
+            <Badge
+              color={statusTone(zone.isActive ? 'active' : 'inactive')}
+              variant="soft"
+              size="sm"
+            >
+              {statusLabel(zone.isActive ? 'active' : 'inactive')}
+            </Badge>
+            <Badge variant="outline" size="sm">
+              {zone.nexusType}
+            </Badge>
             {zone.registrationNumber && (
               <Text size="xs" className="font-mono" variant="muted">
                 {zone.registrationNumber}
@@ -81,7 +92,7 @@ export async function TaxZoneDetailContent({ id }: Props) {
         <TaxZoneDeleteButton zoneId={zone.id} />
       </Stack>
 
-      <Card>
+      <Card variant="module">
         <CardHeader>
           <Stack gap={1}>
             <Stack direction="row" align="center" gap={2}>

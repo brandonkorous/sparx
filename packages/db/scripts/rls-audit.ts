@@ -57,13 +57,10 @@ const ENABLE_ONLY_TABLES = new Set<string>([
   // as the auth tables; /v1/me/legal-* reads go through withRequestTenant so
   // the ENABLE policy still scopes sparx_app.
   'platform_legal_acceptance',
-  // Fitment reference tables — nullable tenant_id for sparx-seeded
-  // globals; carry an OR-clause policy that permits global + own rows.
-  // FORCE would block the seed insert path.
-  'commerce_fitment_domains',
-  'commerce_fitment_categories',
-  'commerce_fitment_items',
-  'commerce_fitment_variants',
+  // (Fitment reference tables were ENABLE-only while a platform-global Vehicle
+  // domain existed; 20260923000000_fitment_remove_global_vehicle removed the
+  // global concept and tightened them to tenant_id NOT NULL + FORCE, so they
+  // are now ordinary tenant-scoped tables — no exemption needed.)
 ]);
 
 // Tables intentionally WITHOUT RLS — tenant-shared reference data, OR non-RLS

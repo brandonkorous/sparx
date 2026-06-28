@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Power, Trash2 } from 'lucide-react';
 
-import { Button, Stack, useConfirm } from '@sparx/ui';
+import { Button, Stack, Text, useConfirm } from '@sparx/ui';
 
 import {
   setProviderEnabledAction,
@@ -85,7 +85,11 @@ export function ProviderActionsBar({
           Uninstall
         </Button>
       </Stack>
-      {testResult && <span className="text-xs text-[var(--color-text-muted)]">{testResult}</span>}
+      {testResult && (
+        <Text size="xs" variant="muted" role="status" aria-live="polite">
+          {testResult}
+        </Text>
+      )}
     </Stack>
   );
 }

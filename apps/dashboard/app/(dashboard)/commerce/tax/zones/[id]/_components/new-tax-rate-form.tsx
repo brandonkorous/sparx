@@ -79,7 +79,7 @@ export function NewTaxRateForm({ zoneId }: { zoneId: string }) {
           <Text size="sm">Apply this rate to shipping charges too</Text>
         </label>
         {error && (
-          <Text size="sm" className="text-[var(--color-danger)]">
+          <Text size="sm" variant="danger" role="alert" aria-live="polite">
             {error}
           </Text>
         )}

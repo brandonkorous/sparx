@@ -34,7 +34,9 @@ interface RestockLine {
 export interface ReturnSummary {
   id: string;
   orderId: string;
+  orderNumber: string | null;
   customerId: string | null;
+  customerName: string | null;
   status: ReturnStatus;
   preferredOutcome: string;
   itemCount: number;
@@ -53,6 +55,7 @@ export interface ReturnDetail extends ReturnSummary {
   items: {
     id: string;
     orderItemId: string;
+    orderItemName: string | null;
     quantity: number;
     approvedQuantity: number;
     reasonCode: string;
@@ -62,9 +65,11 @@ export interface ReturnDetail extends ReturnSummary {
   inspections: {
     id: string;
     returnLineItemId: string;
+    lineItemName: string | null;
     condition: string;
     restockable: boolean;
     warehouseId: string | null;
+    warehouseName: string | null;
     note: string | null;
   }[];
   labels: {
@@ -106,12 +111,26 @@ export async function list(
     const orderIds = [...new Set(rows.map((r) => r.orderId))];
     const orders = await tx.order.findMany({
       where: { id: { in: orderIds } },
-      select: { id: true, customerId: true },
+      select: {
+        id: true,
+        customerId: true,
+        orderNumber: true,
+        customer: { select: CUSTOMER_NAME_SELECT },
+      },
     });
-    const customerByOrder = new Map(orders.map((o) => [o.id, o.customerId]));
+    const metaByOrder = new Map<string, OrderMeta>(
+      orders.map((o) => [
+        o.id,
+        {
+          customerId: o.customerId,
+          customerName: customerDisplayName(o.customer),
+          orderNumber: o.orderNumber,
+        },
+      ])
+    );
 
     return {
-      items: rows.map((row) => toSummary(row, customerByOrder.get(row.orderId) ?? null)),
+      items: rows.map((row) => toSummary(row, metaByOrder.get(row.orderId))),
       total,
     };
   });
@@ -126,15 +145,44 @@ export async function get(ctx: ServiceContext, returnId: string): Promise<Return
     if (!row) return null;
     const order = await tx.order.findFirst({
       where: { id: row.orderId },
-      select: { customerId: true },
+      select: {
+        customerId: true,
+        orderNumber: true,
+        customer: { select: CUSTOMER_NAME_SELECT },
+        items: { select: { id: true, name: true } },
+      },
     });
-    return { row, customerId: order?.customerId ?? null };
+
+    // orderItemId → display name (sku/title snapshot frozen on the order line).
+    const orderItemName = new Map((order?.items ?? []).map((it) => [it.id, it.name]));
+    // returnLineItemId → the product it returns (via its orderItemId).
+    const lineItemName = new Map(
+      row.items.map((li) => [li.id, orderItemName.get(li.orderItemId) ?? null])
+    );
+    // Resolve any inspection warehouse ids → names in one query.
+    const warehouseIds = [
+      ...new Set(row.inspections.map((i) => i.warehouseId).filter((x): x is string => Boolean(x))),
+    ];
+    const warehouses = warehouseIds.length
+      ? await tx.warehouse.findMany({
+          where: { id: { in: warehouseIds } },
+          select: { id: true, name: true },
+        })
+      : [];
+    const warehouseName = new Map(warehouses.map((w) => [w.id, w.name]));
+
+    const meta: OrderMeta = {
+      customerId: order?.customerId ?? null,
+      customerName: customerDisplayName(order?.customer ?? null),
+      orderNumber: order?.orderNumber ?? null,
+    };
+    return { row, meta, orderItemName, lineItemName, warehouseName };
   });
   if (!detail) throw new CommerceNotFoundError('ReturnRequest', returnId);
 
-  const { row, customerId } = detail;
+  const { row, meta, orderItemName, lineItemName, warehouseName } = detail;
   return {
-    ...toSummary(row, customerId),
+    ...toSummary(row, meta),
     staffNote: row.staffNote,
     refundedAmountCents: row.refundedAmountCents,
     restockingFeeCents: row.restockingFeeCents,
@@ -146,6 +194,7 @@ export async function get(ctx: ServiceContext, returnId: string): Promise<Return
     items: row.items.map((it) => ({
       id: it.id,
       orderItemId: it.orderItemId,
+      orderItemName: orderItemName.get(it.orderItemId) ?? null,
       quantity: it.quantity,
       approvedQuantity: it.approvedQuantity,
       reasonCode: it.reasonCode,
@@ -155,9 +204,11 @@ export async function get(ctx: ServiceContext, returnId: string): Promise<Return
     inspections: row.inspections.map((ins) => ({
       id: ins.id,
       returnLineItemId: ins.returnLineItemId,
+      lineItemName: lineItemName.get(ins.returnLineItemId) ?? null,
       condition: ins.condition,
       restockable: ins.restockable,
       warehouseId: ins.warehouseId,
+      warehouseName: ins.warehouseId ? (warehouseName.get(ins.warehouseId) ?? null) : null,
       note: ins.note,
     })),
     labels: row.labels.map((lbl) => ({
@@ -574,14 +625,52 @@ async function assertReturnWritable(tx: TxClient, returnId: string): Promise<Ret
   return ret;
 }
 
+// Order-derived display fields a return surfaces (the return row itself only
+// stores an orderId — name/number come from the order + its customer).
+interface OrderMeta {
+  customerId: string | null;
+  customerName: string | null;
+  orderNumber: string | null;
+}
+
+const CUSTOMER_NAME_SELECT = {
+  firstName: true,
+  lastName: true,
+  company: true,
+  email: true,
+} satisfies Prisma.CustomerSelect;
+
+// Best human label for a customer: full name → company → email. Returns null
+// when nothing usable exists so the UI can fall back to a short id.
+function customerDisplayName(
+  c: {
+    firstName: string | null;
+    lastName: string | null;
+    company: string | null;
+    email: string | null;
+  } | null
+): string | null {
+  if (!c) return null;
+  // First non-empty of: full name → company → email. (`??` won't do — an empty
+  // string must fall through to the next candidate, which nullish-coalescing skips.)
+  const candidates = [[c.firstName, c.lastName].filter(Boolean).join(' '), c.company, c.email];
+  for (const candidate of candidates) {
+    const trimmed = candidate?.trim();
+    if (trimmed) return trimmed;
+  }
+  return null;
+}
+
 function toSummary(
   row: ReturnRequest & { items: ReturnLineItem[] },
-  customerId: string | null
+  meta: OrderMeta | undefined
 ): ReturnSummary {
   return {
     id: row.id,
     orderId: row.orderId,
-    customerId,
+    orderNumber: meta?.orderNumber ?? null,
+    customerId: meta?.customerId ?? null,
+    customerName: meta?.customerName ?? null,
     status: row.status as ReturnStatus,
     preferredOutcome: row.preferredOutcome,
     itemCount: row.items.length,

@@ -99,11 +99,19 @@ const EnvSchema = z
       .string()
       .optional()
       .transform((v) => v === 'true' || v === '1'),
-    // Stripe platform-level keys. Used by the webhook handler and Stripe
+    // Stripe platform-level keys. Used by the webhook handlers and Stripe
     // Connect OAuth. Per-tenant keys live in ProviderInstallation configs.
     // STRIPE_SECRET_KEY       — platform/connect account secret key
-    // STRIPE_PUBLISHABLE_KEY  — returned to storefronts for Stripe.js init
-    // STRIPE_WEBHOOK_SECRET   — whsec_... for the COMMERCE payment webhook
+    // STRIPE_PUBLISHABLE_KEY  — Stripe.js key; the storefront actually reads it as
+    //   the build-time NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in apps/site, so this
+    //   server-side copy is informational (kept for parity / future config endpoint).
+    // STRIPE_WEBHOOK_SECRET   — whsec_... legacy pre-gateway single-account commerce
+    //   secret (superseded by the per-gateway secrets below).
+    // STRIPE_WEBHOOK_SECRET_SPARX_PAY — whsec_... for the sparx Pay (Connect
+    //   destination-charge) payment webhook POST /v1/public/webhooks/sparx-pay.
+    //   Read by @sparx/payments' SparxPayGateway; declared here so boot validates it
+    //   and .env.example documents it. (Stripe Direct uses per-tenant secrets in GSM,
+    //   not an env var; the BYO gateways verify with their own stored secrets.)
     // STRIPE_CLIENT_ID        — Connect OAuth client_id (ca_...)
     // STRIPE_WEBHOOK_SECRET_BILLING — whsec_... for the PLATFORM billing webhook
     //   (subscription/invoice events). Separate endpoint, separate signing secret
@@ -111,6 +119,7 @@ const EnvSchema = z
     STRIPE_SECRET_KEY: z.string().optional(),
     STRIPE_PUBLISHABLE_KEY: z.string().optional(),
     STRIPE_WEBHOOK_SECRET: z.string().optional(),
+    STRIPE_WEBHOOK_SECRET_SPARX_PAY: z.string().optional(),
     STRIPE_WEBHOOK_SECRET_BILLING: z.string().optional(),
     STRIPE_CLIENT_ID: z.string().optional(),
     // Media storage. When GCS_MEDIA_BUCKET is set we use Cloud Storage with
