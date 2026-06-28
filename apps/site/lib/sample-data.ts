@@ -13,6 +13,7 @@
 
 import type {
   PublicCollection,
+  PublicFitmentDimension,
   PublicFitmentDomain,
   PublicProduct,
   PublicProductListItem,
@@ -21,6 +22,16 @@ import type {
 } from '@/lib/commerce';
 
 const SAMPLE_AT = '2026-01-02T00:00:00.000Z';
+
+// The sample Vehicle domain's shape: Make → Model → Engine (the level tree),
+// narrowed by Year (a range axis). Shared by the sample product's fitment rows
+// and the sample domain map so the PDP fitment table renders generically.
+const SAMPLE_VEHICLE_DIMENSIONS: PublicFitmentDimension[] = [
+  { key: 'make', label: 'Make', kind: 'level' },
+  { key: 'model', label: 'Model', kind: 'level' },
+  { key: 'engine', label: 'Engine', kind: 'level' },
+  { key: 'year', label: 'Year', kind: 'range', unit: 'year' },
+];
 
 const first = (v: string | string[] | undefined): string | undefined =>
   Array.isArray(v) ? v[0] : v;
@@ -123,24 +134,20 @@ export const SAMPLE_PRODUCT: PublicProduct = {
       id: 'sample-fit-1',
       domainSlug: 'vehicle',
       domainLabel: 'Vehicle',
-      rangeUnit: 'year',
-      category: 'Ford',
-      item: 'F-250',
-      variant: '6.7L Power Stroke',
-      rangeMin: 2017,
-      rangeMax: 2022,
+      dimensions: SAMPLE_VEHICLE_DIMENSIONS,
+      nodeName: '6.7L Power Stroke',
+      nodePath: ['Ford', 'F-250', '6.7L Power Stroke'],
+      ranges: [{ dimensionKey: 'year', min: 2017, max: 2022 }],
       notes: null,
     },
     {
       id: 'sample-fit-2',
       domainSlug: 'vehicle',
       domainLabel: 'Vehicle',
-      rangeUnit: 'year',
-      category: 'Ram',
-      item: '2500',
-      variant: '6.7L Cummins',
-      rangeMin: 2019,
-      rangeMax: 2023,
+      dimensions: SAMPLE_VEHICLE_DIMENSIONS,
+      nodeName: '6.7L Cummins',
+      nodePath: ['Ram', '2500', '6.7L Cummins'],
+      ranges: [{ dimensionKey: 'year', min: 2019, max: 2023 }],
       notes: null,
     },
   ],
@@ -214,8 +221,7 @@ export const SAMPLE_PRODUCT_EXTRAS: {
       displayName: 'Vehicle',
       description: null,
       iconKey: null,
-      labels: { l1: 'Make', l2: 'Model', l3: 'Engine', range: 'Year' },
-      rangeUnit: 'year',
+      dimensions: SAMPLE_VEHICLE_DIMENSIONS,
     },
   },
 };

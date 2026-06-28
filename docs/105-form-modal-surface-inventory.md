@@ -1,8 +1,8 @@
 # Form & Modal Surface Inventory
 
-Version: 1.16
+Version: 1.17
 Author: Brandon Korous
-Last Updated: 2026-06-27
+Last Updated: 2026-06-28
 
 A complete census of every **form, create/edit flow, and modal/dialog** in the dashboard app
 (`apps/dashboard/app`), with each one's current presentation and the work needed to bring it onto
@@ -324,6 +324,21 @@ Two real bugs surfaced **because** the data finally existed (exactly the point o
 
 - 🐞 **Fitment was missing from the commerce sidebar.** `/commerce/fitment` is a full first-class surface but had no nav entry — reachable only by typing the URL. Added `{ id: 'fitment', label: 'Fitment', icon: Boxes }` to `packages/commerce/src/manifest.ts` (between Collections and Pricing).
 - 🐞 **Global Vehicle domain's categories 400'd — the tree was never browsable.** The seeded global domain uses a sentinel id `00000000-0000-0000-0000-000000000001` (set by the fitment migration) whose version/variant bits are zero: a valid Postgres `uuid` that **Zod 4's strict `.uuid()` (RFC-9562) rejects**. So `GET /v1/commerce/fitment/domains/:domainId/categories` failed request validation and the editor silently rendered an empty domain under a "3 makes" badge. Pre-existing latent bug — invisible only because the domain had no categories before. Fixed by accepting the UUID **shape** (`z.guid()`) for fitment reference ids in `services/api-rest/.../commerce/fitment.ts` (path params) + `packages/commerce-schemas/src/fitment.ts` (input ids); product / product-fitment ids stay strict `.uuid()`. Verified on screen: Vehicle → Ford → F-250 → 6.7L/6.0L Power Stroke now renders end to end.
+
+### Fitment rebuild — global removed, then a dimension-driven model (2026-06-28)
+
+Two structural changes landed back-to-back, both eyes-on verified across the whole stack.
+
+**1. The platform-global Vehicle domain is gone.** Nothing fitment-shaped shows by default (a bakery/publisher never sees "Vehicle"). The four reference tables went `tenant_id NOT NULL` + strict FORCE RLS (migration `20260923000000`); the platform now ships a **library of 14 installable dictionaries** (`packages/commerce-schemas/src/fitment-dictionaries.ts`, industry-varied) a tenant stamps as its own tenant-scoped copy. New dashboard surfaces: a **dictionary picker** (`fitment/_components/dictionary-picker.tsx`, 3-col `ModalContent size="2xl"`, soft module badges, correct pluralization via shared `pluralize.ts`) + the install/“+ New domain” shell (`fitment-manager.tsx`).
+
+**2. The rigid 3-level + 1-range model became fully dimension-driven (the real fix).** A merchant flagged that the old `labels.l1/l2/l3 + rangeUnit` baked a 3-tier cap and shoved year into one product-side range — "2026 Ford F-250 6.7L" or "2026 MacBook Pro M2" couldn't be expressed, and the tree was **add-only** (no rename/delete/uninstall — a typo was unfixable). Reworked to:
+
+- **Schema** (`33-commerce-fitment.prisma`, migration `20260924000000`, **data-preserving**, tenant-looped for FORCE-RLS): `fitment_domains.dimensions` JSON (`{key,label,kind:'level'|'range',unit?}[]`, unlimited depth); a single self-referential **`fitment_nodes`** table (replaces categories/items/variants) carrying materialized `path`/`pathNames`/`depth` for ancestor (storefront "fits my 2015 F-250") + descendant (collection "all Ford parts") filtering; `product_fitments.nodeId` (null = whole-domain) + a **`product_fitment_ranges`** child (unlimited numeric axes). Every existing row migrated (category/item/variant → node keeping its id; labels → dimensions; range_min/max → a range row).
+- **Service / API** (`fitment-service.ts`, `commerce/fitment.ts`): generic node CRUD (create/update/**delete**/reorder, with rename cascading `pathNames`), domain update + **uninstall** (returns products-affected), dimension-aware `lookup`.
+- **Dashboard** (all standardized: `useConfirm`, soft module badges, `Button shape="square"` icon buttons): **dimension-builder** dialog (`new-domain-dialog.tsx` — add arbitrary level/range dimensions, **no Vehicle default**), a generic **N-level tree editor** (`fitment-reference-editor.tsx` — lazy drill of ANY depth with inline **rename + delete + add-per-level + drag-reorder (whole-row, dnd-kit) + uninstall**), a shared **node drill** (`products/_components/fitment-node-drill.tsx`) reused by the product **Fitment panel** (node path + per-range-dimension from/to inputs) and the product **wizard** step.
+- **Consumers migrated** to nodes/ranges: storefront read-path + generic `FacetPanel` (`apps/site`), B2B **fleet** (vehicle = node + range values, ancestor-matched compatible-products), `collection-rules` (descendant-by-name via `node.pathNames`), `search-projection` (depth-bucketed denorm).
+
+Verified: all 7 affected workspaces `tsc` clean; migration applied + re-seed (`4 makes / 8 models / 11 engines`, `nodes=23`, `ranges=8`) data-correct on docker; on screen — Vehicle tree drills 3 deep with rename/delete on every node + uninstall on the domain, the dimension builder opens with neutral placeholders, and a product rule shows `Ford / F-250 / 6.7L Power Stroke` + a `Year 2011–2022` narrowing badge with Year from/to inputs.
 
 ### Platform gaps surfaced (fix once, on the primitive)
 

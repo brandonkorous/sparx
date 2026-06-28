@@ -7,6 +7,7 @@
 // is produced by Better Auth's own hasher (scrypt, via better-auth/crypto) so
 // the seeded credential row verifies against the live sign-in flow.
 
+import { readFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 
 import { PrismaClient, type Prisma } from '@prisma/client';
@@ -17,6 +18,22 @@ import { PLATFORM_CATALOG } from '@sparx/builder-schemas';
 import { getFitmentDictionary, planFitmentDictionaryRows } from '@sparx/commerce-schemas';
 
 const prisma = new PrismaClient();
+
+// The owner (sparx_owner) connection string, for the few GLOBAL, owner-write
+// tables (e.g. platform_components). Prefers the ambient env (prod sets it on
+// the job); falls back to reading packages/db/.env in dev — dependency-free so
+// the seed needs no dotenv. Falls back to the default URL if neither resolves.
+function ownerDatabaseUrl(): string | undefined {
+  if (process.env.MIGRATION_DATABASE_URL) return process.env.MIGRATION_DATABASE_URL;
+  try {
+    const env = readFileSync('.env', 'utf8');
+    const match = /^\s*MIGRATION_DATABASE_URL\s*=\s*"?([^"\n\r]+)"?/m.exec(env);
+    if (match?.[1]) return match[1].trim();
+  } catch {
+    // no .env file (e.g. prod) — fall through to the default connection
+  }
+  return process.env.DATABASE_URL;
+}
 
 const TENANT_SLUG = 'e2e-store';
 const STAFF_EMAIL = 'e2e-staff@sparx.test';
@@ -1145,6 +1162,13 @@ async function seedDemoInventory(tenantId: string): Promise<void> {
     }
     const mainId = whByCode.get('MAIN')!;
 
+    // Stale storefront/test carts pin demo variants via a RESTRICT FK
+    // (commerce_cart_items.variant_id), which would block the product reset
+    // below. Carts are ephemeral shopping sessions — clear this tenant's first so
+    // the idempotent re-seed always succeeds.
+    await tx.cartItem.deleteMany({ where: { tenantId } });
+    await tx.cart.deleteMany({ where: { tenantId } });
+
     // Drop prior demo products → cascades variants/levels/movements/lots.
     await tx.product.deleteMany({ where: { tenantId, handle: { startsWith: 'inv-demo-' } } });
 
@@ -1649,26 +1673,35 @@ async function seedDemoInventory(tenantId: string): Promise<void> {
 // the reserved `system` id (the seed predates any real platform user). Stays in sync
 // with the static catalog automatically — new catalog entries seed with no change here.
 async function seedPlatformCatalog(): Promise<void> {
-  for (const e of PLATFORM_CATALOG) {
-    const data = {
-      name: e.name,
-      category: e.category,
-      kind: e.kind,
-      icon: e.icon,
-      description: e.description.slice(0, 280),
-      surfaces: e.surfaces,
-      tree: e.tree as unknown as Prisma.InputJsonValue,
-      tags: e.tags ?? [],
-      status: 'published' as const,
-      visibility: 'public' as const,
-    };
-    await prisma.platformComponent.upsert({
-      where: { key: e.key },
-      update: data,
-      create: { key: e.key, authorId: 'system', ...data },
-    });
+  // platform_components is GLOBAL with owner-only writes: the sparx_app role can
+  // only SELECT published rows (packages/db/CLAUDE.md), so the default seed
+  // connection's upsert violates RLS. Write through the owner connection
+  // (MIGRATION_DATABASE_URL = sparx_owner) so it passes in both docker and prod.
+  const owner = new PrismaClient({ datasourceUrl: ownerDatabaseUrl() });
+  try {
+    for (const e of PLATFORM_CATALOG) {
+      const data = {
+        name: e.name,
+        category: e.category,
+        kind: e.kind,
+        icon: e.icon,
+        description: e.description.slice(0, 280),
+        surfaces: e.surfaces,
+        tree: e.tree as unknown as Prisma.InputJsonValue,
+        tags: e.tags ?? [],
+        status: 'published' as const,
+        visibility: 'public' as const,
+      };
+      await owner.platformComponent.upsert({
+        where: { key: e.key },
+        update: data,
+        create: { key: e.key, authorId: 'system', ...data },
+      });
+    }
+    console.log(`[seed] platform component catalog: ${PLATFORM_CATALOG.length} entries published`);
+  } finally {
+    await owner.$disconnect();
   }
-  console.log(`[seed] platform component catalog: ${PLATFORM_CATALOG.length} entries published`);
 }
 
 // ── Demo scheduling data (docs/79) ───────────────────────────────────────────
@@ -2889,12 +2922,12 @@ async function seedDemoFitment(tenantId: string): Promise<void> {
     await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
 
     // Idempotent reset: drop this tenant's product links + fitment domains
-    // (cascades categories/items/variants). Nothing is global to clear.
+    // (cascades the node tree). Nothing is global to clear.
     await tx.productFitment.deleteMany({ where: { tenantId } });
     await tx.fitmentDomain.deleteMany({ where: { tenantId } });
 
-    // Stamp the Vehicle dictionary as a tenant-scoped tree via the shared
-    // planner — identical to installFitmentDictionary's codepath.
+    // Stamp the Vehicle dictionary as a tenant-scoped domain + node tree via the
+    // shared planner — identical to installFitmentDictionary's codepath.
     const planned = planFitmentDictionaryRows(vehicle, tenantId, () => randomUUID());
     await tx.fitmentDomain.create({
       data: {
@@ -2904,42 +2937,24 @@ async function seedDemoFitment(tenantId: string): Promise<void> {
         displayName: planned.domain.displayName,
         description: planned.domain.description,
         iconKey: planned.domain.iconKey,
-        labels: planned.domain.labels,
-        rangeUnit: planned.domain.rangeUnit,
+        dimensions: planned.domain.dimensions,
         position: planned.domain.position,
       },
     });
-    await tx.fitmentCategory.createMany({
-      data: planned.categories.map((c) => ({
-        id: c.id,
+    await tx.fitmentNode.createMany({
+      data: planned.nodes.map((n) => ({
+        id: n.id,
         tenantId,
-        domainId: c.domainId,
-        name: c.name,
-        slug: c.slug,
-        attributes: c.attributes,
-        position: c.position,
-      })),
-    });
-    await tx.fitmentItem.createMany({
-      data: planned.items.map((i) => ({
-        id: i.id,
-        tenantId,
-        categoryId: i.categoryId,
-        name: i.name,
-        slug: i.slug,
-        attributes: i.attributes,
-        position: i.position,
-      })),
-    });
-    await tx.fitmentVariant.createMany({
-      data: planned.variants.map((v) => ({
-        id: v.id,
-        tenantId,
-        itemId: v.itemId,
-        name: v.name,
-        slug: v.slug,
-        attributes: v.attributes,
-        position: v.position,
+        domainId: n.domainId,
+        parentId: n.parentId,
+        dimensionKey: n.dimensionKey,
+        name: n.name,
+        slug: n.slug,
+        attributes: n.attributes,
+        path: n.path,
+        pathNames: n.pathNames,
+        depth: n.depth,
+        position: n.position,
       })),
     });
 
@@ -2957,42 +2972,39 @@ async function seedDemoFitment(tenantId: string): Promise<void> {
             select: { id: true, title: true },
           });
 
+    const yearKey = planned.index.rangeKeys[0] ?? 'year';
     let linkCount = 0;
     for (const product of products) {
       for (const rule of FITMENT_RULES) {
         if (!product.title.includes(rule.keyword)) continue;
-        const categoryId = planned.index.categoryIdBySlug[rule.makeSlug];
-        if (!categoryId) continue;
-        const itemId = rule.modelSlug
-          ? (planned.index.itemIdByKey[`${rule.makeSlug}/${rule.modelSlug}`] ?? null)
-          : null;
-        const variantId =
-          rule.modelSlug && rule.engineSlug
-            ? (planned.index.variantIdByKey[
-                `${rule.makeSlug}/${rule.modelSlug}/${rule.engineSlug}`
-              ] ?? null)
-            : null;
+        // Resolve the deepest available node by slug path (make/model/engine);
+        // a rule with only a make attaches at the make node (universal fit).
+        const slugPath = [rule.makeSlug, rule.modelSlug, rule.engineSlug].filter(Boolean).join('/');
+        const nodeId =
+          planned.index.nodeIdByPath[slugPath] ?? planned.index.nodeIdByPath[rule.makeSlug] ?? null;
+        if (!nodeId) continue;
         await tx.productFitment.create({
           data: {
             tenantId,
             productId: product.id,
             domainId: planned.index.domainId,
-            categoryId,
-            itemId,
-            variantId,
-            rangeMin: rule.yearMin,
-            rangeMax: rule.yearMax,
-            notes: itemId
+            nodeId,
+            notes: rule.modelSlug
               ? null
               : `Universal fit across all ${rule.makeSlug.toUpperCase()} diesel platforms`,
+            ranges: {
+              create: [{ tenantId, dimensionKey: yearKey, min: rule.yearMin, max: rule.yearMax }],
+            },
           },
         });
         linkCount += 1;
       }
     }
 
+    const makeCount = planned.nodes.filter((n) => n.depth === 0).length;
+    const engineCount = planned.nodes.filter((n) => n.depth === 2).length;
     console.log(
-      `[seed] fitment: installed Vehicle dictionary (${planned.categories.length} makes, ${planned.variants.length} engines), ${linkCount} product links`
+      `[seed] fitment: installed Vehicle dictionary (${makeCount} makes, ${engineCount} engines), ${linkCount} product links`
     );
   });
 }

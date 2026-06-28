@@ -2,15 +2,15 @@
 
 // Product wizard — Fitment step (conditional).
 //
-// Fitment is GENERALIZED, not automotive: a domain declares its levels and
-// labels (vehicle → Make/Model/Engine, pet store → Species/Breed, phone cases →
-// Brand/Model). This step drives the same domain → category → item → variant
-// cascade the detail tab uses, labelled dynamically from the domain so it stays
-// generic. The wizard only renders this step when the tenant actually has
-// fitment data (a domain with categories) — see the gate in index.tsx.
+// Fitment is GENERALIZED, not automotive: a domain declares an ordered list of
+// DIMENSIONS — `level` tiers (vehicle → Make/Model/Engine, pet store →
+// Species/Breed) + `range` axes (Year, Weight). This step drives the same
+// dimension-aware node drill the detail tab uses, so it stays generic. The
+// wizard only renders this step when the tenant actually has fitment data — see
+// the gate in index.tsx.
 //
-// Saves are replace-all (PUT /fitment), so we load existing rows first and send
-// the full set each time.
+// Saves are replace-all (PUT /fitment): load existing rows first, send the full
+// set each time.
 
 import * as React from 'react';
 import { Plus, Trash } from 'lucide-react';
@@ -28,18 +28,14 @@ import {
 } from '@sparx/ui';
 
 import {
-  listFitmentCategoriesAction,
   listFitmentDomainsAction,
-  listFitmentItemsAction,
-  listFitmentVariantsAction,
   listProductFitmentAction,
   setProductFitmentAction,
-  type FitmentCategoryRow,
+  type FitmentDimension,
   type FitmentDomainRow,
-  type FitmentItemRow,
-  type FitmentVariantRow,
   type ProductFitmentRow,
 } from '../../../fitment-actions';
+import { FitmentNodeDrill } from '../fitment-node-drill';
 
 interface FitmentStepProps {
   productId: string;
@@ -47,15 +43,23 @@ interface FitmentStepProps {
   onComplete: () => void;
 }
 
-/** Convert a display-named row back to the PUT entry shape. */
+function levelsOf(d: FitmentDomainRow): FitmentDimension[] {
+  return d.dimensions.filter((dim) => dim.kind === 'level');
+}
+function rangesOf(d: FitmentDomainRow): FitmentDimension[] {
+  return d.dimensions.filter((dim) => dim.kind === 'range');
+}
+
+/** Convert a saved row back to the PUT entry shape. */
 function toEntry(r: ProductFitmentRow): Record<string, unknown> {
   return {
     domainId: r.domainId,
-    categoryId: r.categoryId,
-    ...(r.itemId ? { itemId: r.itemId } : {}),
-    ...(r.variantId ? { variantId: r.variantId } : {}),
-    ...(r.rangeMin !== null ? { rangeMin: r.rangeMin } : {}),
-    ...(r.rangeMax !== null ? { rangeMax: r.rangeMax } : {}),
+    nodeId: r.nodeId,
+    ranges: r.ranges.map((rg) => ({
+      dimensionKey: rg.dimensionKey,
+      ...(rg.min !== null ? { min: rg.min } : {}),
+      ...(rg.max !== null ? { max: rg.max } : {}),
+    })),
     ...(r.notes ? { notes: r.notes } : {}),
   };
 }
@@ -66,20 +70,16 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
   const [rows, setRows] = React.useState<ProductFitmentRow[]>([]);
 
   const [domainId, setDomainId] = React.useState('');
-  const [categoryId, setCategoryId] = React.useState('');
-  const [itemId, setItemId] = React.useState('');
-  const [variantId, setVariantId] = React.useState('');
-  const [rangeMin, setRangeMin] = React.useState('');
-  const [rangeMax, setRangeMax] = React.useState('');
-
-  const [categories, setCategories] = React.useState<FitmentCategoryRow[]>([]);
-  const [items, setItems] = React.useState<FitmentItemRow[]>([]);
-  const [variants, setVariants] = React.useState<FitmentVariantRow[]>([]);
+  const [nodeId, setNodeId] = React.useState<string | null>(null);
+  const [rangeInputs, setRangeInputs] = React.useState<
+    Record<string, { min: string; max: string }>
+  >({});
 
   const [saving, setSaving] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
   const domain = domains.find((d) => d.id === domainId);
+  const ranges = domain ? rangesOf(domain) : [];
 
   const reloadRows = React.useCallback(async () => {
     const res = await listProductFitmentAction(productId);
@@ -105,53 +105,10 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
     };
   }, [productId]);
 
-  // Cascade: domain → categories.
   React.useEffect(() => {
-    if (!domainId) return;
-    let cancelled = false;
-    setCategoryId('');
-    setItems([]);
-    setVariants([]);
-    void listFitmentCategoriesAction(domainId).then((res) => {
-      if (!cancelled && res.ok) setCategories(res.data);
-    });
-    return () => {
-      cancelled = true;
-    };
+    setNodeId(null);
+    setRangeInputs({});
   }, [domainId]);
-
-  // category → items (only if the domain has an L2 level).
-  React.useEffect(() => {
-    if (!categoryId || !domain?.labels.l2) {
-      setItems([]);
-      return;
-    }
-    let cancelled = false;
-    setItemId('');
-    setVariants([]);
-    void listFitmentItemsAction(categoryId).then((res) => {
-      if (!cancelled && res.ok) setItems(res.data);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [categoryId, domain?.labels.l2]);
-
-  // item → variants (only if the domain has an L3 level).
-  React.useEffect(() => {
-    if (!itemId || !domain?.labels.l3) {
-      setVariants([]);
-      return;
-    }
-    let cancelled = false;
-    setVariantId('');
-    void listFitmentVariantsAction(itemId).then((res) => {
-      if (!cancelled && res.ok) setVariants(res.data);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [itemId, domain?.labels.l3]);
 
   async function persist(next: Record<string, unknown>[]) {
     setSaving(true);
@@ -170,31 +127,31 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
   }
 
   async function addRow() {
-    if (!domainId || !categoryId) {
-      setError(`Pick a ${domain?.labels.l1?.toLowerCase() ?? 'category'} first.`);
+    if (!domainId) {
+      setError('Pick a domain first.');
       return;
     }
-    const min = rangeMin.trim() ? Number.parseFloat(rangeMin) : undefined;
-    const max = rangeMax.trim() ? Number.parseFloat(rangeMax) : undefined;
-    if (min !== undefined && max !== undefined && min > max) {
-      setError('Range min must be ≤ range max.');
-      return;
+    const builtRanges: { dimensionKey: string; min?: number; max?: number }[] = [];
+    for (const dim of ranges) {
+      const raw = rangeInputs[dim.key];
+      const min = raw?.min.trim() ? Number.parseFloat(raw.min) : undefined;
+      const max = raw?.max.trim() ? Number.parseFloat(raw.max) : undefined;
+      if (min === undefined && max === undefined) continue;
+      if (min !== undefined && max !== undefined && min > max) {
+        setError(`${dim.label}: from must be ≤ to.`);
+        return;
+      }
+      builtRanges.push({
+        dimensionKey: dim.key,
+        ...(min !== undefined ? { min } : {}),
+        ...(max !== undefined ? { max } : {}),
+      });
     }
-    const entry: Record<string, unknown> = {
-      domainId,
-      categoryId,
-      ...(itemId ? { itemId } : {}),
-      ...(variantId ? { variantId } : {}),
-      ...(min !== undefined && Number.isFinite(min) ? { rangeMin: min } : {}),
-      ...(max !== undefined && Number.isFinite(max) ? { rangeMax: max } : {}),
-    };
+    const entry = { domainId, nodeId, ranges: builtRanges };
     const ok = await persist([...rows.map(toEntry), entry]);
     if (ok) {
-      setCategoryId('');
-      setItemId('');
-      setVariantId('');
-      setRangeMin('');
-      setRangeMax('');
+      setNodeId(null);
+      setRangeInputs({});
     }
   }
 
@@ -203,12 +160,11 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
   }
 
   function rowLabel(r: ProductFitmentRow): string {
-    const parts = [r.categoryName, r.itemName, r.variantName].filter(Boolean);
-    let label = parts.join(' · ');
-    if (r.rangeMin !== null || r.rangeMax !== null) {
-      label += ` (${r.rangeMin ?? '…'}–${r.rangeMax ?? '…'})`;
+    let label = r.nodePath.length > 0 ? r.nodePath.join(' · ') : 'Any';
+    if (r.ranges.length > 0) {
+      label += ` (${r.ranges.map((rg) => `${rg.min ?? '…'}–${rg.max ?? '…'}`).join(', ')})`;
     }
-    return label.length > 0 ? label : r.domainSlug;
+    return label;
   }
 
   return (
@@ -233,7 +189,6 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
             </div>
           ) : (
             <div className="flex flex-col gap-5">
-              {/* Existing entries */}
               {rows.length > 0 && (
                 <div className="flex flex-col gap-2">
                   {rows.map((r) => (
@@ -262,7 +217,6 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
                 </div>
               )}
 
-              {/* Add a new entry — the cascade */}
               <div className="flex flex-col gap-3 rounded-xl border border-[var(--color-border-default)] p-4">
                 <Text size="sm" weight="medium">
                   Add a fit
@@ -285,87 +239,54 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
                   </div>
                 )}
 
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <div>
-                    <Label htmlFor="ft-cat">{domain?.labels.l1 ?? 'Category'}</Label>
-                    <NativeSelect
-                      id="ft-cat"
-                      value={categoryId}
-                      onChange={(e) => setCategoryId(e.target.value)}
-                    >
-                      <option value="">Select…</option>
-                      {categories.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name}
-                        </option>
-                      ))}
-                    </NativeSelect>
+                {domain && (
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <FitmentNodeDrill
+                      key={domainId}
+                      domainId={domain.id}
+                      levels={levelsOf(domain)}
+                      onChange={setNodeId}
+                      className="min-w-0"
+                    />
                   </div>
+                )}
 
-                  {domain?.labels.l2 && (
-                    <div>
-                      <Label htmlFor="ft-item">{domain.labels.l2}</Label>
-                      <NativeSelect
-                        id="ft-item"
-                        value={itemId}
-                        onChange={(e) => setItemId(e.target.value)}
-                        disabled={!categoryId || items.length === 0}
-                      >
-                        <option value="">Any</option>
-                        {items.map((it) => (
-                          <option key={it.id} value={it.id}>
-                            {it.name}
-                          </option>
-                        ))}
-                      </NativeSelect>
-                    </div>
-                  )}
-
-                  {domain?.labels.l3 && (
-                    <div>
-                      <Label htmlFor="ft-variant">{domain.labels.l3}</Label>
-                      <NativeSelect
-                        id="ft-variant"
-                        value={variantId}
-                        onChange={(e) => setVariantId(e.target.value)}
-                        disabled={!itemId || variants.length === 0}
-                      >
-                        <option value="">Any</option>
-                        {variants.map((v) => (
-                          <option key={v.id} value={v.id}>
-                            {v.name}
-                          </option>
-                        ))}
-                      </NativeSelect>
-                    </div>
-                  )}
-                </div>
-
-                {(domain?.rangeUnit != null || domain?.labels.range != null) && (
+                {ranges.length > 0 && (
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <div>
-                      <Label htmlFor="ft-min">
-                        {domain.labels.range ?? 'Range'} from
-                        {domain.rangeUnit ? ` (${domain.rangeUnit})` : ''}
-                      </Label>
-                      <Input
-                        id="ft-min"
-                        inputMode="numeric"
-                        value={rangeMin}
-                        onChange={(e) => setRangeMin(e.target.value)}
-                        placeholder="2011"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="ft-max">{domain.labels.range ?? 'Range'} to</Label>
-                      <Input
-                        id="ft-max"
-                        inputMode="numeric"
-                        value={rangeMax}
-                        onChange={(e) => setRangeMax(e.target.value)}
-                        placeholder="2016"
-                      />
-                    </div>
+                    {ranges.map((dim) => (
+                      <div key={dim.key} className="grid grid-cols-2 gap-2">
+                        <div>
+                          <Label htmlFor={`ft-${dim.key}-min`}>
+                            {dim.label} from{dim.unit ? ` (${dim.unit})` : ''}
+                          </Label>
+                          <Input
+                            id={`ft-${dim.key}-min`}
+                            inputMode="numeric"
+                            value={rangeInputs[dim.key]?.min ?? ''}
+                            onChange={(e) =>
+                              setRangeInputs((prev) => ({
+                                ...prev,
+                                [dim.key]: { min: e.target.value, max: prev[dim.key]?.max ?? '' },
+                              }))
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor={`ft-${dim.key}-max`}>{dim.label} to</Label>
+                          <Input
+                            id={`ft-${dim.key}-max`}
+                            inputMode="numeric"
+                            value={rangeInputs[dim.key]?.max ?? ''}
+                            onChange={(e) =>
+                              setRangeInputs((prev) => ({
+                                ...prev,
+                                [dim.key]: { min: prev[dim.key]?.min ?? '', max: e.target.value },
+                              }))
+                            }
+                          />
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
 
@@ -375,7 +296,7 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
                     color="module"
                     size="sm"
                     onClick={() => void addRow()}
-                    disabled={saving || !categoryId}
+                    disabled={saving}
                     loading={saving}
                     leftIcon={<Plus className="h-3.5 w-3.5" />}
                   >

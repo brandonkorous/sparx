@@ -30,7 +30,7 @@ import {
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { B2bTierAssigner } from './_components/b2b-tier-assigner';
 import { B2bAccountOverridesTable } from './_components/b2b-account-overrides-table';
-import { FleetProfileEditor } from './_components/fleet-profile-editor';
+import { FleetProfileEditor, type FleetVehicleView } from './_components/fleet-profile-editor';
 import { ApprovalRulesEditor } from './_components/approval-rules-editor';
 import { FleetHoldsPanel, type FleetHold } from './_components/fleet-holds-panel';
 
@@ -57,7 +57,7 @@ interface B2bAccount {
   paymentTerms: string | null;
   discountPercent: number;
   fleetSize: number | null;
-  engineProfiles: unknown;
+  fleetVehicles: FleetVehicleView[];
   notes: string | null;
   overrideCount?: number;
 }
@@ -110,6 +110,24 @@ function formatDollars(cents: number) {
   return `$${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 }
 
+// The node path (root → self, e.g. "Ford / F-250 / 6.7L"), falling back to the
+// node name, then the domain name (a whole-domain fleet entry).
+function fleetFitmentLabel(v: FleetVehicleView): string {
+  if (v.nodePath && v.nodePath.length > 0) return v.nodePath.join(' / ');
+  if (v.nodeName) return v.nodeName;
+  return v.domainName ?? '—';
+}
+
+// The per-vehicle range values, labelled with their dimension + unit when the
+// server resolved them (e.g. "Year 2020"); falls back to raw key/value pairs.
+function fleetDetailLabel(v: FleetVehicleView): string {
+  const parts = v.ranges?.length
+    ? v.ranges.map((r) => `${r.label} ${r.value}${r.unit ? ` ${r.unit}` : ''}`)
+    : (v.rangeValues ?? []).map((r) => `${r.dimensionKey} ${r.value}`);
+  if (v.mileage !== undefined) parts.push(`${v.mileage.toLocaleString('en-US')} mi`);
+  return parts.length > 0 ? parts.join(' · ') : '—';
+}
+
 interface Props {
   id: string;
 }
@@ -152,7 +170,7 @@ export async function B2bAccountDetailContent({ id }: Props) {
         ? 'var(--color-warning-500)'
         : 'var(--module-active)';
 
-  const profiles: unknown[] = Array.isArray(account.engineProfiles) ? account.engineProfiles : [];
+  const fleetVehicles: FleetVehicleView[] = account.fleetVehicles ?? [];
 
   return (
     <Stack gap={6}>
@@ -279,58 +297,49 @@ export async function B2bAccountDetailContent({ id }: Props) {
         </CardContent>
       </Card>
 
-      {/* Fleet / engine profiles */}
+      {/* Fleet */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Engine profiles</CardTitle>
+            <CardTitle>Fleet</CardTitle>
             {account.fleetSize !== null && (
               <CardDescription>{account.fleetSize} vehicles in fleet</CardDescription>
             )}
           </div>
-          <FleetProfileEditor
-            accountId={account.id}
-            initialProfiles={
-              profiles as {
-                fitmentCategoryId?: string;
-                fitmentItemId?: string;
-                fitmentVariantId?: string;
-                year?: number;
-                displayName: string;
-                count: number;
-              }[]
-            }
-          />
+          <FleetProfileEditor accountId={account.id} initialVehicles={fleetVehicles} />
         </CardHeader>
-        {profiles.length > 0 && (
+        {fleetVehicles.length > 0 && (
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Year</TableHead>
-                  <TableHead>Vehicle</TableHead>
+                  <TableHead>Label</TableHead>
+                  <TableHead>Fitment</TableHead>
+                  <TableHead>Details</TableHead>
                   <TableHead>Count</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {profiles.map((p: unknown, idx: number) => (
+                {fleetVehicles.map((v, idx) => (
                   <TableRow key={idx}>
                     <TableCell>
-                      <Text size="sm">{(p as { year?: number }).year ?? '—'}</Text>
+                      <Text size="sm" className="font-medium">
+                        {v.label ?? '—'}
+                      </Text>
+                      {v.vin && (
+                        <Text size="sm" variant="muted">
+                          VIN {v.vin}
+                        </Text>
+                      )}
                     </TableCell>
                     <TableCell>
-                      <Text size="sm">
-                        {((p as { displayName?: string }).displayName ??
-                          `${(p as { make?: string }).make ?? ''} ${(p as { model?: string }).model ?? ''} ${(p as { engine?: string }).engine ?? ''}`.trim()) ||
-                          '—'}
-                      </Text>
+                      <Text size="sm">{fleetFitmentLabel(v)}</Text>
                     </TableCell>
                     <TableCell>
-                      <Text size="sm">
-                        {(p as { count?: number }).count !== undefined
-                          ? `×${(p as { count?: number }).count}`
-                          : '—'}
-                      </Text>
+                      <Text size="sm">{fleetDetailLabel(v)}</Text>
+                    </TableCell>
+                    <TableCell>
+                      <Text size="sm">×{v.count ?? 1}</Text>
                     </TableCell>
                   </TableRow>
                 ))}

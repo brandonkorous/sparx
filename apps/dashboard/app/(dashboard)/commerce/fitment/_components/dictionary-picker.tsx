@@ -131,7 +131,7 @@ export function DictionaryPicker({ open, onOpenChange, dictionaries, installedSl
                         {levelChain(dict)}
                       </Badge>
                       <Badge color="module" variant="soft" size="sm">
-                        {dict.categoryCount} {labelL1(dict)}
+                        {dict.rootCount} {labelL1(dict)}
                       </Badge>
                     </Stack>
                     {isInstalled ? (
@@ -161,9 +161,19 @@ export function DictionaryPicker({ open, onOpenChange, dictionaries, installedSl
 }
 
 function labelL1(dict: FitmentDictionarySummary): string {
-  return pluralizeLabel(dict.labels.l1.toLowerCase(), dict.categoryCount);
+  const first = dict.dimensions.find((d) => d.kind === 'level');
+  return pluralizeLabel((first?.label ?? 'item').toLowerCase(), dict.rootCount);
 }
 
+// The level chain plus any range axes, e.g. "Make → Model → Engine · Year".
 function levelChain(dict: FitmentDictionarySummary): string {
-  return [dict.labels.l1, dict.labels.l2, dict.labels.l3].filter(Boolean).join(' → ');
+  const levels = dict.dimensions
+    .filter((d) => d.kind === 'level')
+    .map((d) => d.label)
+    .join(' → ');
+  const ranges = dict.dimensions
+    .filter((d) => d.kind === 'range')
+    .map((d) => d.label)
+    .join(', ');
+  return ranges ? `${levels} · ${ranges}` : levels;
 }

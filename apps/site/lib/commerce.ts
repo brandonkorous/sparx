@@ -134,21 +134,36 @@ export interface PublicProductImage {
   optionValueIds: string[];
 }
 
+/** One axis of a fitment domain (its shape). `level` dimensions form the node
+ *  tree in declared order; `range` dimensions are numeric narrowing axes
+ *  (Year/Weight/Shoe size). `unit` is an optional hint for the range widget. */
+export interface PublicFitmentDimension {
+  key: string;
+  label: string;
+  kind: 'level' | 'range';
+  unit?: string;
+}
+
 // One applicability row on a product, in the generalized fitment model.
-// `domainLabel` is the merchant-facing noun for this vertical's top level
-// (e.g. "Vehicle", "Pet"); category/item/variant are the resolved names down
-// the tree; range + rangeUnit express the optional numeric span (year span,
-// weight band, shoe-size range — unit declared on the domain).
+// `domainLabel` is the merchant-facing noun for this vertical (e.g. "Vehicle",
+// "Pet"); `nodeName`/`nodePath` are the deepest level node + its ancestry
+// (root → self), or null/[] for a universal (whole-domain) rule; `ranges`
+// carry a numeric window per range dimension (year/weight/size span — the unit
+// lives on the matching dimension in `dimensions`).
+export interface PublicProductFitmentRange {
+  dimensionKey: string;
+  min: number | null;
+  max: number | null;
+}
+
 export interface PublicProductFitment {
   id: string;
   domainSlug: string;
   domainLabel: string;
-  rangeUnit: string | null;
-  category: string;
-  item: string | null;
-  variant: string | null;
-  rangeMin: number | null;
-  rangeMax: number | null;
+  dimensions: PublicFitmentDimension[];
+  nodeName: string | null;
+  nodePath: string[];
+  ranges: PublicProductFitmentRange[];
   notes: string | null;
 }
 
@@ -179,34 +194,23 @@ export interface PublicFitmentDomain {
   displayName: string;
   description: string | null;
   iconKey: string | null;
-  labels: { l1?: string; l2?: string; l3?: string; range?: string };
-  rangeUnit: string | null;
+  /** Ordered dimension list — `level` dims drive the node drill (in order),
+   *  `range` dims drive the numeric narrowing widgets. */
+  dimensions: PublicFitmentDimension[];
 }
 
-export interface PublicFitmentCategory {
+/** One node in a domain's `level` tree (a Make, a Model, an Engine — or a
+ *  Species, a Breed). `dimensionKey` names which level it sits at; `childCount`
+ *  tells the panel whether a deeper level exists (0 = leaf, end of the drill). */
+export interface PublicFitmentNode {
   id: string;
   name: string;
   slug: string;
-  iconMediaId: string | null;
+  dimensionKey: string;
+  depth: number;
+  position: number;
+  childCount: number;
 }
-
-export interface PublicFitmentItem {
-  id: string;
-  name: string;
-  slug: string;
-}
-
-export interface PublicFitmentVariant {
-  id: string;
-  name: string;
-  slug: string;
-}
-
-/** Back-compat alias — storefront callers used `PublicVehicleMake` when
- *  fitment was vehicle-only. The shape is now a generic fitment category
- *  with `name`/`slug`. New code should use
- *  PublicFitmentCategory directly. */
-export type PublicVehicleMake = PublicFitmentCategory;
 
 // ─── Calls ─────────────────────────────────────────────────────────────
 
@@ -268,14 +272,14 @@ export interface ProductListFilters {
   vendor?: string;
   productType?: string;
   tag?: string;
-  /** Generalized fitment filter: category name + optional numeric range value
-   *  (year / weight / size — the unit is implied by the active domain). */
-  fitmentCategory?: string;
+  /** Generalized fitment filter: the NAME of any selected `level` node (a Make,
+   *  Model, Engine — or a Species, Breed). The API matches it against the
+   *  node's ancestry (`node.pathNames has <name>`), so picking any level narrows
+   *  to that subtree. Sent on the wire as `fitmentMake` (the API param name). */
+  fitmentNodeName?: string;
+  /** Optional numeric narrowing against a `range` dimension (year / weight /
+   *  size — the unit is implied by the active domain). Sent as `fitmentYear`. */
   fitmentRangeValue?: number;
-  /** Legacy vehicle aliases — api-rest still accepts them and maps them onto
-   *  category + range internally. Kept for SEO/back-compat with old URLs. */
-  fitmentMake?: string;
-  fitmentYear?: number;
   minPriceCents?: number;
   maxPriceCents?: number;
   inStock?: boolean;
@@ -294,10 +298,11 @@ export async function listProducts(
     vendor: filters.vendor,
     productType: filters.productType,
     tag: filters.tag,
-    fitmentCategory: filters.fitmentCategory,
-    fitmentRangeValue: filters.fitmentRangeValue,
-    fitmentMake: filters.fitmentMake,
-    fitmentYear: filters.fitmentYear,
+    // The listing filter reads `fitmentMake` (a node name, matched against
+    // node.pathNames) + `fitmentYear` (a numeric range value). Generic over the
+    // domain — the names are historical, the behaviour is name + numeric.
+    fitmentMake: filters.fitmentNodeName,
+    fitmentYear: filters.fitmentRangeValue,
     minPriceCents: filters.minPriceCents,
     maxPriceCents: filters.maxPriceCents,
     inStock: filters.inStock === undefined ? undefined : String(filters.inStock),
@@ -640,49 +645,19 @@ export async function listFitmentDomains(tenantSlug: string): Promise<PublicFitm
   return data;
 }
 
-export async function listFitmentCategories(
+/** Drill the domain's `level` node tree. Absent `parentId` → the top-level
+ *  nodes (first level dimension); a node id → that node's children (the next
+ *  level). One call walks any depth, so the storefront facet stays generic
+ *  over `dimensions` — no per-vertical endpoints. */
+export async function listFitmentNodes(
   tenantSlug: string,
-  domainId: string
-): Promise<PublicFitmentCategory[]> {
-  const { data } = await publicGet<PublicFitmentCategory[]>(
-    `/v1/public/commerce/fitment/domains/${encodeURIComponent(domainId)}/categories`,
-    { tenant: tenantSlug },
-    [`commerce:${tenantSlug}:fitment:categories:${domainId}`]
+  domainId: string,
+  parentId?: string
+): Promise<PublicFitmentNode[]> {
+  const { data } = await publicGet<PublicFitmentNode[]>(
+    `/v1/public/commerce/fitment/domains/${encodeURIComponent(domainId)}/nodes`,
+    { tenant: tenantSlug, parentId },
+    [`commerce:${tenantSlug}:fitment:nodes:${domainId}:${parentId ?? 'root'}`]
   );
   return data;
-}
-
-export async function listFitmentItems(
-  tenantSlug: string,
-  categoryId: string
-): Promise<PublicFitmentItem[]> {
-  const { data } = await publicGet<PublicFitmentItem[]>(
-    `/v1/public/commerce/fitment/categories/${encodeURIComponent(categoryId)}/items`,
-    { tenant: tenantSlug },
-    [`commerce:${tenantSlug}:fitment:items:${categoryId}`]
-  );
-  return data;
-}
-
-export async function listFitmentVariants(
-  tenantSlug: string,
-  itemId: string
-): Promise<PublicFitmentVariant[]> {
-  const { data } = await publicGet<PublicFitmentVariant[]>(
-    `/v1/public/commerce/fitment/items/${encodeURIComponent(itemId)}/variants`,
-    { tenant: tenantSlug },
-    [`commerce:${tenantSlug}:fitment:variants:${itemId}`]
-  );
-  return data;
-}
-
-/** Back-compat — keep callers that loaded "vehicle makes" working by
- *  returning the categories of the global Vehicle domain. New code
- *  should compose listFitmentDomains + listFitmentCategories so it's
- *  not hardcoded to the vehicle vertical. */
-export async function listVehicleMakes(tenantSlug: string): Promise<PublicVehicleMake[]> {
-  const domains = await listFitmentDomains(tenantSlug);
-  const vehicle = domains.find((d) => d.slug === 'vehicle');
-  if (!vehicle) return [];
-  return listFitmentCategories(tenantSlug, vehicle.id);
 }

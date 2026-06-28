@@ -1,10 +1,11 @@
-// Commerce — fitment (domains, categories, items, variants + product
+// Commerce — fitment (domains + a generalized node tree + product
 // applicability) and configurator (templates + bundles).
 //
-// "Fitment" is the generalized "this product fits that thing" concept.
-// Domain selects the vocabulary (vehicle / pet / device / apparel / ...);
-// category → item → variant form the 1-3 level tree under it. See
-// packages/commerce/src/services/fitment-service.ts for the storage model.
+// "Fitment" is the generalized "this product fits that thing" concept. A domain
+// declares an ordered list of DIMENSIONS (each a `level` tier or a `range`
+// axis); a single self-referential node tree holds the values at any depth; a
+// product fitment names the deepest level node it targets + a numeric window per
+// range axis. See packages/commerce/src/services/fitment-service.ts.
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -13,17 +14,14 @@ import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
 
-// Fitment reference entities (domain/category/item) can be platform globals,
-// and the seeded global Vehicle domain uses a sentinel id
-// (00000000-0000-0000-0000-000000000001) whose version/variant bits are zero
-// — a valid Postgres uuid that Zod's strict .uuid() (RFC-9562) rejects. Use
-// z.guid() for those path ids so the global tree stays browsable; product /
-// product-fitment ids are always tenant-minted v4, so they keep strict .uuid().
+// Fitment ids are generated/seeded uuids; z.guid() validates the 8-4-4-4-12
+// shape without RFC-9562 version pedantry (some seeded ids zero the version
+// bits), so reference path ids stay valid across services.
 const FitmentId = z.guid();
 const PathId = z.object({ id: FitmentId });
 const DomainParam = z.object({ domainId: FitmentId });
-const CategoryParam = z.object({ categoryId: FitmentId });
-const ItemParam = z.object({ itemId: FitmentId });
+const NodeParam = z.object({ nodeId: FitmentId });
+const NodeListQuery = z.object({ parentId: FitmentId.optional() });
 const ProductIdParam = z.object({ productId: z.string().uuid() });
 const FitmentParam = z.object({ fitmentId: z.string().uuid() });
 
@@ -81,52 +79,62 @@ const fitmentRoutes: FastifyPluginAsync = async (app) => {
     return ok(created);
   });
 
-  // ─── Categories (L1) ──────────────────────────────────────────────
-  app.get('/v1/commerce/fitment/domains/:domainId/categories', async (request) => {
+  app.patch('/v1/commerce/fitment/domains/:id', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const { id } = PathId.parse(request.params);
+    return ok(await fitmentService.updateDomain(toCommerceContext(request), id, request.body));
+  });
+
+  // Uninstall a domain: drops it, its whole node tree, and every product fitment
+  // that referenced it. Returns the count of affected products for the UI.
+  app.delete('/v1/commerce/fitment/domains/:id', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const { id } = PathId.parse(request.params);
+    return ok(await fitmentService.deleteDomain(toCommerceContext(request), id));
+  });
+
+  // ─── Nodes (the value tree, any depth) ────────────────────────────
+  // List children of `?parentId=` (or the domain's top-level nodes when absent).
+  app.get('/v1/commerce/fitment/domains/:domainId/nodes', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
     const { domainId } = DomainParam.parse(request.params);
-    return ok(await fitmentService.listCategories(toCommerceContext(request), domainId));
+    const { parentId } = NodeListQuery.parse(request.query);
+    return ok(
+      await fitmentService.listNodes(toCommerceContext(request), domainId, parentId ?? null)
+    );
   });
 
-  app.post('/v1/commerce/fitment/categories', async (request, reply) => {
+  app.post('/v1/commerce/fitment/nodes', async (request, reply) => {
     requireRole(request, 'editor');
     await requireCommerceModule(request);
-    const created = await fitmentService.createCategory(toCommerceContext(request), request.body);
+    const created = await fitmentService.createNode(toCommerceContext(request), request.body);
     reply.code(201);
     return ok(created);
   });
 
-  // ─── Items (L2) ───────────────────────────────────────────────────
-  app.get('/v1/commerce/fitment/categories/:categoryId/items', async (request) => {
-    requireRole(request, 'viewer');
-    await requireCommerceModule(request);
-    const { categoryId } = CategoryParam.parse(request.params);
-    return ok(await fitmentService.listItems(toCommerceContext(request), categoryId));
-  });
-
-  app.post('/v1/commerce/fitment/items', async (request, reply) => {
+  app.patch('/v1/commerce/fitment/nodes/:nodeId', async (request) => {
     requireRole(request, 'editor');
     await requireCommerceModule(request);
-    const created = await fitmentService.createItem(toCommerceContext(request), request.body);
-    reply.code(201);
-    return ok(created);
+    const { nodeId } = NodeParam.parse(request.params);
+    return ok(await fitmentService.updateNode(toCommerceContext(request), nodeId, request.body));
   });
 
-  // ─── Variants (L3) ────────────────────────────────────────────────
-  app.get('/v1/commerce/fitment/items/:itemId/variants', async (request) => {
-    requireRole(request, 'viewer');
-    await requireCommerceModule(request);
-    const { itemId } = ItemParam.parse(request.params);
-    return ok(await fitmentService.listVariants(toCommerceContext(request), itemId));
-  });
-
-  app.post('/v1/commerce/fitment/variants', async (request, reply) => {
+  // Delete a node + its subtree. Returns the count of affected products.
+  app.delete('/v1/commerce/fitment/nodes/:nodeId', async (request) => {
     requireRole(request, 'editor');
     await requireCommerceModule(request);
-    const created = await fitmentService.createVariant(toCommerceContext(request), request.body);
-    reply.code(201);
-    return ok(created);
+    const { nodeId } = NodeParam.parse(request.params);
+    return ok(await fitmentService.deleteNode(toCommerceContext(request), nodeId));
+  });
+
+  app.post('/v1/commerce/fitment/nodes/reorder', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    await fitmentService.reorderNodes(toCommerceContext(request), request.body);
+    return ok({ reordered: true });
   });
 
   // ─── Product fitment ──────────────────────────────────────────────

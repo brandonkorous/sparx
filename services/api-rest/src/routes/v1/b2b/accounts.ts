@@ -1,13 +1,14 @@
 // B2B accounts — B2B-module-enriched view of the CRM's b2b_accounts spine.
 //
 // These routes add pricing tier assignment, account-level product overrides,
-// fleet/engine-profile management, and the credit/status data that
-// CRM's /v1/crm/b2b-accounts already returns.
+// fleet management (a generalized fitment selection per vehicle: a domain node +
+// a value per range dimension), and the credit/status data that CRM's
+// /v1/crm/b2b-accounts already returns.
 //
 //   GET    /v1/b2b/accounts                          → list (with tier/credit info)
 //   GET    /v1/b2b/accounts/:id                      → fetch one (enriched)
 //   PATCH  /v1/b2b/accounts/:id                      → update B2B fields (tier, credit, notes)
-//   PUT    /v1/b2b/accounts/:id/engine-profiles       → replace fleet profile array
+//   PUT    /v1/b2b/accounts/:id/fleet                  → replace fleet vehicle array
 //   GET    /v1/b2b/accounts/:id/compatible-products   → products compatible with fleet
 //   GET    /v1/b2b/accounts/:id/overrides             → list per-account overrides
 //   POST   /v1/b2b/accounts/:id/overrides             → add override
@@ -60,20 +61,31 @@ const OverrideBody = z
     { message: 'Provide exactly one of priceCents or discountPercentage' }
   );
 
-// An engine profile entry. fitmentVariantId / fitmentItemId / fitmentCategoryId
-// store the IDs from the fitment vocabulary so compatible-products queries can
-// be done by ID join rather than text match.
-const EngineProfileEntry = z.object({
-  fitmentCategoryId: z.string().uuid().optional(), // FitmentCategory (make)
-  fitmentItemId: z.string().uuid().optional(), // FitmentItem (model)
-  fitmentVariantId: z.string().uuid().optional(), // FitmentVariant (engine)
-  year: z.number().int().min(1900).max(2100).optional(),
-  displayName: z.string().max(255),
+// A fleet vehicle entry. Generalized fitment: a vehicle identifies a node in the
+// domain's tree (`nodeId`, the deepest level the account operates — e.g. the
+// 6.7L Power Stroke) plus a numeric value per `range` dimension (`rangeValues`,
+// e.g. Year 2020). `nodeId` null = the whole domain. Compatible-products queries
+// match by node ancestry + range windows (mirrors fitmentService.lookup).
+const FleetVehicleEntry = z.object({
+  label: z.string().min(1).max(127), // "Truck #14", "Service Van A"
+  vin: z
+    .string()
+    .length(17)
+    .regex(/^[A-HJ-NPR-Z0-9]{17}$/, 'VIN excludes I, O, Q and is 17 chars')
+    .optional(),
+  domainId: z.string().uuid(),
+  nodeId: z.string().uuid().nullish(),
+  rangeValues: z
+    .array(z.object({ dimensionKey: z.string().min(1), value: z.number() }))
+    .max(16)
+    .optional(),
+  mileage: z.number().int().nonnegative().optional(),
+  notes: z.string().max(2000).optional(),
   count: z.number().int().min(1).default(1),
 });
 
-const EngineProfilesBody = z.object({
-  profiles: z.array(EngineProfileEntry).max(100),
+const FleetVehiclesBody = z.object({
+  vehicles: z.array(FleetVehicleEntry).max(100),
   fleetSize: z.number().int().min(0).optional(),
 });
 
@@ -126,6 +138,97 @@ function toAccountView(a: {
     createdAt: a.createdAt.toISOString(),
     updatedAt: a.updatedAt.toISOString(),
   };
+}
+
+// One stored fleet vehicle (the JSONB shape persisted on engineProfiles).
+interface StoredFleetVehicle {
+  label?: string;
+  vin?: string;
+  domainId?: string;
+  nodeId?: string | null;
+  rangeValues?: { dimensionKey: string; value: number }[];
+  mileage?: number;
+  notes?: string;
+  count?: number;
+}
+
+function readFleet(value: unknown): StoredFleetVehicle[] {
+  return Array.isArray(value) ? (value as StoredFleetVehicle[]) : [];
+}
+
+// A fitment dimension as stored on a domain's `dimensions` JSONB.
+interface StoredDimension {
+  key: string;
+  label: string;
+  kind: 'level' | 'range';
+  unit?: string;
+}
+
+// Resolved fleet vehicle for display — the node path (root → self) + the range
+// values rendered with their dimension label and unit.
+interface FleetVehicleView extends StoredFleetVehicle {
+  domainName: string | null;
+  nodeName: string | null;
+  nodePath: string[];
+  ranges: { dimensionKey: string; label: string; unit: string | null; value: number }[];
+}
+
+/**
+ * Enrich stored fleet vehicles with display data (domain name, node path, and a
+ * labelled range list) by reading the referenced domains' `dimensions` and the
+ * referenced nodes' `name`/`pathNames` — generic over any domain's dimensions,
+ * no hardcoded make/model/engine/year vocabulary.
+ */
+async function resolveFleetVehicles(
+  ctx: { tenantId: string },
+  vehicles: StoredFleetVehicle[]
+): Promise<FleetVehicleView[]> {
+  const domainIds = [...new Set(vehicles.map((v) => v.domainId).filter(Boolean) as string[])];
+  const nodeIds = [...new Set(vehicles.map((v) => v.nodeId).filter(Boolean) as string[])];
+
+  const [domains, nodes] = await withTenant(ctx, (tx) =>
+    Promise.all([
+      domainIds.length > 0
+        ? tx.fitmentDomain.findMany({
+            where: { id: { in: domainIds }, deletedAt: null },
+            select: { id: true, displayName: true, dimensions: true },
+          })
+        : Promise.resolve([]),
+      nodeIds.length > 0
+        ? tx.fitmentNode.findMany({
+            where: { id: { in: nodeIds }, deletedAt: null },
+            select: { id: true, name: true, pathNames: true },
+          })
+        : Promise.resolve([]),
+    ])
+  );
+
+  const domainById = new Map(domains.map((d) => [d.id, d]));
+  const nodeById = new Map(nodes.map((n) => [n.id, n]));
+
+  return vehicles.map((v) => {
+    const domain = v.domainId ? domainById.get(v.domainId) : undefined;
+    const dims: StoredDimension[] = Array.isArray(domain?.dimensions)
+      ? (domain.dimensions as unknown as StoredDimension[])
+      : [];
+    const dimByKey = new Map(dims.map((d) => [d.key, d]));
+    const node = v.nodeId ? nodeById.get(v.nodeId) : undefined;
+    return {
+      ...v,
+      domainName: domain?.displayName ?? null,
+      nodeName: node?.name ?? null,
+      nodePath: node?.pathNames ?? [],
+      ranges: (v.rangeValues ?? []).map((rv) => {
+        const dim = dimByKey.get(rv.dimensionKey);
+        return {
+          dimensionKey: rv.dimensionKey,
+          label: dim?.label ?? rv.dimensionKey,
+          unit: dim?.unit ?? null,
+          value: rv.value,
+        };
+      }),
+    };
+  });
 }
 
 const b2bAccountRoutes: FastifyPluginAsync = (app) => {
@@ -190,7 +293,12 @@ const b2bAccountRoutes: FastifyPluginAsync = (app) => {
       })
     );
     if (!account) throw notFound('b2b account');
-    return ok({ ...toAccountView(account), overrideCount: account._count.productOverrides });
+    const fleetVehicles = await resolveFleetVehicles(ctx, readFleet(account.engineProfiles));
+    return ok({
+      ...toAccountView(account),
+      fleetVehicles,
+      overrideCount: account._count.productOverrides,
+    });
   });
 
   // ─── Patch (B2B-specific fields) ─────────────────────────────────────────
@@ -243,32 +351,63 @@ const b2bAccountRoutes: FastifyPluginAsync = (app) => {
     return ok(toAccountView(updated));
   });
 
-  // ─── Engine profiles (fleet) ─────────────────────────────────────────────
+  // ─── Fleet vehicles ──────────────────────────────────────────────────────
+  // The fleet is stored as a JSONB array on engine_profiles; each entry is a
+  // generalized fitment selection (a domain + the deepest node + a value per
+  // range dimension), not an automotive-specific make/model/engine triple.
 
-  app.put('/v1/b2b/accounts/:id/engine-profiles', async (request) => {
+  app.put('/v1/b2b/accounts/:id/fleet', async (request) => {
     requireRole(request, 'editor');
     await requireB2bModule(request);
     const ctx = toB2bContext(request);
     const { id } = PathId.parse(request.params);
-    const body = EngineProfilesBody.parse(request.body);
+    const body = FleetVehiclesBody.parse(request.body);
 
     const account = await withTenant(ctx, (tx) =>
       tx.b2BAccount.findFirst({ where: { id, tenantId: ctx.tenantId, deletedAt: null } })
     );
     if (!account) throw notFound('b2b account');
 
+    // Validate every referenced domain + node belongs to this tenant so a fleet
+    // can't pin to another tenant's fitment tree (RLS is the backstop, this is
+    // the friendly error).
+    const domainIds = [...new Set(body.vehicles.map((v) => v.domainId))];
+    const nodeIds = [...new Set(body.vehicles.map((v) => v.nodeId).filter(Boolean) as string[])];
+    const [domains, nodes] = await withTenant(ctx, (tx) =>
+      Promise.all([
+        tx.fitmentDomain.findMany({
+          where: { id: { in: domainIds }, deletedAt: null },
+          select: { id: true },
+        }),
+        nodeIds.length > 0
+          ? tx.fitmentNode.findMany({
+              where: { id: { in: nodeIds }, deletedAt: null },
+              select: { id: true, domainId: true },
+            })
+          : Promise.resolve([]),
+      ])
+    );
+    const knownDomains = new Set(domains.map((d) => d.id));
+    const nodeDomain = new Map(nodes.map((n) => [n.id, n.domainId]));
+    for (const v of body.vehicles) {
+      if (!knownDomains.has(v.domainId)) throw notFound('fitment domain');
+      if (v.nodeId && nodeDomain.get(v.nodeId) !== v.domainId) throw notFound('fitment node');
+    }
+
     const updated = await withTenant(ctx, (tx) =>
       tx.b2BAccount.update({
         where: { id },
         data: {
-          engineProfiles: body.profiles,
+          engineProfiles: body.vehicles,
           ...(body.fleetSize !== undefined ? { fleetSize: body.fleetSize } : {}),
           updatedAt: new Date(),
         },
         select: { id: true, engineProfiles: true, fleetSize: true },
       })
     );
-    return ok(updated);
+
+    const fleetVehicles = await resolveFleetVehicles(ctx, readFleet(updated.engineProfiles));
+    return ok({ id: updated.id, fleetSize: updated.fleetSize, fleetVehicles });
   });
 
   // ─── Compatible products (fleet-filtered catalog) ─────────────────────────
@@ -293,49 +432,66 @@ const b2bAccountRoutes: FastifyPluginAsync = (app) => {
     );
     if (!account) throw notFound('b2b account');
 
-    const profiles = Array.isArray(account.engineProfiles)
-      ? (account.engineProfiles as {
-          fitmentCategoryId?: string;
-          fitmentItemId?: string;
-          fitmentVariantId?: string;
-          year?: number;
-        }[])
-      : [];
-
-    if (profiles.length === 0) {
+    const vehicles = readFleet(account.engineProfiles);
+    if (vehicles.length === 0) {
       return ok({ data: [], meta: { total: 0 } });
     }
 
-    // Collect all fitment node IDs across all profiles.
-    const variantIds = profiles.map((p) => p.fitmentVariantId).filter(Boolean) as string[];
-    const itemIds = profiles.map((p) => p.fitmentItemId).filter(Boolean) as string[];
-    const categoryIds = profiles.map((p) => p.fitmentCategoryId).filter(Boolean) as string[];
+    // Resolve each vehicle's node ancestry once (path = ancestor ids incl. self,
+    // root → self), so a make-level fitment rule still matches an engine-level
+    // fleet vehicle (universal-to-specific).
+    const fleetNodeIds = [...new Set(vehicles.map((v) => v.nodeId).filter(Boolean) as string[])];
+    const fleetNodes =
+      fleetNodeIds.length > 0
+        ? await withTenant(ctx, (tx) =>
+            tx.fitmentNode.findMany({
+              where: { id: { in: fleetNodeIds }, deletedAt: null },
+              select: { id: true, path: true },
+            })
+          )
+        : [];
+    const pathByNodeId = new Map(fleetNodes.map((n) => [n.id, n.path]));
 
-    // Year ranges: find which profiles have a year and collect range filters.
-    const yearFilters = profiles.filter((p) => typeof p.year === 'number').map((p) => p.year!);
+    // One OR-clause per vehicle: scope to its domain, match the node chain (or a
+    // whole-domain rule), and narrow by each range value (a rule with no window
+    // on an axis matches any value; otherwise [min, max] must contain it). This
+    // mirrors fitmentService.lookup so the fleet sees exactly what a storefront
+    // drill to the same node would surface.
+    const vehicleClauses = vehicles
+      .filter((v) => v.domainId)
+      .map((v) => {
+        const ancestorIds = v.nodeId ? (pathByNodeId.get(v.nodeId) ?? [v.nodeId]) : null;
+        const rangeMatches = (v.rangeValues ?? []).map((rv) => ({
+          OR: [
+            { ranges: { none: { dimensionKey: rv.dimensionKey } } },
+            {
+              ranges: {
+                some: {
+                  dimensionKey: rv.dimensionKey,
+                  AND: [
+                    { OR: [{ min: { lte: rv.value } }, { min: null }] },
+                    { OR: [{ max: { gte: rv.value } }, { max: null }] },
+                  ],
+                },
+              },
+            },
+          ],
+        }));
+        return {
+          domainId: v.domainId,
+          ...(ancestorIds ? { OR: [{ nodeId: { in: ancestorIds } }, { nodeId: null }] } : {}),
+          ...(rangeMatches.length > 0 ? { AND: rangeMatches } : {}),
+        };
+      });
 
-    const fitmentWhere: Record<string, unknown> = {
-      tenantId: ctx.tenantId,
-      OR: [
-        ...(variantIds.length > 0 ? [{ variantId: { in: variantIds } }] : []),
-        ...(itemIds.length > 0 ? [{ itemId: { in: itemIds } }] : []),
-        ...(categoryIds.length > 0 ? [{ categoryId: { in: categoryIds } }] : []),
-      ],
-    };
-
-    // If all profiles have a year, add an AND-of-OR year range filter.
-    if (yearFilters.length > 0) {
-      fitmentWhere.OR = [
-        ...((fitmentWhere.OR as unknown[]) ?? []),
-        // Products with no range set (rangeMin IS NULL) match any year.
-        { rangeMin: null },
-      ];
+    if (vehicleClauses.length === 0) {
+      return ok({ data: [], meta: { total: 0 } });
     }
 
-    // Find distinct productIds matching the fitment criteria.
+    // Find distinct productIds matching ANY fleet vehicle.
     const fitmentRows = await withTenant(ctx, (tx) =>
       tx.productFitment.findMany({
-        where: fitmentWhere,
+        where: { OR: vehicleClauses, product: { deletedAt: null } },
         select: { productId: true },
         distinct: ['productId'],
       })

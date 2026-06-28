@@ -197,28 +197,36 @@ function compileCondition(c: Condition): Prisma.ProductWhereInput | null {
     case 'priceMaxCents':
       return numericMatch('priceMaxCents', c);
     case 'fitmentMake':
-      // Legacy field name kept on CollectionPredicate (rule editor still
-      // ships labels like "Make"); the underlying join uses the generic
-      // FitmentCategory level so it works for any domain whose L1 is
-      // user-facing as "Make" / "Brand" / "Species" / etc.
+      // Legacy field name kept on CollectionPredicate (rule editor still ships
+      // labels like "Make"); the underlying match is descendant-by-name via a
+      // node's materialized `pathNames` (ancestor names incl. self), so "Ford"
+      // matches a product attached at the Ford make OR any F-250/engine under
+      // it. Works for any domain whose top level reads as Make/Brand/Species/etc.
       if (c.op === 'equals' && typeof c.value === 'string') {
-        return { fitments: { some: { category: { name: c.value } } } };
+        return { fitments: { some: { node: { pathNames: { has: c.value } } } } };
       }
       if (c.op === 'in' && Array.isArray(c.value)) {
         const names = (c.value as unknown[]).filter((v): v is string => typeof v === 'string');
-        return { fitments: { some: { category: { name: { in: names } } } } };
+        return { fitments: { some: { node: { pathNames: { hasSome: names } } } } };
       }
       return null;
     case 'fitmentYear':
-      // Same legacy-name pattern — numeric narrowing on a fitment row's
-      // rangeMin/rangeMax window. Works for year (vehicle), weight (pet),
-      // shoe size, etc. — the domain owns the unit.
+      // Same legacy-name pattern — numeric narrowing against a fitment rule's
+      // range windows (commerce_product_fitment_ranges). Matches a rule that has
+      // at least one range window containing the value. Works for year (vehicle),
+      // weight (pet), shoe size, etc. — the domain owns the unit.
       if (c.op === 'equals' && typeof c.value === 'number') {
         return {
           fitments: {
             some: {
-              rangeMin: { lte: c.value },
-              OR: [{ rangeMax: { gte: c.value } }, { rangeMax: null }],
+              ranges: {
+                some: {
+                  AND: [
+                    { OR: [{ min: { lte: c.value } }, { min: null }] },
+                    { OR: [{ max: { gte: c.value } }, { max: null }] },
+                  ],
+                },
+              },
             },
           },
         };

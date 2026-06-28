@@ -172,11 +172,10 @@ model Tenant {
   productCollections  ProductCollection[]
 
   // Commerce module — fitment (generalized: vehicle, pet, device, ...)
-  fitmentDomains    FitmentDomain[]
-  fitmentCategories FitmentCategory[]
-  fitmentItems      FitmentItem[]
-  fitmentVariants   FitmentVariant[]
-  productFitments   ProductFitment[]
+  fitmentDomains       FitmentDomain[]
+  fitmentNodes         FitmentNode[]
+  productFitments      ProductFitment[]
+  productFitmentRanges ProductFitmentRange[]
 
   // Inventory module — warehouses, levels, movement ledger, lots, suppliers
   warehouses             Warehouse[]

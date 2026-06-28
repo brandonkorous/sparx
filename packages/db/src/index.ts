@@ -74,10 +74,9 @@ export type {
   ProductCollection,
   CollectionProduct,
   FitmentDomain,
-  FitmentCategory,
-  FitmentItem,
-  FitmentVariant,
+  FitmentNode,
   ProductFitment,
+  ProductFitmentRange,
   // Inventory module
   Warehouse,
   InventoryLevel,

@@ -56,11 +56,8 @@ export async function projectProduct(
         },
         fitments: {
           select: {
-            category: { select: { name: true } },
-            item: { select: { name: true } },
-            variant: { select: { name: true } },
-            rangeMin: true,
-            rangeMax: true,
+            node: { select: { pathNames: true } },
+            ranges: { select: { min: true, max: true } },
           },
         },
         categoryLinks: { select: { categoryId: true } },
@@ -109,24 +106,28 @@ export async function projectProduct(
         ? Math.max(...priceCentsList)
         : (product.priceMaxCents ?? priceMinCents);
 
-    // Fitment denormalized. Distinct L1/L2/L3 name lists power the
-    // storefront facets without a join. The field names stay
-    // `fitment_makes/models/engines` for storage-format stability across
-    // the indexer — they're generic buckets at the index layer. Range
-    // pairs flatten into a numeric list (year for vehicle, weight for
-    // pet, etc.); open-ended ranges are capped to a sensible window.
+    // Fitment denormalized. A rule's node carries `pathNames` (ancestor names
+    // incl. self, root → self); we bucket them by depth — level 0 → makes,
+    // level 1 → models, level 2+ → engines — so the storefront facets work
+    // without a join. The field names stay `fitment_makes/models/engines` for
+    // storage-format stability across the indexer; they're generic depth buckets
+    // at the index layer. Range windows flatten into a numeric list (year for
+    // vehicle, weight for pet, etc.); open-ended ranges cap to a sensible window.
     const categories = new Set<string>();
     const items = new Set<string>();
     const variants = new Set<string>();
     const rangeValues = new Set<number>();
     for (const f of product.fitments) {
-      categories.add(f.category.name);
-      if (f.item) items.add(f.item.name);
-      if (f.variant) variants.add(f.variant.name);
-      const lo = f.rangeMin === null ? 0 : Number(f.rangeMin);
-      const hi = f.rangeMax === null ? (lo > 0 ? lo + 30 : 0) : Number(f.rangeMax);
-      if (lo > 0 && hi >= lo) {
-        for (let y = lo; y <= Math.min(hi, lo + 50); y++) rangeValues.add(y);
+      const path = f.node?.pathNames ?? [];
+      if (path[0]) categories.add(path[0]);
+      if (path[1]) items.add(path[1]);
+      for (const deep of path.slice(2)) variants.add(deep);
+      for (const r of f.ranges) {
+        const lo = r.min === null ? 0 : Number(r.min);
+        const hi = r.max === null ? (lo > 0 ? lo + 30 : 0) : Number(r.max);
+        if (lo > 0 && hi >= lo) {
+          for (let y = lo; y <= Math.min(hi, lo + 50); y++) rangeValues.add(y);
+        }
       }
     }
 

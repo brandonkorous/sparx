@@ -133,19 +133,21 @@ interface MarkupRuleSummary {
   appliesTo: 'catalog' | 'document' | 'both';
 }
 
+interface FitmentDimension {
+  key: string;
+  label: string;
+  kind: 'level' | 'range';
+  unit?: string;
+}
+
 interface ProductFitmentRow {
   id: string;
-  productId: string;
   domainId: string;
   domainSlug: string;
-  categoryId: string;
-  categoryName: string;
-  itemId: string | null;
-  itemName: string | null;
-  variantId: string | null;
-  variantName: string | null;
-  rangeMin: number | null;
-  rangeMax: number | null;
+  nodeId: string | null;
+  nodeName: string | null;
+  nodePath: string[];
+  ranges: { dimensionKey: string; min: number | null; max: number | null }[];
   notes: string | null;
 }
 
@@ -155,9 +157,9 @@ interface FitmentDomainRow {
   displayName: string;
   description: string | null;
   iconKey: string | null;
-  labels: { l1: string; l2?: string; l3?: string; range?: string };
-  rangeUnit: string | null;
-  categoryCount: number;
+  dimensions: FitmentDimension[];
+  position: number;
+  rootCount: number;
 }
 
 interface WarehouseRow {
@@ -458,8 +460,7 @@ export async function ProductDetailContent({ id }: Props) {
                     id: d.id,
                     slug: d.slug,
                     displayName: d.displayName,
-                    labels: d.labels,
-                    rangeUnit: d.rangeUnit,
+                    dimensions: d.dimensions,
                   }))}
                 />
               </TabsContent>

@@ -1,41 +1,37 @@
 // fitmentService — generalized "what this product fits" reference data +
-// per-product applicability. One model serves every catalog whose
-// products are filtered by what they're compatible with: vehicles,
-// pets, devices, apparel, industrial gear.
+// per-product applicability. A domain declares an ordered list of DIMENSIONS
+// (each a `level` tier or a `range` axis); a single self-referential NODE tree
+// holds the values at any depth; a product fitment names the deepest level node
+// it targets (null = the whole domain) plus a numeric window per range axis.
 //
-// Everything here is tenant-scoped — there is NO platform-global fitment
-// domain. The platform ships a LIBRARY of installable dictionaries
-// (@sparx/commerce-schemas FITMENT_DICTIONARIES); installFitmentDictionary
-// stamps a chosen dictionary as the tenant's own domain → category → item →
-// variant tree. The single stamping codepath (planFitmentDictionaryRows) is
-// shared with the demo seed, so an installed tree and a seeded tree are
-// identical. All four reference tables carry the standard tenant_id NOT NULL +
-// FORCE RLS posture (20260923000000_fitment_remove_global_vehicle).
+// Everything is tenant-scoped — there is NO platform-global domain. The platform
+// ships a LIBRARY of installable dictionaries (@sparx/commerce-schemas
+// FITMENT_DICTIONARIES); installFitmentDictionary stamps a chosen dictionary as
+// the tenant's own domain + node tree via the shared planner
+// (planFitmentDictionaryRows), so an installed tree and a seeded tree are
+// identical. All fitment tables carry tenant_id NOT NULL + FORCE RLS
+// (20260924000000_fitment_dimension_model).
 
 import { randomUUID } from 'node:crypto';
 
 import {
   BulkAssignFitmentInput,
-  CreateFitmentCategoryInput,
   CreateFitmentDomainInput,
-  CreateFitmentItemInput,
-  CreateFitmentVariantInput,
+  CreateFitmentNodeInput,
   FitmentLookupQuery,
   getFitmentDictionary,
   InstallFitmentDictionaryParams,
   listFitmentDictionarySummaries,
   planFitmentDictionaryRows,
   ProductFitmentInput,
+  ReorderFitmentNodesInput,
+  UpdateFitmentDomainInput,
+  UpdateFitmentNodeInput,
 } from '@sparx/commerce-schemas';
-import type { FitmentDictionarySummary } from '@sparx/commerce-schemas';
+import type { FitmentDictionarySummary, FitmentDimension } from '@sparx/commerce-schemas';
 import { withTenant } from '@sparx/db';
-import type {
-  FitmentCategory,
-  FitmentItem,
-  FitmentVariant,
-  Prisma,
-  ProductFitment,
-} from '@sparx/db';
+import { Prisma } from '@sparx/db';
+import type { FitmentNode, ProductFitment } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import { CommerceConflictError, CommerceNotFoundError } from '../errors';
@@ -50,45 +46,30 @@ export interface FitmentDomainRow {
   displayName: string;
   description: string | null;
   iconKey: string | null;
-  labels: {
-    l1: string;
-    l2?: string;
-    l3?: string;
-    range?: string;
-  };
-  rangeUnit: string | null;
+  dimensions: FitmentDimension[];
   position: number;
-  categoryCount: number;
+  /** Top-level (root) node count, e.g. "4 makes". */
+  rootCount: number;
 }
 
-export interface FitmentCategoryRow {
+export interface FitmentNodeRow {
   id: string;
   domainId: string;
+  parentId: string | null;
+  dimensionKey: string;
   name: string;
   slug: string;
   attributes: Record<string, unknown>;
-  iconMediaId: string | null;
+  depth: number;
   position: number;
-  itemCount: number;
+  /** Number of direct children (drives the expand affordance). */
+  childCount: number;
 }
 
-export interface FitmentItemRow {
-  id: string;
-  categoryId: string;
-  name: string;
-  slug: string;
-  attributes: Record<string, unknown>;
-  position: number;
-  variantCount: number;
-}
-
-export interface FitmentVariantRow {
-  id: string;
-  itemId: string;
-  name: string;
-  slug: string;
-  attributes: Record<string, unknown>;
-  position: number;
+export interface ProductFitmentRangeRow {
+  dimensionKey: string;
+  min: number | null;
+  max: number | null;
 }
 
 export interface ProductFitmentRow {
@@ -96,15 +77,23 @@ export interface ProductFitmentRow {
   productId: string;
   domainId: string;
   domainSlug: string;
-  categoryId: string;
-  categoryName: string;
-  itemId: string | null;
-  itemName: string | null;
-  variantId: string | null;
-  variantName: string | null;
-  rangeMin: number | null;
-  rangeMax: number | null;
+  nodeId: string | null;
+  /** The matched node's name (deepest level), null for a whole-domain rule. */
+  nodeName: string | null;
+  /** Ancestor names incl. self, root → self (e.g. ["Ford","F-250","6.7L"]). */
+  nodePath: string[];
+  ranges: ProductFitmentRangeRow[];
   notes: string | null;
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────
+
+function dimensionsOf(value: Prisma.JsonValue | null): FitmentDimension[] {
+  return Array.isArray(value) ? (value as unknown as FitmentDimension[]) : [];
+}
+
+function levelKeysOf(dimensions: FitmentDimension[]): string[] {
+  return dimensions.filter((d) => d.kind === 'level').map((d) => d.key);
 }
 
 // ─── Domain reads + writes ────────────────────────────────────────────
@@ -114,7 +103,7 @@ export async function listDomains(ctx: ServiceContext): Promise<FitmentDomainRow
     const rows = await tx.fitmentDomain.findMany({
       where: { deletedAt: null },
       orderBy: [{ position: 'asc' }, { displayName: 'asc' }],
-      include: { _count: { select: { categories: true } } },
+      include: { _count: { select: { nodes: { where: { parentId: null, deletedAt: null } } } } },
     });
     return rows.map((d) => ({
       id: d.id,
@@ -122,10 +111,9 @@ export async function listDomains(ctx: ServiceContext): Promise<FitmentDomainRow
       displayName: d.displayName,
       description: d.description,
       iconKey: d.iconKey,
-      labels: (d.labels ?? {}) as FitmentDomainRow['labels'],
-      rangeUnit: d.rangeUnit,
+      dimensions: dimensionsOf(d.dimensions),
       position: d.position,
-      categoryCount: d._count.categories,
+      rootCount: d._count.nodes,
     }));
   });
 }
@@ -137,7 +125,7 @@ export async function getDomain(
   return withTenant(ctx, async (tx) => {
     const d = await tx.fitmentDomain.findFirst({
       where: { id: domainId, deletedAt: null },
-      include: { _count: { select: { categories: true } } },
+      include: { _count: { select: { nodes: { where: { parentId: null, deletedAt: null } } } } },
     });
     if (!d) return null;
     return {
@@ -146,10 +134,9 @@ export async function getDomain(
       displayName: d.displayName,
       description: d.description,
       iconKey: d.iconKey,
-      labels: (d.labels ?? {}) as FitmentDomainRow['labels'],
-      rangeUnit: d.rangeUnit,
+      dimensions: dimensionsOf(d.dimensions),
       position: d.position,
-      categoryCount: d._count.categories,
+      rootCount: d._count.nodes,
     };
   });
 }
@@ -179,8 +166,7 @@ export async function createDomain(
         displayName: input.displayName,
         description: input.description ?? null,
         iconKey: input.iconKey ?? null,
-        labels: input.labels,
-        rangeUnit: input.rangeUnit ?? null,
+        dimensions: input.dimensions,
         position: input.position,
       },
     });
@@ -202,23 +188,115 @@ export async function createDomain(
   return { id: result.id };
 }
 
-// ─── Dictionary library (install a platform fitment dictionary) ───────
+export async function updateDomain(
+  ctx: ServiceContext,
+  domainId: string,
+  rawInput: unknown
+): Promise<{ id: string }> {
+  const input = UpdateFitmentDomainInput.parse(rawInput);
+
+  return withTenant(ctx, async (tx) => {
+    const domain = await tx.fitmentDomain.findFirst({
+      where: { id: domainId, deletedAt: null },
+    });
+    if (!domain) throw new CommerceNotFoundError('FitmentDomain', domainId);
+
+    // Guard: removing a `level` dimension that still has nodes would orphan the
+    // tree. Adding levels / editing labels / editing range axes is always safe.
+    if (input.dimensions) {
+      const oldLevels = levelKeysOf(dimensionsOf(domain.dimensions));
+      const newLevels = levelKeysOf(input.dimensions);
+      const removed = oldLevels.filter((k) => !newLevels.includes(k));
+      if (removed.length > 0) {
+        const used = await tx.fitmentNode.count({
+          where: { domainId, dimensionKey: { in: removed }, deletedAt: null },
+        });
+        if (used > 0) {
+          throw new CommerceConflictError(
+            `Can't remove level "${removed.join(', ')}" — ${used} node(s) still use it. Delete those first.`,
+            'dimensions'
+          );
+        }
+      }
+    }
+
+    const updated = await tx.fitmentDomain.update({
+      where: { id: domainId },
+      data: {
+        ...(input.displayName !== undefined ? { displayName: input.displayName } : {}),
+        ...(input.description !== undefined ? { description: input.description } : {}),
+        ...(input.iconKey !== undefined ? { iconKey: input.iconKey } : {}),
+        ...(input.dimensions ? { dimensions: input.dimensions } : {}),
+        ...(input.position !== undefined ? { position: input.position } : {}),
+      },
+    });
+
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'commerce.fitment.domain_updated',
+      entityType: 'FitmentDomain',
+      entityId: domainId,
+      diff: { after: { displayName: updated.displayName } },
+    });
+
+    return { id: updated.id };
+  });
+}
 
 /**
- * The platform's installable fitment dictionaries (Vehicle, Apparel, Pet, …) —
- * picker metadata only, no DB. A tenant installs one as their own tenant-scoped
- * tree via installFitmentDictionary.
+ * Uninstall a domain entirely — drops the domain, its whole node tree, and every
+ * product fitment that referenced it (the domain FK is Restrict, so the rules
+ * are removed first, then the domain cascades its nodes). Returns the count of
+ * products whose fitment was affected so the UI can warn before confirming.
  */
+export async function deleteDomain(
+  ctx: ServiceContext,
+  domainId: string
+): Promise<{ productsAffected: number }> {
+  return withTenant(ctx, async (tx) => {
+    const domain = await tx.fitmentDomain.findFirst({
+      where: { id: domainId, deletedAt: null },
+      select: { id: true, slug: true, displayName: true },
+    });
+    if (!domain) throw new CommerceNotFoundError('FitmentDomain', domainId);
+
+    const affected = await tx.productFitment.findMany({
+      where: { domainId },
+      select: { productId: true },
+      distinct: ['productId'],
+    });
+
+    await tx.productFitment.deleteMany({ where: { domainId } });
+    await tx.fitmentDomain.delete({ where: { id: domainId } });
+
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'commerce.fitment.domain_deleted',
+      entityType: 'FitmentDomain',
+      entityId: domainId,
+      diff: { before: { slug: domain.slug, displayName: domain.displayName } },
+    });
+
+    return { productsAffected: affected.length };
+  });
+}
+
+// ─── Dictionary library (install a platform fitment dictionary) ───────
+
 export function listFitmentDictionaries(): FitmentDictionarySummary[] {
   return listFitmentDictionarySummaries();
 }
 
 /**
- * Stamp a platform dictionary as a tenant-scoped domain → category → item →
- * variant tree. Conflict is by slug: installing a dictionary whose slug the
- * tenant already uses is a 409, so the merchant chooses whether to extend the
- * existing domain or pick a different dictionary. The stamping codepath
- * (planFitmentDictionaryRows) is shared with the demo seed.
+ * Stamp a platform dictionary as a tenant-scoped domain + node tree. Conflict is
+ * by slug (409). The stamping codepath (planFitmentDictionaryRows) is shared
+ * with the demo seed, so an installed tree and a seeded tree are identical.
  */
 export async function installFitmentDictionary(
   ctx: ServiceContext,
@@ -250,47 +328,25 @@ export async function installFitmentDictionary(
         displayName: planned.domain.displayName,
         description: planned.domain.description,
         iconKey: planned.domain.iconKey,
-        labels: planned.domain.labels as Prisma.InputJsonValue,
-        rangeUnit: planned.domain.rangeUnit,
+        dimensions: planned.domain.dimensions,
         position: planned.domain.position,
       },
     });
-    if (planned.categories.length > 0) {
-      await tx.fitmentCategory.createMany({
-        data: planned.categories.map((c) => ({
-          id: c.id,
-          tenantId: c.tenantId,
-          domainId: c.domainId,
-          name: c.name,
-          slug: c.slug,
-          attributes: c.attributes as Prisma.InputJsonValue,
-          position: c.position,
-        })),
-      });
-    }
-    if (planned.items.length > 0) {
-      await tx.fitmentItem.createMany({
-        data: planned.items.map((i) => ({
-          id: i.id,
-          tenantId: i.tenantId,
-          categoryId: i.categoryId,
-          name: i.name,
-          slug: i.slug,
-          attributes: i.attributes as Prisma.InputJsonValue,
-          position: i.position,
-        })),
-      });
-    }
-    if (planned.variants.length > 0) {
-      await tx.fitmentVariant.createMany({
-        data: planned.variants.map((v) => ({
-          id: v.id,
-          tenantId: v.tenantId,
-          itemId: v.itemId,
-          name: v.name,
-          slug: v.slug,
-          attributes: v.attributes as Prisma.InputJsonValue,
-          position: v.position,
+    if (planned.nodes.length > 0) {
+      await tx.fitmentNode.createMany({
+        data: planned.nodes.map((n) => ({
+          id: n.id,
+          tenantId: n.tenantId,
+          domainId: n.domainId,
+          parentId: n.parentId,
+          dimensionKey: n.dimensionKey,
+          name: n.name,
+          slug: n.slug,
+          attributes: n.attributes,
+          path: n.path,
+          pathNames: n.pathNames,
+          depth: n.depth,
+          position: n.position,
         })),
       });
     }
@@ -307,9 +363,7 @@ export async function installFitmentDictionary(
         after: {
           dictionary: dict.slug,
           displayName: dict.name,
-          categories: planned.categories.length,
-          items: planned.items.length,
-          variants: planned.variants.length,
+          nodes: planned.nodes.length,
         },
       },
     });
@@ -318,54 +372,87 @@ export async function installFitmentDictionary(
   });
 }
 
-// ─── Category (L1) ────────────────────────────────────────────────────
+// ─── Nodes (the value tree, any depth) ────────────────────────────────
 
-export async function listCategories(
+/** List the children of `parentId` (or top-level nodes when parentId is null). */
+export async function listNodes(
   ctx: ServiceContext,
-  domainId: string
-): Promise<FitmentCategoryRow[]> {
+  domainId: string,
+  parentId: string | null
+): Promise<FitmentNodeRow[]> {
   return withTenant(ctx, async (tx) => {
-    const rows = await tx.fitmentCategory.findMany({
-      where: { domainId, deletedAt: null },
+    const rows = await tx.fitmentNode.findMany({
+      where: { domainId, parentId, deletedAt: null },
       orderBy: [{ position: 'asc' }, { name: 'asc' }],
-      include: { _count: { select: { items: true } } },
+      include: { _count: { select: { children: { where: { deletedAt: null } } } } },
     });
-    return rows.map(toCategoryRow);
+    return rows.map(toNodeRow);
   });
 }
 
-export async function createCategory(
-  ctx: ServiceContext,
-  rawInput: unknown
-): Promise<{ id: string }> {
-  const input = CreateFitmentCategoryInput.parse(rawInput);
+export async function createNode(ctx: ServiceContext, rawInput: unknown): Promise<{ id: string }> {
+  const input = CreateFitmentNodeInput.parse(rawInput);
 
   const result = await withTenant(ctx, async (tx) => {
     const domain = await tx.fitmentDomain.findFirst({
       where: { id: input.domainId, deletedAt: null },
-      select: { id: true },
+      select: { id: true, dimensions: true },
     });
     if (!domain) throw new CommerceNotFoundError('FitmentDomain', input.domainId);
+    const levelKeys = levelKeysOf(dimensionsOf(domain.dimensions));
 
-    const collision = await tx.fitmentCategory.findFirst({
-      where: { domainId: input.domainId, slug: input.slug, deletedAt: null },
+    const parent = input.parentId
+      ? await tx.fitmentNode.findFirst({
+          where: { id: input.parentId, domainId: input.domainId, deletedAt: null },
+          select: { id: true, path: true, pathNames: true, depth: true },
+        })
+      : null;
+    if (input.parentId && !parent) {
+      throw new CommerceNotFoundError('FitmentNode', input.parentId);
+    }
+
+    const depth = parent ? parent.depth + 1 : 0;
+    const dimensionKey = levelKeys[depth];
+    if (!dimensionKey) {
+      throw new CommerceConflictError(
+        `This domain has ${levelKeys.length} level(s); can't add a node deeper than that. Add a level dimension first.`,
+        'parentId'
+      );
+    }
+
+    const collision = await tx.fitmentNode.findFirst({
+      where: {
+        domainId: input.domainId,
+        parentId: input.parentId ?? null,
+        slug: input.slug,
+        deletedAt: null,
+      },
       select: { id: true },
     });
     if (collision) {
       throw new CommerceConflictError(
-        `Category "${input.slug}" already exists under this domain`,
+        `A node with slug "${input.slug}" already exists here`,
         'slug'
       );
     }
 
-    const created = await tx.fitmentCategory.create({
+    const id = randomUUID();
+    const path = parent ? [...parent.path, id] : [id];
+    const pathNames = parent ? [...parent.pathNames, input.name] : [input.name];
+
+    const created = await tx.fitmentNode.create({
       data: {
+        id,
         tenantId: ctx.tenantId,
         domainId: input.domainId,
+        parentId: input.parentId ?? null,
+        dimensionKey,
         name: input.name,
         slug: input.slug,
         attributes: input.attributes as Prisma.InputJsonValue,
-        iconMediaId: input.iconMediaId ?? null,
+        path,
+        pathNames,
+        depth,
         position: input.position,
       },
     });
@@ -375,10 +462,10 @@ export async function createCategory(
       tenantId: ctx.tenantId,
       actorId: ctx.userId ?? null,
       actorType: ctx.userId ? 'user' : 'system',
-      action: 'commerce.fitment.category_created',
-      entityType: 'FitmentCategory',
+      action: 'commerce.fitment.node_created',
+      entityType: 'FitmentNode',
       entityId: created.id,
-      diff: { after: { name: created.name, domainId: created.domainId } },
+      diff: { after: { name: created.name, domainId: created.domainId, depth } },
     });
 
     return created;
@@ -387,136 +474,140 @@ export async function createCategory(
   return { id: result.id };
 }
 
-// ─── Item (L2) ────────────────────────────────────────────────────────
-
-export async function listItems(
+export async function updateNode(
   ctx: ServiceContext,
-  categoryId: string
-): Promise<FitmentItemRow[]> {
-  return withTenant(ctx, async (tx) => {
-    const rows = await tx.fitmentItem.findMany({
-      where: { categoryId, deletedAt: null },
-      orderBy: [{ position: 'asc' }, { name: 'asc' }],
-      include: { _count: { select: { variants: true } } },
-    });
-    return rows.map(toItemRow);
-  });
-}
-
-export async function createItem(ctx: ServiceContext, rawInput: unknown): Promise<{ id: string }> {
-  const input = CreateFitmentItemInput.parse(rawInput);
-
-  const result = await withTenant(ctx, async (tx) => {
-    const category = await tx.fitmentCategory.findFirst({
-      where: { id: input.categoryId, deletedAt: null },
-      select: { id: true },
-    });
-    if (!category) throw new CommerceNotFoundError('FitmentCategory', input.categoryId);
-
-    const collision = await tx.fitmentItem.findFirst({
-      where: { categoryId: input.categoryId, slug: input.slug, deletedAt: null },
-      select: { id: true },
-    });
-    if (collision) {
-      throw new CommerceConflictError(
-        `Item "${input.slug}" already exists under this category`,
-        'slug'
-      );
-    }
-
-    const created = await tx.fitmentItem.create({
-      data: {
-        tenantId: ctx.tenantId,
-        categoryId: input.categoryId,
-        name: input.name,
-        slug: input.slug,
-        attributes: input.attributes as Prisma.InputJsonValue,
-        position: input.position,
-      },
-    });
-
-    await writeAuditLog({
-      tx,
-      tenantId: ctx.tenantId,
-      actorId: ctx.userId ?? null,
-      actorType: ctx.userId ? 'user' : 'system',
-      action: 'commerce.fitment.item_created',
-      entityType: 'FitmentItem',
-      entityId: created.id,
-      diff: { after: { name: created.name, categoryId: created.categoryId } },
-    });
-
-    return created;
-  });
-
-  return { id: result.id };
-}
-
-// ─── Variant (L3) ─────────────────────────────────────────────────────
-
-export async function listVariants(
-  ctx: ServiceContext,
-  itemId: string
-): Promise<FitmentVariantRow[]> {
-  return withTenant(ctx, async (tx) => {
-    const rows = await tx.fitmentVariant.findMany({
-      where: { itemId, deletedAt: null },
-      orderBy: [{ position: 'asc' }, { name: 'asc' }],
-    });
-    return rows.map(toVariantRow);
-  });
-}
-
-export async function createVariant(
-  ctx: ServiceContext,
+  nodeId: string,
   rawInput: unknown
 ): Promise<{ id: string }> {
-  const input = CreateFitmentVariantInput.parse(rawInput);
+  const input = UpdateFitmentNodeInput.parse(rawInput);
 
-  const result = await withTenant(ctx, async (tx) => {
-    const item = await tx.fitmentItem.findFirst({
-      where: { id: input.itemId, deletedAt: null },
-      select: { id: true },
+  return withTenant(ctx, async (tx) => {
+    const node = await tx.fitmentNode.findFirst({
+      where: { id: nodeId, deletedAt: null },
     });
-    if (!item) throw new CommerceNotFoundError('FitmentItem', input.itemId);
+    if (!node) throw new CommerceNotFoundError('FitmentNode', nodeId);
 
-    const collision = await tx.fitmentVariant.findFirst({
-      where: { itemId: input.itemId, slug: input.slug, deletedAt: null },
-      select: { id: true },
-    });
-    if (collision) {
-      throw new CommerceConflictError(
-        `Variant "${input.slug}" already exists under this item`,
-        'slug'
-      );
+    if (input.slug && input.slug !== node.slug) {
+      const collision = await tx.fitmentNode.findFirst({
+        where: {
+          domainId: node.domainId,
+          parentId: node.parentId,
+          slug: input.slug,
+          deletedAt: null,
+          id: { not: nodeId },
+        },
+        select: { id: true },
+      });
+      if (collision) {
+        throw new CommerceConflictError(
+          `A node with slug "${input.slug}" already exists here`,
+          'slug'
+        );
+      }
     }
 
-    const created = await tx.fitmentVariant.create({
+    await tx.fitmentNode.update({
+      where: { id: nodeId },
       data: {
-        tenantId: ctx.tenantId,
-        itemId: input.itemId,
-        name: input.name,
-        slug: input.slug,
-        attributes: input.attributes as Prisma.InputJsonValue,
-        position: input.position,
+        ...(input.name !== undefined ? { name: input.name } : {}),
+        ...(input.slug !== undefined ? { slug: input.slug } : {}),
+        ...(input.attributes !== undefined
+          ? { attributes: input.attributes as Prisma.InputJsonValue }
+          : {}),
+        ...(input.position !== undefined ? { position: input.position } : {}),
       },
     });
+
+    // A rename must propagate into the materialized pathNames of this node AND
+    // every descendant (their path_names share this node's name at its depth).
+    if (input.name !== undefined && input.name !== node.name) {
+      const idx = node.depth + 1; // path_names is 1-indexed in Postgres
+      await tx.$executeRaw`
+        UPDATE commerce_fitment_nodes
+        SET path_names[${Prisma.raw(String(idx))}] = ${input.name}, updated_at = now()
+        WHERE tenant_id = ${ctx.tenantId}::uuid AND path @> ARRAY[${nodeId}::uuid]
+      `;
+    }
 
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,
       actorId: ctx.userId ?? null,
       actorType: ctx.userId ? 'user' : 'system',
-      action: 'commerce.fitment.variant_created',
-      entityType: 'FitmentVariant',
-      entityId: created.id,
-      diff: { after: { name: created.name, itemId: created.itemId } },
+      action: 'commerce.fitment.node_updated',
+      entityType: 'FitmentNode',
+      entityId: nodeId,
+      diff: { after: { name: input.name ?? node.name } },
     });
 
-    return created;
+    return { id: nodeId };
   });
+}
 
-  return { id: result.id };
+/**
+ * Delete a node and everything under it — child nodes cascade (parent FK), and
+ * every product fitment pointing at this node or a descendant cascades (node
+ * FK). Returns the count of products whose fitment was affected for the confirm.
+ */
+export async function deleteNode(
+  ctx: ServiceContext,
+  nodeId: string
+): Promise<{ productsAffected: number }> {
+  return withTenant(ctx, async (tx) => {
+    const node = await tx.fitmentNode.findFirst({
+      where: { id: nodeId, deletedAt: null },
+      select: { id: true, name: true, domainId: true },
+    });
+    if (!node) throw new CommerceNotFoundError('FitmentNode', nodeId);
+
+    // Products attached at this node OR any descendant (path contains nodeId).
+    const subtree = await tx.fitmentNode.findMany({
+      where: { domainId: node.domainId, path: { has: nodeId } },
+      select: { id: true },
+    });
+    const subtreeIds = subtree.map((n) => n.id);
+    const affected =
+      subtreeIds.length > 0
+        ? await tx.productFitment.findMany({
+            where: { nodeId: { in: subtreeIds } },
+            select: { productId: true },
+            distinct: ['productId'],
+          })
+        : [];
+
+    await tx.fitmentNode.delete({ where: { id: nodeId } });
+
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'commerce.fitment.node_deleted',
+      entityType: 'FitmentNode',
+      entityId: nodeId,
+      diff: { before: { name: node.name } },
+    });
+
+    return { productsAffected: affected.length };
+  });
+}
+
+/** Reorder siblings (same parent within a domain) to match `orderedIds`. */
+export async function reorderNodes(ctx: ServiceContext, rawInput: unknown): Promise<void> {
+  const input = ReorderFitmentNodesInput.parse(rawInput);
+
+  await withTenant(ctx, async (tx) => {
+    const siblings = await tx.fitmentNode.findMany({
+      where: { domainId: input.domainId, parentId: input.parentId ?? null, deletedAt: null },
+      select: { id: true },
+    });
+    const known = new Set(siblings.map((s) => s.id));
+    const ordered = input.orderedIds.filter((id) => known.has(id));
+
+    await Promise.all(
+      ordered.map((id, position) => tx.fitmentNode.update({ where: { id }, data: { position } }))
+    );
+  });
 }
 
 // ─── Per-product fitment ──────────────────────────────────────────────
@@ -528,12 +619,11 @@ export async function listForProduct(
   return withTenant(ctx, async (tx) => {
     const rows = await tx.productFitment.findMany({
       where: { productId },
-      orderBy: [{ rangeMin: 'asc' }, { id: 'asc' }],
+      orderBy: [{ id: 'asc' }],
       include: {
         domain: { select: { slug: true } },
-        category: { select: { name: true } },
-        item: { select: { name: true } },
-        variant: { select: { name: true } },
+        node: { select: { name: true, pathNames: true } },
+        ranges: { select: { dimensionKey: true, min: true, max: true } },
       },
     });
     return rows.map((r) => ({
@@ -541,23 +631,23 @@ export async function listForProduct(
       productId: r.productId,
       domainId: r.domainId,
       domainSlug: r.domain.slug,
-      categoryId: r.categoryId,
-      categoryName: r.category.name,
-      itemId: r.itemId,
-      itemName: r.item?.name ?? null,
-      variantId: r.variantId,
-      variantName: r.variant?.name ?? null,
-      rangeMin: r.rangeMin === null ? null : Number(r.rangeMin),
-      rangeMax: r.rangeMax === null ? null : Number(r.rangeMax),
+      nodeId: r.nodeId,
+      nodeName: r.node?.name ?? null,
+      nodePath: r.node?.pathNames ?? [],
+      ranges: r.ranges.map((rg) => ({
+        dimensionKey: rg.dimensionKey,
+        min: rg.min === null ? null : Number(rg.min),
+        max: rg.max === null ? null : Number(rg.max),
+      })),
       notes: r.notes,
     }));
   });
 }
 
 /**
- * Replace all fitment rows for a product. Atomic: existing rows wiped
- * inside the same transaction the new rows insert in, so the catalog
- * never observes a half-written state.
+ * Replace all fitment rows for a product. Atomic: existing rows wiped inside the
+ * same transaction the new rows insert in, so the catalog never observes a
+ * half-written state. Each rule's range windows insert as child rows.
  */
 export async function setForProduct(
   ctx: ServiceContext,
@@ -574,19 +664,23 @@ export async function setForProduct(
     if (!product) throw new CommerceNotFoundError('Product', productId);
 
     await tx.productFitment.deleteMany({ where: { productId } });
-    if (validated.length > 0) {
-      await tx.productFitment.createMany({
-        data: validated.map((f) => ({
+    for (const f of validated) {
+      await tx.productFitment.create({
+        data: {
           tenantId: ctx.tenantId,
           productId,
           domainId: f.domainId,
-          categoryId: f.categoryId,
-          itemId: f.itemId ?? null,
-          variantId: f.variantId ?? null,
-          rangeMin: f.rangeMin ?? null,
-          rangeMax: f.rangeMax ?? null,
+          nodeId: f.nodeId ?? null,
           notes: f.notes ?? null,
-        })),
+          ranges: {
+            create: f.ranges.map((rg) => ({
+              tenantId: ctx.tenantId,
+              dimensionKey: rg.dimensionKey,
+              min: rg.min ?? null,
+              max: rg.max ?? null,
+            })),
+          },
+        },
       });
     }
 
@@ -611,10 +705,9 @@ export async function setForProduct(
 }
 
 /**
- * Bulk-apply the same fitment set to a batch of products. Used by
- * catalog importers (AAIA, supplier feed, merchant CSV) that slice the
- * feed into "this set of products fits these things" buckets and fan
- * out one call per bucket.
+ * Bulk-apply the same fitment set to a batch of products. Used by catalog
+ * importers (AAIA, supplier feed, merchant CSV) that slice the feed into "this
+ * set of products fits these things" buckets and fan out one call per bucket.
  */
 export async function bulkAssign(
   ctx: ServiceContext,
@@ -636,21 +729,25 @@ export async function bulkAssign(
     let rowsAffected = 0;
     for (const productId of input.productIds) {
       await tx.productFitment.deleteMany({ where: { productId } });
-      if (input.fitments.length > 0) {
-        const inserted = await tx.productFitment.createMany({
-          data: input.fitments.map((f) => ({
+      for (const f of input.fitments) {
+        await tx.productFitment.create({
+          data: {
             tenantId: ctx.tenantId,
             productId,
             domainId: f.domainId,
-            categoryId: f.categoryId,
-            itemId: f.itemId ?? null,
-            variantId: f.variantId ?? null,
-            rangeMin: f.rangeMin ?? null,
-            rangeMax: f.rangeMax ?? null,
+            nodeId: f.nodeId ?? null,
             notes: f.notes ?? null,
-          })),
+            ranges: {
+              create: f.ranges.map((rg) => ({
+                tenantId: ctx.tenantId,
+                dimensionKey: rg.dimensionKey,
+                min: rg.min ?? null,
+                max: rg.max ?? null,
+              })),
+            },
+          },
         });
-        rowsAffected += inserted.count;
+        rowsAffected += 1;
       }
       await writeAuditLog({
         tx,
@@ -716,33 +813,49 @@ export interface FitmentLookupResult {
 }
 
 /**
- * Resolve "what fits this thing?" — returns the set of product IDs that
- * have at least one fitment row matching the query. Optional narrowing
- * cascades: category → item → variant → range. `rangeValue` matches
- * when the fitment's [rangeMin, rangeMax] window (or open ends) contains
- * the queried value. Units are domain-defined (year, lb, kg, ...).
- *
- * Runs as a single SQL JOIN for the dashboard "show me everything"
- * case. Storefront search filtering goes through Typesense once the
- * indexer lands.
+ * Resolve "what fits this thing?" — returns product IDs with at least one
+ * fitment rule matching. A rule matches when its node is an ancestor-or-self of
+ * the queried node (a make-level rule fits a specific engine query) OR the rule
+ * is whole-domain (nodeId null); and for each queried range value, the rule
+ * either has no window for that axis or its [min, max] window contains the value.
  */
 export async function lookup(ctx: ServiceContext, rawQuery: unknown): Promise<FitmentLookupResult> {
   const query = FitmentLookupQuery.parse(rawQuery);
 
   return withTenant(ctx, async (tx) => {
+    let nodeMatch: Prisma.ProductFitmentWhereInput = {};
+    if (query.nodeId) {
+      const node = await tx.fitmentNode.findFirst({
+        where: { id: query.nodeId, deletedAt: null },
+        select: { path: true },
+      });
+      // node.path = ancestor ids incl. self → rules attached anywhere on that
+      // chain (or whole-domain) match the specific query.
+      const ancestorIds = node?.path ?? [query.nodeId];
+      nodeMatch = { OR: [{ nodeId: { in: ancestorIds } }, { nodeId: null }] };
+    }
+
+    const rangeMatches: Prisma.ProductFitmentWhereInput[] = (query.rangeValues ?? []).map((rv) => ({
+      OR: [
+        { ranges: { none: { dimensionKey: rv.dimensionKey } } },
+        {
+          ranges: {
+            some: {
+              dimensionKey: rv.dimensionKey,
+              AND: [
+                { OR: [{ min: { lte: rv.value } }, { min: null }] },
+                { OR: [{ max: { gte: rv.value } }, { max: null }] },
+              ],
+            },
+          },
+        },
+      ],
+    }));
+
     const where: Prisma.ProductFitmentWhereInput = {
       ...(query.domainId ? { domainId: query.domainId } : {}),
-      ...(query.categoryId ? { categoryId: query.categoryId } : {}),
-      ...(query.itemId ? { OR: [{ itemId: query.itemId }, { itemId: null }] } : {}),
-      ...(query.variantId ? { OR: [{ variantId: query.variantId }, { variantId: null }] } : {}),
-      ...(query.rangeValue !== undefined
-        ? {
-            AND: [
-              { OR: [{ rangeMin: { lte: query.rangeValue } }, { rangeMin: null }] },
-              { OR: [{ rangeMax: { gte: query.rangeValue } }, { rangeMax: null }] },
-            ],
-          }
-        : {}),
+      ...nodeMatch,
+      ...(rangeMatches.length > 0 ? { AND: rangeMatches } : {}),
       product: { deletedAt: null, status: 'active' },
     };
 
@@ -759,39 +872,18 @@ export async function lookup(ctx: ServiceContext, rawQuery: unknown): Promise<Fi
 
 // ─── Internal helpers ─────────────────────────────────────────────────
 
-function toCategoryRow(c: FitmentCategory & { _count: { items: number } }): FitmentCategoryRow {
+function toNodeRow(n: FitmentNode & { _count: { children: number } }): FitmentNodeRow {
   return {
-    id: c.id,
-    domainId: c.domainId,
-    name: c.name,
-    slug: c.slug,
-    attributes: (c.attributes ?? {}) as Record<string, unknown>,
-    iconMediaId: c.iconMediaId,
-    position: c.position,
-    itemCount: c._count.items,
-  };
-}
-
-function toItemRow(i: FitmentItem & { _count: { variants: number } }): FitmentItemRow {
-  return {
-    id: i.id,
-    categoryId: i.categoryId,
-    name: i.name,
-    slug: i.slug,
-    attributes: (i.attributes ?? {}) as Record<string, unknown>,
-    position: i.position,
-    variantCount: i._count.variants,
-  };
-}
-
-function toVariantRow(v: FitmentVariant): FitmentVariantRow {
-  return {
-    id: v.id,
-    itemId: v.itemId,
-    name: v.name,
-    slug: v.slug,
-    attributes: (v.attributes ?? {}) as Record<string, unknown>,
-    position: v.position,
+    id: n.id,
+    domainId: n.domainId,
+    parentId: n.parentId,
+    dimensionKey: n.dimensionKey,
+    name: n.name,
+    slug: n.slug,
+    attributes: (n.attributes ?? {}) as Record<string, unknown>,
+    depth: n.depth,
+    position: n.position,
+    childCount: n._count.children,
   };
 }
 
@@ -800,10 +892,6 @@ function serializeFitment(f: ProductFitment): Record<string, unknown> {
     id: f.id,
     productId: f.productId,
     domainId: f.domainId,
-    categoryId: f.categoryId,
-    itemId: f.itemId,
-    variantId: f.variantId,
-    rangeMin: f.rangeMin === null ? null : Number(f.rangeMin),
-    rangeMax: f.rangeMax === null ? null : Number(f.rangeMax),
+    nodeId: f.nodeId,
   };
 }

@@ -8,7 +8,8 @@
 //   GET /v1/public/commerce/products                     ?tenant=<slug>[&page=&perPage=&q=]
 //   GET /v1/public/commerce/products/:handle             ?tenant=<slug>
 //   GET /v1/public/commerce/categories                   ?tenant=<slug>
-//   GET /v1/public/commerce/fitment/makes                ?tenant=<slug>
+//   GET /v1/public/commerce/fitment/domains              ?tenant=<slug>
+//   GET /v1/public/commerce/fitment/domains/:domainId/nodes ?tenant=<slug>[&parentId=<uuid>]
 //
 // Tenant resolution is identical to the CMS public surface
 // (tenants table is the only non-RLS row, safe to look up by slug).
@@ -311,11 +312,20 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
         ? {
             fitments: {
               some: {
-                ...(q.fitmentMake ? { category: { name: q.fitmentMake } } : {}),
+                // Descendant-by-name: "Ford" matches a product attached at the
+                // Ford node OR any model/engine under it (node.pathNames).
+                ...(q.fitmentMake ? { node: { pathNames: { has: q.fitmentMake } } } : {}),
+                // Numeric narrowing against the rule's range windows.
                 ...(q.fitmentYear
                   ? {
-                      rangeMin: { lte: q.fitmentYear },
-                      OR: [{ rangeMax: { gte: q.fitmentYear } }, { rangeMax: null }],
+                      ranges: {
+                        some: {
+                          AND: [
+                            { OR: [{ min: { lte: q.fitmentYear } }, { min: null }] },
+                            { OR: [{ max: { gte: q.fitmentYear } }, { max: null }] },
+                          ],
+                        },
+                      },
                     }
                   : {}),
               },
@@ -591,11 +601,12 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
 
   // ─── Fitment ───────────────────────────────────────────────────────
   //
-  // Surfaces the fitment domains the tenant has access to (global + own)
-  // plus L1 categories per domain. Drives the storefront narrowing
-  // filter — vehicle Year/Make/Model/Engine for an auto shop, Pet
-  // Species/Breed for a pet store, Device Brand/Model for a phone case
-  // shop. L2/L3 are lazy-loaded as the customer drills down.
+  // Surfaces the fitment domains the tenant has installed plus a generic
+  // node drill down the domain's `level` dimensions. Drives the storefront
+  // narrowing filter — Make → Model → Engine (narrowed by Year) for an auto
+  // shop, Species → Breed (narrowed by Weight) for a pet store, Brand → Model
+  // for a phone-case shop. Each level's children are lazy-loaded as the
+  // customer drills, so the panel stays generic over the domain's shape.
 
   app.get('/v1/public/commerce/fitment/domains', async (request) => {
     const q = TenantQuery.parse(request.query);
@@ -609,8 +620,7 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
         displayName: true,
         description: true,
         iconKey: true,
-        labels: true,
-        rangeUnit: true,
+        dimensions: true,
       },
     });
     return ok(
@@ -620,76 +630,47 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
         displayName: r.displayName,
         description: r.description,
         iconKey: r.iconKey,
-        labels: r.labels,
-        rangeUnit: r.rangeUnit,
+        // Ordered FitmentDimension[]: { key, label, kind: 'level'|'range', unit? }.
+        // `level` dims form the drill tree (in order); `range` dims are the
+        // numeric narrowing widgets (Year/Weight/…).
+        dimensions: r.dimensions,
       }))
     );
   });
 
-  app.get('/v1/public/commerce/fitment/domains/:domainId/categories', async (request) => {
-    const q = TenantQuery.parse(request.query);
-    const { domainId } = z.object({ domainId: z.string().uuid() }).parse(request.params);
+  // Generic node drill. Absent `?parentId=` → the domain's top-level nodes
+  // (parentId: null); a uuid → that node's children. One endpoint walks the
+  // whole `level` tree regardless of depth, so the storefront facet is fully
+  // generic over `dimensions`. `childCount` lets the panel know whether the
+  // next level exists (a leaf = end of the drill).
+  app.get('/v1/public/commerce/fitment/domains/:domainId/nodes', async (request) => {
+    const q = z
+      .object({ tenant: z.string().min(1).max(63), parentId: z.guid().optional() })
+      .parse(request.query);
+    const { domainId } = z.object({ domainId: z.guid() }).parse(request.params);
     const tenantId = await resolveTenantBySlug(q.tenant);
-    const rows = await prisma.fitmentCategory.findMany({
-      where: {
-        domainId,
-        tenantId,
-        deletedAt: null,
-      },
+    const rows = await prisma.fitmentNode.findMany({
+      where: { domainId, tenantId, parentId: q.parentId ?? null, deletedAt: null },
       orderBy: [{ position: 'asc' }, { name: 'asc' }],
-      select: { id: true, name: true, slug: true, iconMediaId: true },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        dimensionKey: true,
+        depth: true,
+        position: true,
+        _count: { select: { children: { where: { deletedAt: null } } } },
+      },
     });
     return ok(
       rows.map((r) => ({
         id: r.id,
         name: r.name,
         slug: r.slug,
-        iconMediaId: r.iconMediaId,
-      }))
-    );
-  });
-
-  app.get('/v1/public/commerce/fitment/categories/:categoryId/items', async (request) => {
-    const q = TenantQuery.parse(request.query);
-    const { categoryId } = z.object({ categoryId: z.string().uuid() }).parse(request.params);
-    const tenantId = await resolveTenantBySlug(q.tenant);
-    const rows = await prisma.fitmentItem.findMany({
-      where: {
-        categoryId,
-        tenantId,
-        deletedAt: null,
-      },
-      orderBy: [{ position: 'asc' }, { name: 'asc' }],
-      select: { id: true, name: true, slug: true },
-    });
-    return ok(
-      rows.map((r) => ({
-        id: r.id,
-        name: r.name,
-        slug: r.slug,
-      }))
-    );
-  });
-
-  app.get('/v1/public/commerce/fitment/items/:itemId/variants', async (request) => {
-    const q = TenantQuery.parse(request.query);
-    const { itemId } = z.object({ itemId: z.string().uuid() }).parse(request.params);
-    const tenantId = await resolveTenantBySlug(q.tenant);
-    const rows = await prisma.fitmentVariant.findMany({
-      where: {
-        itemId,
-        tenantId,
-        deletedAt: null,
-      },
-      orderBy: [{ position: 'asc' }, { name: 'asc' }],
-      select: { id: true, name: true, slug: true, attributes: true },
-    });
-    return ok(
-      rows.map((r) => ({
-        id: r.id,
-        name: r.name,
-        slug: r.slug,
-        attributes: r.attributes,
+        dimensionKey: r.dimensionKey,
+        depth: r.depth,
+        position: r.position,
+        childCount: r._count.children,
       }))
     );
   });
@@ -791,13 +772,10 @@ const FULL_PRODUCT_SELECT = {
   fitments: {
     select: {
       id: true,
-      rangeMin: true,
-      rangeMax: true,
       notes: true,
-      domain: { select: { slug: true, displayName: true, rangeUnit: true } },
-      category: { select: { name: true } },
-      item: { select: { name: true } },
-      variant: { select: { name: true } },
+      node: { select: { name: true, pathNames: true } },
+      ranges: { select: { dimensionKey: true, min: true, max: true } },
+      domain: { select: { slug: true, displayName: true, dimensions: true } },
     },
   },
 } satisfies Prisma.ProductSelect;
@@ -849,12 +827,17 @@ function mapFullProduct(result: FullProductRow, inventoryActive: boolean) {
       id: f.id,
       domainSlug: f.domain.slug,
       domainLabel: f.domain.displayName,
-      rangeUnit: f.domain.rangeUnit,
-      category: f.category.name,
-      item: f.item?.name ?? null,
-      variant: f.variant?.name ?? null,
-      rangeMin: f.rangeMin === null ? null : Number(f.rangeMin),
-      rangeMax: f.rangeMax === null ? null : Number(f.rangeMax),
+      // The domain's ordered dimension list so the PDP can label each range.
+      dimensions: f.domain.dimensions,
+      // Deepest level node name + its ancestor path (root → self), null/[] for
+      // a whole-domain (universal) rule.
+      nodeName: f.node?.name ?? null,
+      nodePath: f.node?.pathNames ?? [],
+      ranges: f.ranges.map((r) => ({
+        dimensionKey: r.dimensionKey,
+        min: r.min === null ? null : Number(r.min),
+        max: r.max === null ? null : Number(r.max),
+      })),
       notes: f.notes,
     })),
   };

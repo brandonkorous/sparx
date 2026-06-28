@@ -1,23 +1,23 @@
 // Product listing page (PLP). Faceted, sortable, paginated — all state lives
 // in the URL so every variant is SSR-cacheable. Filters: price, availability,
-// generalized fitment (domain → category + range), free-text search. Sort +
-// pagination via query params.
+// generalized fitment (a level-by-level node drill + numeric range narrowing),
+// free-text search. Sort + pagination via query params.
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { Breadcrumbs } from '@/components/breadcrumbs';
-import { FacetPanel, type FacetValues } from '@/components/facet-panel';
+import { FacetPanel, type FacetValues, type FitmentLevel } from '@/components/facet-panel';
 import { Pagination } from '@/components/pagination';
 import { ProductGrid } from '@/components/product-grid';
 import { SortSelect } from '@/components/sort-select';
 import {
-  listFitmentCategories,
   listFitmentDomains,
+  listFitmentNodes,
   listProducts,
   type ProductSort,
-  type PublicFitmentCategory,
   type PublicFitmentDomain,
+  type PublicFitmentNode,
 } from '@/lib/commerce';
 import { resolveSite } from '@/lib/site-context';
 
@@ -40,6 +40,42 @@ function dollarsToCents(v: string | undefined): number | undefined {
 
 const PER_PAGE = 24;
 
+// Resolve the fitment level drill from the URL. Walks the domain's `level`
+// dimensions in order: level 0 = the domain's top-level nodes; each subsequent
+// level loads the children of the node selected at the previous level (read
+// from fl0, fl1, …). Stops once a level has no selection or the picked node is a
+// leaf — so the panel only ever shows reachable tiers. Returns the resolved
+// chain plus the deepest selected node (its name drives the product filter).
+async function resolveFitmentLevels(
+  tenantSlug: string,
+  domain: PublicFitmentDomain,
+  sp: SearchParams
+): Promise<{ levels: FitmentLevel[]; selectedNode: PublicFitmentNode | null }> {
+  const levelDims = domain.dimensions.filter((d) => d.kind === 'level');
+  const levels: FitmentLevel[] = [];
+  let selectedNode: PublicFitmentNode | null = null;
+  let parentId: string | undefined;
+
+  for (let i = 0; i < levelDims.length; i++) {
+    const dimension = levelDims[i]!;
+    const nodes = await listFitmentNodes(tenantSlug, domain.id, parentId).catch<
+      PublicFitmentNode[]
+    >(() => []);
+    if (nodes.length === 0) break;
+
+    const selectedId = one(sp[`fl${i}`]) ?? '';
+    const picked = nodes.find((n) => n.id === selectedId) ?? null;
+    levels.push({ dimension, nodes, selectedId: picked ? picked.id : '' });
+
+    if (!picked) break;
+    selectedNode = picked;
+    if (picked.childCount === 0) break; // leaf — no deeper tier to drill
+    parentId = picked.id;
+  }
+
+  return { levels, selectedNode };
+}
+
 export default async function ProductsPage({
   searchParams,
 }: {
@@ -54,21 +90,27 @@ export default async function ProductsPage({
   const minPrice = one(sp.minPrice);
   const maxPrice = one(sp.maxPrice);
   const inStock = one(sp.inStock) === 'true';
-  // Generalized fitment params (preferred) with legacy vehicle aliases.
   const fitmentDomain = one(sp.fitmentDomain);
-  const fitmentCategory = one(sp.fitmentCategory) ?? one(sp.fitmentMake);
-  const fitmentRangeValue = one(sp.fitmentRangeValue) ?? one(sp.fitmentYear);
   const page = Math.max(1, Number(one(sp.page) ?? '1') || 1);
 
-  // Load the fitment domains, then resolve the active one + its categories so
-  // the facet panel can render domain-appropriate labels and a range widget.
+  // Load the fitment domains, resolve the active one + its level drill chain so
+  // the facet panel can render domain-appropriate labels and range widgets.
   const domains = await listFitmentDomains(site.slug).catch<PublicFitmentDomain[]>(() => []);
   const activeDomain = domains.find((d) => d.slug === fitmentDomain) ?? domains[0] ?? null;
-  const categories = activeDomain
-    ? await listFitmentCategories(site.slug, activeDomain.id).catch<PublicFitmentCategory[]>(
-        () => []
-      )
-    : [];
+  const { levels, selectedNode } = activeDomain
+    ? await resolveFitmentLevels(site.slug, activeDomain, sp)
+    : { levels: [], selectedNode: null };
+
+  // The deepest selected node's NAME narrows the catalog (the API matches it
+  // against node ancestry). The first `range` value (year/weight/size) narrows
+  // numerically — the listing filter carries a single range axis.
+  const rangeDims = activeDomain?.dimensions.filter((d) => d.kind === 'range') ?? [];
+  const fitmentRanges: Record<string, string> = {};
+  for (const dim of rangeDims) {
+    const v = one(sp[dim.key]);
+    if (v) fitmentRanges[dim.key] = v;
+  }
+  const primaryRange = rangeDims.map((d) => fitmentRanges[d.key]).find((v) => v) ?? undefined;
 
   const result = await listProducts(site.slug, {
     ...(q ? { q } : {}),
@@ -76,8 +118,8 @@ export default async function ProductsPage({
     ...(minPrice ? { minPriceCents: dollarsToCents(minPrice) } : {}),
     ...(maxPrice ? { maxPriceCents: dollarsToCents(maxPrice) } : {}),
     ...(inStock ? { inStock: true } : {}),
-    ...(fitmentCategory ? { fitmentCategory } : {}),
-    ...(fitmentRangeValue ? { fitmentRangeValue: Number(fitmentRangeValue) } : {}),
+    ...(selectedNode ? { fitmentNodeName: selectedNode.name } : {}),
+    ...(primaryRange ? { fitmentRangeValue: Number(primaryRange) } : {}),
     page,
     perPage: PER_PAGE,
   });
@@ -92,8 +134,7 @@ export default async function ProductsPage({
     maxPrice,
     inStock,
     ...(activeDomain ? { fitmentDomain: activeDomain.slug } : {}),
-    fitmentCategory,
-    fitmentRangeValue,
+    fitmentRanges,
   };
 
   return (
@@ -112,7 +153,7 @@ export default async function ProductsPage({
             action="/products"
             domains={domains}
             activeDomain={activeDomain}
-            categories={categories}
+            levels={levels}
             values={facetValues}
           />
         </aside>

@@ -1,15 +1,19 @@
 'use client';
 
 // Build a custom fitment domain from scratch (the "+ New domain" path that
-// coexists with the dictionary library). Name it, then declare how many levels
-// it has and what they're called — Make → Model → Engine for a vehicle shop,
-// or a single Size axis for apparel. Categories/items/variants are added in the
-// tree editor afterward. Wrapped in <ModuleProvider> for the portal color
-// footgun (packages/ui/CLAUDE.md).
+// coexists with the dictionary library). Name it, then declare its DIMENSIONS —
+// an ordered list where each is a `level` (a tier in the tree) or a `range` (a
+// numeric narrowing axis). There is NO fixed depth and no industry default: add
+// as many levels as the catalog needs (Brand → Line → Model → Chip for a
+// computer; a single Size for apparel; Make → Model → Engine + a Year range for
+// a vehicle). The values are filled in the tree editor afterward. Wrapped in
+// <ModuleProvider> for the portal color footgun (packages/ui/CLAUDE.md).
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import { Plus, Trash2 } from 'lucide-react';
 import {
+  Badge,
   Button,
   Input,
   Label,
@@ -28,7 +32,11 @@ import {
 
 import { createFitmentDomainAction } from '../../fitment-actions';
 
-const RANGE_UNITS = ['year', 'lb', 'kg', 'month', 'us_shoe', 'eu_shoe', 'mm', 'in'] as const;
+interface DimensionDraft {
+  label: string;
+  kind: 'level' | 'range';
+  unit: string;
+}
 
 function slugify(s: string): string {
   return s
@@ -36,6 +44,16 @@ function slugify(s: string): string {
     .trim()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
+}
+
+/** A stable machine key from a human label ("Rim diameter" → "rim_diameter"). */
+function dimensionKey(label: string): string {
+  const base = label
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+  return /^[a-z]/.test(base) ? base : `x_${base}`;
 }
 
 interface Props {
@@ -50,11 +68,9 @@ export function NewDomainDialog({ open, onOpenChange }: Props) {
   const [name, setName] = React.useState('');
   const [slug, setSlug] = React.useState('');
   const [slugEdited, setSlugEdited] = React.useState(false);
-  const [l1, setL1] = React.useState('');
-  const [l2, setL2] = React.useState('');
-  const [l3, setL3] = React.useState('');
-  const [rangeUnit, setRangeUnit] = React.useState('');
-  const [rangeLabel, setRangeLabel] = React.useState('');
+  const [dimensions, setDimensions] = React.useState<DimensionDraft[]>([
+    { label: '', kind: 'level', unit: '' },
+  ]);
 
   const effectiveSlug = slugEdited ? slug : slugify(name);
 
@@ -62,11 +78,7 @@ export function NewDomainDialog({ open, onOpenChange }: Props) {
     setName('');
     setSlug('');
     setSlugEdited(false);
-    setL1('');
-    setL2('');
-    setL3('');
-    setRangeUnit('');
-    setRangeLabel('');
+    setDimensions([{ label: '', kind: 'level', unit: '' }]);
     setError(null);
   }
 
@@ -75,30 +87,55 @@ export function NewDomainDialog({ open, onOpenChange }: Props) {
     onOpenChange(next);
   }
 
+  function patchDimension(index: number, patch: Partial<DimensionDraft>): void {
+    setDimensions((prev) => prev.map((d, i) => (i === index ? { ...d, ...patch } : d)));
+  }
+
+  function addDimension(): void {
+    setDimensions((prev) => [...prev, { label: '', kind: 'level', unit: '' }]);
+  }
+
+  function removeDimension(index: number): void {
+    setDimensions((prev) => prev.filter((_, i) => i !== index));
+  }
+
   function onSubmit(e: React.FormEvent<HTMLFormElement>): void {
     e.preventDefault();
     setError(null);
-    if (!name.trim() || !effectiveSlug || !l1.trim()) {
-      setError('Name, slug, and the first level label are required.');
+
+    const filled = dimensions.filter((d) => d.label.trim());
+    if (!name.trim() || !effectiveSlug) {
+      setError('Name and slug are required.');
       return;
     }
+    if (filled.length === 0 || !filled.some((d) => d.kind === 'level')) {
+      setError('Add at least one level dimension (a tier in the tree).');
+      return;
+    }
+    const built = filled.map((d) => ({
+      key: dimensionKey(d.label),
+      label: d.label.trim(),
+      kind: d.kind,
+      ...(d.kind === 'range' && d.unit.trim() ? { unit: d.unit.trim() } : {}),
+    }));
+    const keys = new Set(built.map((d) => d.key));
+    if (keys.size !== built.length) {
+      setError('Each dimension needs a distinct name.');
+      return;
+    }
+
     startTransition(async () => {
-      const labels: Record<string, string> = { l1: l1.trim() };
-      if (l2.trim()) labels.l2 = l2.trim();
-      if (l2.trim() && l3.trim()) labels.l3 = l3.trim();
-      if (rangeUnit && rangeLabel.trim()) labels.range = rangeLabel.trim();
       const res = await createFitmentDomainAction({
         slug: effectiveSlug,
         displayName: name.trim(),
-        labels,
-        ...(rangeUnit ? { rangeUnit } : {}),
+        dimensions: built,
       });
       if (!res.ok) {
         setError(res.error.message);
         return;
       }
       toast.success(`${name.trim()} created`, {
-        description: 'Add its categories, items, and variants in the tree.',
+        description: 'Fill in its values in the tree below.',
       });
       reset();
       onOpenChange(false);
@@ -113,8 +150,9 @@ export function NewDomainDialog({ open, onOpenChange }: Props) {
           <ModalHeader>
             <ModalTitle>New fitment domain</ModalTitle>
             <ModalDescription>
-              Build a custom compatibility vocabulary — name it, then choose how many levels it has
-              (e.g. Make → Model → Engine, or just Size).
+              Name your compatibility vocabulary, then add its dimensions — each a level (a tier in
+              the tree) or a range (a numeric axis like a year or a weight). Add as many as your
+              catalog needs.
             </ModalDescription>
           </ModalHeader>
           <form onSubmit={onSubmit} noValidate>
@@ -126,7 +164,7 @@ export function NewDomainDialog({ open, onOpenChange }: Props) {
                     id="nd-name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Vehicle"
+                    placeholder="What you're matching against"
                     required
                   />
                 </Stack>
@@ -143,64 +181,82 @@ export function NewDomainDialog({ open, onOpenChange }: Props) {
                   />
                 </Stack>
               </Stack>
-              <Stack gap={1}>
-                <Label htmlFor="nd-l1">First level label</Label>
-                <Input
-                  id="nd-l1"
-                  value={l1}
-                  onChange={(e) => setL1(e.target.value)}
-                  placeholder="Make"
-                  required
-                />
-              </Stack>
-              <Stack direction="row" gap={3} className="flex-wrap">
-                <Stack gap={1} className="min-w-[160px] flex-1">
-                  <Label htmlFor="nd-l2">Second level (optional)</Label>
-                  <Input
-                    id="nd-l2"
-                    value={l2}
-                    onChange={(e) => setL2(e.target.value)}
-                    placeholder="Model"
-                  />
+
+              <Stack gap={2}>
+                <Stack direction="row" align="center" justify="between">
+                  <Label>Dimensions</Label>
+                  <Text size="xs" variant="muted">
+                    Levels nest top → bottom; ranges narrow a match
+                  </Text>
                 </Stack>
-                <Stack gap={1} className="min-w-[160px] flex-1">
-                  <Label htmlFor="nd-l3">Third level (optional)</Label>
-                  <Input
-                    id="nd-l3"
-                    value={l3}
-                    onChange={(e) => setL3(e.target.value)}
-                    placeholder="Engine"
-                    disabled={!l2.trim()}
-                  />
-                </Stack>
-              </Stack>
-              <Stack direction="row" gap={3} className="flex-wrap">
-                <Stack gap={1} className="min-w-[160px] flex-1">
-                  <Label htmlFor="nd-range-unit">Numeric range (optional)</Label>
-                  <NativeSelect
-                    id="nd-range-unit"
-                    value={rangeUnit}
-                    onChange={(e) => setRangeUnit(e.target.value)}
+                {dimensions.map((dim, i) => (
+                  <Stack key={i} direction="row" gap={2} align="end" className="flex-wrap">
+                    <Stack gap={1} className="min-w-[160px] flex-1">
+                      {i === 0 && <Label htmlFor={`nd-dim-label-${i}`}>Label</Label>}
+                      <Input
+                        id={`nd-dim-label-${i}`}
+                        value={dim.label}
+                        onChange={(e) => patchDimension(i, { label: e.target.value })}
+                        placeholder="Level or axis name"
+                      />
+                    </Stack>
+                    <Stack gap={1} className="w-[120px]">
+                      {i === 0 && <Label htmlFor={`nd-dim-kind-${i}`}>Type</Label>}
+                      <NativeSelect
+                        id={`nd-dim-kind-${i}`}
+                        value={dim.kind}
+                        onChange={(e) =>
+                          patchDimension(i, { kind: e.target.value as DimensionDraft['kind'] })
+                        }
+                      >
+                        <option value="level">Level</option>
+                        <option value="range">Range</option>
+                      </NativeSelect>
+                    </Stack>
+                    <Stack gap={1} className="w-[120px]">
+                      {i === 0 && <Label htmlFor={`nd-dim-unit-${i}`}>Unit</Label>}
+                      <Input
+                        id={`nd-dim-unit-${i}`}
+                        value={dim.unit}
+                        onChange={(e) => patchDimension(i, { unit: e.target.value })}
+                        placeholder="e.g. year"
+                        disabled={dim.kind !== 'range'}
+                      />
+                    </Stack>
+                    <Button
+                      shape="square"
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      title="Remove dimension"
+                      aria-label={`Remove dimension ${i + 1}`}
+                      disabled={dimensions.length === 1}
+                      onClick={() => removeDimension(i)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </Stack>
+                ))}
+                <Stack direction="row" align="center" justify="between">
+                  <Button
+                    type="button"
+                    color="neutral"
+                    variant="outline"
+                    size="sm"
+                    leftIcon={<Plus className="h-3.5 w-3.5" />}
+                    onClick={addDimension}
                   >
-                    <option value="">None</option>
-                    {RANGE_UNITS.map((u) => (
-                      <option key={u} value={u}>
-                        {u}
-                      </option>
-                    ))}
-                  </NativeSelect>
-                </Stack>
-                <Stack gap={1} className="min-w-[160px] flex-1">
-                  <Label htmlFor="nd-range-label">Range label</Label>
-                  <Input
-                    id="nd-range-label"
-                    value={rangeLabel}
-                    onChange={(e) => setRangeLabel(e.target.value)}
-                    placeholder="Year"
-                    disabled={!rangeUnit}
-                  />
+                    Add dimension
+                  </Button>
+                  <Badge variant="soft" size="sm">
+                    {dimensions.filter((d) => d.label.trim() && d.kind === 'level').length} level
+                    {dimensions.filter((d) => d.label.trim() && d.kind === 'level').length === 1
+                      ? ''
+                      : 's'}
+                  </Badge>
                 </Stack>
               </Stack>
+
               {error && (
                 <Text size="sm" variant="danger" role="alert">
                   {error}

@@ -266,14 +266,14 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
   const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'product' });
 
   // Fitment is generalized (vehicle / device / breed …) but only meaningful when
-  // the tenant has actually set up fitment data — a domain with categories. We
-  // gate the step on that so a plain content/apparel tenant never sees it.
+  // the tenant has actually set up fitment data — a domain with values. We gate
+  // the step on that so a plain content/apparel tenant never sees it.
   const [fitmentRelevant, setFitmentRelevant] = React.useState(false);
   React.useEffect(() => {
     let cancelled = false;
     void listFitmentDomainsAction().then((res) => {
       if (cancelled || !res.ok) return;
-      setFitmentRelevant(res.data.some((d) => d.categoryCount > 0));
+      setFitmentRelevant(res.data.some((d) => d.rootCount > 0));
     });
     return () => {
       cancelled = true;
