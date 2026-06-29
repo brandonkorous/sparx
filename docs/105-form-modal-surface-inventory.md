@@ -1,6 +1,6 @@
 # Form & Modal Surface Inventory
 
-Version: 1.21
+Version: 1.22
 Author: Brandon Korous
 Last Updated: 2026-06-28
 
@@ -49,6 +49,55 @@ footgun and the procedure live in the skill.
 The backlog is large but **highly repetitive** — most of it is the same three or four shapes repeated
 across modules, which is exactly what the `form-surface` skill is for. The waves below order it by shape,
 so each wave is "the same move, N times."
+
+---
+
+## Strategy & workstreams (WS1–WS5) — locked 2026-06-28
+
+The form strategy is settled (spec: [docs/86](86-surface-frame-pattern.md) §1A). Three decisions, then the
+remaining backlog organized as five workstreams — **this is the standing goal: complete WS1–WS5.**
+
+**The strategy in one line:** _one form primitive · three surfaces the **user** picks · single-page by
+default · editors are not forms._
+
+1. **The user picks the surface — keep it, it's the differentiator.** Every create/edit honors the
+   operator's `defaultDetailView` (drawer / modal / full-page / new tab) via `EntityCreateButton`. Other
+   systems force the container by field-count; we let the operator choose and apply it everywhere. Safe
+   across all three because the `modal` variant is a **large ~920×680 canvas**, not a cramped dialog.
+2. **Single-page by default; a wizard must be earned.** A form is one well-structured scroll (grouped
+   `<Card variant="module">` sections + its live summary), not a stepper. Multi-step is reserved for
+   genuinely sequential/branching **and** infrequent flows — **onboarding + blueprint/new-site only.**
+3. **Editors are not forms.** Visual canvases (builder, automation, broadcast composer, configurator
+   template editor, CMS schema/menu editors, scheduling availability) keep their own chrome and are
+   excluded from this backlog — never wizard-ify them.
+
+| WS      | What                                                                 | Maps to              | Status      |
+| ------- | -------------------------------------------------------------------- | -------------------- | ----------- |
+| **WS1** | Collapse the 8 multi-step create wizards to single-page              | _new_ (was Wave 1+)  | in progress |
+| **WS2** | Full-page-only create forms → overlay (single-page, honor pref)      | old Wave 2           | pending     |
+| **WS3** | Editor exclusion — formally drop editor-class surfaces from this doc | "Design calls" below | pending     |
+| **WS4** | Inline detail-page edit/record forms → standardize                   | old Wave 4           | pending     |
+| **WS5** | Substantive dialogs → standard overlay/dialog                        | old Wave 5           | pending     |
+
+### WS1 — collapse the multi-step create wizards to single-page (the new headline work)
+
+These eight already ride `SurfaceFrame` with a live summary column (Wave 1). WS1 collapses their `steps`
+array into **one step** — the grouped `<Card variant="module">` sections stack in one internal scroll, the
+summary column stays, the toolbar becomes **Cancel + Create** (no Back/Continue). A single-page form is what
+lets these render well in a drawer or modal (a stepper only really works full-page), so this is what makes
+decision (1) pay off. Keep field grouping, validation, and the summary; only the step boundaries go.
+
+- `commerce/products/_components/product-wizard/` → ProductWizard (heaviest — the context-rail record)
+- `crm/quotes/new/_components/quote-wizard.tsx` · `crm/orders/new/_components/order-wizard.tsx`
+- `inventory/purchase-orders/new/_components/purchase-order-wizard.tsx` · `inventory/transfers/new/_components/transfer-wizard.tsx`
+- `invoicing/documents/new/_components/invoice-wizard.tsx`
+- `crm/customers/new/customer-full-profile-wizard.tsx` · `b2b/accounts/new/b2b-account-wizard.tsx`
+
+**Stays multi-step (do NOT collapse):** `(onboarding)/_components/onboarding-wizard.tsx` (first-run, no app
+chrome) and `settings/sites/new-site-wizard.tsx` + blueprint install (branching, infrequent).
+
+> WS2 = the "Wave 2" section, WS3 = the "Design calls" section (made a formal exclusion), WS4 = the "Wave 4"
+> section, WS5 = the "Wave 5" section — all below, unchanged in content, now numbered as workstreams.
 
 ---
 
@@ -596,10 +645,11 @@ Already on `SurfaceFrame`; just add the F-layout summary column (and join `SUMMA
 - `crm/customers/new/customer-full-profile-wizard.tsx`
 - `b2b/accounts/new/b2b-account-wizard.tsx`
 
-### Wave 2 — single-step create forms: add `surface` + wire the overlay
+### WS2 (Wave 2) — single-step create forms: add `surface` + wire the overlay
 
 Mechanical, one per form via the skill (build `*CreateForm` with a `surface` prop → register in the three
-places → swap the launcher to `EntityCreateButton`). The full-page-only create forms:
+places → swap the launcher to `EntityCreateButton`) — the exact move Wave 3 repeated, so each now honors the
+user's `defaultDetailView`. The full-page-only create forms:
 
 - Commerce: `bundles`, `configurator`, `discounts`, `shipping/profiles`, `shipping/zones`, `tax/zones`,
   `providers/install`
@@ -618,7 +668,7 @@ Same `Modal` + `AlertDialog` pattern repeated; swept with a shared surface-aware
 - Inventory: `sources` (`source-form` + `new-source-button` + `source-actions` + `[id]/source-detail-actions`)
 - Dropship: `suppliers` (`supplier-form` + `new-supplier-button` + `supplier-actions` + `vendor-picker`)
 
-### Wave 4 — inline record/edit forms on detail pages → standardize
+### WS4 (Wave 4) — inline record/edit forms on detail pages → standardize
 
 Forms that live raw in a detail-page body and clobber the chrome; wrap in the standard card/overlay:
 
@@ -629,7 +679,7 @@ Forms that live raw in a detail-page body and clobber the chrome; wrap in the st
 - CMS edit surfaces: `cms/[id]/edit-form`, `author-edit-form`, `media/[id]/edit-form`,
   `types/[typeKey]/[id]/edit-entry-form`, `schema-editor`, `terms-manager`, `legal/consent-settings-form`
 
-### Wave 5 — substantive dialogs → standard overlay/dialog
+### WS5 (Wave 5) — substantive dialogs → standard overlay/dialog
 
 Dialogs that carry real input (not just confirms):
 
@@ -647,11 +697,28 @@ Dialogs that carry real input (not just confirms):
   placeholders with zero imports app-wide — **deleted 2026-06-26** (Products surface review).
 - `b2b/accounts/[id]/b2b-account-overrides-table.tsx` ("Add override" is disabled)
 
-### Design calls (likely keep as-is — confirm intent before touching)
+### WS3 — Editor exclusion (formal: these are NOT forms, never wizard-ify them)
 
-- `builder/**` bespoke editor surfaces (inspector, panels, palettes, brand/theme controls, framing/preview modals) — these are a visual editor, not CRUD.
-- `automations/automation-editor.tsx` (full-page flow canvas), `email/broadcasts/broadcast-composer.tsx`,
-  `marketplace/installs/[id]/update`, `scheduling/availability` editors — full-page may be the right surface; decide before migrating.
+**Decision (2026-06-28): the following are visual editors / canvases, not CRUD forms — permanently OUT of
+the form-surface system.** They keep their own purpose-built chrome; do not wrap them in a `SurfaceFrame`,
+do not add a `presentation` prop, do not give them a `/new` overlay. WS3 is the act of recording this so no
+later pass tries to "migrate" them.
+
+- `builder/**` bespoke editor surfaces (inspector, panels, palettes, brand/theme controls, framing/preview
+  modals) — the page builder is a visual canvas.
+- `automations/_components/automation-editor.tsx` — full-page flow canvas.
+- `email/broadcasts/_components/broadcast-composer.tsx` — message-composition canvas (its **schedule/send**
+  dialog is the only form-shaped part → that's WS5, not the composer itself).
+- `commerce/configurator/[id]/_components/template-json-editor.tsx` — the raw-JSON editor is being replaced by
+  a **structured/visual editor** (see [[project_configurator_json_audience_gap]]); the structured editor is an
+  editor, not a form — excluded here, tracked separately.
+- `cms/types/[typeKey]/schema/schema-editor.tsx` + `cms/navigation/menu-editor.tsx` — schema/tree editors.
+- `scheduling/availability/page.tsx` + `weekly-editor.tsx` + `exceptions-panel.tsx` — weekly grid editor.
+- `marketplace/installs/[id]/update/page.tsx` — blueprint update review (a diff/review surface, not a form);
+  **owned by a parallel agent — do not touch, just note the exclusion.**
+
+The narrow form-shaped pieces some of these launch (e.g. the broadcast **scheduler** dialog, the new-component
+name prompt) are migrated under WS4/WS5; the editor body itself is excluded.
 
 ---
 

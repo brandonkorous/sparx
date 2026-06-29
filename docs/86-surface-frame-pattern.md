@@ -1,14 +1,14 @@
 # sparx Platform — Form Surface Layout Pattern (`SurfaceFrame`)
 
-**Version:** 3.5
+**Version:** 3.6
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-25
+**Last Updated:** 2026-06-28
 
 ---
 
 ## 1. Purpose
 
-One layout language for every **form surface** in the platform — create and edit forms, the multi-step create-wizards (Product, Quote, Order, Customer, B2B Account, Document, Content, …), onboarding, blueprint installs, and any future setup sequence.
+One layout language for every **form surface** in the platform — create and edit forms, the few genuinely sequential flows that remain multi-step (onboarding, blueprint/new-site install), and any future setup sequence. (The record-builder "wizards" — Product, Quote, Order, Customer, B2B Account, Document, … — are **collapsing to single-page** per the 2026 strategy below; they still use this frame, just with one `step`.)
 
 The primitive is **`SurfaceFrame`** (formerly `WizardFrame` — that name wrongly implied wizard-only and is retired). It is **single-step by default**; the `steps`/stepper machinery is an **opt-in** feature for multi-step flows (a wizard), never the identity. **Create and edit both use it.** Two edit sub-cases — getting this wrong nests a frame inside tabs:
 
@@ -23,6 +23,18 @@ It ships in **two presentations of the same model**:
 This doc owns the **layout**. The **flows** inside it (which steps, which fields, validation) are owned by their feature docs — onboarding by [docs/15](15-merchant-onboarding-prd.md), the create-wizards by [docs/68](68-wizards-import-export-bulk.md). The **wiring** of a form into the drawer/modal/full-page system is the [`form-surface`](../.claude/skills/form-surface/SKILL.md) skill.
 
 > **v3 change:** the in-app presentation moved from a dark left rail (v1) → a horizontal numbered top stepper (v2) → the **F layout** (v3): a compact segmented progress strip, a form column, and an optional live **summary** column that earns the width instead of leaving it empty. Cancel moved into the bottom toolbar; the embedded full page became a contained, centered sheet. The numbered top stepper survives only in the self-owned `modal` variant (e.g. New site). The immersive rail (onboarding) is unchanged.
+
+---
+
+## 1A. Form strategy (2026) — one form · three USER-picked surfaces · single-page · editor ≠ form
+
+Locked 2026-06-28 after a 2026 form-UX research pass (drawers are the converging admin-CRUD default; modals are for short input/confirmation; full-page for genuinely complex; explicit-save is the default for transactional records; multi-step wizards only when the flow is sequential/branching **and** infrequent). Three product decisions now govern which shape any surface takes — the remaining migration is tracked as **WS1–WS5** in [docs/105](105-form-modal-surface-inventory.md):
+
+1. **Three surfaces, the USER picks — and that's the differentiator.** Every create/edit honors the operator's `defaultDetailView` preference (drawer / modal / full-page / new tab), resolved by `EntityCreateButton`. Most design systems force the container by field-count; sparx lets the operator choose their working surface and applies it platform-wide. It's safe across all three because the `modal` variant is a **large ~920×680 canvas**, not a cramped dialog — so the documented "complex form crammed into a tiny modal" failure mode is largely neutralized. We **keep and lean into** this integration; it does not get traded away for a complexity-driven auto-picker.
+2. **Single-page by default; a wizard must be EARNED.** A form is **one well-structured scroll** — grouped `<Card variant="module">` sections plus its live summary — **not** a stepper. The `steps`/MiniProgress machinery is reserved for flows that are genuinely **sequential/branching and infrequent**: **first-run onboarding and blueprint/new-site install only.** The record-builder "wizards" (product, quote, order, purchase-order, transfer, billing-document, customer, b2b-account) **collapse to single-page** (WS1). This is also what lets them render well in a drawer or modal — a stepped wizard only really works full-page, so collapsing is precisely what makes decision (1) pay off across all three surfaces.
+3. **Editors are not forms.** Visual canvases — the page builder, the automation flow canvas, the broadcast composer, the configurator template editor, the CMS schema-editor and menu-editor, the scheduling availability editor — are **out of the form system**. They keep their own purpose-built chrome and are excluded from the migration backlog (WS3); never wrap one in a `SurfaceFrame` or a wizard.
+
+Unchanged by the strategy: the **save model** (explicit Save + the `useUnsavedGuard` leave-guard — §5) and the F-layout itself. What changes is only _how many steps a form has_ (one, unless earned) and _who chooses the container_ (the user, always).
 
 ---
 
