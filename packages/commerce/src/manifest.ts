@@ -23,8 +23,10 @@ import {
   Receipt,
   Repeat2,
   Settings2,
+  ShoppingBag,
   ShoppingCart,
   Star,
+  Store,
   Tag,
   TicketPercent,
   Truck,
@@ -73,6 +75,13 @@ export const commerceManifest: ModuleManifest = {
     { id: 'reports', label: 'Reports', icon: BarChart3, href: '/commerce/reports' },
     { id: 'shipping', label: 'Shipping', icon: Truck, href: '/commerce/shipping' },
     { id: 'tax', label: 'Tax', icon: Receipt, href: '/commerce/tax' },
+    // Sales channels — connect/sync the marketplaces & social platforms a tenant
+    // sells on. Owned by Commerce (the API gates it on the module); the revenue
+    // ROLLUP is the money view in Finance → Channels.
+    { id: 'channels', label: 'Sales channels', icon: Store, href: '/commerce/channels' },
+    // sparx.market — the first-party marketplace, itself a sales channel. Owned by
+    // Commerce; the money (settlement + payouts) is the view in Finance → Payouts.
+    { id: 'market', label: 'sparx.market', icon: ShoppingBag, href: '/commerce/market' },
     { id: 'providers', label: 'Providers', icon: Plug, href: '/commerce/providers' },
     { id: 'settings', label: 'Settings', icon: Settings2, href: '/commerce/settings' },
   ],

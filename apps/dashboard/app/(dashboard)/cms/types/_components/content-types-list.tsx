@@ -54,11 +54,11 @@ export function ContentTypesList({ types, counts, view }: ContentTypesListProps)
 
   const kindCell = (t: ContentType) => (
     <Stack direction="row" align="center" gap={2}>
-      <Badge color={t.is_built_in ? 'outline' : 'module'} className="text-xs">
+      <Badge color={t.is_built_in ? 'neutral' : 'module'} variant="soft" size="sm">
         {t.is_built_in ? 'built-in' : 'custom'}
       </Badge>
       {t.is_singleton && (
-        <Badge variant="outline" className="text-xs">
+        <Badge color="info" variant="soft" size="sm">
           singleton
         </Badge>
       )}

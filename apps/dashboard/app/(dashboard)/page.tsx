@@ -293,7 +293,9 @@ export default async function DashboardHome() {
                         {m.icon}
                       </span>
                       <Text weight="medium">{m.label}</Text>
-                      <Badge variant="outline">Preview</Badge>
+                      <Badge color="info" variant="soft" size="sm">
+                        Preview
+                      </Badge>
                     </Stack>
                     <Text size="xs" variant="muted">
                       {m.description}

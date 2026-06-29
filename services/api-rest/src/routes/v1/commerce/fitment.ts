@@ -38,24 +38,11 @@ const ListTemplatesQuery = z.object({
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const fitmentRoutes: FastifyPluginAsync = async (app) => {
-  // ─── Dictionaries (installable platform fitment libraries) ────────
-  // The platform's library of fitment dictionaries (Vehicle, Apparel, Pet, …);
-  // installing one stamps a tenant-scoped domain → category → item → variant
-  // tree. Nothing is global — a tenant installs only what its catalog needs.
-  app.get('/v1/commerce/fitment/dictionaries', async (request) => {
-    requireRole(request, 'viewer');
-    await requireCommerceModule(request);
-    return ok(fitmentService.listFitmentDictionaries());
-  });
-
-  app.post('/v1/commerce/fitment/dictionaries/:slug/install', async (request, reply) => {
-    requireRole(request, 'editor');
-    await requireCommerceModule(request);
-    const { slug } = z.object({ slug: z.string().min(1).max(63) }).parse(request.params);
-    const created = await fitmentService.installFitmentDictionary(toCommerceContext(request), slug);
-    reply.code(201);
-    return ok(created);
-  });
+  // Fitment dictionaries are installed through the cross-module preset seam
+  // (`GET /v1/presets?module=commerce&kind=fitment` + `POST /v1/presets/
+  // commerce/:slug/install`, routes/v1/presets.ts) — the commerce preset there
+  // delegates to fitmentService.installFitmentDictionary. The bespoke
+  // `/fitment/dictionaries` endpoints were retired so there is ONE install path.
 
   // ─── Domains ──────────────────────────────────────────────────────
   app.get('/v1/commerce/fitment/domains', async (request) => {

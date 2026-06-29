@@ -79,8 +79,8 @@ export async function TaxZoneDetailContent({ id }: Props) {
             >
               {statusLabel(zone.isActive ? 'active' : 'inactive')}
             </Badge>
-            <Badge variant="outline" size="sm">
-              {zone.nexusType}
+            <Badge color="neutral" variant="soft" size="sm">
+              {statusLabel(zone.nexusType)}
             </Badge>
             {zone.registrationNumber && (
               <Text size="xs" className="font-mono" variant="muted">

@@ -9,6 +9,7 @@
 import Link from 'next/link';
 import { Banknote } from 'lucide-react';
 import {
+  Button,
   Card,
   CardContent,
   CardHeader,
@@ -31,7 +32,7 @@ import {
 } from './actions';
 import { SparxPayBalanceCard } from './_components/sparx-pay-balance-card';
 import { SettlementPanel } from './_components/settlement-panel';
-import { PayoutAccountForm } from './_components/payout-account-form';
+import { PayoutAccountCard } from './_components/payout-account-card';
 
 export const dynamic = 'force-dynamic';
 
@@ -72,7 +73,7 @@ export default async function PayoutsPage(): Promise<React.JSX.Element> {
                   <CardTitle>Marketplace payout account</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <PayoutAccountForm account={account} />
+                  <PayoutAccountCard account={account} />
                 </CardContent>
               </Card>
             </>
@@ -89,12 +90,11 @@ export default async function PayoutsPage(): Promise<React.JSX.Element> {
                     commission. Your settlement history and payout bank account will appear here
                     once you join.
                   </Text>
-                  <Link
-                    href="/settings/market"
-                    className="text-sm font-medium text-[var(--module-active-text)] hover:underline"
-                  >
-                    Join sparx.market →
-                  </Link>
+                  <div>
+                    <Button asChild color="module">
+                      <Link href="/commerce/market">Join sparx.market</Link>
+                    </Button>
+                  </div>
                 </Stack>
               </CardContent>
             </Card>

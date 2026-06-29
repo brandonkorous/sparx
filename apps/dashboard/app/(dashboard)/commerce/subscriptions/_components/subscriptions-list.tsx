@@ -24,6 +24,7 @@ type SubscriptionStatus = 'active' | 'trialing' | 'paused' | 'past_due' | 'cance
 export interface SubscriptionSummary {
   id: string;
   customerId: string;
+  customerName: string | null;
   status: SubscriptionStatus;
   nextOccurrenceAt: string | null;
   itemCount: number;
@@ -72,11 +73,14 @@ export function SubscriptionsList({ items, view }: SubscriptionsListProps) {
     },
     {
       header: 'Customer',
-      cell: (s) => (
-        <Text size="xs" className="font-mono">
-          {s.customerId.slice(0, 8)}
-        </Text>
-      ),
+      cell: (s) =>
+        s.customerName ? (
+          <Text size="sm">{s.customerName}</Text>
+        ) : (
+          <Text size="xs" variant="muted" className="font-mono">
+            {s.customerId.slice(0, 8)}
+          </Text>
+        ),
     },
     { header: 'Items', cell: (s) => s.itemCount },
     { header: 'Status', cell: (s) => <StatusBadge status={s.status} /> },
@@ -95,8 +99,8 @@ export function SubscriptionsList({ items, view }: SubscriptionsListProps) {
   const card: SelectionCard<SubscriptionSummary> = {
     title: (s) => idLink(s, 'truncate font-mono text-sm hover:text-[var(--module-active)]'),
     subtitle: (s) => (
-      <Text size="xs" variant="muted" className="font-mono">
-        {s.customerId.slice(0, 8)}
+      <Text size="xs" variant="muted" className={s.customerName ? undefined : 'font-mono'}>
+        {s.customerName ?? s.customerId.slice(0, 8)}
       </Text>
     ),
     badge: (s) => <StatusBadge status={s.status} />,

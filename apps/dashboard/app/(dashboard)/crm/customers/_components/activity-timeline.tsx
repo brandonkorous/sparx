@@ -29,6 +29,7 @@ import {
   TimelineItem,
   TimelineTime,
   TimelineTitle,
+  statusLabel,
 } from '@sparx/ui';
 import {
   CheckCircle2,
@@ -159,11 +160,13 @@ export function ActivityTimeline({ activities }: Props) {
                 <Stack direction="row" align="center" gap={2}>
                   <TimelineTitle>{meta.title}</TimelineTitle>
                   {isCorrection && (
-                    <Badge variant="outline">
+                    <Badge color="info" variant="soft" size="sm">
                       <Pencil className="h-3 w-3" /> Edited
                     </Badge>
                   )}
-                  <Badge variant="outline">{a.actorType}</Badge>
+                  <Badge color="neutral" variant="soft" size="sm">
+                    {statusLabel(a.actorType)}
+                  </Badge>
                 </Stack>
                 {a.description && <TimelineDescription>{a.description}</TimelineDescription>}
                 <TimelineTime dateTime={a.occurredAt}>

@@ -86,7 +86,7 @@ export function LegalChecklist({ data }: { data: ChecklistData }) {
                   <div className="flex flex-wrap items-center gap-2">
                     <Text weight="medium">{item.title}</Text>
                     {item.required ? (
-                      <Badge color="neutral" variant="outline">
+                      <Badge color="neutral" variant="soft" size="sm">
                         Required
                       </Badge>
                     ) : null}

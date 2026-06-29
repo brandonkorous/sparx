@@ -7,6 +7,7 @@ import {
   type SelectionColumn,
   Stack,
   Text,
+  statusLabel,
 } from '@sparx/ui';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
@@ -50,7 +51,9 @@ export function BundlesList({ bundles, view }: BundlesListProps) {
 
   const pricingCell = (b: BundleRow) => (
     <>
-      <Badge variant="outline">{b.pricingMode}</Badge>
+      <Badge color="info" variant="soft" size="sm">
+        {statusLabel(b.pricingMode)}
+      </Badge>
       {b.pricingMode === 'fixed' && b.fixedPriceCents != null && (
         <Text size="xs" variant="muted" className="mt-1">
           {moneyFmt.format(b.fixedPriceCents / 100)}
@@ -64,7 +67,11 @@ export function BundlesList({ bundles, view }: BundlesListProps) {
     </>
   );
 
-  const inventoryBadge = (b: BundleRow) => <Badge variant="outline">{b.inventoryMode}</Badge>;
+  const inventoryBadge = (b: BundleRow) => (
+    <Badge color="neutral" variant="soft" size="sm">
+      {statusLabel(b.inventoryMode)}
+    </Badge>
+  );
 
   const columns: SelectionColumn<BundleRow>[] = [
     { header: 'Bundle product', cell: (b) => titleLink(b) },

@@ -153,7 +153,7 @@ export function ProductPricingPanel({
                         <Stack direction="row" align="center" gap={2}>
                           <Text className="font-medium">{v.title ?? v.sku}</Text>
                           {v.isDefault && (
-                            <Badge color="neutral" variant="outline" size="sm">
+                            <Badge color="neutral" variant="soft" size="sm">
                               Default
                             </Badge>
                           )}

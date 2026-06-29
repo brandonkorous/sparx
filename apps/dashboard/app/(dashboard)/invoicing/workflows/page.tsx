@@ -89,7 +89,7 @@ export default async function InvoicingWorkflowsPage() {
                           ) : (
                             stages.map((s, i) => (
                               <Stack key={s.id} direction="row" align="center" gap={2}>
-                                <Badge variant="outline" className="text-xs">
+                                <Badge color="neutral" variant="soft" size="sm">
                                   {s.customerLabel}
                                 </Badge>
                                 {i < stages.length - 1 && (

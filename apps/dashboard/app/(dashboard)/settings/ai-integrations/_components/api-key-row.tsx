@@ -52,15 +52,21 @@ export function ApiKeyRow({ apiKey }: ApiKeyRowProps) {
       <Stack gap={1} className="flex-1">
         <Stack direction="row" align="center" gap={2}>
           <Text weight="medium">{apiKey.name}</Text>
-          {apiKey.revokedAt && <Badge variant="outline">Revoked</Badge>}
+          {apiKey.revokedAt && (
+            <Badge color="danger" variant="soft" size="sm">
+              Revoked
+            </Badge>
+          )}
           {apiKey.expiresAt && apiKey.expiresAt.getTime() < Date.now() && (
-            <Badge variant="outline">Expired</Badge>
+            <Badge color="warning" variant="soft" size="sm">
+              Expired
+            </Badge>
           )}
         </Stack>
         <Stack direction="row" align="center" gap={2} className="flex-wrap">
           <code className="text-xs">{apiKey.keyPrefix}…</code>
           {apiKey.scopes.map((s) => (
-            <Badge key={s} variant="outline" className="text-xs">
+            <Badge key={s} color="neutral" variant="soft" size="sm">
               <code>{s}</code>
             </Badge>
           ))}

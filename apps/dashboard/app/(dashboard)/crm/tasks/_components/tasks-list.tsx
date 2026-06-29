@@ -149,7 +149,7 @@ export function TasksList({ tasks, view, overdue }: TasksListProps) {
     {
       header: 'Priority',
       cell: (t) => (
-        <Badge color={PRIORITY_VARIANT[t.priority] ?? 'outline'} className="text-xs">
+        <Badge color={PRIORITY_VARIANT[t.priority] ?? 'neutral'} variant="soft" size="sm">
           {t.priority}
         </Badge>
       ),

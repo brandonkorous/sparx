@@ -6,6 +6,7 @@
 // Commerce goes through one of the services here.
 
 export * from './services';
+export { commercePresets } from './presets';
 export * from './events';
 export { mediaPublicUrl } from './media-url';
 export * from './search-projection';

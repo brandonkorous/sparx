@@ -47,7 +47,9 @@ export function TaxonomiesList({ rows, view }: TaxonomiesListProps) {
   );
 
   const kindBadge = (t: TaxonomyListItem) => (
-    <Badge variant="outline">{t.hierarchical ? 'hierarchical' : 'flat'}</Badge>
+    <Badge color="info" variant="soft" size="sm">
+      {t.hierarchical ? 'hierarchical' : 'flat'}
+    </Badge>
   );
 
   const manageButton = (t: TaxonomyListItem) => (

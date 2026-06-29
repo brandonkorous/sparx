@@ -157,7 +157,9 @@ export async function B2bAccountDetailContent({ id }: Props) {
                   gap={3}
                   className="rounded-md border border-[var(--color-border-default)] p-3"
                 >
-                  <Badge variant="outline">{(p as { year?: number }).year ?? '—'}</Badge>
+                  <Badge color="neutral" variant="soft" size="sm">
+                    {(p as { year?: number }).year ?? '—'}
+                  </Badge>
                   <Text size="sm">
                     {(p as { make?: string }).make ?? '—'} {(p as { model?: string }).model ?? ''}
                   </Text>
@@ -167,7 +169,7 @@ export async function B2bAccountDetailContent({ id }: Props) {
                     </Text>
                   )}
                   {(p as { count?: number }).count !== undefined && (
-                    <Badge variant="outline" className="ml-auto">
+                    <Badge color="neutral" variant="soft" size="sm" className="ml-auto">
                       ×{(p as { count?: number }).count}
                     </Badge>
                   )}

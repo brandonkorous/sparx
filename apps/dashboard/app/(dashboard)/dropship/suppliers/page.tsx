@@ -69,7 +69,7 @@ export default async function DropshipSuppliersPage({ searchParams }: Props) {
             </Badge>
           }
           description="Connect suppliers to source and import products for dropshipping."
-          actions={<NewSupplierButton vendors={vendors} sites={sites} />}
+          actions={<NewSupplierButton />}
         />
 
         <ListToolbar searchPlaceholder="Search suppliers…" enableViewToggle />
@@ -83,7 +83,7 @@ export default async function DropshipSuppliersPage({ searchParams }: Props) {
                   ? 'Try a different search term.'
                   : 'Connect your first supplier to start importing dropship products.'
               }
-              action={!q ? <NewSupplierButton vendors={vendors} sites={sites} /> : undefined}
+              action={!q ? <NewSupplierButton /> : undefined}
             />
           </Card>
         ) : (

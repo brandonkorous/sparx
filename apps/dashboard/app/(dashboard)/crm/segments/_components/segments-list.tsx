@@ -55,7 +55,7 @@ export function SegmentsList({ segments, view }: SegmentsListProps) {
   const badges = (s: SegmentListRow) => (
     <>
       {s.isBuiltIn && (
-        <Badge variant="outline" className="text-xs">
+        <Badge color="neutral" variant="soft" size="sm">
           <Star className="h-3 w-3" /> Built-in
         </Badge>
       )}

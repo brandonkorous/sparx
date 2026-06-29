@@ -154,17 +154,17 @@ function DomainRow({
           {status.label}
         </Badge>
         {isZone && (
-          <Badge color="neutral" variant="outline">
+          <Badge color="neutral" variant="soft" size="sm">
             sparx zone
           </Badge>
         )}
         {isPurchased && (
-          <Badge color="neutral" variant="outline">
+          <Badge color="neutral" variant="soft" size="sm">
             Purchased
           </Badge>
         )}
         {isCustom && (
-          <Badge color="neutral" variant="outline">
+          <Badge color="neutral" variant="soft" size="sm">
             Connected
           </Badge>
         )}
@@ -707,10 +707,10 @@ export function DomainsManager({ properties, domains, purchaseEnabled }: Domains
                 >
                   <Globe className="size-4 text-[var(--color-text-secondary)]" />
                   <span className="font-medium">{d.host}</span>
-                  <Badge color="success" variant="soft">
+                  <Badge color="success" variant="soft" size="sm">
                     Active
                   </Badge>
-                  <Badge color="neutral" variant="outline">
+                  <Badge color="neutral" variant="soft" size="sm">
                     Always on
                   </Badge>
                   {d.isCanonical && (

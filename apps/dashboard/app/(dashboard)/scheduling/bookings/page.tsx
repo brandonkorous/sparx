@@ -52,7 +52,7 @@ export default async function SchedulingBookingsPage({ searchParams }: Props) {
             </Badge>
           }
           description="Every appointment, class, reservation, and rental — confirm, check in, reschedule, or cancel."
-          actions={<NewBookingButton services={services} />}
+          actions={<NewBookingButton />}
         />
 
         <div className="flex flex-wrap gap-2">
@@ -80,7 +80,7 @@ export default async function SchedulingBookingsPage({ searchParams }: Props) {
                   ? 'Create a service and set availability, then take your first booking.'
                   : 'New bookings will appear here. Create one to get started.'
               }
-              action={services.length > 0 ? <NewBookingButton services={services} /> : undefined}
+              action={services.length > 0 ? <NewBookingButton /> : undefined}
             />
           </Card>
         ) : (

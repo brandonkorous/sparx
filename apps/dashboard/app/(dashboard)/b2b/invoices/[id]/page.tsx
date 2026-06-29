@@ -55,7 +55,7 @@ export default async function B2bInvoiceDetailPage({ params }: PageProps) {
           icon={<Receipt className="h-5 w-5" />}
           title={invoice.invoiceNumber}
           badge={
-            <Badge color={STATUS_VARIANT[invoice.status] ?? 'outline'} variant="soft">
+            <Badge color={STATUS_VARIANT[invoice.status] ?? 'neutral'} variant="soft" size="sm">
               {invoice.status.replace('_', ' ')}
             </Badge>
           }

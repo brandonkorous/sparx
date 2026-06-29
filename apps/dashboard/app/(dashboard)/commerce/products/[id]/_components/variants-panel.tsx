@@ -32,6 +32,7 @@ import {
   Text,
   useConfirm,
   NativeSelect,
+  statusLabel,
 } from '@sparx/ui';
 
 import {
@@ -124,7 +125,7 @@ export function VariantsPanel({ productId, productTitle, options, variants, mark
               <Stack direction="row" align="center" gap={2}>
                 <Sliders className="h-4 w-4 text-[var(--module-active)]" />
                 <Heading level={3}>Options</Heading>
-                <Badge variant="outline">
+                <Badge color="neutral" variant="soft" size="sm">
                   {options.length} option{options.length === 1 ? '' : 's'}
                 </Badge>
               </Stack>
@@ -174,7 +175,7 @@ export function VariantsPanel({ productId, productTitle, options, variants, mark
               <Stack direction="row" align="center" gap={2}>
                 <Boxes className="h-4 w-4 text-[var(--module-active)]" />
                 <Heading level={3}>Variants</Heading>
-                <Badge variant="outline">
+                <Badge color="neutral" variant="soft" size="sm">
                   {activeVariants.length} active
                   {archivedVariants.length > 0 ? ` · ${archivedVariants.length} archived` : ''}
                 </Badge>
@@ -260,8 +261,8 @@ function OptionPreview({ option }: { option: OptionRow }) {
         <Text size="sm" weight="medium">
           {option.name}
         </Text>
-        <Badge variant="outline" className="text-xs">
-          {option.displayType}
+        <Badge color="neutral" variant="soft" size="sm">
+          {statusLabel(option.displayType)}
         </Badge>
         <Text size="xs" variant="muted">
           {option.values.length} value{option.values.length === 1 ? '' : 's'}

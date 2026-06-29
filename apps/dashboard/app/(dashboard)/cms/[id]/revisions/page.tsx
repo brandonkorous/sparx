@@ -12,6 +12,8 @@ import {
   PageHeader,
   Stack,
   Text,
+  statusLabel,
+  statusTone,
 } from '@sparx/ui';
 import { GitCompare, History } from 'lucide-react';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -35,19 +37,29 @@ interface EntryBasics {
   status: string;
 }
 
+interface TenantUser {
+  id: string;
+  name: string | null;
+  email: string | null;
+}
+
 export default async function RevisionsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   let entry: EntryBasics;
   let revisions: RevisionMeta[];
+  let users: TenantUser[];
   try {
-    [entry, revisions] = await Promise.all([
+    [entry, revisions, users] = await Promise.all([
       api.get<EntryBasics>(`/v1/content/entries/${id}`),
       api.get<RevisionMeta[]>(`/v1/content/entries/${id}/revisions`),
+      // Resolve each revision's author_id → a person, not a raw id.
+      api.get<TenantUser[]>('/v1/users?take=200'),
     ]);
   } catch (err) {
     if ((err as ApiRestError).status === 404) notFound();
     throw err;
   }
+  const authorNameById = new Map(users.map((u) => [u.id, u.name ?? u.email ?? null]));
 
   return (
     <Container size="xl">
@@ -57,7 +69,11 @@ export default async function RevisionsPage({ params }: { params: Promise<{ id: 
             className="mb-0"
             icon={<History className="h-5 w-5" />}
             title="Revision history"
-            badge={<Badge variant="outline">{revisions.length}</Badge>}
+            badge={
+              <Badge color="neutral" variant="soft" size="sm">
+                {revisions.length}
+              </Badge>
+            }
             description={
               <>
                 Every save creates a revision. Click <strong>Restore</strong> to copy that
@@ -91,9 +107,15 @@ export default async function RevisionsPage({ params }: { params: Promise<{ id: 
                   <Stack direction="row" align="center" justify="between">
                     <Stack direction="row" align="center" gap={3}>
                       <Heading level={4}>#{r.revision_number}</Heading>
-                      <Badge color={r.kind === 'manual' ? 'module' : 'outline'}>{r.kind}</Badge>
-                      <Badge color={r.status === 'published' ? 'success' : 'outline'}>
-                        {r.status}
+                      <Badge
+                        color={r.kind === 'manual' ? 'module' : 'neutral'}
+                        variant="soft"
+                        size="sm"
+                      >
+                        {statusLabel(r.kind)}
+                      </Badge>
+                      <Badge color={statusTone(r.status)} variant="soft" size="sm">
+                        {statusLabel(r.status)}
                       </Badge>
                     </Stack>
                     <Stack direction="row" align="center" gap={2}>
@@ -115,7 +137,9 @@ export default async function RevisionsPage({ params }: { params: Promise<{ id: 
                       dateStyle: 'medium',
                       timeStyle: 'short',
                     })}
-                    {r.author_id ? ` · author ${r.author_id.slice(0, 8)}` : ' · system'}
+                    {r.author_id
+                      ? ` · ${authorNameById.get(r.author_id) ?? `author ${r.author_id.slice(0, 8)}`}`
+                      : ' · system'}
                   </CardDescription>
                 </CardHeader>
               </Card>

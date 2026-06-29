@@ -9,6 +9,8 @@ import {
   Heading,
   Stack,
   Text,
+  statusLabel,
+  statusTone,
 } from '@sparx/ui';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { AssetEditForm } from './edit-form';
@@ -76,7 +78,9 @@ export async function MediaAssetDetailContent({ id }: Props) {
       <Stack gap={2}>
         <Heading level={1}>{asset.original_filename}</Heading>
         <Stack direction="row" gap={2} align="center">
-          <Badge color={asset.status === 'ready' ? 'success' : 'outline'}>{asset.status}</Badge>
+          <Badge color={statusTone(asset.status)} variant="soft" size="sm">
+            {statusLabel(asset.status)}
+          </Badge>
           <Text size="sm" variant="muted">
             {asset.width && asset.height && `${asset.width}×${asset.height} · `}
             {asset.mime_type}
@@ -135,7 +139,9 @@ export async function MediaAssetDetailContent({ id }: Props) {
                     gap={3}
                     className="rounded-md bg-[var(--color-bg-subtle)] px-3 py-2 text-sm"
                   >
-                    <Badge variant="outline">{v.format.toUpperCase()}</Badge>
+                    <Badge color="neutral" variant="soft" size="sm">
+                      {v.format.toUpperCase()}
+                    </Badge>
                     <Text size="sm">{v.width}px</Text>
                     <Text size="xs" variant="muted" className="ml-auto">
                       {formatBytes(Number(v.byte_size))}

@@ -39,7 +39,11 @@ export default async function AuthorsPage({ searchParams }: PageProps) {
       <Stack gap={6} className="py-10">
         <PageHeader
           title="Authors"
-          badge={<Badge variant="outline">{total}</Badge>}
+          badge={
+            <Badge color="neutral" variant="soft" size="sm">
+              {total}
+            </Badge>
+          }
           description="Bylines for blog posts and editorial entries. An author is independent from a staff user — a user can write under multiple pen names, an author can outlive a user row."
           actions={
             <EntityCreateButton

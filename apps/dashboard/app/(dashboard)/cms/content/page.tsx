@@ -136,7 +136,11 @@ export default async function ContentListPage({ searchParams }: PageProps) {
           className="mb-0"
           icon={<FileText className="h-5 w-5" />}
           title="Content"
-          badge={<Badge variant="outline">{total}</Badge>}
+          badge={
+            <Badge color="neutral" variant="soft" size="sm">
+              {total}
+            </Badge>
+          }
           description="Every page, post, and entry across your content types."
           actions={
             <ContentNewButton

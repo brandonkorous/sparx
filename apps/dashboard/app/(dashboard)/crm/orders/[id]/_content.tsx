@@ -167,7 +167,9 @@ export async function OrderDetailContent({ id }: Props) {
           <CardTitle>
             <Stack direction="row" align="center" gap={2}>
               <Package className="h-4 w-4" /> Line items
-              <Badge variant="outline">{order.items.length}</Badge>
+              <Badge color="neutral" variant="soft" size="sm">
+                {order.items.length}
+              </Badge>
             </Stack>
           </CardTitle>
         </CardHeader>
@@ -215,7 +217,9 @@ export async function OrderDetailContent({ id }: Props) {
             <CardTitle>
               <Stack direction="row" align="center" gap={2}>
                 <CreditCard className="h-4 w-4" /> Payments
-                <Badge variant="outline">{payments.length}</Badge>
+                <Badge color="neutral" variant="soft" size="sm">
+                  {payments.length}
+                </Badge>
               </Stack>
             </CardTitle>
           </CardHeader>
@@ -284,7 +288,9 @@ export async function OrderDetailContent({ id }: Props) {
             <CardTitle>
               <Stack direction="row" align="center" gap={2}>
                 <Truck className="h-4 w-4" /> Fulfillments
-                <Badge variant="outline">{fulfillments.length}</Badge>
+                <Badge color="neutral" variant="soft" size="sm">
+                  {fulfillments.length}
+                </Badge>
               </Stack>
             </CardTitle>
           </CardHeader>

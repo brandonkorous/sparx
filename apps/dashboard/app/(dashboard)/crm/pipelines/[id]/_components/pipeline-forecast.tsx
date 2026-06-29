@@ -84,7 +84,7 @@ export async function PipelineForecast({ pipelineId }: PipelineForecastProps) {
                     <Text size="sm" weight="medium">
                       {b.month}
                     </Text>
-                    <Badge variant="outline" className="text-xs">
+                    <Badge color="neutral" variant="soft" size="sm">
                       {b.dealCount} deal{b.dealCount === 1 ? '' : 's'}
                     </Badge>
                   </Stack>

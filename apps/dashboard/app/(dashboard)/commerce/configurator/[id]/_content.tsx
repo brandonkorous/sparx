@@ -76,6 +76,8 @@ interface ConfigurationRule {
 
 interface ConfigurationAddOn {
   variantId: string;
+  variantSku: string | null;
+  productTitle: string | null;
   defaultIncluded: boolean;
   priceOverrideCents?: number;
 }
@@ -168,7 +170,9 @@ export async function ConfiguratorTemplateDetailContent({ id }: Props) {
                   </TableCell>
                   <TableCell>{o.label}</TableCell>
                   <TableCell>
-                    <Badge variant="outline">{o.type}</Badge>
+                    <Badge color="neutral" variant="soft" size="sm">
+                      {statusLabel(o.type)}
+                    </Badge>
                   </TableCell>
                   <TableCell>{o.required ? 'yes' : 'no'}</TableCell>
                   <TableCell>{o.choices.length}</TableCell>
@@ -210,7 +214,9 @@ export async function ConfiguratorTemplateDetailContent({ id }: Props) {
                   <TableRow key={i}>
                     <TableCell>{r.name}</TableCell>
                     <TableCell>
-                      <Badge variant="outline">{r.match}</Badge>
+                      <Badge color="neutral" variant="soft" size="sm">
+                        {statusLabel(r.match)}
+                      </Badge>
                     </TableCell>
                     <TableCell>{r.conditions.length}</TableCell>
                     <TableCell>{r.actions.length}</TableCell>
@@ -242,7 +248,7 @@ export async function ConfiguratorTemplateDetailContent({ id }: Props) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Variant id</TableHead>
+                  <TableHead>Add-on</TableHead>
                   <TableHead>Default included</TableHead>
                   <TableHead>Price override</TableHead>
                 </TableRow>
@@ -251,7 +257,14 @@ export async function ConfiguratorTemplateDetailContent({ id }: Props) {
                 {template.addOns.map((a) => (
                   <TableRow key={a.variantId}>
                     <TableCell>
-                      <span className="font-mono text-xs">{a.variantId.slice(0, 8)}…</span>
+                      <Stack gap={0}>
+                        <Text size="sm">{a.productTitle ?? a.variantId.slice(0, 8)}</Text>
+                        {a.variantSku && (
+                          <Text size="xs" variant="muted" className="font-mono">
+                            {a.variantSku}
+                          </Text>
+                        )}
+                      </Stack>
                     </TableCell>
                     <TableCell>{a.defaultIncluded ? 'yes' : 'no'}</TableCell>
                     <TableCell>

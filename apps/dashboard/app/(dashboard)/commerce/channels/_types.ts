@@ -1,4 +1,4 @@
-// Local type mirror for the Channels settings surface (docs/106). The dashboard
+// Local type mirror for the Sales-channels surface (docs/106). The dashboard
 // renders straight from the `GET /v1/channels` response, so these mirror the API
 // shapes rather than importing @sparx/channels — the established dashboard pattern
 // that keeps the app off the lockfile graph of backend-only packages.

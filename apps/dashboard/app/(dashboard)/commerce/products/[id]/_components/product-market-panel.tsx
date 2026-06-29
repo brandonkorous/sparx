@@ -98,10 +98,10 @@ export function ProductMarketPanel({
             <Alert color="info" variant="soft" title="Join sparx.market first">
               Your store isn’t selling on sparx.market yet. Enable it in{' '}
               <Link
-                href="/settings/market"
+                href="/commerce/market"
                 className="font-medium text-[var(--module-active)] hover:underline"
               >
-                Settings → sparx.market
+                Commerce → sparx.market
               </Link>{' '}
               to list products.
             </Alert>

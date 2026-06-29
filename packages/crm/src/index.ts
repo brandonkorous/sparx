@@ -6,6 +6,7 @@
 // services here.
 
 export * from './services/index';
+export { crmPresets, b2bPresets, invoicingPresets } from './presets';
 export * from './events';
 export * from './consumers/index';
 export * as crmMcp from './mcp';

@@ -93,7 +93,7 @@ export function AppointmentsList({ appointments, view }: AppointmentsListProps) 
     );
 
   const statusBadge = (appt: AppointmentRow) => (
-    <Badge color={STATUS_BADGE[appt.status] ?? 'outline'} variant="soft" size="sm">
+    <Badge color={STATUS_BADGE[appt.status] ?? 'neutral'} variant="soft" size="sm">
       {STATUS_LABEL[appt.status] ?? appt.status}
     </Badge>
   );

@@ -9,6 +9,7 @@ import {
   Badge,
   Stack,
   Text,
+  statusLabel,
 } from '@sparx/ui';
 
 // Client wrapper for the suppliers list. SelectionList takes render functions
@@ -60,8 +61,8 @@ export function SuppliersList({ rows, view }: SuppliersListProps) {
 
   const terms = (s: SupplierRow) =>
     s.paymentTerms ? (
-      <Badge variant="outline" className="text-xs">
-        {s.paymentTerms}
+      <Badge color="neutral" variant="soft" size="sm">
+        {statusLabel(s.paymentTerms)}
       </Badge>
     ) : (
       <Text size="xs" variant="muted">
@@ -79,7 +80,15 @@ export function SuppliersList({ rows, view }: SuppliersListProps) {
     );
 
   const statusBadge = (s: SupplierRow) =>
-    s.isActive ? <Badge color="success">active</Badge> : <Badge color="warning">inactive</Badge>;
+    s.isActive ? (
+      <Badge color="success" variant="soft" size="sm">
+        active
+      </Badge>
+    ) : (
+      <Badge color="neutral" variant="soft" size="sm">
+        inactive
+      </Badge>
+    );
 
   const columns: SelectionColumn<SupplierRow>[] = [
     { header: 'Code', cell: codeLink },

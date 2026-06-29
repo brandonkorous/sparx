@@ -133,7 +133,7 @@ export async function QuestionDetailContent({ id }: Props) {
                         Staff
                       </Badge>
                     ) : (
-                      <Badge variant="outline" size="sm">
+                      <Badge color="neutral" variant="soft" size="sm">
                         Customer
                       </Badge>
                     )}

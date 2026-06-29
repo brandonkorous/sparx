@@ -88,9 +88,13 @@ export default async function WishlistsPage() {
                   {topVariants.map((row) => (
                     <TableRow key={row.variantId}>
                       <TableCell>
-                        <Text size="xs" className="font-mono">
-                          {row.variantId.slice(0, 8)}
-                        </Text>
+                        {row.variantTitle ? (
+                          <Text size="sm">{row.variantTitle}</Text>
+                        ) : (
+                          <Text size="sm" variant="muted">
+                            Default
+                          </Text>
+                        )}
                       </TableCell>
                       <TableCell>
                         <Text size="xs" className="font-mono">
@@ -99,7 +103,9 @@ export default async function WishlistsPage() {
                       </TableCell>
                       <TableCell>{row.productTitle}</TableCell>
                       <TableCell className="text-right">
-                        <Badge variant="outline">{row.saveCount}</Badge>
+                        <Badge color="module" variant="soft" size="sm">
+                          {row.saveCount}
+                        </Badge>
                       </TableCell>
                     </TableRow>
                   ))}

@@ -24,10 +24,12 @@ import { writeAuditLog } from '../audit';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
+import { CUSTOMER_NAME_SELECT, customerDisplayName, type CustomerNameParts } from './customer-name';
 
 export interface SubscriptionSummary {
   id: string;
   customerId: string;
+  customerName: string | null;
   status: SubscriptionStatus;
   nextOccurrenceAt: string | null;
   itemCount: number;
@@ -51,9 +53,12 @@ export interface SubscriptionDetail extends SubscriptionSummary {
   items: {
     id: string;
     variantId: string;
+    variantSku: string | null;
+    productTitle: string | null;
     quantity: number;
     unitPriceCents: number;
     addonOfId: string | null;
+    addonOfName: string | null;
   }[];
 }
 
@@ -76,7 +81,7 @@ export async function list(
     const [rows, total] = await Promise.all([
       tx.subscription.findMany({
         where,
-        include: { items: true },
+        include: { items: true, customer: { select: CUSTOMER_NAME_SELECT } },
         orderBy: { createdAt: 'desc' },
         take: filter.take ?? 50,
         skip: filter.skip ?? 0,
@@ -94,10 +99,16 @@ export async function get(
   const row = await withTenant(ctx, (tx) =>
     tx.subscription.findFirst({
       where: { id: subscriptionId },
-      include: { items: true },
+      include: {
+        items: { include: { variant: { include: { product: { select: { title: true } } } } } },
+        customer: { select: CUSTOMER_NAME_SELECT },
+      },
     })
   );
   if (!row) throw new CommerceNotFoundError('Subscription', subscriptionId);
+  // Resolve `addonOfId` → the parent line's product name so add-ons read as
+  // "rides along with <product>" instead of a raw item id.
+  const itemNameById = new Map(row.items.map((it) => [it.id, it.variant.product.title]));
   return {
     ...toSummary(row),
     intervalUnit: row.intervalUnit,
@@ -114,9 +125,12 @@ export async function get(
     items: row.items.map((it) => ({
       id: it.id,
       variantId: it.variantId,
+      variantSku: it.variant.sku,
+      productTitle: it.variant.product.title,
       quantity: it.quantity,
       unitPriceCents: it.unitPriceCents,
       addonOfId: it.addonOfId,
+      addonOfName: it.addonOfId ? (itemNameById.get(it.addonOfId) ?? null) : null,
     })),
   };
 }
@@ -128,7 +142,7 @@ export async function listForCustomer(
   return withTenant(ctx, async (tx) => {
     const rows = await tx.subscription.findMany({
       where: { customerId },
-      include: { items: true },
+      include: { items: true, customer: { select: CUSTOMER_NAME_SELECT } },
       orderBy: { createdAt: 'desc' },
       take: 100,
     });
@@ -613,7 +627,9 @@ function computeNextOccurrence(from: Date, unit: string, count: number): Date {
   return next;
 }
 
-function toSummary(row: Subscription & { items: SubscriptionItem[] }): SubscriptionSummary {
+function toSummary(
+  row: Subscription & { items: SubscriptionItem[]; customer?: CustomerNameParts | null }
+): SubscriptionSummary {
   // MRR estimate — sum of (unitPriceCents * quantity * deliveriesPerCycle)
   // normalized to a monthly cadence. Keeps the dashboard's MRR strip honest.
   const perCycleCents = row.items.reduce((sum, it) => sum + it.unitPriceCents * it.quantity, 0);
@@ -621,6 +637,7 @@ function toSummary(row: Subscription & { items: SubscriptionItem[] }): Subscript
   return {
     id: row.id,
     customerId: row.customerId,
+    customerName: customerDisplayName(row.customer ?? null),
     status: row.status as SubscriptionStatus,
     nextOccurrenceAt: row.nextOccurrenceAt?.toISOString() ?? null,
     itemCount: row.items.length,

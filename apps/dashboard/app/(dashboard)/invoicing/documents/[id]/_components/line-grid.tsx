@@ -106,9 +106,11 @@ export function LineGrid({
         <CardTitle>
           <Stack direction="row" align="center" gap={2}>
             Line items
-            <Badge variant="outline">{lines.length}</Badge>
+            <Badge color="neutral" variant="soft" size="sm">
+              {lines.length}
+            </Badge>
             {locked && (
-              <Badge color="neutral" variant="soft" className="text-xs">
+              <Badge color="neutral" variant="soft" size="sm">
                 <Lock className="mr-1 h-3 w-3" /> Locked
               </Badge>
             )}

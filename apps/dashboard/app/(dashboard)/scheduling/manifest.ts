@@ -28,5 +28,14 @@ export const schedulingManifest: ModuleManifest = {
     { id: 'reports', label: 'Reports', icon: BarChart3, href: '/scheduling/reports' },
   ],
   actions: [],
-  entityTypes: [],
+  // Create-only overlay entities (no `hasDetailView`: these list surfaces edit via
+  // a self-owned modal, not a detail-view drawer). The manifest entry gives the
+  // create overlay chrome a label + the "open in full page" href; the single-step
+  // SurfaceFrame create opts into drawer/modal via CREATE_VIEW_TYPES + detail-slot.
+  entityTypes: [
+    { id: 'service', label: 'Service', routePrefix: '/scheduling/services' },
+    { id: 'resource', label: 'Resource', routePrefix: '/scheduling/resources' },
+    { id: 'booking-policy', label: 'Booking policy', routePrefix: '/scheduling/policies' },
+    { id: 'booking', label: 'Booking', routePrefix: '/scheduling/bookings' },
+  ],
 };

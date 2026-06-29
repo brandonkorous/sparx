@@ -327,14 +327,16 @@ function PreviewTable({ preview }: { preview: MarkupPreviewResult }) {
         <Stack direction="row" align="center" justify="between" wrap gap={3}>
           <Heading level={3}>Preview</Heading>
           <Stack direction="row" gap={2} align="center" wrap>
-            <Badge color="module" variant="outline">
+            <Badge color="module" variant="soft" size="sm">
               {preview.totalVariants} in scope
             </Badge>
-            <Badge color="success" variant="outline">
+            <Badge color="success" variant="soft" size="sm">
               {preview.pricedVariants} priced
             </Badge>
             {preview.unpriceableVariants > 0 && (
-              <Badge variant="outline">{preview.unpriceableVariants} skipped</Badge>
+              <Badge color="warning" variant="soft" size="sm">
+                {preview.unpriceableVariants} skipped
+              </Badge>
             )}
           </Stack>
         </Stack>

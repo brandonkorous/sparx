@@ -16,6 +16,10 @@
 
 import { prisma } from '@sparx/db';
 
+// The module-preset contract + pure registry index (the reusable install seam).
+// Type-only dep on ModuleSlug below, so no runtime cycle.
+export * from './presets';
+
 export type ModuleSlug =
   | 'builder'
   | 'commerce'

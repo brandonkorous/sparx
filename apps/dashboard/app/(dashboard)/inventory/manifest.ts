@@ -98,5 +98,13 @@ export const inventoryManifest: ModuleManifest = {
       label: 'Transfer',
       routePrefix: '/inventory/transfers',
     },
+    // Connect-a-source create overlay. The connection detail lives at a full-page
+    // route (not a @detail drawer), and editing rides a self-owned modal — so no
+    // `hasDetailView`. The single-step SurfaceFrame create opts into drawer/modal.
+    {
+      id: 'inventory-source',
+      label: 'Inventory source',
+      routePrefix: '/inventory/sources',
+    },
   ],
 };

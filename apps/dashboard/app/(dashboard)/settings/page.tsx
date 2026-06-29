@@ -35,7 +35,11 @@ export default function SettingsPage() {
                       <Icon className="h-4 w-4" />
                     </span>
                     <CardTitle>{g.label}</CardTitle>
-                    {!g.ready && <Badge variant="outline">Soon</Badge>}
+                    {!g.ready && (
+                      <Badge color="neutral" variant="soft" size="sm">
+                        Soon
+                      </Badge>
+                    )}
                   </Stack>
                   <CardDescription>{g.description}</CardDescription>
                 </CardHeader>

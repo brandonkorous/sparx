@@ -57,6 +57,10 @@ export function TermsManager({
   const [parentId, setParentId] = React.useState('');
   const [pendingDelete, setPendingDelete] = React.useState<Term | null>(null);
 
+  // Resolve a term's `parent_term_id` to the parent's name (all terms are in
+  // scope here) so the tree reads as names, not raw ids.
+  const termNameById = new Map(terms.map((t) => [t.id, t.name]));
+
   function onCreate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
@@ -203,7 +207,9 @@ export function TermsManager({
                     <Text size="sm">{t.name}</Text>
                     <Text size="xs" variant="muted">
                       <code>{t.slug}</code>
-                      {t.parent_term_id ? ` · parent ${t.parent_term_id.slice(0, 8)}` : ''}
+                      {t.parent_term_id
+                        ? ` · parent ${termNameById.get(t.parent_term_id) ?? t.parent_term_id.slice(0, 8)}`
+                        : ''}
                       {t.description ? ` · ${t.description.slice(0, 60)}` : ''}
                     </Text>
                   </Stack>

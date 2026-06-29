@@ -60,8 +60,16 @@ export function WelcomeChecklist({ progress }: WelcomeChecklistProps) {
               <Stack gap={1} className="flex-1">
                 <Stack direction="row" align="center" gap={2}>
                   <Text weight="medium">{step.title}</Text>
-                  {step.comingSoon && <Badge variant="outline">Coming soon</Badge>}
-                  {step.done && !step.comingSoon && <Badge color="success">Done</Badge>}
+                  {step.comingSoon && (
+                    <Badge color="neutral" variant="soft" size="sm">
+                      Coming soon
+                    </Badge>
+                  )}
+                  {step.done && !step.comingSoon && (
+                    <Badge color="success" variant="soft" size="sm">
+                      Done
+                    </Badge>
+                  )}
                 </Stack>
                 <Text size="sm" variant="muted">
                   {step.description}

@@ -158,7 +158,9 @@ export function SurchargesManager({ initialRules }: { initialRules: SurchargeRul
                       <Text weight="medium">{r.name}</Text>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{summary(r)}</Badge>
+                      <Badge color="info" variant="soft" size="sm">
+                        {summary(r)}
+                      </Badge>
                       {r.capCents != null && (
                         <Text size="xs" variant="muted">
                           cap {money.format(r.capCents / 100)}

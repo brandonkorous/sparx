@@ -77,6 +77,17 @@ const CREATE_VIEW_TYPES = new Set<string>([
   'shipping-profile',
   'tax-zone',
   'configurator-template',
+  // Scheduling / B2B / Inventory / Dropship list surfaces whose create form moved
+  // from a self-owned modal onto the SurfaceFrame overlay (docs/105 Wave 3). No
+  // detail view — a created record returns to the list; editing rides a modal.
+  'service',
+  'resource',
+  'booking-policy',
+  'booking',
+  'b2b-service-type',
+  'b2b-pricing-tier',
+  'inventory-source',
+  'dropship-supplier',
 ]);
 
 export function hasCreateView(typeId: string): boolean {
@@ -122,6 +133,15 @@ const FULL_BLEED_CREATE_TYPES = new Set<string>([
   'shipping-profile',
   'tax-zone',
   'configurator-template',
+  // Wave 3 list-surface create overlays (scheduling/b2b/inventory/dropship).
+  'service',
+  'resource',
+  'booking-policy',
+  'booking',
+  'b2b-service-type',
+  'b2b-pricing-tier',
+  'inventory-source',
+  'dropship-supplier',
 ]);
 
 export function isFullBleedCreate(typeId: string): boolean {

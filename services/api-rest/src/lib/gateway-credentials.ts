@@ -89,6 +89,20 @@ export interface CaptureCredentialInput {
   fields: Record<string, string>;
 }
 
+/** Encrypt the secret bundle for storage, mapping a missing/invalid CHANNELS_TOKEN_KEY
+ *  to a clean GatewayCredentialError (→ 400) instead of a generic 500 — the platform
+ *  operator must provision the key before any gateway credential can be encrypted. */
+function encryptSecretBundle(secrets: Record<string, string>): string | null {
+  if (Object.keys(secrets).length === 0) return null;
+  try {
+    return encryptChannelToken(JSON.stringify(secrets));
+  } catch {
+    throw new GatewayCredentialError(
+      'Payment credentials can’t be saved: the encryption key (CHANNELS_TOKEN_KEY) is not configured on this platform.'
+    );
+  }
+}
+
 /** Capture (or replace) a gateway's credentials. A blank secret field KEEPS the value
  *  already on file (the masked form never returns secrets) — re-entering replaces it. */
 export async function captureGatewayCredentials(
@@ -129,8 +143,7 @@ export async function captureGatewayCredentials(
     }
   }
 
-  const secretEnc =
-    Object.keys(secrets).length > 0 ? encryptChannelToken(JSON.stringify(secrets)) : null;
+  const secretEnc = encryptSecretBundle(secrets);
 
   const row = await withTenant({ tenantId }, (tx) =>
     tx.tenantGatewayCredential.upsert({

@@ -51,5 +51,10 @@ export const b2bManifest: ModuleManifest = {
     },
   ],
   actions: [],
-  entityTypes: [{ id: 'b2b-account', label: 'B2B Account', routePrefix: '/b2b/accounts' }],
+  entityTypes: [
+    { id: 'b2b-account', label: 'B2B Account', routePrefix: '/b2b/accounts' },
+    // Create-only overlays (no detail view: the lists edit via a self-owned modal).
+    { id: 'b2b-service-type', label: 'Service type', routePrefix: '/b2b/service-types' },
+    { id: 'b2b-pricing-tier', label: 'Pricing tier', routePrefix: '/b2b/pricing-tiers' },
+  ],
 };

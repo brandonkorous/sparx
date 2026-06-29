@@ -11,6 +11,8 @@ import {
   PageHeader,
   Stack,
   Text,
+  statusLabel,
+  statusTone,
 } from '@sparx/ui';
 import { Image as ImageIcon } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
@@ -46,7 +48,11 @@ export default async function MediaPage() {
         <PageHeader
           icon={<ImageIcon className="h-5 w-5" />}
           title="Media library"
-          badge={<Badge variant="outline">{assets.length}</Badge>}
+          badge={
+            <Badge color="neutral" variant="soft" size="sm">
+              {assets.length}
+            </Badge>
+          }
           description="Images, video, and other files used across your pages and posts."
           actions={<UploadButton />}
         />
@@ -114,10 +120,12 @@ function MediaCard({ asset }: { asset: MediaAsset }) {
           )}
           {asset.status !== 'ready' && (
             <Badge
-              color={asset.status === 'failed' ? 'danger' : 'outline'}
+              color={statusTone(asset.status)}
+              variant="soft"
+              size="sm"
               className="absolute top-2 right-2"
             >
-              {asset.status}
+              {statusLabel(asset.status)}
             </Badge>
           )}
         </div>
@@ -132,7 +140,7 @@ function MediaCard({ asset }: { asset: MediaAsset }) {
       </CardHeader>
       <CardFooter>
         <Stack direction="row" align="center" gap={2} className="w-full">
-          <Badge color={asset.usage_count > 0 ? 'success' : 'outline'}>
+          <Badge color={asset.usage_count > 0 ? 'success' : 'neutral'} variant="soft" size="sm">
             {asset.usage_count > 0 ? `Used ${asset.usage_count}×` : 'Unused'}
           </Badge>
           <Text size="xs" variant="muted" className="ml-auto">

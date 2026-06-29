@@ -17,9 +17,23 @@ import { CopyButton } from './copy-button';
 import type { DnsRecord } from '../../_lib/types';
 
 function validBadge(valid: string) {
-  if (valid === 'valid') return <Badge color="success">valid</Badge>;
-  if (valid === 'invalid') return <Badge color="danger">invalid</Badge>;
-  return <Badge variant="outline">unknown</Badge>;
+  if (valid === 'valid')
+    return (
+      <Badge color="success" variant="soft" size="sm">
+        valid
+      </Badge>
+    );
+  if (valid === 'invalid')
+    return (
+      <Badge color="danger" variant="soft" size="sm">
+        invalid
+      </Badge>
+    );
+  return (
+    <Badge color="neutral" variant="soft" size="sm">
+      unknown
+    </Badge>
+  );
 }
 
 // Renders the exact DNS records the tenant must publish at their registrar.
@@ -48,7 +62,9 @@ export function DnsRecordsTable({ records }: { records: DnsRecord[] }) {
         {records.map((r, i) => (
           <TableRow key={`${r.recordType}-${r.name}-${i}`}>
             <TableCell>
-              <Badge variant="outline">{r.recordType}</Badge>
+              <Badge color="neutral" variant="soft" size="sm">
+                {r.recordType}
+              </Badge>
             </TableCell>
             <TableCell>
               <Stack direction="row" align="center" gap={1}>

@@ -1,37 +1,22 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Plus } from 'lucide-react';
-import { Button, Modal, ModalContent, ModalHeader, ModalTitle } from '@sparx/ui';
-import { ServiceTypeForm } from './service-type-form';
 
+import { EntityCreateButton } from '../../../_components/entity-create-button';
+
+// "New service type" launcher — opens the create surface in the user's preferred
+// presentation via the shared EntityCreateButton. The `b2b-service-type` create
+// form is registered in the @detail overlay system, with /b2b/service-types/new
+// as the full-page fallback.
 export function NewServiceTypeButton() {
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
-
-  function onSuccess() {
-    setOpen(false);
-    router.refresh();
-  }
-
   return (
-    <>
-      <Button color="primary" onClick={() => setOpen(true)}>
-        <Plus className="mr-1.5 h-4 w-4" />
-        New service type
-      </Button>
-
-      <Modal open={open} onOpenChange={setOpen}>
-        <ModalContent>
-          <ModalHeader>
-            <ModalTitle>New service type</ModalTitle>
-          </ModalHeader>
-          <div className="px-6 pb-6">
-            <ServiceTypeForm onSuccess={onSuccess} onCancel={() => setOpen(false)} />
-          </div>
-        </ModalContent>
-      </Modal>
-    </>
+    <EntityCreateButton
+      entityType="b2b-service-type"
+      newHref="/b2b/service-types/new"
+      color="module"
+    >
+      <Plus className="mr-1.5 h-4 w-4" />
+      New service type
+    </EntityCreateButton>
   );
 }

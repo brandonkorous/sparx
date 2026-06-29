@@ -8,8 +8,6 @@ import {
   Plug,
   Settings as SettingsIcon,
   Shield,
-  ShoppingBag,
-  Store,
   Users,
 } from 'lucide-react';
 
@@ -63,22 +61,6 @@ export const SETTINGS_NAV: readonly SettingsNavItem[] = [
     description: 'Browser push alerts for chat and other events. Per-device.',
     icon: Bell,
     href: '/settings/notifications',
-    ready: true,
-  },
-  {
-    id: 'channels',
-    label: 'Channels',
-    description: 'Sell on TikTok Shop, Etsy, Amazon, Meta, and more — synced from one place.',
-    icon: Store,
-    href: '/settings/channels',
-    ready: true,
-  },
-  {
-    id: 'market',
-    label: 'sparx.market',
-    description: 'Sell on the first-party marketplace, manage your profile and listings.',
-    icon: ShoppingBag,
-    href: '/settings/market',
     ready: true,
   },
   {

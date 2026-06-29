@@ -226,7 +226,9 @@ export default async function InventoryPage({ searchParams }: PageProps) {
                             </Link>
                           </TableCell>
                           <TableCell>
-                            <Badge variant="outline">{row.warehouseCode}</Badge>
+                            <Badge color="neutral" variant="soft" size="sm">
+                              {row.warehouseCode}
+                            </Badge>
                           </TableCell>
                           <TableCell>
                             <Text className="text-[var(--color-warning)]">{row.available}</Text>
@@ -244,7 +246,7 @@ export default async function InventoryPage({ searchParams }: PageProps) {
             <Stack gap={2}>
               <Heading level={3}>
                 Stock at {fallbackWarehouse?.code ?? '—'}
-                <Badge variant="outline" className="ml-2 text-xs">
+                <Badge color="neutral" variant="soft" size="sm" className="ml-2">
                   {gridRows.length} variants
                 </Badge>
               </Heading>

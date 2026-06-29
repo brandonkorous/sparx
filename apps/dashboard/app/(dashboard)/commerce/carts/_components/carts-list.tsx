@@ -7,6 +7,7 @@ import {
   Badge,
   Stack,
   Text,
+  statusLabel,
 } from '@sparx/ui';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
@@ -86,11 +87,17 @@ export function CartsList({ rows, view }: CartsListProps) {
 
   const lifecycleBadge = (c: CartRow) =>
     c.recoveredAt ? (
-      <Badge color="success">recovered</Badge>
+      <Badge color="success" variant="soft" size="sm">
+        recovered
+      </Badge>
     ) : c.abandonedAt ? (
-      <Badge color="warning">abandoned</Badge>
+      <Badge color="warning" variant="soft" size="sm">
+        abandoned
+      </Badge>
     ) : (
-      <Badge variant="outline">active</Badge>
+      <Badge color="info" variant="soft" size="sm">
+        active
+      </Badge>
     );
 
   const totalLabel = (c: CartRow) => `$${(c.totalCents / 100).toFixed(2)} ${c.currency}`;
@@ -98,7 +105,14 @@ export function CartsList({ rows, view }: CartsListProps) {
   const columns: SelectionColumn<CartRow>[] = [
     { header: 'ID', cell: idLink },
     { header: 'Customer', cell: customerCell },
-    { header: 'Channel', cell: (c) => <Badge variant="outline">{c.channel}</Badge> },
+    {
+      header: 'Channel',
+      cell: (c) => (
+        <Badge color="neutral" variant="soft" size="sm">
+          {statusLabel(c.channel)}
+        </Badge>
+      ),
+    },
     { header: 'Items', cell: (c) => <>{c.itemCount}</> },
     { header: 'Total', cell: (c) => <>{totalLabel(c)}</> },
     { header: 'Last activity', cell: (c) => <>{new Date(c.updatedAt).toLocaleString()}</> },
@@ -120,7 +134,9 @@ export function CartsList({ rows, view }: CartsListProps) {
     body: (c) => (
       <>
         <Stack direction="row" align="center" justify="between" gap={2}>
-          <Badge variant="outline">{c.channel}</Badge>
+          <Badge color="neutral" variant="soft" size="sm">
+            {statusLabel(c.channel)}
+          </Badge>
           <Text size="sm" className="tabular-nums">
             {totalLabel(c)}
           </Text>

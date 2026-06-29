@@ -1,34 +1,55 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useCallback, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
   Grid,
   Input,
   Label,
+  ModuleProvider,
   NativeSelect,
   Stack,
+  SurfaceFrame,
+  SurfaceStep,
   Switch,
+  Text,
   Textarea,
   toast,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 
 import type { ResourceKind, SchedulingResource } from '../../_lib/types';
 import { RESOURCE_KIND_LABEL } from '../../_lib/format';
 import { createResourceAction, updateResourceAction } from '../../_lib/actions';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
-interface Props {
+// Resource create/edit on the standard form surface (docs/86 F layout). ONE
+// component drives page / overlay / modal — see service-form.tsx for the shape.
+// No detail view: a created resource returns to the list; edit rides a modal.
+
+type Presentation = 'page' | 'overlay' | 'modal';
+
+interface ResourceFormProps {
+  presentation: Presentation;
   resource?: SchedulingResource;
-  onSuccess: () => void;
-  onCancel: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const KINDS: ResourceKind[] = ['staff', 'asset', 'table', 'space', 'equipment'];
+const STEPS: SurfaceStepDef[] = [{ key: 'basics', label: 'Basics' }];
 
-export function ResourceForm({ resource, onSuccess, onCancel }: Props) {
+export function ResourceForm({ presentation, resource, open, onOpenChange }: ResourceFormProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [saving, setSaving] = useState(false);
+
   const [name, setName] = useState(resource?.name ?? '');
   const [kind, setKind] = useState<ResourceKind>(resource?.kind ?? 'staff');
   const [timezone, setTimezone] = useState(resource?.timezone ?? 'UTC');
@@ -44,8 +65,61 @@ export function ResourceForm({ resource, onSuccess, onCancel }: Props) {
 
   const isTable = kind === 'table';
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
+  const snapshot = () =>
+    JSON.stringify({
+      name,
+      kind,
+      timezone,
+      description,
+      color,
+      exclusive,
+      capacity,
+      capacityMin,
+      capacityMax,
+      skillTags,
+      bookableOnline,
+      isActive,
+    });
+  const [initial] = useState(snapshot);
+  const dirty = snapshot() !== initial;
+
+  const guardLeave = useUnsavedGuard(
+    dirty,
+    resource ? { kind: 'edit', noun: 'resource' } : { kind: 'create', noun: 'resource' }
+  );
+
+  const close = useCallback(() => {
+    if (presentation === 'modal') {
+      onOpenChange?.(false);
+      return;
+    }
+    if (presentation === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+      return;
+    }
+    router.push('/scheduling/resources');
+  }, [presentation, onOpenChange, pathname, searchParams, router]);
+
+  const cancel = useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
+
+  function onRequestClose(): boolean {
+    if (saving) return false;
+    if (!dirty) return true;
+    void Promise.resolve(guardLeave()).then((ok) => ok && close());
+    return false;
+  }
+  function onCancelClick() {
+    if (saving) return;
+    void Promise.resolve(guardLeave()).then((ok) => ok && close());
+  }
+
+  async function submit() {
     if (!name.trim()) {
       toast.error('Name is required');
       return;
@@ -75,146 +149,196 @@ export function ResourceForm({ resource, onSuccess, onCancel }: Props) {
     setSaving(false);
     if (result.ok) {
       toast.success(resource ? 'Resource updated' : 'Resource created');
-      onSuccess();
+      close();
       router.refresh();
     } else {
       toast.error(result.error);
     }
   }
 
+  const heading = resource ? 'Edit resource' : 'New resource';
+
+  const body = (
+    <SurfaceStep
+      header={{
+        title: heading,
+        supporting: 'Staff, assets, tables, spaces, or equipment a booking consumes.',
+      }}
+      actions={{
+        onNext: () => void submit(),
+        nextLabel: resource ? 'Save changes' : 'Create resource',
+        nextLoading: saving,
+        nextDisabled: saving,
+      }}
+    >
+      <Card variant="module">
+        <CardHeader>
+          <CardTitle>Resource details</CardTitle>
+        </CardHeader>
+        <CardContent className="py-6">
+          <Stack gap={4}>
+            <Grid cols={2} gap={3}>
+              <div>
+                <Label htmlFor="res-name">Name</Label>
+                <Input
+                  id="res-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g. Alex Rivera, Table 4, Bay 2"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="res-kind">Type</Label>
+                <NativeSelect
+                  id="res-kind"
+                  value={kind}
+                  onChange={(e) => setKind(e.target.value as ResourceKind)}
+                >
+                  {KINDS.map((k) => (
+                    <option key={k} value={k}>
+                      {RESOURCE_KIND_LABEL[k]}
+                    </option>
+                  ))}
+                </NativeSelect>
+              </div>
+            </Grid>
+
+            <Grid cols={2} gap={3}>
+              <div>
+                <Label htmlFor="res-tz">Time zone</Label>
+                <Input
+                  id="res-tz"
+                  value={timezone}
+                  onChange={(e) => setTimezone(e.target.value)}
+                  placeholder="e.g. America/New_York"
+                />
+              </div>
+              <div>
+                <Label htmlFor="res-color">Accent color</Label>
+                <Input
+                  id="res-color"
+                  value={color}
+                  onChange={(e) => setColor(e.target.value)}
+                  placeholder="#6366F1"
+                />
+              </div>
+            </Grid>
+
+            <Grid cols={isTable ? 3 : 1} gap={3}>
+              <div>
+                <Label htmlFor="res-cap">{exclusive ? 'Seats / capacity' : 'Pooled units'}</Label>
+                <Input
+                  id="res-cap"
+                  type="number"
+                  min={1}
+                  value={capacity}
+                  onChange={(e) => setCapacity(Math.max(1, Number(e.target.value) || 1))}
+                />
+              </div>
+              {isTable ? (
+                <>
+                  <div>
+                    <Label htmlFor="res-min">Min party</Label>
+                    <Input
+                      id="res-min"
+                      type="number"
+                      min={0}
+                      value={capacityMin}
+                      onChange={(e) => setCapacityMin(Math.max(0, Number(e.target.value) || 0))}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="res-max">Max party</Label>
+                    <Input
+                      id="res-max"
+                      type="number"
+                      min={0}
+                      value={capacityMax}
+                      onChange={(e) => setCapacityMax(Math.max(0, Number(e.target.value) || 0))}
+                    />
+                  </div>
+                </>
+              ) : null}
+            </Grid>
+
+            <div>
+              <Label htmlFor="res-skills">Skills / tags</Label>
+              <Input
+                id="res-skills"
+                value={skillTags}
+                onChange={(e) => setSkillTags(e.target.value)}
+                placeholder="comma-separated, e.g. color, balayage"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="res-desc">Description</Label>
+              <Textarea
+                id="res-desc"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={2}
+              />
+            </div>
+
+            <Stack gap={2}>
+              <ToggleRow
+                label="Exclusive"
+                hint="On: one booking at a time (double-booking blocked). Off: pooled / overbookable."
+                checked={exclusive}
+                onChange={setExclusive}
+              />
+              <ToggleRow
+                label="Bookable online"
+                checked={bookableOnline}
+                onChange={setBookableOnline}
+              />
+              <ToggleRow label="Active" checked={isActive} onChange={setIsActive} />
+            </Stack>
+          </Stack>
+        </CardContent>
+      </Card>
+    </SurfaceStep>
+  );
+
+  if (presentation === 'modal') {
+    return (
+      <ModuleProvider module="scheduling">
+        <SurfaceFrame
+          variant="modal"
+          title={heading}
+          steps={STEPS}
+          current={0}
+          open={open}
+          onOpenChange={(next) => {
+            if (!next) close();
+          }}
+          onRequestClose={onRequestClose}
+          footer={
+            <Button variant="ghost" color="neutral" size="sm" onClick={onCancelClick}>
+              Cancel
+            </Button>
+          }
+        >
+          {body}
+        </SurfaceFrame>
+      </ModuleProvider>
+    );
+  }
+
   return (
-    <form onSubmit={submit}>
-      <Stack gap={4} className="px-1 py-2">
-        <Grid cols={2} gap={3}>
-          <div>
-            <Label htmlFor="res-name">Name</Label>
-            <Input
-              id="res-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Alex Rivera, Table 4, Bay 2"
-              required
-            />
-          </div>
-          <div>
-            <Label htmlFor="res-kind">Type</Label>
-            <NativeSelect
-              id="res-kind"
-              value={kind}
-              onChange={(e) => setKind(e.target.value as ResourceKind)}
-            >
-              {KINDS.map((k) => (
-                <option key={k} value={k}>
-                  {RESOURCE_KIND_LABEL[k]}
-                </option>
-              ))}
-            </NativeSelect>
-          </div>
-        </Grid>
-
-        <Grid cols={2} gap={3}>
-          <div>
-            <Label htmlFor="res-tz">Time zone</Label>
-            <Input
-              id="res-tz"
-              value={timezone}
-              onChange={(e) => setTimezone(e.target.value)}
-              placeholder="e.g. America/New_York"
-            />
-          </div>
-          <div>
-            <Label htmlFor="res-color">Accent color</Label>
-            <Input
-              id="res-color"
-              value={color}
-              onChange={(e) => setColor(e.target.value)}
-              placeholder="#6366F1"
-            />
-          </div>
-        </Grid>
-
-        <Grid cols={isTable ? 3 : 1} gap={3}>
-          <div>
-            <Label htmlFor="res-cap">{exclusive ? 'Seats / capacity' : 'Pooled units'}</Label>
-            <Input
-              id="res-cap"
-              type="number"
-              min={1}
-              value={capacity}
-              onChange={(e) => setCapacity(Math.max(1, Number(e.target.value) || 1))}
-            />
-          </div>
-          {isTable ? (
-            <>
-              <div>
-                <Label htmlFor="res-min">Min party</Label>
-                <Input
-                  id="res-min"
-                  type="number"
-                  min={0}
-                  value={capacityMin}
-                  onChange={(e) => setCapacityMin(Math.max(0, Number(e.target.value) || 0))}
-                />
-              </div>
-              <div>
-                <Label htmlFor="res-max">Max party</Label>
-                <Input
-                  id="res-max"
-                  type="number"
-                  min={0}
-                  value={capacityMax}
-                  onChange={(e) => setCapacityMax(Math.max(0, Number(e.target.value) || 0))}
-                />
-              </div>
-            </>
-          ) : null}
-        </Grid>
-
-        <div>
-          <Label htmlFor="res-skills">Skills / tags</Label>
-          <Input
-            id="res-skills"
-            value={skillTags}
-            onChange={(e) => setSkillTags(e.target.value)}
-            placeholder="comma-separated, e.g. color, balayage"
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="res-desc">Description</Label>
-          <Textarea
-            id="res-desc"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={2}
-          />
-        </div>
-
-        <Stack gap={2}>
-          <ToggleRow
-            label="Exclusive"
-            hint="On: one booking at a time (double-booking blocked). Off: pooled / overbookable."
-            checked={exclusive}
-            onChange={setExclusive}
-          />
-          <ToggleRow
-            label="Bookable online"
-            checked={bookableOnline}
-            onChange={setBookableOnline}
-          />
-          <ToggleRow label="Active" checked={isActive} onChange={setIsActive} />
-        </Stack>
-
-        <div className="flex justify-end gap-2 pt-2">
-          <Button type="button" variant="ghost" onClick={onCancel} disabled={saving}>
-            Cancel
-          </Button>
-          <Button type="submit" color="module" loading={saving}>
-            {resource ? 'Save changes' : 'Create resource'}
-          </Button>
-        </div>
-      </Stack>
-    </form>
+    <ModuleProvider module="scheduling" className="h-full">
+      <SurfaceFrame
+        variant={presentation === 'overlay' ? 'inline' : 'embedded'}
+        title={heading}
+        steps={STEPS}
+        current={0}
+        onCancel={cancel}
+      >
+        {body}
+      </SurfaceFrame>
+    </ModuleProvider>
   );
 }
 
@@ -232,9 +356,13 @@ function ToggleRow({
   return (
     <label className="flex items-center justify-between gap-4">
       <span>
-        <span className="text-sm font-medium">{label}</span>
+        <Text size="sm" weight="medium">
+          {label}
+        </Text>
         {hint ? (
-          <span className="block text-xs text-[var(--color-muted-foreground)]">{hint}</span>
+          <Text size="xs" variant="muted">
+            {hint}
+          </Text>
         ) : null}
       </span>
       <Switch color="module" checked={checked} onCheckedChange={onChange} />

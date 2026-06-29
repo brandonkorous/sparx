@@ -14,6 +14,7 @@ import {
   Heading,
   Stack,
   Text,
+  statusLabel,
 } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -66,11 +67,17 @@ export async function ProviderInstallationDetailContent({ id }: Props) {
         <Stack gap={1}>
           <Stack direction="row" align="center" gap={2}>
             <Heading level={1}>{metadata?.displayName ?? installation.providerSlug}</Heading>
-            <Badge variant="outline">{installation.kind}</Badge>
-            <Badge color={installation.environment === 'production' ? 'success' : 'warning'}>
-              {installation.environment}
+            <Badge color="info" variant="soft" size="sm">
+              {statusLabel(installation.kind)}
             </Badge>
-            <Badge color={installation.enabled ? 'success' : 'outline'}>
+            <Badge
+              color={installation.environment === 'production' ? 'success' : 'warning'}
+              variant="soft"
+              size="sm"
+            >
+              {statusLabel(installation.environment)}
+            </Badge>
+            <Badge color={installation.enabled ? 'success' : 'neutral'} variant="soft" size="sm">
               {installation.enabled ? 'enabled' : 'disabled'}
             </Badge>
           </Stack>

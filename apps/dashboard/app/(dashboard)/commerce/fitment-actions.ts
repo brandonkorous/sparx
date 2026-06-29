@@ -46,18 +46,6 @@ export interface FitmentNodeRow {
   childCount: number;
 }
 
-// One installable dictionary, picker-summary shape (no tree).
-export interface FitmentDictionarySummary {
-  slug: string;
-  name: string;
-  description: string;
-  iconKey: string;
-  tags: string[];
-  dimensions: FitmentDimension[];
-  rootCount: number;
-  sampleRoots: string[];
-}
-
 export interface ProductFitmentRangeRow {
   dimensionKey: string;
   min: number | null;
@@ -102,28 +90,12 @@ export async function listFitmentNodesAction(
   );
 }
 
-export async function listFitmentDictionariesAction(): Promise<
-  ActionResult<FitmentDictionarySummary[]>
-> {
-  return restAction(async () =>
-    api.get<FitmentDictionarySummary[]>('/v1/commerce/fitment/dictionaries')
-  );
-}
-
 // ─── Domain writes ────────────────────────────────────────────────────
-
-export async function installFitmentDictionaryAction(
-  slug: string
-): Promise<ActionResult<{ id: string }>> {
-  return restAction(async () => {
-    const result = await api.post<{ id: string }>(
-      `/v1/commerce/fitment/dictionaries/${slug}/install`,
-      {}
-    );
-    revalidatePath('/commerce/fitment');
-    return result;
-  });
-}
+//
+// Fitment dictionaries are installed through the cross-module preset seam — see
+// `_components/preset-actions.ts` (listPresetsAction / installPresetAction) and
+// the shared <PresetPicker>. This file owns the bespoke domain/node/product
+// fitment surface only.
 
 export async function createFitmentDomainAction(
   input: unknown

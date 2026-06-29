@@ -1,8 +1,32 @@
 'use client';
 
-import { useState } from 'react';
-import { Button, Stack, Text, Input } from '@sparx/ui';
+import { useCallback, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Checkbox,
+  Input,
+  Label,
+  ModuleProvider,
+  Stack,
+  SurfaceFrame,
+  SurfaceStep,
+  Text,
+  toast,
+  type SurfaceStepDef,
+} from '@sparx/ui';
+
 import { createServiceType, updateServiceType } from '../_lib/actions';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+
+// Service-type create/edit on the standard form surface (docs/86 F layout). ONE
+// component drives page / overlay / modal — see scheduling/service-form.tsx for
+// the shape. No detail view: a created type returns to the list; editing rides a
+// self-owned modal (delete stays a useConfirm in service-type-actions).
 
 interface ServiceType {
   id: string;
@@ -15,176 +39,256 @@ interface ServiceType {
   notes: string | null;
 }
 
-interface Props {
+type Presentation = 'page' | 'overlay' | 'modal';
+
+interface ServiceTypeFormProps {
+  presentation: Presentation;
   type?: ServiceType;
-  onSuccess: () => void;
-  onCancel: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function ServiceTypeForm({ type, onSuccess, onCancel }: Props) {
+const STEPS: SurfaceStepDef[] = [{ key: 'basics', label: 'Basics' }];
+
+export function ServiceTypeForm({ presentation, type, open, onOpenChange }: ServiceTypeFormProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [name, setName] = useState(type?.name ?? '');
   const [description, setDescription] = useState(type?.description ?? '');
   const [durationMinutes, setDurationMinutes] = useState(String(type?.durationMinutes ?? 60));
   const [color, setColor] = useState(type?.color ?? '');
   const [requiresVehicle, setRequiresVehicle] = useState(type?.requiresVehicle ?? false);
   const [notes, setNotes] = useState(type?.notes ?? '');
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  const snapshot = () =>
+    JSON.stringify({ name, description, durationMinutes, color, requiresVehicle, notes });
+  const [initial] = useState(snapshot);
+  const dirty = snapshot() !== initial;
+
+  const guardLeave = useUnsavedGuard(
+    dirty,
+    type ? { kind: 'edit', noun: 'service type' } : { kind: 'create', noun: 'service type' }
+  );
+
+  const close = useCallback(() => {
+    if (presentation === 'modal') {
+      onOpenChange?.(false);
+      return;
+    }
+    if (presentation === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+      return;
+    }
+    router.push('/b2b/service-types');
+  }, [presentation, onOpenChange, pathname, searchParams, router]);
+
+  const cancel = useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
+
+  function onRequestClose(): boolean {
+    if (saving) return false;
+    if (!dirty) return true;
+    void Promise.resolve(guardLeave()).then((ok) => ok && close());
+    return false;
+  }
+  function onCancelClick() {
+    if (saving) return;
+    void Promise.resolve(guardLeave()).then((ok) => ok && close());
+  }
+
+  async function submit() {
     if (!name.trim()) {
-      setError('Name is required.');
+      toast.error('Name is required');
       return;
     }
     const duration = parseInt(durationMinutes, 10);
     if (isNaN(duration) || duration < 5 || duration > 480) {
-      setError('Duration must be between 5 and 480 minutes.');
+      toast.error('Duration must be between 5 and 480 minutes');
       return;
     }
-
-    setSubmitting(true);
-    setError(null);
-    try {
-      const body = {
-        name: name.trim(),
-        description: description.trim() || undefined,
-        durationMinutes: duration,
-        color: color.trim() || undefined,
-        requiresVehicle,
-        notes: notes.trim() || undefined,
-      };
-
-      if (type) {
-        const { error: err } = await updateServiceType(type.id, body);
-        if (err) throw new Error(err);
-      } else {
-        const { error: err } = await createServiceType(body);
-        if (err) throw new Error(err);
-      }
-      onSuccess();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Save failed');
-    } finally {
-      setSubmitting(false);
+    setSaving(true);
+    const body = {
+      name: name.trim(),
+      description: description.trim() || undefined,
+      durationMinutes: duration,
+      color: color.trim() || undefined,
+      requiresVehicle,
+      notes: notes.trim() || undefined,
+    };
+    const { error: err } = type
+      ? await updateServiceType(type.id, body)
+      : await createServiceType(body);
+    setSaving(false);
+    if (err) {
+      toast.error(err);
+      return;
     }
+    toast.success(type ? 'Service type updated' : 'Service type created');
+    close();
+    router.refresh();
+  }
+
+  const heading = type ? 'Edit service type' : 'New service type';
+
+  const body = (
+    <SurfaceStep
+      header={{
+        title: heading,
+        supporting:
+          'A bookable service customers can request — name, duration, and scheduling color.',
+      }}
+      actions={{
+        onNext: () => void submit(),
+        nextLabel: type ? 'Save changes' : 'Create service type',
+        nextLoading: saving,
+        nextDisabled: saving,
+      }}
+    >
+      <Card variant="module">
+        <CardHeader>
+          <CardTitle>Service type</CardTitle>
+        </CardHeader>
+        <CardContent className="py-6">
+          <Stack gap={4}>
+            <div>
+              <Label htmlFor="st-name">
+                Name <span className="text-[var(--color-danger)]">*</span>
+              </Label>
+              <Input
+                id="st-name"
+                placeholder="e.g. Oil Change, Inspection"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                disabled={saving}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="st-desc">Description</Label>
+              <Input
+                id="st-desc"
+                placeholder="Brief description for customers"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                disabled={saving}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="st-duration">Duration (minutes)</Label>
+              <Input
+                id="st-duration"
+                type="number"
+                min={5}
+                max={480}
+                value={durationMinutes}
+                onChange={(e) => setDurationMinutes(e.target.value)}
+                disabled={saving}
+              />
+            </div>
+
+            <Stack gap={1}>
+              <Label htmlFor="st-color">Calendar color</Label>
+              <Stack direction="row" gap={2} className="items-center">
+                <input
+                  type="color"
+                  aria-label="Calendar color"
+                  value={color || '#6366f1'}
+                  onChange={(e) => setColor(e.target.value)}
+                  disabled={saving}
+                  className="border-input h-9 w-14 cursor-pointer rounded border"
+                />
+                <Input
+                  id="st-color"
+                  placeholder="#6366F1"
+                  value={color}
+                  onChange={(e) => setColor(e.target.value)}
+                  disabled={saving}
+                  className="w-32"
+                />
+                {color && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setColor('')}
+                    disabled={saving}
+                  >
+                    Clear
+                  </Button>
+                )}
+              </Stack>
+            </Stack>
+
+            <label className="flex cursor-pointer items-center gap-3">
+              <Checkbox
+                color="module"
+                checked={requiresVehicle}
+                onCheckedChange={(v) => setRequiresVehicle(v === true)}
+                disabled={saving}
+              />
+              <Text size="sm">Requires vehicle information</Text>
+            </label>
+
+            <div>
+              <Label htmlFor="st-notes">Internal notes</Label>
+              <Input
+                id="st-notes"
+                placeholder="Notes visible to staff only"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                disabled={saving}
+              />
+            </div>
+          </Stack>
+        </CardContent>
+      </Card>
+    </SurfaceStep>
+  );
+
+  if (presentation === 'modal') {
+    return (
+      <ModuleProvider module="b2b">
+        <SurfaceFrame
+          variant="modal"
+          title={heading}
+          steps={STEPS}
+          current={0}
+          open={open}
+          onOpenChange={(next) => {
+            if (!next) close();
+          }}
+          onRequestClose={onRequestClose}
+          footer={
+            <Button variant="ghost" color="neutral" size="sm" onClick={onCancelClick}>
+              Cancel
+            </Button>
+          }
+        >
+          {body}
+        </SurfaceFrame>
+      </ModuleProvider>
+    );
   }
 
   return (
-    <form onSubmit={(e) => void handleSubmit(e)}>
-      <Stack gap={4}>
-        <Stack gap={2}>
-          <Text size="sm" className="font-medium">
-            Name <span className="text-[var(--color-danger)]">*</span>
-          </Text>
-          <Input
-            placeholder="e.g. Oil Change, Inspection"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            disabled={submitting}
-          />
-        </Stack>
-
-        <Stack gap={2}>
-          <Text size="sm" className="font-medium">
-            Description
-          </Text>
-          <Input
-            placeholder="Brief description for customers"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            disabled={submitting}
-          />
-        </Stack>
-
-        <Stack gap={2}>
-          <Text size="sm" className="font-medium">
-            Duration (minutes)
-          </Text>
-          <Input
-            type="number"
-            min={5}
-            max={480}
-            value={durationMinutes}
-            onChange={(e) => setDurationMinutes(e.target.value)}
-            disabled={submitting}
-          />
-        </Stack>
-
-        <Stack gap={2}>
-          <Text size="sm" className="font-medium">
-            Calendar color
-          </Text>
-          <Stack direction="row" gap={2} className="items-center">
-            <input
-              type="color"
-              value={color || '#6366f1'}
-              onChange={(e) => setColor(e.target.value)}
-              disabled={submitting}
-              className="border-input h-9 w-14 cursor-pointer rounded border"
-            />
-            <Input
-              placeholder="#6366F1"
-              value={color}
-              onChange={(e) => setColor(e.target.value)}
-              disabled={submitting}
-              className="w-32"
-            />
-            {color && (
-              <Button
-                type="button"
-                size="sm"
-                variant="ghost"
-                onClick={() => setColor('')}
-                disabled={submitting}
-              >
-                Clear
-              </Button>
-            )}
-          </Stack>
-        </Stack>
-
-        <Stack direction="row" gap={3} className="items-center">
-          <input
-            id="requires-vehicle"
-            type="checkbox"
-            checked={requiresVehicle}
-            onChange={(e) => setRequiresVehicle(e.target.checked)}
-            disabled={submitting}
-            className="border-input h-4 w-4 rounded"
-          />
-          <label htmlFor="requires-vehicle" className="cursor-pointer text-sm">
-            Requires vehicle information
-          </label>
-        </Stack>
-
-        <Stack gap={2}>
-          <Text size="sm" className="font-medium">
-            Internal notes
-          </Text>
-          <Input
-            placeholder="Notes visible to staff only"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            disabled={submitting}
-          />
-        </Stack>
-
-        {error && (
-          <Text size="sm" className="text-[var(--color-danger)]">
-            {error}
-          </Text>
-        )}
-
-        <Stack direction="row" gap={2} className="justify-end">
-          <Button type="button" variant="ghost" disabled={submitting} onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button type="submit" color="primary" disabled={submitting}>
-            {submitting ? 'Saving…' : type ? 'Save changes' : 'Create service type'}
-          </Button>
-        </Stack>
-      </Stack>
-    </form>
+    <ModuleProvider module="b2b" className="h-full">
+      <SurfaceFrame
+        variant={presentation === 'overlay' ? 'inline' : 'embedded'}
+        title={heading}
+        steps={STEPS}
+        current={0}
+        onCancel={cancel}
+      >
+        {body}
+      </SurfaceFrame>
+    </ModuleProvider>
   );
 }

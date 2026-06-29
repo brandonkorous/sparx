@@ -21,14 +21,13 @@ import {
   FitmentLookupQuery,
   getFitmentDictionary,
   InstallFitmentDictionaryParams,
-  listFitmentDictionarySummaries,
   planFitmentDictionaryRows,
   ProductFitmentInput,
   ReorderFitmentNodesInput,
   UpdateFitmentDomainInput,
   UpdateFitmentNodeInput,
 } from '@sparx/commerce-schemas';
-import type { FitmentDictionarySummary, FitmentDimension } from '@sparx/commerce-schemas';
+import type { FitmentDimension } from '@sparx/commerce-schemas';
 import { withTenant } from '@sparx/db';
 import { Prisma } from '@sparx/db';
 import type { FitmentNode, ProductFitment } from '@sparx/db';
@@ -289,8 +288,23 @@ export async function deleteDomain(
 
 // ─── Dictionary library (install a platform fitment dictionary) ───────
 
-export function listFitmentDictionaries(): FitmentDictionarySummary[] {
-  return listFitmentDictionarySummaries();
+/**
+ * Whether a dictionary's domain (matched by slug) is already installed for this
+ * tenant. Powers the module-preset picker's "Installed" state and lets an
+ * industry starter skip-if-present for batch idempotency. Cheap indexed read;
+ * composes into ctx.tx when one is supplied (a starter's atomic install).
+ */
+export async function isFitmentDictionaryInstalled(
+  ctx: ServiceContext,
+  slug: string
+): Promise<boolean> {
+  return withTenant(ctx, async (tx) => {
+    const existing = await tx.fitmentDomain.findFirst({
+      where: { tenantId: ctx.tenantId, slug, deletedAt: null },
+      select: { id: true },
+    });
+    return existing !== null;
+  });
 }
 
 /**

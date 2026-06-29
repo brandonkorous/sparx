@@ -339,7 +339,9 @@ export async function DocumentEditorContent({ id }: Props) {
             <CardTitle>
               <Stack direction="row" align="center" gap={2}>
                 <Receipt className="h-4 w-4" /> Frozen records
-                <Badge variant="outline">{snapshots.length}</Badge>
+                <Badge color="neutral" variant="soft" size="sm">
+                  {snapshots.length}
+                </Badge>
               </Stack>
             </CardTitle>
           </CardHeader>
@@ -357,7 +359,7 @@ export async function DocumentEditorContent({ id }: Props) {
                     <Text size="sm" className="font-medium">
                       {s.documentNumber ?? s.customerLabel}
                     </Text>
-                    <Badge variant="outline" className="text-xs">
+                    <Badge color="neutral" variant="soft" size="sm">
                       {s.customerLabel}
                     </Badge>
                     <Text size="xs" variant="muted">

@@ -431,7 +431,9 @@ export function MarkupRulesManager({
                       </Stack>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{methodSummary(r)}</Badge>
+                      <Badge color="info" variant="soft" size="sm">
+                        {methodSummary(r)}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       <Text size="sm" variant="muted">

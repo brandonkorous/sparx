@@ -126,13 +126,13 @@ function MappingRow({ sourceId, link }: { sourceId: string; link: SourceLinkRow 
       </Stack>
       <Stack direction="row" align="center" gap={2} wrap justify="end">
         {link.unitsPerExternal > 1 ? (
-          <Badge color="neutral" variant="outline" size="sm">
+          <Badge color="neutral" variant="soft" size="sm">
             ×{link.unitsPerExternal}
             {link.externalUom ? ` ${link.externalUom}` : ''}
           </Badge>
         ) : null}
         {link.safetyBuffer > 0 ? (
-          <Badge color="info" variant="outline" size="sm">
+          <Badge color="info" variant="soft" size="sm">
             buffer {link.safetyBuffer}
           </Badge>
         ) : null}

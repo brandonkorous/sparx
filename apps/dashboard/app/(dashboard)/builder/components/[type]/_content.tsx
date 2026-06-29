@@ -149,11 +149,17 @@ function SystemComponentDetail({ def }: { def: ComponentDef }) {
           <Stack gap={2} className="min-w-0">
             <Stack direction="row" align="center" gap={3} wrap>
               <Heading level={1}>{def.label}</Heading>
-              <Badge variant="outline">{KIND_LABELS[def.kind]}</Badge>
-              <Badge color="module" variant="soft">
+              <Badge color="info" variant="soft" size="sm">
+                {KIND_LABELS[def.kind]}
+              </Badge>
+              <Badge color="module" variant="soft" size="sm">
                 {GROUP_LABELS[def.group]}
               </Badge>
-              {def.module ? <Badge variant="outline">{MODULE_LABELS[def.module]}</Badge> : null}
+              {def.module ? (
+                <Badge color="neutral" variant="soft" size="sm">
+                  {MODULE_LABELS[def.module]}
+                </Badge>
+              ) : null}
             </Stack>
             <Text variant="muted">{summaryOf(def)}</Text>
           </Stack>
@@ -275,7 +281,7 @@ function SystemComponentDetail({ def }: { def: ComponentDef }) {
                       {p.options && p.options.length > 0 ? (
                         <Stack direction="row" align="center" gap={1} wrap>
                           {p.options.map((o) => (
-                            <Badge key={o.value} variant="outline" className="text-xs">
+                            <Badge key={o.value} color="neutral" variant="soft" size="sm">
                               {o.label}
                             </Badge>
                           ))}
@@ -319,7 +325,7 @@ function SystemComponentDetail({ def }: { def: ComponentDef }) {
               {axes.length > 0 ? (
                 <Stack direction="row" align="center" gap={1} wrap>
                   {axes.map((a) => (
-                    <Badge key={a} variant="outline" className="text-xs">
+                    <Badge key={a} color="neutral" variant="soft" size="sm">
                       {BOX_AXIS_LABELS[a]}
                     </Badge>
                   ))}
@@ -373,11 +379,15 @@ function CustomComponentDetail({
           <Stack gap={2} className="min-w-0">
             <Stack direction="row" align="center" gap={3} wrap>
               <Heading level={1}>{component.name}</Heading>
-              <Badge color="module" variant="soft">
+              <Badge color="module" variant="soft" size="sm">
                 Custom
               </Badge>
-              <Badge variant="outline">{GROUP_LABELS[component.group]}</Badge>
-              <Badge variant="outline">v{component.latestVersion}</Badge>
+              <Badge color="info" variant="soft" size="sm">
+                {GROUP_LABELS[component.group]}
+              </Badge>
+              <Badge color="neutral" variant="soft" size="sm">
+                v{component.latestVersion}
+              </Badge>
             </Stack>
             <Text variant="muted">{component.description ?? 'A component you built.'}</Text>
           </Stack>
@@ -484,7 +494,7 @@ function CustomComponentDetail({
             <Stack gap={4}>
               <Stack direction="row" align="center" gap={2} wrap>
                 {usage.pages.map((p) => (
-                  <Badge key={`p:${p.id}`} variant="outline">
+                  <Badge key={`p:${p.id}`} color="neutral" variant="soft" size="sm">
                     {p.name}
                   </Badge>
                 ))}

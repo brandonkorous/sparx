@@ -9,10 +9,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTitle,
   Table,
   TableBody,
   TableCell,
@@ -77,7 +73,7 @@ export function ServicesList({ services }: { services: SchedulingService[] }) {
               </TableCell>
               <TableCell>{svc.capacity}</TableCell>
               <TableCell>
-                <Badge color={svc.isActive ? 'success' : 'neutral'} variant="soft">
+                <Badge color={svc.isActive ? 'success' : 'neutral'} variant="soft" size="sm">
                   {svc.isActive ? 'Active' : 'Inactive'}
                 </Badge>
               </TableCell>
@@ -108,20 +104,14 @@ export function ServicesList({ services }: { services: SchedulingService[] }) {
         </TableBody>
       </Table>
 
-      <Modal open={editing !== null} onOpenChange={(o) => !o && setEditing(null)}>
-        <ModalContent className="max-w-2xl">
-          <ModalHeader>
-            <ModalTitle>Edit service</ModalTitle>
-          </ModalHeader>
-          {editing ? (
-            <ServiceForm
-              service={editing}
-              onSuccess={() => setEditing(null)}
-              onCancel={() => setEditing(null)}
-            />
-          ) : null}
-        </ModalContent>
-      </Modal>
+      {editing ? (
+        <ServiceForm
+          presentation="modal"
+          service={editing}
+          open
+          onOpenChange={(o) => !o && setEditing(null)}
+        />
+      ) : null}
     </>
   );
 }

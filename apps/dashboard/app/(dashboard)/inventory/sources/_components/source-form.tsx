@@ -1,18 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Button,
-  Stack,
-  Text,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
   Input,
-  Textarea,
+  Label,
+  ModuleProvider,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Stack,
+  SurfaceFrame,
+  SurfaceStep,
+  Text,
+  Textarea,
+  toast,
+  type SurfaceStepDef,
 } from '@sparx/ui';
+
 import { createSource, updateSource } from '../_lib/actions';
 import {
   SourceApiFields,
@@ -21,6 +33,12 @@ import {
   apiConfigToBody,
   type ApiConfigState,
 } from './source-api-fields';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+
+// Inventory-source connect/edit on the standard form surface (docs/86 F layout).
+// ONE component drives page / overlay / modal — see scheduling/service-form.tsx
+// for the shape. Create rides the @detail overlay; editing (from the list row or
+// the connection detail page) rides a self-owned modal.
 
 interface Source {
   id: string;
@@ -31,10 +49,13 @@ interface Source {
   notes: string | null;
 }
 
-interface Props {
+type Presentation = 'page' | 'overlay' | 'modal';
+
+interface SourceFormProps {
+  presentation: Presentation;
   source?: Source;
-  onSuccess: () => void;
-  onCancel: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const TYPE_OPTIONS = [
@@ -52,7 +73,12 @@ const INTERVAL_OPTIONS = [
   { value: '86400', label: 'Once a day' },
 ];
 
-export function SourceForm({ source, onSuccess, onCancel }: Props) {
+const STEPS: SurfaceStepDef[] = [{ key: 'connection', label: 'Connection' }];
+
+export function SourceForm({ presentation, source, open, onOpenChange }: SourceFormProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [name, setName] = useState(source?.name ?? '');
   const [type, setType] = useState(source?.type ?? 'csv');
   const [csvUrl, setCsvUrl] = useState(
@@ -64,12 +90,51 @@ export function SourceForm({ source, onSuccess, onCancel }: Props) {
   const hasApiKey = source?.config?.hasApiKey === true;
   const [interval, setInterval] = useState(String(source?.syncIntervalSec ?? 0));
   const [notes, setNotes] = useState(source?.notes ?? '');
-
-  const [submitting, setSubmitting] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  const snapshot = () => JSON.stringify({ name, type, csvUrl, apiConfig, interval, notes });
+  const [initial] = useState(snapshot);
+  const dirty = snapshot() !== initial;
+
+  const guardLeave = useUnsavedGuard(
+    dirty,
+    source ? { kind: 'edit', noun: 'source' } : { kind: 'create', noun: 'source' }
+  );
+
+  const close = useCallback(() => {
+    if (presentation === 'modal') {
+      onOpenChange?.(false);
+      return;
+    }
+    if (presentation === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+      return;
+    }
+    router.push('/inventory/sources');
+  }, [presentation, onOpenChange, pathname, searchParams, router]);
+
+  const cancel = useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
+
+  function onRequestClose(): boolean {
+    if (saving) return false;
+    if (!dirty) return true;
+    void Promise.resolve(guardLeave()).then((ok) => ok && close());
+    return false;
+  }
+  function onCancelClick() {
+    if (saving) return;
+    void Promise.resolve(guardLeave()).then((ok) => ok && close());
+  }
+
+  async function submit() {
+    setError(null);
     if (!name.trim()) {
       setError('Name is required.');
       return;
@@ -89,157 +154,195 @@ export function SourceForm({ source, onSuccess, onCancel }: Props) {
       }
     }
 
-    setSubmitting(true);
-    setError(null);
-    try {
-      const config: Record<string, unknown> =
-        type === 'csv'
-          ? { csvUrl: csvUrl.trim() }
-          : type === 'api'
-            ? apiConfigToBody(apiConfig)
-            : {}; // agent: no pull config — it pushes; pair it after creating
+    setSaving(true);
+    const config: Record<string, unknown> =
+      type === 'csv' ? { csvUrl: csvUrl.trim() } : type === 'api' ? apiConfigToBody(apiConfig) : {}; // agent: no pull config — it pushes; pair it after creating
 
-      const body = {
-        name: name.trim(),
-        ...(source ? {} : { type }),
-        config,
-        syncIntervalSec: parseInt(interval, 10),
-        notes: notes.trim() || null,
-      };
+    const body = {
+      name: name.trim(),
+      ...(source ? {} : { type }),
+      config,
+      syncIntervalSec: parseInt(interval, 10),
+      notes: notes.trim() || null,
+    };
 
-      if (source) {
-        const { error: err } = await updateSource(source.id, body);
-        if (err) throw new Error(err);
-      } else {
-        const { error: err } = await createSource(body);
-        if (err) throw new Error(err);
-      }
-      onSuccess();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Save failed');
-    } finally {
-      setSubmitting(false);
+    const { error: err } = source ? await updateSource(source.id, body) : await createSource(body);
+    setSaving(false);
+    if (err) {
+      setError(err);
+      return;
     }
+    toast.success(source ? 'Source updated' : 'Source connected');
+    close();
+    router.refresh();
+  }
+
+  const heading = source ? 'Edit source' : 'Connect inventory source';
+
+  const body = (
+    <SurfaceStep
+      header={{
+        title: heading,
+        supporting: 'Configure a CSV feed, API connection, or on-prem bridge for stock-level sync.',
+      }}
+      actions={{
+        onNext: () => void submit(),
+        nextLabel: source ? 'Save changes' : 'Connect source',
+        nextLoading: saving,
+        nextDisabled: saving,
+      }}
+    >
+      <Card variant="module">
+        <CardHeader>
+          <CardTitle>Connection</CardTitle>
+        </CardHeader>
+        <CardContent className="py-6">
+          <Stack gap={5}>
+            <div>
+              <Label htmlFor="src-name">
+                Name <span className="text-[var(--color-danger)]">*</span>
+              </Label>
+              <Input
+                id="src-name"
+                placeholder="e.g. Main Warehouse CSV"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+
+            {!source && (
+              <Stack gap={1}>
+                <Label>Source type</Label>
+                <Select value={type} onValueChange={setType}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TYPE_OPTIONS.map((t) => (
+                      <SelectItem key={t.value} value={t.value}>
+                        {t.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Stack>
+            )}
+
+            {type === 'csv' && (
+              <div>
+                <Label htmlFor="src-csv">
+                  CSV feed URL <span className="text-[var(--color-danger)]">*</span>
+                </Label>
+                <Input
+                  id="src-csv"
+                  type="url"
+                  placeholder="https://your-wms.example.com/inventory.csv"
+                  value={csvUrl}
+                  onChange={(e) => setCsvUrl(e.target.value)}
+                />
+                <Text size="xs" variant="muted" className="mt-1">
+                  Required columns: <span className="font-mono">sku</span>,{' '}
+                  <span className="font-mono">quantity</span>. Optional:{' '}
+                  <span className="font-mono">location</span>.
+                </Text>
+              </div>
+            )}
+
+            {type === 'api' && (
+              <SourceApiFields value={apiConfig} onChange={setApiConfig} hasApiKey={hasApiKey} />
+            )}
+
+            {type === 'agent' && (
+              <Stack
+                gap={2}
+                className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-3 py-3"
+              >
+                <Text size="sm" weight="medium">
+                  On-prem bridge agent
+                </Text>
+                <Text size="xs" variant="muted">
+                  For an ERP whose API only lives on your local network (e.g. Fishbowl). After
+                  creating this source, open it and choose{' '}
+                  <span className="font-medium">Pair agent</span> to mint a key, then install the
+                  sparx Inventory Bridge on a machine on your network.
+                </Text>
+              </Stack>
+            )}
+
+            <Stack gap={1}>
+              <Label>Sync interval</Label>
+              <Select value={interval} onValueChange={setInterval}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {INTERVAL_OPTIONS.map((o) => (
+                    <SelectItem key={o.value} value={o.value}>
+                      {o.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Stack>
+
+            <div>
+              <Label htmlFor="src-notes">Internal notes</Label>
+              <Textarea
+                id="src-notes"
+                placeholder="Optional notes about this source"
+                rows={2}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
+            </div>
+
+            {error && (
+              <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                {error}
+              </Text>
+            )}
+          </Stack>
+        </CardContent>
+      </Card>
+    </SurfaceStep>
+  );
+
+  if (presentation === 'modal') {
+    return (
+      <ModuleProvider module="inventory">
+        <SurfaceFrame
+          variant="modal"
+          title={heading}
+          steps={STEPS}
+          current={0}
+          open={open}
+          onOpenChange={(next) => {
+            if (!next) close();
+          }}
+          onRequestClose={onRequestClose}
+          footer={
+            <Button variant="ghost" color="neutral" size="sm" onClick={onCancelClick}>
+              Cancel
+            </Button>
+          }
+        >
+          {body}
+        </SurfaceFrame>
+      </ModuleProvider>
+    );
   }
 
   return (
-    <form onSubmit={(e) => void handleSubmit(e)}>
-      <Stack gap={5}>
-        <Stack gap={2}>
-          <Text size="sm" className="font-medium">
-            Name <span className="text-[var(--color-danger)]">*</span>
-          </Text>
-          <Input
-            placeholder="e.g. Main Warehouse CSV"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </Stack>
-
-        {!source && (
-          <Stack gap={2}>
-            <Text size="sm" className="font-medium">
-              Source type
-            </Text>
-            <Select value={type} onValueChange={setType}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {TYPE_OPTIONS.map((t) => (
-                  <SelectItem key={t.value} value={t.value}>
-                    {t.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Stack>
-        )}
-
-        {type === 'csv' && (
-          <Stack gap={2}>
-            <Text size="sm" className="font-medium">
-              CSV feed URL <span className="text-[var(--color-danger)]">*</span>
-            </Text>
-            <Input
-              type="url"
-              placeholder="https://your-wms.example.com/inventory.csv"
-              value={csvUrl}
-              onChange={(e) => setCsvUrl(e.target.value)}
-            />
-            <Text size="xs" className="text-[var(--color-muted-foreground)]">
-              Required columns: <span className="font-mono">sku</span>,{' '}
-              <span className="font-mono">quantity</span>. Optional:{' '}
-              <span className="font-mono">location</span>.
-            </Text>
-          </Stack>
-        )}
-
-        {type === 'api' && (
-          <SourceApiFields value={apiConfig} onChange={setApiConfig} hasApiKey={hasApiKey} />
-        )}
-
-        {type === 'agent' && (
-          <Stack
-            gap={2}
-            className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-3 py-3"
-          >
-            <Text size="sm" className="font-medium">
-              On-prem bridge agent
-            </Text>
-            <Text size="xs" className="text-[var(--color-muted-foreground)]">
-              For an ERP whose API only lives on your local network (e.g. Fishbowl). After creating
-              this source, open it and choose <span className="font-medium">Pair agent</span> to
-              mint a key, then install the sparx Inventory Bridge on a machine on your network.
-            </Text>
-          </Stack>
-        )}
-
-        <Stack gap={2}>
-          <Text size="sm" className="font-medium">
-            Sync interval
-          </Text>
-          <Select value={interval} onValueChange={setInterval}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {INTERVAL_OPTIONS.map((o) => (
-                <SelectItem key={o.value} value={o.value}>
-                  {o.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </Stack>
-
-        <Stack gap={2}>
-          <Text size="sm" className="font-medium">
-            Internal notes
-          </Text>
-          <Textarea
-            placeholder="Optional notes about this source"
-            rows={2}
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-          />
-        </Stack>
-
-        {error && (
-          <Text size="sm" className="text-[var(--color-danger)]">
-            {error}
-          </Text>
-        )}
-
-        <Stack direction="row" gap={2} className="justify-end">
-          <Button type="button" color="neutral" variant="ghost" onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button type="submit" color="primary" disabled={submitting}>
-            {submitting ? 'Saving…' : source ? 'Save changes' : 'Connect source'}
-          </Button>
-        </Stack>
-      </Stack>
-    </form>
+    <ModuleProvider module="inventory" className="h-full">
+      <SurfaceFrame
+        variant={presentation === 'overlay' ? 'inline' : 'embedded'}
+        title={heading}
+        steps={STEPS}
+        current={0}
+        onCancel={cancel}
+      >
+        {body}
+      </SurfaceFrame>
+    </ModuleProvider>
   );
 }

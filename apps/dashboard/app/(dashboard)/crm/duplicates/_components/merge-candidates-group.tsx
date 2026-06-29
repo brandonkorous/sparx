@@ -7,7 +7,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-import { Badge, Button, Stack, Text } from '@sparx/ui';
+import { Badge, Button, Stack, Text, statusLabel } from '@sparx/ui';
 
 import { mergeCustomersAction } from '../../actions';
 
@@ -105,14 +105,16 @@ export function MergeCandidatesGroup({ customers }: Props) {
                   >
                     {customerDisplayName(c)}
                   </Link>
-                  <Badge variant="outline">{c.type}</Badge>
+                  <Badge color="neutral" variant="soft" size="sm">
+                    {statusLabel(c.type)}
+                  </Badge>
                   {c.email && (
                     <Text size="xs" variant="muted">
                       {c.email}
                     </Text>
                   )}
                   {c.orderCount > 0 && (
-                    <Badge color="success">
+                    <Badge color="success" variant="soft" size="sm">
                       {c.orderCount} order{c.orderCount === 1 ? '' : 's'}
                     </Badge>
                   )}

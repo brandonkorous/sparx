@@ -50,7 +50,11 @@ export default async function RedirectsPage({ searchParams }: PageProps) {
       <Stack gap={6} className="py-10">
         <PageHeader
           title="Redirects"
-          badge={<Badge variant="outline">{total}</Badge>}
+          badge={
+            <Badge color="neutral" variant="soft" size="sm">
+              {total}
+            </Badge>
+          }
           description="Forward old URLs to new ones. Loops and chains over 8 hops are rejected at insert."
           actions={
             <Stack direction="row" gap={2}>

@@ -210,7 +210,7 @@ export function VariantsStep({
                     <Text size="sm" weight="medium">
                       Options
                     </Text>
-                    <Badge variant="outline" size="sm">
+                    <Badge color="neutral" variant="soft" size="sm">
                       {options.length}
                     </Badge>
                   </div>
@@ -267,7 +267,7 @@ export function VariantsStep({
                       <Text size="sm" weight="medium">
                         Variants
                       </Text>
-                      <Badge variant="outline" size="sm">
+                      <Badge color="neutral" variant="soft" size="sm">
                         {combos.length} combination{combos.length === 1 ? '' : 's'}
                       </Badge>
                     </div>
@@ -335,7 +335,7 @@ export function VariantsStep({
                                     Created
                                   </Badge>
                                 ) : (
-                                  <Badge variant="outline" size="sm">
+                                  <Badge color="info" variant="soft" size="sm">
                                     New
                                   </Badge>
                                 )}

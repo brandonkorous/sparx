@@ -35,12 +35,14 @@ import { isInventoryActive } from '../inventory-gate';
 
 import * as configuratorService from './configurator-service';
 import * as pricingService from './pricing-service';
+import { CUSTOMER_NAME_SELECT, customerDisplayName } from './customer-name';
 
 const DEFAULT_CART_TTL_MIN = 60 * 24 * 14; // 14 days
 
 export interface CartSnapshot {
   cartId: string;
   customerId: string | null;
+  customerName: string | null;
   channel: string;
   currency: string;
   items: CartItemSnapshot[];
@@ -600,6 +602,7 @@ type CartWithRelations = Prisma.CartGetPayload<{
   include: {
     items: { include: { variant: { include: { product: true } } } };
     discounts: { include: { discount: { select: { code: true } } } };
+    customer: { select: typeof CUSTOMER_NAME_SELECT };
   };
 }>;
 
@@ -609,6 +612,7 @@ async function loadCart(tx: TxClient, cartId: string): Promise<CartWithRelations
     include: {
       items: { include: { variant: { include: { product: true } } } },
       discounts: { include: { discount: { select: { code: true } } } },
+      customer: { select: CUSTOMER_NAME_SELECT },
     },
   });
 }
@@ -727,6 +731,7 @@ function serializeCart(row: CartWithRelations): CartSnapshot {
   return {
     cartId: row.id,
     customerId: row.customerId,
+    customerName: customerDisplayName(row.customer),
     channel: row.channel,
     currency: row.currency,
     items,

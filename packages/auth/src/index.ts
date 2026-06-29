@@ -32,6 +32,14 @@ export {
   isModuleFlagOn,
   deriveModuleStates,
   type ModuleEnabledSource,
+  ModulePresetRegistry,
+  toModulePresetView,
+  definePreset,
+  type ModulePreset,
+  type ModulePresetKind,
+  type ModulePresetSummaryChip,
+  type ModulePresetInstallResult,
+  type ModulePresetView,
 } from './module-gate';
 export {
   issueApiKey,

@@ -103,7 +103,9 @@ export function PaymentsPanel({ documentId, currency, balance, payments }: Payme
         <CardTitle>
           <Stack direction="row" align="center" gap={2}>
             Payments
-            <Badge variant="outline">{payments.length}</Badge>
+            <Badge color="neutral" variant="soft" size="sm">
+              {payments.length}
+            </Badge>
           </Stack>
         </CardTitle>
       </CardHeader>

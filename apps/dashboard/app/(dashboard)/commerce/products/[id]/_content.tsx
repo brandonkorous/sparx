@@ -384,7 +384,7 @@ export async function ProductDetailContent({ id }: Props) {
                 <TabsTrigger value="variants">
                   Variants
                   {product.variantCount > 0 && (
-                    <Badge variant="outline" className="ml-2 text-xs">
+                    <Badge color="neutral" variant="soft" size="sm" className="ml-2">
                       {product.variantCount}
                     </Badge>
                   )}
@@ -392,7 +392,7 @@ export async function ProductDetailContent({ id }: Props) {
                 <TabsTrigger value="media">
                   Media
                   {images.length > 0 && (
-                    <Badge variant="outline" className="ml-2 text-xs">
+                    <Badge color="neutral" variant="soft" size="sm" className="ml-2">
                       {images.length}
                     </Badge>
                   )}

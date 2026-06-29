@@ -1,21 +1,33 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle2 } from 'lucide-react';
 import {
   Button,
+  Card,
+  CardContent,
   Checkbox,
-  Stack,
-  Text,
   Input,
-  Textarea,
+  Label,
+  ModuleProvider,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Stack,
+  SurfaceFrame,
+  SurfaceStep,
+  Text,
+  Textarea,
+  toast,
+  type SurfaceStepDef,
 } from '@sparx/ui';
+
 import { createSupplier, updateSupplier } from '../_lib/actions';
+import { VendorPicker } from './vendor-picker';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
 // ── Shared shapes (mirror @sparx/dropship/vendors, delivered via the API) ──────
 
@@ -55,9 +67,6 @@ interface Supplier {
   id: string;
   name: string;
   type: string;
-  // The credential field spec for this vendor type and whether a token is
-  // already on file — both come from the API (toSupplierView). Secrets are
-  // write-only, so the form never receives the values themselves.
   credentialFields?: VendorCredentialField[];
   credentialsSet?: boolean;
   pricingRule: {
@@ -70,15 +79,25 @@ interface Supplier {
   siteScope?: string[];
 }
 
-interface Props {
-  /** The chosen vendor (create flow). */
-  vendor?: Vendor;
-  /** The existing supplier (edit flow). */
+// Dropship-supplier connect/edit on the standard form surface (docs/86 F layout).
+// ONE component drives page / overlay / modal. CREATE is a two-step flow (pick a
+// vendor from the catalog → configure the connection); EDIT is single-step config
+// and rides a self-owned modal. The picker is the first SurfaceFrame step.
+
+type Presentation = 'page' | 'overlay' | 'modal';
+
+interface SupplierFormProps {
+  presentation: Presentation;
+  /** Edit flow: the existing supplier. */
   supplier?: Supplier;
+  /** Edit flow: the resolved vendor spec (for the credential fields). */
+  vendor?: Vendor;
+  /** Create flow: the connectable vendor catalog. */
+  vendors?: Vendor[];
   /** The tenant's sites, for per-site enablement. */
   sites: SiteOption[];
-  onSuccess: () => void;
-  onCancel: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const PRICING_TYPES = [
@@ -94,27 +113,40 @@ const ROUND_OPTIONS = [
   { value: 'five_dollar', label: 'Nearest $5' },
 ];
 
-export function SupplierForm({ vendor, supplier, sites, onSuccess, onCancel }: Props) {
+const CREATE_STEPS: SurfaceStepDef[] = [
+  { key: 'vendor', label: 'Supplier' },
+  { key: 'configure', label: 'Configure' },
+];
+const EDIT_STEPS: SurfaceStepDef[] = [{ key: 'configure', label: 'Configure' }];
+
+export function SupplierForm({
+  presentation,
+  supplier,
+  vendor,
+  vendors,
+  sites,
+  open,
+  onOpenChange,
+}: SupplierFormProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const isEdit = Boolean(supplier);
-  // Credential field spec comes from the supplier (edit, via the API) or the
-  // chosen vendor (create). Secrets are write-only — the API never echoes them
-  // back — so on edit the inputs always start blank and a blank field means
-  // "keep the stored value". `credentialsSet` tells us whether a token is on
-  // file, which drives the "saved / replace" vs "needs credentials" UI below.
+
+  const [step, setStep] = useState(isEdit ? 1 : 0);
+  const [chosenVendor, setChosenVendor] = useState<Vendor | null>(null);
+  const activeVendor = supplier ? vendor : chosenVendor;
+
   const fields: VendorCredentialField[] =
-    supplier?.credentialFields ?? vendor?.credentialFields ?? [];
+    supplier?.credentialFields ?? activeVendor?.credentialFields ?? [];
   const hasStoredCreds = supplier?.credentialsSet ?? false;
 
-  const [name, setName] = useState(supplier?.name ?? vendor?.label ?? '');
+  const [name, setName] = useState(supplier?.name ?? '');
   const [creds, setCreds] = useState<Record<string, string>>(() => {
     const init: Record<string, string> = {};
-    for (const f of fields) init[f.key] = '';
+    for (const f of supplier?.credentialFields ?? []) init[f.key] = '';
     return init;
   });
-  // On edit with a token already on file, the credential inputs stay hidden
-  // behind a "Replace" affordance so a routine edit (pricing, sites, notes)
-  // never requires the token. When there are no stored creds (e.g. a wiped
-  // connection being recovered), the inputs show immediately.
   const [replacingCreds, setReplacingCreds] = useState(false);
   const credsOpen = !isEdit || !hasStoredCreds || replacingCreds;
   const [notes, setNotes] = useState(supplier?.notes ?? '');
@@ -129,16 +161,83 @@ export function SupplierForm({ vendor, supplier, sites, onSuccess, onCancel }: P
     supplier?.pricingRule?.maxMsrp === 'use_supplier_msrp'
   );
 
-  // Per-site enablement. Empty siteScope = all sites. Only relevant when the
-  // tenant has more than one site.
   const multiSite = sites.length > 1;
   const [limitSites, setLimitSites] = useState((supplier?.siteScope?.length ?? 0) > 0);
   const [selectedSites, setSelectedSites] = useState<Set<string>>(
     () => new Set(supplier?.siteScope ?? [])
   );
 
-  const [submitting, setSubmitting] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Create is dirty once a vendor is chosen (the work begins at selection); edit
+  // is dirty once any field changes from the loaded record.
+  const editSnapshot = () =>
+    JSON.stringify({
+      name,
+      creds,
+      notes,
+      hasPricingRule,
+      pricingType,
+      pricingValue,
+      roundTo,
+      capAtMsrp,
+      limitSites,
+      sites: [...selectedSites],
+    });
+  const [initial] = useState(editSnapshot);
+  const dirty = isEdit ? editSnapshot() !== initial : chosenVendor !== null;
+
+  const guardLeave = useUnsavedGuard(
+    dirty,
+    isEdit ? { kind: 'edit', noun: 'supplier' } : { kind: 'create', noun: 'supplier' }
+  );
+
+  const close = useCallback(() => {
+    if (presentation === 'modal') {
+      onOpenChange?.(false);
+      return;
+    }
+    if (presentation === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+      return;
+    }
+    router.push('/dropship/suppliers');
+  }, [presentation, onOpenChange, pathname, searchParams, router]);
+
+  const cancel = useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
+
+  function onRequestClose(): boolean {
+    if (saving) return false;
+    if (!dirty) return true;
+    void Promise.resolve(guardLeave()).then((ok) => ok && close());
+    return false;
+  }
+  function onCancelClick() {
+    if (saving) return;
+    void Promise.resolve(guardLeave()).then((ok) => ok && close());
+  }
+
+  function chooseVendor(v: Vendor) {
+    setChosenVendor(v);
+    setName(v.label);
+    setCreds(Object.fromEntries(v.credentialFields.map((f) => [f.key, ''])));
+    setStep(1);
+  }
+
+  function backToPicker() {
+    setStep(0);
+    setChosenVendor(null);
+    setName('');
+    setCreds({});
+    setError(null);
+  }
 
   function toggleSite(id: string) {
     setSelectedSites((prev) => {
@@ -149,14 +248,12 @@ export function SupplierForm({ vendor, supplier, sites, onSuccess, onCancel }: P
     });
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function submit() {
+    setError(null);
     if (!name.trim()) {
       setError('Name is required.');
       return;
     }
-    // On edit, blank credential fields mean "keep current", so required only
-    // applies when connecting (create).
     if (!isEdit) {
       for (const f of fields) {
         if (f.required && !creds[f.key]?.trim()) {
@@ -175,314 +272,369 @@ export function SupplierForm({ vendor, supplier, sites, onSuccess, onCancel }: P
       return;
     }
 
-    setSubmitting(true);
-    setError(null);
-    try {
-      // On edit, send ONLY the fields the user actually re-entered; the backend
-      // merges them over the stored secrets so blanks keep their value (and an
-      // untouched edit never wipes credentials). On create, send everything.
-      const credentials: Record<string, string> = {};
-      for (const f of fields) {
-        const value = (creds[f.key] ?? '').trim();
-        if (!isEdit || value) credentials[f.key] = value;
-      }
-
-      const pricingRule = hasPricingRule
-        ? {
-            type: pricingType,
-            value,
-            roundTo,
-            ...(capAtMsrp && { maxMsrp: 'use_supplier_msrp' as const }),
-          }
-        : null;
-
-      const siteScope = multiSite && limitSites ? [...selectedSites] : [];
-
-      if (supplier) {
-        const { error: err } = await updateSupplier(supplier.id, {
-          name: name.trim(),
-          credentials,
-          pricingRule,
-          notes: notes.trim() || null,
-          siteScope,
-        });
-        if (err) throw new Error(err);
-      } else {
-        const { error: err } = await createSupplier({
-          name: name.trim(),
-          type: vendor!.slug,
-          credentials,
-          pricingRule,
-          notes: notes.trim() || null,
-          siteScope,
-        });
-        if (err) throw new Error(err);
-      }
-      onSuccess();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Save failed');
-    } finally {
-      setSubmitting(false);
+    setSaving(true);
+    // On edit, send ONLY the fields the user re-entered; the backend merges them
+    // over the stored secrets so blanks keep their value. On create, send all.
+    const credentials: Record<string, string> = {};
+    for (const f of fields) {
+      const v = (creds[f.key] ?? '').trim();
+      if (!isEdit || v) credentials[f.key] = v;
     }
+
+    const pricingRule = hasPricingRule
+      ? {
+          type: pricingType,
+          value,
+          roundTo,
+          ...(capAtMsrp && { maxMsrp: 'use_supplier_msrp' as const }),
+        }
+      : null;
+
+    const siteScope = multiSite && limitSites ? [...selectedSites] : [];
+
+    const { error: err } = supplier
+      ? await updateSupplier(supplier.id, {
+          name: name.trim(),
+          credentials,
+          pricingRule,
+          notes: notes.trim() || null,
+          siteScope,
+        })
+      : await createSupplier({
+          name: name.trim(),
+          type: chosenVendor!.slug,
+          credentials,
+          pricingRule,
+          notes: notes.trim() || null,
+          siteScope,
+        });
+    setSaving(false);
+    if (err) {
+      setError(err);
+      return;
+    }
+    toast.success(supplier ? 'Supplier updated' : 'Supplier connected');
+    close();
+    router.refresh();
   }
 
-  return (
-    <form onSubmit={(e) => void handleSubmit(e)}>
-      <Stack gap={5}>
-        <Stack gap={2}>
-          <Text size="sm" className="font-medium">
-            Name <span className="text-[var(--color-danger)]">*</span>
-          </Text>
-          <Input
-            placeholder="e.g. Printify — Main shop"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </Stack>
+  const heading = supplier
+    ? 'Edit supplier'
+    : activeVendor
+      ? `Connect ${activeVendor.label}`
+      : 'Connect a supplier';
 
-        {fields.length > 0 && (
-          <Stack gap={2}>
-            <Text size="sm" className="font-medium">
-              Connection credentials
-            </Text>
+  const pickerStep = (
+    <SurfaceStep
+      header={{
+        title: 'Connect a supplier',
+        supporting: 'Choose a supplier to source and import products from.',
+      }}
+    >
+      <VendorPicker vendors={vendors ?? []} onSelect={chooseVendor} />
+    </SurfaceStep>
+  );
 
-            {/* Token is on file and the user hasn't chosen to rotate it — show a
-                reassuring "saved" row so routine edits never demand the secret. */}
-            {isEdit && hasStoredCreds && !credsOpen && (
-              <div className="flex items-center justify-between gap-3 rounded-md border border-[var(--color-border)] px-3 py-2.5">
-                <Stack direction="row" align="center" gap={2}>
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-[var(--color-success)]" />
-                  <Text size="sm" className="text-[var(--color-muted-foreground)]">
-                    Saved — you don&apos;t need to re-enter it to make changes.
-                  </Text>
-                </Stack>
-                <Button
-                  type="button"
-                  color="neutral"
-                  variant="soft"
-                  size="sm"
-                  onClick={() => setReplacingCreds(true)}
-                >
-                  Replace
-                </Button>
-              </div>
-            )}
+  const configStep = (
+    <SurfaceStep
+      header={{
+        title: heading,
+        supporting: activeVendor?.description ?? 'Connection settings, pricing, and availability.',
+      }}
+      actions={{
+        ...(isEdit ? {} : { onBack: backToPicker }),
+        onNext: () => void submit(),
+        nextLabel: supplier ? 'Save changes' : 'Connect supplier',
+        nextLoading: saving,
+        nextDisabled: saving,
+      }}
+    >
+      <Card variant="module">
+        <CardContent className="py-6">
+          <Stack gap={5}>
+            <div>
+              <Label htmlFor="sup-name">
+                Name <span className="text-[var(--color-danger)]">*</span>
+              </Label>
+              <Input
+                id="sup-name"
+                placeholder="e.g. Printify — Main shop"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
 
-            {credsOpen && (
-              <Stack gap={4}>
-                {isEdit && !hasStoredCreds && (
-                  <Text size="xs" className="text-[var(--color-warning)]">
-                    No credentials on file — enter the token below to reconnect this supplier.
-                  </Text>
+            {fields.length > 0 && (
+              <Stack gap={2}>
+                <Text size="sm" weight="medium">
+                  Connection credentials
+                </Text>
+
+                {isEdit && hasStoredCreds && !credsOpen && (
+                  <div className="flex items-center justify-between gap-3 rounded-md border border-[var(--color-border-default)] px-3 py-2.5">
+                    <Stack direction="row" align="center" gap={2}>
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-[var(--color-success)]" />
+                      <Text size="sm" variant="muted">
+                        Saved — you don&apos;t need to re-enter it to make changes.
+                      </Text>
+                    </Stack>
+                    <Button
+                      type="button"
+                      color="neutral"
+                      variant="soft"
+                      size="sm"
+                      onClick={() => setReplacingCreds(true)}
+                    >
+                      Replace
+                    </Button>
+                  </div>
                 )}
-                {fields.map((f) => (
-                  <Stack key={f.key} gap={2}>
-                    <Text size="sm" className="font-medium">
-                      {f.label}
-                      {f.required && !isEdit && (
-                        <span className="text-[var(--color-danger)]"> *</span>
-                      )}
-                    </Text>
-                    <Input
-                      type={f.type === 'password' ? 'password' : f.type === 'url' ? 'url' : 'text'}
-                      placeholder={f.placeholder}
-                      value={creds[f.key] ?? ''}
-                      onChange={(e) => setCreds((p) => ({ ...p, [f.key]: e.target.value }))}
-                      autoComplete="off"
-                    />
-                    {f.help && (
-                      <Text size="xs" className="text-[var(--color-muted-foreground)]">
-                        {f.help}
+
+                {credsOpen && (
+                  <Stack gap={4}>
+                    {isEdit && !hasStoredCreds && (
+                      <Text size="xs" variant="warning">
+                        No credentials on file — enter the token below to reconnect this supplier.
                       </Text>
                     )}
-                  </Stack>
-                ))}
+                    {fields.map((f) => (
+                      <div key={f.key}>
+                        <Label htmlFor={`sup-cred-${f.key}`}>
+                          {f.label}
+                          {f.required && !isEdit && (
+                            <span className="text-[var(--color-danger)]"> *</span>
+                          )}
+                        </Label>
+                        <Input
+                          id={`sup-cred-${f.key}`}
+                          type={
+                            f.type === 'password' ? 'password' : f.type === 'url' ? 'url' : 'text'
+                          }
+                          placeholder={f.placeholder}
+                          value={creds[f.key] ?? ''}
+                          onChange={(e) => setCreds((p) => ({ ...p, [f.key]: e.target.value }))}
+                          autoComplete="off"
+                        />
+                        {f.help && (
+                          <Text size="xs" variant="muted" className="mt-1">
+                            {f.help}
+                          </Text>
+                        )}
+                      </div>
+                    ))}
 
-                {vendor?.credentialsHelpUrl && (
-                  <Text size="xs" className="text-[var(--color-muted-foreground)]">
-                    Need help finding these?{' '}
-                    <a
-                      href={vendor.credentialsHelpUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline"
-                    >
-                      {vendor.label} credentials guide
-                    </a>
+                    {activeVendor?.credentialsHelpUrl && (
+                      <Text size="xs" variant="muted">
+                        Need help finding these?{' '}
+                        <a
+                          href={activeVendor.credentialsHelpUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline"
+                        >
+                          {activeVendor.label} credentials guide
+                        </a>
+                      </Text>
+                    )}
+
+                    {isEdit && hasStoredCreds && replacingCreds && (
+                      <button
+                        type="button"
+                        className="self-start text-xs text-[var(--color-text-muted)] underline"
+                        onClick={() => {
+                          setReplacingCreds(false);
+                          setCreds((p) => {
+                            const cleared: Record<string, string> = {};
+                            for (const k of Object.keys(p)) cleared[k] = '';
+                            return cleared;
+                          });
+                        }}
+                      >
+                        Cancel — keep the saved credentials
+                      </button>
+                    )}
+                  </Stack>
+                )}
+              </Stack>
+            )}
+
+            {multiSite && (
+              <Stack gap={3}>
+                <label className="flex cursor-pointer items-center gap-2">
+                  <Checkbox
+                    color="module"
+                    checked={limitSites}
+                    onCheckedChange={(v) => setLimitSites(v === true)}
+                  />
+                  <Text size="sm" weight="medium">
+                    Limit this connection to specific sites
+                  </Text>
+                </label>
+                {!limitSites && (
+                  <Text size="xs" variant="muted">
+                    Available on all of your sites.
                   </Text>
                 )}
-
-                {/* Let the user back out of a rotation without wiping the stored
-                    token (blank submit keeps it, but this avoids the inputs
-                    lingering and reassures them nothing changed). */}
-                {isEdit && hasStoredCreds && replacingCreds && (
-                  <button
-                    type="button"
-                    className="self-start text-xs text-[var(--color-muted-foreground)] underline"
-                    onClick={() => {
-                      setReplacingCreds(false);
-                      setCreds((p) => {
-                        const cleared: Record<string, string> = {};
-                        for (const k of Object.keys(p)) cleared[k] = '';
-                        return cleared;
-                      });
-                    }}
-                  >
-                    Cancel — keep the saved credentials
-                  </button>
+                {limitSites && (
+                  <Stack gap={2} className="border-l-2 border-[var(--color-border-default)] pl-6">
+                    {sites.map((s) => (
+                      <label key={s.id} className="flex cursor-pointer items-center gap-2">
+                        <Checkbox
+                          color="module"
+                          checked={selectedSites.has(s.id)}
+                          onCheckedChange={() => toggleSite(s.id)}
+                        />
+                        <Text size="sm">
+                          {s.name}
+                          {s.isPrimary && (
+                            <span className="text-[var(--color-text-muted)]"> (primary)</span>
+                          )}
+                        </Text>
+                      </label>
+                    ))}
+                  </Stack>
                 )}
               </Stack>
             )}
-          </Stack>
-        )}
 
-        {/* Per-site enablement — only for multi-site tenants. */}
-        {multiSite && (
-          <Stack gap={3}>
-            <label className="flex cursor-pointer items-center gap-2">
-              <Checkbox
-                color="module"
-                checked={limitSites}
-                onCheckedChange={(v) => setLimitSites(v === true)}
-              />
-              <Text size="sm" className="font-medium">
-                Limit this connection to specific sites
-              </Text>
-            </label>
-            {!limitSites && (
-              <Text size="xs" className="text-[var(--color-muted-foreground)]">
-                Available on all of your sites.
-              </Text>
-            )}
-            {limitSites && (
-              <Stack gap={2} className="border-l-2 border-[var(--color-border)] pl-6">
-                {sites.map((s) => (
-                  <label key={s.id} className="flex cursor-pointer items-center gap-2">
-                    <Checkbox
-                      color="module"
-                      checked={selectedSites.has(s.id)}
-                      onCheckedChange={() => toggleSite(s.id)}
-                    />
-                    <Text size="sm">
-                      {s.name}
-                      {s.isPrimary && (
-                        <span className="text-[var(--color-muted-foreground)]"> (primary)</span>
-                      )}
-                    </Text>
-                  </label>
-                ))}
-              </Stack>
-            )}
-          </Stack>
-        )}
-
-        <Stack gap={3}>
-          <label className="flex cursor-pointer items-center gap-2">
-            <Checkbox
-              color="module"
-              checked={hasPricingRule}
-              onCheckedChange={(v) => setHasPricingRule(v === true)}
-            />
-            <Text size="sm" className="font-medium">
-              Apply pricing rule to imported products
-            </Text>
-          </label>
-
-          {hasPricingRule && (
-            <Stack gap={3} className="border-l-2 border-[var(--color-border)] pl-6">
-              <Stack gap={2}>
-                <Text size="sm" className="font-medium">
-                  Rule type
-                </Text>
-                <Select value={pricingType} onValueChange={setPricingType}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PRICING_TYPES.map((t) => (
-                      <SelectItem key={t.value} value={t.value}>
-                        {t.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Stack>
-
-              <Stack gap={2}>
-                <Text size="sm" className="font-medium">
-                  {pricingType === 'percentage_markup' || pricingType === 'fixed_margin'
-                    ? 'Percentage (%)'
-                    : pricingType === 'multiplier'
-                      ? 'Multiplier'
-                      : 'Flat amount (cents)'}
-                </Text>
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder={pricingType === 'multiplier' ? '1.5' : '30'}
-                  value={pricingValue}
-                  onChange={(e) => setPricingValue(e.target.value)}
-                />
-              </Stack>
-
-              <Stack gap={2}>
-                <Text size="sm" className="font-medium">
-                  Round retail price to
-                </Text>
-                <Select value={roundTo} onValueChange={setRoundTo}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ROUND_OPTIONS.map((o) => (
-                      <SelectItem key={o.value} value={o.value}>
-                        {o.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Stack>
-
+            <Stack gap={3}>
               <label className="flex cursor-pointer items-center gap-2">
                 <Checkbox
                   color="module"
-                  checked={capAtMsrp}
-                  onCheckedChange={(v) => setCapAtMsrp(v === true)}
+                  checked={hasPricingRule}
+                  onCheckedChange={(v) => setHasPricingRule(v === true)}
                 />
-                <Text size="sm">Cap retail price at supplier MSRP</Text>
+                <Text size="sm" weight="medium">
+                  Apply pricing rule to imported products
+                </Text>
               </label>
+
+              {hasPricingRule && (
+                <Stack gap={3} className="border-l-2 border-[var(--color-border-default)] pl-6">
+                  <Stack gap={1}>
+                    <Label>Rule type</Label>
+                    <Select value={pricingType} onValueChange={setPricingType}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PRICING_TYPES.map((t) => (
+                          <SelectItem key={t.value} value={t.value}>
+                            {t.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Stack>
+
+                  <div>
+                    <Label htmlFor="sup-pricing-value">
+                      {pricingType === 'percentage_markup' || pricingType === 'fixed_margin'
+                        ? 'Percentage (%)'
+                        : pricingType === 'multiplier'
+                          ? 'Multiplier'
+                          : 'Flat amount (cents)'}
+                    </Label>
+                    <Input
+                      id="sup-pricing-value"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      placeholder={pricingType === 'multiplier' ? '1.5' : '30'}
+                      value={pricingValue}
+                      onChange={(e) => setPricingValue(e.target.value)}
+                    />
+                  </div>
+
+                  <Stack gap={1}>
+                    <Label>Round retail price to</Label>
+                    <Select value={roundTo} onValueChange={setRoundTo}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ROUND_OPTIONS.map((o) => (
+                          <SelectItem key={o.value} value={o.value}>
+                            {o.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Stack>
+
+                  <label className="flex cursor-pointer items-center gap-2">
+                    <Checkbox
+                      color="module"
+                      checked={capAtMsrp}
+                      onCheckedChange={(v) => setCapAtMsrp(v === true)}
+                    />
+                    <Text size="sm">Cap retail price at supplier MSRP</Text>
+                  </label>
+                </Stack>
+              )}
             </Stack>
-          )}
-        </Stack>
 
-        <Stack gap={2}>
-          <Text size="sm" className="font-medium">
-            Internal notes
-          </Text>
-          <Textarea
-            placeholder="Optional notes about this supplier"
-            rows={2}
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-          />
-        </Stack>
+            <div>
+              <Label htmlFor="sup-notes">Internal notes</Label>
+              <Textarea
+                id="sup-notes"
+                placeholder="Optional notes about this supplier"
+                rows={2}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
+            </div>
 
-        {error && (
-          <Text size="sm" className="text-[var(--color-danger)]">
-            {error}
-          </Text>
-        )}
+            {error && (
+              <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                {error}
+              </Text>
+            )}
+          </Stack>
+        </CardContent>
+      </Card>
+    </SurfaceStep>
+  );
 
-        <Stack direction="row" gap={2} className="justify-end">
-          <Button type="button" color="neutral" variant="ghost" onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button type="submit" color="primary" disabled={submitting}>
-            {submitting ? 'Saving…' : supplier ? 'Save changes' : 'Connect supplier'}
-          </Button>
-        </Stack>
-      </Stack>
-    </form>
+  const steps = isEdit ? EDIT_STEPS : CREATE_STEPS;
+  const body = !isEdit && step === 0 ? pickerStep : configStep;
+
+  if (presentation === 'modal') {
+    return (
+      <ModuleProvider module="dropship">
+        <SurfaceFrame
+          variant="modal"
+          title={heading}
+          steps={steps}
+          current={isEdit ? 0 : step}
+          open={open}
+          onOpenChange={(next) => {
+            if (!next) close();
+          }}
+          onRequestClose={onRequestClose}
+          footer={
+            <Button variant="ghost" color="neutral" size="sm" onClick={onCancelClick}>
+              Cancel
+            </Button>
+          }
+        >
+          {body}
+        </SurfaceFrame>
+      </ModuleProvider>
+    );
+  }
+
+  return (
+    <ModuleProvider module="dropship" className="h-full">
+      <SurfaceFrame
+        variant={presentation === 'overlay' ? 'inline' : 'embedded'}
+        title={heading}
+        steps={steps}
+        current={isEdit ? 0 : step}
+        onCancel={cancel}
+      >
+        {body}
+      </SurfaceFrame>
+    </ModuleProvider>
   );
 }

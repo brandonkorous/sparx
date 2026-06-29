@@ -10,6 +10,7 @@ import {
   Heading,
   Stack,
   Text,
+  statusLabel,
 } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -99,8 +100,12 @@ export async function BundleDetailContent({ id }: Props) {
           <Stack direction="row" align="center" gap={3} wrap>
             <Package2 className="h-5 w-5" />
             <Heading level={1}>{bundle.bundleProductTitle}</Heading>
-            <Badge variant="outline">{bundle.pricingMode}</Badge>
-            <Badge variant="outline">{bundle.inventoryMode}</Badge>
+            <Badge color="info" variant="soft" size="sm">
+              {statusLabel(bundle.pricingMode)}
+            </Badge>
+            <Badge color="neutral" variant="soft" size="sm">
+              {statusLabel(bundle.inventoryMode)}
+            </Badge>
           </Stack>
           <Text size="sm" variant="muted">
             {bundle.componentCount} component{bundle.componentCount === 1 ? '' : 's'} · updated{' '}

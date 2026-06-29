@@ -175,7 +175,9 @@ const priceListName = (list: PriceListRow) => (
 
 const priceListChannel = (list: PriceListRow) =>
   list.channel ? (
-    <Badge variant="outline">{list.channel}</Badge>
+    <Badge color="neutral" variant="soft" size="sm">
+      {statusLabel(list.channel)}
+    </Badge>
   ) : (
     <Text size="xs" variant="muted">
       all
@@ -186,7 +188,7 @@ const priceListChannel = (list: PriceListRow) =>
 // draft/active/archived read the same tone here as on every other surface
 // (draft→warning, active→success, archived→neutral) — never an ad-hoc per-list map.
 const priceListStatus = (list: PriceListRow) => (
-  <Badge color={statusTone(list.status)} variant="soft">
+  <Badge color={statusTone(list.status)} variant="soft" size="sm">
     {statusLabel(list.status)}
   </Badge>
 );
@@ -226,9 +228,13 @@ const priceListCard: SelectionCard<PriceListRow> = {
 
 const bulkTierScope = (tier: BulkPriceTierRow) =>
   tier.variantId ? (
-    <Badge variant="outline">variant</Badge>
+    <Badge color="info" variant="soft" size="sm">
+      variant
+    </Badge>
   ) : (
-    <Badge variant="outline">price list</Badge>
+    <Badge color="neutral" variant="soft" size="sm">
+      price list
+    </Badge>
   );
 
 const bulkTierColumns: SelectionColumn<BulkPriceTierRow>[] = [

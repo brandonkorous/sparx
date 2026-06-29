@@ -7,6 +7,7 @@ import {
   type SelectionColumn,
   Stack,
   Text,
+  statusLabel,
 } from '@sparx/ui';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
@@ -47,7 +48,15 @@ export function TaxZonesList({ zones, view }: TaxZonesListProps) {
   );
 
   const statusBadge = (z: TaxZoneRow) =>
-    z.isActive ? <Badge color="success">active</Badge> : <Badge color="warning">inactive</Badge>;
+    z.isActive ? (
+      <Badge color="success" variant="soft" size="sm">
+        active
+      </Badge>
+    ) : (
+      <Badge color="neutral" variant="soft" size="sm">
+        inactive
+      </Badge>
+    );
 
   const columns: SelectionColumn<TaxZoneRow>[] = [
     { header: 'Country', cell: (z) => countryLink(z) },
@@ -60,7 +69,14 @@ export function TaxZonesList({ zones, view }: TaxZonesListProps) {
           </Text>
         ),
     },
-    { header: 'Nexus', cell: (z) => <Badge variant="outline">{z.nexusType}</Badge> },
+    {
+      header: 'Nexus',
+      cell: (z) => (
+        <Badge color="neutral" variant="soft" size="sm">
+          {statusLabel(z.nexusType)}
+        </Badge>
+      ),
+    },
     {
       header: 'Registration #',
       cell: (z) => (
@@ -84,7 +100,9 @@ export function TaxZonesList({ zones, view }: TaxZonesListProps) {
     badge: statusBadge,
     body: (z) => (
       <Stack direction="row" align="center" gap={2} wrap>
-        <Badge variant="outline">{z.nexusType}</Badge>
+        <Badge color="neutral" variant="soft" size="sm">
+          {statusLabel(z.nexusType)}
+        </Badge>
         <Text size="xs" variant="muted">
           {z.rateCount} rate{z.rateCount === 1 ? '' : 's'}
           {z.registrationNumber ? ` · reg ${z.registrationNumber}` : ''}

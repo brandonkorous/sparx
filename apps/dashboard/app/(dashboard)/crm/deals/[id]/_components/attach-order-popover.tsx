@@ -18,6 +18,8 @@ import {
   Stack,
   Text,
   toast,
+  statusLabel,
+  statusTone,
 } from '@sparx/ui';
 
 import { attachOrderToDealAction, detachOrderFromDealAction } from '../../../deal-actions';
@@ -95,8 +97,8 @@ export function AttachOrderPopover({ dealId, candidates, attachedIds }: AttachOr
                       <Text size="sm" weight="medium">
                         {o.orderNumber}
                       </Text>
-                      <Badge variant="outline" className="text-xs">
-                        {o.status}
+                      <Badge color={statusTone(o.status)} variant="soft" size="sm">
+                        {statusLabel(o.status)}
                       </Badge>
                     </Stack>
                     <Text size="xs" variant="muted" className="tabular-nums">

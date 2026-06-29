@@ -238,11 +238,11 @@ export function SitesManager({
                       <div className="flex flex-wrap items-center gap-2">
                         <Globe className="size-4 text-[var(--muted-foreground)]" />
                         <span className="font-medium">{d.host}</span>
-                        <Badge color={statusColor(d.status)} variant="soft">
+                        <Badge color={statusColor(d.status)} variant="soft" size="sm">
                           {d.type === 'subdomain' ? 'live' : d.status}
                         </Badge>
                         {d.isCanonical && (
-                          <Badge color="neutral" variant="outline">
+                          <Badge color="neutral" variant="soft" size="sm">
                             canonical
                           </Badge>
                         )}

@@ -1,38 +1,22 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Plus } from 'lucide-react';
-import { Button, Modal, ModalContent, ModalHeader, ModalTitle, ModalDescription } from '@sparx/ui';
-import { SourceForm } from './source-form';
 
+import { EntityCreateButton } from '../../../_components/entity-create-button';
+
+// "Connect source" launcher — opens the create surface in the user's preferred
+// presentation via the shared EntityCreateButton. The `inventory-source` create
+// form is registered in the @detail overlay system, with /inventory/sources/new
+// as the full-page fallback.
 export function NewSourceButton() {
-  const [open, setOpen] = useState(false);
-  const router = useRouter();
-
   return (
-    <>
-      <Button color="primary" onClick={() => setOpen(true)}>
-        <Plus className="mr-1.5 size-4" />
-        Connect source
-      </Button>
-      <Modal open={open} onOpenChange={setOpen}>
-        <ModalContent>
-          <ModalHeader>
-            <ModalTitle>Connect inventory source</ModalTitle>
-            <ModalDescription>
-              Configure a CSV feed or API connection for stock-level sync.
-            </ModalDescription>
-          </ModalHeader>
-          <SourceForm
-            onSuccess={() => {
-              setOpen(false);
-              router.refresh();
-            }}
-            onCancel={() => setOpen(false)}
-          />
-        </ModalContent>
-      </Modal>
-    </>
+    <EntityCreateButton
+      entityType="inventory-source"
+      newHref="/inventory/sources/new"
+      color="module"
+    >
+      <Plus className="mr-1.5 size-4" />
+      Connect source
+    </EntityCreateButton>
   );
 }

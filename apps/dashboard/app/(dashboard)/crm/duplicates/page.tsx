@@ -70,7 +70,9 @@ export default async function DuplicatesPage() {
                     <CardTitle>
                       {group.reason === 'email' ? 'Shared email' : 'Same last name + company'}
                     </CardTitle>
-                    <Badge variant="outline">{group.customers.length} records</Badge>
+                    <Badge color="neutral" variant="soft" size="sm">
+                      {group.customers.length} records
+                    </Badge>
                   </Stack>
                 </CardHeader>
                 <CardContent>

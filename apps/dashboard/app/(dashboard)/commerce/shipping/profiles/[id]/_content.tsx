@@ -69,7 +69,7 @@ export async function ShippingProfileDetailContent({ id }: Props) {
             <Field label="Hazmat classes allowed">
               <Stack direction="row" gap={1} wrap>
                 {profile.hazmatClassesAllowed.map((c) => (
-                  <Badge key={c} variant="outline">
+                  <Badge key={c} color="neutral" variant="soft" size="sm">
                     {c}
                   </Badge>
                 ))}
@@ -79,7 +79,7 @@ export async function ShippingProfileDetailContent({ id }: Props) {
               {profile.allowedCarrierServices.length > 0 ? (
                 <Stack direction="row" gap={1} wrap>
                   {profile.allowedCarrierServices.map((s) => (
-                    <Badge key={s} variant="outline" className="font-mono text-xs">
+                    <Badge key={s} color="neutral" variant="soft" size="sm" className="font-mono">
                       {s}
                     </Badge>
                   ))}
@@ -91,8 +91,16 @@ export async function ShippingProfileDetailContent({ id }: Props) {
               )}
             </Field>
             <Stack direction="row" gap={4}>
-              {profile.requiresSignature && <Badge variant="outline">Signature required</Badge>}
-              {profile.requiresFreight && <Badge color="warning">Freight only</Badge>}
+              {profile.requiresSignature && (
+                <Badge color="neutral" variant="soft" size="sm">
+                  Signature required
+                </Badge>
+              )}
+              {profile.requiresFreight && (
+                <Badge color="warning" variant="soft" size="sm">
+                  Freight only
+                </Badge>
+              )}
             </Stack>
           </Stack>
         </CardContent>

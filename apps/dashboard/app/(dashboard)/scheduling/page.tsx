@@ -80,7 +80,7 @@ export default async function SchedulingOverviewPage() {
           icon={<LayoutDashboard className="h-5 w-5" />}
           title="Overview"
           description="Your upcoming bookings at a glance — the next two weeks. Open the Calendar for the week grid."
-          actions={services.length > 0 ? <NewBookingButton services={services} /> : undefined}
+          actions={services.length > 0 ? <NewBookingButton /> : undefined}
         />
 
         {services.length === 0 ? (

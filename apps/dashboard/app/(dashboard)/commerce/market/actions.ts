@@ -1,9 +1,9 @@
 'use server';
 
-// Server actions for the sparx.market settings page (docs/106 §4.7). Tenant-scoped
-// via the api-rest client (which forwards the staff session); every route is gated
-// on the Commerce module + role server-side. Reads are plain `api.get`; writes
-// return an ActionResult so the client forms surface the friendly message.
+// Server actions for the Commerce → sparx.market page (docs/106 §4.7). Tenant-scoped
+// via the api-rest client (which forwards the staff session); every route is gated on
+// the Commerce module + role server-side. Reads are plain `api.get`; writes return an
+// ActionResult so the client forms surface the friendly message.
 
 import 'server-only';
 import { revalidatePath } from 'next/cache';
@@ -15,7 +15,7 @@ import type {
   ProductMarketState,
 } from './_types';
 
-const MARKET_PATH = '/settings/market';
+const MARKET_PATH = '/commerce/market';
 
 // Settlement earnings + the ACH payout account moved to Finance → Payouts (docs/110
 // Slice 3) — their reads + the payout-account write now live in finance/payouts/actions.ts.

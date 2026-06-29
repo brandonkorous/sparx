@@ -15,6 +15,8 @@ import {
   TableHeader,
   TableRow,
   Text,
+  statusLabel,
+  statusTone,
 } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -32,14 +34,18 @@ type SubscriptionStatus = 'active' | 'trialing' | 'paused' | 'past_due' | 'cance
 interface SubscriptionItem {
   id: string;
   variantId: string;
+  variantSku: string | null;
+  productTitle: string | null;
   quantity: number;
   unitPriceCents: number;
   addonOfId: string | null;
+  addonOfName: string | null;
 }
 
 interface SubscriptionDetail {
   id: string;
   customerId: string;
+  customerName: string | null;
   status: SubscriptionStatus;
   nextOccurrenceAt: string | null;
   itemCount: number;
@@ -77,10 +83,13 @@ export async function SubscriptionDetailContent({ id }: Props) {
             <Heading level={1} className="font-mono text-2xl">
               {sub.id.slice(0, 8)}
             </Heading>
-            <Badge color={statusVariant(sub.status)}>{sub.status}</Badge>
+            <Badge color={statusTone(sub.status)} variant="soft" size="sm">
+              {statusLabel(sub.status)}
+            </Badge>
           </Stack>
           <Text variant="muted">
-            Every {sub.intervalCount} {sub.intervalUnit}
+            {sub.customerName ?? `Customer ${sub.customerId.slice(0, 8)}`} · Every{' '}
+            {sub.intervalCount} {sub.intervalUnit}
             {sub.intervalCount > 1 ? 's' : ''} · {sub.deliveriesPerCycle} per cycle
           </Text>
         </Stack>
@@ -124,17 +133,20 @@ export async function SubscriptionDetailContent({ id }: Props) {
               {sub.items.map((it) => (
                 <TableRow key={it.id}>
                   <TableCell>
-                    <Text size="xs" className="font-mono">
-                      {it.variantId.slice(0, 8)}
-                    </Text>
+                    <Stack gap={0}>
+                      <Text size="sm">{it.productTitle ?? it.variantId.slice(0, 8)}</Text>
+                      {it.variantSku && (
+                        <Text size="xs" variant="muted" className="font-mono">
+                          {it.variantSku}
+                        </Text>
+                      )}
+                    </Stack>
                   </TableCell>
                   <TableCell>{it.quantity}</TableCell>
                   <TableCell>${(it.unitPriceCents / 100).toFixed(2)}</TableCell>
                   <TableCell>
                     {it.addonOfId ? (
-                      <Text size="xs" className="font-mono">
-                        {it.addonOfId.slice(0, 8)}
-                      </Text>
+                      <Text size="sm">{it.addonOfName ?? it.addonOfId.slice(0, 8)}</Text>
                     ) : (
                       '—'
                     )}
@@ -158,7 +170,7 @@ export async function SubscriptionDetailContent({ id }: Props) {
         </CardHeader>
         <CardContent>
           <Stack gap={3}>
-            <Row label="Status" value={sub.status} />
+            <Row label="Status" value={statusLabel(sub.status)} />
             <Row
               label="Period"
               value={
@@ -209,10 +221,4 @@ function Row({ label, value }: { label: string; value: string }) {
       <Text size="sm">{value}</Text>
     </Stack>
   );
-}
-
-function statusVariant(status: string): 'success' | 'warning' | 'outline' {
-  if (status === 'active') return 'success';
-  if (status === 'past_due') return 'warning';
-  return 'outline';
 }

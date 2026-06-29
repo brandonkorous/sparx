@@ -116,7 +116,7 @@ export async function B2bQuoteDetailContent({ id }: Props) {
         <Stack direction="row" align="center" gap={3} wrap>
           <FileText className="h-5 w-5" />
           <Heading level={1}>Quote {quote.quoteNumber}</Heading>
-          <Badge color={STATUS_VARIANT[quote.status] ?? 'outline'}>
+          <Badge color={STATUS_VARIANT[quote.status] ?? 'neutral'} variant="soft" size="sm">
             {quote.status.replace('_', ' ')}
           </Badge>
         </Stack>

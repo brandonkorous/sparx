@@ -319,7 +319,12 @@ export interface ConfigurationTemplateDetail extends ConfigurationTemplateRow {
   layout: unknown;
   options: ConfigurationOptionInput[];
   rules: ConfigurationRuleInput[];
-  addOns: ConfigurationAddOnInput[];
+  // Add-on variant ids are resolved to sku + product title so the detail reads
+  // as real products, not raw variant ids (the AddOn model has no relation).
+  addOns: (ConfigurationAddOnInput & {
+    variantSku: string | null;
+    productTitle: string | null;
+  })[];
 }
 
 export async function listTemplatesForProduct(
@@ -381,6 +386,19 @@ export async function getTemplate(
   );
   if (!row) throw new CommerceNotFoundError('ConfigurationTemplate', id);
 
+  // Batch-resolve add-on variant ids → sku + product title (the AddOn row holds
+  // only a bare variantId, no relation), so the detail surface shows products.
+  const addOnVariants = new Map<string, { sku: string; title: string }>();
+  if (row.addOns.length > 0) {
+    const variants = await withTenant(ctx, (tx) =>
+      tx.productVariant.findMany({
+        where: { id: { in: row.addOns.map((a) => a.variantId) } },
+        select: { id: true, sku: true, product: { select: { title: true } } },
+      })
+    );
+    for (const v of variants) addOnVariants.set(v.id, { sku: v.sku, title: v.product.title });
+  }
+
   return {
     ...serializeTemplateRow(row),
     layout: row.layout,
@@ -408,6 +426,8 @@ export async function getTemplate(
     })),
     addOns: row.addOns.map((a) => ({
       variantId: a.variantId,
+      variantSku: addOnVariants.get(a.variantId)?.sku ?? null,
+      productTitle: addOnVariants.get(a.variantId)?.title ?? null,
       defaultIncluded: a.defaultIncluded,
       priceOverrideCents: a.priceOverrideCents ?? undefined,
     })),

@@ -200,7 +200,7 @@ export async function setProductMarketStateAction(
     const state = await api.put<ProductMarketState>(`/v1/market/products/${productId}`, input);
     revalidatePath('/commerce/products');
     revalidatePath(`/commerce/products/${productId}`);
-    revalidatePath('/settings/market');
+    revalidatePath('/commerce/market');
     return state;
   });
 }
@@ -213,7 +213,7 @@ export async function bulkSetProductMarketStateAction(input: {
   return restAction(async () => {
     const result = await api.post<{ updated: number }>('/v1/market/products/bulk', input);
     revalidatePath('/commerce/products');
-    revalidatePath('/settings/market');
+    revalidatePath('/commerce/market');
     return result;
   });
 }

@@ -22,6 +22,7 @@ import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError }
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
 import { isInventoryActive } from '../inventory-gate';
+import { CUSTOMER_NAME_SELECT, customerDisplayName } from './customer-name';
 
 /** A restockable return line resolved to its variant + (optional) location. */
 interface RestockLine {
@@ -631,34 +632,6 @@ interface OrderMeta {
   customerId: string | null;
   customerName: string | null;
   orderNumber: string | null;
-}
-
-const CUSTOMER_NAME_SELECT = {
-  firstName: true,
-  lastName: true,
-  company: true,
-  email: true,
-} satisfies Prisma.CustomerSelect;
-
-// Best human label for a customer: full name → company → email. Returns null
-// when nothing usable exists so the UI can fall back to a short id.
-function customerDisplayName(
-  c: {
-    firstName: string | null;
-    lastName: string | null;
-    company: string | null;
-    email: string | null;
-  } | null
-): string | null {
-  if (!c) return null;
-  // First non-empty of: full name → company → email. (`??` won't do — an empty
-  // string must fall through to the next candidate, which nullish-coalescing skips.)
-  const candidates = [[c.firstName, c.lastName].filter(Boolean).join(' '), c.company, c.email];
-  for (const candidate of candidates) {
-    const trimmed = candidate?.trim();
-    if (trimmed) return trimmed;
-  }
-  return null;
 }
 
 function toSummary(

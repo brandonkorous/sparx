@@ -75,7 +75,11 @@ export default async function ContentTypesPage({ searchParams }: PageProps) {
         <PageHeader
           icon={<Database className="h-5 w-5" />}
           title="Content types"
-          badge={<Badge variant="outline">{total}</Badge>}
+          badge={
+            <Badge color="neutral" variant="soft" size="sm">
+              {total}
+            </Badge>
+          }
           description="The authoring shapes behind your content — pages, posts, FAQs, and any custom type. Click a type to see its items, or open its schema to edit the fields."
           actions={
             <EntityCreateButton

@@ -96,7 +96,7 @@ export function B2bAccountOverridesTable({ accountId, overrides }: Props) {
           {overrides.map((o) => (
             <TableRow key={o.id}>
               <TableCell>
-                <Badge variant="outline" color={o.variantId ? 'module' : 'default'}>
+                <Badge color={o.variantId ? 'module' : 'neutral'} variant="soft" size="sm">
                   {o.variantId ? 'Variant' : 'Collection'}
                 </Badge>
               </TableCell>

@@ -16,6 +16,8 @@ import {
   Stack,
   Text,
   toast,
+  statusLabel,
+  statusTone,
 } from '@sparx/ui';
 
 import { attachQuoteToDealAction, detachQuoteFromDealAction } from '../../../deal-actions';
@@ -93,8 +95,8 @@ export function AttachQuotePopover({ dealId, candidates, attachedIds }: AttachQu
                       <Text size="sm" weight="medium">
                         {q.quoteNumber}
                       </Text>
-                      <Badge variant="outline" className="text-xs">
-                        {q.status}
+                      <Badge color={statusTone(q.status)} variant="soft" size="sm">
+                        {statusLabel(q.status)}
                       </Badge>
                     </Stack>
                     <Text size="xs" variant="muted" className="tabular-nums">

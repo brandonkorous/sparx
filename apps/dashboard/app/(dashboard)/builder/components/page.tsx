@@ -154,10 +154,10 @@ export default async function BuilderComponentsPage({ searchParams }: PageProps)
                     {entry.summary}
                   </Text>
                   <Stack direction="row" align="center" gap={2} wrap>
-                    <Badge variant="outline" className="text-xs">
+                    <Badge color="info" variant="soft" size="sm">
                       {entry.groupLabel}
                     </Badge>
-                    <Badge variant="outline" className="text-xs">
+                    <Badge color="neutral" variant="soft" size="sm">
                       {entry.kindLabel}
                     </Badge>
                     <Text size="xs" variant="muted">
@@ -217,7 +217,7 @@ export default async function BuilderComponentsPage({ searchParams }: PageProps)
                         </Stack>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge color="info" variant="soft" size="sm">
                           {entry.groupLabel}
                         </Badge>
                       </TableCell>

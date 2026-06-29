@@ -64,12 +64,24 @@ export function BlueprintsList({ rows, view, canInstall }: BlueprintsListProps) 
 
   const contentBadges = (bp: BlueprintListItem) => (
     <div className="flex flex-wrap gap-2">
-      <Badge variant="outline">{bp.contents.products} products</Badge>
-      <Badge variant="outline">{bp.contents.content} content</Badge>
-      <Badge variant="outline">{bp.contents.pages} pages</Badge>
-      <Badge variant="outline">{bp.contents.emails} emails</Badge>
-      <Badge variant="outline">{bp.contents.components} components</Badge>
-      <Badge variant="outline">Theme: {bp.contents.theme}</Badge>
+      <Badge color="neutral" variant="soft" size="sm">
+        {bp.contents.products} products
+      </Badge>
+      <Badge color="neutral" variant="soft" size="sm">
+        {bp.contents.content} content
+      </Badge>
+      <Badge color="neutral" variant="soft" size="sm">
+        {bp.contents.pages} pages
+      </Badge>
+      <Badge color="neutral" variant="soft" size="sm">
+        {bp.contents.emails} emails
+      </Badge>
+      <Badge color="neutral" variant="soft" size="sm">
+        {bp.contents.components} components
+      </Badge>
+      <Badge color="neutral" variant="soft" size="sm">
+        Theme: {bp.contents.theme}
+      </Badge>
     </div>
   );
 

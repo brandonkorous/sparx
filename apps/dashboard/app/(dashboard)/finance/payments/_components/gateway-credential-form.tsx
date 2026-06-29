@@ -4,13 +4,12 @@
 // from the catalog descriptor's `credentialFields`, so adding a gateway needs no new UI.
 // Secret fields are write-only: blank on load (shown as "•••• on file" when stored),
 // and re-entering REPLACES the value. Non-secret fields (public client key, location id,
-// hosted URL) round-trip in the clear. Saving encrypts the secrets server-side.
+// hosted URL) round-trip in the clear. Saving encrypts the secrets server-side. Rendered
+// inside the gateway drawer; `onSaved` lets the parent activate the gateway + close.
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
-import { Check, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import {
-  Badge,
   Button,
   Input,
   Label,
@@ -21,8 +20,6 @@ import {
   SelectValue,
   Stack,
   Text,
-  statusLabel,
-  statusTone,
 } from '@sparx/ui';
 
 import {
@@ -34,14 +31,15 @@ import {
 export function GatewayCredentialForm({
   descriptor,
   credential,
+  onSaved,
 }: {
   descriptor: GatewayDescriptor;
   credential?: MaskedGatewayCredential;
+  /** Called after a successful save so the parent can activate + close the drawer. */
+  onSaved?: () => void;
 }) {
-  const router = useRouter();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
-  const [savedAt, setSavedAt] = React.useState<number | null>(null);
   const [environment, setEnvironment] = React.useState<'sandbox' | 'production'>(
     credential?.environment ?? 'production'
   );
@@ -57,7 +55,6 @@ export function GatewayCredentialForm({
   function set(key: string, value: string) {
     setFields((prev) => ({ ...prev, [key]: value }));
     setError(null);
-    setSavedAt(null);
   }
 
   // Required secrets are satisfied either by a fresh entry or by one already on file.
@@ -71,50 +68,25 @@ export function GatewayCredentialForm({
     e.preventDefault();
     if (!canSubmit) return;
     setError(null);
-    setSavedAt(null);
     startTransition(async () => {
       const res = await saveGatewayCredentials({ gatewayId: descriptor.id, environment, fields });
       if (!res.ok) {
         setError(res.error);
         return;
       }
-      // Clear secret inputs after a successful save; the masked status refreshes.
-      setFields((prev) => {
-        const next = { ...prev };
-        for (const f of descriptor.credentialFields) if (f.secret) next[f.key] = '';
-        return next;
-      });
-      setSavedAt(Date.now());
-      router.refresh();
+      onSaved?.();
     });
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate>
-      <Stack gap={4}>
-        <Stack direction="row" align="center" gap={3} wrap className="justify-between">
-          <Text size="sm" variant="muted" className="max-w-prose">
-            {descriptor.feeNote}
-            {descriptor.checkout === 'redirect'
-              ? ' Shoppers pay on the gateway’s hosted page, so card data never touches sparx.'
-              : ''}
-          </Text>
-          {credential ? (
-            <Badge color={statusTone(credential.status)} variant="soft" size="sm">
-              {statusLabel(credential.status)}
-            </Badge>
-          ) : null}
-        </Stack>
-
+    <form id={`gateway-form-${descriptor.id}`} onSubmit={onSubmit} noValidate>
+      <Stack gap={5}>
         {descriptor.environments ? (
-          <Stack gap={2} className="max-w-xs">
+          <Stack gap={2}>
             <Label htmlFor={`${descriptor.id}-env`}>Environment</Label>
             <Select
               value={environment}
-              onValueChange={(v) => {
-                setEnvironment(v as 'sandbox' | 'production');
-                setSavedAt(null);
-              }}
+              onValueChange={(v) => setEnvironment(v as 'sandbox' | 'production')}
             >
               <SelectTrigger id={`${descriptor.id}-env`}>
                 <SelectValue />
@@ -127,70 +99,59 @@ export function GatewayCredentialForm({
           </Stack>
         ) : null}
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          {descriptor.credentialFields.map((f) => {
-            const onFile = f.secret && credential?.hasSecrets === true;
-            return (
-              <Stack key={f.key} gap={2}>
-                <Label htmlFor={`${descriptor.id}-${f.key}`}>
-                  {f.label}
-                  {f.optional ? (
-                    <span className="text-[var(--color-text-tertiary)]"> (optional)</span>
-                  ) : null}
-                </Label>
-                <Input
-                  id={`${descriptor.id}-${f.key}`}
-                  type={f.secret ? 'password' : 'text'}
-                  value={fields[f.key] ?? ''}
-                  autoComplete="off"
-                  placeholder={
-                    onFile ? '•••• on file — re-enter to replace' : (f.placeholder ?? '')
-                  }
-                  onChange={(e) => set(f.key, e.target.value)}
-                />
-                {f.help ? (
-                  <Text size="xs" variant="muted">
-                    {f.help}
-                  </Text>
+        {descriptor.credentialFields.map((f) => {
+          const onFile = f.secret && credential?.hasSecrets === true;
+          return (
+            <Stack key={f.key} gap={2}>
+              <Label htmlFor={`${descriptor.id}-${f.key}`}>
+                {f.label}
+                {f.optional ? (
+                  <span className="text-[var(--color-text-tertiary)]"> (optional)</span>
                 ) : null}
-              </Stack>
-            );
-          })}
-        </div>
-
-        <Stack direction="row" align="center" justify="end" gap={3} wrap>
-          {descriptor.docsUrl ? (
-            <a
-              href={descriptor.docsUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mr-auto inline-flex items-center gap-1 text-sm text-[var(--color-text-secondary)] hover:underline"
-            >
-              Where do I find these? <ExternalLink className="h-3.5 w-3.5" />
-            </a>
-          ) : null}
-          {error ? (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite">
-              {error}
-            </Text>
-          ) : null}
-          {savedAt !== null ? (
-            <Stack
-              direction="row"
-              align="center"
-              gap={1}
-              className="text-[var(--color-success-text)]"
-            >
-              <Check className="h-4 w-4" />
-              <Text size="sm" variant="success">
-                Saved
-              </Text>
+              </Label>
+              <Input
+                id={`${descriptor.id}-${f.key}`}
+                type={f.secret ? 'password' : 'text'}
+                value={fields[f.key] ?? ''}
+                autoComplete="off"
+                placeholder={onFile ? '•••• on file — re-enter to replace' : (f.placeholder ?? '')}
+                onChange={(e) => set(f.key, e.target.value)}
+              />
+              {f.help ? (
+                <Text size="xs" variant="muted">
+                  {f.help}
+                </Text>
+              ) : null}
             </Stack>
-          ) : null}
-          <Button type="submit" color="module" disabled={pending || !canSubmit} loading={pending}>
-            {credential ? 'Update keys' : 'Connect'}
-          </Button>
-        </Stack>
+          );
+        })}
+
+        {descriptor.docsUrl ? (
+          <a
+            href={descriptor.docsUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 text-sm text-[var(--color-text-secondary)] hover:underline"
+          >
+            Where do I find these? <ExternalLink className="h-3.5 w-3.5" />
+          </a>
+        ) : null}
+
+        {error ? (
+          <Text size="sm" variant="danger" role="alert" aria-live="polite">
+            {error}
+          </Text>
+        ) : null}
+
+        <Button
+          type="submit"
+          color="module"
+          className="w-full"
+          disabled={pending || !canSubmit}
+          loading={pending}
+        >
+          {credential ? 'Save changes' : 'Connect & use'}
+        </Button>
       </Stack>
     </form>
   );

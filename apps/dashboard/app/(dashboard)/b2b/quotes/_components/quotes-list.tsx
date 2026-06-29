@@ -68,7 +68,7 @@ export function QuotesList({ quotes, view }: QuotesListProps) {
     );
 
   const statusBadge = (q: QuoteRow) => (
-    <Badge color={STATUS_VARIANT[q.status] ?? 'outline'} variant="soft">
+    <Badge color={STATUS_VARIANT[q.status] ?? 'neutral'} variant="soft" size="sm">
       {q.status.replace('_', ' ')}
     </Badge>
   );

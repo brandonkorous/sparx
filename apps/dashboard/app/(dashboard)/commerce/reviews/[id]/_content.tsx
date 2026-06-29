@@ -22,6 +22,17 @@ import { RespondForm } from './_components/respond-form';
 
 export const dynamic = 'force-dynamic';
 
+// Customer-attached review photos resolve through the public media redirect
+// (/v1/public/media/:id?tenant=slug) — the one resolver that works for both
+// stored uploads and hot-linked external keys. Mirrors product-media-panel.
+const PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3100';
+
+function mediaUrl(mediaAssetId: string, tenantSlug: string): string {
+  return `${PUBLIC_API_URL}/v1/public/media/${encodeURIComponent(mediaAssetId)}?tenant=${encodeURIComponent(
+    tenantSlug
+  )}`;
+}
+
 interface Props {
   id: string;
 }
@@ -58,6 +69,8 @@ export async function ReviewDetailContent({ id }: Props) {
     if ((err as ApiRestError).code === 'NOT_FOUND') notFound();
     throw err;
   }
+  // Slug for the public media redirect that renders attached photos.
+  const tenant = await api.get<{ slug: string }>('/v1/tenant');
 
   return (
     <Stack gap={6}>
@@ -101,9 +114,13 @@ export async function ReviewDetailContent({ id }: Props) {
             {review.mediaAssetIds.length > 0 && (
               <Stack direction="row" gap={2} wrap>
                 {review.mediaAssetIds.map((mid) => (
-                  <Text key={mid} size="xs" className="font-mono" variant="muted">
-                    {mid.slice(0, 8)}
-                  </Text>
+                  <img
+                    key={mid}
+                    src={mediaUrl(mid, tenant.slug)}
+                    alt="Submitted with this review"
+                    loading="lazy"
+                    className="h-20 w-20 rounded-md border border-[var(--color-border-default)] object-cover"
+                  />
                 ))}
               </Stack>
             )}

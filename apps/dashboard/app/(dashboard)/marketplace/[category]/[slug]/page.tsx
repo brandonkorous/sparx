@@ -127,7 +127,7 @@ export default async function ListingDetailPage({
                     </Text>
                     <div className="flex flex-wrap gap-2">
                       {requires.map((m) => (
-                        <Badge key={m} variant="outline">
+                        <Badge key={m} color="neutral" variant="soft" size="sm">
                           {m}
                         </Badge>
                       ))}

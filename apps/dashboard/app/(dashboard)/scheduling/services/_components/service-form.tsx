@@ -1,17 +1,26 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
   Grid,
   Input,
   Label,
+  ModuleProvider,
   NativeSelect,
   Stack,
+  SurfaceFrame,
+  SurfaceStep,
   Switch,
+  Text,
   Textarea,
   toast,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 
 import type {
@@ -28,11 +37,26 @@ import {
   listBookingPoliciesAction,
   updateServiceAction,
 } from '../../_lib/actions';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
-interface Props {
+// Service create/edit on the standard form surface (docs/86 F layout). ONE
+// component drives all three presentations the host picks:
+//   - presentation="page"    → SurfaceFrame `embedded` at /scheduling/services/new
+//   - presentation="overlay" → SurfaceFrame `inline` inside the @detail drawer/modal
+//   - presentation="modal"   → SurfaceFrame `modal` (self-owned dialog) for edit
+//     from the list row (the list has no detail view, so editing rides a modal —
+//     the same blessed pattern as the new-site wizard).
+// Create has no detail view, so a successful create returns to the list.
+
+type Presentation = 'page' | 'overlay' | 'modal';
+
+interface ServiceFormProps {
+  presentation: Presentation;
+  /** Present → edit; absent → create. */
   service?: SchedulingService;
-  onSuccess: () => void;
-  onCancel: () => void;
+  /** Modal (edit) only — controlled open state owned by the list. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const TYPES: BookingType[] = ['appointment', 'class', 'reservation', 'rental'];
@@ -43,9 +67,14 @@ const STRATEGIES: { value: AssignmentStrategy; label: string }[] = [
   { value: 'collective', label: 'Collective (all required)' },
 ];
 
-export function ServiceForm({ service, onSuccess, onCancel }: Props) {
+const STEPS: SurfaceStepDef[] = [{ key: 'basics', label: 'Basics' }];
+
+export function ServiceForm({ presentation, service, open, onOpenChange }: ServiceFormProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [saving, setSaving] = useState(false);
+
   const [name, setName] = useState(service?.name ?? '');
   const [bookingType, setBookingType] = useState<BookingType>(
     service?.bookingType ?? 'appointment'
@@ -79,8 +108,74 @@ export function ServiceForm({ service, onSuccess, onCancel }: Props) {
     });
   }, []);
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
+  // Dirty = current field set differs from the snapshot captured on mount (empty
+  // defaults for create, the record's values for edit). One mechanism covers
+  // both, and the lazy initializer is StrictMode-safe (no skip-first-render ref).
+  const snapshot = () =>
+    JSON.stringify({
+      name,
+      bookingType,
+      description,
+      durationMinutes,
+      bufferBeforeMin,
+      bufferAfterMin,
+      priceDollars,
+      capacity,
+      slotIntervalMin,
+      minLeadMinutes,
+      maxAdvanceDays,
+      strategy,
+      requirements,
+      bookableOnline,
+      requiresApproval,
+      isActive,
+      policyId,
+    });
+  const [initial] = useState(snapshot);
+  const dirty = snapshot() !== initial;
+
+  const guardLeave = useUnsavedGuard(
+    dirty,
+    service ? { kind: 'edit', noun: 'service' } : { kind: 'create', noun: 'service' }
+  );
+
+  // Leave WITHOUT the guard — the success path and (through the guarded paths) a
+  // confirmed discard. Modal hands control back to the list; the overlay clears
+  // the detail token; the page returns to the list.
+  const close = useCallback(() => {
+    if (presentation === 'modal') {
+      onOpenChange?.(false);
+      return;
+    }
+    if (presentation === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+      return;
+    }
+    router.push('/scheduling/services');
+  }, [presentation, onOpenChange, pathname, searchParams, router]);
+
+  const cancel = useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
+
+  // Modal-only dismissal guards (Radix backdrop/Esc want a sync boolean; the
+  // footer Cancel is async). Mirrors the new-site wizard.
+  function onRequestClose(): boolean {
+    if (saving) return false;
+    if (!dirty) return true;
+    void Promise.resolve(guardLeave()).then((ok) => ok && close());
+    return false;
+  }
+  function onCancelClick() {
+    if (saving) return;
+    void Promise.resolve(guardLeave()).then((ok) => ok && close());
+  }
+
+  async function submit() {
     if (!name.trim()) {
       toast.error('Name is required');
       return;
@@ -111,173 +206,234 @@ export function ServiceForm({ service, onSuccess, onCancel }: Props) {
     setSaving(false);
     if (result.ok) {
       toast.success(service ? 'Service updated' : 'Service created');
-      onSuccess();
+      close();
       router.refresh();
     } else {
       toast.error(result.error);
     }
   }
 
-  return (
-    <form onSubmit={submit}>
-      <Stack gap={4} className="px-1 py-2">
-        <div>
-          <Label htmlFor="svc-name">Name</Label>
-          <Input
-            id="svc-name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Haircut, Yoga class, Dinner table"
-            required
-          />
-        </div>
+  const heading = service ? 'Edit service' : 'New service';
 
-        <Grid cols={2} gap={3}>
-          <div>
-            <Label htmlFor="svc-type">Booking type</Label>
-            <NativeSelect
-              id="svc-type"
-              value={bookingType}
-              onChange={(e) => setBookingType(e.target.value as BookingType)}
-            >
-              {TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {BOOKING_TYPE_LABEL[t]}
-                </option>
-              ))}
-            </NativeSelect>
-          </div>
-          <div>
-            <Label htmlFor="svc-strategy">Assignment</Label>
-            <NativeSelect
-              id="svc-strategy"
-              value={strategy}
-              onChange={(e) => setStrategy(e.target.value as AssignmentStrategy)}
-            >
-              {STRATEGIES.map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
-                </option>
-              ))}
-            </NativeSelect>
-          </div>
-        </Grid>
+  const body = (
+    <SurfaceStep
+      header={{
+        title: heading,
+        supporting: 'Define something bookable and how it gets staffed.',
+      }}
+      actions={{
+        onNext: () => void submit(),
+        nextLabel: service ? 'Save changes' : 'Create service',
+        nextLoading: saving,
+        nextDisabled: saving,
+      }}
+    >
+      <Stack gap={6}>
+        <Card variant="module">
+          <CardHeader>
+            <CardTitle>Basics</CardTitle>
+          </CardHeader>
+          <CardContent className="py-6">
+            <Stack gap={4}>
+              <div>
+                <Label htmlFor="svc-name">Name</Label>
+                <Input
+                  id="svc-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g. Haircut, Yoga class, Dinner table"
+                  required
+                />
+              </div>
 
-        <div>
-          <Label htmlFor="svc-desc">Description</Label>
-          <Textarea
-            id="svc-desc"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={2}
-          />
-        </div>
+              <Grid cols={2} gap={3}>
+                <div>
+                  <Label htmlFor="svc-type">Booking type</Label>
+                  <NativeSelect
+                    id="svc-type"
+                    value={bookingType}
+                    onChange={(e) => setBookingType(e.target.value as BookingType)}
+                  >
+                    {TYPES.map((t) => (
+                      <option key={t} value={t}>
+                        {BOOKING_TYPE_LABEL[t]}
+                      </option>
+                    ))}
+                  </NativeSelect>
+                </div>
+                <div>
+                  <Label htmlFor="svc-strategy">Assignment</Label>
+                  <NativeSelect
+                    id="svc-strategy"
+                    value={strategy}
+                    onChange={(e) => setStrategy(e.target.value as AssignmentStrategy)}
+                  >
+                    {STRATEGIES.map((s) => (
+                      <option key={s.value} value={s.value}>
+                        {s.label}
+                      </option>
+                    ))}
+                  </NativeSelect>
+                </div>
+              </Grid>
 
-        <Grid cols={3} gap={3}>
-          <NumberField
-            label="Duration (min)"
-            value={durationMinutes}
-            min={1}
-            onChange={setDuration}
-          />
-          <NumberField
-            label="Buffer before"
-            value={bufferBeforeMin}
-            min={0}
-            onChange={setBufferBefore}
-          />
-          <NumberField
-            label="Buffer after"
-            value={bufferAfterMin}
-            min={0}
-            onChange={setBufferAfter}
-          />
-        </Grid>
+              <div>
+                <Label htmlFor="svc-desc">Description</Label>
+                <Textarea
+                  id="svc-desc"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={2}
+                />
+              </div>
 
-        <Grid cols={3} gap={3}>
-          <div>
-            <Label htmlFor="svc-price">Price ($)</Label>
-            <Input
-              id="svc-price"
-              type="number"
-              min={0}
-              step="0.01"
-              value={priceDollars}
-              onChange={(e) => setPriceDollars(Number(e.target.value) || 0)}
-            />
-          </div>
-          <NumberField
-            label={bookingType === 'class' ? 'Capacity (seats)' : 'Capacity'}
-            value={capacity}
-            min={1}
-            onChange={setCapacity}
-          />
-          <NumberField
-            label="Slot interval (min)"
-            value={slotIntervalMin}
-            min={1}
-            onChange={setSlotInterval}
-          />
-        </Grid>
+              <Grid cols={3} gap={3}>
+                <NumberField
+                  label="Duration (min)"
+                  value={durationMinutes}
+                  min={1}
+                  onChange={setDuration}
+                />
+                <NumberField
+                  label="Buffer before"
+                  value={bufferBeforeMin}
+                  min={0}
+                  onChange={setBufferBefore}
+                />
+                <NumberField
+                  label="Buffer after"
+                  value={bufferAfterMin}
+                  min={0}
+                  onChange={setBufferAfter}
+                />
+              </Grid>
 
-        <Grid cols={2} gap={3}>
-          <NumberField
-            label="Min lead time (min)"
-            value={minLeadMinutes}
-            min={0}
-            onChange={setMinLead}
-          />
-          <NumberField
-            label="Max advance (days)"
-            value={maxAdvanceDays}
-            min={0}
-            onChange={setMaxAdvance}
-          />
-        </Grid>
+              <Grid cols={3} gap={3}>
+                <div>
+                  <Label htmlFor="svc-price">Price ($)</Label>
+                  <Input
+                    id="svc-price"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={priceDollars}
+                    onChange={(e) => setPriceDollars(Number(e.target.value) || 0)}
+                  />
+                </div>
+                <NumberField
+                  label={bookingType === 'class' ? 'Capacity (seats)' : 'Capacity'}
+                  value={capacity}
+                  min={1}
+                  onChange={setCapacity}
+                />
+                <NumberField
+                  label="Slot interval (min)"
+                  value={slotIntervalMin}
+                  min={1}
+                  onChange={setSlotInterval}
+                />
+              </Grid>
 
-        <div>
-          <Label htmlFor="svc-policy">Booking policy</Label>
-          <NativeSelect
-            id="svc-policy"
-            value={policyId}
-            onChange={(e) => setPolicyId(e.target.value)}
-          >
-            <option value="">No policy</option>
-            {policies.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </NativeSelect>
-        </div>
+              <Grid cols={2} gap={3}>
+                <NumberField
+                  label="Min lead time (min)"
+                  value={minLeadMinutes}
+                  min={0}
+                  onChange={setMinLead}
+                />
+                <NumberField
+                  label="Max advance (days)"
+                  value={maxAdvanceDays}
+                  min={0}
+                  onChange={setMaxAdvance}
+                />
+              </Grid>
 
-        <RequirementEditor value={requirements} onChange={setRequirements} />
+              <div>
+                <Label htmlFor="svc-policy">Booking policy</Label>
+                <NativeSelect
+                  id="svc-policy"
+                  value={policyId}
+                  onChange={(e) => setPolicyId(e.target.value)}
+                >
+                  <option value="">No policy</option>
+                  {policies.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </NativeSelect>
+              </div>
+            </Stack>
+          </CardContent>
+        </Card>
 
-        <Stack gap={2}>
-          <ToggleRow
-            label="Bookable online"
-            checked={bookableOnline}
-            onChange={setBookableOnline}
-          />
-          <ToggleRow
-            label="Requires approval"
-            hint="Bookings start as Requested until staff confirm."
-            checked={requiresApproval}
-            onChange={setRequiresApproval}
-          />
-          <ToggleRow label="Active" checked={isActive} onChange={setIsActive} />
-        </Stack>
+        <Card variant="module">
+          <CardHeader>
+            <CardTitle>Staffing &amp; availability</CardTitle>
+          </CardHeader>
+          <CardContent className="py-6">
+            <Stack gap={4}>
+              <RequirementEditor value={requirements} onChange={setRequirements} />
 
-        <div className="flex justify-end gap-2 pt-2">
-          <Button type="button" variant="ghost" onClick={onCancel} disabled={saving}>
-            Cancel
-          </Button>
-          <Button type="submit" color="module" loading={saving}>
-            {service ? 'Save changes' : 'Create service'}
-          </Button>
-        </div>
+              <Stack gap={2}>
+                <ToggleRow
+                  label="Bookable online"
+                  checked={bookableOnline}
+                  onChange={setBookableOnline}
+                />
+                <ToggleRow
+                  label="Requires approval"
+                  hint="Bookings start as Requested until staff confirm."
+                  checked={requiresApproval}
+                  onChange={setRequiresApproval}
+                />
+                <ToggleRow label="Active" checked={isActive} onChange={setIsActive} />
+              </Stack>
+            </Stack>
+          </CardContent>
+        </Card>
       </Stack>
-    </form>
+    </SurfaceStep>
+  );
+
+  if (presentation === 'modal') {
+    return (
+      <ModuleProvider module="scheduling">
+        <SurfaceFrame
+          variant="modal"
+          title={heading}
+          steps={STEPS}
+          current={0}
+          open={open}
+          onOpenChange={(next) => {
+            if (!next) close();
+          }}
+          onRequestClose={onRequestClose}
+          footer={
+            <Button variant="ghost" color="neutral" size="sm" onClick={onCancelClick}>
+              Cancel
+            </Button>
+          }
+        >
+          {body}
+        </SurfaceFrame>
+      </ModuleProvider>
+    );
+  }
+
+  return (
+    <ModuleProvider module="scheduling" className="h-full">
+      <SurfaceFrame
+        variant={presentation === 'overlay' ? 'inline' : 'embedded'}
+        title={heading}
+        steps={STEPS}
+        current={0}
+        onCancel={cancel}
+      >
+        {body}
+      </SurfaceFrame>
+    </ModuleProvider>
   );
 }
 
@@ -319,9 +475,13 @@ function ToggleRow({
   return (
     <label className="flex items-center justify-between gap-4">
       <span>
-        <span className="text-sm font-medium">{label}</span>
+        <Text size="sm" weight="medium">
+          {label}
+        </Text>
         {hint ? (
-          <span className="block text-xs text-[var(--color-muted-foreground)]">{hint}</span>
+          <Text size="xs" variant="muted">
+            {hint}
+          </Text>
         ) : null}
       </span>
       <Switch color="module" checked={checked} onCheckedChange={onChange} />

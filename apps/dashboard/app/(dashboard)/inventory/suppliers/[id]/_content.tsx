@@ -38,13 +38,17 @@ export async function SupplierDetailContent({ id }: { id: string }) {
           <Stack direction="row" align="center" gap={3} wrap>
             <Truck className="h-5 w-5" />
             <Heading level={1}>{supplier.name}</Heading>
-            <Badge variant="outline" className="font-mono text-xs">
+            <Badge color="neutral" variant="soft" size="sm" className="font-mono">
               {supplier.code}
             </Badge>
             {supplier.isActive ? (
-              <Badge color="success">active</Badge>
+              <Badge color="success" variant="soft" size="sm">
+                active
+              </Badge>
             ) : (
-              <Badge color="warning">inactive</Badge>
+              <Badge color="neutral" variant="soft" size="sm">
+                inactive
+              </Badge>
             )}
           </Stack>
           <Text size="sm" variant="muted">

@@ -161,7 +161,9 @@ export async function QuoteDetailContent({ id }: Props) {
           <CardTitle>
             <Stack direction="row" align="center" gap={2}>
               <Package className="h-4 w-4" /> Line items
-              <Badge variant="outline">{quote.items.length}</Badge>
+              <Badge color="neutral" variant="soft" size="sm">
+                {quote.items.length}
+              </Badge>
             </Stack>
           </CardTitle>
         </CardHeader>

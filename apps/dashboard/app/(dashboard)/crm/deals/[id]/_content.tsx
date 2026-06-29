@@ -18,6 +18,8 @@ import {
   TableHeader,
   TableRow,
   Text,
+  statusLabel,
+  statusTone,
 } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -197,7 +199,9 @@ export async function DealDetailContent({ id }: Props) {
                 <CardTitle>
                   <Stack direction="row" align="center" gap={2}>
                     <Receipt className="h-4 w-4" /> Attached orders
-                    <Badge variant="outline">{attachedOrders.length}</Badge>
+                    <Badge color="neutral" variant="soft" size="sm">
+                      {attachedOrders.length}
+                    </Badge>
                   </Stack>
                 </CardTitle>
                 <AttachOrderPopover
@@ -242,8 +246,8 @@ export async function DealDetailContent({ id }: Props) {
                           </Link>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="text-xs">
-                            {o.status}
+                          <Badge color={statusTone(o.status)} variant="soft" size="sm">
+                            {statusLabel(o.status)}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right tabular-nums">
@@ -271,7 +275,9 @@ export async function DealDetailContent({ id }: Props) {
                 <CardTitle>
                   <Stack direction="row" align="center" gap={2}>
                     <FileText className="h-4 w-4" /> Attached quotes
-                    <Badge variant="outline">{attachedQuotes.length}</Badge>
+                    <Badge color="neutral" variant="soft" size="sm">
+                      {attachedQuotes.length}
+                    </Badge>
                   </Stack>
                 </CardTitle>
                 <AttachQuotePopover
@@ -316,8 +322,8 @@ export async function DealDetailContent({ id }: Props) {
                           </Link>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="text-xs">
-                            {q.status}
+                          <Badge color={statusTone(q.status)} variant="soft" size="sm">
+                            {statusLabel(q.status)}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right tabular-nums">
@@ -354,8 +360,8 @@ export async function DealDetailContent({ id }: Props) {
                 {activities.map((a) => (
                   <Stack key={a.id} gap={1}>
                     <Stack direction="row" align="center" justify="between">
-                      <Badge variant="outline" className="text-xs">
-                        {a.type}
+                      <Badge color="neutral" variant="soft" size="sm">
+                        {statusLabel(a.type)}
                       </Badge>
                       <Text size="xs" variant="muted">
                         {new Date(a.occurredAt).toLocaleDateString()}

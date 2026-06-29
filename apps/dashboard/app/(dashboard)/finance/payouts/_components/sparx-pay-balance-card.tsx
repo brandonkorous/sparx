@@ -6,6 +6,7 @@
 import Link from 'next/link';
 import {
   Badge,
+  Button,
   Card,
   CardContent,
   CardHeader,
@@ -68,12 +69,11 @@ export function SparxPayBalanceCard({ balance }: { balance: SparxPayBalance | nu
               available and settling balances show here — sparx handles settlement and pays out to
               your bank automatically.
             </Text>
-            <Link
-              href="/finance/payments"
-              className="text-sm font-medium text-[var(--module-active-text)] hover:underline"
-            >
-              Set up sparx Pay →
-            </Link>
+            <div>
+              <Button asChild color="module">
+                <Link href="/finance/payments">Set up sparx Pay</Link>
+              </Button>
+            </div>
           </Stack>
         )}
       </CardContent>

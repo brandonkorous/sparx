@@ -47,7 +47,9 @@ export function RuleNode({ rule, onChange, onRemove, depth = 0 }: Props) {
         className="rounded-md border border-dashed border-[var(--color-border-default)] p-3"
       >
         <Stack direction="row" align="center" justify="between">
-          <Badge variant="outline">NOT</Badge>
+          <Badge color="warning" variant="soft" size="sm">
+            NOT
+          </Badge>
           {onRemove && (
             <Button
               type="button"

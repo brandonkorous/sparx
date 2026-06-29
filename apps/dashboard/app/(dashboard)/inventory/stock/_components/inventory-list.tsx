@@ -49,7 +49,7 @@ function productCell(r: InventoryRow) {
 
 function reorderBadge(r: InventoryRow) {
   return r.reorderPoint !== null ? (
-    <Badge color={isBelowReorder(r) ? 'warning' : 'outline'} className="text-xs">
+    <Badge color={isBelowReorder(r) ? 'warning' : 'neutral'} variant="soft" size="sm">
       ≤ {r.reorderPoint}
     </Badge>
   ) : (

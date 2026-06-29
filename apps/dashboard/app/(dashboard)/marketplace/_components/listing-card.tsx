@@ -83,7 +83,7 @@ export function ListingCard({
           {badges.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {badges.map((b) => (
-                <Badge key={b} variant="outline">
+                <Badge key={b} color="neutral" variant="soft" size="sm">
                   {b}
                 </Badge>
               ))}

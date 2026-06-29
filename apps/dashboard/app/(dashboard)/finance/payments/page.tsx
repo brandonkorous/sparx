@@ -30,7 +30,7 @@ export default async function PaymentsSettingsPage(): Promise<React.JSX.Element>
         <PageHeader
           icon={<Wallet className="h-5 w-5" />}
           title="Payments"
-          description="Choose how you accept payments. sparx Pay sets you up in minutes — sparx handles disputes, settlement, and PCI, for a flat 0.5% per transaction. Prefer your own processor? Bring Stripe, Square, Authorize.net, 1stPayGateway, or any custom gateway — sparx stays out of the money flow and takes no fee."
+          description="How you accept payments at checkout. sparx Pay is the fastest path — or connect a processor you already use."
         />
         <PaymentsManager initialConfig={config} catalog={catalog} credentials={credentials} />
       </Stack>

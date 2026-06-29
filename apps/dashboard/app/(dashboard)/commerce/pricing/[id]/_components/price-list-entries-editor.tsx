@@ -231,11 +231,13 @@ export function PriceListEntriesEditor({
                 <TableCell>{entry.productTitle}</TableCell>
                 <TableCell>
                   {entry.fixedPriceCents !== null ? (
-                    <Badge variant="outline">
+                    <Badge color="info" variant="soft" size="sm">
                       {moneyFmt.format(entry.fixedPriceCents / 100)} fixed
                     </Badge>
                   ) : (
-                    <Badge variant="outline">{entry.percentOffList}% off</Badge>
+                    <Badge color="info" variant="soft" size="sm">
+                      {entry.percentOffList}% off
+                    </Badge>
                   )}
                 </TableCell>
                 <TableCell>

@@ -33,7 +33,7 @@ export function KanbanColumn({ stage, deals }: KanbanColumnProps) {
             <Text size="sm" weight="medium">
               {stage.name}
             </Text>
-            <Badge variant="outline" className="text-xs">
+            <Badge color="neutral" variant="soft" size="sm">
               {deals.length}
             </Badge>
           </Stack>

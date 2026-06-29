@@ -76,7 +76,11 @@ export function DomainsList({ rows, view }: DomainsListProps) {
     },
     {
       header: 'Region',
-      cell: (d) => <Badge variant="outline">{d.region.toUpperCase()}</Badge>,
+      cell: (d) => (
+        <Badge color="neutral" variant="soft" size="sm">
+          {d.region.toUpperCase()}
+        </Badge>
+      ),
     },
     {
       header: '',

@@ -10,18 +10,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTitle,
-  ModalDescription,
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+  toast,
+  useConfirm,
 } from '@sparx/ui';
 import { syncSource, deleteSource } from '../_lib/actions';
 import { SourceForm } from './source-form';
@@ -37,12 +27,10 @@ interface Source {
 
 export function SourceActions({ source }: { source: Source }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [editOpen, setEditOpen] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false);
   const [syncing, startSync] = useTransition();
-  const [deleting, startDelete] = useTransition();
   const [syncError, setSyncError] = useState<string | null>(null);
-  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   function triggerSync() {
     setSyncError(null);
@@ -56,17 +44,24 @@ export function SourceActions({ source }: { source: Source }) {
     });
   }
 
-  function handleDelete() {
-    setDeleteError(null);
-    startDelete(async () => {
+  function onRemove() {
+    void (async () => {
+      const ok = await confirm({
+        title: `Remove "${source.name}"?`,
+        description:
+          'This will disconnect the source and stop future syncs. Existing stock levels are retained.',
+        confirmLabel: 'Remove',
+        tone: 'danger',
+      });
+      if (!ok) return;
       const { error } = await deleteSource(source.id);
       if (error) {
-        setDeleteError(error);
-      } else {
-        setDeleteOpen(false);
-        router.refresh();
+        toast.error(error);
+        return;
       }
-    });
+      toast.success('Source removed');
+      router.refresh();
+    })();
   }
 
   return (
@@ -87,67 +82,27 @@ export function SourceActions({ source }: { source: Source }) {
               <Pencil className="mr-2 size-4" />
               Edit
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={() => setDeleteOpen(true)}
-              className="text-[var(--color-danger)]"
-            >
+            <DropdownMenuItem onSelect={onRemove} className="text-[var(--color-danger)]">
               <Trash2 className="mr-2 size-4" />
               Remove
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         {syncError && (
-          <Text size="xs" className="max-w-[200px] text-right text-[var(--color-danger)]">
+          <Text size="xs" variant="danger" className="max-w-[200px] text-right">
             {syncError}
           </Text>
         )}
       </div>
 
-      <Modal open={editOpen} onOpenChange={setEditOpen}>
-        <ModalContent>
-          <ModalHeader>
-            <ModalTitle>Edit source</ModalTitle>
-            <ModalDescription>Update this inventory source&apos;s configuration.</ModalDescription>
-          </ModalHeader>
-          <SourceForm
-            source={source}
-            onSuccess={() => {
-              setEditOpen(false);
-              router.refresh();
-            }}
-            onCancel={() => setEditOpen(false)}
-          />
-        </ModalContent>
-      </Modal>
-
-      <AlertDialog
-        open={deleteOpen}
-        onOpenChange={(open) => {
-          if (!open) setDeleteError(null);
-          setDeleteOpen(open);
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Remove &quot;{source.name}&quot;?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will disconnect the source and stop future syncs. Existing stock levels are
-              retained.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          {deleteError && (
-            <Text size="sm" className="px-6 text-[var(--color-danger)]">
-              {deleteError}
-            </Text>
-          )}
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
-            <Button color="danger" disabled={deleting} onClick={() => void handleDelete()}>
-              {deleting ? 'Removing…' : 'Remove'}
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {editOpen ? (
+        <SourceForm
+          presentation="modal"
+          source={source}
+          open
+          onOpenChange={(o) => !o && setEditOpen(false)}
+        />
+      ) : null}
     </>
   );
 }

@@ -72,7 +72,7 @@ export function AvailableChannelCard({ channel }: { channel: ChannelCatalogItem 
       <div>
         {isFirstParty ? (
           <Button asChild size="sm" variant="soft" color="primary">
-            <Link href="/settings/market">Manage</Link>
+            <Link href="/commerce/market">Manage</Link>
           </Button>
         ) : (
           <Button

@@ -12,5 +12,8 @@ export const dropshipManifest: ModuleManifest = {
     { id: 'analytics', label: 'Profitability', icon: BarChart2, href: '/dropship/analytics' },
   ],
   actions: [],
-  entityTypes: [],
+  // Create-only overlay (no detail view: the list edits via a self-owned modal).
+  // The single-step create is a two-step SurfaceFrame (pick vendor → configure)
+  // that opts into the drawer/modal via CREATE_VIEW_TYPES + detail-slot.
+  entityTypes: [{ id: 'dropship-supplier', label: 'Supplier', routePrefix: '/dropship/suppliers' }],
 };

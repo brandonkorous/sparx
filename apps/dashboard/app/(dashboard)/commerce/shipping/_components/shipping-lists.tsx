@@ -219,12 +219,12 @@ const zoneCountries = (z: ShippingZoneRow) =>
   z.targeting.countries.length > 0 ? (
     <Stack direction="row" gap={1} wrap>
       {z.targeting.countries.slice(0, 6).map((c) => (
-        <Badge key={c} variant="outline" className="text-xs">
+        <Badge key={c} color="neutral" variant="soft" size="sm">
           {c}
         </Badge>
       ))}
       {z.targeting.countries.length > 6 && (
-        <Badge variant="outline" className="text-xs">
+        <Badge color="neutral" variant="soft" size="sm">
           +{z.targeting.countries.length - 6}
         </Badge>
       )}
@@ -273,7 +273,7 @@ const profileName = (p: ShippingProfileRow) => (
 const profileHazmat = (p: ShippingProfileRow) => (
   <Stack direction="row" gap={1} wrap>
     {p.hazmatClassesAllowed.slice(0, 3).map((h) => (
-      <Badge key={h} variant="outline" className="text-xs">
+      <Badge key={h} color="neutral" variant="soft" size="sm">
         {h}
       </Badge>
     ))}
@@ -281,10 +281,22 @@ const profileHazmat = (p: ShippingProfileRow) => (
 );
 
 const profileFreight = (p: ShippingProfileRow) =>
-  p.requiresFreight ? <Badge color="warning">freight</Badge> : '—';
+  p.requiresFreight ? (
+    <Badge color="warning" variant="soft" size="sm">
+      freight
+    </Badge>
+  ) : (
+    '—'
+  );
 
 const profileSignature = (p: ShippingProfileRow) =>
-  p.requiresSignature ? <Badge variant="outline">required</Badge> : '—';
+  p.requiresSignature ? (
+    <Badge color="neutral" variant="soft" size="sm">
+      required
+    </Badge>
+  ) : (
+    '—'
+  );
 
 const profileColumns: SelectionColumn<ShippingProfileRow>[] = [
   { header: 'Name', cell: profileName },

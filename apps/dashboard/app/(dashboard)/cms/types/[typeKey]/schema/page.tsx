@@ -38,7 +38,11 @@ export default async function EditTypeSchemaPage({ params }: PageParams) {
         <Stack gap={6} className="py-10">
           <PageHeader
             title={type.name}
-            badge={<Badge variant="outline">built-in</Badge>}
+            badge={
+              <Badge color="neutral" variant="soft" size="sm">
+                built-in
+              </Badge>
+            }
             description={
               <>
                 Built-in content types are read-only — their schema is part of the platform and is

@@ -19,6 +19,8 @@ import {
   PageHeader,
   Stack,
   Text,
+  statusLabel,
+  statusTone,
 } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -92,11 +94,15 @@ export default async function RevisionDiffPage({ params }: PageParams) {
             title={`Revision #${revision.revision_number}`}
             badge={
               <>
-                <Badge color={revision.kind === 'manual' ? 'module' : 'outline'}>
-                  {revision.kind}
+                <Badge
+                  color={revision.kind === 'manual' ? 'module' : 'neutral'}
+                  variant="soft"
+                  size="sm"
+                >
+                  {statusLabel(revision.kind)}
                 </Badge>
-                <Badge color={revision.status === 'published' ? 'success' : 'outline'}>
-                  {revision.status}
+                <Badge color={statusTone(revision.status)} variant="soft" size="sm">
+                  {statusLabel(revision.status)}
                 </Badge>
               </>
             }
@@ -125,9 +131,13 @@ export default async function RevisionDiffPage({ params }: PageParams) {
             <Stack direction="row" align="center" gap={2}>
               <Heading level={3}>Body</Heading>
               {revHtml === curHtml ? (
-                <Badge variant="outline">unchanged</Badge>
+                <Badge color="neutral" variant="soft" size="sm">
+                  unchanged
+                </Badge>
               ) : (
-                <Badge color="module">changed</Badge>
+                <Badge color="module" variant="soft" size="sm">
+                  changed
+                </Badge>
               )}
             </Stack>
           </CardHeader>
@@ -165,9 +175,13 @@ function FieldDiff({
         <Stack direction="row" align="center" gap={2}>
           <Heading level={4}>{label}</Heading>
           {changed ? (
-            <Badge color="module">changed</Badge>
+            <Badge color="module" variant="soft" size="sm">
+              changed
+            </Badge>
           ) : (
-            <Badge variant="outline">unchanged</Badge>
+            <Badge color="neutral" variant="soft" size="sm">
+              unchanged
+            </Badge>
           )}
         </Stack>
       </CardHeader>
@@ -215,9 +229,13 @@ function SeoDiff({
         <Stack direction="row" align="center" gap={2}>
           <Heading level={4}>SEO</Heading>
           {anyChanged ? (
-            <Badge color="module">{changedRows.length} changed</Badge>
+            <Badge color="module" variant="soft" size="sm">
+              {changedRows.length} changed
+            </Badge>
           ) : (
-            <Badge variant="outline">unchanged</Badge>
+            <Badge color="neutral" variant="soft" size="sm">
+              unchanged
+            </Badge>
           )}
         </Stack>
       </CardHeader>

@@ -173,7 +173,10 @@ export function WorkflowEditor({ workflow }: WorkflowEditorProps) {
         <CardHeader>
           <CardTitle>
             <Stack direction="row" align="center" gap={2}>
-              Stages <Badge variant="outline">{stages.length}</Badge>
+              Stages{' '}
+              <Badge color="neutral" variant="soft" size="sm">
+                {stages.length}
+              </Badge>
             </Stack>
           </CardTitle>
         </CardHeader>

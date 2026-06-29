@@ -110,7 +110,11 @@ export default async function PipelineDetailPage({ params, searchParams }: PageP
           title={pipeline.name}
           badge={
             <>
-              {pipeline.isDefault && <Badge variant="outline">Default</Badge>}
+              {pipeline.isDefault && (
+                <Badge color="neutral" variant="soft" size="sm">
+                  Default
+                </Badge>
+              )}
               <Badge color="module">
                 {deals.length} open deal{deals.length === 1 ? '' : 's'}
               </Badge>

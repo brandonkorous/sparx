@@ -64,17 +64,17 @@ export function KanbanCard({ deal, dragging }: KanbanCardProps) {
           </Text>
         </Stack>
         <Stack direction="row" gap={1} wrap>
-          <Badge variant="outline" className="text-xs">
+          <Badge color="neutral" variant="soft" size="sm">
             {deal.probability}%
           </Badge>
           {deal.expectedCloseDate && (
-            <Badge variant="outline" className="text-xs">
+            <Badge color="neutral" variant="soft" size="sm">
               <Calendar className="h-3 w-3" />
               {new Date(deal.expectedCloseDate).toLocaleDateString()}
             </Badge>
           )}
           {deal.tags.slice(0, 2).map((tag) => (
-            <Badge key={tag} variant="outline" className="text-xs">
+            <Badge key={tag} color="neutral" variant="soft" size="sm">
               {tag}
             </Badge>
           ))}

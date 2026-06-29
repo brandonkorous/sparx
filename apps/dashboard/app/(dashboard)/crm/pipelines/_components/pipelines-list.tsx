@@ -89,7 +89,7 @@ export function PipelinesList({ pipelines, view }: PipelinesListProps) {
         {p.name}
       </Link>
       {p.isDefault && (
-        <Badge variant="outline" className="text-xs">
+        <Badge color="neutral" variant="soft" size="sm">
           Default
         </Badge>
       )}

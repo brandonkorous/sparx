@@ -4,23 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { RefreshCw, Pencil, Trash2 } from 'lucide-react';
 
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  Button,
-  Modal,
-  ModalContent,
-  ModalDescription,
-  ModalHeader,
-  ModalTitle,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Stack, Text, toast, useConfirm } from '@sparx/ui';
 
 import { syncSource, deleteSource } from '../../_lib/actions';
 import { SourceForm } from '../../_components/source-form';
@@ -28,14 +12,13 @@ import type { SourceSummary } from './types';
 
 // Header actions for a source's connection detail page: trigger a sync now, edit
 // the connection config, or remove it. Remove navigates back to the sources list;
-// sync/edit refresh in place. Reuses the shared source actions + SourceForm.
+// sync/edit refresh in place. Reuses the shared surface-aware SourceForm (modal).
 
 export function SourceDetailActions({ source }: { source: SourceSummary }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [editOpen, setEditOpen] = React.useState(false);
-  const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [syncing, startSync] = React.useTransition();
-  const [deleting, startDelete] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
 
   function triggerSync() {
@@ -47,18 +30,25 @@ export function SourceDetailActions({ source }: { source: SourceSummary }) {
     });
   }
 
-  function handleDelete() {
-    setError(null);
-    startDelete(async () => {
+  function onRemove() {
+    void (async () => {
+      const ok = await confirm({
+        title: `Remove "${source.name}"?`,
+        description:
+          'This disconnects the source and stops future syncs. Existing stock levels and mappings are retained.',
+        confirmLabel: 'Remove',
+        tone: 'danger',
+      });
+      if (!ok) return;
       const { error: err } = await deleteSource(source.id);
       if (err) {
-        setError(err);
+        toast.error(err);
         return;
       }
-      setDeleteOpen(false);
+      toast.success('Source removed');
       router.push('/inventory/sources');
       router.refresh();
-    });
+    })();
   }
 
   const editSource = {
@@ -74,7 +64,7 @@ export function SourceDetailActions({ source }: { source: SourceSummary }) {
     <>
       <Stack direction="row" gap={2} align="center" wrap>
         {error ? (
-          <Text size="xs" className="text-[var(--color-danger)]">
+          <Text size="xs" variant="danger">
             {error}
           </Text>
         ) : null}
@@ -99,53 +89,21 @@ export function SourceDetailActions({ source }: { source: SourceSummary }) {
         <Button
           color="danger"
           variant="ghost"
-          onClick={() => setDeleteOpen(true)}
+          onClick={onRemove}
           leftIcon={<Trash2 className="size-4" />}
         >
           Remove
         </Button>
       </Stack>
 
-      <Modal open={editOpen} onOpenChange={setEditOpen}>
-        <ModalContent>
-          <ModalHeader>
-            <ModalTitle>Edit source</ModalTitle>
-            <ModalDescription>Update this inventory source&apos;s configuration.</ModalDescription>
-          </ModalHeader>
-          <SourceForm
-            source={editSource}
-            onSuccess={() => {
-              setEditOpen(false);
-              router.refresh();
-            }}
-            onCancel={() => setEditOpen(false)}
-          />
-        </ModalContent>
-      </Modal>
-
-      <AlertDialog
-        open={deleteOpen}
-        onOpenChange={(open) => {
-          if (!open) setError(null);
-          setDeleteOpen(open);
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Remove &quot;{source.name}&quot;?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This disconnects the source and stops future syncs. Existing stock levels and mappings
-              are retained.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
-            <Button color="danger" disabled={deleting} onClick={handleDelete}>
-              {deleting ? 'Removing…' : 'Remove'}
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {editOpen ? (
+        <SourceForm
+          presentation="modal"
+          source={editSource}
+          open
+          onOpenChange={(o) => !o && setEditOpen(false)}
+        />
+      ) : null}
     </>
   );
 }

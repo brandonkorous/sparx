@@ -137,6 +137,13 @@ export default tseslint.config(
       // The platform component catalog (docs/98 §5) — composed component trees are
       // declarative data-as-code, like blueprints/seeds.
       'packages/builder-schemas/src/catalog/**',
+      // Module-preset catalogs (Wave 2) — declarative config packs (tax zones, CRM
+      // pipelines, invoicing workflows, …) authored as data, same as the catalogs
+      // above. The per-module arrays live under a `presets/` dir in each module
+      // package and at the api-rest composition root for modules that don't dep the
+      // preset contract.
+      'packages/*/src/presets/**',
+      'services/*/src/lib/presets/**',
       '**/seed.ts',
       '**/_lib/catalog.ts',
       '**/module-catalog.ts',

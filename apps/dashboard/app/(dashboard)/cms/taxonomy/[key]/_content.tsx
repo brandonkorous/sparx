@@ -53,7 +53,9 @@ export async function TaxonomyDetailContent({ id: key }: Props) {
       <Stack gap={2}>
         <Stack direction="row" align="center" gap={2}>
           <Heading level={1}>{taxonomy.plural_name}</Heading>
-          <Badge variant="outline">{taxonomy.hierarchical ? 'hierarchical' : 'flat'}</Badge>
+          <Badge color="info" variant="soft" size="sm">
+            {taxonomy.hierarchical ? 'hierarchical' : 'flat'}
+          </Badge>
           <code className="text-xs text-[var(--color-text-tertiary)]">{taxonomy.key}</code>
         </Stack>
         <Text variant="muted">

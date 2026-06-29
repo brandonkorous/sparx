@@ -10,10 +10,3 @@ export function formatMoney(cents: number, currency = 'USD'): string {
     return `${(cents / 100).toFixed(2)} ${currency}`;
   }
 }
-
-export function formatDate(iso: string | null): string {
-  if (!iso) return '—';
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '—';
-  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-}

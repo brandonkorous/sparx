@@ -83,14 +83,14 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
   );
 
   const statusBadge = (a: B2bAccountRow) => (
-    <Badge color={STATUS_VARIANT[a.status] ?? 'outline'} variant="soft">
+    <Badge color={STATUS_VARIANT[a.status] ?? 'neutral'} variant="soft" size="sm">
       {STATUS_LABEL[a.status] ?? a.status}
     </Badge>
   );
 
   const tierCell = (a: B2bAccountRow) =>
     a.pricingTierName ? (
-      <Badge color="module" variant="outline">
+      <Badge color="module" variant="soft" size="sm">
         {a.pricingTierName}
       </Badge>
     ) : (
@@ -126,7 +126,7 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
       companyLink(a, 'truncate font-medium hover:text-[var(--module-active)] hover:underline'),
     subtitle: (a) =>
       a.pricingTierName ? (
-        <Badge color="module" variant="outline" className="self-start">
+        <Badge color="module" variant="soft" size="sm" className="self-start">
           {a.pricingTierName}
         </Badge>
       ) : null,

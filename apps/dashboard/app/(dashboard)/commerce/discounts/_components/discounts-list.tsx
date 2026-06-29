@@ -54,7 +54,7 @@ function codeName(d: DiscountRow) {
       {d.code ? (
         <span className="font-mono text-xs">{d.code}</span>
       ) : (
-        <Badge variant="outline" className="text-xs">
+        <Badge color="neutral" variant="soft" size="sm">
           automatic
         </Badge>
       )}
@@ -92,7 +92,14 @@ function statusBadge(d: DiscountRow) {
 export function DiscountsList({ discounts, view }: DiscountsListProps) {
   const columns: SelectionColumn<DiscountRow>[] = [
     { header: 'Code / Name', cell: codeName },
-    { header: 'Type', cell: (d) => <Badge variant="outline">{d.type}</Badge> },
+    {
+      header: 'Type',
+      cell: (d) => (
+        <Badge color="info" variant="soft" size="sm">
+          {statusLabel(d.type)}
+        </Badge>
+      ),
+    },
     { header: 'Value', cell: valueLabel },
     { header: 'Usage', cell: usageLabel },
     { header: 'Status', cell: statusBadge },
@@ -108,7 +115,7 @@ export function DiscountsList({ discounts, view }: DiscountsListProps) {
       d.code ? (
         <span className="truncate font-mono text-sm">{d.code}</span>
       ) : (
-        <Badge variant="outline" className="text-xs">
+        <Badge color="neutral" variant="soft" size="sm">
           automatic
         </Badge>
       ),
@@ -121,7 +128,9 @@ export function DiscountsList({ discounts, view }: DiscountsListProps) {
     body: (d) => (
       <>
         <Stack direction="row" align="center" justify="between" gap={2}>
-          <Badge variant="outline">{d.type}</Badge>
+          <Badge color="info" variant="soft" size="sm">
+            {statusLabel(d.type)}
+          </Badge>
           <Text size="sm" className="tabular-nums">
             {valueLabel(d)}
           </Text>

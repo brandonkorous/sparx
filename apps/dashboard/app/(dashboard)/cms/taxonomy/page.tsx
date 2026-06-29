@@ -40,7 +40,11 @@ export default async function TaxonomyIndexPage({ searchParams }: PageProps) {
         <PageHeader
           icon={<Tag className="h-5 w-5" />}
           title="Taxonomies"
-          badge={<Badge variant="outline">{total}</Badge>}
+          badge={
+            <Badge color="neutral" variant="soft" size="sm">
+              {total}
+            </Badge>
+          }
           description="Tenant-defined vocabularies. Mark hierarchical to allow parent/child term nesting (good for categories); leave flat for tag-style lists."
           actions={
             <EntityCreateButton

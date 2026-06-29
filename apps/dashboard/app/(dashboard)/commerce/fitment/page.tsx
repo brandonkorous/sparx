@@ -4,7 +4,8 @@ import { Badge, Container, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
-import type { FitmentDictionarySummary, FitmentDomainRow } from '../fitment-actions';
+import type { ModulePresetView } from '../../_components/preset-actions';
+import type { FitmentDomainRow } from '../fitment-actions';
 import { FitmentManager } from './_components/fitment-manager';
 
 // Fitment dictionaries — the "what your products are compatible with"
@@ -20,9 +21,9 @@ import { FitmentManager } from './_components/fitment-manager';
 export const dynamic = 'force-dynamic';
 
 export default async function FitmentReferencePage() {
-  const [domains, dictionaries] = await Promise.all([
+  const [domains, presets] = await Promise.all([
     api.get<FitmentDomainRow[]>('/v1/commerce/fitment/domains'),
-    api.get<FitmentDictionarySummary[]>('/v1/commerce/fitment/dictionaries'),
+    api.get<ModulePresetView[]>('/v1/presets?module=commerce&kind=fitment'),
   ]);
 
   return (
@@ -46,7 +47,7 @@ export default async function FitmentReferencePage() {
           }
         />
 
-        <FitmentManager domains={domains} dictionaries={dictionaries} />
+        <FitmentManager domains={domains} presets={presets} />
       </Stack>
     </Container>
   );

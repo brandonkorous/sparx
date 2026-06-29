@@ -3,18 +3,43 @@
 // Booking-policy editor (docs/79 §9) — deposits, cancellation window, late-cancel
 // + no-show fees, reminder cadence, and the policy text a customer accepts at
 // booking. A service attaches a policy to opt into deposits/holds + reminders.
+//
+// On the standard form surface (docs/86 F layout): ONE component drives
+// page / overlay / modal — see service-form.tsx for the shape. No detail view,
+// so a created policy returns to the list; editing rides a self-owned modal.
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button, Grid, Input, Label, NativeSelect, Stack, Textarea, toast } from '@sparx/ui';
+import { useCallback, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Grid,
+  Input,
+  Label,
+  ModuleProvider,
+  NativeSelect,
+  Stack,
+  SurfaceFrame,
+  SurfaceStep,
+  Textarea,
+  toast,
+  type SurfaceStepDef,
+} from '@sparx/ui';
 
 import type { BookingPolicy, DepositType, FeeType } from '../../_lib/types';
 import { createBookingPolicyAction, updateBookingPolicyAction } from '../../_lib/actions';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
-interface Props {
+type Presentation = 'page' | 'overlay' | 'modal';
+
+interface PolicyFormProps {
+  presentation: Presentation;
   policy?: BookingPolicy;
-  onSuccess: () => void;
-  onCancel: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const DEPOSIT_TYPES: { value: DepositType; label: string }[] = [
@@ -39,8 +64,12 @@ function formToFee(mode: FeeMode, display: number): { type: FeeType | null; valu
   return { type: mode, value: mode === 'fixed' ? Math.round(display * 100) : Math.round(display) };
 }
 
-export function PolicyForm({ policy, onSuccess, onCancel }: Props) {
+const STEPS: SurfaceStepDef[] = [{ key: 'basics', label: 'Basics' }];
+
+export function PolicyForm({ presentation, policy, open, onOpenChange }: PolicyFormProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [saving, setSaving] = useState(false);
   const [name, setName] = useState(policy?.name ?? '');
   const [depositType, setDepositType] = useState<DepositType>(policy?.depositType ?? 'none');
@@ -66,8 +95,60 @@ export function PolicyForm({ policy, onSuccess, onCancel }: Props) {
 
   const showDepositAmount = depositType === 'deposit' || depositType === 'card_hold';
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
+  const snapshot = () =>
+    JSON.stringify({
+      name,
+      depositType,
+      depositDollars,
+      depositPercent,
+      cancelWindow,
+      lateMode,
+      lateValue,
+      noShowMode,
+      noShowValue,
+      reminders,
+      policyText,
+    });
+  const [initial] = useState(snapshot);
+  const dirty = snapshot() !== initial;
+
+  const guardLeave = useUnsavedGuard(
+    dirty,
+    policy ? { kind: 'edit', noun: 'policy' } : { kind: 'create', noun: 'policy' }
+  );
+
+  const close = useCallback(() => {
+    if (presentation === 'modal') {
+      onOpenChange?.(false);
+      return;
+    }
+    if (presentation === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+      return;
+    }
+    router.push('/scheduling/policies');
+  }, [presentation, onOpenChange, pathname, searchParams, router]);
+
+  const cancel = useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
+
+  function onRequestClose(): boolean {
+    if (saving) return false;
+    if (!dirty) return true;
+    void Promise.resolve(guardLeave()).then((ok) => ok && close());
+    return false;
+  }
+  function onCancelClick() {
+    if (saving) return;
+    void Promise.resolve(guardLeave()).then((ok) => ok && close());
+  }
+
+  async function submit() {
     if (!name.trim()) {
       toast.error('Name is required');
       return;
@@ -99,126 +180,178 @@ export function PolicyForm({ policy, onSuccess, onCancel }: Props) {
     setSaving(false);
     if (result.ok) {
       toast.success(policy ? 'Policy updated' : 'Policy created');
-      onSuccess();
+      close();
       router.refresh();
     } else {
       toast.error(result.error);
     }
   }
 
+  const heading = policy ? 'Edit policy' : 'New booking policy';
+
+  const body = (
+    <SurfaceStep
+      header={{
+        title: heading,
+        supporting: 'Deposits, cancellation rules, fees, and reminders a service can attach to.',
+      }}
+      actions={{
+        onNext: () => void submit(),
+        nextLabel: policy ? 'Save changes' : 'Create policy',
+        nextLoading: saving,
+        nextDisabled: saving,
+      }}
+    >
+      <Card variant="module">
+        <CardHeader>
+          <CardTitle>Policy terms</CardTitle>
+        </CardHeader>
+        <CardContent className="py-6">
+          <Stack gap={4}>
+            <div>
+              <Label htmlFor="pol-name">Name</Label>
+              <Input
+                id="pol-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Standard, Premium (deposit required)"
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="pol-deposit">Deposit</Label>
+              <NativeSelect
+                id="pol-deposit"
+                value={depositType}
+                onChange={(e) => setDepositType(e.target.value as DepositType)}
+              >
+                {DEPOSIT_TYPES.map((d) => (
+                  <option key={d.value} value={d.value}>
+                    {d.label}
+                  </option>
+                ))}
+              </NativeSelect>
+            </div>
+
+            {showDepositAmount ? (
+              <Grid cols={2} gap={3}>
+                <div>
+                  <Label htmlFor="pol-dep-amt">Deposit amount ($)</Label>
+                  <Input
+                    id="pol-dep-amt"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={depositDollars}
+                    onChange={(e) => setDepositDollars(Number(e.target.value) || 0)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="pol-dep-pct">…or percent of price (%)</Label>
+                  <Input
+                    id="pol-dep-pct"
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={depositPercent}
+                    onChange={(e) => setDepositPercent(Number(e.target.value) || 0)}
+                  />
+                </div>
+              </Grid>
+            ) : null}
+
+            <div>
+              <Label htmlFor="pol-window">Cancellation notice window (hours)</Label>
+              <Input
+                id="pol-window"
+                type="number"
+                min={0}
+                value={cancelWindow}
+                onChange={(e) => setCancelWindow(Math.max(0, Number(e.target.value) || 0))}
+              />
+            </div>
+
+            <FeeField
+              label="Late-cancel fee"
+              mode={lateMode}
+              value={lateValue}
+              onMode={setLateMode}
+              onValue={setLateValue}
+            />
+            <FeeField
+              label="No-show fee"
+              mode={noShowMode}
+              value={noShowValue}
+              onMode={setNoShowMode}
+              onValue={setNoShowValue}
+            />
+
+            <div>
+              <Label htmlFor="pol-reminders">
+                Reminder offsets (minutes before, comma-separated)
+              </Label>
+              <Input
+                id="pol-reminders"
+                value={reminders}
+                onChange={(e) => setReminders(e.target.value)}
+                placeholder="1440, 120"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="pol-text">Policy text (shown + accepted at booking)</Label>
+              <Textarea
+                id="pol-text"
+                value={policyText}
+                onChange={(e) => setPolicyText(e.target.value)}
+                rows={2}
+                placeholder="Please give at least 24 hours notice to cancel or reschedule."
+              />
+            </div>
+          </Stack>
+        </CardContent>
+      </Card>
+    </SurfaceStep>
+  );
+
+  if (presentation === 'modal') {
+    return (
+      <ModuleProvider module="scheduling">
+        <SurfaceFrame
+          variant="modal"
+          title={heading}
+          steps={STEPS}
+          current={0}
+          open={open}
+          onOpenChange={(next) => {
+            if (!next) close();
+          }}
+          onRequestClose={onRequestClose}
+          footer={
+            <Button variant="ghost" color="neutral" size="sm" onClick={onCancelClick}>
+              Cancel
+            </Button>
+          }
+        >
+          {body}
+        </SurfaceFrame>
+      </ModuleProvider>
+    );
+  }
+
   return (
-    <form onSubmit={submit}>
-      <Stack gap={4} className="px-1 py-2">
-        <div>
-          <Label htmlFor="pol-name">Name</Label>
-          <Input
-            id="pol-name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Standard, Premium (deposit required)"
-            required
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="pol-deposit">Deposit</Label>
-          <NativeSelect
-            id="pol-deposit"
-            value={depositType}
-            onChange={(e) => setDepositType(e.target.value as DepositType)}
-          >
-            {DEPOSIT_TYPES.map((d) => (
-              <option key={d.value} value={d.value}>
-                {d.label}
-              </option>
-            ))}
-          </NativeSelect>
-        </div>
-
-        {showDepositAmount ? (
-          <Grid cols={2} gap={3}>
-            <div>
-              <Label htmlFor="pol-dep-amt">Deposit amount ($)</Label>
-              <Input
-                id="pol-dep-amt"
-                type="number"
-                min={0}
-                step="0.01"
-                value={depositDollars}
-                onChange={(e) => setDepositDollars(Number(e.target.value) || 0)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="pol-dep-pct">…or percent of price (%)</Label>
-              <Input
-                id="pol-dep-pct"
-                type="number"
-                min={0}
-                max={100}
-                value={depositPercent}
-                onChange={(e) => setDepositPercent(Number(e.target.value) || 0)}
-              />
-            </div>
-          </Grid>
-        ) : null}
-
-        <div>
-          <Label htmlFor="pol-window">Cancellation notice window (hours)</Label>
-          <Input
-            id="pol-window"
-            type="number"
-            min={0}
-            value={cancelWindow}
-            onChange={(e) => setCancelWindow(Math.max(0, Number(e.target.value) || 0))}
-          />
-        </div>
-
-        <FeeField
-          label="Late-cancel fee"
-          mode={lateMode}
-          value={lateValue}
-          onMode={setLateMode}
-          onValue={setLateValue}
-        />
-        <FeeField
-          label="No-show fee"
-          mode={noShowMode}
-          value={noShowValue}
-          onMode={setNoShowMode}
-          onValue={setNoShowValue}
-        />
-
-        <div>
-          <Label htmlFor="pol-reminders">Reminder offsets (minutes before, comma-separated)</Label>
-          <Input
-            id="pol-reminders"
-            value={reminders}
-            onChange={(e) => setReminders(e.target.value)}
-            placeholder="1440, 120"
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="pol-text">Policy text (shown + accepted at booking)</Label>
-          <Textarea
-            id="pol-text"
-            value={policyText}
-            onChange={(e) => setPolicyText(e.target.value)}
-            rows={2}
-            placeholder="Please give at least 24 hours notice to cancel or reschedule."
-          />
-        </div>
-
-        <div className="flex justify-end gap-2 pt-2">
-          <Button type="button" variant="ghost" onClick={onCancel} disabled={saving}>
-            Cancel
-          </Button>
-          <Button type="submit" color="module" loading={saving}>
-            {policy ? 'Save changes' : 'Create policy'}
-          </Button>
-        </div>
-      </Stack>
-    </form>
+    <ModuleProvider module="scheduling" className="h-full">
+      <SurfaceFrame
+        variant={presentation === 'overlay' ? 'inline' : 'embedded'}
+        title={heading}
+        steps={STEPS}
+        current={0}
+        onCancel={cancel}
+      >
+        {body}
+      </SurfaceFrame>
+    </ModuleProvider>
   );
 }
 

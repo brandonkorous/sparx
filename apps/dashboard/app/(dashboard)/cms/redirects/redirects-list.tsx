@@ -88,7 +88,11 @@ export function RedirectsList({ rows, view }: RedirectsListProps) {
   const columns: SelectionColumn<RedirectRow>[] = [
     {
       header: 'Status',
-      cell: (r) => <Badge variant="outline">{r.status_code}</Badge>,
+      cell: (r) => (
+        <Badge color="neutral" variant="soft" size="sm">
+          {r.status_code}
+        </Badge>
+      ),
     },
     {
       header: 'From',
@@ -129,7 +133,9 @@ export function RedirectsList({ rows, view }: RedirectsListProps) {
   const card: SelectionCard<RedirectRow> = {
     title: (r) => (
       <Stack direction="row" align="center" gap={2} className="min-w-0">
-        <Badge variant="outline">{r.status_code}</Badge>
+        <Badge color="neutral" variant="soft" size="sm">
+          {r.status_code}
+        </Badge>
         <Text size="sm" className="truncate font-mono">
           {r.from_path}
         </Text>

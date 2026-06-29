@@ -9,10 +9,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTitle,
   useConfirm,
 } from '@sparx/ui';
 import { updateServiceType, deleteServiceType } from '../_lib/actions';
@@ -100,24 +96,14 @@ export function ServiceTypeActions({ type }: Props) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Edit modal — Wave-3 item, left as-is */}
-      <Modal open={editOpen} onOpenChange={setEditOpen}>
-        <ModalContent>
-          <ModalHeader>
-            <ModalTitle>Edit service type</ModalTitle>
-          </ModalHeader>
-          <div className="px-6 pb-6">
-            <ServiceTypeForm
-              type={type}
-              onSuccess={() => {
-                setEditOpen(false);
-                refresh();
-              }}
-              onCancel={() => setEditOpen(false)}
-            />
-          </div>
-        </ModalContent>
-      </Modal>
+      {editOpen ? (
+        <ServiceTypeForm
+          presentation="modal"
+          type={type}
+          open
+          onOpenChange={(o) => !o && setEditOpen(false)}
+        />
+      ) : null}
     </>
   );
 }

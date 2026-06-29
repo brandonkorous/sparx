@@ -285,7 +285,9 @@ export function PriceReviewsManager({ initialReviews }: { initialReviews: PriceR
                     {r.marginPct == null ? '—' : `${r.marginPct}%`}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{reasonLabel(r.reason)}</Badge>
+                    <Badge color="neutral" variant="soft" size="sm">
+                      {reasonLabel(r.reason)}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <Stack direction="row" gap={1} justify="end">

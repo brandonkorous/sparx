@@ -121,10 +121,18 @@ export async function CustomerDetailContent({ id }: Props) {
       <Stack gap={2}>
         <Stack direction="row" align="center" gap={3} wrap>
           <Heading level={1}>{displayName}</Heading>
-          <Badge color="module">{customer.type}</Badge>
-          {customer.doNotContact && <Badge color="warning">Do not contact</Badge>}
+          <Badge color="module" variant="soft" size="sm">
+            {statusLabel(customer.type)}
+          </Badge>
+          {customer.doNotContact && (
+            <Badge color="warning" variant="soft" size="sm">
+              Do not contact
+            </Badge>
+          )}
           {customer.mergedIntoCustomerId && (
-            <Badge variant="outline">Merged into another record</Badge>
+            <Badge color="neutral" variant="soft" size="sm">
+              Merged into another record
+            </Badge>
           )}
         </Stack>
         {customer.company && (
@@ -175,7 +183,11 @@ export async function CustomerDetailContent({ id }: Props) {
             <TabsList>
               <TabsTrigger value="activity">
                 Activity{' '}
-                {activities.length > 0 && <Badge variant="outline">{activities.length}</Badge>}
+                {activities.length > 0 && (
+                  <Badge color="neutral" variant="soft" size="sm">
+                    {activities.length}
+                  </Badge>
+                )}
               </TabsTrigger>
               <TabsTrigger value="tasks">
                 Tasks {openTasks.length > 0 && <Badge color="warning">{openTasks.length}</Badge>}
@@ -265,7 +277,10 @@ export async function CustomerDetailContent({ id }: Props) {
                 <CardContent>
                   <Stack gap={4}>
                     <Text variant="muted" size="sm">
-                      Notes are recorded as activities of type <Badge variant="outline">note</Badge>
+                      Notes are recorded as activities of type{' '}
+                      <Badge color="neutral" variant="soft" size="sm">
+                        note
+                      </Badge>
                       . Use the right rail to add one.
                     </Text>
                     <ActivityTimeline activities={activities.filter((a) => a.type === 'note')} />
@@ -342,7 +357,7 @@ export async function CustomerDetailContent({ id }: Props) {
               <CardContent>
                 <Stack direction="row" gap={2} wrap>
                   {customer.tags.map((t) => (
-                    <Badge key={t} variant="outline">
+                    <Badge key={t} color="neutral" variant="soft" size="sm">
                       {t}
                     </Badge>
                   ))}

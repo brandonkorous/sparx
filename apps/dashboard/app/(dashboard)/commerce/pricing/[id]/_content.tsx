@@ -93,10 +93,14 @@ export async function PriceListDetailContent({ id }: Props) {
             <Badge color={statusTone(priceList.status)} variant="soft" size="sm">
               {statusLabel(priceList.status)}
             </Badge>
-            <Badge variant="outline" size="sm" className="font-mono">
+            <Badge color="neutral" variant="soft" size="sm" className="font-mono">
               {priceList.currency}
             </Badge>
-            {priceList.channel && <Badge variant="outline">{priceList.channel}</Badge>}
+            {priceList.channel && (
+              <Badge color="neutral" variant="soft" size="sm">
+                {statusLabel(priceList.channel)}
+              </Badge>
+            )}
           </Stack>
           <Text size="sm" variant="muted">
             Priority {priceList.priority} · {entries.length} entries

@@ -60,7 +60,7 @@ export default async function SchedulingCalendarPage({
         icon={<CalendarDays className="h-5 w-5" />}
         title="Calendar"
         description="Your week at a glance — every booking on one grid."
-        actions={services.length > 0 ? <NewBookingButton services={services} /> : undefined}
+        actions={services.length > 0 ? <NewBookingButton /> : undefined}
       />
 
       {services.length === 0 ? (

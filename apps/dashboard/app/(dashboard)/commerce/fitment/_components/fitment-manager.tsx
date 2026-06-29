@@ -18,21 +18,21 @@ import {
   Stack,
 } from '@sparx/ui';
 
-import type { FitmentDictionarySummary, FitmentDomainRow } from '../../fitment-actions';
+import type { ModulePresetView } from '../../../_components/preset-actions';
+import { PresetPicker } from '../../../_components/preset-picker';
+import type { FitmentDomainRow } from '../../fitment-actions';
 
-import { DictionaryPicker } from './dictionary-picker';
 import { FitmentReferenceEditor } from './fitment-reference-editor';
 import { NewDomainDialog } from './new-domain-dialog';
 
 interface Props {
   domains: FitmentDomainRow[];
-  dictionaries: FitmentDictionarySummary[];
+  presets: ModulePresetView[];
 }
 
-export function FitmentManager({ domains, dictionaries }: Props) {
+export function FitmentManager({ domains, presets }: Props) {
   const [pickerOpen, setPickerOpen] = React.useState(false);
   const [newOpen, setNewOpen] = React.useState(false);
-  const installedSlugs = domains.map((d) => d.slug);
 
   return (
     <>
@@ -89,11 +89,13 @@ export function FitmentManager({ domains, dictionaries }: Props) {
         </CardContent>
       </Card>
 
-      <DictionaryPicker
+      <PresetPicker
         open={pickerOpen}
         onOpenChange={setPickerOpen}
-        dictionaries={dictionaries}
-        installedSlugs={installedSlugs}
+        presets={presets}
+        title="Browse fitment dictionaries"
+        description="Install a ready-made compatibility dictionary for your industry — vehicles, apparel sizes, devices, pets, and more. Each installs as your own editable tree; nothing is shared across tenants."
+        revalidate="/commerce/fitment"
       />
       <NewDomainDialog open={newOpen} onOpenChange={setNewOpen} />
     </>

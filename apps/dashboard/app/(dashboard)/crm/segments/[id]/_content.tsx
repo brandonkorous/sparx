@@ -19,6 +19,7 @@ import {
   TableHeader,
   TableRow,
   Text,
+  statusLabel,
 } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -77,7 +78,7 @@ export async function SegmentDetailContent({ id }: Props) {
           <Stack direction="row" align="center" gap={3} wrap>
             <Heading level={1}>{segment.name}</Heading>
             {segment.isBuiltIn && (
-              <Badge variant="outline">
+              <Badge color="neutral" variant="soft" size="sm">
                 <Star className="h-3 w-3" /> Built-in
               </Badge>
             )}
@@ -136,7 +137,9 @@ export async function SegmentDetailContent({ id }: Props) {
           <CardTitle>
             <Stack direction="row" align="center" gap={2}>
               <Users className="h-4 w-4" /> Members
-              <Badge variant="outline">{total}</Badge>
+              <Badge color="neutral" variant="soft" size="sm">
+                {total}
+              </Badge>
             </Stack>
           </CardTitle>
         </CardHeader>
@@ -172,8 +175,8 @@ export async function SegmentDetailContent({ id }: Props) {
                       </Link>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="text-xs">
-                        {m.customer.type}
+                      <Badge color="neutral" variant="soft" size="sm">
+                        {statusLabel(m.customer.type)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right tabular-nums">

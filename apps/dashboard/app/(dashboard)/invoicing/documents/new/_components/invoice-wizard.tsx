@@ -546,7 +546,9 @@ function InvoiceWizardInner({
           <CardHeader>
             <Stack direction="row" align="center" gap={2}>
               <Heading level={3}>Charges</Heading>
-              <Badge variant="outline">{lines.length}</Badge>
+              <Badge color="neutral" variant="soft" size="sm">
+                {lines.length}
+              </Badge>
             </Stack>
           </CardHeader>
           <CardContent>
@@ -567,7 +569,7 @@ function InvoiceWizardInner({
                     className="rounded-md border border-[var(--color-border-default)] px-3 py-2"
                   >
                     <Stack direction="row" align="center" gap={2} wrap className="min-w-0">
-                      <Badge variant="outline" className="text-xs">
+                      <Badge color="info" variant="soft" size="sm">
                         {l.typeLabel}
                       </Badge>
                       <Text size="sm" className="truncate">

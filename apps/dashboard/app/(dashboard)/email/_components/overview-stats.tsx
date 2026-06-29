@@ -18,6 +18,7 @@ import {
   TableRow,
   Text,
   type BadgeProps,
+  statusLabel,
 } from '@sparx/ui';
 
 import type { OverviewResult } from '../_lib/types';
@@ -87,7 +88,9 @@ export function OverviewStats({ overview }: { overview: OverviewResult }) {
                 {recent.map((e, i) => (
                   <TableRow key={`${e.recipient}-${e.occurredAt}-${i}`}>
                     <TableCell>
-                      <Badge color={EVENT_BADGE[e.type] ?? 'outline'}>{e.type}</Badge>
+                      <Badge color={EVENT_BADGE[e.type] ?? 'neutral'} variant="soft" size="sm">
+                        {statusLabel(e.type)}
+                      </Badge>
                     </TableCell>
                     <TableCell>{e.recipient}</TableCell>
                     <TableCell>{new Date(e.occurredAt).toLocaleString()}</TableCell>

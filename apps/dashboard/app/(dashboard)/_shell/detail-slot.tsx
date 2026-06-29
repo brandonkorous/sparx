@@ -48,6 +48,20 @@ import { NewProfileForm } from '../commerce/shipping/profiles/new/_components/ne
 import { NewTaxZoneForm } from '../commerce/tax/zones/new/_components/new-tax-zone-form';
 import { NewTemplateForm } from '../commerce/configurator/new/_components/new-template-form';
 import { loadConfiguratorProducts } from '../commerce/configurator/new/_components/configurator-create-data';
+import { ServiceForm } from '../scheduling/services/_components/service-form';
+import { ResourceForm } from '../scheduling/resources/_components/resource-form';
+import { PolicyForm } from '../scheduling/policies/_components/policy-form';
+import { BookingForm } from '../scheduling/bookings/_components/booking-form';
+import type { SchedulingService } from '../scheduling/_lib/types';
+import { ServiceTypeForm } from '../b2b/service-types/_components/service-type-form';
+import { TierCreateForm } from '../b2b/pricing-tiers/_components/tier-create-form';
+import { SourceForm } from '../inventory/sources/_components/source-form';
+import {
+  SupplierForm,
+  type Vendor,
+  type SiteOption,
+} from '../dropship/suppliers/_components/supplier-form';
+import { listProperties } from '@/lib/sites';
 import { AuthorDetailContent } from '../cms/authors/[id]/_content';
 import { ContentTypeDetailContent } from '../cms/types/[typeKey]/_content';
 import { ContentEntryDetailContent } from '../cms/types/[typeKey]/[id]/_content';
@@ -182,6 +196,18 @@ const detailModules: Record<string, SparxModule> = {
   'gift-card': 'commerce',
   'account-credit': 'commerce',
   discount: 'commerce',
+  // Scheduling — create-only overlays (lists edit via a self-owned modal)
+  service: 'scheduling',
+  resource: 'scheduling',
+  'booking-policy': 'scheduling',
+  booking: 'scheduling',
+  // B2B — create-only overlays (lists edit via a self-owned modal / are read-only)
+  'b2b-service-type': 'b2b',
+  'b2b-pricing-tier': 'b2b',
+  // Inventory — connect-a-source create overlay (edits via a self-owned modal)
+  'inventory-source': 'inventory',
+  // Dropship — connect-a-supplier create overlay (edits via a self-owned modal)
+  'dropship-supplier': 'dropship',
   // Builder
   'builder-component': 'builder',
 };
@@ -324,6 +350,33 @@ async function ConfiguratorTemplateCreateOverlay() {
   return <NewTemplateForm surface="overlay" products={products} />;
 }
 
+// Booking create is single-step but needs the tenant's services to populate the
+// service picker (the form filters to the active, bookable ones), so a thin
+// server wrapper fetches them. No detail view — a created booking returns to the
+// list.
+async function BookingCreateOverlay() {
+  const services = await api
+    .get<SchedulingService[]>('/v1/scheduling/services')
+    .catch(() => [] as SchedulingService[]);
+  return <BookingForm presentation="overlay" services={services} />;
+}
+
+// Dropship-supplier create is a two-step SurfaceFrame (pick vendor → configure),
+// so it needs the connectable vendor catalog + the tenant's sites. A thin server
+// wrapper loads both. No detail view — a created supplier returns to the list.
+async function SupplierCreateOverlay() {
+  const [vendors, properties] = await Promise.all([
+    api.get<Vendor[]>('/v1/dropship/vendors').catch(() => [] as Vendor[]),
+    listProperties().catch(() => []),
+  ]);
+  const sites: SiteOption[] = properties.map((p) => ({
+    id: p.id,
+    name: p.name,
+    isPrimary: p.isPrimary,
+  }));
+  return <SupplierForm presentation="overlay" vendors={vendors} sites={sites} />;
+}
+
 const createComponents: Record<string, React.ComponentType> = {
   category: CategoryCreateOverlay,
   // Commerce single-column create overlays (no detail view — stay open with an
@@ -371,6 +424,16 @@ const createComponents: Record<string, React.ComponentType> = {
   // Invoicing — multi-step SurfaceFrame create overlay (the document editor stays
   // full-page; only creation opens in the drawer/modal).
   'billing-document': BillingDocumentCreateOverlay,
+  // Scheduling — single-step create overlays (no detail view, so a created record
+  // returns to the list; editing rides a self-owned modal on the list).
+  service: () => <ServiceForm presentation="overlay" />,
+  resource: () => <ResourceForm presentation="overlay" />,
+  'booking-policy': () => <PolicyForm presentation="overlay" />,
+  booking: BookingCreateOverlay,
+  'b2b-service-type': () => <ServiceTypeForm presentation="overlay" />,
+  'b2b-pricing-tier': () => <TierCreateForm presentation="overlay" />,
+  'inventory-source': () => <SourceForm presentation="overlay" />,
+  'dropship-supplier': SupplierCreateOverlay,
 };
 
 // Renders the detail content for a given (typeId, id), or null when the type

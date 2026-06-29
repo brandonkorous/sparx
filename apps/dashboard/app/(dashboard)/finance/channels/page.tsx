@@ -1,13 +1,14 @@
 // Finance → Channels (docs/110 Slice 4b) — the revenue rollup across every sales
 // channel: gross, channel fees, net-after-fees, AOV, and share of total, plus a
 // per-channel top-products drill. This is the money view; connecting and syncing
-// channels lives in Settings → Sales channels (D4: rollup-in-Finance / manage-in-
+// channels lives in Commerce → Sales channels (D4: rollup-in-Finance / manage-in-
 // place). Commerce-gated and tinted with the Commerce hue.
 
 import Link from 'next/link';
 import { Store } from 'lucide-react';
 import { channelKeyLabel } from '@sparx/crm-schemas';
 import {
+  Button,
   Card,
   CardContent,
   CardHeader,
@@ -87,12 +88,11 @@ export default async function FinanceChannelsPage({
                     storefront or a connected marketplace — your revenue, fees, and net break down
                     by channel here.
                   </Text>
-                  <Link
-                    href="/settings/channels"
-                    className="text-sm font-medium text-[var(--module-active-text)] hover:underline"
-                  >
-                    Connect a sales channel →
-                  </Link>
+                  <div>
+                    <Button asChild color="module">
+                      <Link href="/commerce/channels">Connect a sales channel</Link>
+                    </Button>
+                  </div>
                 </Stack>
               </CardContent>
             </Card>
@@ -101,10 +101,10 @@ export default async function FinanceChannelsPage({
           <Text size="sm" variant="muted">
             Connect, disconnect, or sync channels in{' '}
             <Link
-              href="/settings/channels"
+              href="/commerce/channels"
               className="font-medium text-[var(--module-active-text)] hover:underline"
             >
-              Settings → Sales channels
+              Commerce → Sales channels
             </Link>
             .
           </Text>

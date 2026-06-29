@@ -203,14 +203,14 @@ export function ModuleTags({
 export function OriginBadge({ origin, locked }: { origin: string; locked: boolean }) {
   if (locked) {
     return (
-      <Badge color="warning" variant="outline" size="sm">
+      <Badge color="warning" variant="soft" size="sm">
         Locked
       </Badge>
     );
   }
   if (origin === 'system') {
     return (
-      <Badge color="neutral" variant="outline" size="sm">
+      <Badge color="neutral" variant="soft" size="sm">
         System
       </Badge>
     );

@@ -29,6 +29,17 @@ export {
   isModuleFlagOn,
   deriveModuleStates,
   type ModuleEnabledSource,
+  // Module-preset contract + pure registry index (the reusable install seam).
+  // Re-exported so api-rest / domain packages reach it via their existing
+  // @sparx/auth dep, without taking a direct @sparx/modules dependency.
+  ModulePresetRegistry,
+  toModulePresetView,
+  definePreset,
+  type ModulePreset,
+  type ModulePresetKind,
+  type ModulePresetSummaryChip,
+  type ModulePresetInstallResult,
+  type ModulePresetView,
 } from '@sparx/modules';
 
 /** Throws ModuleDisabledError if the session's tenant doesn't have the given

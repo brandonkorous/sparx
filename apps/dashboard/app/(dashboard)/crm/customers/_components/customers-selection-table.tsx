@@ -55,7 +55,7 @@ export function CustomersSelectionTable({ customers, view }: CustomersSelectionT
   ];
 
   const typeBadge = (c: CustomerListRow) => (
-    <Badge variant="outline" className="text-xs">
+    <Badge color="neutral" variant="soft" size="sm">
       {TYPE_LABELS[c.type as keyof typeof TYPE_LABELS] ?? c.type}
     </Badge>
   );

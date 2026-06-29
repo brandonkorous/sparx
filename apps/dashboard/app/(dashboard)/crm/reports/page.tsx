@@ -61,6 +61,12 @@ interface AcquisitionPoint {
   newCustomers: number;
 }
 
+interface TenantUser {
+  id: string;
+  name: string | null;
+  email: string | null;
+}
+
 // CRM reports landing — tenant snapshot + funnel for the default pipeline
 // + recent acquisition. Each report is a server-rendered card calling
 // reportingService directly (no rollup yet — Phase 6 follow-up).
@@ -68,13 +74,17 @@ interface AcquisitionPoint {
 export const dynamic = 'force-dynamic';
 
 export default async function ReportsPage() {
-  const [snapshot, pipelines, winLoss, acquisition] = await Promise.all([
+  const [snapshot, pipelines, winLoss, acquisition, users] = await Promise.all([
     api.get<TenantSnapshot>('/v1/crm/reports/snapshot'),
     // List paginates (default 50); reports need every pipeline — max page.
     api.get<PipelineLite[]>('/v1/crm/pipelines?take=250'),
     api.get<WinLossRow[]>('/v1/crm/reports/win-loss'),
     api.get<AcquisitionPoint[]>('/v1/crm/reports/acquisition?months=12'),
+    // Resolve assigned-rep ids → names so the win/loss table reads as people.
+    api.get<TenantUser[]>('/v1/users?take=200'),
   ]);
+
+  const repNameById = new Map(users.map((u) => [u.id, u.name ?? u.email ?? null]));
 
   const defaultPipeline = pipelines.find((p) => p.isDefault) ?? pipelines[0];
   const funnel = defaultPipeline
@@ -154,7 +164,7 @@ export default async function ReportsPage() {
                           <Text size="sm" weight="medium">
                             {b.stageName}
                           </Text>
-                          <Badge variant="outline" className="text-xs">
+                          <Badge color="neutral" variant="soft" size="sm">
                             {b.count}
                           </Badge>
                         </Stack>
@@ -205,12 +215,14 @@ export default async function ReportsPage() {
                   {winLoss.map((r, idx) => (
                     <TableRow key={r.repId ?? `unassigned-${idx}`}>
                       <TableCell>
-                        {r.repId ? (
-                          <code className="text-xs">{r.repId.slice(0, 8)}</code>
-                        ) : (
+                        {!r.repId ? (
                           <Text size="sm" variant="muted">
                             Unassigned
                           </Text>
+                        ) : repNameById.get(r.repId) ? (
+                          <Text size="sm">{repNameById.get(r.repId)}</Text>
+                        ) : (
+                          <code className="text-xs">{r.repId.slice(0, 8)}</code>
                         )}
                       </TableCell>
                       <TableCell className="text-right tabular-nums">{r.won}</TableCell>

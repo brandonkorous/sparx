@@ -42,10 +42,14 @@ export async function ContentTypeDetailContent({ id }: { id: string }) {
       <Stack gap={2}>
         <Stack direction="row" align="center" gap={3} wrap>
           <Heading level={1}>{type.name}</Heading>
-          <Badge color={type.is_built_in ? 'outline' : 'module'}>
+          <Badge color={type.is_built_in ? 'neutral' : 'module'} variant="soft" size="sm">
             {type.is_built_in ? 'built-in' : 'custom'}
           </Badge>
-          {type.is_singleton && <Badge variant="outline">singleton</Badge>}
+          {type.is_singleton && (
+            <Badge color="info" variant="soft" size="sm">
+              singleton
+            </Badge>
+          )}
         </Stack>
         <Stack direction="row" align="center" gap={2} wrap>
           <Text size="sm" variant="muted">

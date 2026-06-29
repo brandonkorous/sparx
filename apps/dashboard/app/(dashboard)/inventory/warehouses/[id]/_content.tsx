@@ -12,6 +12,7 @@ import {
   Heading,
   Stack,
   Text,
+  statusLabel,
 } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -88,14 +89,20 @@ export async function WarehouseDetailContent({ id }: Props) {
           <Stack direction="row" align="center" gap={3} wrap>
             <WarehouseIcon className="h-5 w-5" />
             <Heading level={1}>{warehouse.name}</Heading>
-            <Badge variant="outline" className="font-mono text-xs">
+            <Badge color="neutral" variant="soft" size="sm" className="font-mono">
               {warehouse.code}
             </Badge>
-            <Badge variant="outline">{warehouse.type}</Badge>
+            <Badge color="info" variant="soft" size="sm">
+              {statusLabel(warehouse.type)}
+            </Badge>
             {warehouse.isActive ? (
-              <Badge color="success">active</Badge>
+              <Badge color="success" variant="soft" size="sm">
+                active
+              </Badge>
             ) : (
-              <Badge color="warning">inactive</Badge>
+              <Badge color="neutral" variant="soft" size="sm">
+                inactive
+              </Badge>
             )}
           </Stack>
           <Text size="sm" variant="muted">

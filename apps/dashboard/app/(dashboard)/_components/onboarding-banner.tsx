@@ -43,7 +43,7 @@ export function OnboardingBanner({ progress }: OnboardingBannerProps) {
         <Stack gap={1} className="flex-1">
           <Stack direction="row" align="center" gap={2}>
             <Heading level={3}>Finish setting up sparx</Heading>
-            <Badge variant="outline">
+            <Badge color="neutral" variant="soft" size="sm">
               {done} of {actionable.length} done
             </Badge>
           </Stack>

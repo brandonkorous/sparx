@@ -179,11 +179,11 @@ export async function B2bAccountDetailContent({ id }: Props) {
         <Stack direction="row" align="center" gap={3} wrap>
           <Building2 className="h-5 w-5" />
           <Heading level={1}>{account.companyName}</Heading>
-          <Badge color={STATUS_VARIANT[account.status] ?? 'outline'}>
+          <Badge color={STATUS_VARIANT[account.status] ?? 'neutral'} variant="soft" size="sm">
             {STATUS_LABEL[account.status] ?? account.status}
           </Badge>
           {account.pricingTierName && (
-            <Badge color="module" variant="outline">
+            <Badge color="module" variant="soft" size="sm">
               {account.pricingTierName}
             </Badge>
           )}

@@ -48,9 +48,17 @@ export function DomainCard({ domain }: { domain: SendingDomainRow }) {
         <Stack direction="row" align="center" justify="between" gap={3} className="flex-wrap">
           <Stack direction="row" align="center" gap={2}>
             <Code>{domain.domain}</Code>
-            <Badge color={badge.variant}>{badge.label}</Badge>
-            {domain.isDefault ? <Badge color="module">Default</Badge> : null}
-            <Badge variant="outline">{domain.region.toUpperCase()}</Badge>
+            <Badge color={badge.variant} variant="soft" size="sm">
+              {badge.label}
+            </Badge>
+            {domain.isDefault ? (
+              <Badge color="module" variant="soft" size="sm">
+                Default
+              </Badge>
+            ) : null}
+            <Badge color="neutral" variant="soft" size="sm">
+              {domain.region.toUpperCase()}
+            </Badge>
           </Stack>
           <DomainActions domain={domain} />
         </Stack>

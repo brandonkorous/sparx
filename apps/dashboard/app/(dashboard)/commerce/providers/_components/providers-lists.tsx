@@ -118,7 +118,9 @@ function KindSection({ group, view }: { group: KindGroup; view: 'table' | 'card'
           <Stack direction="row" align="center" gap={2}>
             <Icon className="h-4 w-4" />
             <Heading level={3}>{KIND_LABEL[kind]}</Heading>
-            <Badge variant="outline">{installed.length} installed</Badge>
+            <Badge color="neutral" variant="soft" size="sm">
+              {installed.length} installed
+            </Badge>
           </Stack>
           <CardDescription>{KIND_DESCRIPTION[kind]}</CardDescription>
         </Stack>
@@ -176,12 +178,12 @@ function ProviderCard({ provider, kind }: { provider: ProviderMetadata; kind: Pr
         <Stack direction="row" align="center" gap={2}>
           <Text className="font-medium">{provider.displayName}</Text>
           {provider.whitelabelOf && (
-            <Badge variant="outline" className="text-xs">
+            <Badge color="neutral" variant="soft" size="sm">
               powered by {provider.whitelabelOf}
             </Badge>
           )}
           {provider.sandboxAvailable && (
-            <Badge variant="outline" className="text-xs">
+            <Badge color="info" variant="soft" size="sm">
               sandbox
             </Badge>
           )}
@@ -191,12 +193,12 @@ function ProviderCard({ provider, kind }: { provider: ProviderMetadata; kind: Pr
         </Text>
         <Stack direction="row" gap={1} wrap className="pt-1">
           {provider.supportedCountries.slice(0, 8).map((c) => (
-            <Badge key={c} variant="outline" className="text-xs">
+            <Badge key={c} color="neutral" variant="soft" size="sm">
               {c}
             </Badge>
           ))}
           {provider.supportedCountries.length > 8 && (
-            <Badge variant="outline" className="text-xs">
+            <Badge color="neutral" variant="soft" size="sm">
               +{provider.supportedCountries.length - 8}
             </Badge>
           )}

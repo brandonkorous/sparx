@@ -9,10 +9,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTitle,
   Table,
   TableBody,
   TableCell,
@@ -95,7 +91,7 @@ export function PoliciesList({ policies }: { policies: BookingPolicy[] }) {
                 {p.depositType === 'none' ? (
                   <span className="text-[var(--color-muted-foreground)]">—</span>
                 ) : (
-                  <Badge color="module" variant="soft">
+                  <Badge color="module" variant="soft" size="sm">
                     {depositSummary(p)}
                   </Badge>
                 )}
@@ -133,20 +129,14 @@ export function PoliciesList({ policies }: { policies: BookingPolicy[] }) {
         </TableBody>
       </Table>
 
-      <Modal open={editing !== null} onOpenChange={(o) => !o && setEditing(null)}>
-        <ModalContent className="max-w-2xl">
-          <ModalHeader>
-            <ModalTitle>Edit policy</ModalTitle>
-          </ModalHeader>
-          {editing ? (
-            <PolicyForm
-              policy={editing}
-              onSuccess={() => setEditing(null)}
-              onCancel={() => setEditing(null)}
-            />
-          ) : null}
-        </ModalContent>
-      </Modal>
+      {editing ? (
+        <PolicyForm
+          presentation="modal"
+          policy={editing}
+          open
+          onOpenChange={(o) => !o && setEditing(null)}
+        />
+      ) : null}
     </>
   );
 }

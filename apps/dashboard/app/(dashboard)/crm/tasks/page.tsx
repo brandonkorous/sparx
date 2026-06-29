@@ -126,7 +126,9 @@ export default async function TasksPage({ searchParams }: PageProps) {
             <CardTitle>
               <Stack direction="row" align="center" gap={2}>
                 <Calendar className="h-4 w-4" /> Open
-                <Badge variant="outline">{openTotal}</Badge>
+                <Badge color="neutral" variant="soft" size="sm">
+                  {openTotal}
+                </Badge>
               </Stack>
             </CardTitle>
           </CardHeader>

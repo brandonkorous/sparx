@@ -72,7 +72,7 @@ export function PricingTiersList({ rows, view }: PricingTiersListProps) {
     {
       header: 'Discount',
       cell: (t) => (
-        <Badge color="module" variant="soft">
+        <Badge color="module" variant="soft" size="sm">
           {discountLabel(t)}
         </Badge>
       ),
@@ -112,7 +112,7 @@ export function PricingTiersList({ rows, view }: PricingTiersListProps) {
         <CardHeader>
           <Stack direction="row" align="start" justify="between" gap={2}>
             <CardTitle>{tier.name}</CardTitle>
-            <Badge color="module" variant="soft">
+            <Badge color="module" variant="soft" size="sm">
               {discountLabel(tier)}
             </Badge>
           </Stack>

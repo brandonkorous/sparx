@@ -68,7 +68,7 @@ export function InvoicesList({ invoices, view }: InvoicesListProps) {
     );
 
   const statusBadge = (inv: InvoiceRow) => (
-    <Badge color={STATUS_VARIANT[inv.status] ?? 'outline'} variant="soft">
+    <Badge color={STATUS_VARIANT[inv.status] ?? 'neutral'} variant="soft" size="sm">
       {inv.status.replace('_', ' ')}
     </Badge>
   );

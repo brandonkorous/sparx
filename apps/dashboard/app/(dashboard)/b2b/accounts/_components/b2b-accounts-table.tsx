@@ -71,13 +71,13 @@ export function B2bAccountsTable({ accounts }: Props) {
                 </Link>
               </TableCell>
               <TableCell>
-                <Badge color={STATUS_VARIANT[a.status] ?? 'outline'} variant="soft">
+                <Badge color={STATUS_VARIANT[a.status] ?? 'neutral'} variant="soft" size="sm">
                   {STATUS_LABEL[a.status] ?? a.status}
                 </Badge>
               </TableCell>
               <TableCell>
                 {a.pricingTierName ? (
-                  <Badge color="module" variant="outline">
+                  <Badge color="module" variant="soft" size="sm">
                     {a.pricingTierName}
                   </Badge>
                 ) : (

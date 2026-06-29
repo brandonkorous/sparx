@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow,
   Text,
+  statusLabel,
 } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -95,7 +96,9 @@ export async function ShippingZoneDetailContent({ id }: Props) {
         <Stack gap={1}>
           <Heading level={1}>{zone.name}</Heading>
           <Stack direction="row" gap={2} align="center">
-            <Badge variant="outline">priority {zone.priority}</Badge>
+            <Badge color="neutral" variant="soft" size="sm">
+              priority {zone.priority}
+            </Badge>
             <Text size="sm" variant="muted">
               {zone.targeting.countries.length === 0
                 ? 'any country'
@@ -121,7 +124,7 @@ export async function ShippingZoneDetailContent({ id }: Props) {
               {zone.targeting.countries.length > 0 ? (
                 <Stack direction="row" gap={1} wrap>
                   {zone.targeting.countries.map((c) => (
-                    <Badge key={c} variant="outline">
+                    <Badge key={c} color="neutral" variant="soft" size="sm">
                       {c}
                     </Badge>
                   ))}
@@ -136,7 +139,7 @@ export async function ShippingZoneDetailContent({ id }: Props) {
               {zone.targeting.regions.length > 0 ? (
                 <Stack direction="row" gap={1} wrap>
                   {zone.targeting.regions.map((r) => (
-                    <Badge key={r} variant="outline">
+                    <Badge key={r} color="neutral" variant="soft" size="sm">
                       {r}
                     </Badge>
                   ))}
@@ -194,7 +197,9 @@ export async function ShippingZoneDetailContent({ id }: Props) {
                         </Text>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{r.type}</Badge>
+                        <Badge color="info" variant="soft" size="sm">
+                          {statusLabel(r.type)}
+                        </Badge>
                       </TableCell>
                       <TableCell>
                         {r.amountCents != null

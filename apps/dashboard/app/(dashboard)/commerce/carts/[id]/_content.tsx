@@ -15,6 +15,7 @@ import {
   TableHeader,
   TableRow,
   Text,
+  statusLabel,
 } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -49,6 +50,7 @@ interface CartTotals {
 interface CartSnapshot {
   cartId: string;
   customerId: string | null;
+  customerName: string | null;
   channel: string;
   currency: string;
   items: CartItem[];
@@ -77,15 +79,21 @@ export async function CartDetailContent({ id }: Props) {
           <Heading level={1} className="font-mono text-2xl">
             {cart.cartId.slice(0, 8)}
           </Heading>
-          <Badge variant="outline">{cart.channel}</Badge>
-          {cart.abandonedAt && <Badge color="warning">abandoned</Badge>}
+          <Badge color="neutral" variant="soft" size="sm">
+            {statusLabel(cart.channel)}
+          </Badge>
+          {cart.abandonedAt && (
+            <Badge color="warning" variant="soft" size="sm">
+              abandoned
+            </Badge>
+          )}
         </Stack>
         <Text variant="muted">
           {cart.customerId ? (
             <>
               Customer{' '}
-              <Text className="font-mono" size="sm">
-                {cart.customerId.slice(0, 8)}
+              <Text as="span" size="sm">
+                {cart.customerName ?? cart.customerId.slice(0, 8)}
               </Text>
             </>
           ) : (
@@ -168,7 +176,7 @@ export async function CartDetailContent({ id }: Props) {
             {cart.appliedDiscountCodes.length > 0 && (
               <Stack direction="row" gap={1} wrap className="pt-1">
                 {cart.appliedDiscountCodes.map((code) => (
-                  <Badge key={code} variant="outline" className="font-mono">
+                  <Badge key={code} color="neutral" variant="soft" size="sm" className="font-mono">
                     {code}
                   </Badge>
                 ))}

@@ -7,6 +7,7 @@ import {
   Badge,
   Stack,
   Text,
+  statusLabel,
 } from '@sparx/ui';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
@@ -61,8 +62,8 @@ export function WarehousesList({ rows, view }: WarehousesListProps) {
     w.defaultForChannel.length > 0 ? (
       <Stack direction="row" gap={1} wrap>
         {w.defaultForChannel.map((c) => (
-          <Badge key={c} variant="outline" className="text-xs">
-            {c}
+          <Badge key={c} color="neutral" variant="soft" size="sm">
+            {statusLabel(c)}
           </Badge>
         ))}
       </Stack>
@@ -73,12 +74,27 @@ export function WarehousesList({ rows, view }: WarehousesListProps) {
     );
 
   const statusBadge = (w: WarehouseRow) =>
-    w.isActive ? <Badge color="success">active</Badge> : <Badge color="warning">inactive</Badge>;
+    w.isActive ? (
+      <Badge color="success" variant="soft" size="sm">
+        active
+      </Badge>
+    ) : (
+      <Badge color="neutral" variant="soft" size="sm">
+        inactive
+      </Badge>
+    );
 
   const columns: SelectionColumn<WarehouseRow>[] = [
     { header: 'Code', cell: codeLink },
     { header: 'Name', cell: (w) => w.name },
-    { header: 'Type', cell: (w) => <Badge variant="outline">{w.type}</Badge> },
+    {
+      header: 'Type',
+      cell: (w) => (
+        <Badge color="info" variant="soft" size="sm">
+          {statusLabel(w.type)}
+        </Badge>
+      ),
+    },
     { header: 'Location', cell: location },
     { header: 'Channels', cell: channels },
     { header: 'Status', cell: statusBadge },
@@ -95,7 +111,9 @@ export function WarehousesList({ rows, view }: WarehousesListProps) {
     body: (w) => (
       <Stack gap={2}>
         <Stack direction="row" align="center" gap={2}>
-          <Badge variant="outline">{w.type}</Badge>
+          <Badge color="info" variant="soft" size="sm">
+            {statusLabel(w.type)}
+          </Badge>
           <Text size="xs" variant="muted">
             {location(w)}
           </Text>

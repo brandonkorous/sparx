@@ -7,6 +7,8 @@ import {
   Badge,
   Stack,
   Text,
+  statusLabel,
+  statusTone,
 } from '@sparx/ui';
 
 // Client wrapper for the checkout-sessions diagnostic list. SelectionList takes
@@ -35,9 +37,11 @@ interface CheckoutSessionsListProps {
 }
 
 function StepBadge({ step }: { step: string }) {
-  const v: 'success' | 'warning' | 'outline' =
-    step === 'completed' ? 'success' : step === 'expired' ? 'warning' : 'outline';
-  return <Badge color={v}>{step}</Badge>;
+  return (
+    <Badge color={statusTone(step)} variant="soft" size="sm">
+      {statusLabel(step)}
+    </Badge>
+  );
 }
 
 export function CheckoutSessionsList({ rows, view }: CheckoutSessionsListProps) {
@@ -53,7 +57,14 @@ export function CheckoutSessionsList({ rows, view }: CheckoutSessionsListProps) 
       ),
     },
     { header: 'Customer', cell: (s) => <>{s.customerEmail ?? '—'}</> },
-    { header: 'Channel', cell: (s) => <Badge variant="outline">{s.channel}</Badge> },
+    {
+      header: 'Channel',
+      cell: (s) => (
+        <Badge color="neutral" variant="soft" size="sm">
+          {statusLabel(s.channel)}
+        </Badge>
+      ),
+    },
     { header: 'Step', cell: (s) => <StepBadge step={s.step} /> },
     { header: 'Total', cell: (s) => <>{totalLabel(s)}</> },
     { header: 'Updated', cell: (s) => <>{new Date(s.updatedAt).toLocaleString()}</> },
@@ -74,7 +85,9 @@ export function CheckoutSessionsList({ rows, view }: CheckoutSessionsListProps) 
     body: (s) => (
       <>
         <Stack direction="row" align="center" justify="between" gap={2}>
-          <Badge variant="outline">{s.channel}</Badge>
+          <Badge color="neutral" variant="soft" size="sm">
+            {statusLabel(s.channel)}
+          </Badge>
           <Text size="sm" className="tabular-nums">
             {totalLabel(s)}
           </Text>

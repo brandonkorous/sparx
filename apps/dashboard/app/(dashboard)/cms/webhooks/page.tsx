@@ -35,7 +35,11 @@ export default function WebhooksPage() {
         <PageHeader
           icon={<Webhook className="h-5 w-5" />}
           title="Webhooks"
-          badge={<Badge variant="outline">coming soon</Badge>}
+          badge={
+            <Badge color="neutral" variant="soft" size="sm">
+              coming soon
+            </Badge>
+          }
           description={
             <>
               Subscribe an external endpoint to <code>content.*</code> events so a publish in sparx

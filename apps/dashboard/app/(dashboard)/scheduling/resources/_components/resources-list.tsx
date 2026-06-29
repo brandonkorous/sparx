@@ -9,10 +9,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTitle,
   Table,
   TableBody,
   TableCell,
@@ -101,12 +97,12 @@ export function ResourcesList({ resources }: { resources: SchedulingResource[] }
                 </span>
               </TableCell>
               <TableCell>
-                <Badge variant="soft" color={r.exclusive ? 'neutral' : 'info'}>
+                <Badge variant="soft" size="sm" color={r.exclusive ? 'neutral' : 'info'}>
                   {r.exclusive ? 'Exclusive' : 'Pooled'}
                 </Badge>
               </TableCell>
               <TableCell>
-                <Badge color={r.isActive ? 'success' : 'neutral'} variant="soft">
+                <Badge color={r.isActive ? 'success' : 'neutral'} variant="soft" size="sm">
                   {r.isActive ? 'Active' : 'Inactive'}
                 </Badge>
               </TableCell>
@@ -141,20 +137,14 @@ export function ResourcesList({ resources }: { resources: SchedulingResource[] }
         </TableBody>
       </Table>
 
-      <Modal open={editing !== null} onOpenChange={(o) => !o && setEditing(null)}>
-        <ModalContent className="max-w-xl">
-          <ModalHeader>
-            <ModalTitle>Edit resource</ModalTitle>
-          </ModalHeader>
-          {editing ? (
-            <ResourceForm
-              resource={editing}
-              onSuccess={() => setEditing(null)}
-              onCancel={() => setEditing(null)}
-            />
-          ) : null}
-        </ModalContent>
-      </Modal>
+      {editing ? (
+        <ResourceForm
+          presentation="modal"
+          resource={editing}
+          open
+          onOpenChange={(o) => !o && setEditing(null)}
+        />
+      ) : null}
 
       <CalendarFeedDialog
         resourceId={feedFor?.id ?? ''}
