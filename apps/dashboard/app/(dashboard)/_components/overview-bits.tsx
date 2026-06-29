@@ -117,10 +117,17 @@ export function MetricTile({ value, label, tone = 'default', className }: Metric
 }
 
 // ── OverviewCard ─────────────────────────────────────────────
-// The section card every overview is built from: a module-striped Card (the
-// 3px stripe rule, satisfies the CMS lint guard) with a title row — an
-// optional module-tinted icon, the title, an optional right slot (a CardLink
+// The section card every overview is built from: a module-tinted Card (its
+// background wears the active module's subtle tint) with a title row — an
+// optional module-colored icon, the title, an optional right slot (a CardLink
 // or SampleBadge) — and an optional description above the body.
+//
+// On a DENSE cross-module page only ONE card per module hue should wear the
+// tint — the section's "primary" card. Every other card passes `plain` to drop
+// to a neutral surface so the screen doesn't become competing color washes. To
+// tint a card in ANOTHER module's hue (e.g. a CRM panel on the Commerce page),
+// wrap it in a nested <ModuleProvider module="crm"> — the tint, icon, and links
+// all follow.
 
 export interface OverviewCardProps {
   title: React.ReactNode;
@@ -129,6 +136,10 @@ export interface OverviewCardProps {
   /** Right-aligned slot in the header — a CardLink or a SampleBadge. */
   right?: React.ReactNode;
   padding?: 'none' | 'sm' | 'md' | 'lg';
+  /** Render as a neutral surface instead of the module-tinted "primary" card.
+   *  On dense cross-module pages, every card EXCEPT the one primary card per
+   *  module hue should pass this. */
+  plain?: boolean;
   className?: string;
   children?: React.ReactNode;
 }
@@ -139,11 +150,12 @@ export function OverviewCard({
   description,
   right,
   padding,
+  plain,
   className,
   children,
 }: OverviewCardProps) {
   return (
-    <Card variant="module" padding={padding} className={className}>
+    <Card variant={plain ? 'default' : 'module'} padding={padding} className={className}>
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="flex items-center gap-2 text-base font-medium text-[var(--color-text-primary)]">

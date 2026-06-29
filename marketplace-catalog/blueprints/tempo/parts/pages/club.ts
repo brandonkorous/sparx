@@ -3,27 +3,27 @@
 // authoring source of truth is marketplace-catalog/_gen/tempo/.
 
 export default {
-  id: 'tmp-513',
+  id: 'tmp-455',
   type: 'Section',
   props: {},
   class: 'w-full flex flex-col',
   name: 'Club',
   children: [
     {
-      id: 'tmp-473',
+      id: 'tmp-415',
       type: 'Section',
       class: 'w-full bg-base-200',
       props: {},
       name: 'Page hero',
       children: [
         {
-          id: 'tmp-473__c',
+          id: 'tmp-415__c',
           type: 'Stack',
           class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-8 @3xl:p-16',
           props: {},
           children: [
             {
-              id: 'tmp-470',
+              id: 'tmp-412',
               type: 'el:p',
               props: {
                 text: 'Membership',
@@ -32,7 +32,7 @@ export default {
                 'font-heading text-xs font-bold uppercase tracking-[0.2em] text-base-content/50',
             },
             {
-              id: 'tmp-471',
+              id: 'tmp-413',
               type: 'el:h1',
               props: {
                 text: 'Join the Club',
@@ -41,7 +41,7 @@ export default {
                 'font-heading max-w-3xl text-3xl font-black uppercase leading-[0.95] tracking-tightest text-base-content @2xl:text-5xl',
             },
             {
-              id: 'tmp-472',
+              id: 'tmp-414',
               type: 'el:p',
               props: {
                 text: 'Free to join. Points on every order, members-only drops, free shipping and returns — plus a birthday surprise. The easiest yes in your closet.',
@@ -53,26 +53,26 @@ export default {
       ],
     },
     {
-      id: 'tmp-487',
+      id: 'tmp-429',
       type: 'Section',
       props: {},
       class: 'w-full mx-auto w-full max-w-site flex flex-col border-y border-base-300',
       name: 'Member benefits',
       children: [
         {
-          id: 'tmp-486',
+          id: 'tmp-428',
           type: 'el:div',
           props: {},
           class: 'grid grid-cols-2 gap-px bg-base-300 @3xl:grid-cols-4',
           children: [
             {
-              id: 'tmp-476',
+              id: 'tmp-418',
               type: 'el:div',
               props: {},
               class: 'bg-base-100 p-6 text-center',
               children: [
                 {
-                  id: 'tmp-474',
+                  id: 'tmp-416',
                   type: 'el:p',
                   props: {
                     text: 'Free Shipping',
@@ -81,7 +81,7 @@ export default {
                     'font-heading text-sm font-bold uppercase tracking-tight text-base-content',
                 },
                 {
-                  id: 'tmp-475',
+                  id: 'tmp-417',
                   type: 'el:p',
                   props: {
                     text: 'On every order',
@@ -91,13 +91,13 @@ export default {
               ],
             },
             {
-              id: 'tmp-479',
+              id: 'tmp-421',
               type: 'el:div',
               props: {},
               class: 'bg-base-100 p-6 text-center',
               children: [
                 {
-                  id: 'tmp-477',
+                  id: 'tmp-419',
                   type: 'el:p',
                   props: {
                     text: 'Free Returns',
@@ -106,7 +106,7 @@ export default {
                     'font-heading text-sm font-bold uppercase tracking-tight text-base-content',
                 },
                 {
-                  id: 'tmp-478',
+                  id: 'tmp-420',
                   type: 'el:p',
                   props: {
                     text: 'Within 30 days',
@@ -116,13 +116,13 @@ export default {
               ],
             },
             {
-              id: 'tmp-482',
+              id: 'tmp-424',
               type: 'el:div',
               props: {},
               class: 'bg-base-100 p-6 text-center',
               children: [
                 {
-                  id: 'tmp-480',
+                  id: 'tmp-422',
                   type: 'el:p',
                   props: {
                     text: 'Member Pricing',
@@ -131,7 +131,7 @@ export default {
                     'font-heading text-sm font-bold uppercase tracking-tight text-base-content',
                 },
                 {
-                  id: 'tmp-481',
+                  id: 'tmp-423',
                   type: 'el:p',
                   props: {
                     text: 'Exclusive offers',
@@ -141,13 +141,13 @@ export default {
               ],
             },
             {
-              id: 'tmp-485',
+              id: 'tmp-427',
               type: 'el:div',
               props: {},
               class: 'bg-base-100 p-6 text-center',
               children: [
                 {
-                  id: 'tmp-483',
+                  id: 'tmp-425',
                   type: 'el:p',
                   props: {
                     text: 'Early Access',
@@ -156,7 +156,7 @@ export default {
                     'font-heading text-sm font-bold uppercase tracking-tight text-base-content',
                 },
                 {
-                  id: 'tmp-484',
+                  id: 'tmp-426',
                   type: 'el:p',
                   props: {
                     text: 'Drops before anyone',
@@ -170,14 +170,14 @@ export default {
       ],
     },
     {
-      id: 'tmp-502',
+      id: 'tmp-444',
       type: 'Section',
       props: {},
       class: 'w-full mx-auto w-full max-w-site flex flex-col gap-4 items-start p-8 @3xl:p-16',
       name: 'Why join',
       children: [
         {
-          id: 'tmp-488',
+          id: 'tmp-430',
           type: 'el:h2',
           props: {
             text: 'Why Join',
@@ -186,19 +186,19 @@ export default {
             'font-heading text-xl font-black uppercase tracking-tightest @2xl:text-2xl text-base-content',
         },
         {
-          id: 'tmp-501',
+          id: 'tmp-443',
           type: 'el:div',
           props: {},
           class: 'grid w-full grid-cols-1 gap-3 @3xl:grid-cols-3',
           children: [
             {
-              id: 'tmp-492',
+              id: 'tmp-434',
               type: 'el:div',
               props: {},
               class: 'flex flex-col gap-2 border border-base-300 p-6',
               children: [
                 {
-                  id: 'tmp-489',
+                  id: 'tmp-431',
                   type: 'el:span',
                   props: {
                     text: '🎁',
@@ -206,7 +206,7 @@ export default {
                   class: 'text-3xl leading-none',
                 },
                 {
-                  id: 'tmp-490',
+                  id: 'tmp-432',
                   type: 'el:h3',
                   props: {
                     text: 'Earn on every order',
@@ -215,7 +215,7 @@ export default {
                     'font-heading text-lg font-black uppercase tracking-tight text-base-content',
                 },
                 {
-                  id: 'tmp-491',
+                  id: 'tmp-433',
                   type: 'el:p',
                   props: {
                     text: 'Collect points on everything you buy and turn them into rewards you’ll actually use.',
@@ -225,13 +225,13 @@ export default {
               ],
             },
             {
-              id: 'tmp-496',
+              id: 'tmp-438',
               type: 'el:div',
               props: {},
               class: 'flex flex-col gap-2 border border-base-300 p-6',
               children: [
                 {
-                  id: 'tmp-493',
+                  id: 'tmp-435',
                   type: 'el:span',
                   props: {
                     text: '⚡',
@@ -239,7 +239,7 @@ export default {
                   class: 'text-3xl leading-none',
                 },
                 {
-                  id: 'tmp-494',
+                  id: 'tmp-436',
                   type: 'el:h3',
                   props: {
                     text: 'Members-only drops',
@@ -248,7 +248,7 @@ export default {
                     'font-heading text-lg font-black uppercase tracking-tight text-base-content',
                 },
                 {
-                  id: 'tmp-495',
+                  id: 'tmp-437',
                   type: 'el:p',
                   props: {
                     text: 'Get early access to limited releases and colorways before they sell out.',
@@ -258,13 +258,13 @@ export default {
               ],
             },
             {
-              id: 'tmp-500',
+              id: 'tmp-442',
               type: 'el:div',
               props: {},
               class: 'flex flex-col gap-2 border border-base-300 p-6',
               children: [
                 {
-                  id: 'tmp-497',
+                  id: 'tmp-439',
                   type: 'el:span',
                   props: {
                     text: '🚚',
@@ -272,7 +272,7 @@ export default {
                   class: 'text-3xl leading-none',
                 },
                 {
-                  id: 'tmp-498',
+                  id: 'tmp-440',
                   type: 'el:h3',
                   props: {
                     text: 'Shipping on us',
@@ -281,7 +281,7 @@ export default {
                     'font-heading text-lg font-black uppercase tracking-tight text-base-content',
                 },
                 {
-                  id: 'tmp-499',
+                  id: 'tmp-441',
                   type: 'el:p',
                   props: {
                     text: 'Free standard shipping and free 30-day returns, no minimums and no fine print.',
@@ -295,7 +295,7 @@ export default {
       ],
     },
     {
-      id: 'tmp-512',
+      id: 'tmp-454',
       type: 'Section',
       props: {},
       class:
@@ -303,19 +303,19 @@ export default {
       name: 'Join the Club',
       children: [
         {
-          id: 'tmp-508',
+          id: 'tmp-450',
           type: 'el:div',
           props: {},
           class: 'max-w-xl',
           children: [
             {
-              id: 'tmp-505',
+              id: 'tmp-447',
               type: 'el:div',
               props: {},
               class: 'mb-3 flex items-center gap-2',
               children: [
                 {
-                  id: 'tmp-503',
+                  id: 'tmp-445',
                   type: 'el:span',
                   props: {
                     text: '»',
@@ -323,7 +323,7 @@ export default {
                   class: 'inline-block font-heading font-black leading-none text-base-100 text-lg',
                 },
                 {
-                  id: 'tmp-504',
+                  id: 'tmp-446',
                   type: 'el:span',
                   props: {
                     text: 'The Club',
@@ -334,7 +334,7 @@ export default {
               ],
             },
             {
-              id: 'tmp-506',
+              id: 'tmp-448',
               type: 'el:h2',
               props: {
                 text: 'Ready when you are.',
@@ -343,7 +343,7 @@ export default {
                 'font-heading text-2xl font-black uppercase leading-[0.95] tracking-tightest text-base-100 @2xl:text-4xl',
             },
             {
-              id: 'tmp-507',
+              id: 'tmp-449',
               type: 'el:p',
               props: {
                 text: 'Sign up in under a minute and we’ll throw in a welcome offer.',
@@ -353,13 +353,13 @@ export default {
           ],
         },
         {
-          id: 'tmp-511',
+          id: 'tmp-453',
           type: 'el:div',
           props: {},
           class: 'flex shrink-0 flex-col gap-3 @sm:flex-row',
           children: [
             {
-              id: 'tmp-509',
+              id: 'tmp-451',
               type: 'el:a',
               props: {
                 href: '/club',
@@ -369,7 +369,7 @@ export default {
                 'inline-flex items-center justify-center gap-2 font-heading font-bold uppercase tracking-wide transition-colors px-7 py-3.5 text-sm bg-base-100 text-base-content hover:bg-base-100/85',
             },
             {
-              id: 'tmp-510',
+              id: 'tmp-452',
               type: 'el:a',
               props: {
                 href: '/club',

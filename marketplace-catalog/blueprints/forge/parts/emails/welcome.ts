@@ -3,14 +3,14 @@
 // authoring source of truth is marketplace-catalog/_gen/forge/.
 
 export default {
-  id: 'fg-755',
+  id: 'fg-734',
   type: 'Section',
   props: {},
   class: 'flex flex-col gap-4',
   name: 'Email body',
   children: [
     {
-      id: 'fg-746',
+      id: 'fg-725',
       type: 'email_wordmark',
       props: {
         treatment: 'lockup',
@@ -19,7 +19,7 @@ export default {
       },
     },
     {
-      id: 'fg-747',
+      id: 'fg-726',
       type: 'Heading',
       props: {
         level: 'h1',
@@ -27,7 +27,7 @@ export default {
       },
     },
     {
-      id: 'fg-748',
+      id: 'fg-727',
       type: 'Text',
       props: {
         variant: 'body',
@@ -35,7 +35,7 @@ export default {
       },
     },
     {
-      id: 'fg-749',
+      id: 'fg-728',
       type: 'Text',
       props: {
         variant: 'body',
@@ -43,7 +43,7 @@ export default {
       },
     },
     {
-      id: 'fg-750',
+      id: 'fg-729',
       type: 'Text',
       props: {
         variant: 'body',
@@ -51,7 +51,7 @@ export default {
       },
     },
     {
-      id: 'fg-751',
+      id: 'fg-730',
       type: 'Text',
       props: {
         variant: 'body',
@@ -59,7 +59,7 @@ export default {
       },
     },
     {
-      id: 'fg-752',
+      id: 'fg-731',
       type: 'Text',
       props: {
         variant: 'body',
@@ -67,7 +67,7 @@ export default {
       },
     },
     {
-      id: 'fg-753',
+      id: 'fg-732',
       type: 'Button',
       props: {
         label: 'See our work',
@@ -75,7 +75,7 @@ export default {
       },
     },
     {
-      id: 'fg-754',
+      id: 'fg-733',
       type: 'Text',
       props: {
         variant: 'meta',

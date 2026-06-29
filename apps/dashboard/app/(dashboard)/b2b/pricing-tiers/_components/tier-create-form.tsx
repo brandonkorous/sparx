@@ -123,7 +123,7 @@ export function TierCreateForm({ presentation }: { presentation: Presentation })
             nextDisabled: form.formState.isSubmitting,
           }}
         >
-          <Card variant="module">
+          <Card variant="default">
             <CardHeader>
               <CardTitle>Tier details</CardTitle>
             </CardHeader>

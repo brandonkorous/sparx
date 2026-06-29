@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
 import type { FieldDef } from '@sparx/cms-schemas';
-import { Container, PageHeader, Stack } from '@sparx/ui';
 import { api } from '@/lib/api-rest-client';
 import { NewEntryForm } from './new-entry-form';
 
@@ -29,19 +28,15 @@ export default async function NewEntryPage({ params }: PageProps) {
     notFound();
   }
 
+  // The embedded SurfaceFrame supplies its own title + toolbar, so the page
+  // renders the form bare (no Container / PageHeader).
   return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          title={`New ${type.name.toLowerCase()}`}
-          description={type.description ?? undefined}
-        />
-        <NewEntryForm
-          typeKey={type.key}
-          urlPattern={type.url_pattern}
-          schema={type.schema_json as { fields: FieldDef[] }}
-        />
-      </Stack>
-    </Container>
+    <NewEntryForm
+      surface="page"
+      typeKey={type.key}
+      typeName={type.name}
+      urlPattern={type.url_pattern}
+      schema={type.schema_json as { fields: FieldDef[] }}
+    />
   );
 }

@@ -229,7 +229,7 @@ export function ServiceForm({ presentation, service, open, onOpenChange }: Servi
       }}
     >
       <Stack gap={6}>
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <CardTitle>Basics</CardTitle>
           </CardHeader>
@@ -368,7 +368,7 @@ export function ServiceForm({ presentation, service, open, onOpenChange }: Servi
           </CardContent>
         </Card>
 
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <CardTitle>Staffing &amp; availability</CardTitle>
           </CardHeader>

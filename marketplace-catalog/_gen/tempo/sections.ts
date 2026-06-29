@@ -199,21 +199,18 @@ export const shopCard = (): BuilderNode =>
     ],
   });
 
-/** A LIVE product grid bound to a category OR collection by HANDLE (the installer rewrites
- *  the handle → the real id at install). `limit` caps it for a teaser; omit for the full
- *  shop. `from` picks the source kind — `collection` (the home Best Sellers / New &
- *  Trending teasers) or `category` (the Shop page's per-category grids). */
-export const boundProductGrid = (
-  handle: string,
-  cols: number,
-  limit?: number,
-  from: 'category' | 'collection' = 'collection'
-): BuilderNode => {
+/** A LIVE product grid bound to the whole catalog (`from: 'all'`): it fills with the
+ *  tenant's products — their own, or industry sample data — once any exist, and renders
+ *  empty until then. `limit` caps it for a teaser; omit for the full shop. A
+ *  presentation-only blueprint ships NO catalog of its own (the look, not the goods), so
+ *  the grid binds the live catalog rather than a specific category/collection handle that
+ *  would dangle with nothing behind it. */
+export const boundProductGrid = (cols: number, limit?: number): BuilderNode => {
   const grid = node('Section', {
     box: { padding: 'none', backgroundWidth: 'full', contentWidth: 'full' },
     layout: { direction: 'grid', columns: cols, gap: 'md' },
     children: [shopCard()],
   });
-  grid.binding = { source: { from, id: handle, ...(limit ? { limit } : {}) } };
+  grid.binding = { source: { from: 'all', ...(limit ? { limit } : {}) } };
   return grid;
 };

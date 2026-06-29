@@ -6,6 +6,7 @@ import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack, Text } f
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
 
+import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
@@ -76,9 +77,14 @@ export default async function LotsPage({ searchParams }: PageProps) {
           }
           description="Batch + serial traceability for regulated, expiring, or serialized stock. Hazmat-flagged batches inform shipping routing; a recall flips the affected serials and surfaces who to notify."
           actions={
-            <Button color="module" asChild leftIcon={<Plus className="h-4 w-4" />}>
-              <Link href="/inventory/lots/new">New lot</Link>
-            </Button>
+            <EntityCreateButton
+              entityType="lot"
+              newHref="/inventory/lots/new"
+              color="module"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New lot
+            </EntityCreateButton>
           }
         />
 
@@ -114,9 +120,14 @@ export default async function LotsPage({ searchParams }: PageProps) {
                   : 'Create a lot to track a batch by expiry, hazmat class, supplier reference, and per-unit serials — and to drive recalls.'
               }
               action={
-                <Button color="module" asChild leftIcon={<Plus className="h-4 w-4" />}>
-                  <Link href="/inventory/lots/new">New lot</Link>
-                </Button>
+                <EntityCreateButton
+                  entityType="lot"
+                  newHref="/inventory/lots/new"
+                  color="module"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New lot
+                </EntityCreateButton>
               }
             />
           </Card>

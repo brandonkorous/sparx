@@ -3,9 +3,9 @@
   "category": "blueprint",
   "slug": "farm-fresh",
   "name": "Farm Fresh",
-  "version": "1.0.23",
+  "version": "1.1.0",
   "tagline": "Here to deliver health.",
-  "description": "A warm, organic storefront for a fresh-food brand — açaí bowls, smoothies and salads. Ships a full menu catalog, a brand story, locations, catering and contact pages, a journal, enriched product and blog templates, two collections, a matching theme, and brand-voiced welcome + seasonal newsletter emails. Installs as a draft for the tenant to review, customize, and publish.",
+  "description": "A warm, organic storefront LOOK for a fresh-food brand — a styled home, full menu page, brand story, locations, catering and contact pages, a journal, enriched product and blog templates, a matching theme, and brand-voiced welcome + seasonal newsletter emails. The look, not the goods: it ships no catalog of its own, so the product grids fill with your own products (or industry sample data) and are empty until then. Installs as a draft for the tenant to review, customize, and publish.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "retail",

@@ -11,15 +11,14 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus } from 'lucide-react';
 import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Button,
   Input,
+  Modal,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
   toast,
 } from '@sparx/ui';
 
@@ -68,27 +67,27 @@ export function NewComponentButton() {
       >
         New
       </Button>
-      <AlertDialog
+      <Modal
         open={open}
         onOpenChange={(next) => {
           // Don't let an Escape / overlay interaction yank the dialog mid-create.
           if (!busy) setOpen(next);
         }}
       >
-        <AlertDialogContent
+        <ModalContent
+          size="sm"
           onOpenAutoFocus={(e) => {
-            // Focus the name field instead of the default (Cancel), so the author
-            // can type immediately.
+            // Focus the name field on open so the author can type immediately.
             e.preventDefault();
             inputRef.current?.focus();
           }}
         >
-          <AlertDialogHeader>
-            <AlertDialogTitle>New component</AlertDialogTitle>
-            <AlertDialogDescription>
+          <ModalHeader>
+            <ModalTitle>New component</ModalTitle>
+            <ModalDescription>
               Give your component a name. You can rename it any time from its editor.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
+            </ModalDescription>
+          </ModalHeader>
           <Input
             ref={inputRef}
             value={name}
@@ -104,16 +103,16 @@ export function NewComponentButton() {
               }
             }}
           />
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={busy}>Cancel</AlertDialogCancel>
-            {/* A plain action button (not AlertDialogAction) so an empty name keeps
-                the dialog open instead of auto-closing on click. */}
+          <ModalFooter>
+            <Button variant="ghost" disabled={busy} onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
             <Button variant="solid" disabled={!trimmed || busy} onClick={() => void onCreate()}>
               {busy ? 'Creating…' : 'Create'}
             </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 }

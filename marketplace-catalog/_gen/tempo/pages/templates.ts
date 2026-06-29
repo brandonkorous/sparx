@@ -65,8 +65,9 @@ export function productTemplate(): BuilderNode {
           }),
         ],
       }),
-      // Cross-sell — a LIVE grid bound to New & Trending so every PDP recommends a varied
-      // handful (photos + PDP links all live).
+      // Cross-sell — a LIVE grid bound to the catalog so every PDP recommends a varied
+      // handful (photos + PDP links all live). Fills with the tenant's products; empty
+      // until any exist.
       node('Section', {
         box: { name: 'You might also like', padding: 'xl', backgroundWidth: 'full', contentWidth: 'contained' },
         layout: { direction: 'stack', gap: 'md', alignItems: 'start' },
@@ -77,7 +78,7 @@ export function productTemplate(): BuilderNode {
               arrowLink('View All', '/shop'),
             ],
           }),
-          boundProductGrid('new-arrivals', 4, 4, 'collection'),
+          boundProductGrid(4, 4),
         ],
       }),
     ],

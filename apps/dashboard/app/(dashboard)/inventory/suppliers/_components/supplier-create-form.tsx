@@ -1,32 +1,52 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
+  CardTitle,
   Checkbox,
-  Heading,
   Input,
   Label,
+  ModuleProvider,
   Stack,
   Text,
+  SurfaceFrame,
+  SurfaceStep,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 
 import { createSupplierAction } from '../../_lib/supplier-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
-// New-supplier form (page surface). Collects the supplier's basics + default
-// purchasing terms; per-variant cost/SKU links are added on the detail page once
-// the supplier exists. On success, navigate to the new supplier's detail.
+// New-supplier form on the standard create surface (docs/86 F layout, WS2). The
+// SAME component renders in both presentations, picked by the host:
+//   - `surface="page"`    → SurfaceFrame `embedded` at the /new route (contained sheet)
+//   - `surface="overlay"` → SurfaceFrame `inline` inside the @detail drawer/modal
+//
+// Single-step form grouped into Basics / Contact / Address / Terms sections.
+// Suppliers have no @detail drawer (their detail is a wide full-page surface with
+// per-variant purchasing links), so on success we navigate to the supplier's
+// detail — the natural next step (add cost/part-number links there).
+//
+// The fields stay an uncontrolled native form (read via FormData on submit); the
+// frame's toolbar primary lives outside the <form>, so it bridges to the form via
+// requestSubmit() rather than being a native submit button.
 
-export function SupplierCreateForm() {
+const STEPS: SurfaceStepDef[] = [{ key: 'details', label: 'Details' }];
+
+interface SupplierCreateFormProps {
+  surface: 'page' | 'overlay';
+}
+
+export function SupplierCreateForm({ surface }: SupplierCreateFormProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
@@ -68,13 +88,22 @@ export function SupplierCreateForm() {
 
   const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'supplier' });
 
-  // Guarded leave for the Cancel control: confirm a discard before dropping
-  // entered work, then return to the supplier list.
-  const cancel = React.useCallback(() => {
-    void Promise.resolve(guardLeave()).then((ok) => {
-      if (ok) router.push('/inventory/suppliers');
-    });
-  }, [guardLeave, router]);
+  // Leave WITHOUT the guard (the success path + the guarded Cancel route here).
+  const close = React.useCallback(() => {
+    if (surface === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+    } else {
+      router.push('/inventory/suppliers');
+    }
+  }, [surface, pathname, searchParams, router]);
+
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -112,123 +141,146 @@ export function SupplierCreateForm() {
         setFieldErrors(map);
         return;
       }
+      // No @detail drawer — navigate to the supplier's full-page detail (clears the
+      // overlay token), where per-variant purchasing links are added.
       router.push(`/inventory/suppliers/${result.data.id}`);
       router.refresh();
     });
   }
 
   return (
-    <form ref={formRef} onSubmit={onSubmit} onInput={recomputeDirty} onChange={recomputeDirty}>
-      <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Basics</Heading>
-            <CardDescription>
-              Name shows in the dashboard; code is a short unique handle.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
-            <Field label="Name" name="name" required error={fieldErrors.name} />
-            <Field
-              label="Code"
-              name="code"
-              required
-              hint="Letters, numbers, hyphen, underscore. Examples: ACME, BOSCH, 3PL-WEST."
-              pattern="[A-Za-z0-9_-]+"
-              error={fieldErrors.code}
-            />
-          </Stack>
-        </CardContent>
-      </Card>
+    <ModuleProvider module="inventory" className="h-full">
+      <SurfaceFrame
+        variant={surface === 'overlay' ? 'inline' : 'embedded'}
+        title="New supplier"
+        steps={STEPS}
+        current={0}
+        onCancel={cancel}
+      >
+        <SurfaceStep
+          header={{
+            title: 'Supplier details',
+            supporting:
+              'Record a vendor you purchase stock from. Per-variant cost + part numbers are added on the supplier’s page once it exists.',
+          }}
+          actions={{
+            onNext: () => formRef.current?.requestSubmit(),
+            nextLabel: 'Create supplier',
+            nextLoading: pending,
+            nextDisabled: pending,
+          }}
+        >
+          <form
+            ref={formRef}
+            onSubmit={onSubmit}
+            onInput={recomputeDirty}
+            onChange={recomputeDirty}
+            className="contents"
+          >
+            <Stack gap={6}>
+              <Card>
+                <CardHeader>
+                  <Stack gap={1}>
+                    <CardTitle>Basics</CardTitle>
+                    <CardDescription>
+                      Name shows in the dashboard; code is a short unique handle.
+                    </CardDescription>
+                  </Stack>
+                </CardHeader>
+                <CardContent>
+                  <Stack gap={4}>
+                    <Field label="Name" name="name" required error={fieldErrors.name} />
+                    <Field
+                      label="Code"
+                      name="code"
+                      required
+                      hint="Letters, numbers, hyphen, underscore. Examples: ACME, BOSCH, 3PL-WEST."
+                      pattern="[A-Za-z0-9_-]+"
+                      error={fieldErrors.code}
+                    />
+                  </Stack>
+                </CardContent>
+              </Card>
 
-      <Card className="mt-6">
-        <CardHeader>
-          <Heading level={3}>Contact</Heading>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
-            <Stack direction="row" gap={3} wrap>
-              <Field label="Contact name" name="contactName" />
-              <Field label="Email" name="email" type="email" error={fieldErrors.email} />
-            </Stack>
-            <Stack direction="row" gap={3} wrap>
-              <Field label="Phone" name="phone" />
-              <Field label="Website" name="website" placeholder="https://" />
-            </Stack>
-          </Stack>
-        </CardContent>
-      </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Contact</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Stack gap={4}>
+                    <Stack direction="row" gap={3} wrap>
+                      <Field label="Contact name" name="contactName" />
+                      <Field label="Email" name="email" type="email" error={fieldErrors.email} />
+                    </Stack>
+                    <Stack direction="row" gap={3} wrap>
+                      <Field label="Phone" name="phone" />
+                      <Field label="Website" name="website" placeholder="https://" />
+                    </Stack>
+                  </Stack>
+                </CardContent>
+              </Card>
 
-      <Card className="mt-6">
-        <CardHeader>
-          <Heading level={3}>Address</Heading>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
-            <Field label="Line 1" name="line1" />
-            <Field label="Line 2" name="line2" />
-            <Stack direction="row" gap={3} wrap>
-              <Field label="City" name="city" />
-              <Field label="Region / State" name="region" />
-              <Field label="Postal code" name="postalCode" />
-              <Field label="Country" name="country" maxLength={2} placeholder="US" />
-            </Stack>
-          </Stack>
-        </CardContent>
-      </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Address</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Stack gap={4}>
+                    <Field label="Line 1" name="line1" />
+                    <Field label="Line 2" name="line2" />
+                    <Stack direction="row" gap={3} wrap>
+                      <Field label="City" name="city" />
+                      <Field label="Region / State" name="region" />
+                      <Field label="Postal code" name="postalCode" />
+                      <Field label="Country" name="country" maxLength={2} placeholder="US" />
+                    </Stack>
+                  </Stack>
+                </CardContent>
+              </Card>
 
-      <Card className="mt-6">
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Terms</Heading>
-            <CardDescription>
-              Defaults applied to purchase orders for this supplier; overridable per PO.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
-            <Stack direction="row" gap={3} wrap>
-              <Field label="Payment terms" name="paymentTerms" placeholder="net30" />
-              <Field label="Lead time (days)" name="leadTimeDays" type="number" />
-              <Field label="Currency" name="currency" maxLength={3} placeholder="USD" />
+              <Card>
+                <CardHeader>
+                  <Stack gap={1}>
+                    <CardTitle>Terms</CardTitle>
+                    <CardDescription>
+                      Defaults applied to purchase orders for this supplier; overridable per PO.
+                    </CardDescription>
+                  </Stack>
+                </CardHeader>
+                <CardContent>
+                  <Stack gap={4}>
+                    <Stack direction="row" gap={3} wrap>
+                      <Field label="Payment terms" name="paymentTerms" placeholder="net30" />
+                      <Field label="Lead time (days)" name="leadTimeDays" type="number" />
+                      <Field label="Currency" name="currency" maxLength={3} placeholder="USD" />
+                    </Stack>
+                    <Stack gap={1}>
+                      <Label htmlFor="notes">Notes</Label>
+                      <textarea
+                        id="notes"
+                        name="notes"
+                        rows={3}
+                        className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2 text-sm"
+                      />
+                    </Stack>
+                    <label className="flex items-center gap-2">
+                      <Checkbox color="module" name="isActive" defaultChecked />
+                      <Text size="sm">Active</Text>
+                    </label>
+
+                    {error && (
+                      <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                        {error}
+                      </Text>
+                    )}
+                  </Stack>
+                </CardContent>
+              </Card>
             </Stack>
-            <Stack gap={1}>
-              <Label htmlFor="notes">Notes</Label>
-              <textarea
-                id="notes"
-                name="notes"
-                rows={3}
-                className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2 text-sm"
-              />
-            </Stack>
-            <label className="flex items-center gap-2">
-              <Checkbox color="module" name="isActive" defaultChecked />
-              <Text size="sm">Active</Text>
-            </label>
-          </Stack>
-        </CardContent>
-        <CardFooter>
-          <Stack direction="row" gap={2} justify="between" align="center" className="w-full">
-            {error && (
-              <Text size="sm" className="text-[var(--color-danger)]">
-                {error}
-              </Text>
-            )}
-            <Stack direction="row" gap={2} className="ml-auto">
-              <Button type="button" variant="ghost" onClick={cancel}>
-                Cancel
-              </Button>
-              <Button color="module" type="submit" disabled={pending}>
-                {pending ? 'Saving…' : 'Create supplier'}
-              </Button>
-            </Stack>
-          </Stack>
-        </CardFooter>
-      </Card>
-    </form>
+          </form>
+        </SurfaceStep>
+      </SurfaceFrame>
+    </ModuleProvider>
   );
 }
 
@@ -274,7 +326,7 @@ function Field({
         </Text>
       )}
       {error && (
-        <Text size="xs" className="text-[var(--color-danger)]">
+        <Text size="xs" variant="danger">
           {error}
         </Text>
       )}

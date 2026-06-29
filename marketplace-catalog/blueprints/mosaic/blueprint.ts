@@ -4,7 +4,6 @@
 // ./parts/, or the gen source, then re-run the generator.
 
 import assets from './parts/assets';
-import content from './parts/content';
 import layoutTree from './parts/layout';
 import page_home from './parts/pages/home';
 import page_pricing from './parts/pages/pricing';
@@ -17,7 +16,7 @@ import email_product_tips from './parts/emails/product-tips';
 
 export default {
   key: 'mosaic',
-  version: '1.0.0',
+  version: '1.1.0',
   name: 'Mosaic',
   summary:
     'A clean, modern marketing site for an AI-workspace / productivity SaaS — a bento-driven home page with a browser-chrome product preview, a scrolling logo wall, agent and assistant showcases, social proof and stats, plus Pricing, Enterprise, a Request-a-demo page, customer stories, and brand-voiced emails. A ready-to-edit services starter.',
@@ -87,7 +86,6 @@ export default {
     apply: true,
   },
   assets: assets,
-  content: content,
   layout: {
     name: 'Mosaic layout',
     tree: layoutTree,

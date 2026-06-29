@@ -6,7 +6,7 @@
 
 import { node, type BuilderNode } from '../_kit';
 import {
-  boundMenuGroup,
+  boundProductGrid,
   locationCard,
   splitBand,
   stepCard,
@@ -167,12 +167,11 @@ export function homeTree(): BuilderNode {
               }),
             ],
           }),
-          // Live product teasers — a few real, shoppable bowls per group (photo + title
-          // link to the PDP, Add sells the scoped product). The full catalog lives on
-          // the Menu page; this is the home taste of it.
-          boundMenuGroup('Açaí & Smoothie Bowls', 'acai-bowls', 3, 3),
-          boundMenuGroup('Cold-Pressed Smoothies', 'smoothies', 4, 4),
-          boundMenuGroup('Salads & Grain Bowls', 'salads-grains', 3, 3),
+          // Live product teaser — a handful of real, shoppable items (photo + title link
+          // to the PDP, Add sells the scoped product). Bound to the live catalog, so it
+          // fills with the tenant's products and is empty until any exist; the full grid
+          // lives on the Menu page.
+          boundProductGrid(3, 6),
           node('Button', { props: { label: 'See the full menu', style: 'accent', href: '/menu' } }),
         ],
       }),

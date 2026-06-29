@@ -174,7 +174,7 @@ export function NewProfileForm({ surface }: NewProfileFormProps) {
             nextDisabled: pending,
           }}
         >
-          <Card variant="module">
+          <Card variant="default">
             <CardContent className="py-6">
               <Stack gap={4}>
                 <Stack gap={1}>

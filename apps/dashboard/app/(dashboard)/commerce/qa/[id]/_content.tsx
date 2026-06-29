@@ -109,7 +109,7 @@ export async function QuestionDetailContent({ id }: Props) {
         </CardContent>
       </Card>
 
-      <Card variant="module">
+      <Card variant="default">
         <CardHeader>
           <Stack gap={1}>
             <Heading level={3}>Answers</Heading>

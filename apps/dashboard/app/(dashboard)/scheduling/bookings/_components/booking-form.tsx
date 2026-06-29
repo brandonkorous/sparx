@@ -188,7 +188,7 @@ export function BookingForm({ presentation, services }: BookingFormProps) {
             'Pick a service and a time — only open slots that respect availability are shown.',
         }}
       >
-        <Card variant="module">
+        <Card variant="default">
           <CardContent className="py-6">
             <Text size="sm" variant="muted">
               No active services to book. Create a service first.
@@ -212,7 +212,7 @@ export function BookingForm({ presentation, services }: BookingFormProps) {
           nextDisabled: saving || !selected,
         }}
       >
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <CardTitle>Service &amp; time</CardTitle>
           </CardHeader>

@@ -132,7 +132,7 @@ export function RedirectCreateForm({ surface }: RedirectCreateFormProps) {
             nextDisabled: pending,
           }}
         >
-          <Card variant="module">
+          <Card variant="default">
             <CardContent className="py-6">
               <Stack direction="row" gap={3} align="end" wrap>
                 <Stack gap={1} className="flex-1">

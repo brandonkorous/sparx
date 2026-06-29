@@ -195,7 +195,7 @@ export function VariantsStep({
         nextDisabled: generating,
       }}
     >
-      <Card variant="module">
+      <Card variant="default">
         <CardContent className="py-6">
           {loading ? (
             <div className="flex items-center gap-2 py-8 text-[var(--color-text-muted)]">

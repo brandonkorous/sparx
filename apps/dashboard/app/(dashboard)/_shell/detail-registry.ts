@@ -41,6 +41,9 @@ const CREATE_VIEW_TYPES = new Set<string>([
   'price-list',
   'customer',
   'b2b-account',
+  // Deal creation is the single-step SurfaceFrame (full-bleed below); a created
+  // deal opens into its detail view. Full page: /crm/deals/new.
+  'deal',
   // Quote + Order creation are multi-step SurfaceFrames (full-bleed below); a
   // created record opens into its detail view. Full pages: /crm/quotes/new,
   // /crm/orders/new.
@@ -51,6 +54,11 @@ const CREATE_VIEW_TYPES = new Set<string>([
   'purchase-order',
   'transfer',
   'segment',
+  // Task create-only overlay (no detail view); a created task returns to the list.
+  'task',
+  // Pipeline create-only overlay (detail is a full-width Kanban, not a drawer); a
+  // created pipeline continues to its edit screen to add stages.
+  'pipeline',
   'page',
   'content-type',
   'content-entry',
@@ -58,6 +66,9 @@ const CREATE_VIEW_TYPES = new Set<string>([
   // Its detail/editor stays full-page, but create opts into the drawer/modal so
   // the "New" button honors `defaultDetailView`. Full page: /invoicing/documents/new.
   'billing-document',
+  // Workflow create-only overlay (the stage editor stays full-page); a created
+  // workflow continues to its edit screen to add stages.
+  'workflow',
   // Single-column create overlays for list surfaces that previously rendered an
   // inline form in the page body. author + taxonomy flow into their detail view
   // on success; the rest have no detail view and stay open with an inline result.
@@ -88,6 +99,15 @@ const CREATE_VIEW_TYPES = new Set<string>([
   'b2b-pricing-tier',
   'inventory-source',
   'dropship-supplier',
+  // Inventory supplier create-only overlay (detail stays full-page); a created
+  // supplier opens its detail to add per-variant purchasing links.
+  'supplier',
+  // Inventory lot create-only overlay (the lot detail — serials + recalls — stays
+  // full-page); a created lot navigates to its detail.
+  'lot',
+  // Inventory count create-only overlay (the count detail — quantity entry/review/
+  // post — stays full-page); a created count navigates to its detail.
+  'count',
 ]);
 
 export function hasCreateView(typeId: string): boolean {
@@ -103,6 +123,7 @@ const FULL_BLEED_CREATE_TYPES = new Set<string>([
   'product',
   'customer',
   'b2b-account',
+  'deal',
   'content-entry',
   'billing-document',
   'quote',
@@ -118,6 +139,8 @@ const FULL_BLEED_CREATE_TYPES = new Set<string>([
   'warehouse',
   'gift-card',
   'segment',
+  'task',
+  'pipeline',
   'price-list',
   'content-type',
   'author',
@@ -142,6 +165,10 @@ const FULL_BLEED_CREATE_TYPES = new Set<string>([
   'b2b-pricing-tier',
   'inventory-source',
   'dropship-supplier',
+  'supplier',
+  'lot',
+  'count',
+  'workflow',
 ]);
 
 export function isFullBleedCreate(typeId: string): boolean {

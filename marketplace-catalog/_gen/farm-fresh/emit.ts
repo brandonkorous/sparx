@@ -19,8 +19,9 @@ import { type BuilderNode } from './_kit';
 // the index signature and is serialized as-is.
 interface ManifestLike {
   assets: unknown;
-  content: unknown;
-  commerce: unknown;
+  // Optional: a presentation-only blueprint ships no catalog/content of its own.
+  content?: unknown;
+  commerce?: unknown;
   layout: { tree: BuilderNode; [k: string]: unknown };
   pages: Array<{ name: string; slug?: string; tree: BuilderNode; [k: string]: unknown }>;
   emails: Array<{ name: string; tree: BuilderNode; [k: string]: unknown }>;
@@ -102,18 +103,21 @@ export async function emitBundle(bundleDir: string, manifest: ManifestLike): Pro
   // Stale-part guard: a renamed page/section would otherwise orphan its old file.
   await fs.rm(join(bundleDir, 'parts'), { recursive: true, force: true });
 
-  // Split the heavy sections out; keep catalog metadata + brand/theme inline (small,
-  // and the natural "overview" of the manifest). Spreading preserves key order.
+  // Split the heavy sections out; keep brand/theme inline (small, and the natural
+  // "overview" of the manifest). Spreading preserves key order. `content` / `commerce`
+  // are emitted only when present — a presentation-only blueprint omits them entirely.
   const entry: Record<string, unknown> = {
     ...manifest,
     assets: await topPart('assets', 'assets', 'media asset references', manifest.assets),
-    content: await topPart('content', 'content', 'CMS content (blog posts)', manifest.content),
-    commerce: await topPart('commerce', 'commerce', 'commerce catalog', manifest.commerce),
     layout: {
       ...manifest.layout,
       tree: await topPart('layout', 'layoutTree', 'site layout (announcement · header · footer)', manifest.layout.tree),
     },
   };
+  if (manifest.content !== undefined)
+    entry.content = await topPart('content', 'content', 'CMS content (blog posts)', manifest.content);
+  if (manifest.commerce !== undefined)
+    entry.commerce = await topPart('commerce', 'commerce', 'commerce catalog', manifest.commerce);
   const pages = [];
   for (const pg of manifest.pages) {
     const base = kebab(pg.slug ?? pg.name);

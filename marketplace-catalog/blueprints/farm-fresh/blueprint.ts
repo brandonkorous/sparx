@@ -4,8 +4,6 @@
 // ./parts/, or the gen source, then re-run the generator.
 
 import assets from './parts/assets';
-import content from './parts/content';
-import commerce from './parts/commerce';
 import layoutTree from './parts/layout';
 import page_home from './parts/pages/home';
 import page_menu from './parts/pages/menu';
@@ -21,7 +19,7 @@ import email_seasonal_newsletter from './parts/emails/seasonal-newsletter';
 
 export default {
   key: 'farm-fresh',
-  version: '1.0.23',
+  version: '1.1.0',
   name: 'Farm Fresh',
   summary:
     'A warm, organic storefront for a fresh-food brand — açaí bowls, smoothies and salads with a full menu, a brand story, locations, catering, and a welcome email. A ready-to-edit retail starter.',
@@ -95,8 +93,6 @@ export default {
     apply: true,
   },
   assets: assets,
-  content: content,
-  commerce: commerce,
   layout: {
     name: 'Farm Fresh layout',
     tree: layoutTree,

@@ -117,7 +117,7 @@ export function AddDomainForm({ surface }: AddDomainFormProps) {
             nextDisabled: pending || !domain.trim(),
           }}
         >
-          <Card variant="module">
+          <Card variant="default">
             <CardContent className="py-6">
               <Stack direction="row" align="end" gap={3} wrap>
                 <Stack gap={2} className="min-w-64 flex-1">

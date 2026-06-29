@@ -1,26 +1,26 @@
 'use client';
 
-// Customer full-profile creation wizard (docs/68 Phase B-5, docs/86 SurfaceFrame).
-// The "one swipe" wizard — create the contact AND everything that usually
-// follows a first touch, without leaving the flow:
-//   1. Contact      — name, email (required), phone, company, job title
-//   2. Classify     — type, preferred contact method, do-not-contact, tags
-//   3. Address      — optional billing/shipping address
-//   4. Follow-up    — optional first-interaction note + a follow-up task
-//   5. Opportunity  — optional: open a deal on a pipeline + start a draft quote
+// Customer full-profile creation form (docs/68 Phase B-5, docs/86 SurfaceFrame).
+// SINGLE-PAGE (WS1, docs/105): the "one swipe" form — create the contact AND
+// everything that usually follows a first touch, in one scroll:
+//   • Contact      — name, email (required), phone, company, job title
+//   • Classify     — type, preferred contact method, do-not-contact, tags
+//   • Address      — optional billing/shipping address
+//   • Get a head start (optional) — first-interaction note + follow-up task,
+//     and an opportunity: open a deal on a pipeline + start a draft quote.
 //
-// Every step after Contact is optional and uses a "fill to create" rule: a deal
+// Everything after Contact is optional and uses a "fill to create" rule: a deal
 // is created only if you name it, a draft quote only if you add a starter line —
-// so someone who just wants a contact clicks straight through.
+// so someone who just wants a contact scrolls to the bottom and clicks Create.
+// (Collapsed from the former 5-step wizard so the form renders well in a drawer /
+// modal / full-page — what makes the user's `defaultDetailView` preference pay off.)
 //
-// Presentation (like the product wizard): the `/new` route renders the in-app
-// `embedded` top stepper (full page inside the dashboard chrome); the CRM list
-// opens it inside the drawer/modal detail chrome (`overlay` → SurfaceFrame
-// `inline`), picked by the user's `defaultDetailView`. On finish: creates the
-// customer, then best-effort
-// applies the address, note, task, deal, and quote, and navigates to the new
-// detail with a `?notice=` listing anything that failed (the contact is saved
-// regardless).
+// Presentation: the `/new` route renders the `embedded` full page inside the
+// dashboard chrome; the CRM list opens it inside the drawer/modal detail chrome
+// (`overlay` → SurfaceFrame `inline`), picked by the user's `defaultDetailView`.
+// On finish: creates the customer, then best-effort applies the address, note,
+// task, deal, and quote, and navigates to the new detail with a `?notice=` listing
+// anything that failed (the contact is saved regardless).
 
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -53,50 +53,13 @@ import { createDealAction } from '../../deal-actions';
 import { createQuoteAction } from '../../quote-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
-// ─── Steps & rail copy ──────────────────────────────────────────────────────────
-
-type StepKey = 'contact' | 'classify' | 'address' | 'followup' | 'opportunity';
 type ActivityKind = 'note' | 'call' | 'meeting';
 type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
 type QuoteTerms = '' | 'prepay' | 'net15' | 'net30' | 'net60' | 'net90';
 
-const ALL_STEPS: Record<StepKey, SurfaceStepDef> = {
-  contact: { key: 'contact', label: 'Contact', sublabel: 'Name & email' },
-  classify: { key: 'classify', label: 'Classify', sublabel: 'Type & tags' },
-  address: { key: 'address', label: 'Address', sublabel: 'Optional' },
-  followup: { key: 'followup', label: 'Follow-up', sublabel: 'Note & task' },
-  opportunity: { key: 'opportunity', label: 'Opportunity', sublabel: 'Deal & quote' },
-};
-
-const STEP_ORDER: StepKey[] = ['contact', 'classify', 'address', 'followup', 'opportunity'];
-
-const RAIL: Record<StepKey, { title: string; blurb: string; context?: string }> = {
-  contact: {
-    title: 'Who are you adding?',
-    blurb: 'The contact’s basic details. Only an email is required — fill in the rest anytime.',
-    context: 'Only the email is required to create the contact.',
-  },
-  classify: {
-    title: 'Classify the contact',
-    blurb: 'Type, contact preferences, and tags drive segment membership and campaign eligibility.',
-    context: 'All optional — these can change later from the profile.',
-  },
-  address: {
-    title: 'Add an address',
-    blurb: 'A primary billing/shipping address — or skip and add one later from the profile.',
-    context: 'Optional — skip and add addresses anytime.',
-  },
-  followup: {
-    title: 'Log it & follow up',
-    blurb: 'Just off a call or back from coffee? Capture what happened and set a reminder — now.',
-    context: 'All optional — leave blank to skip.',
-  },
-  opportunity: {
-    title: 'Start the work',
-    blurb: 'Open a deal on a pipeline and start a draft quote — all without leaving the contact.',
-    context: 'All optional — name the deal or add a line to create them.',
-  },
-};
+// Single-page form = one step, so SurfaceFrame's MiniProgress auto-hides and the
+// toolbar is Cancel + Create (no Back/Continue).
+const SINGLE_STEP: SurfaceStepDef[] = [{ key: 'customer', label: 'Customer' }];
 
 // ─── Field schemas ──────────────────────────────────────────────────────────────
 
@@ -187,7 +150,7 @@ const ADDRESS_FIELDS = [
   { key: 'phone', label: 'Address phone', type: 'tel' as const },
 ];
 
-// ─── Parsing helpers (the Opportunity step's free-text → typed values) ───────────
+// ─── Parsing helpers (the Opportunity section's free-text → typed values) ─────────
 
 /** A monetary amount string → a non-negative number rounded to cents (Money
  *  is `multipleOf(0.01)`; an un-rounded float like 19.999 would fail Zod). */
@@ -219,7 +182,7 @@ function deriveSku(name: string): string {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 /** A pipeline + its ordered stages, fetched server-side and passed in so the
- *  Opportunity step can offer pipeline → stage selection without a client fetch. */
+ *  Opportunity section can offer pipeline → stage selection without a client fetch. */
 export interface PipelineOption {
   id: string;
   name: string;
@@ -227,13 +190,13 @@ export interface PipelineOption {
 }
 
 export interface CustomerWizardProps {
-  /** `'page'` = the in-app full-page `/new` route (embedded top stepper, inside
-   *  the dashboard chrome); `'overlay'` = the drawer/modal detail chrome (the
-   *  `defaultDetailView` preference picks which). */
+  /** `'page'` = the in-app full-page `/new` route (embedded, inside the dashboard
+   *  chrome); `'overlay'` = the drawer/modal detail chrome (the `defaultDetailView`
+   *  preference picks which). */
   presentation?: 'page' | 'overlay';
   /** Current user id — the optional follow-up task is assigned to them. Supplied
-   *  by the server surface (the wizard is a client component); when absent, a
-   *  typed task is skipped on submit (the note still records). */
+   *  by the server surface (the form is a client component); when absent, a typed
+   *  task is skipped on submit (the note still records). */
   currentUserId?: string;
   /** The tenant's CRM pipelines (with stages) for the optional deal. Empty when
    *  none exist yet — the deal card then points the user to create one first. */
@@ -241,8 +204,8 @@ export interface CustomerWizardProps {
 }
 
 export function CustomerFullProfileWizard(props: CustomerWizardProps = {}) {
-  // Both presentations are full-height top-stepper frames (embedded fills the
-  // dashboard content area; inline fills the drawer/modal body), so the wrapping
+  // Both presentations are full-height frames (embedded fills the dashboard
+  // content area; inline fills the drawer/modal body), so the wrapping
   // ModuleProvider carries the height through (h-full).
   return (
     <ModuleProvider module="crm" className="h-full">
@@ -260,21 +223,19 @@ function CustomerWizardInner({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [stepKey, setStepKey] = React.useState<StepKey>('contact');
-
   const [contact, setContact] = React.useState<Record<string, unknown>>({});
   const [classify, setClassify] = React.useState<Record<string, unknown>>({ type: 'prospect' });
   const [address, setAddress] = React.useState<Record<string, unknown>>({ type: 'shipping' });
   const [skipAddress, setSkipAddress] = React.useState(false);
 
-  // Follow-up step — an optional first interaction note + a follow-up task.
+  // Follow-up — an optional first interaction note + a follow-up task.
   const [noteKind, setNoteKind] = React.useState<ActivityKind>('note');
   const [noteDescription, setNoteDescription] = React.useState('');
   const [taskTitle, setTaskTitle] = React.useState('');
   const [taskDueAt, setTaskDueAt] = React.useState('');
   const [taskPriority, setTaskPriority] = React.useState<TaskPriority>('medium');
 
-  // Opportunity step — an optional deal on a pipeline + an optional draft quote.
+  // Opportunity — an optional deal on a pipeline + an optional draft quote.
   const firstPipeline = pipelines[0];
   const [dealPipelineId, setDealPipelineId] = React.useState<string>(firstPipeline?.id ?? '');
   const [dealStageId, setDealStageId] = React.useState<string>(firstPipeline?.stages[0]?.id ?? '');
@@ -294,19 +255,13 @@ function CustomerWizardInner({
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  const steps: SurfaceStepDef[] = STEP_ORDER.map((k) => ALL_STEPS[k]);
-  const current = Math.max(
-    0,
-    steps.findIndex((s) => s.key === stepKey)
-  );
-
   const selectedPipeline = pipelines.find((p) => p.id === dealPipelineId);
   const dealStages = selectedPipeline?.stages ?? [];
 
-  // Unsaved-changes guard. A create wizard starts blank, so "dirty" is "the user
-  // entered or changed anything across any step" — any contact field, a changed
-  // classification, an address, a follow-up note/task, or an opportunity. Guards a
-  // Cancel / Close / backdrop so a half-built profile isn't silently discarded.
+  // Unsaved-changes guard. A create form starts blank, so "dirty" is "the user
+  // entered or changed anything" — any contact field, a changed classification,
+  // an address, a follow-up note/task, or an opportunity. Guards a Cancel / Close
+  // / backdrop so a half-built profile isn't silently discarded.
   const filled = (v: unknown) => typeof v === 'string' && v.trim() !== '';
   const dirty =
     filled(contact.firstName) ||
@@ -338,19 +293,14 @@ function CustomerWizardInner({
     quoteValidUntil.trim() !== '';
   const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'customer' });
 
-  function goToStep(key: StepKey) {
-    setError(null);
-    setStepKey(key);
-  }
-
   function onPipelineChange(id: string) {
     setDealPipelineId(id);
     const pipeline = pipelines.find((p) => p.id === id);
     setDealStageId(pipeline?.stages[0]?.id ?? '');
   }
 
-  // Where "leave the wizard" goes. In the overlay it clears the detail token so
-  // the drawer/modal closes in place; the page route returns to the list.
+  // Where "leave the form" goes. In the overlay it clears the detail token so the
+  // drawer/modal closes in place; the page route returns to the list.
   const close = React.useCallback(() => {
     if (presentation === 'overlay') {
       const next = new URLSearchParams(searchParams?.toString() ?? '');
@@ -369,7 +319,7 @@ function CustomerWizardInner({
     if (await guardLeave()) close();
   }, [guardLeave, close]);
 
-  // ── Validation ─────────────────────────────────────────────────────────────
+  // ── Validation (run as submit backstops) ─────────────────────────────────────
 
   function validateContact(): boolean {
     const errs: Record<string, string> = {};
@@ -382,6 +332,11 @@ function CustomerWizardInner({
 
   function validateAddress(): boolean {
     if (skipAddress) return true;
+    // The address section is fully optional — only validate it when the user has
+    // actually started one (any required field touched); an untouched address
+    // shouldn't block creating a contact-only customer.
+    const started = filled(address.line1) || filled(address.city) || filled(address.country);
+    if (!started) return true;
     const errs: Record<string, string> = {};
     if (!address.line1) errs.line1 = 'Address line 1 is required.';
     if (!address.city) errs.city = 'City is required.';
@@ -397,19 +352,10 @@ function CustomerWizardInner({
     return Object.keys(errs).length === 0;
   }
 
-  function commitContact() {
-    if (!validateContact()) return;
-    goToStep('classify');
-  }
-
-  function commitAddress() {
-    if (!skipAddress && !validateAddress()) return;
-    goToStep('followup');
-  }
-
   // ── Submit ───────────────────────────────────────────────────────────────────
 
   async function handleSubmit() {
+    if (!validateContact() || !validateAddress()) return;
     setError(null);
     setSubmitting(true);
     try {
@@ -528,440 +474,9 @@ function CustomerWizardInner({
     }
   }
 
-  // ── Step bodies ──────────────────────────────────────────────────────────────
-
-  const contactStep = (
-    <SurfaceStep
-      header={{
-        title: 'Contact information',
-        supporting:
-          'Only an email is required — you can fill in the rest after the contact exists.',
-      }}
-      actions={{
-        onNext: commitContact,
-        nextLabel: 'Continue',
-        nextDisabled:
-          typeof contact.email !== 'string' || !contact.email.includes('@') || submitting,
-      }}
-    >
-      <Card variant="module">
-        <CardHeader>
-          <Heading level={3}>Contact details</Heading>
-        </CardHeader>
-        <CardContent>
-          <SchemaFieldRenderer
-            fields={CONTACT_FIELDS}
-            values={contact}
-            onChange={(key, value) => setContact((prev) => ({ ...prev, [key]: value }))}
-            errors={contactErrors}
-            disabled={submitting}
-          />
-        </CardContent>
-      </Card>
-      {error && (
-        <Text size="sm" variant="danger" role="alert" className="mt-4">
-          {error}
-        </Text>
-      )}
-    </SurfaceStep>
-  );
-
-  const classifyStep = (
-    <SurfaceStep
-      header={{
-        title: 'Classify the contact',
-        supporting: 'Type, contact preferences, and tags — they drive segments and campaigns.',
-      }}
-      actions={{
-        onBack: () => goToStep('contact'),
-        onNext: () => goToStep('address'),
-        nextLabel: 'Continue',
-        nextDisabled: submitting,
-      }}
-    >
-      <Card variant="module">
-        <CardHeader>
-          <Heading level={3}>Classification</Heading>
-        </CardHeader>
-        <CardContent>
-          <SchemaFieldRenderer
-            fields={CLASSIFY_FIELDS}
-            values={classify}
-            onChange={(key, value) => setClassify((prev) => ({ ...prev, [key]: value }))}
-            disabled={submitting}
-          />
-        </CardContent>
-      </Card>
-    </SurfaceStep>
-  );
-
-  const addressStep = (
-    <SurfaceStep
-      header={{
-        title: 'Primary address',
-        supporting: 'Add a primary address now, or skip and add one later from the profile.',
-      }}
-      actions={{
-        onBack: () => goToStep('classify'),
-        onNext: commitAddress,
-        nextLabel: 'Continue',
-        nextDisabled: submitting,
-      }}
-    >
-      <div className="flex flex-col gap-4">
-        {!skipAddress ? (
-          <>
-            <Card variant="module">
-              <CardHeader>
-                <Heading level={3}>Primary address</Heading>
-              </CardHeader>
-              <CardContent>
-                <SchemaFieldRenderer
-                  fields={ADDRESS_FIELDS}
-                  values={address}
-                  onChange={(key, value) => setAddress((prev) => ({ ...prev, [key]: value }))}
-                  errors={addressErrors}
-                  disabled={submitting}
-                />
-              </CardContent>
-            </Card>
-            <button
-              type="button"
-              className="self-start text-sm text-[var(--color-text-muted)] underline-offset-4 hover:underline"
-              onClick={() => {
-                setSkipAddress(true);
-                setAddressErrors({});
-              }}
-            >
-              Skip — I’ll add an address later
-            </button>
-          </>
-        ) : (
-          <Card padding="sm" className="bg-[var(--color-bg-subtle)]">
-            <Stack direction="row" align="center" gap={3}>
-              <UserPlus className="h-4 w-4 shrink-0 text-[var(--color-text-muted)]" />
-              <Text size="sm" variant="muted">
-                No address will be added. You can add one from the customer’s profile.
-              </Text>
-              <button
-                type="button"
-                className="ml-auto shrink-0 text-xs text-[var(--module-active)] hover:underline"
-                onClick={() => setSkipAddress(false)}
-              >
-                Add address
-              </button>
-            </Stack>
-          </Card>
-        )}
-
-        {error && (
-          <Text size="sm" variant="danger" role="alert">
-            {error}
-          </Text>
-        )}
-      </div>
-    </SurfaceStep>
-  );
-
-  const followupStep = (
-    <SurfaceStep
-      header={{
-        title: 'Log it & follow up',
-        supporting:
-          'Capture what just happened and set a reminder, all in one go. Both are optional.',
-      }}
-      actions={{
-        onBack: () => goToStep('address'),
-        onNext: () => goToStep('opportunity'),
-        nextLabel: 'Continue',
-        nextDisabled: submitting,
-      }}
-    >
-      <div className="flex flex-col gap-5">
-        <Card variant="module">
-          <CardHeader>
-            <Heading level={3}>What just happened?</Heading>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col gap-3">
-              <div>
-                <Label htmlFor="cw-note-kind">Interaction</Label>
-                <NativeSelect
-                  id="cw-note-kind"
-                  value={noteKind}
-                  onChange={(e) => setNoteKind(e.target.value as ActivityKind)}
-                >
-                  <option value="note">Note</option>
-                  <option value="call">Call</option>
-                  <option value="meeting">Meeting</option>
-                </NativeSelect>
-              </div>
-              <div>
-                <Label htmlFor="cw-note">Details</Label>
-                <Textarea
-                  id="cw-note"
-                  rows={3}
-                  value={noteDescription}
-                  onChange={(e) => setNoteDescription(e.target.value)}
-                  placeholder="What did you discuss? Leave blank to skip."
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card variant="module">
-          <CardHeader>
-            <Heading level={3}>Follow-up task</Heading>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col gap-3">
-              <div>
-                <Label htmlFor="cw-task">Task</Label>
-                <Input
-                  id="cw-task"
-                  value={taskTitle}
-                  onChange={(e) => setTaskTitle(e.target.value)}
-                  placeholder="e.g. Send a quote, schedule a call — leave blank to skip"
-                />
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <Label htmlFor="cw-due">Due date</Label>
-                  <Input
-                    id="cw-due"
-                    type="date"
-                    value={taskDueAt}
-                    onChange={(e) => setTaskDueAt(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="cw-priority">Priority</Label>
-                  <NativeSelect
-                    id="cw-priority"
-                    value={taskPriority}
-                    onChange={(e) => setTaskPriority(e.target.value as TaskPriority)}
-                  >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                    <option value="urgent">Urgent</option>
-                  </NativeSelect>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {error && (
-          <Text size="sm" variant="danger" role="alert">
-            {error}
-          </Text>
-        )}
-      </div>
-    </SurfaceStep>
-  );
-
-  const opportunityStep = (
-    <SurfaceStep
-      header={{
-        title: 'Start the work',
-        supporting:
-          'Open a deal and start a draft quote for this contact — all optional, all editable later.',
-      }}
-      actions={{
-        onBack: () => goToStep('followup'),
-        onNext: () => void handleSubmit(),
-        nextLabel: 'Create customer',
-        nextLoading: submitting,
-        nextDisabled: submitting,
-      }}
-    >
-      <div className="flex flex-col gap-5">
-        <Card variant="module">
-          <CardHeader>
-            <Heading level={3}>Start a deal</Heading>
-          </CardHeader>
-          <CardContent>
-            {pipelines.length === 0 ? (
-              <Text size="sm" variant="muted">
-                No pipelines yet. Create one in CRM → Pipelines to open deals from here.
-              </Text>
-            ) : (
-              <div className="flex flex-col gap-3">
-                <Text size="sm" variant="muted">
-                  Name the opportunity to open it on a pipeline. Leave the name blank to skip.
-                </Text>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div>
-                    <Label htmlFor="cw-deal-pipeline">Pipeline</Label>
-                    <NativeSelect
-                      id="cw-deal-pipeline"
-                      value={dealPipelineId}
-                      onChange={(e) => onPipelineChange(e.target.value)}
-                    >
-                      {pipelines.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.name}
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  </div>
-                  <div>
-                    <Label htmlFor="cw-deal-stage">Stage</Label>
-                    <NativeSelect
-                      id="cw-deal-stage"
-                      value={dealStageId}
-                      onChange={(e) => setDealStageId(e.target.value)}
-                      disabled={dealStages.length === 0}
-                    >
-                      {dealStages.map((s) => (
-                        <option key={s.id} value={s.id}>
-                          {s.name}
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="cw-deal-title">Deal name</Label>
-                  <Input
-                    id="cw-deal-title"
-                    value={dealTitle}
-                    onChange={(e) => setDealTitle(e.target.value)}
-                    placeholder="e.g. 2026 fleet maintenance — leave blank to skip"
-                  />
-                </div>
-                <div className="max-w-[12rem]">
-                  <Label htmlFor="cw-deal-value">Value (USD)</Label>
-                  <Input
-                    id="cw-deal-value"
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    inputMode="decimal"
-                    value={dealValue}
-                    onChange={(e) => setDealValue(e.target.value)}
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card variant="module">
-          <CardHeader>
-            <Heading level={3}>Start a draft quote</Heading>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col gap-3">
-              <Text size="sm" variant="muted">
-                Add a first line item to open a draft quote. You can add more lines and send it from
-                the quote later. Leave the item blank to skip.
-              </Text>
-              <div>
-                <Label htmlFor="cw-quote-name">Item</Label>
-                <Input
-                  id="cw-quote-name"
-                  value={quoteItemName}
-                  onChange={(e) => setQuoteItemName(e.target.value)}
-                  placeholder="e.g. Annual service plan — leave blank to skip"
-                />
-              </div>
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div>
-                  <Label htmlFor="cw-quote-sku">SKU</Label>
-                  <Input
-                    id="cw-quote-sku"
-                    value={quoteSku}
-                    onChange={(e) => setQuoteSku(e.target.value)}
-                    placeholder="Auto from item"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="cw-quote-qty">Quantity</Label>
-                  <Input
-                    id="cw-quote-qty"
-                    type="number"
-                    min={1}
-                    step={1}
-                    inputMode="numeric"
-                    value={quoteQuantity}
-                    onChange={(e) => setQuoteQuantity(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="cw-quote-price">Unit price (USD)</Label>
-                  <Input
-                    id="cw-quote-price"
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    inputMode="decimal"
-                    value={quoteUnitPrice}
-                    onChange={(e) => setQuoteUnitPrice(e.target.value)}
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <Label htmlFor="cw-quote-valid">Valid until</Label>
-                  <Input
-                    id="cw-quote-valid"
-                    type="date"
-                    value={quoteValidUntil}
-                    onChange={(e) => setQuoteValidUntil(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="cw-quote-terms">Payment terms</Label>
-                  <NativeSelect
-                    id="cw-quote-terms"
-                    value={quoteTerms}
-                    onChange={(e) => setQuoteTerms(e.target.value as QuoteTerms)}
-                  >
-                    <option value="">No terms</option>
-                    <option value="prepay">Prepay</option>
-                    <option value="net15">Net 15</option>
-                    <option value="net30">Net 30</option>
-                    <option value="net60">Net 60</option>
-                    <option value="net90">Net 90</option>
-                  </NativeSelect>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {error && (
-          <Text size="sm" variant="danger" role="alert">
-            {error}
-          </Text>
-        )}
-      </div>
-    </SurfaceStep>
-  );
-
-  let body: React.ReactNode;
-  if (stepKey === 'contact') body = contactStep;
-  else if (stepKey === 'classify') body = classifyStep;
-  else if (stepKey === 'address') body = addressStep;
-  else if (stepKey === 'followup') body = followupStep;
-  else body = opportunityStep;
-
-  // ── Frame ──────────────────────────────────────────────────────────────────
-
-  const onStepSelect = (key: string) => {
-    const target = steps.findIndex((s) => s.key === key);
-    if (target >= 0 && target <= current) goToStep(key as StepKey);
-  };
-  const canSelectStep = (_key: string, index: number) => index <= current;
-
-  // The live draft summary — the F layout's right-hand column (docs/86). Shows the
-  // identity being built plus the "fill to create" extras that will be applied on
-  // finish, so the optional work is visible the whole way through.
+  // ── Live draft summary (the F layout's right column, docs/86) ─────────────────
+  // Shows the identity being built plus the "fill to create" extras that will be
+  // applied on finish, so the optional work is visible the whole way down.
   const str = (v: unknown) => (typeof v === 'string' ? v.trim() : '');
   const fullName = [str(contact.firstName), str(contact.lastName)].filter(Boolean).join(' ');
   const email = str(contact.email);
@@ -1006,22 +521,368 @@ function CustomerWizardInner({
     </SurfaceSummary>
   );
 
-  // One top-stepper frame for both presentations: `embedded` fills the dashboard
-  // content area at `/new` (sidebar + header stay); `inline` fills the drawer/
-  // modal detail panel, which supplies its own chrome.
+  // ── Frame ──────────────────────────────────────────────────────────────────
+  // Single-page: one SurfaceStep stacking the core (contact / classify / address)
+  // and the optional "fill to create" sections. Only the email is required, so the
+  // primary stays disabled until it's a valid address.
+  const emailInvalid = typeof contact.email !== 'string' || !contact.email.includes('@');
+
   return (
     <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New customer"
-      steps={steps}
-      current={current}
-      context={RAIL[stepKey].context}
-      onStepSelect={onStepSelect}
-      canSelectStep={canSelectStep}
+      steps={SINGLE_STEP}
+      current={0}
       onCancel={cancel}
       summary={summary}
     >
-      {body}
+      <SurfaceStep
+        actions={{
+          onNext: () => void handleSubmit(),
+          nextLabel: 'Create customer',
+          nextLoading: submitting,
+          nextDisabled: submitting || emailInvalid,
+        }}
+      >
+        <div className="flex flex-col gap-5">
+          {/* Contact — the only required group */}
+          <Card variant="default">
+            <CardHeader>
+              <Heading level={3}>Contact details</Heading>
+              <Text size="sm" variant="muted">
+                Only an email is required — fill in the rest now or after the contact exists.
+              </Text>
+            </CardHeader>
+            <CardContent>
+              <SchemaFieldRenderer
+                fields={CONTACT_FIELDS}
+                values={contact}
+                onChange={(key, value) => setContact((prev) => ({ ...prev, [key]: value }))}
+                errors={contactErrors}
+                disabled={submitting}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Classification */}
+          <Card variant="default">
+            <CardHeader>
+              <Heading level={3}>Classification</Heading>
+              <Text size="sm" variant="muted">
+                Type, contact preferences, and tags — they drive segments and campaigns.
+              </Text>
+            </CardHeader>
+            <CardContent>
+              <SchemaFieldRenderer
+                fields={CLASSIFY_FIELDS}
+                values={classify}
+                onChange={(key, value) => setClassify((prev) => ({ ...prev, [key]: value }))}
+                disabled={submitting}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Primary address (optional, skippable) */}
+          {!skipAddress ? (
+            <Card variant="default">
+              <CardHeader>
+                <Stack direction="row" align="center" justify="between">
+                  <div className="flex flex-col gap-1">
+                    <Heading level={3}>Primary address</Heading>
+                    <Text size="sm" variant="muted">
+                      Add a primary address now, or skip and add one later from the profile.
+                    </Text>
+                  </div>
+                  <button
+                    type="button"
+                    className="shrink-0 text-xs text-[var(--color-text-muted)] underline-offset-4 hover:underline"
+                    onClick={() => {
+                      setSkipAddress(true);
+                      setAddressErrors({});
+                    }}
+                  >
+                    Skip for now
+                  </button>
+                </Stack>
+              </CardHeader>
+              <CardContent>
+                <SchemaFieldRenderer
+                  fields={ADDRESS_FIELDS}
+                  values={address}
+                  onChange={(key, value) => setAddress((prev) => ({ ...prev, [key]: value }))}
+                  errors={addressErrors}
+                  disabled={submitting}
+                />
+              </CardContent>
+            </Card>
+          ) : (
+            <Card padding="sm" className="bg-[var(--color-bg-subtle)]">
+              <Stack direction="row" align="center" gap={3}>
+                <UserPlus className="h-4 w-4 shrink-0 text-[var(--color-text-muted)]" />
+                <Text size="sm" variant="muted">
+                  No address will be added. You can add one from the customer’s profile.
+                </Text>
+                <button
+                  type="button"
+                  className="ml-auto shrink-0 text-xs text-[var(--module-active)] hover:underline"
+                  onClick={() => setSkipAddress(false)}
+                >
+                  Add address
+                </button>
+              </Stack>
+            </Card>
+          )}
+
+          {/* Optional "fill to create" zone */}
+          <div className="pt-1">
+            <Heading level={3}>Get a head start</Heading>
+            <Text size="sm" variant="muted">
+              All optional — capture a first interaction, set a follow-up, or open a deal and draft
+              quote now. Fill a section to create it; leave it blank to skip.
+            </Text>
+          </div>
+
+          {/* Follow-up — note + task */}
+          <Card variant="default">
+            <CardHeader>
+              <Heading level={3}>What just happened?</Heading>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-3">
+                <div>
+                  <Label htmlFor="cw-note-kind">Interaction</Label>
+                  <NativeSelect
+                    id="cw-note-kind"
+                    value={noteKind}
+                    onChange={(e) => setNoteKind(e.target.value as ActivityKind)}
+                  >
+                    <option value="note">Note</option>
+                    <option value="call">Call</option>
+                    <option value="meeting">Meeting</option>
+                  </NativeSelect>
+                </div>
+                <div>
+                  <Label htmlFor="cw-note">Details</Label>
+                  <Textarea
+                    id="cw-note"
+                    rows={3}
+                    value={noteDescription}
+                    onChange={(e) => setNoteDescription(e.target.value)}
+                    placeholder="What did you discuss? Leave blank to skip."
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card variant="default">
+            <CardHeader>
+              <Heading level={3}>Follow-up task</Heading>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-3">
+                <div>
+                  <Label htmlFor="cw-task">Task</Label>
+                  <Input
+                    id="cw-task"
+                    value={taskTitle}
+                    onChange={(e) => setTaskTitle(e.target.value)}
+                    placeholder="e.g. Send a quote, schedule a call — leave blank to skip"
+                  />
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <Label htmlFor="cw-due">Due date</Label>
+                    <Input
+                      id="cw-due"
+                      type="date"
+                      value={taskDueAt}
+                      onChange={(e) => setTaskDueAt(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="cw-priority">Priority</Label>
+                    <NativeSelect
+                      id="cw-priority"
+                      value={taskPriority}
+                      onChange={(e) => setTaskPriority(e.target.value as TaskPriority)}
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                      <option value="urgent">Urgent</option>
+                    </NativeSelect>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Opportunity — deal + draft quote */}
+          <Card variant="default">
+            <CardHeader>
+              <Heading level={3}>Start a deal</Heading>
+            </CardHeader>
+            <CardContent>
+              {pipelines.length === 0 ? (
+                <Text size="sm" variant="muted">
+                  No pipelines yet. Create one in CRM → Pipelines to open deals from here.
+                </Text>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  <Text size="sm" variant="muted">
+                    Name the opportunity to open it on a pipeline. Leave the name blank to skip.
+                  </Text>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <Label htmlFor="cw-deal-pipeline">Pipeline</Label>
+                      <NativeSelect
+                        id="cw-deal-pipeline"
+                        value={dealPipelineId}
+                        onChange={(e) => onPipelineChange(e.target.value)}
+                      >
+                        {pipelines.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name}
+                          </option>
+                        ))}
+                      </NativeSelect>
+                    </div>
+                    <div>
+                      <Label htmlFor="cw-deal-stage">Stage</Label>
+                      <NativeSelect
+                        id="cw-deal-stage"
+                        value={dealStageId}
+                        onChange={(e) => setDealStageId(e.target.value)}
+                        disabled={dealStages.length === 0}
+                      >
+                        {dealStages.map((s) => (
+                          <option key={s.id} value={s.id}>
+                            {s.name}
+                          </option>
+                        ))}
+                      </NativeSelect>
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="cw-deal-title">Deal name</Label>
+                    <Input
+                      id="cw-deal-title"
+                      value={dealTitle}
+                      onChange={(e) => setDealTitle(e.target.value)}
+                      placeholder="e.g. 2026 fleet maintenance — leave blank to skip"
+                    />
+                  </div>
+                  <div className="max-w-[12rem]">
+                    <Label htmlFor="cw-deal-value">Value (USD)</Label>
+                    <Input
+                      id="cw-deal-value"
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      inputMode="decimal"
+                      value={dealValue}
+                      onChange={(e) => setDealValue(e.target.value)}
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card variant="default">
+            <CardHeader>
+              <Heading level={3}>Start a draft quote</Heading>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-3">
+                <Text size="sm" variant="muted">
+                  Add a first line item to open a draft quote. You can add more lines and send it
+                  from the quote later. Leave the item blank to skip.
+                </Text>
+                <div>
+                  <Label htmlFor="cw-quote-name">Item</Label>
+                  <Input
+                    id="cw-quote-name"
+                    value={quoteItemName}
+                    onChange={(e) => setQuoteItemName(e.target.value)}
+                    placeholder="e.g. Annual service plan — leave blank to skip"
+                  />
+                </div>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <div>
+                    <Label htmlFor="cw-quote-sku">SKU</Label>
+                    <Input
+                      id="cw-quote-sku"
+                      value={quoteSku}
+                      onChange={(e) => setQuoteSku(e.target.value)}
+                      placeholder="Auto from item"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="cw-quote-qty">Quantity</Label>
+                    <Input
+                      id="cw-quote-qty"
+                      type="number"
+                      min={1}
+                      step={1}
+                      inputMode="numeric"
+                      value={quoteQuantity}
+                      onChange={(e) => setQuoteQuantity(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="cw-quote-price">Unit price (USD)</Label>
+                    <Input
+                      id="cw-quote-price"
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      inputMode="decimal"
+                      value={quoteUnitPrice}
+                      onChange={(e) => setQuoteUnitPrice(e.target.value)}
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <Label htmlFor="cw-quote-valid">Valid until</Label>
+                    <Input
+                      id="cw-quote-valid"
+                      type="date"
+                      value={quoteValidUntil}
+                      onChange={(e) => setQuoteValidUntil(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="cw-quote-terms">Payment terms</Label>
+                    <NativeSelect
+                      id="cw-quote-terms"
+                      value={quoteTerms}
+                      onChange={(e) => setQuoteTerms(e.target.value as QuoteTerms)}
+                    >
+                      <option value="">No terms</option>
+                      <option value="prepay">Prepay</option>
+                      <option value="net15">Net 15</option>
+                      <option value="net30">Net 30</option>
+                      <option value="net60">Net 60</option>
+                      <option value="net90">Net 90</option>
+                    </NativeSelect>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {error && (
+            <Text size="sm" variant="danger" role="alert">
+              {error}
+            </Text>
+          )}
+        </div>
+      </SurfaceStep>
     </SurfaceFrame>
   );
 }

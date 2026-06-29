@@ -177,7 +177,7 @@ export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
           }}
         >
           <Stack gap={6}>
-            <Card variant="module">
+            <Card variant="default">
               <CardHeader>
                 <CardTitle>Details</CardTitle>
               </CardHeader>
@@ -216,7 +216,7 @@ export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
               </CardContent>
             </Card>
 
-            <Card variant="module">
+            <Card variant="default">
               <CardHeader>
                 <Stack direction="row" align="center" justify="between">
                   <CardTitle>Rule</CardTitle>

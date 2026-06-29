@@ -32,6 +32,10 @@
   --module-scheduling: #f43f5e;
   --module-automations: #d946ef;
   --module-seo: #eab308;
+  /* Finance is a platform surface (always-on, not billed) but owns a hue so its
+     hub pops and finance signals read as finance wherever they appear. Money
+     green, kept distinct from the emerald success token (#10b981). */
+  --module-finance: #16a34a;
 
   /* Active module — set by ModuleProvider, read by components */
   --module-active: var(--sparx-primary);
@@ -201,7 +205,10 @@
 
   --color-text-primary: #f0f0f0;
   --color-text-secondary: #a1a1aa;
-  --color-text-tertiary: #52525b;
+  /* #52525b (the light-mode secondary, mirrored here) is nearly invisible on the
+     dark surface — lift tertiary to a legible faint gray that still sits below
+     muted/secondary in the ramp. */
+  --color-text-tertiary: #71717a;
   --color-text-muted: #8a8a93;
   --color-text-disabled: #3f3f46;
   --color-text-inverse: #0a0a0a;
@@ -216,10 +223,33 @@
 
   --sparx-primary-tint: #1e1b4b;
 
+  /* Default module ink outside any ModuleProvider — derived so it stays legible
+     on the dark surface (the light :root #4338ca would not). Inside a provider,
+     the [data-module] rules below override this with the per-module dark ink. */
+  --module-active-text: color-mix(in oklab, var(--module-active) 60%, var(--color-text-primary));
+
   /* Neutral fill inverts in dark mode — a light surface with dark content,
      so a `color="neutral"` solid button stays high-contrast. */
   --color-neutral: #e5e7eb;
   --color-neutral-content: #1f2937;
+}
+
+/* ── MODULE ACTIVE TINT / INK — theme-aware selection ────────────
+   ModuleProvider emits per-module LIGHT values (hand-picked) alongside DARK
+   derivations (the module color mixed into the surface, and lifted toward the
+   text color). The bare --module-active-tint / --module-active-text that the
+   whole UI consumes are SELECTED here by theme on [data-module], so every
+   module-tinted chip, nav highlight, and module-ink label adapts to dark mode
+   from one place: light stays exactly the hand-picked hexes, dark never renders
+   a fixed light hex on a dark surface. Nested providers each carry their own
+   light/dark pair, so the selection is correct per-subtree. */
+[data-module] {
+  --module-active-tint: var(--module-active-tint-light);
+  --module-active-text: var(--module-active-text-light);
+}
+[data-theme='dark'] [data-module] {
+  --module-active-tint: var(--module-active-tint-dark);
+  --module-active-text: var(--module-active-text-dark);
 }
 
 /* ── COLOR ROLE VARIABLES (docs/35 §4) ───────────────────────────
@@ -408,6 +438,13 @@
   --c-ink: color-mix(in oklch, var(--module-seo) 52%, var(--color-text-primary));
   --c-hover: color-mix(in oklch, var(--module-seo) 86%, var(--color-text-primary));
   --c-tint: color-mix(in oklch, var(--module-seo) 16%, transparent);
+}
+.sx-c-finance {
+  --c-bg: var(--module-finance);
+  --c-fg: #ffffff;
+  --c-ink: color-mix(in oklch, var(--module-finance) 56%, var(--color-text-primary));
+  --c-hover: color-mix(in oklch, var(--module-finance) 86%, var(--color-text-primary));
+  --c-tint: color-mix(in oklch, var(--module-finance) 14%, transparent);
 }
 
 /* Indeterminate <Progress> — a sliding pill that loops when no value is set. */

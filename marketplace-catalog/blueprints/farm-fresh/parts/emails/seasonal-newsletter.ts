@@ -3,14 +3,14 @@
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh/.
 
 export default {
-  id: 'ffb-467',
+  id: 'ffb-396',
   type: 'Section',
   props: {},
   class: 'flex flex-col gap-4',
   name: 'Email body',
   children: [
     {
-      id: 'ffb-457',
+      id: 'ffb-386',
       type: 'email_wordmark',
       props: {
         treatment: 'lockup',
@@ -19,7 +19,7 @@ export default {
       },
     },
     {
-      id: 'ffb-458',
+      id: 'ffb-387',
       type: 'Heading',
       props: {
         level: 'h1',
@@ -27,7 +27,7 @@ export default {
       },
     },
     {
-      id: 'ffb-459',
+      id: 'ffb-388',
       type: 'Text',
       props: {
         variant: 'body',
@@ -35,7 +35,7 @@ export default {
       },
     },
     {
-      id: 'ffb-460',
+      id: 'ffb-389',
       type: 'Text',
       props: {
         variant: 'body',
@@ -43,7 +43,7 @@ export default {
       },
     },
     {
-      id: 'ffb-461',
+      id: 'ffb-390',
       type: 'Text',
       props: {
         variant: 'body',
@@ -51,7 +51,7 @@ export default {
       },
     },
     {
-      id: 'ffb-462',
+      id: 'ffb-391',
       type: 'Text',
       props: {
         variant: 'body',
@@ -59,7 +59,7 @@ export default {
       },
     },
     {
-      id: 'ffb-463',
+      id: 'ffb-392',
       type: 'Button',
       props: {
         label: 'Order for pickup or delivery',
@@ -67,17 +67,17 @@ export default {
       },
     },
     {
-      id: 'ffb-464',
+      id: 'ffb-393',
       type: 'Divider',
       props: {},
     },
     {
-      id: 'ffb-465',
+      id: 'ffb-394',
       type: 'unsubscribe_link',
       props: {},
     },
     {
-      id: 'ffb-466',
+      id: 'ffb-395',
       type: 'physical_address',
       props: {},
     },

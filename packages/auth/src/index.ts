@@ -40,6 +40,12 @@ export {
   type ModulePresetSummaryChip,
   type ModulePresetInstallResult,
   type ModulePresetView,
+  IndustryStarterRegistry,
+  starterModules,
+  toIndustryStarterView,
+  type IndustryStarter,
+  type IndustryStarterPresetRef,
+  type IndustryStarterView,
 } from './module-gate';
 export {
   issueApiKey,

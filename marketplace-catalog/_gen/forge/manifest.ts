@@ -5,12 +5,16 @@
 // Careers, Contact, Insight Story), then `emails` (Welcome, Studio Notes). Reorder a
 // property and every downstream id shifts, so KEEP this order stable.
 //
-// `brand`, `theme`, `assets`, `content` are pure data imported above — no node() calls,
-// so no ids are minted until `layout.tree` evaluates.
+// `brand`, `theme`, `assets` are pure data imported above — no node() calls, so no ids
+// are minted until `layout.tree` evaluates.
+//
+// Presentation-only (the four-axis provisioning model): the blueprint ships the LOOK —
+// brand, theme, layout, pages, emails — but NO content of its own. A tenant gets the
+// styled studio site; articles fill in from their own CMS (or industry sample data), and
+// the Insights index is an empty state until any exist.
 
 import { brand, theme } from './theme';
 import { brandAssets } from './logo';
-import { content, storyCovers } from './cms';
 import { layoutTree } from './layout';
 import { homeTree } from './pages/home';
 import { workTree } from './pages/work';
@@ -24,7 +28,7 @@ import { studioNotesEmail, welcomeEmail } from './email';
 
 export const manifest = {
   key: 'forge',
-  version: '1.0.0',
+  version: '1.1.0',
   name: 'Forge',
   summary:
     'A bold, dark, award-style marketing site for a creative / brand & web studio — a warm near-black canvas with an acid-green accent, a recreated case-study showcase, a scrolling client + awards marquee, a 2-up work gallery, a 4-up stat band, numbered services, a process timeline, and testimonials, plus Work, Services, About, Insights, Careers, a Contact form, seeded insight articles, and brand-voiced emails. A ready-to-edit services starter.',
@@ -35,10 +39,9 @@ export const manifest = {
 
   theme,
 
-  // Insight-article covers (data-URI panels) + the brand logo/favicon (data-URI SVG).
-  assets: [...storyCovers, ...brandAssets],
-
-  content,
+  // The brand logo/favicon only (data-URI SVG). Insight-article covers are gone with the
+  // content strip — the article template binds the tenant's own media.
+  assets: [...brandAssets],
 
   layout: { name: 'Forge layout', tree: layoutTree(), makeActive: true },
 

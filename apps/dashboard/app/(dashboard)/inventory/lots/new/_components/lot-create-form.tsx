@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Plus, Warehouse as WarehouseIcon } from 'lucide-react';
 
 import {
   Button,
@@ -10,17 +11,23 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  Heading,
+  CardTitle,
+  EmptyState,
   Input,
   Label,
+  ModuleProvider,
   NativeSelect,
   Stack,
   Text,
+  SurfaceFrame,
+  SurfaceStep,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 
 import { createLotBatchAction } from '../../../_lib/lot-actions';
 import { lookupVariantBySkuAction } from '../../../_lib/supplier-actions';
 import { HAZMAT_OPTIONS } from '../../_components/types';
+import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
 
 interface WarehouseOption {
   id: string;
@@ -34,15 +41,69 @@ interface PickedVariant {
   title: string | null;
 }
 
-// New-lot form. Resolve the item by SKU, pick the warehouse, and record the batch
-// (lot number, quantity, manufactured/expiry dates, hazmat class, supplier ref).
-// Submits and navigates to the lot detail, where serials + recalls are managed.
+// New-lot form on the standard create surface (docs/86 F layout, WS2). The SAME
+// component renders in both presentations, picked by the host:
+//   - `surface="page"`    → SurfaceFrame `embedded` at the /new route (contained sheet)
+//   - `surface="overlay"` → SurfaceFrame `inline` inside the @detail drawer/modal
+//
+// Single-step form. Resolve the item by SKU, pick the warehouse, and record the
+// batch (lot number, quantity, manufactured/expiry dates, hazmat, supplier ref).
+// Lots have no @detail drawer (the lot detail manages serials + recalls full-page),
+// so on success we navigate there. The fields stay an uncontrolled native form, so
+// the frame's toolbar primary bridges to it via requestSubmit().
 
-export function LotCreateForm({ warehouses }: { warehouses: WarehouseOption[] }) {
+const STEPS: SurfaceStepDef[] = [{ key: 'details', label: 'Details' }];
+
+interface LotCreateFormProps {
+  surface: 'page' | 'overlay';
+  warehouses: WarehouseOption[];
+}
+
+export function LotCreateForm({ surface, warehouses }: LotCreateFormProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   const [variant, setVariant] = React.useState<PickedVariant | null>(null);
+
+  const formRef = React.useRef<HTMLFormElement>(null);
+  const [fieldsDirty, setFieldsDirty] = React.useState(false);
+  const recomputeDirty = React.useCallback(() => {
+    const form = formRef.current;
+    if (!form) return;
+    const data = new FormData(form);
+    const str = (k: string) => {
+      const v = data.get(k);
+      return typeof v === 'string' ? v.trim() : '';
+    };
+    setFieldsDirty(
+      str('lotNumber') !== '' ||
+        (str('quantity') !== '' && str('quantity') !== '0') ||
+        str('manufacturedAt') !== '' ||
+        str('expiresAt') !== '' ||
+        str('hazmatClass') !== 'none' ||
+        str('supplierBatchRef') !== ''
+    );
+  }, []);
+  const dirty = variant !== null || fieldsDirty;
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'lot' });
+
+  const close = React.useCallback(() => {
+    if (surface === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+    } else {
+      router.push('/inventory/lots');
+    }
+  }, [surface, pathname, searchParams, router]);
+
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -80,92 +141,137 @@ export function LotCreateForm({ warehouses }: { warehouses: WarehouseOption[] })
     });
   }
 
-  return (
-    <form onSubmit={onSubmit}>
-      <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Lot details</Heading>
-            <CardDescription>
-              A lot is one batch of an item at a warehouse. Quantity is traceability metadata —
-              on-hand is managed separately through the stock ledger.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
-            <SkuResolver
-              variant={variant}
-              onResolve={setVariant}
-              onClear={() => setVariant(null)}
+  // Guard: a lot is held at one warehouse, so at least one is required.
+  if (warehouses.length === 0) {
+    return (
+      <ModuleProvider module="inventory" className="h-full">
+        <div className="flex h-full items-center justify-center p-8">
+          <Card padding="none" className="w-full max-w-lg">
+            <EmptyState
+              icon={<WarehouseIcon className="h-5 w-5" />}
+              title="Add a warehouse first"
+              description="A lot is held at one warehouse. Create one, then come back to record a lot."
+              action={
+                <Button color="module" asChild leftIcon={<Plus className="h-4 w-4" />}>
+                  <Link href="/inventory/warehouses/new">New warehouse</Link>
+                </Button>
+              }
             />
+          </Card>
+        </div>
+      </ModuleProvider>
+    );
+  }
 
-            <Stack direction="row" gap={3} wrap>
-              <Stack gap={1} className="min-w-[14rem] flex-1">
-                <Label htmlFor="warehouseId">Warehouse</Label>
-                <NativeSelect id="warehouseId" name="warehouseId" defaultValue={warehouses[0]?.id}>
-                  {warehouses.map((w) => (
-                    <option key={w.id} value={w.id}>
-                      {w.name} ({w.code})
-                    </option>
-                  ))}
-                </NativeSelect>
-              </Stack>
-              <Stack gap={1} className="min-w-[10rem] flex-1">
-                <Label htmlFor="lotNumber">Lot number</Label>
-                <Input id="lotNumber" name="lotNumber" placeholder="e.g. LOT-2026-001" />
-              </Stack>
-              <Stack gap={1} className="min-w-[7rem]">
-                <Label htmlFor="quantity">Quantity</Label>
-                <Input id="quantity" name="quantity" type="number" min={0} defaultValue={0} />
-              </Stack>
-            </Stack>
+  return (
+    <ModuleProvider module="inventory" className="h-full">
+      <SurfaceFrame
+        variant={surface === 'overlay' ? 'inline' : 'embedded'}
+        title="New lot"
+        steps={STEPS}
+        current={0}
+        onCancel={cancel}
+      >
+        <SurfaceStep
+          header={{
+            title: 'Lot details',
+            supporting:
+              'A lot is one batch of an item at a warehouse. Quantity is traceability metadata — on-hand is managed separately through the stock ledger.',
+          }}
+          actions={{
+            onNext: () => formRef.current?.requestSubmit(),
+            nextLabel: 'Create lot',
+            nextLoading: pending,
+            nextDisabled: pending,
+          }}
+        >
+          <form
+            ref={formRef}
+            onSubmit={onSubmit}
+            onInput={recomputeDirty}
+            onChange={recomputeDirty}
+            className="contents"
+          >
+            <Card>
+              <CardHeader>
+                <Stack gap={1}>
+                  <CardTitle>Lot details</CardTitle>
+                  <CardDescription>
+                    Resolve the item by SKU, choose its warehouse, and record the batch.
+                  </CardDescription>
+                </Stack>
+              </CardHeader>
+              <CardContent>
+                <Stack gap={4}>
+                  <SkuResolver
+                    variant={variant}
+                    onResolve={setVariant}
+                    onClear={() => setVariant(null)}
+                  />
 
-            <Stack direction="row" gap={3} wrap>
-              <Stack gap={1} className="min-w-[10rem]">
-                <Label htmlFor="manufacturedAt">Manufactured</Label>
-                <Input id="manufacturedAt" name="manufacturedAt" type="date" />
-              </Stack>
-              <Stack gap={1} className="min-w-[10rem]">
-                <Label htmlFor="expiresAt">Expires</Label>
-                <Input id="expiresAt" name="expiresAt" type="date" />
-              </Stack>
-              <Stack gap={1} className="min-w-[14rem] flex-1">
-                <Label htmlFor="hazmatClass">Hazmat class</Label>
-                <NativeSelect id="hazmatClass" name="hazmatClass" defaultValue="none">
-                  {HAZMAT_OPTIONS.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
-                    </option>
-                  ))}
-                </NativeSelect>
-              </Stack>
-            </Stack>
+                  <Stack direction="row" gap={3} wrap>
+                    <Stack gap={1} className="min-w-[14rem] flex-1">
+                      <Label htmlFor="warehouseId">Warehouse</Label>
+                      <NativeSelect
+                        id="warehouseId"
+                        name="warehouseId"
+                        defaultValue={warehouses[0]?.id}
+                      >
+                        {warehouses.map((w) => (
+                          <option key={w.id} value={w.id}>
+                            {w.name} ({w.code})
+                          </option>
+                        ))}
+                      </NativeSelect>
+                    </Stack>
+                    <Stack gap={1} className="min-w-[10rem] flex-1">
+                      <Label htmlFor="lotNumber">Lot number</Label>
+                      <Input id="lotNumber" name="lotNumber" placeholder="e.g. LOT-2026-001" />
+                    </Stack>
+                    <Stack gap={1} className="min-w-[7rem]">
+                      <Label htmlFor="quantity">Quantity</Label>
+                      <Input id="quantity" name="quantity" type="number" min={0} defaultValue={0} />
+                    </Stack>
+                  </Stack>
 
-            <Stack gap={1}>
-              <Label htmlFor="supplierBatchRef">Supplier batch reference</Label>
-              <Input id="supplierBatchRef" name="supplierBatchRef" placeholder="Optional" />
-            </Stack>
-          </Stack>
-        </CardContent>
-      </Card>
+                  <Stack direction="row" gap={3} wrap>
+                    <Stack gap={1} className="min-w-[10rem]">
+                      <Label htmlFor="manufacturedAt">Manufactured</Label>
+                      <Input id="manufacturedAt" name="manufacturedAt" type="date" />
+                    </Stack>
+                    <Stack gap={1} className="min-w-[10rem]">
+                      <Label htmlFor="expiresAt">Expires</Label>
+                      <Input id="expiresAt" name="expiresAt" type="date" />
+                    </Stack>
+                    <Stack gap={1} className="min-w-[14rem] flex-1">
+                      <Label htmlFor="hazmatClass">Hazmat class</Label>
+                      <NativeSelect id="hazmatClass" name="hazmatClass" defaultValue="none">
+                        {HAZMAT_OPTIONS.map((o) => (
+                          <option key={o.value} value={o.value}>
+                            {o.label}
+                          </option>
+                        ))}
+                      </NativeSelect>
+                    </Stack>
+                  </Stack>
 
-      <Stack direction="row" gap={2} align="center" justify="between" className="mt-6 w-full">
-        {error && (
-          <Text size="sm" className="text-[var(--color-danger)]">
-            {error}
-          </Text>
-        )}
-        <Stack direction="row" gap={2} className="ml-auto">
-          <Button type="button" variant="ghost" asChild>
-            <Link href="/inventory/lots">Cancel</Link>
-          </Button>
-          <Button color="module" type="submit" disabled={pending}>
-            {pending ? 'Creating…' : 'Create lot'}
-          </Button>
-        </Stack>
-      </Stack>
-    </form>
+                  <Stack gap={1}>
+                    <Label htmlFor="supplierBatchRef">Supplier batch reference</Label>
+                    <Input id="supplierBatchRef" name="supplierBatchRef" placeholder="Optional" />
+                  </Stack>
+
+                  {error && (
+                    <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                      {error}
+                    </Text>
+                  )}
+                </Stack>
+              </CardContent>
+            </Card>
+          </form>
+        </SurfaceStep>
+      </SurfaceFrame>
+    </ModuleProvider>
   );
 }
 
@@ -260,7 +366,7 @@ function SkuResolver({
         </Button>
       </Stack>
       {error && (
-        <Text size="sm" className="text-[var(--color-danger)]">
+        <Text size="sm" variant="danger">
           {error}
         </Text>
       )}

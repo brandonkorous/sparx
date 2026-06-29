@@ -229,13 +229,11 @@ const MODULES: Mod[] = [
 const DEFAULT_ON = new Set(['builder', 'commerce', 'cms']);
 
 // Dependency graph — mirrors the server (@sparx/modules). REQUIRES co-enables +
-// locks a separately-billed provider (Commerce/CMS/Email need Builder; B2B needs
-// Commerce, transitively Builder). BUNDLED_FREE makes a capability $0 while a
+// locks a separately-billed provider (only B2B needs Commerce). Builder is NOT
+// required by Commerce/CMS/Email — they run headless against the API; Builder is
+// the optional hosted-site module. BUNDLED_FREE makes a capability $0 while a
 // provider is on (Invoicing rides with Commerce/B2B).
 const REQUIRES: Record<string, string[]> = {
-  commerce: ['builder'],
-  cms: ['builder'],
-  email: ['builder'],
   b2b: ['commerce'],
 };
 const BUNDLED_FREE: Record<string, string[]> = {
@@ -278,10 +276,10 @@ export function PricingSwitchboard() {
   );
   const [openKey, setOpenKey] = useState<string | null>(null);
 
-  // Dependency model mirrors the server (@sparx/modules graph): Commerce/CMS/Email
-  // require Builder, B2B requires Commerce (and transitively Builder); a required
-  // provider is co-enabled, billed, and locked on. Invoicing is BUNDLED_FREE with
-  // Commerce/B2B — $0 ("Included") while either is on, else a $19 add-on.
+  // Dependency model mirrors the server (@sparx/modules graph): only B2B requires
+  // Commerce; a required provider is co-enabled, billed, and locked on. Builder is
+  // NOT required by Commerce/CMS/Email — they run headless. Invoicing is
+  // BUNDLED_FREE with Commerce/B2B — $0 ("Included") while either is on, else $19.
   const effectiveOn = (key: string): boolean =>
     !!on[key] || activeBundlers(on, key).length > 0 || activeRequirers(on, key).length > 0;
   const lockOf = (key: string): 'included' | 'required' | null => lockOfState(on, key);

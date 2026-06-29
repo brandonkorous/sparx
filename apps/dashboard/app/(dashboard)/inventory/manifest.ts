@@ -106,5 +106,29 @@ export const inventoryManifest: ModuleManifest = {
       label: 'Inventory source',
       routePrefix: '/inventory/sources',
     },
+    // Supplier create-only overlay. The supplier detail (edit/archive + per-variant
+    // purchasing links) is a wide full-page surface, so no `hasDetailView`; the
+    // single-step SurfaceFrame create opts into the drawer/modal.
+    {
+      id: 'supplier',
+      label: 'Supplier',
+      routePrefix: '/inventory/suppliers',
+    },
+    // Lot create-only overlay. The lot detail (serial roster, status changes,
+    // recalls) is a full-page surface, so no `hasDetailView`; the single-step
+    // SurfaceFrame create opts into the drawer/modal.
+    {
+      id: 'lot',
+      label: 'Lot',
+      routePrefix: '/inventory/lots',
+    },
+    // Count create-only overlay. The count detail (quantity entry → review →
+    // approve → post) is a full-page surface, so no `hasDetailView`; the single-step
+    // SurfaceFrame create opts into the drawer/modal.
+    {
+      id: 'count',
+      label: 'Count',
+      routePrefix: '/inventory/counts',
+    },
   ],
 };

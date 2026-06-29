@@ -3,7 +3,7 @@
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh/.
 
 export default {
-  id: 'ffb-141',
+  id: 'ffb-113',
   type: 'Section',
   props: {},
   class:
@@ -11,7 +11,7 @@ export default {
   name: 'How it works',
   children: [
     {
-      id: 'ffb-126',
+      id: 'ffb-98',
       type: 'Text',
       props: {
         variant: 'body',
@@ -21,7 +21,7 @@ export default {
         'inline-flex w-fit items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-wide bg-[#7FA85B]/30 text-white',
     },
     {
-      id: 'ffb-127',
+      id: 'ffb-99',
       type: 'Heading',
       props: {
         level: 'h2',
@@ -30,19 +30,19 @@ export default {
       class: 'text-center text-4xl @3xl:text-5xl text-white',
     },
     {
-      id: 'ffb-140',
+      id: 'ffb-112',
       type: 'Section',
       props: {},
       class: 'grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-3 gap-6',
       children: [
         {
-          id: 'ffb-131',
+          id: 'ffb-103',
           type: 'Stack',
           props: {},
           class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
           children: [
             {
-              id: 'ffb-128',
+              id: 'ffb-100',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -52,7 +52,7 @@ export default {
                 'h-20 w-20 bg-[#7FA85B]/25 text-4xl shrink-0 inline-flex items-center justify-center rounded-full leading-none',
             },
             {
-              id: 'ffb-129',
+              id: 'ffb-101',
               type: 'Heading',
               props: {
                 level: 'h3',
@@ -61,7 +61,7 @@ export default {
               class: 'text-center text-xl text-white',
             },
             {
-              id: 'ffb-130',
+              id: 'ffb-102',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -72,13 +72,13 @@ export default {
           ],
         },
         {
-          id: 'ffb-135',
+          id: 'ffb-107',
           type: 'Stack',
           props: {},
           class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
           children: [
             {
-              id: 'ffb-132',
+              id: 'ffb-104',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -88,7 +88,7 @@ export default {
                 'h-20 w-20 bg-[#7FA85B]/25 text-4xl shrink-0 inline-flex items-center justify-center rounded-full leading-none',
             },
             {
-              id: 'ffb-133',
+              id: 'ffb-105',
               type: 'Heading',
               props: {
                 level: 'h3',
@@ -97,7 +97,7 @@ export default {
               class: 'text-center text-xl text-white',
             },
             {
-              id: 'ffb-134',
+              id: 'ffb-106',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -108,13 +108,13 @@ export default {
           ],
         },
         {
-          id: 'ffb-139',
+          id: 'ffb-111',
           type: 'Stack',
           props: {},
           class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
           children: [
             {
-              id: 'ffb-136',
+              id: 'ffb-108',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -124,7 +124,7 @@ export default {
                 'h-20 w-20 bg-[#7FA85B]/25 text-4xl shrink-0 inline-flex items-center justify-center rounded-full leading-none',
             },
             {
-              id: 'ffb-137',
+              id: 'ffb-109',
               type: 'Heading',
               props: {
                 level: 'h3',
@@ -133,7 +133,7 @@ export default {
               class: 'text-center text-xl text-white',
             },
             {
-              id: 'ffb-138',
+              id: 'ffb-110',
               type: 'Text',
               props: {
                 variant: 'body',

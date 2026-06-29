@@ -16,6 +16,7 @@ import {
   ModalDescription,
   ModalHeader,
   ModalTitle,
+  Text,
   toast,
 } from '@sparx/ui';
 import { Copy } from 'lucide-react';
@@ -76,7 +77,9 @@ export function CalendarFeedDialog({
         <p className="px-1 pt-1 text-sm font-medium">Subscribe to this resource&rsquo;s bookings</p>
         <div className="flex flex-col gap-3 px-1 py-2">
           {error ? (
-            <p className="text-sm text-[var(--color-danger)]">{error}</p>
+            <Text size="sm" variant="danger">
+              {error}
+            </Text>
           ) : (
             <div className="flex items-center gap-2">
               <Input

@@ -321,7 +321,7 @@ export function EditEntryForm({
           <EntryStatusBar layout="card" {...statusBarProps} />
         )}
 
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <Heading level={3}>Content</Heading>
             <CardDescription>
@@ -341,7 +341,7 @@ export function EditEntryForm({
         </Card>
 
         {multiSite && (
-          <Card variant="module">
+          <Card variant="default">
             <CardHeader>
               <Heading level={3}>Sites</Heading>
               <CardDescription>Which of your sites show this {lowerType}.</CardDescription>
@@ -373,7 +373,7 @@ export function EditEntryForm({
           />
         )}
 
-        <Card variant="module">
+        <Card variant="default">
           <CardContent>
             <Stack gap={2}>
               {error && (

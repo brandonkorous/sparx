@@ -23,14 +23,17 @@ function settings(...enabled: ModuleSlug[]): unknown {
 
 describe('requiredModules', () => {
   it('returns the paid requirements that must be co-enabled, transitively', () => {
-    // B2B → Commerce → Builder.
-    expect(requiredModules('b2b')).toEqual(['commerce', 'builder']);
+    // B2B is wholesale layered on Commerce — and ONLY Commerce. Builder is not
+    // pulled in: a B2B portal can run headless with no hosted sparx site.
+    expect(requiredModules('b2b')).toEqual(['commerce']);
   });
 
-  it('pulls in Builder for the site-backed modules', () => {
-    expect(requiredModules('commerce')).toEqual(['builder']);
-    expect(requiredModules('cms')).toEqual(['builder']);
-    expect(requiredModules('email')).toEqual(['builder']);
+  it('does NOT require Builder for the headless modules', () => {
+    // Commerce/CMS/Email are API-first and run fully headless — Builder is an
+    // independent, optional hosted-site module, never their requirement.
+    expect(requiredModules('commerce')).toEqual([]);
+    expect(requiredModules('cms')).toEqual([]);
+    expect(requiredModules('email')).toEqual([]);
   });
 
   it('is empty for modules with no requirements', () => {
@@ -60,13 +63,11 @@ describe('blockingDependents', () => {
     expect(blockingDependents('scheduling', () => true)).toEqual([]);
   });
 
-  it('blocks disabling Builder while a site-backed module is on', () => {
-    // Commerce / CMS / Email each require Builder — can't turn Builder off first.
-    expect(blockingDependents('builder', (m) => m === 'commerce')).toEqual(['commerce']);
-    expect(blockingDependents('builder', (m) => m === 'cms' || m === 'email')).toEqual([
-      'cms',
-      'email',
-    ]);
+  it('never blocks disabling Builder — no module requires it (headless model)', () => {
+    // Builder is the optional hosted-site module; Commerce/CMS/Email run headless
+    // and do not depend on it, so turning Builder off is always allowed.
+    expect(blockingDependents('builder', (m) => m === 'commerce')).toEqual([]);
+    expect(blockingDependents('builder', (m) => m === 'cms' || m === 'email')).toEqual([]);
   });
 });
 

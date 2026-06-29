@@ -1,28 +1,39 @@
 'use client';
 
-// New-deal form. Owns its own state because the stage select depends on
-// the chosen pipeline. The server action does the real validation — we
-// surface its field errors back into the form.
+// New-deal form, on the standard create surface (docs/86 F layout, WS2). The SAME
+// component renders in both presentations, picked by the host:
+//   - `surface="page"`    → SurfaceFrame `embedded` at the /new route (contained sheet)
+//   - `surface="overlay"` → SurfaceFrame `inline` inside the @detail drawer/modal
+//
+// Single-step form (a one-step wizard): the frame supplies the title + window
+// controls + the pinned floor toolbar (ghost Cancel + module primary) and hides
+// MiniProgress; fields sit in a module-tinted Card. The stage select depends on
+// the chosen pipeline. The server action does the real validation — we surface its
+// field errors back into the form. On success the overlay swaps the token to the
+// new deal's detail view (create flows into view); the page pushes to the record.
 
 import * as React from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import {
-  Button,
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
   Input,
   Label,
+  ModuleProvider,
+  NativeSelect,
   Stack,
   Text,
   Textarea,
+  SurfaceFrame,
+  SurfaceStep,
+  type SurfaceStepDef,
 } from '@sparx/ui';
 
 import { createDealAction } from '../../../deal-actions';
+import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
 
 interface StageOpt {
   id: string;
@@ -41,54 +52,129 @@ interface CustomerOpt {
 }
 
 interface NewDealFormProps {
+  surface: 'page' | 'overlay';
   pipelines: PipelineOpt[];
   customers: CustomerOpt[];
   initialPipelineId: string | null;
 }
 
-const SELECT_CLASS =
-  'flex h-9 w-full rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2 text-sm text-[var(--color-text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]';
+const STEPS: SurfaceStepDef[] = [{ key: 'details', label: 'Details' }];
 
-export function NewDealForm({ pipelines, customers, initialPipelineId }: NewDealFormProps) {
+function firstOpenStageId(pipeline: PipelineOpt | null): string {
+  return (
+    pipeline?.stages.find((s) => s.stageType !== 'lost' && s.stageType !== 'won')?.id ??
+    pipeline?.stages[0]?.id ??
+    ''
+  );
+}
+
+export function NewDealForm({
+  surface,
+  pipelines,
+  customers,
+  initialPipelineId,
+}: NewDealFormProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
-  const [pipelineId, setPipelineId] = React.useState<string | null>(initialPipelineId);
 
+  const startPipelineId = initialPipelineId ?? pipelines[0]?.id ?? '';
+  const [pipelineId, setPipelineId] = React.useState(startPipelineId);
   const pipeline = pipelines.find((p) => p.id === pipelineId) ?? null;
-  const defaultStageId =
-    pipeline?.stages.find((s) => s.stageType !== 'lost' && s.stageType !== 'won')?.id ??
-    pipeline?.stages[0]?.id ??
-    '';
+  const [stageId, setStageId] = React.useState(() => firstOpenStageId(pipeline));
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  const [title, setTitle] = React.useState('');
+  const [customerId, setCustomerId] = React.useState('');
+  const [value, setValue] = React.useState('');
+  const [currency, setCurrency] = React.useState('USD');
+  const [probability, setProbability] = React.useState('');
+  const [expectedCloseDate, setExpectedCloseDate] = React.useState('');
+  const [source, setSource] = React.useState('');
+  const [tags, setTags] = React.useState('');
+
+  function onPipelineChange(id: string) {
+    setPipelineId(id);
+    setStageId(firstOpenStageId(pipelines.find((p) => p.id === id) ?? null));
+  }
+
+  // Unsaved-changes guard. A create form starts blank, so "dirty" is "the user
+  // entered anything" (the pipeline/stage default to the first, so they don't
+  // count). Guards a Cancel / Close / backdrop so typed work isn't dropped.
+  const dirty =
+    title.trim() !== '' ||
+    customerId !== '' ||
+    (value.trim() !== '' && Number(value) !== 0) ||
+    (probability.trim() !== '' && Number(probability) !== 0) ||
+    expectedCloseDate.trim() !== '' ||
+    source.trim() !== '' ||
+    tags.trim() !== '';
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'deal' });
+
+  // Leave WITHOUT the guard (the success path + the guarded Cancel both route here).
+  const close = React.useCallback(() => {
+    if (surface === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname ?? '/'}?${qs}` : (pathname ?? '/'));
+    } else {
+      router.push('/crm/deals');
+    }
+  }, [surface, pathname, searchParams, router]);
+
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
+
+  // After create: in an overlay, transition the token to the new deal's detail
+  // (preserving drawer vs modal); on a page, navigate to it.
+  function onCreated(id: string) {
+    if (surface === 'overlay') {
+      const next = new URLSearchParams(searchParams ?? '');
+      const mode = next.has('modal') ? 'modal' : 'drawer';
+      next.delete('drawer');
+      next.delete('modal');
+      next.set(mode, `deal:${id}`);
+      router.replace(`${pathname ?? '/'}?${next.toString()}`);
+      router.refresh();
+      return;
+    }
+    router.push(`/crm/deals/${id}`);
+    router.refresh();
+  }
+
+  function submit() {
     setError(null);
     setFieldErrors({});
-
-    const form = new FormData(e.currentTarget);
+    if (!title.trim()) {
+      setError('Title is required.');
+      return;
+    }
     const input = {
       pipelineId,
-      stageId: form.get('stageId') as string,
-      customerId: nonEmpty(form.get('customerId')),
-      title: nonEmpty(form.get('title')) ?? '',
-      value: numOrZero(form.get('value')),
-      probability: numOrZero(form.get('probability')),
-      currency: (nonEmpty(form.get('currency')) ?? 'USD').toUpperCase(),
-      expectedCloseDate: nonEmpty(form.get('expectedCloseDate')),
-      source: nonEmpty(form.get('source')),
-      tags: nonEmpty(form.get('tags'))
-        ?.split(',')
-        .map((t) => t.trim())
-        .filter(Boolean),
+      stageId,
+      customerId: customerId || undefined,
+      title: title.trim(),
+      value: numOrZero(value),
+      probability: numOrZero(probability),
+      currency: (currency.trim() || 'USD').toUpperCase(),
+      expectedCloseDate: expectedCloseDate.trim() || undefined,
+      source: source.trim() || undefined,
+      tags: tags.trim()
+        ? tags
+            .split(',')
+            .map((t) => t.trim())
+            .filter(Boolean)
+        : undefined,
     };
-
     startTransition(async () => {
       const result = await createDealAction(input);
       if (result.ok) {
-        router.push(`/crm/deals/${result.data.id}`);
-        router.refresh();
+        onCreated(result.data.id);
         return;
       }
       if (result.error.code === 'VALIDATION_ERROR' && result.error.details?.length) {
@@ -101,145 +187,179 @@ export function NewDealForm({ pipelines, customers, initialPipelineId }: NewDeal
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate>
-      <Card>
-        <CardHeader>
-          <CardTitle>Deal details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
-            <Stack gap={2}>
-              <Label htmlFor="title">Title</Label>
-              <Input id="title" name="title" required placeholder="Q3 fleet renewal" />
-              <FieldError msg={fieldErrors.title} />
-            </Stack>
+    <ModuleProvider module="crm" className="h-full">
+      <SurfaceFrame
+        variant={surface === 'overlay' ? 'inline' : 'embedded'}
+        title="New deal"
+        steps={STEPS}
+        current={0}
+        onCancel={cancel}
+      >
+        <SurfaceStep
+          header={{
+            title: 'Deal details',
+            supporting:
+              'Track an opportunity through the pipeline. Stage probability feeds the forecast; stage moves emit crm.deal.stage_changed for the email automation engine.',
+          }}
+          actions={{
+            onNext: submit,
+            nextLabel: 'Create deal',
+            nextLoading: pending,
+            nextDisabled: pending,
+          }}
+        >
+          <Card variant="default">
+            <CardHeader>
+              <CardTitle>Deal details</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Stack gap={4}>
+                <Stack gap={2}>
+                  <Label htmlFor="deal-title">Title</Label>
+                  <Input
+                    id="deal-title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Q3 fleet renewal"
+                  />
+                  <FieldError msg={fieldErrors.title} />
+                </Stack>
 
-            <Stack direction="row" gap={4}>
-              <Stack gap={2} className="flex-1">
-                <Label htmlFor="pipelineId">Pipeline</Label>
-                <select
-                  id="pipelineId"
-                  value={pipelineId ?? ''}
-                  onChange={(e) => setPipelineId(e.target.value || null)}
-                  className={SELECT_CLASS}
-                >
-                  {pipelines.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
-              </Stack>
-              <Stack gap={2} className="flex-1">
-                <Label htmlFor="stageId">Stage</Label>
-                <select
-                  id="stageId"
-                  name="stageId"
-                  key={pipelineId ?? 'none'}
-                  defaultValue={defaultStageId}
-                  className={SELECT_CLASS}
-                >
-                  {pipeline?.stages.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name} ({s.probability}%)
-                    </option>
-                  ))}
-                </select>
-                <FieldError msg={fieldErrors.stageId} />
-              </Stack>
-            </Stack>
+                <Stack direction="row" gap={4} wrap>
+                  <Stack gap={2} className="flex-1">
+                    <Label htmlFor="deal-pipeline">Pipeline</Label>
+                    <NativeSelect
+                      id="deal-pipeline"
+                      value={pipelineId}
+                      onChange={(e) => onPipelineChange(e.target.value)}
+                    >
+                      {pipelines.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name}
+                        </option>
+                      ))}
+                    </NativeSelect>
+                  </Stack>
+                  <Stack gap={2} className="flex-1">
+                    <Label htmlFor="deal-stage">Stage</Label>
+                    <NativeSelect
+                      id="deal-stage"
+                      value={stageId}
+                      onChange={(e) => setStageId(e.target.value)}
+                    >
+                      {pipeline?.stages.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.name} ({s.probability}%)
+                        </option>
+                      ))}
+                    </NativeSelect>
+                    <FieldError msg={fieldErrors.stageId} />
+                  </Stack>
+                </Stack>
 
-            <Stack gap={2}>
-              <Label htmlFor="customerId">Customer</Label>
-              <select id="customerId" name="customerId" className={SELECT_CLASS} defaultValue="">
-                <option value="">(none)</option>
-                {customers.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.label}
-                  </option>
-                ))}
-              </select>
-            </Stack>
+                <Stack gap={2}>
+                  <Label htmlFor="deal-customer">Customer</Label>
+                  <NativeSelect
+                    id="deal-customer"
+                    value={customerId}
+                    onChange={(e) => setCustomerId(e.target.value)}
+                  >
+                    <option value="">(none)</option>
+                    {customers.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.label}
+                      </option>
+                    ))}
+                  </NativeSelect>
+                </Stack>
 
-            <Stack direction="row" gap={4}>
-              <Stack gap={2} className="flex-1">
-                <Label htmlFor="value">Value</Label>
-                <Input id="value" name="value" type="number" min="0" step="0.01" defaultValue={0} />
-                <FieldError msg={fieldErrors.value} />
-              </Stack>
-              <Stack gap={2} className="w-32">
-                <Label htmlFor="currency">Currency</Label>
-                <Input
-                  id="currency"
-                  name="currency"
-                  defaultValue="USD"
-                  maxLength={3}
-                  className="uppercase"
-                />
-              </Stack>
-              <Stack gap={2} className="w-32">
-                <Label htmlFor="probability">Probability</Label>
-                <Input
-                  id="probability"
-                  name="probability"
-                  type="number"
-                  min="0"
-                  max="100"
-                  defaultValue={0}
-                />
-              </Stack>
-            </Stack>
+                <Stack direction="row" gap={4} wrap>
+                  <Stack gap={2} className="flex-1">
+                    <Label htmlFor="deal-value">Value</Label>
+                    <Input
+                      id="deal-value"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={value}
+                      onChange={(e) => setValue(e.target.value)}
+                      placeholder="0.00"
+                    />
+                    <FieldError msg={fieldErrors.value} />
+                  </Stack>
+                  <Stack gap={2} className="w-32">
+                    <Label htmlFor="deal-currency">Currency</Label>
+                    <Input
+                      id="deal-currency"
+                      value={currency}
+                      maxLength={3}
+                      className="uppercase"
+                      onChange={(e) => setCurrency(e.target.value)}
+                    />
+                  </Stack>
+                  <Stack gap={2} className="w-32">
+                    <Label htmlFor="deal-probability">Probability</Label>
+                    <Input
+                      id="deal-probability"
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={probability}
+                      onChange={(e) => setProbability(e.target.value)}
+                      placeholder="0"
+                    />
+                  </Stack>
+                </Stack>
 
-            <Stack direction="row" gap={4}>
-              <Stack gap={2} className="flex-1">
-                <Label htmlFor="expectedCloseDate">Expected close</Label>
-                <Input id="expectedCloseDate" name="expectedCloseDate" type="date" />
-                <FieldError msg={fieldErrors.expectedCloseDate} />
-              </Stack>
-              <Stack gap={2} className="flex-1">
-                <Label htmlFor="source">Source</Label>
-                <Input id="source" name="source" placeholder="trade show, referral, …" />
-              </Stack>
-            </Stack>
+                <Stack direction="row" gap={4} wrap>
+                  <Stack gap={2} className="flex-1">
+                    <Label htmlFor="deal-close">Expected close</Label>
+                    <Input
+                      id="deal-close"
+                      type="date"
+                      value={expectedCloseDate}
+                      onChange={(e) => setExpectedCloseDate(e.target.value)}
+                    />
+                    <FieldError msg={fieldErrors.expectedCloseDate} />
+                  </Stack>
+                  <Stack gap={2} className="flex-1">
+                    <Label htmlFor="deal-source">Source</Label>
+                    <Input
+                      id="deal-source"
+                      value={source}
+                      onChange={(e) => setSource(e.target.value)}
+                      placeholder="trade show, referral, …"
+                    />
+                  </Stack>
+                </Stack>
 
-            <Stack gap={2}>
-              <Label htmlFor="tags">Tags</Label>
-              <Textarea
-                id="tags"
-                name="tags"
-                rows={2}
-                placeholder="fleet, q3, gillett (comma-separated)"
-              />
-            </Stack>
+                <Stack gap={2}>
+                  <Label htmlFor="deal-tags">Tags</Label>
+                  <Textarea
+                    id="deal-tags"
+                    value={tags}
+                    onChange={(e) => setTags(e.target.value)}
+                    rows={2}
+                    placeholder="fleet, q3, gillett (comma-separated)"
+                  />
+                </Stack>
 
-            {error && (
-              <Text size="sm" variant="danger" role="alert" aria-live="polite">
-                {error}
-              </Text>
-            )}
-          </Stack>
-        </CardContent>
-        <CardFooter>
-          <Button variant="ghost" asChild>
-            <Link href="/crm/pipelines">Cancel</Link>
-          </Button>
-          <Button type="submit" color="module" disabled={pending} loading={pending}>
-            Create deal
-          </Button>
-        </CardFooter>
-      </Card>
-    </form>
+                {error && (
+                  <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                    {error}
+                  </Text>
+                )}
+              </Stack>
+            </CardContent>
+          </Card>
+        </SurfaceStep>
+      </SurfaceFrame>
+    </ModuleProvider>
   );
 }
 
-function nonEmpty(value: FormDataEntryValue | null): string | undefined {
-  if (typeof value !== 'string') return undefined;
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : undefined;
-}
-
-function numOrZero(value: FormDataEntryValue | null): number {
-  const s = typeof value === 'string' ? value.trim() : '';
+function numOrZero(value: string): number {
+  const s = value.trim();
   const n = Number(s);
   return Number.isFinite(n) ? n : 0;
 }

@@ -460,7 +460,7 @@ function ContentEntryWizardInner({
       }}
     >
       <div className="flex flex-col gap-5">
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <Heading level={3}>Author</Heading>
           </CardHeader>
@@ -544,7 +544,7 @@ function ContentEntryWizardInner({
         </Card>
 
         {assetFields.length > 0 && (
-          <Card variant="module">
+          <Card variant="default">
             <CardHeader>
               <Heading level={3}>Media</Heading>
             </CardHeader>
@@ -589,7 +589,7 @@ function ContentEntryWizardInner({
       }}
     >
       <div className="flex flex-col gap-5">
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <Heading level={3}>Visibility</Heading>
           </CardHeader>
@@ -622,7 +622,7 @@ function ContentEntryWizardInner({
         </Card>
 
         {typeSchema.url_pattern && (
-          <Card variant="module">
+          <Card variant="default">
             <CardHeader>
               <Heading level={3}>URL</Heading>
             </CardHeader>

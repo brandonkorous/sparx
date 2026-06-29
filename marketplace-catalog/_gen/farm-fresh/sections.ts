@@ -150,42 +150,21 @@ export const shopCard = (): BuilderNode => {
   });
 };
 
-/** A LIVE product grid bound to a category OR collection by HANDLE (the installer
- *  rewrites the handle → the real id at install). `limit` caps it for a teaser (the
- *  home menu shows a few per group; the PDP cross-sell shows a handful); omit for the
- *  full shop. `from` picks the source kind — `category` (default, the menu groups) or
- *  `collection` (the curated PDP "fresh favorites" cross-sell). Repeats `shopCard`. */
-export const boundProductGrid = (
-  handle: string,
-  cols: number,
-  limit?: number,
-  from: 'category' | 'collection' = 'category'
-): BuilderNode => {
+/** A LIVE product grid bound to the whole catalog (`from: 'all'`): it fills with the
+ *  tenant's products — their own, or industry sample data — once any exist, and renders
+ *  empty until then. `limit` caps it for a teaser (the home showcase); omit for the full
+ *  shop. A presentation-only blueprint ships NO catalog of its own (the look, not the
+ *  goods), so the grid binds the live catalog rather than a specific category/collection
+ *  handle that would dangle with nothing behind it. Repeats `shopCard`. */
+export const boundProductGrid = (cols: number, limit?: number): BuilderNode => {
   const grid = node('Section', {
     box: { padding: 'none', backgroundWidth: 'full', contentWidth: 'full' },
     layout: { direction: 'grid', columns: cols, gap: 'lg' },
     children: [shopCard()],
   });
-  grid.binding = { source: { from, id: handle, ...(limit ? { limit } : {}) } };
+  grid.binding = { source: { from: 'all', ...(limit ? { limit } : {}) } };
   return grid;
 };
-
-/** A labeled live product group (home menu teaser): a leaf subhead over a capped
- *  `boundProductGrid` for `handle`. */
-export const boundMenuGroup = (
-  title: string,
-  handle: string,
-  cols: number,
-  limit: number
-): BuilderNode =>
-  node('Stack', {
-    box: { name: title, padding: 'none', backgroundWidth: 'full', contentWidth: 'full' },
-    layout: { direction: 'stack', gap: 'md', alignItems: 'start' },
-    children: [
-      node('Heading', { cls: 'text-primary text-2xl', props: { level: 'h3', text: title } }),
-      boundProductGrid(handle, cols, limit),
-    ],
-  });
 
 /** A step card for "how it works" (text on the dark band): a fern-tinted emoji
  *  circle over a numbered title + a short line. */

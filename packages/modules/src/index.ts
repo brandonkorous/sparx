@@ -19,6 +19,9 @@ import { prisma } from '@sparx/db';
 // The module-preset contract + pure registry index (the reusable install seam).
 // Type-only dep on ModuleSlug below, so no runtime cycle.
 export * from './presets';
+// Industry starters — the second provisioning tier that composes presets across
+// modules (definitions + install seam live at the api-rest composition root).
+export * from './starters';
 
 export type ModuleSlug =
   | 'builder'
@@ -67,13 +70,17 @@ const ALL_MODULES: readonly ModuleSlug[] = [
 //   time here (pure derivation — nothing is written).
 //
 // REQUIRES — the key cannot run without the listed modules, and those modules are
-//   SEPARATELY BILLED (B2B needs Commerce at $49; Commerce, CMS, and Email each
-//   need Builder — the $10 site foundation they render on). This is NOT derived
-//   at read time: enabling the dependent must physically WRITE + bill the
-//   requirement, and disabling a requirement while its dependent is active is
-//   blocked. Enforced WRITE-side by the module-toggle handlers via the helpers
-//   below — deriving it here would grant unbilled access. Requirements compose
-//   transitively (`requiredModules('b2b')` pulls in Commerce AND Builder).
+//   SEPARATELY BILLED (B2B needs Commerce at $49 — wholesale on the same catalog).
+//   Builder is deliberately NOT required by Commerce/CMS/Email: those are API-first
+//   and run fully HEADLESS — drive the commerce API from your own storefront, pull
+//   CMS content over the API/MCP, send email with no hosted page. Builder is the
+//   OPTIONAL hosted-site module (it renders + hosts pages, themes, domains) you add
+//   when you want sparx to serve the site — an independent opt-in, never a base the
+//   others depend on. This is NOT derived at read time: enabling the dependent must
+//   physically WRITE + bill the requirement, and disabling a requirement while its
+//   dependent is active is blocked. Enforced WRITE-side by the module-toggle
+//   handlers via the helpers below — deriving it here would grant unbilled access.
+//   Requirements compose transitively (`requiredModules('b2b')` pulls in Commerce).
 export const BUNDLED_FREE: Partial<Record<ModuleSlug, readonly ModuleSlug[]>> = {
   invoicing: ['b2b', 'commerce'],
   // Stock tracking rides along free with selling modules: any Commerce or B2B
@@ -83,9 +90,6 @@ export const BUNDLED_FREE: Partial<Record<ModuleSlug, readonly ModuleSlug[]>> = 
 };
 
 export const REQUIRES: Partial<Record<ModuleSlug, readonly ModuleSlug[]>> = {
-  commerce: ['builder'],
-  cms: ['builder'],
-  email: ['builder'],
   b2b: ['commerce'],
 };
 

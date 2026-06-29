@@ -113,7 +113,7 @@ export function AuthorEditForm({ author }: { author: EditableAuthor }) {
       noValidate
     >
       <Stack gap={5}>
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <Heading level={3}>Details</Heading>
           </CardHeader>

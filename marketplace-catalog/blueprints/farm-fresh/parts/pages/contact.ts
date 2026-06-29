@@ -3,28 +3,28 @@
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh/.
 
 export default {
-  id: 'ffb-365',
+  id: 'ffb-309',
   type: 'Section',
   props: {},
   class: 'w-full flex flex-col',
   name: 'Contact',
   children: [
     {
-      id: 'ffb-333',
+      id: 'ffb-277',
       type: 'Section',
       class: 'w-full flex items-center justify-center bg-primary text-primary-content min-h-[50vh]',
       props: {},
       name: 'Contact hero',
       children: [
         {
-          id: 'ffb-333__c',
+          id: 'ffb-277__c',
           type: 'Stack',
           class:
             'mx-auto w-full max-w-site flex flex-col gap-2 justify-center items-center p-8 @3xl:p-16 text-center',
           props: {},
           children: [
             {
-              id: 'ffb-331',
+              id: 'ffb-275',
               type: 'Heading',
               props: {
                 level: 'h1',
@@ -34,7 +34,7 @@ export default {
               class: 'text-center',
             },
             {
-              id: 'ffb-332',
+              id: 'ffb-276',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -47,7 +47,7 @@ export default {
       ],
     },
     {
-      id: 'ffb-349',
+      id: 'ffb-293',
       type: 'Section',
       props: {},
       class:
@@ -55,14 +55,14 @@ export default {
       name: 'Reach us',
       children: [
         {
-          id: 'ffb-338',
+          id: 'ffb-282',
           type: 'Card',
           props: {},
           class:
             'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 justify-between items-start p-6 @3xl:p-10 bg-white shadow-lg border border-base-300 st-hover--lift',
           children: [
             {
-              id: 'ffb-334',
+              id: 'ffb-278',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -71,7 +71,7 @@ export default {
               class: 'text-4xl leading-none',
             },
             {
-              id: 'ffb-335',
+              id: 'ffb-279',
               type: 'Heading',
               props: {
                 level: 'h3',
@@ -80,7 +80,7 @@ export default {
               class: 'text-xl',
             },
             {
-              id: 'ffb-336',
+              id: 'ffb-280',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -89,7 +89,7 @@ export default {
               class: 'text-base-content/70',
             },
             {
-              id: 'ffb-337',
+              id: 'ffb-281',
               type: 'Button',
               props: {
                 label: 'Send an email',
@@ -100,14 +100,14 @@ export default {
           ],
         },
         {
-          id: 'ffb-343',
+          id: 'ffb-287',
           type: 'Card',
           props: {},
           class:
             'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 justify-between items-start p-6 @3xl:p-10 bg-white shadow-lg border border-base-300 st-hover--lift',
           children: [
             {
-              id: 'ffb-339',
+              id: 'ffb-283',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -116,7 +116,7 @@ export default {
               class: 'text-4xl leading-none',
             },
             {
-              id: 'ffb-340',
+              id: 'ffb-284',
               type: 'Heading',
               props: {
                 level: 'h3',
@@ -125,7 +125,7 @@ export default {
               class: 'text-xl',
             },
             {
-              id: 'ffb-341',
+              id: 'ffb-285',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -134,7 +134,7 @@ export default {
               class: 'text-base-content/70',
             },
             {
-              id: 'ffb-342',
+              id: 'ffb-286',
               type: 'Button',
               props: {
                 label: 'Call now',
@@ -145,14 +145,14 @@ export default {
           ],
         },
         {
-          id: 'ffb-348',
+          id: 'ffb-292',
           type: 'Card',
           props: {},
           class:
             'mx-auto w-full max-w-site rounded-box flex flex-col gap-2 justify-between items-start p-6 @3xl:p-10 bg-white shadow-lg border border-base-300 st-hover--lift',
           children: [
             {
-              id: 'ffb-344',
+              id: 'ffb-288',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -161,7 +161,7 @@ export default {
               class: 'text-4xl leading-none',
             },
             {
-              id: 'ffb-345',
+              id: 'ffb-289',
               type: 'Heading',
               props: {
                 level: 'h3',
@@ -170,7 +170,7 @@ export default {
               class: 'text-xl',
             },
             {
-              id: 'ffb-346',
+              id: 'ffb-290',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -179,7 +179,7 @@ export default {
               class: 'text-base-content/70',
             },
             {
-              id: 'ffb-347',
+              id: 'ffb-291',
               type: 'Button',
               props: {
                 label: 'Request a quote',
@@ -192,27 +192,27 @@ export default {
       ],
     },
     {
-      id: 'ffb-359',
+      id: 'ffb-303',
       type: 'Section',
       class: 'w-full bg-base-200',
       props: {},
       name: 'Visit',
       children: [
         {
-          id: 'ffb-359__c',
+          id: 'ffb-303__c',
           type: 'Stack',
           class:
             'mx-auto w-full max-w-site grid grid-cols-1 @3xl:grid-cols-2 gap-6 items-center p-8 @3xl:p-16',
           props: {},
           children: [
             {
-              id: 'ffb-357',
+              id: 'ffb-301',
               type: 'Stack',
               props: {},
               class: 'mx-auto w-full max-w-site flex flex-col gap-2 justify-center items-start',
               children: [
                 {
-                  id: 'ffb-350',
+                  id: 'ffb-294',
                   type: 'Heading',
                   props: {
                     level: 'h2',
@@ -220,7 +220,7 @@ export default {
                   },
                 },
                 {
-                  id: 'ffb-351',
+                  id: 'ffb-295',
                   type: 'Text',
                   props: {
                     variant: 'body',
@@ -228,7 +228,7 @@ export default {
                   },
                 },
                 {
-                  id: 'ffb-352',
+                  id: 'ffb-296',
                   type: 'Text',
                   props: {
                     variant: 'body',
@@ -236,7 +236,7 @@ export default {
                   },
                 },
                 {
-                  id: 'ffb-353',
+                  id: 'ffb-297',
                   type: 'Text',
                   props: {
                     variant: 'body',
@@ -245,7 +245,7 @@ export default {
                   class: 'pt-2 font-semibold',
                 },
                 {
-                  id: 'ffb-354',
+                  id: 'ffb-298',
                   type: 'Text',
                   props: {
                     variant: 'meta',
@@ -253,7 +253,7 @@ export default {
                   },
                 },
                 {
-                  id: 'ffb-355',
+                  id: 'ffb-299',
                   type: 'Text',
                   props: {
                     variant: 'meta',
@@ -261,7 +261,7 @@ export default {
                   },
                 },
                 {
-                  id: 'ffb-356',
+                  id: 'ffb-300',
                   type: 'Button',
                   props: {
                     label: 'Get directions',
@@ -272,7 +272,7 @@ export default {
               ],
             },
             {
-              id: 'ffb-358',
+              id: 'ffb-302',
               type: 'Map',
               props: {
                 query: '214 Orchard Lane, Riverside, CA 92501',
@@ -283,21 +283,21 @@ export default {
       ],
     },
     {
-      id: 'ffb-364',
+      id: 'ffb-308',
       type: 'Section',
       class: 'w-full bg-accent text-accent-content',
       props: {},
       name: 'Newsletter',
       children: [
         {
-          id: 'ffb-364__c',
+          id: 'ffb-308__c',
           type: 'Stack',
           class:
             'mx-auto w-full max-w-site flex flex-col gap-4 justify-center items-center p-8 @3xl:p-16 text-center',
           props: {},
           children: [
             {
-              id: 'ffb-360',
+              id: 'ffb-304',
               type: 'Heading',
               props: {
                 level: 'h2',
@@ -306,7 +306,7 @@ export default {
               class: 'text-center text-4xl @3xl:text-5xl',
             },
             {
-              id: 'ffb-361',
+              id: 'ffb-305',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -315,13 +315,13 @@ export default {
               class: 'text-center max-w-lg',
             },
             {
-              id: 'ffb-363',
+              id: 'ffb-307',
               type: 'Stack',
               props: {},
               class: 'mx-auto w-full max-w-site flex flex-col items-center w-full max-w-md',
               children: [
                 {
-                  id: 'ffb-362',
+                  id: 'ffb-306',
                   type: 'Signup',
                   props: {
                     cta: 'Sign up',

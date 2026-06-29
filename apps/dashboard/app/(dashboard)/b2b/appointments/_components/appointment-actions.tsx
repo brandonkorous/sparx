@@ -145,7 +145,7 @@ export function AppointmentActions({ appointment }: Props) {
 
           {error && (
             <Stack className="px-6 pb-2">
-              <Text size="sm" className="text-[var(--color-danger)]">
+              <Text size="sm" variant="danger">
                 {error}
               </Text>
             </Stack>

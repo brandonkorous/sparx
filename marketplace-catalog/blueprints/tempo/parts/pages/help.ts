@@ -3,27 +3,27 @@
 // authoring source of truth is marketplace-catalog/_gen/tempo/.
 
 export default {
-  id: 'tmp-592',
+  id: 'tmp-534',
   type: 'Section',
   props: {},
   class: 'w-full flex flex-col',
   name: 'Help',
   children: [
     {
-      id: 'tmp-551',
+      id: 'tmp-493',
       type: 'Section',
       class: 'w-full bg-base-200',
       props: {},
       name: 'Page hero',
       children: [
         {
-          id: 'tmp-551__c',
+          id: 'tmp-493__c',
           type: 'Stack',
           class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-8 @3xl:p-16',
           props: {},
           children: [
             {
-              id: 'tmp-548',
+              id: 'tmp-490',
               type: 'el:p',
               props: {
                 text: 'Help & Support',
@@ -32,7 +32,7 @@ export default {
                 'font-heading text-xs font-bold uppercase tracking-[0.2em] text-base-content/50',
             },
             {
-              id: 'tmp-549',
+              id: 'tmp-491',
               type: 'el:h1',
               props: {
                 text: 'How can we help?',
@@ -41,7 +41,7 @@ export default {
                 'font-heading max-w-3xl text-3xl font-black uppercase leading-[0.95] tracking-tightest text-base-content @2xl:text-5xl',
             },
             {
-              id: 'tmp-550',
+              id: 'tmp-492',
               type: 'el:p',
               props: {
                 text: 'Orders, returns, shipping and sizing — find an answer fast, or reach the team directly.',
@@ -53,14 +53,14 @@ export default {
       ],
     },
     {
-      id: 'tmp-575',
+      id: 'tmp-517',
       type: 'Section',
       props: {},
       class: 'w-full mx-auto w-full max-w-site flex flex-col gap-4 items-start p-8 @3xl:p-16',
       name: 'Support topics',
       children: [
         {
-          id: 'tmp-552',
+          id: 'tmp-494',
           type: 'el:h2',
           props: {
             text: 'Popular Topics',
@@ -69,19 +69,19 @@ export default {
             'font-heading text-xl font-black uppercase tracking-tightest @2xl:text-2xl text-base-content',
         },
         {
-          id: 'tmp-574',
+          id: 'tmp-516',
           type: 'el:div',
           props: {},
           class: 'grid w-full grid-cols-1 gap-3 @3xl:grid-cols-3',
           children: [
             {
-              id: 'tmp-559',
+              id: 'tmp-501',
               type: 'el:div',
               props: {},
               class: 'flex flex-col gap-2 border border-base-300 p-6',
               children: [
                 {
-                  id: 'tmp-553',
+                  id: 'tmp-495',
                   type: 'el:span',
                   props: {
                     text: '📦',
@@ -89,7 +89,7 @@ export default {
                   class: 'text-3xl leading-none',
                 },
                 {
-                  id: 'tmp-554',
+                  id: 'tmp-496',
                   type: 'el:h3',
                   props: {
                     text: 'Orders & Tracking',
@@ -98,7 +98,7 @@ export default {
                     'font-heading text-lg font-black uppercase tracking-tight text-base-content',
                 },
                 {
-                  id: 'tmp-555',
+                  id: 'tmp-497',
                   type: 'el:p',
                   props: {
                     text: 'Check your order status and track every step from warehouse to door.',
@@ -106,7 +106,7 @@ export default {
                   class: 'text-sm leading-relaxed text-base-content/65',
                 },
                 {
-                  id: 'tmp-558',
+                  id: 'tmp-500',
                   type: 'el:a',
                   props: {
                     href: '/help',
@@ -115,14 +115,14 @@ export default {
                     'group/al inline-flex w-fit items-center gap-2 border-b-2 border-current pb-1 font-heading text-xs font-bold uppercase tracking-wide  mt-2',
                   children: [
                     {
-                      id: 'tmp-556',
+                      id: 'tmp-498',
                       type: 'el:span',
                       props: {
                         text: 'Learn More',
                       },
                     },
                     {
-                      id: 'tmp-557',
+                      id: 'tmp-499',
                       type: 'Icon',
                       props: {
                         name: 'arrow-right',
@@ -134,13 +134,13 @@ export default {
               ],
             },
             {
-              id: 'tmp-566',
+              id: 'tmp-508',
               type: 'el:div',
               props: {},
               class: 'flex flex-col gap-2 border border-base-300 p-6',
               children: [
                 {
-                  id: 'tmp-560',
+                  id: 'tmp-502',
                   type: 'el:span',
                   props: {
                     text: '↩️',
@@ -148,7 +148,7 @@ export default {
                   class: 'text-3xl leading-none',
                 },
                 {
-                  id: 'tmp-561',
+                  id: 'tmp-503',
                   type: 'el:h3',
                   props: {
                     text: 'Returns & Exchanges',
@@ -157,7 +157,7 @@ export default {
                     'font-heading text-lg font-black uppercase tracking-tight text-base-content',
                 },
                 {
-                  id: 'tmp-562',
+                  id: 'tmp-504',
                   type: 'el:p',
                   props: {
                     text: 'Free returns within 30 days — start a return or swap a size in minutes.',
@@ -165,7 +165,7 @@ export default {
                   class: 'text-sm leading-relaxed text-base-content/65',
                 },
                 {
-                  id: 'tmp-565',
+                  id: 'tmp-507',
                   type: 'el:a',
                   props: {
                     href: '/help',
@@ -174,14 +174,14 @@ export default {
                     'group/al inline-flex w-fit items-center gap-2 border-b-2 border-current pb-1 font-heading text-xs font-bold uppercase tracking-wide  mt-2',
                   children: [
                     {
-                      id: 'tmp-563',
+                      id: 'tmp-505',
                       type: 'el:span',
                       props: {
                         text: 'Learn More',
                       },
                     },
                     {
-                      id: 'tmp-564',
+                      id: 'tmp-506',
                       type: 'Icon',
                       props: {
                         name: 'arrow-right',
@@ -193,13 +193,13 @@ export default {
               ],
             },
             {
-              id: 'tmp-573',
+              id: 'tmp-515',
               type: 'el:div',
               props: {},
               class: 'flex flex-col gap-2 border border-base-300 p-6',
               children: [
                 {
-                  id: 'tmp-567',
+                  id: 'tmp-509',
                   type: 'el:span',
                   props: {
                     text: '📏',
@@ -207,7 +207,7 @@ export default {
                   class: 'text-3xl leading-none',
                 },
                 {
-                  id: 'tmp-568',
+                  id: 'tmp-510',
                   type: 'el:h3',
                   props: {
                     text: 'Sizing & Fit',
@@ -216,7 +216,7 @@ export default {
                     'font-heading text-lg font-black uppercase tracking-tight text-base-content',
                 },
                 {
-                  id: 'tmp-569',
+                  id: 'tmp-511',
                   type: 'el:p',
                   props: {
                     text: 'Find your size with our charts and fit notes for every category.',
@@ -224,7 +224,7 @@ export default {
                   class: 'text-sm leading-relaxed text-base-content/65',
                 },
                 {
-                  id: 'tmp-572',
+                  id: 'tmp-514',
                   type: 'el:a',
                   props: {
                     href: '/help',
@@ -233,14 +233,14 @@ export default {
                     'group/al inline-flex w-fit items-center gap-2 border-b-2 border-current pb-1 font-heading text-xs font-bold uppercase tracking-wide  mt-2',
                   children: [
                     {
-                      id: 'tmp-570',
+                      id: 'tmp-512',
                       type: 'el:span',
                       props: {
                         text: 'Learn More',
                       },
                     },
                     {
-                      id: 'tmp-571',
+                      id: 'tmp-513',
                       type: 'Icon',
                       props: {
                         name: 'arrow-right',
@@ -256,27 +256,27 @@ export default {
       ],
     },
     {
-      id: 'tmp-591',
+      id: 'tmp-533',
       type: 'Section',
       class: 'w-full bg-base-200',
       props: {},
       name: 'Contact us',
       children: [
         {
-          id: 'tmp-591__c',
+          id: 'tmp-533__c',
           type: 'Stack',
           class:
             'mx-auto w-full max-w-site grid grid-cols-1 @3xl:grid-cols-2 gap-8 items-center p-8 @3xl:p-16',
           props: {},
           children: [
             {
-              id: 'tmp-580',
+              id: 'tmp-522',
               type: 'el:div',
               props: {},
               class: 'flex flex-col gap-3',
               children: [
                 {
-                  id: 'tmp-576',
+                  id: 'tmp-518',
                   type: 'el:h2',
                   props: {
                     text: 'Still need a hand?',
@@ -285,7 +285,7 @@ export default {
                     'font-heading text-2xl font-black uppercase tracking-tightest text-base-content @2xl:text-3xl',
                 },
                 {
-                  id: 'tmp-577',
+                  id: 'tmp-519',
                   type: 'el:p',
                   props: {
                     text: 'Our team is here seven days a week. Reach out and we’ll get you sorted.',
@@ -293,13 +293,13 @@ export default {
                   class: 'max-w-md text-base leading-relaxed text-base-content/70',
                 },
                 {
-                  id: 'tmp-579',
+                  id: 'tmp-521',
                   type: 'el:div',
                   props: {},
                   class: 'mt-2',
                   children: [
                     {
-                      id: 'tmp-578',
+                      id: 'tmp-520',
                       type: 'el:a',
                       props: {
                         href: '/help',
@@ -313,18 +313,18 @@ export default {
               ],
             },
             {
-              id: 'tmp-590',
+              id: 'tmp-532',
               type: 'el:div',
               props: {},
               class: 'flex flex-col gap-4 bg-base-100 p-6',
               children: [
                 {
-                  id: 'tmp-583',
+                  id: 'tmp-525',
                   type: 'el:div',
                   props: {},
                   children: [
                     {
-                      id: 'tmp-581',
+                      id: 'tmp-523',
                       type: 'el:p',
                       props: {
                         text: 'Email',
@@ -333,7 +333,7 @@ export default {
                         'font-heading text-xs font-bold uppercase tracking-widest text-base-content/50',
                     },
                     {
-                      id: 'tmp-582',
+                      id: 'tmp-524',
                       type: 'el:p',
                       props: {
                         text: 'support@tempo.example',
@@ -343,12 +343,12 @@ export default {
                   ],
                 },
                 {
-                  id: 'tmp-586',
+                  id: 'tmp-528',
                   type: 'el:div',
                   props: {},
                   children: [
                     {
-                      id: 'tmp-584',
+                      id: 'tmp-526',
                       type: 'el:p',
                       props: {
                         text: 'Phone',
@@ -357,7 +357,7 @@ export default {
                         'font-heading text-xs font-bold uppercase tracking-widest text-base-content/50',
                     },
                     {
-                      id: 'tmp-585',
+                      id: 'tmp-527',
                       type: 'el:p',
                       props: {
                         text: '(800) 555-0142',
@@ -367,12 +367,12 @@ export default {
                   ],
                 },
                 {
-                  id: 'tmp-589',
+                  id: 'tmp-531',
                   type: 'el:div',
                   props: {},
                   children: [
                     {
-                      id: 'tmp-587',
+                      id: 'tmp-529',
                       type: 'el:p',
                       props: {
                         text: 'Hours',
@@ -381,7 +381,7 @@ export default {
                         'font-heading text-xs font-bold uppercase tracking-widest text-base-content/50',
                     },
                     {
-                      id: 'tmp-588',
+                      id: 'tmp-530',
                       type: 'el:p',
                       props: {
                         text: 'Mon–Sun · 6am – 9pm PT',

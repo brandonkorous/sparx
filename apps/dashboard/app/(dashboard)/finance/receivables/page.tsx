@@ -1,8 +1,8 @@
 // Finance → Receivables (docs/110 Slice 4c) — money owed TO the merchant: every open
 // invoice across Invoicing documents and B2B accounts, in one aging rollup, with deep
 // links to author or collect. AR is invoicing functionality, so the page is gated on
-// the invoicing module (B2B/Commerce tenants get it free via BUNDLED_FREE) and tinted
-// with the invoicing hue (color-follows-functionality). The aging report itself spans
+// the invoicing module (B2B/Commerce tenants get it free via BUNDLED_FREE) but wears the
+// Finance hue — a Finance section, and Finance owns its color (docs/109). The report spans
 // both systems — invoicing and B2B share the one BillingDocument substrate.
 
 import Link from 'next/link';
@@ -70,7 +70,7 @@ export default async function ReceivablesPage(): Promise<React.JSX.Element> {
   const allCurrent = !aging || aging.totalCount === 0;
 
   return (
-    <ModuleProvider module="invoicing">
+    <ModuleProvider module="finance">
       <Container size="xl">
         <Stack gap={6} className="py-10">
           <PageHeader

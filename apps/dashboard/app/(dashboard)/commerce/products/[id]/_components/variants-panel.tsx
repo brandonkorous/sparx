@@ -118,7 +118,7 @@ export function VariantsPanel({ productId, productTitle, options, variants, mark
 
   return (
     <Stack gap={4}>
-      <Card variant="module">
+      <Card variant="default">
         <CardHeader>
           <Stack direction="row" align="center" justify="between" wrap gap={3}>
             <Stack gap={1}>
@@ -168,7 +168,7 @@ export function VariantsPanel({ productId, productTitle, options, variants, mark
         )}
       </Card>
 
-      <Card variant="module">
+      <Card variant="default">
         <CardHeader>
           <Stack direction="row" align="center" justify="between" wrap gap={3}>
             <Stack gap={1}>

@@ -41,7 +41,7 @@ export function ConfiguratorPanel({
 
   if (templates.length === 0) {
     return (
-      <Card variant="module">
+      <Card variant="default">
         <CardContent>
           <EmptyState
             icon={<Settings2 className="h-5 w-5" />}
@@ -59,7 +59,7 @@ export function ConfiguratorPanel({
   }
 
   return (
-    <Card variant="module">
+    <Card variant="default">
       <CardHeader>
         <Stack direction="row" align="start" justify="between" wrap gap={3}>
           <Stack gap={1}>

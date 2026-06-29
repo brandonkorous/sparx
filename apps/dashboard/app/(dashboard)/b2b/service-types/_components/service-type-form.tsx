@@ -151,7 +151,7 @@ export function ServiceTypeForm({ presentation, type, open, onOpenChange }: Serv
         nextDisabled: saving,
       }}
     >
-      <Card variant="module">
+      <Card variant="default">
         <CardHeader>
           <CardTitle>Service type</CardTitle>
         </CardHeader>

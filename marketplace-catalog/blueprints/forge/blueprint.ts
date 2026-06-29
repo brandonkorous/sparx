@@ -4,7 +4,6 @@
 // ./parts/, or the gen source, then re-run the generator.
 
 import assets from './parts/assets';
-import content from './parts/content';
 import layoutTree from './parts/layout';
 import page_home from './parts/pages/home';
 import page_work from './parts/pages/work';
@@ -19,7 +18,7 @@ import email_studio_notes from './parts/emails/studio-notes';
 
 export default {
   key: 'forge',
-  version: '1.0.0',
+  version: '1.1.0',
   name: 'Forge',
   summary:
     'A bold, dark, award-style marketing site for a creative / brand & web studio — a warm near-black canvas with an acid-green accent, a recreated case-study showcase, a scrolling client + awards marquee, a 2-up work gallery, a 4-up stat band, numbered services, a process timeline, and testimonials, plus Work, Services, About, Insights, Careers, a Contact form, seeded insight articles, and brand-voiced emails. A ready-to-edit services starter.',
@@ -89,7 +88,6 @@ export default {
     apply: true,
   },
   assets: assets,
-  content: content,
   layout: {
     name: 'Forge layout',
     tree: layoutTree,

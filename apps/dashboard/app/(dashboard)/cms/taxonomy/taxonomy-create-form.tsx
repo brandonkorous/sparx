@@ -146,7 +146,7 @@ export function TaxonomyCreateForm({ surface }: TaxonomyCreateFormProps) {
             nextDisabled: pending,
           }}
         >
-          <Card variant="module">
+          <Card variant="default">
             <CardContent className="py-6">
               <Stack gap={4}>
                 <Stack direction="row" gap={3} wrap>

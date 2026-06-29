@@ -21,11 +21,15 @@ export type SparxModule =
   | 'inventory'
   | 'chat'
   | 'scheduling'
-  // Automations + SEO are platform surfaces (always-on, not separately billed),
-  // but they own a brand color so their overview pages read in-module. They are
+  // Automations, SEO + Finance are platform surfaces (always-on, not separately
+  // billed), but they own a brand color so their pages read in-module. They are
   // intentionally NOT in moduleManifests — they get no gated sidebar slot.
   | 'automations'
   | 'seo'
+  // Finance (docs/109) is the money hub — a peer of Settings, but it owns a hue
+  // so its surfaces pop AND a finance signal embedded in another module (e.g. the
+  // Payouts card on the Commerce overview) reads as finance, not that module.
+  | 'finance'
   | 'platform';
 
 interface ModuleColors {
@@ -64,6 +68,9 @@ const MODULE_COLORS: Record<SparxModule, ModuleColors> = {
   automations: { color: '#D946EF', tint: '#FDF4FF', text: '#A21CAF', content: WHITE },
   // SEO yellow is bright; on-fill ink is dark for legibility.
   seo: { color: '#EAB308', tint: '#FEFCE8', text: '#854D0E', content: AMBER_INK },
+  // Finance "money green" — green-600, a deeper shade than the emerald success
+  // token (#10B981) so finance chrome stays distinct from positive-state badges.
+  finance: { color: '#16A34A', tint: '#F0FDF4', text: '#15803D', content: WHITE },
   platform: { color: '#6366F1', tint: '#EEF2FF', text: '#4338CA', content: WHITE },
 };
 
@@ -83,9 +90,18 @@ export function ModuleProvider({ module, children, className, style }: ModulePro
     () =>
       ({
         '--module-active': colors.color,
-        '--module-active-tint': colors.tint,
-        '--module-active-text': colors.text,
         '--module-active-content': colors.content,
+        // Theme-aware tint + ink. We emit the hand-picked LIGHT values plus a
+        // DARK derivation (module color mixed into the surface / lifted toward
+        // the text color); tokens.css selects between them by theme on
+        // [data-module]. This keeps light mode exactly as designed while
+        // preventing a fixed light hex from rendering on a dark surface — the
+        // whole UI consumes the resolved --module-active-tint / -text, so every
+        // module-tinted chip, nav highlight, and ink label adapts at once.
+        '--module-active-tint-light': colors.tint,
+        '--module-active-tint-dark': `color-mix(in oklab, ${colors.color} 14%, var(--color-bg-surface))`,
+        '--module-active-text-light': colors.text,
+        '--module-active-text-dark': `color-mix(in oklab, ${colors.color} 60%, var(--color-text-primary))`,
       }) as React.CSSProperties,
     [colors]
   );

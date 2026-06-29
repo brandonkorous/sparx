@@ -3,27 +3,27 @@
 // authoring source of truth is marketplace-catalog/_gen/mosaic/.
 
 export default {
-  id: 'msc-595',
+  id: 'msc-580',
   type: 'Section',
   props: {},
   class: 'w-full flex flex-col',
   name: 'Customer story',
   children: [
     {
-      id: 'msc-591',
+      id: 'msc-576',
       type: 'Section',
       class: 'w-full bg-base-200',
       props: {},
       name: 'Story header',
       children: [
         {
-          id: 'msc-591__c',
+          id: 'msc-576__c',
           type: 'Stack',
           class: 'mx-auto w-full max-w-site flex flex-col gap-4 items-start p-8 @3xl:p-16',
           props: {},
           children: [
             {
-              id: 'msc-588',
+              id: 'msc-573',
               type: 'el:a',
               props: {
                 href: '/customers',
@@ -32,7 +32,7 @@ export default {
               class: 'text-sm font-medium text-primary',
             },
             {
-              id: 'msc-589',
+              id: 'msc-574',
               type: 'Heading',
               props: {
                 level: 'h1',
@@ -43,7 +43,7 @@ export default {
               },
             },
             {
-              id: 'msc-590',
+              id: 'msc-575',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -58,14 +58,14 @@ export default {
       ],
     },
     {
-      id: 'msc-594',
+      id: 'msc-579',
       type: 'Section',
       props: {},
       class: 'w-full mx-auto w-full max-w-site flex flex-col gap-6 p-8 @3xl:p-16',
       name: 'Story body',
       children: [
         {
-          id: 'msc-592',
+          id: 'msc-577',
           type: 'Image',
           props: {
             ratio: 'wide',
@@ -77,7 +77,7 @@ export default {
           },
         },
         {
-          id: 'msc-593',
+          id: 'msc-578',
           type: 'Prose',
           props: {},
           binding: {

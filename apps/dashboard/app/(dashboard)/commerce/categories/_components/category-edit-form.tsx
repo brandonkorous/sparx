@@ -261,7 +261,7 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
               submit();
             }}
           >
-            <Card variant="module">
+            <Card variant="default">
               <CardContent className="py-6">
                 <Stack gap={4}>
                   <Stack direction="row" gap={3} wrap>

@@ -171,7 +171,7 @@ export function ProductEditForm({
   return (
     <form id="product-edit-form" onSubmit={onSubmit} noValidate>
       <Stack gap={4}>
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <Heading level={3} as="h2">
               Basics
@@ -212,7 +212,7 @@ export function ProductEditForm({
         </Card>
 
         {sites.length > 1 && (
-          <Card variant="module">
+          <Card variant="default">
             <CardHeader>
               <Heading level={3} as="h2">
                 Sites
@@ -225,7 +225,7 @@ export function ProductEditForm({
           </Card>
         )}
 
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <Heading level={3} as="h2">
               Organization
@@ -300,7 +300,7 @@ export function ProductEditForm({
           </CardContent>
         </Card>
 
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <Heading level={3} as="h2">
               Shipping &amp; fulfillment

@@ -1,5 +1,4 @@
 import { requireSession } from '@sparx/auth';
-import { Container, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -36,36 +35,24 @@ export default async function NewTaskPage({ searchParams }: PageProps) {
     api.get<TenantUser[]>('/v1/users?take=100'),
   ]);
 
+  // The embedded SurfaceFrame supplies the title + chrome — no Container/PageHeader.
   return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          title="New task"
-          description={
-            <>
-              Assign a follow-up to yourself or a teammate. Tasks linked to a customer or deal show
-              up on that record&apos;s task list as well.
-            </>
-          }
-        />
-
-        <NewTaskForm
-          currentUserId={session.user.id}
-          users={users.map((u) => ({
-            id: u.id,
-            label: u.name ?? u.email ?? u.id.slice(0, 8),
-          }))}
-          customers={customers.map((c) => ({
-            id: c.id,
-            label:
-              [c.firstName, c.lastName].filter(Boolean).join(' ') ||
-              (c.company ?? c.email ?? c.id.slice(0, 8)),
-          }))}
-          preselectedCustomerId={stringParam(sp.customerId) ?? null}
-          preselectedDealId={stringParam(sp.dealId) ?? null}
-        />
-      </Stack>
-    </Container>
+    <NewTaskForm
+      surface="page"
+      currentUserId={session.user.id}
+      users={users.map((u) => ({
+        id: u.id,
+        label: u.name ?? u.email ?? u.id.slice(0, 8),
+      }))}
+      customers={customers.map((c) => ({
+        id: c.id,
+        label:
+          [c.firstName, c.lastName].filter(Boolean).join(' ') ||
+          (c.company ?? c.email ?? c.id.slice(0, 8)),
+      }))}
+      preselectedCustomerId={stringParam(sp.customerId) ?? null}
+      preselectedDealId={stringParam(sp.dealId) ?? null}
+    />
   );
 }
 

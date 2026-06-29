@@ -202,7 +202,7 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
           }}
         >
           <Stack gap={5}>
-            <Card variant="module">
+            <Card variant="default">
               <CardHeader>
                 <Heading level={3}>Identity</Heading>
               </CardHeader>
@@ -293,7 +293,7 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
               </CardContent>
             </Card>
 
-            <Card variant="module">
+            <Card variant="default">
               <CardHeader>
                 <Heading level={3}>Schema</Heading>
                 <CardDescription>

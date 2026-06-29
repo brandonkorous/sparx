@@ -15,6 +15,8 @@ import {
 
 import { api } from '@/lib/api-rest-client';
 
+import { EntityCreateButton } from '../../_components/entity-create-button';
+
 export const dynamic = 'force-dynamic';
 
 interface StageLite {
@@ -47,9 +49,14 @@ export default async function InvoicingWorkflowsPage() {
           }
           description="A workflow is a document's lifecycle — the ordered stages it moves through (Estimate → Approved → Invoiced → Paid). Each stage carries the customer-facing label and the behavior: when to mint a number, freeze a snapshot, or lock editing. One engine, your labels."
           actions={
-            <Button asChild color="module" leftIcon={<Plus className="h-4 w-4" />}>
-              <Link href="/invoicing/workflows/new">New workflow</Link>
-            </Button>
+            <EntityCreateButton
+              entityType="workflow"
+              newHref="/invoicing/workflows/new"
+              color="module"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New workflow
+            </EntityCreateButton>
           }
         />
 

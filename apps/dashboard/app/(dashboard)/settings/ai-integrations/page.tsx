@@ -32,16 +32,8 @@ export default async function AiIntegrationsPage() {
           icon={<KeyRound className="h-5 w-5" />}
           title="AI Integrations"
           description="Issue API keys for Claude Desktop, ChatGPT custom GPTs, or Microsoft Copilot. Each key is scoped — grant only the permissions the assistant needs. Keys are shown once at issuance; copy and store securely."
+          actions={<IssueKeyForm />}
         />
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Issue a new key</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <IssueKeyForm />
-          </CardContent>
-        </Card>
 
         <Card>
           <CardHeader>
@@ -50,7 +42,7 @@ export default async function AiIntegrationsPage() {
           <CardContent>
             {live.length === 0 ? (
               <Text size="sm" variant="muted">
-                No active keys yet. Use the form above to issue one.
+                No active keys yet. Use “Issue key” above to create one.
               </Text>
             ) : (
               <Stack gap={2}>

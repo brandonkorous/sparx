@@ -5,13 +5,17 @@
 // Product, Article), then `emails` (Welcome, New Drops). Reorder a property and every
 // downstream id shifts, so KEEP this order stable.
 //
-// `brand`, `theme`, `assets`, `content`, `commerce` are pure data imported above — no
-// node() calls, so no ids are minted until `layout.tree` evaluates.
+// `brand`, `theme`, `assets` are pure data imported above — no node() calls, so no ids
+// are minted until `layout.tree` evaluates.
+//
+// Presentation-only (the four-axis provisioning model): the blueprint ships the LOOK —
+// brand, theme, layout, pages, emails — but NO catalog or news content of its own. A
+// tenant gets the styled sportswear site; products fill in from their own catalog or
+// industry sample data, and the product grids bind the live catalog (`from: 'all'`),
+// empty until any exist.
 
 import { brand, theme } from './theme';
-import { assets, commerce } from './commerce';
 import { brandAssets } from './logo';
-import { content, newsCovers } from './cms';
 import { layoutTree } from './layout';
 import { homeTree } from './pages/home';
 import { shopTree } from './pages/shop';
@@ -24,7 +28,7 @@ import { welcomeEmail, dropsEmail } from './email';
 
 export const manifest = {
   key: 'tempo',
-  version: '1.0.1',
+  version: '1.1.0',
   name: 'Tempo',
   summary:
     'A bold, stark athletic storefront — a campaign-driven home with a hero carousel, a team-colorway scroller, category tiles, a live best-sellers grid, a membership band and a mega footer, plus a Shop catalog, a Club membership page, Our Story, Help, a News index, enriched product and article templates, ~12 products across four categories, two collections, and brand-voiced emails. A ready-to-edit sportswear retail starter.',
@@ -35,12 +39,10 @@ export const manifest = {
 
   theme,
 
-  // Product imagery + news covers (data-URI panels) + the brand motion-mark logo/favicon.
-  assets: [...assets, ...newsCovers, ...brandAssets],
-
-  content,
-
-  commerce,
+  // The brand motion-mark logo/favicon only (data URIs). Product imagery + news covers
+  // are gone with the catalog/content strip — the PDP/article templates now bind the
+  // tenant's own media.
+  assets: [...brandAssets],
 
   layout: { name: 'Tempo layout', tree: layoutTree(), makeActive: true },
 

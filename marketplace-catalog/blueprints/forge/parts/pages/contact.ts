@@ -3,33 +3,33 @@
 // authoring source of truth is marketplace-catalog/_gen/forge/.
 
 export default {
-  id: 'fg-737',
+  id: 'fg-716',
   type: 'Section',
   props: {},
   class: 'w-full flex flex-col',
   name: 'Contact',
   children: [
     {
-      id: 'fg-694',
+      id: 'fg-673',
       type: 'Section',
       props: {},
       class: 'w-full mx-auto w-full max-w-site flex flex-col gap-4 items-start p-8 @3xl:p-16',
       name: 'Page hero',
       children: [
         {
-          id: 'fg-689',
+          id: 'fg-668',
           type: 'el:p',
           props: {},
           class: 'flex items-center gap-3 text-sm font-medium tracking-wide text-base-content/60',
           children: [
             {
-              id: 'fg-687',
+              id: 'fg-666',
               type: 'el:span',
               props: {},
               class: 'inline-block h-2 w-2 shrink-0 rounded-full bg-[#C6F24E]',
             },
             {
-              id: 'fg-688',
+              id: 'fg-667',
               type: 'el:span',
               props: {
                 text: 'Contact',
@@ -38,14 +38,14 @@ export default {
           ],
         },
         {
-          id: 'fg-692',
+          id: 'fg-671',
           type: 'el:h1',
           props: {},
           class:
             'font-heading max-w-4xl text-[2.5rem] font-medium leading-[1.02] tracking-tight text-[#ECE7DD] @2xl:text-6xl',
           children: [
             {
-              id: 'fg-690',
+              id: 'fg-669',
               type: 'el:span',
               props: {
                 text: '/',
@@ -53,7 +53,7 @@ export default {
               class: 'mr-2 inline-block -skew-x-12 font-bold text-[#C6F24E] mr-3',
             },
             {
-              id: 'fg-691',
+              id: 'fg-670',
               type: 'el:span',
               props: {
                 text: 'Let’s talk.',
@@ -62,7 +62,7 @@ export default {
           ],
         },
         {
-          id: 'fg-693',
+          id: 'fg-672',
           type: 'el:p',
           props: {
             text: 'Tell us about your project and what success looks like. We reply within one business day.',
@@ -72,20 +72,20 @@ export default {
       ],
     },
     {
-      id: 'fg-736',
+      id: 'fg-715',
       type: 'Section',
       props: {},
       class: 'w-full mx-auto w-full max-w-site flex flex-col gap-6 p-8 @3xl:p-16',
       name: 'Inquiry',
       children: [
         {
-          id: 'fg-735',
+          id: 'fg-714',
           type: 'el:div',
           props: {},
           class: 'grid w-full grid-cols-1 gap-10 @3xl:grid-cols-[1.3fr_1fr]',
           children: [
             {
-              id: 'fg-712',
+              id: 'fg-691',
               type: 'el:form',
               props: {},
               class:
@@ -93,7 +93,7 @@ export default {
               name: 'Contact form',
               children: [
                 {
-                  id: 'fg-696',
+                  id: 'fg-675',
                   type: 'Field',
                   props: {
                     label: 'Full name',
@@ -101,7 +101,7 @@ export default {
                   class: 'w-full',
                   children: [
                     {
-                      id: 'fg-695',
+                      id: 'fg-674',
                       type: 'Input',
                       props: {
                         type: 'text',
@@ -113,7 +113,7 @@ export default {
                   ],
                 },
                 {
-                  id: 'fg-698',
+                  id: 'fg-677',
                   type: 'Field',
                   props: {
                     label: 'Work email',
@@ -121,7 +121,7 @@ export default {
                   class: 'w-full',
                   children: [
                     {
-                      id: 'fg-697',
+                      id: 'fg-676',
                       type: 'Input',
                       props: {
                         type: 'email',
@@ -133,7 +133,7 @@ export default {
                   ],
                 },
                 {
-                  id: 'fg-700',
+                  id: 'fg-679',
                   type: 'Field',
                   props: {
                     label: 'Company',
@@ -141,7 +141,7 @@ export default {
                   class: 'w-full',
                   children: [
                     {
-                      id: 'fg-699',
+                      id: 'fg-678',
                       type: 'Input',
                       props: {
                         type: 'text',
@@ -153,7 +153,7 @@ export default {
                   ],
                 },
                 {
-                  id: 'fg-707',
+                  id: 'fg-686',
                   type: 'Field',
                   props: {
                     label: 'Project budget',
@@ -161,7 +161,7 @@ export default {
                   class: 'w-full',
                   children: [
                     {
-                      id: 'fg-706',
+                      id: 'fg-685',
                       type: 'el:select',
                       props: {
                         name: 'budget',
@@ -170,7 +170,7 @@ export default {
                         'w-full rounded-xl border border-white/15 bg-[#1A1611] px-4 py-3 text-sm text-[#ECE7DD]',
                       children: [
                         {
-                          id: 'fg-701',
+                          id: 'fg-680',
                           type: 'el:option',
                           props: {
                             value: '',
@@ -178,7 +178,7 @@ export default {
                           },
                         },
                         {
-                          id: 'fg-702',
+                          id: 'fg-681',
                           type: 'el:option',
                           props: {
                             value: 'under-25k',
@@ -186,7 +186,7 @@ export default {
                           },
                         },
                         {
-                          id: 'fg-703',
+                          id: 'fg-682',
                           type: 'el:option',
                           props: {
                             value: '25-50k',
@@ -194,7 +194,7 @@ export default {
                           },
                         },
                         {
-                          id: 'fg-704',
+                          id: 'fg-683',
                           type: 'el:option',
                           props: {
                             value: '50-100k',
@@ -202,7 +202,7 @@ export default {
                           },
                         },
                         {
-                          id: 'fg-705',
+                          id: 'fg-684',
                           type: 'el:option',
                           props: {
                             value: '100k-plus',
@@ -214,7 +214,7 @@ export default {
                   ],
                 },
                 {
-                  id: 'fg-709',
+                  id: 'fg-688',
                   type: 'Field',
                   props: {
                     label: 'About the project',
@@ -222,7 +222,7 @@ export default {
                   class: 'w-full',
                   children: [
                     {
-                      id: 'fg-708',
+                      id: 'fg-687',
                       type: 'Textarea',
                       props: {
                         name: 'message',
@@ -233,7 +233,7 @@ export default {
                   ],
                 },
                 {
-                  id: 'fg-710',
+                  id: 'fg-689',
                   type: 'Button',
                   props: {
                     label: 'Send inquiry',
@@ -241,7 +241,7 @@ export default {
                   class: 'st-btn st-c-primary st-v-solid st-btn--sz-md w-full rounded-full',
                 },
                 {
-                  id: 'fg-711',
+                  id: 'fg-690',
                   type: 'el:p',
                   props: {
                     text: 'By submitting, you agree to be contacted about your inquiry. We respect your inbox.',
@@ -251,18 +251,18 @@ export default {
               ],
             },
             {
-              id: 'fg-734',
+              id: 'fg-713',
               type: 'el:div',
               props: {},
               class: 'flex flex-col gap-6',
               children: [
                 {
-                  id: 'fg-715',
+                  id: 'fg-694',
                   type: 'el:div',
                   props: {},
                   children: [
                     {
-                      id: 'fg-713',
+                      id: 'fg-692',
                       type: 'el:p',
                       props: {
                         text: 'Email',
@@ -270,7 +270,7 @@ export default {
                       class: 'text-sm font-medium text-base-content/50',
                     },
                     {
-                      id: 'fg-714',
+                      id: 'fg-693',
                       type: 'el:a',
                       props: {
                         href: 'mailto:hello@forge.studio',
@@ -282,12 +282,12 @@ export default {
                   ],
                 },
                 {
-                  id: 'fg-718',
+                  id: 'fg-697',
                   type: 'el:div',
                   props: {},
                   children: [
                     {
-                      id: 'fg-716',
+                      id: 'fg-695',
                       type: 'el:p',
                       props: {
                         text: 'New business',
@@ -295,7 +295,7 @@ export default {
                       class: 'text-sm font-medium text-base-content/50',
                     },
                     {
-                      id: 'fg-717',
+                      id: 'fg-696',
                       type: 'el:a',
                       props: {
                         href: 'mailto:newbiz@forge.studio',
@@ -307,12 +307,12 @@ export default {
                   ],
                 },
                 {
-                  id: 'fg-721',
+                  id: 'fg-700',
                   type: 'el:div',
                   props: {},
                   children: [
                     {
-                      id: 'fg-719',
+                      id: 'fg-698',
                       type: 'el:p',
                       props: {
                         text: 'Studio',
@@ -320,7 +320,7 @@ export default {
                       class: 'text-sm font-medium text-base-content/50',
                     },
                     {
-                      id: 'fg-720',
+                      id: 'fg-699',
                       type: 'el:p',
                       props: {
                         text: 'Remote-first · Working worldwide',
@@ -330,13 +330,13 @@ export default {
                   ],
                 },
                 {
-                  id: 'fg-733',
+                  id: 'fg-712',
                   type: 'el:div',
                   props: {},
                   class: 'mt-2 rounded-[1.5rem] border border-white/10 bg-[#221D16] p-6',
                   children: [
                     {
-                      id: 'fg-722',
+                      id: 'fg-701',
                       type: 'el:h3',
                       props: {
                         text: 'What happens next',
@@ -344,19 +344,19 @@ export default {
                       class: 'font-heading text-lg font-semibold text-[#ECE7DD]',
                     },
                     {
-                      id: 'fg-732',
+                      id: 'fg-711',
                       type: 'el:ul',
                       props: {},
                       class: 'mt-4 flex flex-col gap-3',
                       children: [
                         {
-                          id: 'fg-725',
+                          id: 'fg-704',
                           type: 'el:li',
                           props: {},
                           class: 'flex items-start gap-3 text-sm text-base-content/70',
                           children: [
                             {
-                              id: 'fg-723',
+                              id: 'fg-702',
                               type: 'el:span',
                               props: {
                                 text: '✓',
@@ -365,7 +365,7 @@ export default {
                                 'mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#C6F24E]/15 text-xs font-bold text-[#C6F24E]',
                             },
                             {
-                              id: 'fg-724',
+                              id: 'fg-703',
                               type: 'el:span',
                               props: {
                                 text: 'We reply within one business day.',
@@ -374,13 +374,13 @@ export default {
                           ],
                         },
                         {
-                          id: 'fg-728',
+                          id: 'fg-707',
                           type: 'el:li',
                           props: {},
                           class: 'flex items-start gap-3 text-sm text-base-content/70',
                           children: [
                             {
-                              id: 'fg-726',
+                              id: 'fg-705',
                               type: 'el:span',
                               props: {
                                 text: '✓',
@@ -389,7 +389,7 @@ export default {
                                 'mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#C6F24E]/15 text-xs font-bold text-[#C6F24E]',
                             },
                             {
-                              id: 'fg-727',
+                              id: 'fg-706',
                               type: 'el:span',
                               props: {
                                 text: 'A 30-minute intro call to understand your goals.',
@@ -398,13 +398,13 @@ export default {
                           ],
                         },
                         {
-                          id: 'fg-731',
+                          id: 'fg-710',
                           type: 'el:li',
                           props: {},
                           class: 'flex items-start gap-3 text-sm text-base-content/70',
                           children: [
                             {
-                              id: 'fg-729',
+                              id: 'fg-708',
                               type: 'el:span',
                               props: {
                                 text: '✓',
@@ -413,7 +413,7 @@ export default {
                                 'mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#C6F24E]/15 text-xs font-bold text-[#C6F24E]',
                             },
                             {
-                              id: 'fg-730',
+                              id: 'fg-709',
                               type: 'el:span',
                               props: {
                                 text: 'A tailored proposal, scope, and timeline.',

@@ -3,9 +3,9 @@
   "category": "blueprint",
   "slug": "mosaic",
   "name": "Mosaic",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "The AI workspace that works for you.",
-  "description": "A clean, modern marketing site for an AI-workspace / productivity SaaS — a long bento-driven home page with a browser-chrome product preview, a scrolling logo wall, agent and assistant showcases, social proof and stats, plus Pricing, Enterprise, a Request-a-demo page, two customer stories with a Customers index, and brand-voiced welcome + product-tips emails. Near-monochrome apex theme with a playful bento accent palette. Installs as a draft for the tenant to review, customize, and publish.",
+  "description": "A clean, modern marketing site LOOK for an AI-workspace / productivity SaaS — a long bento-driven home page with a browser-chrome product preview, a scrolling logo wall, agent and assistant showcases, social proof and stats, plus Pricing, Enterprise, a Request-a-demo page, a Customers index, and brand-voiced welcome + product-tips emails. The look, not the content: it ships no stories of its own, so the Customers index fills with your own posts (or industry sample data) and is empty until then. Near-monochrome apex theme with a playful bento accent palette. Installs as a draft for the tenant to review, customize, and publish.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",

@@ -105,8 +105,9 @@ export function productTemplate(): BuilderNode {
           valueCard('♻️', 'Eco Packaging', '100% compostable bowls'),
         ],
       }),
-      // Cross-sell — a LIVE grid bound to the curated "Fan Favorites" collection, so
-      // every product page recommends a varied handful (photos + Add-to-cart all live).
+      // Cross-sell — a LIVE grid bound to the catalog, so every product page recommends
+      // a varied handful (photos + Add-to-cart all live). Fills with the tenant's
+      // products; empty until any exist.
       node('Section', {
         box: { name: 'You might also like', padding: 'xl', backgroundWidth: 'full', contentWidth: 'contained' },
         layout: { direction: 'stack', gap: 'lg', alignItems: 'start' },
@@ -116,7 +117,7 @@ export function productTemplate(): BuilderNode {
             cls: 'text-base-content/70',
             props: { variant: 'body', text: 'More fresh favorites our regulars order on repeat.' },
           }),
-          boundProductGrid('fan-favorites', 4, 4, 'collection'),
+          boundProductGrid(4, 4),
         ],
       }),
     ],

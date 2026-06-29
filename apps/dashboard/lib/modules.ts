@@ -241,15 +241,12 @@ export const MODULE_BY_KEY: Record<string, SwitchboardModule> = Object.fromEntri
 
 // ── Module dependency rules (mirror the server @sparx/modules graph) ──────────
 //   REQUIRES — a key needs these providers; each is SEPARATELY BILLED and locks
-//     ON while the key is on. Commerce/CMS/Email need Builder (the $10 site
-//     foundation); B2B needs Commerce. Requirements compose transitively
-//     (B2B → Commerce → Builder).
+//     ON while the key is on. Only B2B requires Commerce. Builder is NOT required
+//     by Commerce/CMS/Email — those run headless against the API; Builder is the
+//     optional hosted-site module you add for a rendered, sparx-hosted site.
 //   BUNDLED_FREE — a key is on free ($0, "Included") whenever a provider is on;
 //     Invoicing rides along with Commerce/B2B, else it's a $19 add-on.
 const REQUIRES: Record<string, string[]> = {
-  commerce: ['builder'],
-  cms: ['builder'],
-  email: ['builder'],
   b2b: ['commerce'],
 };
 const BUNDLED_FREE: Record<string, string[]> = {

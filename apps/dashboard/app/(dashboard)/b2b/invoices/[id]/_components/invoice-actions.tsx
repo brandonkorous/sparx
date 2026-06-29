@@ -86,7 +86,16 @@ export function InvoiceActions({ invoiceId }: InvoiceActionsProps) {
     <div className="flex gap-2">
       {/* Mark Paid */}
       <Modal open={markPaidOpen} onOpenChange={setMarkPaidOpen}>
-        <Button color="success" variant="soft" size="sm" onClick={() => setMarkPaidOpen(true)}>
+        <Button
+          color="success"
+          variant="soft"
+          size="sm"
+          onClick={() => {
+            setPaidMethod('');
+            setNotes('');
+            setMarkPaidOpen(true);
+          }}
+        >
           <CheckCircle className="mr-1 h-4 w-4" />
           Mark paid
         </Button>
@@ -141,7 +150,15 @@ export function InvoiceActions({ invoiceId }: InvoiceActionsProps) {
 
       {/* Write Off */}
       <Modal open={writeOffOpen} onOpenChange={setWriteOffOpen}>
-        <Button color="danger" variant="ghost" size="sm" onClick={() => setWriteOffOpen(true)}>
+        <Button
+          color="danger"
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            setNotes('');
+            setWriteOffOpen(true);
+          }}
+        >
           <XCircle className="mr-1 h-4 w-4" />
           Write off
         </Button>

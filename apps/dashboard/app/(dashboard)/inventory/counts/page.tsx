@@ -6,6 +6,7 @@ import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack } from '@
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
 
+import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
@@ -51,9 +52,14 @@ export default async function InventoryCountsPage({ searchParams }: PageProps) {
           }
           description="Reconcile recorded stock against a physical count. Capture counted quantities, review the variance, and post — large variances need an approval before they apply."
           actions={
-            <Button color="module" asChild leftIcon={<Plus className="h-4 w-4" />}>
-              <Link href="/inventory/counts/new">New count</Link>
-            </Button>
+            <EntityCreateButton
+              entityType="count"
+              newHref="/inventory/counts/new"
+              color="module"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New count
+            </EntityCreateButton>
           }
         />
 
@@ -86,9 +92,14 @@ export default async function InventoryCountsPage({ searchParams }: PageProps) {
               title={status ? `No ${status} counts` : 'No counts yet'}
               description="Start a cycle count of a few SKUs or a full physical count of a warehouse. Enter the counted quantities, then post to correct stock with an audit trail."
               action={
-                <Button color="module" asChild leftIcon={<Plus className="h-4 w-4" />}>
-                  <Link href="/inventory/counts/new">New count</Link>
-                </Button>
+                <EntityCreateButton
+                  entityType="count"
+                  newHref="/inventory/counts/new"
+                  color="module"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New count
+                </EntityCreateButton>
               }
             />
           </Card>

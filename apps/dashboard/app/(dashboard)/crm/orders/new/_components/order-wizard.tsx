@@ -1,24 +1,21 @@
 'use client';
 
-// Order creation wizard (docs/86 SurfaceFrame, docs/68). The manual-order builder
-// — it composes a COMPLETE order in a guided flow:
-//   1. Customer  — the customer (required), channel, and currency.
-//   2. Line items — the priced lines (SKU, name, qty, unit price, per-line tax
-//                   and discount), via the shared LineItemsEditor.
-//   3. Details   — source, shipping, and notes (all optional).
-//   4. Review    — the summary + totals. Create.
+// Order creation form (docs/86 SurfaceFrame, docs/68). SINGLE-PAGE (WS1, docs/105):
+// the manual-order builder composes a COMPLETE order in one scroll:
+//   • Customer   — the customer (required), channel, and currency.
+//   • Line items — the priced lines (SKU, name, qty, unit price, per-line tax and
+//                  discount), via the shared LineItemsEditor.
+//   • Details    — source, shipping, and notes (all optional).
+// The old "Review" step is dropped: the live summary column already carries the
+// running totals, so it IS the review. Everything is composed locally and committed
+// in a single `createOrderAction` on finish (the order API takes the header + items
+// together; the service emits `order.created` after the transaction commits), then
+// the user lands on the new order. The line editor is shared with the Quote form.
 //
-// Everything is composed locally and committed in a single `createOrderAction`
-// on finish (the order API takes the header + items together; the service emits
-// `order.created` after the transaction commits), then the user lands on the new
-// order. Mirrors the Quote wizard; the line editor is shared with it.
-//
-// Presentation (like the other create-wizards): the `/new` route renders the
-// in-app `embedded` top stepper (full page inside the dashboard chrome); the
-// Orders list opens it inside the drawer/modal detail chrome (`overlay` →
-// SurfaceFrame `inline`), picked by the user's `defaultDetailView`. Finishing
-// navigates to the new order, which clears the overlay token — closing the
-// drawer/modal on its own.
+// Presentation: the `/new` route renders the `embedded` full page inside the
+// dashboard chrome; the Orders list opens it inside the drawer/modal detail chrome
+// (`overlay` → SurfaceFrame `inline`), picked by the user's `defaultDetailView`.
+// Finishing navigates to the new order, which clears the overlay token.
 
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -33,7 +30,6 @@ import {
   Label,
   ModuleProvider,
   NativeSelect,
-  Stack,
   Text,
   Textarea,
   SurfaceFrame,
@@ -56,15 +52,14 @@ export interface CustomerOption {
 }
 
 export interface OrderWizardProps {
-  /** `'page'` = the in-app full-page `/new` route (embedded top stepper, inside
-   *  the dashboard chrome); `'overlay'` = the drawer/modal detail chrome (the
-   *  `defaultDetailView` preference picks which). */
+  /** `'page'` = the in-app full-page `/new` route (embedded, inside the dashboard
+   *  chrome); `'overlay'` = the drawer/modal detail chrome (the `defaultDetailView`
+   *  preference picks which). */
   presentation?: 'page' | 'overlay';
   customers: CustomerOption[];
   preselectedCustomerId?: string | null;
 }
 
-type StepKey = 'customer' | 'lines' | 'details' | 'review';
 type Channel = 'admin' | 'storefront' | 'b2b_portal' | 'import' | 'mcp';
 
 const CHANNELS: { value: Channel; label: string }[] = [
@@ -75,21 +70,9 @@ const CHANNELS: { value: Channel; label: string }[] = [
   { value: 'mcp', label: 'MCP' },
 ];
 
-const STEP_ORDER: StepKey[] = ['customer', 'lines', 'details', 'review'];
-
-const ALL_STEPS: Record<StepKey, SurfaceStepDef> = {
-  customer: { key: 'customer', label: 'Customer', sublabel: 'Who & how' },
-  lines: { key: 'lines', label: 'Line items', sublabel: 'The order' },
-  details: { key: 'details', label: 'Details', sublabel: 'Shipping & notes' },
-  review: { key: 'review', label: 'Review', sublabel: 'Create' },
-};
-
-const RAIL: Record<StepKey, { context: string }> = {
-  customer: { context: 'An order is placed for a single customer.' },
-  lines: { context: 'Totals derive from line items + header shipping.' },
-  details: { context: 'All optional — leave a field blank to skip it.' },
-  review: { context: 'The service emits order.created after the order commits.' },
-};
+// Single-page form = one step, so SurfaceFrame's MiniProgress auto-hides and the
+// toolbar is Cancel + Create (no Back/Continue).
+const SINGLE_STEP: SurfaceStepDef[] = [{ key: 'order', label: 'Order' }];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────────
 
@@ -113,8 +96,8 @@ function money(amount: number, currency: string): string {
 // ─── Component ────────────────────────────────────────────────────────────────────
 
 export function OrderWizard(props: OrderWizardProps) {
-  // Both presentations are full-height top-stepper frames (embedded fills the
-  // dashboard content area; inline fills the drawer/modal body), so the wrapping
+  // Both presentations are full-height frames (embedded fills the dashboard
+  // content area; inline fills the drawer/modal body), so the wrapping
   // ModuleProvider carries the height through (h-full).
   return (
     <ModuleProvider module="crm" className="h-full">
@@ -132,19 +115,17 @@ function OrderWizardInner({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [stepKey, setStepKey] = React.useState<StepKey>('customer');
-
-  // Step 1 — customer
+  // Customer
   const [customerId, setCustomerId] = React.useState(preselectedCustomerId ?? '');
   const [channel, setChannel] = React.useState<Channel>('admin');
   const [currency, setCurrency] = React.useState('USD');
 
-  // Step 2 — line items
+  // Line items
   const [items, setItems] = React.useState<LineItem[]>([
     { sku: '', name: '', quantity: 1, unitPrice: 0, taxAmount: 0, discountAmount: 0 },
   ]);
 
-  // Step 3 — details
+  // Details
   const [source, setSource] = React.useState('');
   const [shipping, setShipping] = React.useState('');
   const [customerNote, setCustomerNote] = React.useState('');
@@ -152,12 +133,6 @@ function OrderWizardInner({
 
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-
-  const steps: SurfaceStepDef[] = STEP_ORDER.map((k) => ALL_STEPS[k]);
-  const current = Math.max(
-    0,
-    steps.findIndex((s) => s.key === stepKey)
-  );
 
   const validItems = items.filter((it) => it.sku.trim() && it.name.trim());
 
@@ -170,9 +145,9 @@ function OrderWizardInner({
 
   const customerLabel = customers.find((c) => c.id === customerId)?.label ?? '—';
 
-  // Unsaved-changes guard. A create wizard starts blank, so "dirty" is "the user
-  // entered anything across any step" — guard a Cancel / Close / backdrop so a
-  // half-built order isn't silently discarded.
+  // Unsaved-changes guard. A create form starts blank, so "dirty" is "the user
+  // entered anything" — guard a Cancel / Close / backdrop so a half-built order
+  // isn't silently discarded.
   const dirty =
     Boolean(customerId) ||
     channel !== 'admin' ||
@@ -184,13 +159,8 @@ function OrderWizardInner({
     internalNote.trim() !== '';
   const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'order' });
 
-  function goToStep(key: StepKey) {
-    setError(null);
-    setStepKey(key);
-  }
-
-  // Where "leave the wizard" goes. In the overlay it clears the detail token so
-  // the drawer/modal closes in place; the page route returns to the list.
+  // Where "leave the form" goes. In the overlay it clears the detail token so the
+  // drawer/modal closes in place; the page route returns to the list.
   const close = React.useCallback(() => {
     if (presentation === 'overlay') {
       const next = new URLSearchParams(searchParams?.toString() ?? '');
@@ -214,12 +184,10 @@ function OrderWizardInner({
   async function handleCreate() {
     if (!customerId) {
       setError('Choose a customer.');
-      goToStep('customer');
       return;
     }
     if (validItems.length === 0) {
       setError('Add at least one line item with a SKU and a name.');
-      goToStep('lines');
       return;
     }
     setError(null);
@@ -251,257 +219,8 @@ function OrderWizardInner({
     }
   }
 
-  // ── Step bodies ──────────────────────────────────────────────────────────────
-
-  const customerStep = (
-    <SurfaceStep
-      header={{
-        title: 'Who is this order for?',
-        supporting: 'An order is placed for a single customer, through a channel.',
-      }}
-      actions={{
-        onNext: () => {
-          if (!customerId) {
-            setError('Choose a customer.');
-            return;
-          }
-          goToStep('lines');
-        },
-        nextLabel: 'Continue',
-        nextDisabled: !customerId || submitting,
-      }}
-    >
-      <Card variant="module">
-        <CardHeader>
-          <Heading level={3}>Customer</Heading>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-4">
-            <div>
-              <Label htmlFor="ow-customer">Customer</Label>
-              <NativeSelect
-                id="ow-customer"
-                value={customerId}
-                onChange={(e) => setCustomerId(e.target.value)}
-              >
-                <option value="">Choose a customer…</option>
-                {customers.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.label}
-                  </option>
-                ))}
-              </NativeSelect>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div>
-                <Label htmlFor="ow-channel">Channel</Label>
-                <NativeSelect
-                  id="ow-channel"
-                  value={channel}
-                  onChange={(e) => setChannel(e.target.value as Channel)}
-                >
-                  {CHANNELS.map((c) => (
-                    <option key={c.value} value={c.value}>
-                      {c.label}
-                    </option>
-                  ))}
-                </NativeSelect>
-              </div>
-              <div className="max-w-[8rem]">
-                <Label htmlFor="ow-currency">Currency</Label>
-                <Input
-                  id="ow-currency"
-                  value={currency}
-                  maxLength={3}
-                  className="uppercase"
-                  onChange={(e) => setCurrency(e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      {error && (
-        <Text size="sm" variant="danger" role="alert" className="mt-4">
-          {error}
-        </Text>
-      )}
-    </SurfaceStep>
-  );
-
-  const linesStep = (
-    <SurfaceStep
-      header={{
-        title: 'Line items',
-        supporting:
-          'Add the order lines — SKU, name, quantity, unit price, and any per-line tax or discount.',
-      }}
-      actions={{
-        onBack: () => goToStep('customer'),
-        onNext: () => goToStep('details'),
-        nextLabel: 'Continue',
-        nextDisabled: submitting,
-      }}
-    >
-      <Card variant="module">
-        <CardHeader>
-          <Heading level={3}>Lines</Heading>
-        </CardHeader>
-        <CardContent>
-          <LineItemsEditor onChange={setItems} initialItems={items} />
-        </CardContent>
-      </Card>
-    </SurfaceStep>
-  );
-
-  const detailsStep = (
-    <SurfaceStep
-      header={{
-        title: 'Shipping & notes',
-        supporting: 'A source reference, header shipping, and notes. Everything here is optional.',
-      }}
-      actions={{
-        onBack: () => goToStep('lines'),
-        onNext: () => goToStep('review'),
-        nextLabel: 'Continue',
-        nextDisabled: submitting,
-      }}
-    >
-      <div className="flex flex-col gap-5">
-        <Card variant="module">
-          <CardHeader>
-            <Heading level={3}>Details</Heading>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div>
-                <Label htmlFor="ow-source">Source</Label>
-                <Input
-                  id="ow-source"
-                  value={source}
-                  onChange={(e) => setSource(e.target.value)}
-                  placeholder="quote:Q-000123, ref:…"
-                />
-              </div>
-              <div className="max-w-[10rem]">
-                <Label htmlFor="ow-shipping">Shipping</Label>
-                <Input
-                  id="ow-shipping"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={shipping}
-                  onChange={(e) => setShipping(e.target.value)}
-                  placeholder="0.00"
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card variant="module">
-          <CardHeader>
-            <Heading level={3}>Notes</Heading>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col gap-3">
-              <div>
-                <Label htmlFor="ow-cust-note">Customer-facing note</Label>
-                <Textarea
-                  id="ow-cust-note"
-                  rows={3}
-                  value={customerNote}
-                  onChange={(e) => setCustomerNote(e.target.value)}
-                  placeholder="Shown on the order — anything the customer should see."
-                />
-              </div>
-              <div>
-                <Label htmlFor="ow-int-note">Internal note</Label>
-                <Textarea
-                  id="ow-int-note"
-                  rows={3}
-                  value={internalNote}
-                  onChange={(e) => setInternalNote(e.target.value)}
-                  placeholder="Only your team sees this."
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </SurfaceStep>
-  );
-
-  const reviewStep = (
-    <SurfaceStep
-      header={{
-        title: 'Review & create',
-        supporting: 'Confirm the order and place it.',
-      }}
-      actions={{
-        onBack: () => goToStep('details'),
-        onNext: () => void handleCreate(),
-        nextLabel: 'Create order',
-        nextLoading: submitting,
-        nextDisabled: submitting || !customerId,
-      }}
-    >
-      <div className="flex flex-col gap-5">
-        <Card variant="module">
-          <CardHeader>
-            <Heading level={3}>Summary</Heading>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={2}>
-              <SummaryRow label="Customer" value={customerLabel} />
-              <SummaryRow
-                label="Channel"
-                value={CHANNELS.find((c) => c.value === channel)?.label ?? channel}
-              />
-              <SummaryRow label="Currency" value={(currency || 'USD').toUpperCase()} />
-              <SummaryRow label="Line items" value={String(validItems.length)} />
-              <div className="border-t border-[var(--color-border-default)] pt-2">
-                <SummaryRow label="Subtotal" value={money(subtotal, currency)} />
-              </div>
-              {discountTotal > 0 && (
-                <SummaryRow label="Discount" value={`- ${money(discountTotal, currency)}`} />
-              )}
-              {taxTotal > 0 && <SummaryRow label="Tax" value={money(taxTotal, currency)} />}
-              {shippingNum > 0 && (
-                <SummaryRow label="Shipping" value={money(shippingNum, currency)} />
-              )}
-              <div className="border-t border-[var(--color-border-default)] pt-2">
-                <SummaryRow label="Total" value={money(total, currency)} strong />
-              </div>
-            </Stack>
-          </CardContent>
-        </Card>
-
-        {error && (
-          <Text size="sm" variant="danger" role="alert">
-            {error}
-          </Text>
-        )}
-      </div>
-    </SurfaceStep>
-  );
-
-  let body: React.ReactNode;
-  if (stepKey === 'customer') body = customerStep;
-  else if (stepKey === 'lines') body = linesStep;
-  else if (stepKey === 'details') body = detailsStep;
-  else body = reviewStep;
-
-  // ── Frame ──────────────────────────────────────────────────────────────────
-
-  const onStepSelect = (key: string) => {
-    const target = steps.findIndex((s) => s.key === key);
-    if (target >= 0 && target <= current) goToStep(key as StepKey);
-  };
-  const canSelectStep = (_key: string, index: number) => index <= current;
-
-  // The live draft summary — the F layout's right-hand column (docs/86). Mirrors
-  // the Review step's totals so the running figures are visible from step one.
+  // ── Live draft summary (the F layout's right column, docs/86) ─────────────────
+  // The running totals — this is the "review" the old step 4 used to be.
   const summary = (
     <SurfaceSummary
       title="Draft summary"
@@ -532,41 +251,169 @@ function OrderWizardInner({
     </SurfaceSummary>
   );
 
-  // One top-stepper frame for both presentations: `embedded` fills the dashboard
-  // content area at `/new` (sidebar + header stay); `inline` fills the drawer/
-  // modal detail panel, which supplies its own chrome.
+  // ── Frame ──────────────────────────────────────────────────────────────────
+  // Single-page: one SurfaceStep stacking customer / line items / details / notes.
+  // A customer is required, so the primary stays disabled until one is chosen; the
+  // line-item requirement surfaces as an inline error on submit.
   return (
     <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New order"
-      steps={steps}
-      current={current}
-      context={RAIL[stepKey].context}
-      onStepSelect={onStepSelect}
-      canSelectStep={canSelectStep}
+      steps={SINGLE_STEP}
+      current={0}
       onCancel={cancel}
       summary={summary}
     >
-      {body}
-    </SurfaceFrame>
-  );
-}
-
-// ─── Sub-components ─────────────────────────────────────────────────────────────
-
-function SummaryRow({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
-  return (
-    <Stack direction="row" justify="between" align="center">
-      <Text
-        size="sm"
-        variant={strong ? 'default' : 'muted'}
-        className={strong ? 'font-semibold' : ''}
+      <SurfaceStep
+        actions={{
+          onNext: () => void handleCreate(),
+          nextLabel: 'Create order',
+          nextLoading: submitting,
+          nextDisabled: submitting || !customerId,
+        }}
       >
-        {label}
-      </Text>
-      <Text size="sm" className={`tabular-nums ${strong ? 'font-semibold' : ''}`}>
-        {value}
-      </Text>
-    </Stack>
+        <div className="flex flex-col gap-5">
+          {/* Customer */}
+          <Card variant="default">
+            <CardHeader>
+              <Heading level={3}>Customer</Heading>
+              <Text size="sm" variant="muted">
+                An order is placed for a single customer, through a channel.
+              </Text>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-4">
+                <div>
+                  <Label htmlFor="ow-customer">Customer</Label>
+                  <NativeSelect
+                    id="ow-customer"
+                    value={customerId}
+                    onChange={(e) => setCustomerId(e.target.value)}
+                  >
+                    <option value="">Choose a customer…</option>
+                    {customers.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.label}
+                      </option>
+                    ))}
+                  </NativeSelect>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <Label htmlFor="ow-channel">Channel</Label>
+                    <NativeSelect
+                      id="ow-channel"
+                      value={channel}
+                      onChange={(e) => setChannel(e.target.value as Channel)}
+                    >
+                      {CHANNELS.map((c) => (
+                        <option key={c.value} value={c.value}>
+                          {c.label}
+                        </option>
+                      ))}
+                    </NativeSelect>
+                  </div>
+                  <div className="max-w-[8rem]">
+                    <Label htmlFor="ow-currency">Currency</Label>
+                    <Input
+                      id="ow-currency"
+                      value={currency}
+                      maxLength={3}
+                      className="uppercase"
+                      onChange={(e) => setCurrency(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Line items */}
+          <Card variant="default">
+            <CardHeader>
+              <Heading level={3}>Line items</Heading>
+              <Text size="sm" variant="muted">
+                SKU, name, quantity, unit price, and any per-line tax or discount.
+              </Text>
+            </CardHeader>
+            <CardContent>
+              <LineItemsEditor onChange={setItems} initialItems={items} />
+            </CardContent>
+          </Card>
+
+          {/* Details */}
+          <Card variant="default">
+            <CardHeader>
+              <Heading level={3}>Details</Heading>
+              <Text size="sm" variant="muted">
+                A source reference and header shipping — all optional.
+              </Text>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="ow-source">Source</Label>
+                  <Input
+                    id="ow-source"
+                    value={source}
+                    onChange={(e) => setSource(e.target.value)}
+                    placeholder="quote:Q-000123, ref:…"
+                  />
+                </div>
+                <div className="max-w-[10rem]">
+                  <Label htmlFor="ow-shipping">Shipping</Label>
+                  <Input
+                    id="ow-shipping"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={shipping}
+                    onChange={(e) => setShipping(e.target.value)}
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Notes */}
+          <Card variant="default">
+            <CardHeader>
+              <Heading level={3}>Notes</Heading>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-3">
+                <div>
+                  <Label htmlFor="ow-cust-note">Customer-facing note</Label>
+                  <Textarea
+                    id="ow-cust-note"
+                    rows={3}
+                    value={customerNote}
+                    onChange={(e) => setCustomerNote(e.target.value)}
+                    placeholder="Shown on the order — anything the customer should see."
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="ow-int-note">Internal note</Label>
+                  <Textarea
+                    id="ow-int-note"
+                    rows={3}
+                    value={internalNote}
+                    onChange={(e) => setInternalNote(e.target.value)}
+                    placeholder="Only your team sees this."
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {error && (
+            <Text size="sm" variant="danger" role="alert">
+              {error}
+            </Text>
+          )}
+        </div>
+      </SurfaceStep>
+    </SurfaceFrame>
   );
 }

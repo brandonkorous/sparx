@@ -44,5 +44,9 @@ export const invoicingManifest: ModuleManifest = {
     // button honors the user's `defaultDetailView`; the full page lives at
     // /invoicing/documents/new.
     { id: 'billing-document', label: 'Document', routePrefix: '/invoicing/documents' },
+    // Workflow create-only overlay. The workflow's stage editor is a full-page
+    // surface, so no `hasDetailView`; the single-step SurfaceFrame create opts into
+    // the drawer/modal, and a created workflow continues to its edit screen.
+    { id: 'workflow', label: 'Workflow', routePrefix: '/invoicing/workflows' },
   ],
 };

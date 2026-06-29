@@ -171,7 +171,7 @@ export function ResourceForm({ presentation, resource, open, onOpenChange }: Res
         nextDisabled: saving,
       }}
     >
-      <Card variant="module">
+      <Card variant="default">
         <CardHeader>
           <CardTitle>Resource details</CardTitle>
         </CardHeader>

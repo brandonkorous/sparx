@@ -201,7 +201,7 @@ export function NewTemplateForm({ products, surface }: NewTemplateFormProps) {
           }}
         >
           <Stack gap={6}>
-            <Card variant="module">
+            <Card variant="default">
               <CardHeader>
                 <CardTitle>Basics</CardTitle>
                 <CardDescription>
@@ -250,7 +250,7 @@ export function NewTemplateForm({ products, surface }: NewTemplateFormProps) {
               </CardContent>
             </Card>
 
-            <Card variant="module">
+            <Card variant="default">
               <CardHeader>
                 <CardTitle>Definition</CardTitle>
                 <CardDescription>

@@ -217,7 +217,7 @@ export async function ReturnDetailContent({ id }: Props) {
       </Card>
 
       {ret.status === 'requested' && (
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <Stack gap={1}>
               <Heading level={3}>Approve</Heading>
@@ -233,7 +233,7 @@ export async function ReturnDetailContent({ id }: Props) {
       )}
 
       {(ret.status === 'received' || ret.status === 'inspecting') && (
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <Stack gap={1}>
               <Heading level={3}>Record inspection</Heading>
@@ -249,7 +249,7 @@ export async function ReturnDetailContent({ id }: Props) {
       )}
 
       {(ret.status === 'inspected' || ret.status === 'received') && (
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <Stack gap={1}>
               <Heading level={3}>Issue refund</Heading>

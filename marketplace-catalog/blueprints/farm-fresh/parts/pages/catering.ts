@@ -3,28 +3,28 @@
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh/.
 
 export default {
-  id: 'ffb-330',
+  id: 'ffb-274',
   type: 'Section',
   props: {},
   class: 'w-full flex flex-col',
   name: 'Catering',
   children: [
     {
-      id: 'ffb-312',
+      id: 'ffb-256',
       type: 'Section',
       class: 'w-full flex items-center justify-center bg-primary text-primary-content min-h-[50vh]',
       props: {},
       name: 'Catering hero',
       children: [
         {
-          id: 'ffb-312__c',
+          id: 'ffb-256__c',
           type: 'Stack',
           class:
             'mx-auto w-full max-w-site flex flex-col gap-2 justify-center items-center p-8 @3xl:p-16 text-center',
           props: {},
           children: [
             {
-              id: 'ffb-310',
+              id: 'ffb-254',
               type: 'Heading',
               props: {
                 level: 'h1',
@@ -34,7 +34,7 @@ export default {
               class: 'text-center',
             },
             {
-              id: 'ffb-311',
+              id: 'ffb-255',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -47,7 +47,7 @@ export default {
       ],
     },
     {
-      id: 'ffb-325',
+      id: 'ffb-269',
       type: 'Section',
       props: {},
       class:
@@ -55,13 +55,13 @@ export default {
       name: 'Catering options',
       children: [
         {
-          id: 'ffb-316',
+          id: 'ffb-260',
           type: 'Stack',
           props: {},
           class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
           children: [
             {
-              id: 'ffb-313',
+              id: 'ffb-257',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -71,7 +71,7 @@ export default {
                 'h-16 w-16 bg-base-200 text-3xl shrink-0 inline-flex items-center justify-center rounded-full leading-none',
             },
             {
-              id: 'ffb-314',
+              id: 'ffb-258',
               type: 'Heading',
               props: {
                 level: 'h3',
@@ -80,7 +80,7 @@ export default {
               class: 'text-center text-lg',
             },
             {
-              id: 'ffb-315',
+              id: 'ffb-259',
               type: 'Text',
               props: {
                 variant: 'meta',
@@ -91,13 +91,13 @@ export default {
           ],
         },
         {
-          id: 'ffb-320',
+          id: 'ffb-264',
           type: 'Stack',
           props: {},
           class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
           children: [
             {
-              id: 'ffb-317',
+              id: 'ffb-261',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -107,7 +107,7 @@ export default {
                 'h-16 w-16 bg-base-200 text-3xl shrink-0 inline-flex items-center justify-center rounded-full leading-none',
             },
             {
-              id: 'ffb-318',
+              id: 'ffb-262',
               type: 'Heading',
               props: {
                 level: 'h3',
@@ -116,7 +116,7 @@ export default {
               class: 'text-center text-lg',
             },
             {
-              id: 'ffb-319',
+              id: 'ffb-263',
               type: 'Text',
               props: {
                 variant: 'meta',
@@ -127,13 +127,13 @@ export default {
           ],
         },
         {
-          id: 'ffb-324',
+          id: 'ffb-268',
           type: 'Stack',
           props: {},
           class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-center text-center',
           children: [
             {
-              id: 'ffb-321',
+              id: 'ffb-265',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -143,7 +143,7 @@ export default {
                 'h-16 w-16 bg-base-200 text-3xl shrink-0 inline-flex items-center justify-center rounded-full leading-none',
             },
             {
-              id: 'ffb-322',
+              id: 'ffb-266',
               type: 'Heading',
               props: {
                 level: 'h3',
@@ -152,7 +152,7 @@ export default {
               class: 'text-center text-lg',
             },
             {
-              id: 'ffb-323',
+              id: 'ffb-267',
               type: 'Text',
               props: {
                 variant: 'meta',
@@ -165,21 +165,21 @@ export default {
       ],
     },
     {
-      id: 'ffb-329',
+      id: 'ffb-273',
       type: 'Section',
       class: 'w-full bg-primary text-primary-content',
       props: {},
       name: 'Catering CTA',
       children: [
         {
-          id: 'ffb-329__c',
+          id: 'ffb-273__c',
           type: 'Stack',
           class:
             'mx-auto w-full max-w-site flex flex-col gap-4 justify-center items-center p-8 @3xl:p-16 text-center',
           props: {},
           children: [
             {
-              id: 'ffb-326',
+              id: 'ffb-270',
               type: 'Heading',
               props: {
                 level: 'h2',
@@ -188,7 +188,7 @@ export default {
               class: 'text-center',
             },
             {
-              id: 'ffb-327',
+              id: 'ffb-271',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -197,7 +197,7 @@ export default {
               class: 'text-center',
             },
             {
-              id: 'ffb-328',
+              id: 'ffb-272',
               type: 'Signup',
               props: {
                 cta: 'Request a quote',

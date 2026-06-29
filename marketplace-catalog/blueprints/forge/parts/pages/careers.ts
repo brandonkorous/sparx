@@ -3,33 +3,33 @@
 // authoring source of truth is marketplace-catalog/_gen/forge/.
 
 export default {
-  id: 'fg-686',
+  id: 'fg-665',
   type: 'Section',
   props: {},
   class: 'w-full flex flex-col',
   name: 'Careers',
   children: [
     {
-      id: 'fg-631',
+      id: 'fg-610',
       type: 'Section',
       props: {},
       class: 'w-full mx-auto w-full max-w-site flex flex-col gap-4 items-start p-8 @3xl:p-16',
       name: 'Page hero',
       children: [
         {
-          id: 'fg-626',
+          id: 'fg-605',
           type: 'el:p',
           props: {},
           class: 'flex items-center gap-3 text-sm font-medium tracking-wide text-base-content/60',
           children: [
             {
-              id: 'fg-624',
+              id: 'fg-603',
               type: 'el:span',
               props: {},
               class: 'inline-block h-2 w-2 shrink-0 rounded-full bg-[#C6F24E]',
             },
             {
-              id: 'fg-625',
+              id: 'fg-604',
               type: 'el:span',
               props: {
                 text: 'Careers',
@@ -38,14 +38,14 @@ export default {
           ],
         },
         {
-          id: 'fg-629',
+          id: 'fg-608',
           type: 'el:h1',
           props: {},
           class:
             'font-heading max-w-4xl text-[2.5rem] font-medium leading-[1.02] tracking-tight text-[#ECE7DD] @2xl:text-6xl',
           children: [
             {
-              id: 'fg-627',
+              id: 'fg-606',
               type: 'el:span',
               props: {
                 text: '/',
@@ -53,7 +53,7 @@ export default {
               class: 'mr-2 inline-block -skew-x-12 font-bold text-[#C6F24E] mr-3',
             },
             {
-              id: 'fg-628',
+              id: 'fg-607',
               type: 'el:span',
               props: {
                 text: 'Build with us.',
@@ -62,7 +62,7 @@ export default {
           ],
         },
         {
-          id: 'fg-630',
+          id: 'fg-609',
           type: 'el:p',
           props: {
             text: 'We’re a small senior team that ships work we’re proud of. If you care about craft and outcomes in equal measure, we’d love to meet you.',
@@ -72,21 +72,21 @@ export default {
       ],
     },
     {
-      id: 'fg-648',
+      id: 'fg-627',
       type: 'Section',
       props: {},
       class: 'w-full mx-auto w-full max-w-site flex flex-col gap-6 items-start p-8 @3xl:p-16',
       name: 'Why join',
       children: [
         {
-          id: 'fg-634',
+          id: 'fg-613',
           type: 'el:h2',
           props: {},
           class:
             'font-heading text-4xl font-medium tracking-tight text-[#ECE7DD] @2xl:text-5xl max-w-3xl',
           children: [
             {
-              id: 'fg-632',
+              id: 'fg-611',
               type: 'el:span',
               props: {
                 text: '/',
@@ -94,7 +94,7 @@ export default {
               class: 'mr-2 inline-block -skew-x-12 font-bold text-[#C6F24E]',
             },
             {
-              id: 'fg-633',
+              id: 'fg-612',
               type: 'el:span',
               props: {
                 text: 'Why join Forge',
@@ -103,19 +103,19 @@ export default {
           ],
         },
         {
-          id: 'fg-647',
+          id: 'fg-626',
           type: 'el:div',
           props: {},
           class: 'grid w-full gap-6 @sm:grid-cols-2 @3xl:grid-cols-4',
           children: [
             {
-              id: 'fg-637',
+              id: 'fg-616',
               type: 'el:div',
               props: {},
               class: 'rounded-[1.5rem] border border-white/10 bg-[#221D16] p-8',
               children: [
                 {
-                  id: 'fg-635',
+                  id: 'fg-614',
                   type: 'el:h3',
                   props: {
                     text: 'Senior work',
@@ -123,7 +123,7 @@ export default {
                   class: 'font-heading text-xl font-semibold text-[#ECE7DD]',
                 },
                 {
-                  id: 'fg-636',
+                  id: 'fg-615',
                   type: 'el:p',
                   props: {
                     text: 'Real projects for real brands, from day one. No busywork, no decks for the sake of decks.',
@@ -133,13 +133,13 @@ export default {
               ],
             },
             {
-              id: 'fg-640',
+              id: 'fg-619',
               type: 'el:div',
               props: {},
               class: 'rounded-[1.5rem] border border-white/10 bg-[#221D16] p-8',
               children: [
                 {
-                  id: 'fg-638',
+                  id: 'fg-617',
                   type: 'el:h3',
                   props: {
                     text: 'Ownership',
@@ -147,7 +147,7 @@ export default {
                   class: 'font-heading text-xl font-semibold text-[#ECE7DD]',
                 },
                 {
-                  id: 'fg-639',
+                  id: 'fg-618',
                   type: 'el:p',
                   props: {
                     text: 'Own your craft end-to-end and see it ship. We hire people we trust to make the call.',
@@ -157,13 +157,13 @@ export default {
               ],
             },
             {
-              id: 'fg-643',
+              id: 'fg-622',
               type: 'el:div',
               props: {},
               class: 'rounded-[1.5rem] border border-white/10 bg-[#221D16] p-8',
               children: [
                 {
-                  id: 'fg-641',
+                  id: 'fg-620',
                   type: 'el:h3',
                   props: {
                     text: 'Remote-first',
@@ -171,7 +171,7 @@ export default {
                   class: 'font-heading text-xl font-semibold text-[#ECE7DD]',
                 },
                 {
-                  id: 'fg-642',
+                  id: 'fg-621',
                   type: 'el:p',
                   props: {
                     text: 'Work from wherever you do your best thinking, with deliberate time together when it counts.',
@@ -181,13 +181,13 @@ export default {
               ],
             },
             {
-              id: 'fg-646',
+              id: 'fg-625',
               type: 'el:div',
               props: {},
               class: 'rounded-[1.5rem] border border-white/10 bg-[#221D16] p-8',
               children: [
                 {
-                  id: 'fg-644',
+                  id: 'fg-623',
                   type: 'el:h3',
                   props: {
                     text: 'Real balance',
@@ -195,7 +195,7 @@ export default {
                   class: 'font-heading text-xl font-semibold text-[#ECE7DD]',
                 },
                 {
-                  id: 'fg-645',
+                  id: 'fg-624',
                   type: 'el:p',
                   props: {
                     text: 'Ambitious work at a sustainable pace — great results without burning out the team.',
@@ -209,21 +209,21 @@ export default {
       ],
     },
     {
-      id: 'fg-673',
+      id: 'fg-652',
       type: 'Section',
       props: {},
       class: 'w-full mx-auto w-full max-w-site flex flex-col gap-6 items-start p-8 @3xl:p-16',
       name: 'Open roles',
       children: [
         {
-          id: 'fg-651',
+          id: 'fg-630',
           type: 'el:h2',
           props: {},
           class:
             'font-heading text-4xl font-medium tracking-tight text-[#ECE7DD] @2xl:text-5xl max-w-3xl',
           children: [
             {
-              id: 'fg-649',
+              id: 'fg-628',
               type: 'el:span',
               props: {
                 text: '/',
@@ -231,7 +231,7 @@ export default {
               class: 'mr-2 inline-block -skew-x-12 font-bold text-[#C6F24E]',
             },
             {
-              id: 'fg-650',
+              id: 'fg-629',
               type: 'el:span',
               props: {
                 text: 'Open roles',
@@ -240,13 +240,13 @@ export default {
           ],
         },
         {
-          id: 'fg-672',
+          id: 'fg-651',
           type: 'el:div',
           props: {},
           class: 'w-full divide-y divide-white/10 border-y border-white/10',
           children: [
             {
-              id: 'fg-656',
+              id: 'fg-635',
               type: 'el:a',
               props: {
                 href: '/contact',
@@ -254,12 +254,12 @@ export default {
               class: 'group grid items-center gap-2 py-6 @sm:grid-cols-[1fr_auto] @sm:gap-6',
               children: [
                 {
-                  id: 'fg-654',
+                  id: 'fg-633',
                   type: 'el:div',
                   props: {},
                   children: [
                     {
-                      id: 'fg-652',
+                      id: 'fg-631',
                       type: 'el:h3',
                       props: {
                         text: 'Senior Brand Designer',
@@ -268,7 +268,7 @@ export default {
                         'font-heading text-xl font-semibold text-[#ECE7DD] transition-colors group-hover:text-[#C6F24E]',
                     },
                     {
-                      id: 'fg-653',
+                      id: 'fg-632',
                       type: 'el:p',
                       props: {
                         text: 'Full-time · Remote',
@@ -278,7 +278,7 @@ export default {
                   ],
                 },
                 {
-                  id: 'fg-655',
+                  id: 'fg-634',
                   type: 'el:span',
                   props: {
                     text: 'Apply →',
@@ -288,7 +288,7 @@ export default {
               ],
             },
             {
-              id: 'fg-661',
+              id: 'fg-640',
               type: 'el:a',
               props: {
                 href: '/contact',
@@ -296,12 +296,12 @@ export default {
               class: 'group grid items-center gap-2 py-6 @sm:grid-cols-[1fr_auto] @sm:gap-6',
               children: [
                 {
-                  id: 'fg-659',
+                  id: 'fg-638',
                   type: 'el:div',
                   props: {},
                   children: [
                     {
-                      id: 'fg-657',
+                      id: 'fg-636',
                       type: 'el:h3',
                       props: {
                         text: 'Web Engineer (React / Next.js)',
@@ -310,7 +310,7 @@ export default {
                         'font-heading text-xl font-semibold text-[#ECE7DD] transition-colors group-hover:text-[#C6F24E]',
                     },
                     {
-                      id: 'fg-658',
+                      id: 'fg-637',
                       type: 'el:p',
                       props: {
                         text: 'Full-time · Remote',
@@ -320,7 +320,7 @@ export default {
                   ],
                 },
                 {
-                  id: 'fg-660',
+                  id: 'fg-639',
                   type: 'el:span',
                   props: {
                     text: 'Apply →',
@@ -330,7 +330,7 @@ export default {
               ],
             },
             {
-              id: 'fg-666',
+              id: 'fg-645',
               type: 'el:a',
               props: {
                 href: '/contact',
@@ -338,12 +338,12 @@ export default {
               class: 'group grid items-center gap-2 py-6 @sm:grid-cols-[1fr_auto] @sm:gap-6',
               children: [
                 {
-                  id: 'fg-664',
+                  id: 'fg-643',
                   type: 'el:div',
                   props: {},
                   children: [
                     {
-                      id: 'fg-662',
+                      id: 'fg-641',
                       type: 'el:h3',
                       props: {
                         text: 'Growth Strategist',
@@ -352,7 +352,7 @@ export default {
                         'font-heading text-xl font-semibold text-[#ECE7DD] transition-colors group-hover:text-[#C6F24E]',
                     },
                     {
-                      id: 'fg-663',
+                      id: 'fg-642',
                       type: 'el:p',
                       props: {
                         text: 'Full-time · Hybrid',
@@ -362,7 +362,7 @@ export default {
                   ],
                 },
                 {
-                  id: 'fg-665',
+                  id: 'fg-644',
                   type: 'el:span',
                   props: {
                     text: 'Apply →',
@@ -372,7 +372,7 @@ export default {
               ],
             },
             {
-              id: 'fg-671',
+              id: 'fg-650',
               type: 'el:a',
               props: {
                 href: '/contact',
@@ -380,12 +380,12 @@ export default {
               class: 'group grid items-center gap-2 py-6 @sm:grid-cols-[1fr_auto] @sm:gap-6',
               children: [
                 {
-                  id: 'fg-669',
+                  id: 'fg-648',
                   type: 'el:div',
                   props: {},
                   children: [
                     {
-                      id: 'fg-667',
+                      id: 'fg-646',
                       type: 'el:h3',
                       props: {
                         text: 'Motion Designer',
@@ -394,7 +394,7 @@ export default {
                         'font-heading text-xl font-semibold text-[#ECE7DD] transition-colors group-hover:text-[#C6F24E]',
                     },
                     {
-                      id: 'fg-668',
+                      id: 'fg-647',
                       type: 'el:p',
                       props: {
                         text: 'Contract · Remote',
@@ -404,7 +404,7 @@ export default {
                   ],
                 },
                 {
-                  id: 'fg-670',
+                  id: 'fg-649',
                   type: 'el:span',
                   props: {
                     text: 'Apply →',
@@ -418,21 +418,21 @@ export default {
       ],
     },
     {
-      id: 'fg-685',
+      id: 'fg-664',
       type: 'Section',
       class: 'w-full bg-primary text-primary-content',
       props: {},
       name: 'Contact CTA',
       children: [
         {
-          id: 'fg-685__c',
+          id: 'fg-664__c',
           type: 'Stack',
           class:
             'mx-auto w-full max-w-site flex flex-col gap-4 justify-center items-center p-8 @3xl:p-16 text-center',
           props: {},
           children: [
             {
-              id: 'fg-674',
+              id: 'fg-653',
               type: 'el:p',
               props: {
                 text: 'Let’s work together',
@@ -440,14 +440,14 @@ export default {
               class: 'font-heading text-sm font-medium tracking-wide text-[#15120D]/60',
             },
             {
-              id: 'fg-677',
+              id: 'fg-656',
               type: 'el:h2',
               props: {},
               class:
                 'font-heading max-w-4xl text-[2.75rem] font-medium leading-[0.98] tracking-tight text-[#15120D] @2xl:text-7xl',
               children: [
                 {
-                  id: 'fg-675',
+                  id: 'fg-654',
                   type: 'el:span',
                   props: {
                     text: '/',
@@ -455,7 +455,7 @@ export default {
                   class: 'inline-block -skew-x-12 font-bold text-[#15120D] mr-2',
                 },
                 {
-                  id: 'fg-676',
+                  id: 'fg-655',
                   type: 'el:span',
                   props: {
                     text: 'Start something impactful.',
@@ -464,13 +464,13 @@ export default {
               ],
             },
             {
-              id: 'fg-683',
+              id: 'fg-662',
               type: 'el:div',
               props: {},
               class: 'mt-4 flex flex-wrap items-center justify-center gap-3',
               children: [
                 {
-                  id: 'fg-678',
+                  id: 'fg-657',
                   type: 'el:a',
                   props: {
                     href: 'mailto:hello@forge.studio',
@@ -479,7 +479,7 @@ export default {
                   class: 'st-btn st-c-neutral st-v-solid st-btn--sz-md rounded-full',
                 },
                 {
-                  id: 'fg-682',
+                  id: 'fg-661',
                   type: 'el:a',
                   props: {
                     href: '/contact',
@@ -488,14 +488,14 @@ export default {
                     'st-btn bg-[#15120D] text-[#ECE7DD] transition-colors hover:bg-black st-btn--sz-md rounded-full',
                   children: [
                     {
-                      id: 'fg-681',
+                      id: 'fg-660',
                       type: 'el:span',
                       props: {
                         text: 'Book a call',
                       },
                     },
                     {
-                      id: 'fg-680',
+                      id: 'fg-659',
                       type: 'el:svg',
                       props: {
                         viewBox: '0 0 24 24',
@@ -506,7 +506,7 @@ export default {
                       class: 'h-4 w-4',
                       children: [
                         {
-                          id: 'fg-679',
+                          id: 'fg-658',
                           type: 'el:path',
                           props: {
                             d: 'M5 12h14M13 6l6 6-6 6',
@@ -521,7 +521,7 @@ export default {
               ],
             },
             {
-              id: 'fg-684',
+              id: 'fg-663',
               type: 'el:p',
               props: {
                 text: 'Working with teams worldwide',

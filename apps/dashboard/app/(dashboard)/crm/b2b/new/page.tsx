@@ -1,23 +1,11 @@
-import { Container, PageHeader, Stack } from '@sparx/ui';
+import { redirect } from 'next/navigation';
 
-import { B2bAccountCreateForm } from '../_components/b2b-account-create-form';
-
-// Full-page surface for creating a B2B account. The form body lives in the
-// surface-aware `B2bAccountCreateForm` (§13.1) so the SAME component renders
-// here (`surface="page"`) and inside the `@detail` drawer/modal overlay
-// (`surface="overlay"`). This route is what `fullPage` / `newTab` detail-view
-// preferences, deep links, and the overlay's "maximize" button resolve to.
+// B2B account creation is canonical at /b2b/accounts/new — the B2B module's own
+// collapsed single-page wizard (also what the drawer/modal overlay renders). This
+// legacy CRM create route consolidates into it (WS2): kept as a redirect so any
+// existing deep link, bookmark, or overlay "maximize" target still resolves to
+// the one canonical create surface instead of a second, divergent form.
 
 export default function NewB2bAccountPage() {
-  return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          title="New B2B account"
-          description="Track a wholesale or fleet customer's pricing, credit, and engine profile so commerce modules can quote, ship, and invoice them consistently."
-        />
-        <B2bAccountCreateForm surface="page" />
-      </Stack>
-    </Container>
-  );
+  redirect('/b2b/accounts/new');
 }

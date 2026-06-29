@@ -9,9 +9,9 @@ const cardVariants = cva(
     variants: {
       variant: {
         default: '',
-        // Structure only — the stripe COLOR is applied in the component so it can
-        // read `--module-active` directly (see below).
-        module: 'rounded-t-none border-t-[3px]',
+        // Background tint only — the tint COLOR is applied in the component so it
+        // can read `--module-active-tint` directly (see below). No top stripe.
+        module: '',
         elevated: 'shadow-md',
         ghost: 'border-transparent bg-transparent',
         subtle: 'border-transparent bg-[var(--color-bg-subtle)]',
@@ -29,8 +29,8 @@ const cardVariants = cva(
 
 export interface CardProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, 'color'>, VariantProps<typeof cardVariants> {
-  /** Pins the `module` variant's top stripe to a specific palette/module color
-   *  (e.g. `accent="inventory"`). Omit it and the stripe follows the nearest
+  /** Pins the `module` variant's background tint to a specific palette/module
+   *  color (e.g. `accent="inventory"`). Omit it and the tint follows the nearest
    *  `<ModuleProvider>` — the normal way to color a card is to wrap the panel in
    *  its module's provider, NOT to pass accent. Reach for accent only for a
    *  one-off color that doesn't match the surrounding module. */
@@ -39,18 +39,23 @@ export interface CardProps
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant, padding, accent, ...props }, ref) => {
-    // The module stripe color. With no `accent` we read `--module-active`
-    // DIRECTLY so the stripe follows the nearest <ModuleProvider> (a nested
-    // provider on a cross-module panel just works). We deliberately do NOT fall
-    // back through the shared `--c-bg` role var: an ancestor's color recipe can
-    // leak `--c-bg` into this subtree and silently override the active module
-    // (the bug this guards against). An explicit `accent` sets `--c-bg` on THIS
-    // card via its role class, so reading `--c-bg` then is safe and local.
-    const moduleStripe =
+    // The module variant tints its whole background by mixing the module color
+    // into the card surface (so it reads as a clean tinted-white card in light
+    // mode and a tinted-dark card in dark mode — never a fixed light hex). The
+    // mix percentage is the "how present" knob; kept just under the soft
+    // treatment's 14% so the surface reads as a deliberate module zone without
+    // tipping into a heavy fill. With no `accent` we read `--module-active` DIRECTLY so the
+    // tint follows the nearest <ModuleProvider> (a nested provider on a
+    // cross-module panel just works). We deliberately do NOT fall back through
+    // the shared, inheritable `--c-bg` role var: an ancestor's color recipe can
+    // leak it into this subtree and silently override the active module (the bug
+    // this guards against). An explicit `accent` sets `--c-bg` on THIS card via
+    // its role class, so reading `--c-bg` then is safe and local.
+    const moduleBg =
       variant === 'module'
         ? accent
-          ? 'border-t-[var(--c-bg)]'
-          : 'border-t-[var(--module-active)]'
+          ? 'bg-[color-mix(in_oklab,var(--c-bg)_12%,var(--color-bg-surface))]'
+          : 'bg-[color-mix(in_oklab,var(--module-active)_12%,var(--color-bg-surface))]'
         : undefined;
     return (
       <div
@@ -58,7 +63,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
         className={cn(
           accent && colorClass(accent),
           cardVariants({ variant, padding }),
-          moduleStripe,
+          moduleBg,
           className
         )}
         {...props}

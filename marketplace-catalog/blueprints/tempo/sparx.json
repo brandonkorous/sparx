@@ -3,9 +3,9 @@
   "category": "blueprint",
   "slug": "tempo",
   "name": "Tempo",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "tagline": "Built to move.",
-  "description": "A bold, stark athletic / sportswear storefront — a campaign-driven home with an auto-advancing hero carousel, a team-colorway scroller, category tiles, a live best-sellers grid, a membership band and a mega footer, plus a Shop catalog, a Club membership page, Our Story, Help, a News index, enriched product and article templates, ~12 products across four categories, two collections, a matching black-on-white theme, and brand-voiced welcome + new-drops emails. Installs as a draft for the tenant to review, customize, and publish.",
+  "description": "A bold, stark athletic / sportswear storefront LOOK — a campaign-driven home with an auto-advancing hero carousel, a team-colorway scroller, category tiles, a live best-sellers grid, a membership band and a mega footer, plus a Shop catalog page, a Club membership page, Our Story, Help, a News index, enriched product and article templates, a matching black-on-white theme, and brand-voiced welcome + new-drops emails. The look, not the goods: it ships no catalog of its own, so the product grids fill with your own products (or industry sample data) and are empty until then. Installs as a draft for the tenant to review, customize, and publish.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "retail",

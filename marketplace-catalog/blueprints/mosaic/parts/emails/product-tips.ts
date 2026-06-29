@@ -3,14 +3,14 @@
 // authoring source of truth is marketplace-catalog/_gen/mosaic/.
 
 export default {
-  id: 'msc-616',
+  id: 'msc-601',
   type: 'Section',
   props: {},
   class: 'flex flex-col gap-4',
   name: 'Email body',
   children: [
     {
-      id: 'msc-606',
+      id: 'msc-591',
       type: 'email_wordmark',
       props: {
         treatment: 'lockup',
@@ -19,7 +19,7 @@ export default {
       },
     },
     {
-      id: 'msc-607',
+      id: 'msc-592',
       type: 'Heading',
       props: {
         level: 'h1',
@@ -27,7 +27,7 @@ export default {
       },
     },
     {
-      id: 'msc-608',
+      id: 'msc-593',
       type: 'Text',
       props: {
         variant: 'body',
@@ -35,7 +35,7 @@ export default {
       },
     },
     {
-      id: 'msc-609',
+      id: 'msc-594',
       type: 'Text',
       props: {
         variant: 'body',
@@ -43,7 +43,7 @@ export default {
       },
     },
     {
-      id: 'msc-610',
+      id: 'msc-595',
       type: 'Text',
       props: {
         variant: 'body',
@@ -51,7 +51,7 @@ export default {
       },
     },
     {
-      id: 'msc-611',
+      id: 'msc-596',
       type: 'Text',
       props: {
         variant: 'body',
@@ -59,7 +59,7 @@ export default {
       },
     },
     {
-      id: 'msc-612',
+      id: 'msc-597',
       type: 'Button',
       props: {
         label: 'See what’s new',
@@ -67,17 +67,17 @@ export default {
       },
     },
     {
-      id: 'msc-613',
+      id: 'msc-598',
       type: 'Divider',
       props: {},
     },
     {
-      id: 'msc-614',
+      id: 'msc-599',
       type: 'unsubscribe_link',
       props: {},
     },
     {
-      id: 'msc-615',
+      id: 'msc-600',
       type: 'physical_address',
       props: {},
     },

@@ -3,27 +3,27 @@
 // authoring source of truth is marketplace-catalog/_gen/tempo/.
 
 export default {
-  id: 'tmp-678',
+  id: 'tmp-591',
   type: 'Section',
   props: {},
   class: 'w-full flex flex-col',
   name: 'Article',
   children: [
     {
-      id: 'tmp-674',
+      id: 'tmp-587',
       type: 'Section',
       class: 'w-full bg-base-200',
       props: {},
       name: 'Article header',
       children: [
         {
-          id: 'tmp-674__c',
+          id: 'tmp-587__c',
           type: 'Stack',
           class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-8 @3xl:p-16',
           props: {},
           children: [
             {
-              id: 'tmp-672',
+              id: 'tmp-585',
               type: 'el:p',
               props: {
                 text: 'News',
@@ -35,7 +35,7 @@ export default {
               },
             },
             {
-              id: 'tmp-673',
+              id: 'tmp-586',
               type: 'Heading',
               props: {
                 level: 'h1',
@@ -51,14 +51,14 @@ export default {
       ],
     },
     {
-      id: 'tmp-677',
+      id: 'tmp-590',
       type: 'Section',
       props: {},
       class: 'w-full mx-auto w-full max-w-site flex flex-col gap-6 p-6 @3xl:p-10',
       name: 'Article body',
       children: [
         {
-          id: 'tmp-675',
+          id: 'tmp-588',
           type: 'Image',
           props: {
             ratio: 'wide',
@@ -70,7 +70,7 @@ export default {
           },
         },
         {
-          id: 'tmp-676',
+          id: 'tmp-589',
           type: 'Prose',
           props: {},
           binding: {

@@ -2,7 +2,7 @@
 // channel: gross, channel fees, net-after-fees, AOV, and share of total, plus a
 // per-channel top-products drill. This is the money view; connecting and syncing
 // channels lives in Commerce → Sales channels (D4: rollup-in-Finance / manage-in-
-// place). Commerce-gated and tinted with the Commerce hue.
+// place). Commerce-gated but wears the Finance hue (Finance owns its color — docs/109).
 
 import Link from 'next/link';
 import { Store } from 'lucide-react';
@@ -42,7 +42,7 @@ export default async function FinanceChannelsPage({
   const topProducts = selectedChannel ? await getChannelTopProducts(selectedChannel) : null;
 
   return (
-    <ModuleProvider module="commerce">
+    <ModuleProvider module="finance">
       <Container size="xl">
         <Stack gap={6} className="py-10">
           <PageHeader

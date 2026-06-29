@@ -174,7 +174,7 @@ warmth is never decorative.
 ### The Module Spectrum
 
 Each module owns exactly one hue, and that hue surfaces **wherever the module's functionality appears** —
-its marketing domain, its sidebar nav item, the 3px top stripe on its cards, and any panel / badge /
+its marketing domain, its sidebar nav item, the subtle module-tint background on its cards, and any panel / badge /
 action representing that module _even when embedded in another module's screen_ (a product page's
 inventory panel wears inventory amber). `--module-active` is set at runtime by the **nearest**
 `<ModuleProvider>`, which is nestable — wrap a cross-module panel in its own `<ModuleProvider module="…">`
@@ -214,9 +214,16 @@ chrome stays neutral; the active route tints the chrome, its native content, and
 action. But any panel, badge, or action that represents **another module's functionality wears that
 module's hue** — wrap it in its own `<ModuleProvider module="…">` (a product page's inventory panel →
 inventory amber, its SEO panel → SEO yellow, a linked customer → CRM cyan). One screen can legibly carry
-several module hues; the multiplicity lives in the **signals** (stripes, primaries, key badges/icons),
-never in background fills, so the surface stays neutral. There is **no "one hue per screen" cap** — the
-only ban is color with no meaning attached (decoration) and module color used as a decorative wash. ("Active
+several module hues; the multiplicity lives in the **signals** (module-tinted cards, primaries, key
+badges/icons) while the chassis — page background + non-primary cards — stays neutral. A module-tint
+background is now a sanctioned signal, but disciplined: on a dense cross-module page tint only the **one
+"primary" card per module hue** (the section's headline card) and pass `plain` to the rest, so the tints
+read as wayfinding rather than a wall of washes. And a **single-module working surface** — a create/edit
+form, wizard, or editor — keeps its cards neutral (`variant="default"`) entirely: the tint differentiates
+nothing on a one-module surface, so identity rides the frame chrome + `color="module"` Save button + the
+faint summary-rail tint (read-only detail/transaction views may keep one tinted KPI accent card). There is **no "one hue per screen" cap** — the
+only ban is color with no meaning attached (decoration) and module color used as a decorative wash on the
+chassis. ("Active
 module" still means something: the route owns the chrome + page-primary and is the default hue for ambiguous
 emphasis — it's the most _frequent_ hue, not the _only_ one.)
 
@@ -304,9 +311,9 @@ that shifts toward `--c-hover`, a prominent focus ring, immediate 175ms state.
 
 - **Corner Style:** `rounded-lg` (8px).
 - **Background / Border:** `surface (#fff)` on a `1px default border (#e5e5e5)`.
-- **Variants:** `default` · `module` (a **3px top stripe** in the active-module color, top corners squared) · `elevated` (`shadow-md`) · `ghost` (borderless, transparent) · `subtle` (borderless on `#f4f4f5`).
+- **Variants:** `default` · `module` (background **tinted with the active-module color** — a subtle `color-mix(in oklab, var(--module-active) 12%, surface)`, theme-aware, no stripe) · `elevated` (`shadow-md`) · `ghost` (borderless, transparent) · `subtle` (borderless on `#f4f4f5`).
 - **Padding:** `none` · `sm` (12px) · `md` (16px, default) · `lg` (24px). Footers right-align actions above a top border. **Never nest cards.**
-- **The `module` stripe follows the nearest `<ModuleProvider>`.** A commerce page's cards are orange; a panel that surfaces another module's job is wrapped in **its** provider (`<ModuleProvider module="inventory">`), and its `module` cards turn amber automatically — same mechanism that colors the panel's buttons/badges. This is the cross-module wayfinding cue (Color-Follows-Functionality, below). **Don't** pass `accent` to recolor a card when a provider already wraps it — `accent="…"` is only for a one-off color with no surrounding provider. (The stripe reads `--module-active` directly, so it never picks up a leaked role color — wrap the panel and it just works.)
+- **The `module` tint follows the nearest `<ModuleProvider>`.** A commerce page's cards are orange; a panel that surfaces another module's job is wrapped in **its** provider (`<ModuleProvider module="inventory">`), and its `module` cards turn amber automatically — same mechanism that colors the panel's buttons/badges. This is the cross-module wayfinding cue (Color-Follows-Functionality, below). **On a dense cross-module page, tint only the ONE "primary" card per module hue and pass `plain` to the rest** (a `OverviewCard` prop that renders a neutral card) — a wall of tinted cards is competing washes, not wayfinding. **Don't** pass `accent` to recolor a card when a provider already wraps it — `accent="…"` is only for a one-off color with no surrounding provider. (The tint reads `--module-active` directly and mixes into the surface, so it never picks up a leaked role color and adapts to light/dark — wrap the panel and it just works.)
 
 ### Inputs / Fields
 
@@ -352,7 +359,7 @@ that shifts toward `--c-hover`, a prominent focus ring, immediate 175ms state.
 - **Don't** ship generic AI-slop SaaS: no cream/sand/parchment backgrounds, no tiny uppercase tracked eyebrows over every section, no identical icon + heading + text card grids, no big-number hero-metric template, no gradient text.
 - **Don't** let anything read as built for one vertical (no diesel/auto-parts or any single trade as the running example). A publisher and a parts distributor must feel equally at home.
 - **Don't** re-skin a control in feature code — a background fill paired with a foreground text color, or hand-built `hover:` / `focus:` / `disabled:` states, means you've rebuilt a `<Button>` / `<Input>` / `<Badge>`. Use the variant, or add one to `@sparx/ui`.
-- **Don't** use a colored `border-left` / `border-right` greater than 1px as an accent stripe. The **only** sanctioned colored stripe is the card's 3px **top** module stripe — side-stripes stay banned.
+- **Don't** use a colored `border-left` / `border-right` greater than 1px as an accent stripe — colored side-stripes stay banned. A module card carries its hue as a subtle background **tint** (`variant="module"`), not a stripe; there are no sanctioned colored card stripes anymore.
 - **Don't** hardcode a color in a component; every value references a token in `tokens.css`.
 - **Don't** use font weights 600 or 700, and don't use `clamp()` fluid type in the dashboard.
 - **Don't** put white text on warm fills (amber, SEO yellow, warning) — it fails AA.

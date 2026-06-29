@@ -71,13 +71,13 @@ default · editors are not forms._
    template editor, CMS schema/menu editors, scheduling availability) keep their own chrome and are
    excluded from this backlog — never wizard-ify them.
 
-| WS      | What                                                                 | Maps to              | Status      |
-| ------- | -------------------------------------------------------------------- | -------------------- | ----------- |
-| **WS1** | Collapse the 8 multi-step create wizards to single-page              | _new_ (was Wave 1+)  | in progress |
-| **WS2** | Full-page-only create forms → overlay (single-page, honor pref)      | old Wave 2           | pending     |
-| **WS3** | Editor exclusion — formally drop editor-class surfaces from this doc | "Design calls" below | pending     |
-| **WS4** | Inline detail-page edit/record forms → standardize                   | old Wave 4           | pending     |
-| **WS5** | Substantive dialogs → standard overlay/dialog                        | old Wave 5           | pending     |
+| WS      | What                                                                 | Maps to              | Status                               |
+| ------- | -------------------------------------------------------------------- | -------------------- | ------------------------------------ |
+| **WS1** | Collapse the multi-step create wizards to single-page                | _new_ (was Wave 1+)  | ✅ done (7 collapsed + product kept) |
+| **WS2** | Full-page-only create forms → overlay (single-page, honor pref)      | old Wave 2           | ✅ done (CRM/inv/invoicing/cms)      |
+| **WS3** | Editor exclusion — formally drop editor-class surfaces from this doc | "Design calls" below | ✅ done (exclusion list recorded)    |
+| **WS4** | Inline detail-page edit/record forms → standardize                   | old Wave 4           | pending                              |
+| **WS5** | Substantive dialogs → standard overlay/dialog                        | old Wave 5           | ✅ done (most already on `Modal`)    |
 
 ### WS1 — collapse the multi-step create wizards to single-page (the new headline work)
 
@@ -87,14 +87,19 @@ summary column stays, the toolbar becomes **Cancel + Create** (no Back/Continue)
 lets these render well in a drawer or modal (a stepper only really works full-page), so this is what makes
 decision (1) pay off. Keep field grouping, validation, and the summary; only the step boundaries go.
 
-- `commerce/products/_components/product-wizard/` → ProductWizard (heaviest — the context-rail record)
 - `crm/quotes/new/_components/quote-wizard.tsx` · `crm/orders/new/_components/order-wizard.tsx`
 - `inventory/purchase-orders/new/_components/purchase-order-wizard.tsx` · `inventory/transfers/new/_components/transfer-wizard.tsx`
 - `invoicing/documents/new/_components/invoice-wizard.tsx`
 - `crm/customers/new/customer-full-profile-wizard.tsx` · `b2b/accounts/new/b2b-account-wizard.tsx`
 
+✅ **All 7 collapsed (2026-06-28), gate-clean.**
+
 **Stays multi-step (do NOT collapse):** `(onboarding)/_components/onboarding-wizard.tsx` (first-run, no app
-chrome) and `settings/sites/new-site-wizard.tsx` + blueprint install (branching, infrequent).
+chrome); `settings/sites/new-site-wizard.tsx` + blueprint install (branching, infrequent); and
+`commerce/products/_components/product-wizard/` — the **earned in-app wizard** (decided 2026-06-28): a
+progressive-draft flow (Basics creates a real draft → Variants/Media/Fitment/Organization attach to the real
+product via the detail-tab endpoints → Review publishes), branching by fulfillment type. It is
+sequential-dependent, not a flat form, so it keeps its stepper (docs/86 §1A #2).
 
 > WS2 = the "Wave 2" section, WS3 = the "Design calls" section (made a formal exclusion), WS4 = the "Wave 4"
 > section, WS5 = the "Wave 5" section — all below, unchanged in content, now numbered as workstreams.
@@ -603,6 +608,115 @@ dev lifecycle.
 ---
 
 ## Progress log
+
+- **2026-06-29 — WS5 COMPLETE: substantive dialogs → standard `Modal` ✅ gate-clean.** Key finding: **most WS5
+  "substantive dialogs" were already on the standard `@sparx/ui` `Modal`/`useConfirm`** — the census's
+  "self-owned modal" just means each component owns its own `Modal` instance (there's no central dialog
+  registry; that IS the target). Verified already-compliant: `b2b/invoices/[id]/invoice-actions` (mark-paid /
+  write-off), `b2b/appointments/appointment-actions`, `b2b/approval-queue/approve-reject-actions`,
+  `settings/domains/purchase-dialog` (two modes — also onboarding `step-domain`), `scheduling/resources/
+calendar-feed-dialog`. **Genuinely converted (3):** `builder/components/new-component-button`
+  (`AlertDialog` — the wrong primitive for data entry → `Modal`); `settings/ai-integrations/issue-key-form`
+  (inline settings form → a `Modal` launched from the page-header "Issue key" action, success-reveal panel
+  kept inside the modal); `email/broadcasts/[id]/broadcast-actions` (inline datetime scheduler → a "Schedule…"
+  button opening a small `Modal`; "Send now" stays inline). **Boy-scout while in-file:** danger spans →
+  `<Text variant="danger">` (appointment / approve-reject / calendar-feed); reset shared `notes` between the
+  mark-paid & write-off modals in invoice-actions. **Judged compliant, left as-is:** `seo/search-console-control`
+  is a connection state-machine widget (already uses `useConfirm` for the destructive disconnect; its inline
+  site-picker — 1–3 verified sites as buttons — is appropriate, not a bespoke dialog to "lift"). `marketplace/
+installs/.../update` is a parallel agent's diff-review surface (excluded, untouched). `@sparx/dashboard` tsc
+  clean · ESLint 0 errors · prettier clean. **WS5 done.** With WS1–WS3 + WS5 complete, only **WS4** remains —
+  blocked by the parallel card-tint sweep on its exact edit/detail files (sequence after it lands).
+
+- **2026-06-29 — WS2 COMPLETE: invoicing workflow + CMS type-scoped new-entry ✅ gate-clean.** Final two WS2
+  forms: **invoicing workflow** (`/invoicing/workflows/new`) converted exactly like the CRM pipeline (name +
+  slug auto-derive + default `Checkbox` → single-step `SurfaceFrame`; create-only, no `@detail` drawer; on
+  success continues to the workflow's stage editor) — wired into `createComponents`/`detailModules`/registry
+  sets + a create-only `workflow` `entityType` in the invoicing manifest + `EntityCreateButton` launcher.
+  **CMS type-scoped new-entry** (`/cms/types/[typeKey]/new`) converted by rewriting `NewEntryForm` to OWN the
+  `SurfaceFrame` chrome + floor toolbar + required-field guard + submit + `useUnsavedGuard`, rendering the
+  SHARED `ContentEntryForm` in CONTROLLED (fields-only) mode so the schema editor stays untouched. It stays a
+  **page surface** (no new overlay): the generic `content-entry` overlay (ContentEntryWizard) already covers
+  the drawer/modal create-with-type-picker case. **Design-direction change applied (landed mid-session in
+  packages/ui/CLAUDE.md #26):** single-module working surfaces — create/edit forms, wizard steps — now use
+  NEUTRAL `<Card>` (`variant="default"`), NOT the module tint (tint reserved for cross-module overview
+  surfaces; form identity comes from the frame chrome + `color="module"` primary + the module-tinted summary
+  rail). All six WS2 forms aligned (dropped `variant="module"` on field cards). **A parallel agent is running
+  this card-tint sweep globally** (it converted the pipeline card + edited the UI CLAUDE.md) — the WS1 forms +
+  other existing create/edit forms still on `variant="module"` are THEIRS to sweep, not touched here.
+  `@sparx/dashboard` tsc clean · ESLint 0 errors · prettier clean. **WS2 done** — next is WS3 (editor
+  exclusion, doc-only) then WS4/WS5.
+
+- **2026-06-29 — WS2 inventory complete: supplier + lot + count → overlay ✅ gate-clean.** Converted the
+  three inventory full-page-only create forms onto single-step `SurfaceFrame` overlays (all create-only — no
+  `@detail` drawer; their detail screens are wide full-page workflows — so each navigates to its full-page
+  detail on success): **supplier** (`/inventory/suppliers/new`; Basics/Contact/Address/Terms sections, no
+  server data), **lot** (`/inventory/lots/new`; SKU resolver + warehouse list via a server wrapper), **count**
+  (`/inventory/counts/new`; cycle/full branching + by-SKU CyclePicker, warehouse list via a server wrapper).
+  All three previously had no `useUnsavedGuard` — added it; converted danger spans → `<Text variant="danger">`
+  and section cards → `<Card variant="module">`. **Pattern note:** these keep their existing UNCONTROLLED
+  native form (FormData on submit) — the frame's toolbar primary lives outside the `<form>`, so it bridges via
+  `onNext: () => formRef.current?.requestSubmit()` (the form keeps a normal `onSubmit`). The no-warehouse guard
+  moved INTO the lot/count forms (a centered `EmptyState` early-return) so both surfaces share it and the
+  `/new` pages render bare. Wired per form: `createComponents` (+ async server wrappers `LotCreateOverlay` /
+  `CountCreateOverlay` loading `/v1/inventory/locations`) + `detailModules['…']='inventory'`;
+  `CREATE_VIEW_TYPES` + `FULL_BLEED_CREATE_TYPES`; new create-only `entityTypes` (supplier/lot/count) in the
+  inventory manifest; list launchers swapped to `EntityCreateButton`. **`receive` is deliberately OUT of WS2:**
+  it has no standalone "New" — receiving is a PO-scoped goods-receipt transaction reached from
+  `/inventory/purchase-orders/{id}/receive`, not an entity create (belongs with the transaction/editor
+  surfaces, not the create-overlay system). `@sparx/dashboard` tsc clean · ESLint 0 errors · prettier clean.
+  Remaining WS2: invoicing workflows/new, cms type-scoped new-entry.
+
+- **2026-06-29 — WS2 CRM complete: pipeline + B2B-create consolidation ✅ gate-clean.** Converted the
+  CRM **pipeline** create form (`crm/pipelines/new`) off the old `<Card>`+`<CardFooter>` shell onto a
+  single-step `SurfaceFrame` (`new-pipeline-form.tsx`: controlled state, live name→slug auto-derive,
+  `Checkbox` for default, `useUnsavedGuard`, frame-owned Cancel). Pipeline has no `@detail` drawer (its detail
+  is a full-width Kanban) and a fresh pipeline has no stages, so on success it **continues to the edit screen**
+  (to add/order stages) rather than returning to the list. Wired: `createComponents['pipeline']` (no server
+  data — direct `() => <NewPipelineForm surface="overlay" />`) + `detailModules['pipeline']='crm'`;
+  `CREATE_VIEW_TYPES` + `FULL_BLEED_CREATE_TYPES`. Manifest entry + `EntityCreateButton` launcher already
+  existed. **B2B create consolidation:** `b2b-account` had TWO create forms — the canonical collapsed
+  `B2bAccountWizard` (used by the overlay + `/b2b/accounts/new`) and a legacy card+footer `B2bAccountCreateForm`
+  rendered only at `/crm/b2b/new`. Deleted the dead legacy form; turned `/crm/b2b/new` into a `redirect()` to
+  the canonical `/b2b/accounts/new`; pointed the `/crm/b2b` list launcher (`newHref`) there too. **Flagged
+  (needs a user IA decision, NOT done):** `b2b-account` is registered in BOTH the CRM manifest (`routePrefix:
+/crm/b2b`, `hasDetailView`) AND the B2B manifest (`/b2b/accounts`) — two parallel B2B sub-apps (each with its
+  own list + `[id]` detail) and a latent `findEntityType` first-match conflict. Consolidating those two
+  homes is out of WS2's form scope. `@sparx/dashboard` tsc clean · ESLint 0 errors · prettier clean. Remaining
+  WS2: inventory counts/lots/suppliers/receive, invoicing workflows/new, cms type-scoped new-entry.
+
+- **2026-06-29 — WS2 started: full-page create forms → overlay (2 done) ✅ gate-clean.** Converted the
+  CRM **deal** + **task** create forms off the old `<Card>`+`<CardFooter>` shell onto single-step
+  `SurfaceFrame` overlays (controlled state, `NativeSelect`, `useUnsavedGuard`, frame-owned Cancel) and wired
+  them into the overlay system: `createComponents` (+ async server wrappers for the pipeline/customer/user
+  pickers) and `detailModules` (task is create-only, so it needed an explicit `task: 'crm'` accent) in
+  `detail-slot.tsx`; `CREATE_VIEW_TYPES` + `FULL_BLEED_CREATE_TYPES` in `detail-registry.ts`; `/new` routes
+  stripped of `Container`/`PageHeader`. The deal/task launchers already used `EntityCreateButton` and the crm
+  manifest already had the `entityTypes`, so once registered they open in the user's `defaultDetailView`. A
+  created **deal** transitions into its detail view; a created **task** (no detail view) returns to the list.
+  `@sparx/dashboard` tsc clean · ESLint 0 errors · prettier clean. Remaining WS2: CRM pipelines (+ consolidate
+  `crm/b2b/new`), inventory counts/lots/suppliers/receive, invoicing workflows/new, cms type-scoped new-entry.
+
+- **2026-06-28 — WS1: wizard → single-page collapse (7 of 8) ✅ gate-clean.** Collapsed the seven
+  compose-locally-then-submit wizards onto one `SurfaceStep` (former steps stack as grouped
+  `<Card variant="module">` sections; `steps` is a single entry so MiniProgress auto-hides; the toolbar is
+  Cancel + Create; the live summary column is unchanged and now reads as the running "review", so the old
+  "Review" step is dropped):
+  - **Record-builders:** `b2b/accounts/new/b2b-account-wizard.tsx` (Company / Pricing / Fleet — pilot;
+    extracted a `FleetProfilesCard`); `crm/customers/new/customer-full-profile-wizard.tsx` (Contact /
+    Classify / Address + an optional "Get a head start" zone). Per-step gating → one submit backstop.
+  - **Line-item docs:** `crm/quotes/new/.../quote-wizard.tsx`, `crm/orders/new/.../order-wizard.tsx`,
+    `inventory/purchase-orders/new/.../purchase-order-wizard.tsx`, `inventory/transfers/new/.../transfer-wizard.tsx`,
+    `invoicing/documents/new/.../invoice-wizard.tsx` — stack [party/header] + [line-items] + [terms]
+    (+ deposit / start-stage for billing-document; the created-doc partial-success panel kept). Validation
+    failures became inline errors (no step-jump). PO/transfer keep their no-supplier/no-warehouse guard panels.
+  - Gate: `@sparx/dashboard` tsc clean · ESLint 0 errors (warn-only `max-lines` only) · prettier clean.
+    **On-screen pass in all 3 surfaces pending** (user owns dev; Playwright profile was locked by a live session).
+  - **8th = `commerce/products/.../product-wizard` — KEPT MULTI-STEP (user decision 2026-06-28).** It is NOT a
+    compose-locally form: it creates a real DRAFT on Basics, then Variants/Media/Fitment/Organization steps
+    attach relations to the real product via the same endpoints as the detail tabs, and Review publishes — a
+    genuinely sequential, branching progressive-draft = the strategy's "earned wizard" (docs/86 §1A #2). No
+    code change. **WS1 COMPLETE: 7 collapsed + product kept as the earned exception.**
 
 - **2026-06-21 — `WizardFrame` → `SurfaceFrame` rename + commerce create sweep ✅.**
   - Renamed the primitive end-to-end: file `surface-frame.tsx`, exports `Surface*` (`SurfaceFrame` /

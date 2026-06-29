@@ -61,7 +61,7 @@ export default async function B2bAccountsPage({ searchParams }: PageProps) {
           actions={
             <EntityCreateButton
               entityType="b2b-account"
-              newHref="/crm/b2b/new"
+              newHref="/b2b/accounts/new"
               color="module"
               leftIcon={<Plus className="h-4 w-4" />}
             >

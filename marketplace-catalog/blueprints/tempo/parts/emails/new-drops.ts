@@ -3,14 +3,14 @@
 // authoring source of truth is marketplace-catalog/_gen/tempo/.
 
 export default {
-  id: 'tmp-699',
+  id: 'tmp-612',
   type: 'Section',
   props: {},
   class: 'flex flex-col gap-4',
   name: 'Email body',
   children: [
     {
-      id: 'tmp-689',
+      id: 'tmp-602',
       type: 'email_wordmark',
       props: {
         treatment: 'lockup',
@@ -19,7 +19,7 @@ export default {
       },
     },
     {
-      id: 'tmp-690',
+      id: 'tmp-603',
       type: 'Heading',
       props: {
         level: 'h1',
@@ -27,7 +27,7 @@ export default {
       },
     },
     {
-      id: 'tmp-691',
+      id: 'tmp-604',
       type: 'Text',
       props: {
         variant: 'body',
@@ -35,7 +35,7 @@ export default {
       },
     },
     {
-      id: 'tmp-692',
+      id: 'tmp-605',
       type: 'Text',
       props: {
         variant: 'body',
@@ -43,7 +43,7 @@ export default {
       },
     },
     {
-      id: 'tmp-693',
+      id: 'tmp-606',
       type: 'Text',
       props: {
         variant: 'body',
@@ -51,7 +51,7 @@ export default {
       },
     },
     {
-      id: 'tmp-694',
+      id: 'tmp-607',
       type: 'Text',
       props: {
         variant: 'body',
@@ -59,7 +59,7 @@ export default {
       },
     },
     {
-      id: 'tmp-695',
+      id: 'tmp-608',
       type: 'Button',
       props: {
         label: 'Shop new arrivals',
@@ -67,17 +67,17 @@ export default {
       },
     },
     {
-      id: 'tmp-696',
+      id: 'tmp-609',
       type: 'Divider',
       props: {},
     },
     {
-      id: 'tmp-697',
+      id: 'tmp-610',
       type: 'unsubscribe_link',
       props: {},
     },
     {
-      id: 'tmp-698',
+      id: 'tmp-611',
       type: 'physical_address',
       props: {},
     },

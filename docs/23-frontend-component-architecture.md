@@ -1,8 +1,8 @@
 # sparx Platform — Frontend Component Architecture
 
-**Version:** 1.6
+**Version:** 1.6.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-08
+**Last Updated:** 2026-06-29
 
 ---
 
@@ -469,7 +469,7 @@ export default function CmsLayout({ children }: { children: React.ReactNode }) {
 
 // Now everything inside cms/ automatically uses teal:
 // - Sidebar nav item highlight → teal
-// - Card top stripe → teal
+// - Card module-tint background → teal
 // - Active tab underline → teal
 // - Module badge → teal
 // - Button variant="module" → teal background
@@ -489,7 +489,11 @@ const cardVariants = cva(
     variants: {
       variant: {
         default: '',
-        module: 'rounded-t-none border-t-[3px] border-t-[var(--module-active)]',
+        // module carries no extra classes — the tinted background is applied in the
+        // component: color-mix(in oklab, var(--module-active) 12%, var(--color-bg-surface)),
+        // reading --module-active directly (leak-safe) and mixing into the surface token
+        // so the tint is theme-aware (tinted-white in light, tinted-dark in dark).
+        module: '',
         elevated: 'shadow-md',
         ghost: 'border-transparent bg-transparent',
         subtle: 'border-transparent bg-[var(--color-bg-subtle)]',
@@ -506,7 +510,7 @@ const cardVariants = cva(
 );
 ```
 
-The `module` variant is the 3px stripe pattern. It applies automatically when `variant="module"` — no module color prop needed because `--module-active` comes from CSS context.
+The `module` variant tints the card's whole background with the active module's subtle tint — `color-mix(in oklab, var(--module-active) 12%, var(--color-bg-surface))`. It reads `--module-active` **directly** (not the inheritable `--c-bg`/`--c-tint` role vars) so it stays leak-safe and follows the nearest `<ModuleProvider>`, and mixing into `--color-bg-surface` makes it theme-aware (a clean tinted-white card in light mode, a tinted-dark card in dark mode). It applies automatically when `variant="module"` — no module color prop needed because `--module-active` comes from CSS context. The `accent` prop pins the tint to a one-off color (it sets `--c-bg`, so the background becomes `color-mix(in oklab, var(--c-bg) 12%, var(--color-bg-surface))`).
 
 ### Badge
 
@@ -654,17 +658,17 @@ All components to build in `@sparx/ui`. Each follows the CVA pattern above.
 
 ### Layout
 
-| Component     | Key variants                             | Notes                          |
-| ------------- | ---------------------------------------- | ------------------------------ |
-| `Card`        | default, module, elevated, ghost, subtle | module = 3px top stripe        |
-| `CardHeader`  | —                                        | Consistent header within Card  |
-| `CardContent` | —                                        |                                |
-| `CardFooter`  | —                                        | Border-top, action area        |
-| `Stack`       | —                                        | Vertical flex with gap prop    |
-| `Grid`        | —                                        | CSS grid with cols + gap props |
-| `Divider`     | horizontal, vertical                     |                                |
-| `Container`   | sm, md, lg, xl, full                     | Max-width containers           |
-| `ScrollArea`  | —                                        | Wraps Radix ScrollArea         |
+| Component     | Key variants                             | Notes                                  |
+| ------------- | ---------------------------------------- | -------------------------------------- |
+| `Card`        | default, module, elevated, ghost, subtle | module = subtle module-tint background |
+| `CardHeader`  | —                                        | Consistent header within Card          |
+| `CardContent` | —                                        |                                        |
+| `CardFooter`  | —                                        | Border-top, action area                |
+| `Stack`       | —                                        | Vertical flex with gap prop            |
+| `Grid`        | —                                        | CSS grid with cols + gap props         |
+| `Divider`     | horizontal, vertical                     |                                        |
+| `Container`   | sm, md, lg, xl, full                     | Max-width containers                   |
+| `ScrollArea`  | —                                        | Wraps Radix ScrollArea                 |
 
 ### Overlay
 

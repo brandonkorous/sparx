@@ -98,7 +98,7 @@ export function ProductSeoForm({
     // provider, so the page-primary action keeps the active commerce accent.
     <ModuleProvider module="seo">
       <form id="product-seo-form" onSubmit={onSubmit} noValidate>
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <Heading level={3} as="h2">
               Search engine listing

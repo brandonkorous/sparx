@@ -113,7 +113,7 @@ export async function CollectionDetailContent({ id }: Props) {
         </TabsList>
 
         <TabsContent value="products">
-          <Card variant="module">
+          <Card variant="default">
             <CardHeader>
               <Stack gap={1}>
                 <Heading level={3}>Membership</Heading>
@@ -155,7 +155,7 @@ export async function CollectionDetailContent({ id }: Props) {
 
         {collection.type === 'rules' && (
           <TabsContent value="rules">
-            <Card variant="module">
+            <Card variant="default">
               <CardHeader>
                 <Heading level={3}>Rule editor — Phase 1.5</Heading>
                 <CardDescription>

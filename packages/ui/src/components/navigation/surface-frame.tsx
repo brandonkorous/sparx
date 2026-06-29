@@ -134,8 +134,11 @@ const SurfaceContext = React.createContext<SurfaceContextValue>({ variant: 'page
 // stacks even on a wide screen (docs/86). The classes are written as full
 // literals (never concatenated) so Tailwind's scanner generates them.
 //
-// A soft module tint over the surface — the quiet summary panel background.
-const SUMMARY_BG = 'bg-[color-mix(in_oklab,var(--module-active)_6%,var(--color-bg-surface))]';
+// A soft module tint over the surface — the quiet summary panel background. On a
+// form the field cards go neutral, so this rail is the single module cue; it uses
+// the standard 12% card-tint level (matching Card variant="module") so the lone
+// tinted element reads consistently with module tints elsewhere.
+const SUMMARY_BG = 'bg-[color-mix(in_oklab,var(--module-active)_12%,var(--color-bg-surface))]';
 
 // ── Rail (immersive `page` variant) ────────────────────────────────────────────
 // RAIL_BG + RailWordmark are shared with the auth split-panel via ../brand/brand-rail

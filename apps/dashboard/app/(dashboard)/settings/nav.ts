@@ -1,6 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
 import {
   Bell,
+  Compass,
   Globe,
   GlobeLock,
   KeyRound,
@@ -53,6 +54,14 @@ export const SETTINGS_NAV: readonly SettingsNavItem[] = [
     description: 'Activate or deactivate platform modules for this tenant.',
     icon: Layers,
     href: '/settings/modules',
+    ready: true,
+  },
+  {
+    id: 'industry',
+    label: 'Industry',
+    description: 'Stamp starter config for your industry across the modules you’ve enabled.',
+    icon: Compass,
+    href: '/settings/industry',
     ready: true,
   },
   {

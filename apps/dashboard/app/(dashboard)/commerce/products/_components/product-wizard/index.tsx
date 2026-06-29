@@ -576,7 +576,7 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
         nextLoading: submitting,
       }}
     >
-      <Card variant="module">
+      <Card variant="default">
         <CardContent className="py-6">
           <div className="flex flex-col gap-5">
             <div>
@@ -669,7 +669,7 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
         nextLoading: submitting,
       }}
     >
-      <Card variant="module">
+      <Card variant="default">
         <CardContent className="py-6">
           <div className="flex flex-col gap-5">
             <div>
@@ -748,7 +748,7 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
         nextDisabled: submitting,
       }}
     >
-      <Card variant="module">
+      <Card variant="default">
         <CardContent className="py-6">
           <div className="flex flex-col gap-5">
             <div className="flex items-start justify-between gap-4 rounded-xl border border-[var(--color-border-default)] p-4">
@@ -916,7 +916,7 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
         ),
       }}
     >
-      <Card variant="module">
+      <Card variant="default">
         <CardContent className="py-6">
           <div className="flex flex-col gap-4">
             <dl className="grid grid-cols-[9rem_1fr] gap-x-4 gap-y-2.5 text-sm">

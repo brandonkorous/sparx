@@ -154,11 +154,12 @@ export function MobileNav({ pathname, enabledModules, favorites, recents }: Mobi
           </SidebarItem>
         </SidebarSection>
 
-        {/* Finance — a first-class platform area (docs/109). Mirrors Settings: a
-            link when you're elsewhere, its money-flow-split section list when
-            you're inside it. Neutral (platform-level, no module hue). */}
+        {/* Finance — a first-class platform area (docs/109) that owns a brand hue
+            (money green). Mirrors the desktop rail/panel: the switcher glyph always
+            carries the finance color (moduleIcon, like SEO/Automations), and inside
+            Finance the active section row goes green via the same "finance" provider. */}
         {inFinance ? (
-          <ModuleProvider module="platform">
+          <ModuleProvider module="finance">
             <SidebarSection>
               <SidebarSectionLabel>Finance</SidebarSectionLabel>
               <FinanceSectionItems pathname={pathname} />
@@ -166,9 +167,11 @@ export function MobileNav({ pathname, enabledModules, favorites, recents }: Mobi
           </ModuleProvider>
         ) : (
           <SidebarSection>
-            <SidebarItem asChild icon={<Landmark className="h-4 w-4" />}>
-              <Link href="/finance">Finance</Link>
-            </SidebarItem>
+            <ModuleProvider module="finance">
+              <SidebarItem moduleIcon asChild icon={<Landmark className="h-4 w-4" />}>
+                <Link href="/finance">Finance</Link>
+              </SidebarItem>
+            </ModuleProvider>
           </SidebarSection>
         )}
 

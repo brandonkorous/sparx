@@ -3,28 +3,28 @@
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh/.
 
 export default {
-  id: 'ffb-254',
+  id: 'ffb-198',
   type: 'Section',
   props: {},
   class: 'w-full flex flex-col',
   name: 'Menu',
   children: [
     {
-      id: 'ffb-211',
+      id: 'ffb-183',
       type: 'Section',
       class: 'w-full bg-base-200',
       props: {},
       name: 'Menu intro',
       children: [
         {
-          id: 'ffb-211__c',
+          id: 'ffb-183__c',
           type: 'Stack',
           class:
             'mx-auto w-full max-w-site flex flex-col gap-2 justify-center items-center p-8 @3xl:p-16 text-center',
           props: {},
           children: [
             {
-              id: 'ffb-209',
+              id: 'ffb-181',
               type: 'Heading',
               props: {
                 level: 'h1',
@@ -34,7 +34,7 @@ export default {
               class: 'text-center',
             },
             {
-              id: 'ffb-210',
+              id: 'ffb-182',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -47,51 +47,51 @@ export default {
       ],
     },
     {
-      id: 'ffb-225',
+      id: 'ffb-197',
       type: 'Section',
       props: {},
       class: 'w-full mx-auto w-full max-w-site flex flex-col gap-4 items-start p-8 @3xl:p-16',
-      name: 'Açaí & Smoothie Bowls',
+      name: 'Menu items',
       children: [
         {
-          id: 'ffb-212',
+          id: 'ffb-184',
           type: 'Heading',
           props: {
             level: 'h2',
-            text: 'Açaí & Smoothie Bowls',
+            text: 'On the menu',
           },
           class: 'text-primary text-3xl',
         },
         {
-          id: 'ffb-213',
+          id: 'ffb-185',
           type: 'Text',
           props: {
             variant: 'body',
-            text: 'Blended to order and piled with fruit, granola, and seeds.',
+            text: 'Everything we make, blended to order from local ingredients.',
           },
           class: 'text-base-content/70',
         },
         {
-          id: 'ffb-224',
+          id: 'ffb-196',
           type: 'Section',
           props: {},
           class: 'w-full grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-3 gap-6',
           children: [
             {
-              id: 'ffb-223',
+              id: 'ffb-195',
               type: 'Card',
               props: {},
               class:
                 'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
               children: [
                 {
-                  id: 'ffb-216',
+                  id: 'ffb-188',
                   type: 'Button',
                   props: {},
                   class: 'block',
                   children: [
                     {
-                      id: 'ffb-215',
+                      id: 'ffb-187',
                       type: 'Image',
                       props: {
                         ratio: 'square',
@@ -109,19 +109,19 @@ export default {
                   },
                 },
                 {
-                  id: 'ffb-222',
+                  id: 'ffb-194',
                   type: 'Stack',
                   props: {},
                   class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 flex-1',
                   children: [
                     {
-                      id: 'ffb-218',
+                      id: 'ffb-190',
                       type: 'Button',
                       props: {},
                       class: 'block transition-colors hover:text-accent',
                       children: [
                         {
-                          id: 'ffb-217',
+                          id: 'ffb-189',
                           type: 'Heading',
                           props: {
                             level: 'h3',
@@ -139,7 +139,7 @@ export default {
                       },
                     },
                     {
-                      id: 'ffb-219',
+                      id: 'ffb-191',
                       type: 'Text',
                       props: {
                         variant: 'body',
@@ -151,14 +151,14 @@ export default {
                       },
                     },
                     {
-                      id: 'ffb-221',
+                      id: 'ffb-193',
                       type: 'Stack',
                       props: {},
                       class:
                         'mx-auto w-full max-w-site flex flex-col @3xl:flex-row gap-2 justify-between items-center mt-auto w-full',
                       children: [
                         {
-                          id: 'ffb-220',
+                          id: 'ffb-192',
                           type: 'PriceTag',
                           props: {},
                           class: 'text-accent font-extrabold text-lg',
@@ -167,7 +167,7 @@ export default {
                           },
                         },
                         {
-                          id: 'ffb-214',
+                          id: 'ffb-186',
                           type: 'Button',
                           props: {
                             label: 'Add',
@@ -186,302 +186,7 @@ export default {
           ],
           binding: {
             source: {
-              from: 'category',
-              id: 'acai-bowls',
-            },
-          },
-        },
-      ],
-    },
-    {
-      id: 'ffb-239',
-      type: 'Section',
-      props: {},
-      class: 'w-full mx-auto w-full max-w-site flex flex-col gap-4 items-start p-8 @3xl:p-16',
-      name: 'Cold-Pressed Smoothies',
-      children: [
-        {
-          id: 'ffb-226',
-          type: 'Heading',
-          props: {
-            level: 'h2',
-            text: 'Cold-Pressed Smoothies',
-          },
-          class: 'text-primary text-3xl',
-        },
-        {
-          id: 'ffb-227',
-          type: 'Text',
-          props: {
-            variant: 'body',
-            text: 'Fresh-pressed and never from concentrate.',
-          },
-          class: 'text-base-content/70',
-        },
-        {
-          id: 'ffb-238',
-          type: 'Section',
-          props: {},
-          class: 'w-full grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-4 gap-6',
-          children: [
-            {
-              id: 'ffb-237',
-              type: 'Card',
-              props: {},
-              class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
-              children: [
-                {
-                  id: 'ffb-230',
-                  type: 'Button',
-                  props: {},
-                  class: 'block',
-                  children: [
-                    {
-                      id: 'ffb-229',
-                      type: 'Image',
-                      props: {
-                        ratio: 'square',
-                        alt: 'Bowl',
-                      },
-                      class: 'w-full',
-                      binding: {
-                        path: 'item.images',
-                      },
-                    },
-                  ],
-                  binding: {
-                    action: 'link',
-                    href: '/products/{{item.handle}}',
-                  },
-                },
-                {
-                  id: 'ffb-236',
-                  type: 'Stack',
-                  props: {},
-                  class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 flex-1',
-                  children: [
-                    {
-                      id: 'ffb-232',
-                      type: 'Button',
-                      props: {},
-                      class: 'block transition-colors hover:text-accent',
-                      children: [
-                        {
-                          id: 'ffb-231',
-                          type: 'Heading',
-                          props: {
-                            level: 'h3',
-                            text: 'Bowl',
-                          },
-                          class: 'text-xl',
-                          binding: {
-                            path: 'item.title',
-                          },
-                        },
-                      ],
-                      binding: {
-                        action: 'link',
-                        href: '/products/{{item.handle}}',
-                      },
-                    },
-                    {
-                      id: 'ffb-233',
-                      type: 'Text',
-                      props: {
-                        variant: 'body',
-                        text: 'A fresh, balanced bowl.',
-                      },
-                      class: 'text-sm leading-relaxed text-base-content/70',
-                      binding: {
-                        path: 'item.description',
-                      },
-                    },
-                    {
-                      id: 'ffb-235',
-                      type: 'Stack',
-                      props: {},
-                      class:
-                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row gap-2 justify-between items-center mt-auto w-full',
-                      children: [
-                        {
-                          id: 'ffb-234',
-                          type: 'PriceTag',
-                          props: {},
-                          class: 'text-accent font-extrabold text-lg',
-                          binding: {
-                            path: 'item.price',
-                          },
-                        },
-                        {
-                          id: 'ffb-228',
-                          type: 'Button',
-                          props: {
-                            label: 'Add',
-                          },
-                          class: 'st-btn st-c-accent st-v-solid st-btn--sz-sm whitespace-nowrap',
-                          binding: {
-                            action: 'add-to-cart',
-                          },
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-          binding: {
-            source: {
-              from: 'category',
-              id: 'smoothies',
-            },
-          },
-        },
-      ],
-    },
-    {
-      id: 'ffb-253',
-      type: 'Section',
-      props: {},
-      class: 'w-full mx-auto w-full max-w-site flex flex-col gap-4 items-start p-8 @3xl:p-16',
-      name: 'Salads & Grain Bowls',
-      children: [
-        {
-          id: 'ffb-240',
-          type: 'Heading',
-          props: {
-            level: 'h2',
-            text: 'Salads & Grain Bowls',
-          },
-          class: 'text-primary text-3xl',
-        },
-        {
-          id: 'ffb-241',
-          type: 'Text',
-          props: {
-            variant: 'body',
-            text: 'Hearty, balanced, and made to fuel your day.',
-          },
-          class: 'text-base-content/70',
-        },
-        {
-          id: 'ffb-252',
-          type: 'Section',
-          props: {},
-          class: 'w-full grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-3 gap-6',
-          children: [
-            {
-              id: 'ffb-251',
-              type: 'Card',
-              props: {},
-              class:
-                'mx-auto w-full max-w-site rounded-box flex flex-col overflow-hidden bg-white shadow-lg border border-base-300 st-hover--lift',
-              children: [
-                {
-                  id: 'ffb-244',
-                  type: 'Button',
-                  props: {},
-                  class: 'block',
-                  children: [
-                    {
-                      id: 'ffb-243',
-                      type: 'Image',
-                      props: {
-                        ratio: 'square',
-                        alt: 'Bowl',
-                      },
-                      class: 'w-full',
-                      binding: {
-                        path: 'item.images',
-                      },
-                    },
-                  ],
-                  binding: {
-                    action: 'link',
-                    href: '/products/{{item.handle}}',
-                  },
-                },
-                {
-                  id: 'ffb-250',
-                  type: 'Stack',
-                  props: {},
-                  class: 'mx-auto w-full max-w-site flex flex-col gap-2 items-start p-6 flex-1',
-                  children: [
-                    {
-                      id: 'ffb-246',
-                      type: 'Button',
-                      props: {},
-                      class: 'block transition-colors hover:text-accent',
-                      children: [
-                        {
-                          id: 'ffb-245',
-                          type: 'Heading',
-                          props: {
-                            level: 'h3',
-                            text: 'Bowl',
-                          },
-                          class: 'text-xl',
-                          binding: {
-                            path: 'item.title',
-                          },
-                        },
-                      ],
-                      binding: {
-                        action: 'link',
-                        href: '/products/{{item.handle}}',
-                      },
-                    },
-                    {
-                      id: 'ffb-247',
-                      type: 'Text',
-                      props: {
-                        variant: 'body',
-                        text: 'A fresh, balanced bowl.',
-                      },
-                      class: 'text-sm leading-relaxed text-base-content/70',
-                      binding: {
-                        path: 'item.description',
-                      },
-                    },
-                    {
-                      id: 'ffb-249',
-                      type: 'Stack',
-                      props: {},
-                      class:
-                        'mx-auto w-full max-w-site flex flex-col @3xl:flex-row gap-2 justify-between items-center mt-auto w-full',
-                      children: [
-                        {
-                          id: 'ffb-248',
-                          type: 'PriceTag',
-                          props: {},
-                          class: 'text-accent font-extrabold text-lg',
-                          binding: {
-                            path: 'item.price',
-                          },
-                        },
-                        {
-                          id: 'ffb-242',
-                          type: 'Button',
-                          props: {
-                            label: 'Add',
-                          },
-                          class: 'st-btn st-c-accent st-v-solid st-btn--sz-sm whitespace-nowrap',
-                          binding: {
-                            action: 'add-to-cart',
-                          },
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-          binding: {
-            source: {
-              from: 'category',
-              id: 'salads-grains',
+              from: 'all',
             },
           },
         },

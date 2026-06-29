@@ -349,7 +349,7 @@ export function SupplierForm({
         nextDisabled: saving,
       }}
     >
-      <Card variant="module">
+      <Card variant="default">
         <CardContent className="py-6">
           <Stack gap={5}>
             <div>

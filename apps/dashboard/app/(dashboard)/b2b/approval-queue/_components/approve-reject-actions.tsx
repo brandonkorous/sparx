@@ -113,7 +113,7 @@ export function ApproveRejectActions({ orderId, orderNumber }: Props) {
               />
             </Stack>
             {error && (
-              <Text size="sm" className="text-[var(--color-danger)]">
+              <Text size="sm" variant="danger">
                 {error}
               </Text>
             )}

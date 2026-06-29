@@ -1,5 +1,3 @@
-import { Container, PageHeader, Stack } from '@sparx/ui';
-
 import { api } from '@/lib/api-rest-client';
 
 import { NewDealForm } from './_components/new-deal-form';
@@ -45,40 +43,28 @@ export default async function NewDealPage({ searchParams }: PageProps) {
 
   const initialPipelineId = stringParam(sp.pipelineId) ?? pipelines[0]?.id ?? null;
 
+  // The embedded SurfaceFrame supplies the title + chrome — no Container/PageHeader.
   return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          title="New deal"
-          description={
-            <>
-              Track an opportunity through the pipeline. Stage probability feeds the forecast; moves
-              emit <code>crm.deal.stage_changed</code> for the email automation engine.
-            </>
-          }
-        />
-
-        <NewDealForm
-          pipelines={pipelines.map((p) => ({
-            id: p.id,
-            name: p.name,
-            stages: p.stages.map((s) => ({
-              id: s.id,
-              name: s.name,
-              probability: Number(s.probability),
-              stageType: s.stageType,
-            })),
-          }))}
-          customers={customers.map((c) => ({
-            id: c.id,
-            label:
-              [c.firstName, c.lastName].filter(Boolean).join(' ') ||
-              (c.company ?? c.email ?? c.id.slice(0, 8)),
-          }))}
-          initialPipelineId={initialPipelineId}
-        />
-      </Stack>
-    </Container>
+    <NewDealForm
+      surface="page"
+      pipelines={pipelines.map((p) => ({
+        id: p.id,
+        name: p.name,
+        stages: p.stages.map((s) => ({
+          id: s.id,
+          name: s.name,
+          probability: Number(s.probability),
+          stageType: s.stageType,
+        })),
+      }))}
+      customers={customers.map((c) => ({
+        id: c.id,
+        label:
+          [c.firstName, c.lastName].filter(Boolean).join(' ') ||
+          (c.company ?? c.email ?? c.id.slice(0, 8)),
+      }))}
+      initialPipelineId={initialPipelineId}
+    />
   );
 }
 

@@ -174,8 +174,7 @@ export default {
       ],
       binding: {
         source: {
-          from: 'collection',
-          id: 'best-sellers',
+          from: 'all',
           limit: 8,
         },
       },

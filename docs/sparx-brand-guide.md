@@ -1,8 +1,8 @@
 # sparx Brand Guide
 
-**Version:** 1.7
+**Version:** 1.7.1
 **Author:** Brandon Korous / WizeWorks
-**Last Updated:** 2026-06-24
+**Last Updated:** 2026-06-29
 
 ---
 
@@ -74,7 +74,7 @@ Each module owns one color. This color appears identically across three touchpoi
 
 1. The module's marketing domain (sparxcms.com, sparxcrm.com, etc.)
 2. The module's nav item in the sparx dashboard sidebar
-3. The 3px top stripe on all cards within that module
+3. The subtle module-tint background on cards within that module
 
 | Module        | Color Name | Hex       | Why                                                                            |
 | ------------- | ---------- | --------- | ------------------------------------------------------------------------------ |
@@ -180,9 +180,9 @@ No gradients, drop shadows (except functional focus rings), or blur effects. Eve
 
 The UI gets out of the way of the tenant's work. Navigation is always visible but never dominant. Empty states are helpful, not decorative.
 
-### The 3px stripe rule
+### The module-tint rule
 
-The single most important UI pattern in the sparx dashboard: every card, panel, and page header carries a 3px top border in **its functionality's** module color. Usually that's the module you're in — but a panel that surfaces _another_ module's functionality (an inventory panel on a product page, an SEO panel on a content entry) wears _that_ module's color, set by wrapping it in its own `<ModuleProvider>`. The stripe tells the tenant exactly what they're looking at, not just where they navigated, without any additional labeling.
+The single most important UI pattern in the sparx dashboard: a `<Card variant="module">` carries **its functionality's** module color as a subtle background tint — a theme-aware `color-mix` of the module color into the surface (formerly a 3px top stripe). Usually that's the module you're in — but a panel that surfaces _another_ module's functionality (an inventory panel on a product page, an SEO panel on a content entry) wears _that_ module's color, set by wrapping it in its own `<ModuleProvider>`. The tint tells the tenant exactly what they're looking at, not just where they navigated, without any additional labeling. On a dense cross-module page, tint only the **one "primary" card per module hue** and leave the rest plain, so the tints read as wayfinding rather than competing washes.
 
 ### Module isolation — color follows functionality
 

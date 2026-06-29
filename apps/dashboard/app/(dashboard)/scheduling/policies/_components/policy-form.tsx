@@ -202,7 +202,7 @@ export function PolicyForm({ presentation, policy, open, onOpenChange }: PolicyF
         nextDisabled: saving,
       }}
     >
-      <Card variant="module">
+      <Card variant="default">
         <CardHeader>
           <CardTitle>Policy terms</CardTitle>
         </CardHeader>

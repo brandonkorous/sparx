@@ -192,7 +192,7 @@ export function SourceForm({ presentation, source, open, onOpenChange }: SourceF
         nextDisabled: saving,
       }}
     >
-      <Card variant="module">
+      <Card variant="default">
         <CardHeader>
           <CardTitle>Connection</CardTitle>
         </CardHeader>

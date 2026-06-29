@@ -92,7 +92,7 @@ export async function TaxZoneDetailContent({ id }: Props) {
         <TaxZoneDeleteButton zoneId={zone.id} />
       </Stack>
 
-      <Card variant="module">
+      <Card variant="default">
         <CardHeader>
           <Stack gap={1}>
             <Stack direction="row" align="center" gap={2}>

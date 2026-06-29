@@ -196,7 +196,7 @@ export function DiscountCreateForm({ surface }: { surface: 'page' | 'overlay' })
           }}
         >
           <Stack gap={6}>
-            <Card variant="module">
+            <Card variant="default">
               <CardContent className="py-6">
                 <Stack gap={4}>
                   <Stack gap={1}>
@@ -248,7 +248,7 @@ export function DiscountCreateForm({ surface }: { surface: 'page' | 'overlay' })
               </CardContent>
             </Card>
 
-            <Card variant="module">
+            <Card variant="default">
               <CardContent className="py-6">
                 <Stack gap={4}>
                   <Stack gap={1} className="max-w-[16rem]">
@@ -300,7 +300,7 @@ export function DiscountCreateForm({ surface }: { surface: 'page' | 'overlay' })
               </CardContent>
             </Card>
 
-            <Card variant="module">
+            <Card variant="default">
               <CardContent className="py-6">
                 <Stack gap={4}>
                   <Text size="xs" variant="muted">

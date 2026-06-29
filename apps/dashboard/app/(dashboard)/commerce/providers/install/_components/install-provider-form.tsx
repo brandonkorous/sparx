@@ -184,7 +184,7 @@ export function InstallProviderForm({
             onChange={recomputeDirty}
           >
             <Stack gap={4}>
-              <Card variant="module">
+              <Card variant="default">
                 <CardContent className="py-6">
                   <Stack gap={4}>
                     <Text size="sm" className="font-medium">
@@ -220,7 +220,7 @@ export function InstallProviderForm({
                 </CardContent>
               </Card>
 
-              <Card variant="module">
+              <Card variant="default">
                 <CardContent className="py-6">
                   <Stack gap={3}>
                     <Text size="sm" className="font-medium">

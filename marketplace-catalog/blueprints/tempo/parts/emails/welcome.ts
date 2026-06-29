@@ -3,14 +3,14 @@
 // authoring source of truth is marketplace-catalog/_gen/tempo/.
 
 export default {
-  id: 'tmp-688',
+  id: 'tmp-601',
   type: 'Section',
   props: {},
   class: 'flex flex-col gap-4',
   name: 'Email body',
   children: [
     {
-      id: 'tmp-679',
+      id: 'tmp-592',
       type: 'email_wordmark',
       props: {
         treatment: 'lockup',
@@ -19,7 +19,7 @@ export default {
       },
     },
     {
-      id: 'tmp-680',
+      id: 'tmp-593',
       type: 'Heading',
       props: {
         level: 'h1',
@@ -27,7 +27,7 @@ export default {
       },
     },
     {
-      id: 'tmp-681',
+      id: 'tmp-594',
       type: 'Text',
       props: {
         variant: 'body',
@@ -35,7 +35,7 @@ export default {
       },
     },
     {
-      id: 'tmp-682',
+      id: 'tmp-595',
       type: 'Text',
       props: {
         variant: 'body',
@@ -43,7 +43,7 @@ export default {
       },
     },
     {
-      id: 'tmp-683',
+      id: 'tmp-596',
       type: 'Text',
       props: {
         variant: 'body',
@@ -51,7 +51,7 @@ export default {
       },
     },
     {
-      id: 'tmp-684',
+      id: 'tmp-597',
       type: 'Text',
       props: {
         variant: 'body',
@@ -59,7 +59,7 @@ export default {
       },
     },
     {
-      id: 'tmp-685',
+      id: 'tmp-598',
       type: 'Text',
       props: {
         variant: 'body',
@@ -67,7 +67,7 @@ export default {
       },
     },
     {
-      id: 'tmp-686',
+      id: 'tmp-599',
       type: 'Button',
       props: {
         label: 'Start shopping',
@@ -75,7 +75,7 @@ export default {
       },
     },
     {
-      id: 'tmp-687',
+      id: 'tmp-600',
       type: 'Text',
       props: {
         variant: 'meta',

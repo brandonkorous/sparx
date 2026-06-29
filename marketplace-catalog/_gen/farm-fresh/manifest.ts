@@ -6,13 +6,17 @@
 // (Welcome). Reorder a property and every downstream id shifts, so KEEP this order
 // stable across edits.
 //
-// `brand`, `theme`, `assets`, `content`, `commerce` are pure data imported above — they
-// contain no node() calls, so no ids are minted until `layout.tree` evaluates.
+// `brand`, `theme`, `assets` are pure data imported above — they contain no node()
+// calls, so no ids are minted until `layout.tree` evaluates.
+//
+// Presentation-only (the four-axis provisioning model): the blueprint ships the LOOK —
+// brand, theme, layout, pages, emails — but NO catalog or blog content of its own. A
+// tenant gets the styled food-brand site; products fill in from their own catalog or
+// industry sample data, and the product grids bind the live catalog (`from: 'all'`),
+// empty until any exist.
 
 import { brand, theme } from './theme';
-import { assets, commerce } from './commerce';
 import { brandAssets } from './logo';
-import { content, blogImageAssets } from './cms';
 import { layoutTree } from './layout';
 import { homeTree } from './pages/home';
 import { menuTree } from './pages/menu';
@@ -26,7 +30,7 @@ import { welcomeEmail, newsletterEmail } from './email';
 
 export const manifest = {
     key: 'farm-fresh',
-    version: '1.0.23',
+    version: '1.1.0',
     name: 'Farm Fresh',
     summary:
         'A warm, organic storefront for a fresh-food brand — açaí bowls, smoothies and salads with a full menu, a brand story, locations, catering, and a welcome email. A ready-to-edit retail starter.',
@@ -37,13 +41,10 @@ export const manifest = {
 
     theme,
 
-    // Product imagery, blog covers, and the brand logo/favicon (all self-contained SVG
-    // data URIs).
-    assets: [...assets, ...blogImageAssets, ...brandAssets],
-
-    content,
-
-    commerce,
+    // The brand logo/favicon only (self-contained SVG data URIs). Product imagery and
+    // blog covers are gone with the catalog/content strip — the trees that referenced
+    // them (PDP/post templates) now bind the tenant's own media.
+    assets: [...brandAssets],
 
     layout: { name: 'Farm Fresh layout', tree: layoutTree(), makeActive: true },
 

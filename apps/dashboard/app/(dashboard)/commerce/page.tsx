@@ -27,6 +27,7 @@ import {
   Button,
   Container,
   Grid,
+  ModuleProvider,
   PageHeader,
   Stack,
   Stat,
@@ -527,40 +528,45 @@ export default async function CommercePage() {
             </div>
           </OverviewCard>
 
-          <OverviewCard
-            title="Payouts"
-            icon={<CreditCard className="h-4 w-4" />}
-            right={<SampleBadge />}
-          >
-            <p className="text-[1.65rem] leading-none font-medium">$4,210.50</p>
-            <p className="mt-1.5 mb-3 text-sm text-[var(--color-text-tertiary)]">
-              Next payout · arrives{' '}
-              <span className="text-[var(--color-text-secondary)]">Jun 16</span>
-            </p>
-            <OverviewRow
-              icon={<DollarSign className="h-4 w-4" />}
-              tone="success"
-              title="Available balance"
-              hint="Ready to pay out"
-              right="$1,890.20"
-            />
-            <OverviewRow
-              icon={<Clock className="h-4 w-4" />}
-              tone="warning"
-              title="In transit"
-              hint="Settling from card sales"
-              right="$4,210.50"
-            />
-            <OverviewRow
-              icon={<RotateCcw className="h-4 w-4" />}
-              tone="module"
-              title="Reserved for refunds"
-              right="$320.00"
-            />
-            <Button asChild variant="outline" size="sm" className="mt-4 w-full">
-              <Link href="/finance/payments">View payout schedule</Link>
-            </Button>
-          </OverviewCard>
+          {/* Payouts is a FINANCE signal on the Commerce page — wrap it in the
+              Finance provider so it wears the Finance (green) hue and pops as the
+              one finance-colored card amid the commerce-tinted overview. */}
+          <ModuleProvider module="finance" className="contents">
+            <OverviewCard
+              title="Payouts"
+              icon={<CreditCard className="h-4 w-4" />}
+              right={<SampleBadge />}
+            >
+              <p className="text-[1.65rem] leading-none font-medium">$4,210.50</p>
+              <p className="mt-1.5 mb-3 text-sm text-[var(--color-text-tertiary)]">
+                Next payout · arrives{' '}
+                <span className="text-[var(--color-text-secondary)]">Jun 16</span>
+              </p>
+              <OverviewRow
+                icon={<DollarSign className="h-4 w-4" />}
+                tone="success"
+                title="Available balance"
+                hint="Ready to pay out"
+                right="$1,890.20"
+              />
+              <OverviewRow
+                icon={<Clock className="h-4 w-4" />}
+                tone="warning"
+                title="In transit"
+                hint="Settling from card sales"
+                right="$4,210.50"
+              />
+              <OverviewRow
+                icon={<RotateCcw className="h-4 w-4" />}
+                tone="module"
+                title="Reserved for refunds"
+                right="$320.00"
+              />
+              <Button asChild variant="outline" size="sm" className="mt-4 w-full">
+                <Link href="/finance/payments">View payout schedule</Link>
+              </Button>
+            </OverviewCard>
+          </ModuleProvider>
         </div>
 
         {/* Recent orders + top products */}
@@ -569,6 +575,7 @@ export default async function CommercePage() {
             title="Recent orders"
             icon={<ShoppingCart className="h-4 w-4" />}
             right={<CardLink href="/commerce/orders">All orders</CardLink>}
+            plain
           >
             <Table>
               <TableHeader>
@@ -609,6 +616,7 @@ export default async function CommercePage() {
             title="Top products"
             icon={<TrendingUp className="h-4 w-4" />}
             right={<CardLink href="/commerce/reports">Report</CardLink>}
+            plain
           >
             <div className="flex flex-col">
               {topProducts.data.map((p, i) => (
@@ -648,79 +656,90 @@ export default async function CommercePage() {
 
         {/* Customers + inventory + recover & grow */}
         <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
-          <OverviewCard
-            title="Top customers"
-            icon={<Users className="h-4 w-4" />}
-            right={<CardLink href="/crm/customers">CRM</CardLink>}
-          >
-            {topCustomers.data.map((c, i) => (
-              <OverviewRow
-                key={`${c.name}-${i}`}
-                icon={<Users className="h-4 w-4" />}
-                tone="module"
-                title={c.name}
-                hint={`${fmtNumber(c.orders)} orders`}
-                right={fmtMoneyCents(c.spentCents, currency)}
-              />
-            ))}
-            {topCustomers.isSample && (
-              <div className="mt-3">
-                <SampleBadge reason="no-data" />
+          {/* CRM is this page's secondary module — Top customers is its primary
+              card, so it wears the CRM (cyan) tint via a nested provider. */}
+          <ModuleProvider module="crm" className="contents">
+            <OverviewCard
+              title="Top customers"
+              icon={<Users className="h-4 w-4" />}
+              right={<CardLink href="/crm/customers">CRM</CardLink>}
+            >
+              {topCustomers.data.map((c, i) => (
+                <OverviewRow
+                  key={`${c.name}-${i}`}
+                  icon={<Users className="h-4 w-4" />}
+                  tone="module"
+                  title={c.name}
+                  hint={`${fmtNumber(c.orders)} orders`}
+                  right={fmtMoneyCents(c.spentCents, currency)}
+                />
+              ))}
+              {topCustomers.isSample && (
+                <div className="mt-3">
+                  <SampleBadge reason="no-data" />
+                </div>
+              )}
+            </OverviewCard>
+          </ModuleProvider>
+
+          {/* Inventory is the page's third module — its primary card wears the
+              Inventory (amber) tint. Status rows stay semantic (danger/warning). */}
+          <ModuleProvider module="inventory" className="contents">
+            <OverviewCard
+              title="Inventory"
+              icon={<Box className="h-4 w-4" />}
+              right={<CardLink href="/inventory/stock">Manage</CardLink>}
+            >
+              <div className="mb-3 grid grid-cols-2 gap-3 text-center">
+                <MetricTile value={fmtNumber(valuation?.totalUnits)} label="Units in stock" />
+                <MetricTile
+                  value={fmtMoneyCents(
+                    valuation?.totalRetailCents,
+                    valuation?.currency ?? currency
+                  )}
+                  label="Stock value"
+                />
               </div>
-            )}
-          </OverviewCard>
-
-          <OverviewCard
-            title="Inventory"
-            icon={<Box className="h-4 w-4" />}
-            right={<CardLink href="/inventory/stock">Manage</CardLink>}
-          >
-            <div className="mb-3 grid grid-cols-2 gap-3 text-center">
-              <MetricTile value={fmtNumber(valuation?.totalUnits)} label="Units in stock" />
-              <MetricTile
-                value={fmtMoneyCents(valuation?.totalRetailCents, valuation?.currency ?? currency)}
-                label="Stock value"
+              <OverviewRow
+                icon={<AlertTriangle className="h-4 w-4" />}
+                tone="danger"
+                title="Switchback Mug"
+                hint="Out of stock"
+                right={
+                  <Badge color="danger" variant="soft">
+                    Restock
+                  </Badge>
+                }
               />
-            </div>
-            <OverviewRow
-              icon={<AlertTriangle className="h-4 w-4" />}
-              tone="danger"
-              title="Switchback Mug"
-              hint="Out of stock"
-              right={
-                <Badge color="danger" variant="soft">
-                  Restock
-                </Badge>
-              }
-            />
-            <OverviewRow
-              icon={<Box className="h-4 w-4" />}
-              tone="warning"
-              title="Cold Brew Concentrate"
-              hint="3 left · sells ~6/day"
-              right={
-                <Badge color="warning" variant="soft">
-                  Low
-                </Badge>
-              }
-            />
-            <OverviewRow
-              icon={<Box className="h-4 w-4" />}
-              tone="warning"
-              title="Single-Origin Ethiopia"
-              hint="8 left"
-              right={
-                <Badge color="warning" variant="soft">
-                  Low
-                </Badge>
-              }
-            />
-            <div className="mt-3">
-              <SampleBadge />
-            </div>
-          </OverviewCard>
+              <OverviewRow
+                icon={<Box className="h-4 w-4" />}
+                tone="warning"
+                title="Cold Brew Concentrate"
+                hint="3 left · sells ~6/day"
+                right={
+                  <Badge color="warning" variant="soft">
+                    Low
+                  </Badge>
+                }
+              />
+              <OverviewRow
+                icon={<Box className="h-4 w-4" />}
+                tone="warning"
+                title="Single-Origin Ethiopia"
+                hint="8 left"
+                right={
+                  <Badge color="warning" variant="soft">
+                    Low
+                  </Badge>
+                }
+              />
+              <div className="mt-3">
+                <SampleBadge />
+              </div>
+            </OverviewCard>
+          </ModuleProvider>
 
-          <OverviewCard title="Recover & grow" icon={<ShoppingCart className="h-4 w-4" />}>
+          <OverviewCard title="Recover & grow" icon={<ShoppingCart className="h-4 w-4" />} plain>
             <OverviewRow
               icon={<ShoppingCart className="h-4 w-4" />}
               tone="module"
@@ -785,6 +804,7 @@ export default async function CommercePage() {
             title="Sales by channel"
             icon={<TrendingUp className="h-4 w-4" />}
             description="Where your orders come from · last 30 days"
+            plain
             right={
               channels && channels.byChannel.length > 0 ? undefined : (
                 <SampleBadge reason="no-data" />

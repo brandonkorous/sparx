@@ -65,7 +65,7 @@ export function FitmentPanel({ productId, productTitle, fitments, domains }: Pro
   const domainsById = new Map(domains.map((d) => [d.id, d]));
   return (
     <Stack gap={4}>
-      <Card variant="module">
+      <Card variant="default">
         <CardHeader>
           <Stack direction="row" align="center" gap={2}>
             <Boxes className="h-4 w-4 text-[var(--module-active)]" />
@@ -119,7 +119,7 @@ export function FitmentPanel({ productId, productTitle, fitments, domains }: Pro
         </CardContent>
       </Card>
 
-      <Card variant="module">
+      <Card variant="default">
         <CardHeader>
           <Stack direction="row" align="center" gap={2}>
             <Plus className="h-4 w-4 text-[var(--module-active)]" />

@@ -3,14 +3,14 @@
 // authoring source of truth is marketplace-catalog/_gen/forge/.
 
 export default {
-  id: 'fg-766',
+  id: 'fg-745',
   type: 'Section',
   props: {},
   class: 'flex flex-col gap-4',
   name: 'Email body',
   children: [
     {
-      id: 'fg-756',
+      id: 'fg-735',
       type: 'email_wordmark',
       props: {
         treatment: 'lockup',
@@ -19,7 +19,7 @@ export default {
       },
     },
     {
-      id: 'fg-757',
+      id: 'fg-736',
       type: 'Heading',
       props: {
         level: 'h1',
@@ -27,7 +27,7 @@ export default {
       },
     },
     {
-      id: 'fg-758',
+      id: 'fg-737',
       type: 'Text',
       props: {
         variant: 'body',
@@ -35,7 +35,7 @@ export default {
       },
     },
     {
-      id: 'fg-759',
+      id: 'fg-738',
       type: 'Text',
       props: {
         variant: 'body',
@@ -43,7 +43,7 @@ export default {
       },
     },
     {
-      id: 'fg-760',
+      id: 'fg-739',
       type: 'Text',
       props: {
         variant: 'body',
@@ -51,7 +51,7 @@ export default {
       },
     },
     {
-      id: 'fg-761',
+      id: 'fg-740',
       type: 'Text',
       props: {
         variant: 'body',
@@ -59,7 +59,7 @@ export default {
       },
     },
     {
-      id: 'fg-762',
+      id: 'fg-741',
       type: 'Button',
       props: {
         label: 'Read the latest',
@@ -67,17 +67,17 @@ export default {
       },
     },
     {
-      id: 'fg-763',
+      id: 'fg-742',
       type: 'Divider',
       props: {},
     },
     {
-      id: 'fg-764',
+      id: 'fg-743',
       type: 'unsubscribe_link',
       props: {},
     },
     {
-      id: 'fg-765',
+      id: 'fg-744',
       type: 'physical_address',
       props: {},
     },

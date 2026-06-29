@@ -11,8 +11,9 @@ import { FINANCE_NAV, FINANCE_FLOW_LABELS, type FinanceFlow } from '../finance/n
 // then a divider + the "you pay sparx" group. The mirror of `settings-section-nav.tsx`
 // for the other first-class platform surface. Items only — no <nav>, no provider.
 // The desktop contextual panel wraps these in a scrolling <nav>; the mobile drawer
-// drops them into a labeled section. Finance has no module color, so the caller
-// wraps in ModuleProvider "platform" (neutral) for the active highlight.
+// drops them into a labeled section. Finance owns a hue now (money green, docs/109),
+// so the caller wraps in ModuleProvider "finance" — the active row glyph + tint go
+// green, exactly like a module's sections.
 //
 // `ready: false` sections (their slice in docs/110 hasn't landed) render as
 // disabled rows, matching the "Soon" cards on the hub landing.

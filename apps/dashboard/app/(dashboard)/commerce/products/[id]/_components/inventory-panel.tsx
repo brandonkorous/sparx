@@ -76,7 +76,7 @@ export function InventoryPanel({ variantsWithLevels, warehouses }: InventoryPane
   return (
     <ModuleProvider module="inventory">
       {warehouses.length === 0 ? (
-        <Card variant="module">
+        <Card variant="default">
           <CardContent>
             <EmptyState
               icon={<Boxes className="h-5 w-5" />}
@@ -91,7 +91,7 @@ export function InventoryPanel({ variantsWithLevels, warehouses }: InventoryPane
           </CardContent>
         </Card>
       ) : variantsWithLevels.length === 0 ? (
-        <Card variant="module">
+        <Card variant="default">
           <CardContent>
             <EmptyState
               icon={<Boxes className="h-5 w-5" />}
@@ -101,7 +101,7 @@ export function InventoryPanel({ variantsWithLevels, warehouses }: InventoryPane
           </CardContent>
         </Card>
       ) : (
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <Stack direction="row" align="start" justify="between" wrap gap={3}>
               <Stack gap={1}>

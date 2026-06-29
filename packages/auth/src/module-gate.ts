@@ -40,6 +40,14 @@ export {
   type ModulePresetSummaryChip,
   type ModulePresetInstallResult,
   type ModulePresetView,
+  // Industry-starter contract + pure registry index (the second provisioning
+  // tier — composes presets across modules). Re-exported on the same dep edge.
+  IndustryStarterRegistry,
+  starterModules,
+  toIndustryStarterView,
+  type IndustryStarter,
+  type IndustryStarterPresetRef,
+  type IndustryStarterView,
 } from '@sparx/modules';
 
 /** Throws ModuleDisabledError if the session's tenant doesn't have the given

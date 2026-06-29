@@ -93,7 +93,7 @@ export function ConsentSettingsForm({ config }: { config: ConsentConfig }) {
   return (
     <Stack gap={4}>
       <Heading level={3}>Cookie consent</Heading>
-      <Card variant="module">
+      <Card variant="default">
         <CardHeader>
           <CardTitle>Consent mode</CardTitle>
           <CardDescription>

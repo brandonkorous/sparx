@@ -5,7 +5,7 @@
 // it sees the activation upsell.
 
 import { Wallet } from 'lucide-react';
-import { Container, PageHeader, Stack } from '@sparx/ui';
+import { Container, ModuleProvider, PageHeader, Stack } from '@sparx/ui';
 
 import { requireModuleOrUpsell } from '@/components/module-gate';
 
@@ -25,15 +25,17 @@ export default async function PaymentsSettingsPage(): Promise<React.JSX.Element>
   ]);
 
   return (
-    <Container size="lg">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          icon={<Wallet className="h-5 w-5" />}
-          title="Payments"
-          description="How you accept payments at checkout. sparx Pay is the fastest path — or connect a processor you already use."
-        />
-        <PaymentsManager initialConfig={config} catalog={catalog} credentials={credentials} />
-      </Stack>
-    </Container>
+    <ModuleProvider module="finance">
+      <Container size="lg">
+        <Stack gap={6} className="py-10">
+          <PageHeader
+            icon={<Wallet className="h-5 w-5" />}
+            title="Payments"
+            description="How you accept payments at checkout. sparx Pay is the fastest path — or connect a processor you already use."
+          />
+          <PaymentsManager initialConfig={config} catalog={catalog} credentials={credentials} />
+        </Stack>
+      </Container>
+    </ModuleProvider>
   );
 }

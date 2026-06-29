@@ -31,6 +31,13 @@ import { CollectionCreateForm } from '../commerce/collections/_components/collec
 import { WarehouseCreateForm } from '../inventory/warehouses/_components/warehouse-create-form';
 import { PriceListCreateForm } from '../commerce/pricing/_components/price-list-create-form';
 import { SegmentCreateForm } from '../crm/segments/_components/segment-create-form';
+import { NewDealForm } from '../crm/deals/new/_components/new-deal-form';
+import { NewTaskForm } from '../crm/tasks/new/_components/new-task-form';
+import { NewPipelineForm } from '../crm/pipelines/new/_components/new-pipeline-form';
+import { SupplierCreateForm } from '../inventory/suppliers/_components/supplier-create-form';
+import { LotCreateForm } from '../inventory/lots/new/_components/lot-create-form';
+import { CountCreateForm } from '../inventory/counts/new/_components/count-create-form';
+import { NewWorkflowForm } from '../invoicing/workflows/new/_components/new-workflow-form';
 import { PageCreateForm } from '../cms/_components/page-create-form';
 import { ContentTypeCreateForm } from '../cms/types/_components/content-type-create-form';
 import { IssueGiftCardForm } from '../commerce/gift-cards/_components/issue-gift-card-form';
@@ -160,6 +167,8 @@ const detailModules: Record<string, SparxModule> = {
   redirect: 'cms',
   // Invoicing — create-only overlay (the document editor stays full-page)
   'billing-document': 'invoicing',
+  // Workflow create-only overlay (the stage editor stays full-page).
+  workflow: 'invoicing',
   // Email — create-only overlays (no detail view)
   'sending-domain': 'email',
   suppression: 'email',
@@ -170,6 +179,11 @@ const detailModules: Record<string, SparxModule> = {
   quote: 'crm',
   order: 'crm',
   segment: 'crm',
+  // Task create-only overlay (no detail view) — wears the crm accent.
+  task: 'crm',
+  // Pipeline create-only overlay (detail is a full-width Kanban, not a drawer) —
+  // wears the crm accent.
+  pipeline: 'crm',
   // Commerce
   product: 'commerce',
   category: 'commerce',
@@ -180,6 +194,12 @@ const detailModules: Record<string, SparxModule> = {
   // Inventory — create-only overlays (the PO / transfer editors stay full-page)
   'purchase-order': 'inventory',
   transfer: 'inventory',
+  // Supplier create-only overlay (detail is a wide full-page surface, not a drawer).
+  supplier: 'inventory',
+  // Lot create-only overlay (the lot detail manages serials + recalls full-page).
+  lot: 'inventory',
+  // Count create-only overlay (the count detail — quantity entry — is full-page).
+  count: 'inventory',
   review: 'commerce',
   'qa-question': 'commerce',
   subscription: 'commerce',
@@ -248,6 +268,89 @@ async function CustomerCreateOverlay() {
       presentation="overlay"
       currentUserId={session.user.id}
       pipelines={pipelines}
+    />
+  );
+}
+
+// Deal create is the single-step SurfaceFrame; its pipeline + stage pickers and
+// optional customer need the tenant's pipelines (with stages) + a customer slice,
+// so a thin server wrapper resolves them (mirrors the /new route's fetch). No
+// `?pipelineId=` preselection here — the /new route carries deep-link preselection
+// instead. A created deal opens into its detail view.
+interface DealPipelineRow {
+  id: string;
+  name: string;
+  stages: {
+    id: string;
+    name: string;
+    probability: string | number;
+    stageType: 'open' | 'won' | 'lost';
+  }[];
+}
+interface DealCustomerRow {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  company: string | null;
+  email: string | null;
+}
+async function DealCreateOverlay() {
+  const [pipelines, customersPaged] = await Promise.all([
+    api.get<DealPipelineRow[]>('/v1/crm/pipelines?take=250'),
+    api.getPaged<DealCustomerRow[]>('/v1/crm/customers?take=200&sort_by=updatedAt'),
+  ]);
+  return (
+    <NewDealForm
+      surface="overlay"
+      pipelines={pipelines.map((p) => ({
+        id: p.id,
+        name: p.name,
+        stages: p.stages.map((s) => ({
+          id: s.id,
+          name: s.name,
+          probability: Number(s.probability),
+          stageType: s.stageType,
+        })),
+      }))}
+      customers={customersPaged.data.map((c) => ({
+        id: c.id,
+        label:
+          [c.firstName, c.lastName].filter(Boolean).join(' ') ||
+          (c.company ?? c.email ?? c.id.slice(0, 8)),
+      }))}
+      initialPipelineId={pipelines[0]?.id ?? null}
+    />
+  );
+}
+
+// Task create is single-step; tasks have no detail view, so a created task returns
+// to the list. The assignee + customer pickers need the tenant's users + customers
+// and the current user (the default assignee), so a thin server wrapper resolves
+// them (mirrors the /new route's fetch). No preselection in the overlay.
+interface TaskUserRow {
+  id: string;
+  name: string | null;
+  email: string | null;
+}
+async function TaskCreateOverlay() {
+  const [session, customersPaged, users] = await Promise.all([
+    requireSession(),
+    api.getPaged<DealCustomerRow[]>('/v1/crm/customers?take=200'),
+    api.get<TaskUserRow[]>('/v1/users?take=100'),
+  ]);
+  return (
+    <NewTaskForm
+      surface="overlay"
+      currentUserId={session.user.id}
+      users={users.map((u) => ({ id: u.id, label: u.name ?? u.email ?? u.id.slice(0, 8) }))}
+      customers={customersPaged.data.map((c) => ({
+        id: c.id,
+        label:
+          [c.firstName, c.lastName].filter(Boolean).join(' ') ||
+          (c.company ?? c.email ?? c.id.slice(0, 8)),
+      }))}
+      preselectedCustomerId={null}
+      preselectedDealId={null}
     />
   );
 }
@@ -377,6 +480,27 @@ async function SupplierCreateOverlay() {
   return <SupplierForm presentation="overlay" vendors={vendors} sites={sites} />;
 }
 
+// Lot create is single-step but a lot is held at one warehouse, so a thin server
+// wrapper loads the warehouse option list (the form owns the no-warehouse guard).
+// No @detail drawer — a created lot navigates to its full-page detail.
+async function LotCreateOverlay() {
+  const { data: warehouses } = await api
+    .getPaged<{ id: string; name: string; code: string }[]>('/v1/inventory/locations?take=250')
+    .catch(() => ({ data: [] as { id: string; name: string; code: string }[] }));
+  return <LotCreateForm surface="overlay" warehouses={warehouses} />;
+}
+
+// Count create is single-step; a count is scoped to one warehouse, so a thin
+// server wrapper loads the warehouse list (the form owns the no-warehouse guard).
+// No @detail drawer — a created count navigates to its full-page detail (quantity
+// entry).
+async function CountCreateOverlay() {
+  const { data: warehouses } = await api
+    .getPaged<{ id: string; name: string; code: string }[]>('/v1/inventory/locations?take=250')
+    .catch(() => ({ data: [] as { id: string; name: string; code: string }[] }));
+  return <CountCreateForm surface="overlay" warehouses={warehouses} />;
+}
+
 const createComponents: Record<string, React.ComponentType> = {
   category: CategoryCreateOverlay,
   // Commerce single-column create overlays (no detail view — stay open with an
@@ -410,6 +534,13 @@ const createComponents: Record<string, React.ComponentType> = {
   'price-list': () => <PriceListCreateForm surface="overlay" />,
   customer: CustomerCreateOverlay,
   'b2b-account': () => <B2bAccountWizard presentation="overlay" />,
+  // Deal create is the single-step SurfaceFrame; a created deal opens into its detail.
+  deal: DealCreateOverlay,
+  // Task create is single-step; no detail view, so a created task returns to the list.
+  task: TaskCreateOverlay,
+  // Pipeline create is single-step with no server data; no detail drawer, so on
+  // success it continues to the pipeline's edit screen (to add stages).
+  pipeline: () => <NewPipelineForm surface="overlay" />,
   // Quote + Order create are multi-step SurfaceFrames (full-bleed); their detail
   // views exist, so a created record opens straight into it.
   quote: QuoteCreateOverlay,
@@ -417,6 +548,18 @@ const createComponents: Record<string, React.ComponentType> = {
   // Inventory — multi-step SurfaceFrame create overlays (editors stay full-page).
   'purchase-order': PurchaseOrderCreateOverlay,
   transfer: TransferCreateOverlay,
+  // Supplier create is single-step with no server data; no @detail drawer, so on
+  // success it navigates to the supplier's full-page detail.
+  supplier: () => <SupplierCreateForm surface="overlay" />,
+  // Lot create is single-step; needs the warehouse list (server wrapper). No
+  // @detail drawer — a created lot navigates to its full-page detail.
+  lot: LotCreateOverlay,
+  // Count create is single-step; needs the warehouse list (server wrapper). No
+  // @detail drawer — a created count navigates to its full-page detail.
+  count: CountCreateOverlay,
+  // Workflow create is single-step with no server data; no @detail drawer, so on
+  // success it continues to the workflow's edit screen (to add stages).
+  workflow: () => <NewWorkflowForm surface="overlay" />,
   segment: () => <SegmentCreateForm surface="overlay" />,
   page: () => <PageCreateForm surface="overlay" />,
   'content-type': () => <ContentTypeCreateForm surface="overlay" />,

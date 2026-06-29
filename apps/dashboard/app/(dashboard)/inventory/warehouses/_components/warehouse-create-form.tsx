@@ -180,7 +180,7 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
           }}
         >
           <Stack gap={6}>
-            <Card variant="module">
+            <Card variant="default">
               <CardHeader>
                 <CardTitle>Basics</CardTitle>
                 <CardDescription>
@@ -224,7 +224,7 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
               </CardContent>
             </Card>
 
-            <Card variant="module">
+            <Card variant="default">
               <CardHeader>
                 <CardTitle>Address</CardTitle>
                 <CardDescription>
@@ -282,7 +282,7 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
               </CardContent>
             </Card>
 
-            <Card variant="module">
+            <Card variant="default">
               <CardHeader>
                 <CardTitle>Default channels</CardTitle>
                 <CardDescription>

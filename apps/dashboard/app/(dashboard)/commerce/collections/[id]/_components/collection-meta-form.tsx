@@ -119,7 +119,7 @@ export function CollectionMetaForm(props: Props) {
 
   return (
     <form onSubmit={onSubmit} noValidate>
-      <Card variant="module">
+      <Card variant="default">
         <CardHeader>
           <Heading level={3}>Metadata</Heading>
           <CardDescription>

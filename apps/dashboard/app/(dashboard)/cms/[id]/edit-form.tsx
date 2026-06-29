@@ -280,7 +280,7 @@ export function EditPageForm({
       </DetailHeaderSlot>
 
       <Stack gap={6}>
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <Heading level={3}>Content</Heading>
             <CardDescription>
@@ -327,7 +327,7 @@ export function EditPageForm({
         </Card>
 
         {multiSite && (
-          <Card variant="module">
+          <Card variant="default">
             <CardHeader>
               <Heading level={3}>Sites</Heading>
               <CardDescription>Which of your sites show this page.</CardDescription>
@@ -347,7 +347,7 @@ export function EditPageForm({
           entryId={page.id}
         />
 
-        <Card variant="module">
+        <Card variant="default">
           <CardContent>
             <Stack gap={2}>
               {error && (

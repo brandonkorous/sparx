@@ -1,22 +1,21 @@
 'use client';
 
-// Purchase-order creation wizard (docs/86 SurfaceFrame, docs/100 P3b). Orders
-// stock from a supplier into a warehouse, composed in a guided flow:
-//   1. Details — supplier (required), warehouse (required), currency.
-//   2. Lines   — the variants to order, added by SKU via the shared LineAddRow.
-//   3. Terms   — payment terms, reference, expected arrival, shipping, notes.
-//   4. Review  — the summary. Create draft.
+// Purchase-order creation form (docs/86 SurfaceFrame, docs/100 P3b). SINGLE-PAGE
+// (WS1, docs/105): orders stock from a supplier into a warehouse, composed in one
+// scroll:
+//   • Details — supplier (required), warehouse (required), currency.
+//   • Lines   — the variants to order, added by SKU via the shared LineAddRow.
+//   • Terms   — payment terms, reference, expected arrival, shipping, notes.
+// The old "Review" step is dropped: the live summary column already carries the
+// supplier/destination/running cost, so it IS the review. Lines accumulate locally;
+// the whole PO is committed as a draft in a single `createPurchaseOrderAction` on
+// finish (a blank draft is allowed — add lines later; a blank line cost defaults
+// server-side from the supplier link / variant cost), then the user lands on its
+// detail.
 //
-// Lines are accumulated locally; the whole PO is committed as a draft in a single
-// `createPurchaseOrderAction` on finish, then the user lands on its detail. A
-// blank draft is allowed (add lines later). A line cost left blank defaults
-// server-side from the supplier link / variant cost.
-//
-// Presentation (like the other create-wizards): the `/new` route renders the
-// in-app `embedded` top stepper (full page inside the dashboard chrome); the PO
-// list opens it inside the drawer/modal detail chrome (`overlay` → SurfaceFrame
-// `inline`), picked by the user's `defaultDetailView`. The PO detail/editor stays
-// full-page; finishing navigates there, clearing the overlay token.
+// Presentation: the `/new` route renders the `embedded` full page inside the
+// dashboard chrome; the PO list opens it inside the drawer/modal detail chrome
+// (`overlay` → SurfaceFrame `inline`), picked by the user's `defaultDetailView`.
 
 import * as React from 'react';
 import Link from 'next/link';
@@ -60,35 +59,21 @@ export interface PartyOption {
 }
 
 export interface PurchaseOrderWizardProps {
-  /** `'page'` = the in-app full-page `/new` route (embedded top stepper, inside
-   *  the dashboard chrome); `'overlay'` = the drawer/modal detail chrome (the
-   *  `defaultDetailView` preference picks which). */
+  /** `'page'` = the in-app full-page `/new` route (embedded, inside the dashboard
+   *  chrome); `'overlay'` = the drawer/modal detail chrome (the `defaultDetailView`
+   *  preference picks which). */
   presentation?: 'page' | 'overlay';
   suppliers: PartyOption[];
   warehouses: PartyOption[];
 }
 
-type StepKey = 'details' | 'lines' | 'terms' | 'review';
-
-const STEP_ORDER: StepKey[] = ['details', 'lines', 'terms', 'review'];
-
-const ALL_STEPS: Record<StepKey, SurfaceStepDef> = {
-  details: { key: 'details', label: 'Details', sublabel: 'Supplier & warehouse' },
-  lines: { key: 'lines', label: 'Lines', sublabel: 'What to order' },
-  terms: { key: 'terms', label: 'Terms', sublabel: 'Shipping & dates' },
-  review: { key: 'review', label: 'Review', sublabel: 'Create draft' },
-};
-
-const RAIL: Record<StepKey, { context: string }> = {
-  details: { context: 'Who you’re buying from and where it lands.' },
-  lines: { context: 'Leave the cost blank to use the supplier’s agreed cost.' },
-  terms: { context: 'All optional — terms default onto the order.' },
-  review: { context: 'Saved as a draft you can edit, then submit when ready.' },
-};
+// Single-page form = one step, so SurfaceFrame's MiniProgress auto-hides and the
+// toolbar is Cancel + Create (no Back/Continue).
+const SINGLE_STEP: SurfaceStepDef[] = [{ key: 'po', label: 'Purchase order' }];
 
 export function PurchaseOrderWizard(props: PurchaseOrderWizardProps) {
-  // Both presentations are full-height top-stepper frames (embedded fills the
-  // dashboard content area; inline fills the drawer/modal body), so the wrapping
+  // Both presentations are full-height frames (embedded fills the dashboard
+  // content area; inline fills the drawer/modal body), so the wrapping
   // ModuleProvider carries the height through (h-full).
   return (
     <ModuleProvider module="inventory" className="h-full">
@@ -106,8 +91,6 @@ function PurchaseOrderWizardInner({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [stepKey, setStepKey] = React.useState<StepKey>('details');
-
   const [supplierId, setSupplierId] = React.useState(suppliers[0]?.id ?? '');
   const [warehouseId, setWarehouseId] = React.useState(warehouses[0]?.id ?? '');
   const [currency, setCurrency] = React.useState('USD');
@@ -121,12 +104,6 @@ function PurchaseOrderWizardInner({
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  const steps: SurfaceStepDef[] = STEP_ORDER.map((k) => ALL_STEPS[k]);
-  const current = Math.max(
-    0,
-    steps.findIndex((s) => s.key === stepKey)
-  );
-
   const knownSubtotal = lines.reduce(
     (s, l) => s + (l.unitCostCents !== undefined ? l.unitCostCents * l.quantity : 0),
     0
@@ -134,11 +111,6 @@ function PurchaseOrderWizardInner({
   const hasDefaults = lines.some((l) => l.unitCostCents === undefined);
   const supplierLabel = suppliers.find((s) => s.id === supplierId)?.name ?? '—';
   const warehouseLabel = warehouses.find((w) => w.id === warehouseId)?.name ?? '—';
-
-  function goToStep(key: StepKey) {
-    setError(null);
-    setStepKey(key);
-  }
 
   function addLine(line: ResolvedLine) {
     setLines((prev) => [...prev.filter((l) => l.variantId !== line.variantId), line]);
@@ -159,7 +131,7 @@ function PurchaseOrderWizardInner({
     }
   }, [presentation, pathname, searchParams, router]);
 
-  // Unsaved-changes guard. A create wizard starts blank, so "dirty" is "the user
+  // Unsaved-changes guard. A create form starts blank, so "dirty" is "the user
   // entered or changed anything" — a supplier/warehouse moved off the default,
   // added lines, a changed currency, or any term. Guards a Cancel / Close /
   // backdrop so a half-built purchase order isn't silently discarded.
@@ -184,7 +156,6 @@ function PurchaseOrderWizardInner({
   async function handleCreate() {
     if (!supplierId || !warehouseId) {
       setError('Choose a supplier and a warehouse.');
-      goToStep('details');
       return;
     }
     setError(null);
@@ -219,276 +190,6 @@ function PurchaseOrderWizardInner({
     }
   }
 
-  // ── Step bodies ──────────────────────────────────────────────────────────────
-
-  const detailsStep = (
-    <SurfaceStep
-      header={{
-        title: 'Order details',
-        supporting: 'Who you’re buying from and where it lands.',
-      }}
-      actions={{
-        onNext: () => goToStep('lines'),
-        nextLabel: 'Continue',
-        nextDisabled: !supplierId || !warehouseId || submitting,
-      }}
-    >
-      <Card variant="module">
-        <CardHeader>
-          <Heading level={3}>Supplier & warehouse</Heading>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-4">
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div>
-                <Label htmlFor="po-supplier">Supplier</Label>
-                <NativeSelect
-                  id="po-supplier"
-                  value={supplierId}
-                  onChange={(e) => setSupplierId(e.target.value)}
-                >
-                  {suppliers.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name} ({s.code})
-                    </option>
-                  ))}
-                </NativeSelect>
-              </div>
-              <div>
-                <Label htmlFor="po-warehouse">Warehouse</Label>
-                <NativeSelect
-                  id="po-warehouse"
-                  value={warehouseId}
-                  onChange={(e) => setWarehouseId(e.target.value)}
-                >
-                  {warehouses.map((w) => (
-                    <option key={w.id} value={w.id}>
-                      {w.name} ({w.code})
-                    </option>
-                  ))}
-                </NativeSelect>
-              </div>
-            </div>
-            <div className="max-w-[8rem]">
-              <Label htmlFor="po-currency">Currency</Label>
-              <Input
-                id="po-currency"
-                value={currency}
-                maxLength={3}
-                className="uppercase"
-                onChange={(e) => setCurrency(e.target.value)}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      {error && (
-        <Text size="sm" variant="danger" role="alert" className="mt-4">
-          {error}
-        </Text>
-      )}
-    </SurfaceStep>
-  );
-
-  const linesStep = (
-    <SurfaceStep
-      header={{
-        title: 'Lines',
-        supporting:
-          'Add the variants to order by SKU. Leave the cost blank to use the supplier’s agreed cost (falls back to the variant cost).',
-      }}
-      actions={{
-        onBack: () => goToStep('details'),
-        onNext: () => goToStep('terms'),
-        nextLabel: 'Continue',
-        nextDisabled: submitting,
-      }}
-    >
-      <Card variant="module">
-        <CardHeader>
-          <Heading level={3}>Lines</Heading>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-4">
-            {lines.length === 0 ? (
-              <Text size="sm" variant="muted">
-                No lines yet — you can still save an empty draft and add them later.
-              </Text>
-            ) : (
-              <Stack gap={2}>
-                {lines.map((l) => (
-                  <Stack
-                    key={l.variantId}
-                    direction="row"
-                    align="center"
-                    gap={3}
-                    wrap
-                    className="rounded border border-[var(--color-border-default)] px-3 py-2"
-                  >
-                    <Stack gap={0} className="min-w-[12rem] flex-1">
-                      <Text size="sm" className="font-medium">
-                        {l.title ?? l.sku}
-                      </Text>
-                      <Text size="xs" variant="muted" className="font-mono">
-                        {l.sku}
-                      </Text>
-                    </Stack>
-                    <Text size="sm">×{l.quantity}</Text>
-                    <Text size="sm" variant="muted">
-                      {l.unitCostCents !== undefined
-                        ? formatMoney(l.unitCostCents, currency)
-                        : 'default'}
-                    </Text>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      type="button"
-                      onClick={() => removeLine(l.variantId)}
-                    >
-                      Remove
-                    </Button>
-                  </Stack>
-                ))}
-                <Stack direction="row" justify="end">
-                  <Text size="sm" variant="muted">
-                    Subtotal {formatMoney(knownSubtotal, currency)}
-                    {hasDefaults ? ' + default-priced lines' : ''}
-                  </Text>
-                </Stack>
-              </Stack>
-            )}
-            <LineAddRow onAdd={addLine} disabled={submitting} />
-          </div>
-        </CardContent>
-      </Card>
-    </SurfaceStep>
-  );
-
-  const termsStep = (
-    <SurfaceStep
-      header={{
-        title: 'Terms & dates',
-        supporting: 'Terms default onto the order and can be overridden per line later.',
-      }}
-      actions={{
-        onBack: () => goToStep('lines'),
-        onNext: () => goToStep('review'),
-        nextLabel: 'Continue',
-        nextDisabled: submitting,
-      }}
-    >
-      <Card variant="module">
-        <CardHeader>
-          <Heading level={3}>Terms</Heading>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-3">
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div>
-                <Label htmlFor="po-terms">Payment terms</Label>
-                <Input
-                  id="po-terms"
-                  value={paymentTerms}
-                  onChange={(e) => setPaymentTerms(e.target.value)}
-                  placeholder="net30"
-                />
-              </div>
-              <div>
-                <Label htmlFor="po-ref">Reference</Label>
-                <Input
-                  id="po-ref"
-                  value={reference}
-                  onChange={(e) => setReference(e.target.value)}
-                  placeholder="optional"
-                />
-              </div>
-              <div>
-                <Label htmlFor="po-eta">Expected arrival</Label>
-                <Input
-                  id="po-eta"
-                  type="date"
-                  value={expectedArrival}
-                  onChange={(e) => setExpectedArrival(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="max-w-[10rem]">
-              <Label htmlFor="po-shipping">Shipping ($)</Label>
-              <Input
-                id="po-shipping"
-                type="number"
-                min="0"
-                step="0.01"
-                value={shipping}
-                onChange={(e) => setShipping(e.target.value)}
-                placeholder="0.00"
-              />
-            </div>
-            <div>
-              <Label htmlFor="po-notes">Notes</Label>
-              <Textarea
-                id="po-notes"
-                rows={2}
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </SurfaceStep>
-  );
-
-  const reviewStep = (
-    <SurfaceStep
-      header={{
-        title: 'Review & create',
-        supporting: 'Saved as a draft you can edit before submitting.',
-      }}
-      actions={{
-        onBack: () => goToStep('terms'),
-        onNext: () => void handleCreate(),
-        nextLabel: 'Create draft',
-        nextLoading: submitting,
-        nextDisabled: submitting || !supplierId || !warehouseId,
-      }}
-    >
-      <div className="flex flex-col gap-5">
-        <Card variant="module">
-          <CardHeader>
-            <Heading level={3}>Summary</Heading>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={2}>
-              <SummaryRow label="Supplier" value={supplierLabel} />
-              <SummaryRow label="Warehouse" value={warehouseLabel} />
-              <SummaryRow label="Currency" value={(currency || 'USD').toUpperCase()} />
-              <SummaryRow label="Lines" value={String(lines.length)} />
-              <div className="border-t border-[var(--color-border-default)] pt-2">
-                <SummaryRow
-                  label="Known subtotal"
-                  value={`${formatMoney(knownSubtotal, currency)}${hasDefaults ? ' + defaults' : ''}`}
-                  strong
-                />
-              </div>
-            </Stack>
-          </CardContent>
-        </Card>
-        {error && (
-          <Text size="sm" variant="danger" role="alert">
-            {error}
-          </Text>
-        )}
-      </div>
-    </SurfaceStep>
-  );
-
-  let body: React.ReactNode;
-  if (stepKey === 'details') body = detailsStep;
-  else if (stepKey === 'lines') body = linesStep;
-  else if (stepKey === 'terms') body = termsStep;
-  else body = reviewStep;
-
   // ── Guard: a PO needs a supplier + a warehouse ─────────────────────────────────
   if (suppliers.length === 0 || warehouses.length === 0) {
     const needSupplier = suppliers.length === 0;
@@ -506,15 +207,9 @@ function PurchaseOrderWizardInner({
     );
   }
 
-  // ── Frame ──────────────────────────────────────────────────────────────────
-  const onStepSelect = (key: string) => {
-    const target = steps.findIndex((s) => s.key === key);
-    if (target >= 0 && target <= current) goToStep(key as StepKey);
-  };
-  const canSelectStep = (_key: string, index: number) => index <= current;
-
-  // The live draft summary — the F layout's right-hand column (docs/86). Mirrors
-  // the Review step so the supplier, destination, and running cost stay visible.
+  // ── Live draft summary (the F layout's right column, docs/86) ─────────────────
+  // The supplier, destination, and running cost — this is the "review" the old
+  // step 4 used to be.
   const summary = (
     <SurfaceSummary
       title="Draft summary"
@@ -537,41 +232,221 @@ function PurchaseOrderWizardInner({
     </SurfaceSummary>
   );
 
+  // ── Frame ──────────────────────────────────────────────────────────────────
+  // Single-page: one SurfaceStep stacking details / lines / terms. A supplier and
+  // warehouse are required, so the primary stays disabled until both are chosen.
   return (
     <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New purchase order"
-      steps={steps}
-      current={current}
-      context={RAIL[stepKey].context}
-      onStepSelect={onStepSelect}
-      canSelectStep={canSelectStep}
+      steps={SINGLE_STEP}
+      current={0}
       onCancel={cancel}
       summary={summary}
     >
-      {body}
+      <SurfaceStep
+        actions={{
+          onNext: () => void handleCreate(),
+          nextLabel: 'Create draft',
+          nextLoading: submitting,
+          nextDisabled: submitting || !supplierId || !warehouseId,
+        }}
+      >
+        <div className="flex flex-col gap-5">
+          {/* Supplier & warehouse */}
+          <Card variant="default">
+            <CardHeader>
+              <Heading level={3}>Supplier &amp; warehouse</Heading>
+              <Text size="sm" variant="muted">
+                Who you’re buying from and where it lands.
+              </Text>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-4">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <Label htmlFor="po-supplier">Supplier</Label>
+                    <NativeSelect
+                      id="po-supplier"
+                      value={supplierId}
+                      onChange={(e) => setSupplierId(e.target.value)}
+                    >
+                      {suppliers.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.name} ({s.code})
+                        </option>
+                      ))}
+                    </NativeSelect>
+                  </div>
+                  <div>
+                    <Label htmlFor="po-warehouse">Warehouse</Label>
+                    <NativeSelect
+                      id="po-warehouse"
+                      value={warehouseId}
+                      onChange={(e) => setWarehouseId(e.target.value)}
+                    >
+                      {warehouses.map((w) => (
+                        <option key={w.id} value={w.id}>
+                          {w.name} ({w.code})
+                        </option>
+                      ))}
+                    </NativeSelect>
+                  </div>
+                </div>
+                <div className="max-w-[8rem]">
+                  <Label htmlFor="po-currency">Currency</Label>
+                  <Input
+                    id="po-currency"
+                    value={currency}
+                    maxLength={3}
+                    className="uppercase"
+                    onChange={(e) => setCurrency(e.target.value)}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Lines */}
+          <Card variant="default">
+            <CardHeader>
+              <Heading level={3}>Lines</Heading>
+              <Text size="sm" variant="muted">
+                Add the variants to order by SKU. Leave the cost blank to use the supplier’s agreed
+                cost (falls back to the variant cost). You can save an empty draft and add lines
+                later.
+              </Text>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-4">
+                {lines.length === 0 ? (
+                  <Text size="sm" variant="muted">
+                    No lines yet — you can still save an empty draft and add them later.
+                  </Text>
+                ) : (
+                  <Stack gap={2}>
+                    {lines.map((l) => (
+                      <Stack
+                        key={l.variantId}
+                        direction="row"
+                        align="center"
+                        gap={3}
+                        wrap
+                        className="rounded border border-[var(--color-border-default)] px-3 py-2"
+                      >
+                        <Stack gap={0} className="min-w-[12rem] flex-1">
+                          <Text size="sm" className="font-medium">
+                            {l.title ?? l.sku}
+                          </Text>
+                          <Text size="xs" variant="muted" className="font-mono">
+                            {l.sku}
+                          </Text>
+                        </Stack>
+                        <Text size="sm">×{l.quantity}</Text>
+                        <Text size="sm" variant="muted">
+                          {l.unitCostCents !== undefined
+                            ? formatMoney(l.unitCostCents, currency)
+                            : 'default'}
+                        </Text>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          type="button"
+                          onClick={() => removeLine(l.variantId)}
+                        >
+                          Remove
+                        </Button>
+                      </Stack>
+                    ))}
+                    <Stack direction="row" justify="end">
+                      <Text size="sm" variant="muted">
+                        Subtotal {formatMoney(knownSubtotal, currency)}
+                        {hasDefaults ? ' + default-priced lines' : ''}
+                      </Text>
+                    </Stack>
+                  </Stack>
+                )}
+                <LineAddRow onAdd={addLine} disabled={submitting} />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Terms */}
+          <Card variant="default">
+            <CardHeader>
+              <Heading level={3}>Terms &amp; dates</Heading>
+              <Text size="sm" variant="muted">
+                All optional — terms default onto the order and can be overridden per line later.
+              </Text>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-3">
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <div>
+                    <Label htmlFor="po-terms">Payment terms</Label>
+                    <Input
+                      id="po-terms"
+                      value={paymentTerms}
+                      onChange={(e) => setPaymentTerms(e.target.value)}
+                      placeholder="net30"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="po-ref">Reference</Label>
+                    <Input
+                      id="po-ref"
+                      value={reference}
+                      onChange={(e) => setReference(e.target.value)}
+                      placeholder="optional"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="po-eta">Expected arrival</Label>
+                    <Input
+                      id="po-eta"
+                      type="date"
+                      value={expectedArrival}
+                      onChange={(e) => setExpectedArrival(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="max-w-[10rem]">
+                  <Label htmlFor="po-shipping">Shipping ($)</Label>
+                  <Input
+                    id="po-shipping"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={shipping}
+                    onChange={(e) => setShipping(e.target.value)}
+                    placeholder="0.00"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="po-notes">Notes</Label>
+                  <Textarea
+                    id="po-notes"
+                    rows={2}
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {error && (
+            <Text size="sm" variant="danger" role="alert">
+              {error}
+            </Text>
+          )}
+        </div>
+      </SurfaceStep>
     </SurfaceFrame>
   );
 }
 
 // ─── Sub-components ─────────────────────────────────────────────────────────────
-
-function SummaryRow({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
-  return (
-    <Stack direction="row" justify="between" align="center">
-      <Text
-        size="sm"
-        variant={strong ? 'default' : 'muted'}
-        className={strong ? 'font-semibold' : ''}
-      >
-        {label}
-      </Text>
-      <Text size="sm" className={`tabular-nums ${strong ? 'font-semibold' : ''}`}>
-        {value}
-      </Text>
-    </Stack>
-  );
-}
 
 function GuardPanel({
   title,

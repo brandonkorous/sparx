@@ -120,15 +120,16 @@ export function ContextualPanel({ pathname, enabledModules, tenantName }: Contex
   }
 
   if (ctx.kind === 'finance') {
-    // Finance is a first-class platform area (no module color of its own) — wrap in
-    // the neutral "platform" provider so the active row picks up a sensible
-    // highlight, matching Settings. The money-flow split lives inside the items.
+    // Finance is a first-class platform area that now owns a brand hue (money green,
+    // docs/109) — wrap in its own "finance" provider so the panel glyph/dot and the
+    // active section row resolve to finance green, exactly like a module's sections.
+    // The money-flow split lives inside the items.
     return (
-      <ModuleProvider module="platform" className="flex h-full flex-col">
+      <ModuleProvider module="finance" className="flex h-full flex-col">
         {collapsed ? (
           <PanelHeadIcon icon={Landmark} label="Finance" />
         ) : (
-          <PanelHead eyebrow="Finance" title={tenantName} />
+          <PanelHead eyebrow="Finance" title={tenantName} dot />
         )}
         <div className="min-h-0 flex-1 overflow-y-auto">
           <SidebarNav

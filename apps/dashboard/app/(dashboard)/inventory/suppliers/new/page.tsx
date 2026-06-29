@@ -1,22 +1,13 @@
-import { Truck } from 'lucide-react';
-
-import { Container, PageHeader, Stack } from '@sparx/ui';
-
 import { SupplierCreateForm } from '../_components/supplier-create-form';
+
+// New-supplier route. The embedded SurfaceFrame supplies its own title + window
+// controls + pinned toolbar, so the page renders the form bare (no Container /
+// PageHeader). The same form also renders in the drawer/modal overlay via
+// `detail-slot.tsx`'s `createComponents['supplier']`, honoring the user's
+// `defaultDetailView` preference.
 
 export const dynamic = 'force-dynamic';
 
 export default function NewSupplierPage() {
-  return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          icon={<Truck className="h-5 w-5" />}
-          title="New supplier"
-          description="Record a vendor you purchase stock from. Add per-variant cost + part numbers on the supplier's page after it exists."
-        />
-        <SupplierCreateForm />
-      </Stack>
-    </Container>
-  );
+  return <SupplierCreateForm surface="page" />;
 }

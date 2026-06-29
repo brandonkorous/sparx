@@ -3,14 +3,14 @@
 // authoring source of truth is marketplace-catalog/_gen/tempo/.
 
 export default {
-  id: 'tmp-671',
+  id: 'tmp-584',
   type: 'Section',
   props: {},
   class: 'w-full flex flex-col',
   name: 'Product',
   children: [
     {
-      id: 'tmp-634',
+      id: 'tmp-547',
       type: 'Section',
       props: {},
       class:
@@ -18,7 +18,7 @@ export default {
       name: 'Breadcrumb',
       children: [
         {
-          id: 'tmp-629',
+          id: 'tmp-542',
           type: 'el:a',
           props: {
             href: '/',
@@ -27,7 +27,7 @@ export default {
           class: 'text-sm text-base-content/60 transition-colors hover:text-base-content',
         },
         {
-          id: 'tmp-630',
+          id: 'tmp-543',
           type: 'el:span',
           props: {
             text: '/',
@@ -35,7 +35,7 @@ export default {
           class: 'text-base-content/30',
         },
         {
-          id: 'tmp-631',
+          id: 'tmp-544',
           type: 'el:a',
           props: {
             href: '/shop',
@@ -44,7 +44,7 @@ export default {
           class: 'text-sm text-base-content/60 transition-colors hover:text-base-content',
         },
         {
-          id: 'tmp-632',
+          id: 'tmp-545',
           type: 'el:span',
           props: {
             text: '/',
@@ -52,7 +52,7 @@ export default {
           class: 'text-base-content/30',
         },
         {
-          id: 'tmp-633',
+          id: 'tmp-546',
           type: 'el:span',
           props: {
             text: 'Product',
@@ -65,7 +65,7 @@ export default {
       ],
     },
     {
-      id: 'tmp-652',
+      id: 'tmp-565',
       type: 'Section',
       props: {},
       class:
@@ -73,7 +73,7 @@ export default {
       name: 'Product detail',
       children: [
         {
-          id: 'tmp-635',
+          id: 'tmp-548',
           type: 'Image',
           props: {
             ratio: 'square',
@@ -85,19 +85,19 @@ export default {
           },
         },
         {
-          id: 'tmp-651',
+          id: 'tmp-564',
           type: 'el:div',
           props: {},
           class: 'flex flex-col gap-7',
           children: [
             {
-              id: 'tmp-638',
+              id: 'tmp-551',
               type: 'el:div',
               props: {},
               class: 'flex flex-col gap-3',
               children: [
                 {
-                  id: 'tmp-636',
+                  id: 'tmp-549',
                   type: 'Heading',
                   props: {
                     level: 'h1',
@@ -109,7 +109,7 @@ export default {
                   },
                 },
                 {
-                  id: 'tmp-637',
+                  id: 'tmp-550',
                   type: 'Prose',
                   props: {},
                   class: 'text-base leading-relaxed text-base-content/70',
@@ -120,7 +120,7 @@ export default {
               ],
             },
             {
-              id: 'tmp-639',
+              id: 'tmp-552',
               type: 'BuyBox',
               props: {},
               binding: {
@@ -128,25 +128,25 @@ export default {
               },
             },
             {
-              id: 'tmp-640',
+              id: 'tmp-553',
               type: 'Divider',
               props: {},
               class: 'w-full border-base-300',
             },
             {
-              id: 'tmp-650',
+              id: 'tmp-563',
               type: 'el:div',
               props: {},
               class: 'flex flex-col gap-3',
               children: [
                 {
-                  id: 'tmp-643',
+                  id: 'tmp-556',
                   type: 'el:div',
                   props: {},
                   class: 'flex items-start gap-3',
                   children: [
                     {
-                      id: 'tmp-641',
+                      id: 'tmp-554',
                       type: 'el:span',
                       props: {
                         text: '🚚',
@@ -154,7 +154,7 @@ export default {
                       class: 'text-xl leading-none',
                     },
                     {
-                      id: 'tmp-642',
+                      id: 'tmp-555',
                       type: 'el:span',
                       props: {
                         text: 'Free shipping for Club members, always.',
@@ -164,13 +164,13 @@ export default {
                   ],
                 },
                 {
-                  id: 'tmp-646',
+                  id: 'tmp-559',
                   type: 'el:div',
                   props: {},
                   class: 'flex items-start gap-3',
                   children: [
                     {
-                      id: 'tmp-644',
+                      id: 'tmp-557',
                       type: 'el:span',
                       props: {
                         text: '↩️',
@@ -178,7 +178,7 @@ export default {
                       class: 'text-xl leading-none',
                     },
                     {
-                      id: 'tmp-645',
+                      id: 'tmp-558',
                       type: 'el:span',
                       props: {
                         text: 'Free returns within 30 days — no questions asked.',
@@ -188,13 +188,13 @@ export default {
                   ],
                 },
                 {
-                  id: 'tmp-649',
+                  id: 'tmp-562',
                   type: 'el:div',
                   props: {},
                   class: 'flex items-start gap-3',
                   children: [
                     {
-                      id: 'tmp-647',
+                      id: 'tmp-560',
                       type: 'el:span',
                       props: {
                         text: '»',
@@ -202,7 +202,7 @@ export default {
                       class: 'text-xl leading-none',
                     },
                     {
-                      id: 'tmp-648',
+                      id: 'tmp-561',
                       type: 'el:span',
                       props: {
                         text: 'Engineered to move, built to last.',
@@ -218,20 +218,20 @@ export default {
       ],
     },
     {
-      id: 'tmp-670',
+      id: 'tmp-583',
       type: 'Section',
       props: {},
       class: 'w-full mx-auto w-full max-w-site flex flex-col gap-4 items-start p-8 @3xl:p-16',
       name: 'You might also like',
       children: [
         {
-          id: 'tmp-657',
+          id: 'tmp-570',
           type: 'el:div',
           props: {},
           class: 'flex w-full items-end justify-between gap-4',
           children: [
             {
-              id: 'tmp-653',
+              id: 'tmp-566',
               type: 'el:h2',
               props: {
                 text: 'You Might Also Like',
@@ -240,7 +240,7 @@ export default {
                 'font-heading text-xl font-black uppercase tracking-tightest text-base-content @2xl:text-2xl',
             },
             {
-              id: 'tmp-656',
+              id: 'tmp-569',
               type: 'el:a',
               props: {
                 href: '/shop',
@@ -249,14 +249,14 @@ export default {
                 'group/al inline-flex w-fit items-center gap-2 border-b-2 border-current pb-1 font-heading text-xs font-bold uppercase tracking-wide',
               children: [
                 {
-                  id: 'tmp-654',
+                  id: 'tmp-567',
                   type: 'el:span',
                   props: {
                     text: 'View All',
                   },
                 },
                 {
-                  id: 'tmp-655',
+                  id: 'tmp-568',
                   type: 'Icon',
                   props: {
                     name: 'arrow-right',
@@ -268,25 +268,25 @@ export default {
           ],
         },
         {
-          id: 'tmp-669',
+          id: 'tmp-582',
           type: 'Section',
           props: {},
           class: 'w-full grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-4 gap-4',
           children: [
             {
-              id: 'tmp-668',
+              id: 'tmp-581',
               type: 'el:article',
               props: {},
               class: 'group flex flex-col',
               children: [
                 {
-                  id: 'tmp-662',
+                  id: 'tmp-575',
                   type: 'el:div',
                   props: {},
                   class: 'relative overflow-hidden bg-base-200',
                   children: [
                     {
-                      id: 'tmp-659',
+                      id: 'tmp-572',
                       type: 'el:button',
                       props: {
                         type: 'button',
@@ -296,7 +296,7 @@ export default {
                         'absolute right-2 top-2 z-10 text-base-content/50 transition-colors hover:text-base-content',
                       children: [
                         {
-                          id: 'tmp-658',
+                          id: 'tmp-571',
                           type: 'Icon',
                           props: {
                             name: 'heart',
@@ -306,13 +306,13 @@ export default {
                       ],
                     },
                     {
-                      id: 'tmp-661',
+                      id: 'tmp-574',
                       type: 'el:a',
                       props: {},
                       class: 'block',
                       children: [
                         {
-                          id: 'tmp-660',
+                          id: 'tmp-573',
                           type: 'Image',
                           props: {
                             ratio: 'square',
@@ -332,19 +332,19 @@ export default {
                   ],
                 },
                 {
-                  id: 'tmp-667',
+                  id: 'tmp-580',
                   type: 'el:div',
                   props: {},
                   class: 'flex flex-1 flex-col pt-2',
                   children: [
                     {
-                      id: 'tmp-664',
+                      id: 'tmp-577',
                       type: 'el:a',
                       props: {},
                       class: 'block transition-colors hover:text-base-content/70',
                       children: [
                         {
-                          id: 'tmp-663',
+                          id: 'tmp-576',
                           type: 'Heading',
                           props: {
                             level: 'h3',
@@ -363,7 +363,7 @@ export default {
                       },
                     },
                     {
-                      id: 'tmp-665',
+                      id: 'tmp-578',
                       type: 'el:p',
                       props: {
                         text: 'A Tempo essential.',
@@ -374,7 +374,7 @@ export default {
                       },
                     },
                     {
-                      id: 'tmp-666',
+                      id: 'tmp-579',
                       type: 'PriceTag',
                       props: {},
                       class: 'mt-1 text-sm font-bold text-base-content',
@@ -389,8 +389,7 @@ export default {
           ],
           binding: {
             source: {
-              from: 'collection',
-              id: 'new-arrivals',
+              from: 'all',
               limit: 4,
             },
           },

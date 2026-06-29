@@ -2,8 +2,8 @@
 // every way sparx pays a merchant out: the sparx Pay (Stripe Connect) balance for
 // their own store sales, and the sparx.market weekly settlement + ACH bank account
 // for marketplace sales. Both rails are part of the Commerce module, so the page is
-// gated on Commerce and tinted with the Commerce hue (color-follows-functionality).
-// Marketplace participation, profile, and listings stay in Settings → sparx.market
+// gated on Commerce but wears the Finance hue (Finance owns its color — docs/109).
+// Marketplace participation, profile, and listings live in Commerce → sparx.market
 // (docs/109 §5); only the money lives here.
 
 import Link from 'next/link';
@@ -54,7 +54,7 @@ export default async function PayoutsPage(): Promise<React.JSX.Element> {
     : [null, null, []];
 
   return (
-    <ModuleProvider module="commerce">
+    <ModuleProvider module="finance">
       <Container size="xl">
         <Stack gap={6} className="py-10">
           <PageHeader

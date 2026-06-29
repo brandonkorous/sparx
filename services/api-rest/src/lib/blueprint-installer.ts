@@ -16,7 +16,8 @@
 
 import type { FastifyBaseLogger } from 'fastify';
 
-import { prisma, withTenant, type Prisma } from '@sparx/db';
+import { withTenant, type Prisma } from '@sparx/db';
+import { listEnabledModules, type ModuleSlug } from '@sparx/auth';
 import {
   categoryService,
   collectionService,
@@ -146,26 +147,21 @@ export function mimeFromUrl(url: string): string {
   }
 }
 
-/** Enable the modules the blueprint needs (so the dashboard surfaces them after
- *  install). `tenants.settings.modules.<slug>.enabled` — the tenants table is
- *  RLS-exempt (the dispatch table), so a direct prisma write is correct. */
-async function enableModules(tenantId: string, modules: string[]): Promise<void> {
-  // TODO(billing): entitlement gate (docs/54 D7). For now this enables every module
-  // the blueprint needs, non-blocking — acceptable while installs are admin-only.
-  // When billing (docs/17) + the public marketplace (§15) land, gate this to the
-  // tenant's entitled modules and surface the rest as upsell instead of enabling.
-  const tenant = await prisma.tenant.findUnique({
-    where: { id: tenantId },
-    select: { settings: true },
-  });
-  const settings = { ...((tenant?.settings as Record<string, unknown>) ?? {}) };
-  const mods = { ...((settings.modules as Record<string, { enabled?: boolean }>) ?? {}) };
-  for (const m of modules) mods[m] = { ...(mods[m] ?? {}), enabled: true };
-  settings.modules = mods;
-  await prisma.tenant.update({
-    where: { id: tenantId },
-    data: { settings: settings as Prisma.InputJsonValue },
-  });
+// Install provisions ONLY into modules the tenant has ENABLED — it NEVER writes
+// `settings.modules` (the locked provisioning invariant: only the user flips a
+// module flag, never a blueprint/preset/starter). Onboarding is modules-FIRST, so
+// by install time the tenant's modules are already chosen; a blueprint that needs a
+// module the tenant didn't enable simply SKIPS that slice (a disabled-module slice
+// inserts nothing — CLAUDE.md "a disabled module stores no rows"). Each slice below
+// gates on `enabled`. Builder is the hosted-site module: pages/layout/components
+// are skipped without it (a headless tenant gets no site rows); commerce →
+// `commerce`, content → `cms`, emails → `email`. Brand + theme are tenant identity
+// + look, applied regardless (they write no module-scoped business rows and re-theme
+// every surface, email included). The marketplace/onboarding surfaces a blueprint's
+// `requiresModules` so the tenant can enable what they want rendered before install.
+function moduleGate(enabled: ModuleSlug[]): (m: ModuleSlug) => boolean {
+  const set = new Set(enabled);
+  return (m) => set.has(m);
 }
 
 // ── commerce reconcile-by-natural-key ─────────────────────────────────────────────
@@ -418,8 +414,10 @@ export async function installBlueprint(
     );
     installId = installRow.id;
 
-    // 1. Modules
-    await enableModules(tenantId, blueprint.requiresModules);
+    // 1. Module gate — read (NEVER write) the tenant's enabled modules; each slice
+    //    below provisions only into an enabled module. No `enableModules` write:
+    //    only the user flips a flag (provisioning invariant).
+    const isOn = moduleGate(await listEnabledModules(tenantId));
 
     // 2. Assets → MediaAsset rows (one tx). Hot-linked: key holds the absolute
     //    URL; mediaPublicUrl() passes it through (docs/54 §6). Idempotent: an asset
@@ -563,8 +561,8 @@ export async function installBlueprint(
       );
     }
 
-    // 5. Content entries (draft)
-    for (const entry of blueprint.content) {
+    // 5. Content entries (draft) — CMS module only; a non-CMS tenant gets none.
+    for (const entry of isOn('cms') ? blueprint.content : []) {
       await withTenant(ctx, async (tx) => {
         const type = await resolveType(tx, entry.typeKey);
         const schema = parseTypeSchema(type);
@@ -612,8 +610,8 @@ export async function installBlueprint(
       });
     }
 
-    // 6. Commerce
-    const commerce = blueprint.commerce;
+    // 6. Commerce — catalog only when the Commerce module is on (else skipped).
+    const commerce = isOn('commerce') ? blueprint.commerce : undefined;
     if (commerce) {
       // Reconcile by natural key (see the helpers above): reuse/restore-then-create,
       // never destroy-and-recreate. Existing rows are left alone.
@@ -814,8 +812,8 @@ export async function installBlueprint(
       }
     }
 
-    // 7. Components (before pages that place them).
-    for (const c of blueprint.components) {
+    // 7. Components (before pages that place them) — Builder module only.
+    for (const c of isOn('builder') ? blueprint.components : []) {
       const created = await componentService.create(ctx, {
         key: c.key,
         name: c.name,
@@ -829,8 +827,8 @@ export async function installBlueprint(
       result.components.push({ key: c.key, id: created.id });
     }
 
-    // 8. Site layout (draft; go-live publishes + activates).
-    if (blueprint.layout) {
+    // 8. Site layout (draft; go-live publishes + activates) — Builder module only.
+    if (blueprint.layout && isOn('builder')) {
       const layout = await layoutService.create(propCtx, {
         name: blueprint.layout.name,
         tree: resolveBindingHandles(blueprint.layout.tree, result),
@@ -843,7 +841,8 @@ export async function installBlueprint(
     //    exactly one `/`, so if one already exists (the seeded starter, or a prior
     //    home), REPLACE its tree/SEO rather than adding a second home — otherwise
     //    the storefront can't tell which slugless singleton is the homepage.
-    for (const pg of blueprint.pages) {
+    //    Builder module only — pages are the hosted site (a headless tenant gets none).
+    for (const pg of isOn('builder') ? blueprint.pages : []) {
       const isHome = pg.kind === 'singleton' && !pg.slug;
       let pageId: string;
       const existingHome = isHome
@@ -892,8 +891,9 @@ export async function installBlueprint(
 
     // A blueprint may ship only collection templates (or omit a home). Guarantee a
     // landing page so the property has a `/` — and register it for the go-live
-    // publish so the storefront root renders immediately, not the fallback.
-    const injectedHome = await pageService.ensureHome(propCtx);
+    // publish so the storefront root renders immediately, not the fallback. Builder
+    // module only — no hosted site means no injected home.
+    const injectedHome = isOn('builder') ? await pageService.ensureHome(propCtx) : null;
     if (injectedHome) {
       result.pages.push({
         name: injectedHome.name,
@@ -903,8 +903,8 @@ export async function installBlueprint(
       });
     }
 
-    // 10. Emails (draft unless publish flagged).
-    for (const e of blueprint.emails) {
+    // 10. Emails (draft unless publish flagged) — Email module only.
+    for (const e of isOn('email') ? blueprint.emails : []) {
       const email = await emailService.create(ctx, {
         name: e.name,
         subject: e.subject,

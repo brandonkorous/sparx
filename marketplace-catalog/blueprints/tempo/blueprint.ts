@@ -4,8 +4,6 @@
 // or the gen source, then re-run the generator.
 
 import assets from './parts/assets';
-import content from './parts/content';
-import commerce from './parts/commerce';
 import layoutTree from './parts/layout';
 import page_home from './parts/pages/home';
 import page_shop from './parts/pages/shop';
@@ -20,7 +18,7 @@ import email_new_drops from './parts/emails/new-drops';
 
 export default {
   key: 'tempo',
-  version: '1.0.1',
+  version: '1.1.0',
   name: 'Tempo',
   summary:
     'A bold, stark athletic storefront — a campaign-driven home with a hero carousel, a team-colorway scroller, category tiles, a live best-sellers grid, a membership band and a mega footer, plus a Shop catalog, a Club membership page, Our Story, Help, a News index, enriched product and article templates, ~12 products across four categories, two collections, and brand-voiced emails. A ready-to-edit sportswear retail starter.',
@@ -94,8 +92,6 @@ export default {
     apply: true,
   },
   assets: assets,
-  content: content,
-  commerce: commerce,
   layout: {
     name: 'Tempo layout',
     tree: layoutTree,

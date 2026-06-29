@@ -18,14 +18,14 @@ Design spec: [docs/86](<../../../docs/86-surface-frame-pattern.md>) (the F layou
 | **Single-step form** (one screen of fields) | `SurfaceFrame` with ONE step (no stepper) | **yes** | category create, tax zone |
 | **Multi-step wizard** (≥2 steps, or a record you build up) | `SurfaceFrame` with `steps`/`current` (stepper shows) | **yes** | product, quote, order |
 
-There is ONE form surface. The old "render a `<Card>` with a `<CardFooter>` toolbar in the host's padded body" pattern is retired (double headers, in-card toolbars, inconsistent chrome — docs/86): chrome title + window controls + pinned floor toolbar come from the frame; fields sit in a `<Card variant="module">`; the toolbar is Cancel + primary (+ Back when multi-step).
+There is ONE form surface. The old "render a `<Card>` with a `<CardFooter>` toolbar in the host's padded body" pattern is retired (double headers, in-card toolbars, inconsistent chrome — docs/86): chrome title + window controls + pinned floor toolbar come from the frame; fields sit in a `<Card variant="default">` (neutral — see §1); the toolbar is Cancel + primary (+ Back when multi-step).
 
 **Create vs edit — both use `SurfaceFrame`:**
 
 - **Create** writes the `?drawer=type:new` token (sentinel id `new`); the form takes `surface`/`presentation: 'page' | 'overlay'`. Covered end-to-end below.
 - **Edit** is the record's detail-view body. Two sub-cases — get this right or you'll nest frames inside tabs:
-  - **The detail view IS a single edit form** (e.g. category — its `[id]/_content.tsx` renders only the form) → render it as a `SurfaceFrame` so create + edit are symmetric. The drawer/modal/full-page chrome supplies the title + window controls; the frame supplies the module-card body + the Save/Cancel floor toolbar.
-  - **Editing is one tab/panel of a tabbed detail view** (e.g. collection Metadata, product Edit) → do **NOT** nest a `SurfaceFrame` inside the tabs. Bring the PANEL onto the design system instead: fields in `<Card variant="module">`, a consistent Save (`color="module"`) + saved/error feedback, no bespoke `<CardFooter>` toolbar.
+  - **The detail view IS a single edit form** (e.g. category — its `[id]/_content.tsx` renders only the form) → render it as a `SurfaceFrame` so create + edit are symmetric. The drawer/modal/full-page chrome supplies the title + window controls; the frame supplies the neutral-card body + the Save/Cancel floor toolbar.
+  - **Editing is one tab/panel of a tabbed detail view** (e.g. collection Metadata, product Edit) → do **NOT** nest a `SurfaceFrame` inside the tabs. Bring the PANEL onto the design system instead: fields in `<Card variant="default">` (neutral), a consistent Save (`color="module"`) + saved/error feedback, no bespoke `<CardFooter>` toolbar.
 
 Then: **does the record have a natural running summary** (party, totals, counts, status)? If yes → pass a `summary` slot **and** join `SUMMARY_CREATE_TYPES` (wider modal). If no → omit it; the form fills the width.
 
@@ -36,8 +36,8 @@ Then: **does the record have a natural running summary** (party, totals, counts,
 - Take a presentation prop: a wizard uses `presentation?: 'page' | 'overlay'`; a single-step form uses `surface?: 'page' | 'overlay'`.
 - Wrap in `<ModuleProvider module="<module>" className="h-full">` so the chrome adopts the module accent and the height carries through.
 - **Wizard:** render [`SurfaceFrame`](<../../../packages/ui/src/components/navigation/surface-frame.tsx>) with `variant={presentation === 'overlay' ? 'inline' : 'embedded'}`, `onCancel={close}` (the frame renders a ghost Cancel **`<Button>`** in the bottom toolbar — NEVER hand-roll a `<button>` cancel link; that drift is the whole reason docs/86 made Cancel frame-owned), `steps`/`current`, and `<SurfaceStep header actions>` per step. Compose every step's content; commit in one action on finish; on success `router.push('/.../{id}')` (navigation clears the overlay token). `close()` clears `drawer`/`modal` params in the overlay, or `router.push('/list')` on the page. Copy the shape from [`product-wizard/index.tsx`](<../../../apps/dashboard/app/(dashboard)/commerce/products/_components/product-wizard/index.tsx>) or [`quote-wizard.tsx`](<../../../apps/dashboard/app/(dashboard)/crm/quotes/new/_components/quote-wizard.tsx>).
-- **Single-step:** the SAME `SurfaceFrame` with one `step` (MiniProgress auto-hides), `onCancel={cancel}`, and a single `<SurfaceStep header actions={{ onNext: submit, nextLabel: 'Create …' }}>` whose body is a `<Card variant="module">` of fields. Use controlled state (not `FormData`) so `onNext` submits; on success close the overlay / return to the list. Copy [`category-create-form.tsx`](<../../../apps/dashboard/app/(dashboard)/commerce/categories/_components/category-create-form.tsx>) — and the page route renders `<XCreateForm surface="page" />` with **no** `Container`/`PageHeader` (the embedded frame supplies the title).
-- **Step bodies** (both kinds): group fields in **`<Card variant="module">`** — the 3px module stripe is the standard on every create surface (it's automatic via `<ModuleProvider>`, so it reads the active module and disambiguates cross-module surfaces). Don't render bare fields or a plain neutral card.
+- **Single-step:** the SAME `SurfaceFrame` with one `step` (MiniProgress auto-hides), `onCancel={cancel}`, and a single `<SurfaceStep header actions={{ onNext: submit, nextLabel: 'Create …' }}>` whose body is a `<Card variant="default">` of fields. Use controlled state (not `FormData`) so `onNext` submits; on success close the overlay / return to the list. Copy [`category-create-form.tsx`](<../../../apps/dashboard/app/(dashboard)/commerce/categories/_components/category-create-form.tsx>) — and the page route renders `<XCreateForm surface="page" />` with **no** `Container`/`PageHeader` (the embedded frame supplies the title).
+- **Step bodies** (both kinds): group fields in **`<Card variant="default">`** (neutral). A create/edit surface is single-module, so a module tint would be decoration, not wayfinding — keep the field cards neutral and let identity ride the frame chrome, the `color="module"` Save button, and the faint module-tinted summary rail. Always group fields in a card; don't render them bare. (The module tint is reserved for cross-module wayfinding on dense overview/dashboard surfaces — see DESIGN.md "Color-Follows-Functionality".)
 
 ## 2. The summary slot (wizards with a natural summary)
 
@@ -57,7 +57,7 @@ const summary = (
 
 It builds live from form state, holds **no inputs and no primary action**, and uses `strong` on the total row. The frame renders it as the full-height right column when wide and **stacks it as a card** when narrow (drawer) — automatically.
 
-The footer status pill is a **status** signal: color it via `statusTone()` (`draft`→warning, etc.) — **not** the module hue. Module color belongs to the record's own primary/stripe; status is its own orthogonal axis (DESIGN.md Color-Follows-Functionality + Semantic-Status rules). `statusTone` / `statusLabel` are exported from `@sparx/ui`.
+The footer status pill is a **status** signal: color it via `statusTone()` (`draft`→warning, etc.) — **not** the module hue. Module color belongs to the record's own primary/tint; status is its own orthogonal axis (DESIGN.md Color-Follows-Functionality + Semantic-Status rules). `statusTone` / `statusLabel` are exported from `@sparx/ui`.
 
 ## 3. Wire it into the overlay system — THREE places, kept in sync
 

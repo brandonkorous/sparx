@@ -3,14 +3,14 @@
 // authoring source of truth is marketplace-catalog/_gen/mosaic/.
 
 export default {
-  id: 'msc-605',
+  id: 'msc-590',
   type: 'Section',
   props: {},
   class: 'flex flex-col gap-4',
   name: 'Email body',
   children: [
     {
-      id: 'msc-596',
+      id: 'msc-581',
       type: 'email_wordmark',
       props: {
         treatment: 'lockup',
@@ -19,7 +19,7 @@ export default {
       },
     },
     {
-      id: 'msc-597',
+      id: 'msc-582',
       type: 'Heading',
       props: {
         level: 'h1',
@@ -27,7 +27,7 @@ export default {
       },
     },
     {
-      id: 'msc-598',
+      id: 'msc-583',
       type: 'Text',
       props: {
         variant: 'body',
@@ -35,7 +35,7 @@ export default {
       },
     },
     {
-      id: 'msc-599',
+      id: 'msc-584',
       type: 'Text',
       props: {
         variant: 'body',
@@ -43,7 +43,7 @@ export default {
       },
     },
     {
-      id: 'msc-600',
+      id: 'msc-585',
       type: 'Text',
       props: {
         variant: 'body',
@@ -51,7 +51,7 @@ export default {
       },
     },
     {
-      id: 'msc-601',
+      id: 'msc-586',
       type: 'Text',
       props: {
         variant: 'body',
@@ -59,7 +59,7 @@ export default {
       },
     },
     {
-      id: 'msc-602',
+      id: 'msc-587',
       type: 'Text',
       props: {
         variant: 'body',
@@ -67,7 +67,7 @@ export default {
       },
     },
     {
-      id: 'msc-603',
+      id: 'msc-588',
       type: 'Button',
       props: {
         label: 'Open your workspace',
@@ -75,7 +75,7 @@ export default {
       },
     },
     {
-      id: 'msc-604',
+      id: 'msc-589',
       type: 'Text',
       props: {
         variant: 'meta',

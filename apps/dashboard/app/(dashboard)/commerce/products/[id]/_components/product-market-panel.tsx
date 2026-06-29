@@ -82,7 +82,7 @@ export function ProductMarketPanel({
   }
 
   return (
-    <Card variant="module">
+    <Card variant="default">
       <CardHeader>
         <Heading level={3} as="h2">
           sparx.market

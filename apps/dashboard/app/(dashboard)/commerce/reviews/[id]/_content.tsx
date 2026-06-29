@@ -149,7 +149,7 @@ export async function ReviewDetailContent({ id }: Props) {
         </CardContent>
       </Card>
 
-      <Card variant="module">
+      <Card variant="default">
         <CardHeader>
           <Stack gap={1}>
             <Heading level={3}>Merchant response</Heading>

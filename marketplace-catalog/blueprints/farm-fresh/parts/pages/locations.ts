@@ -3,14 +3,14 @@
 // authoring source of truth is marketplace-catalog/_gen/farm-fresh/.
 
 export default {
-  id: 'ffb-309',
+  id: 'ffb-253',
   type: 'Section',
   props: {},
   class: 'w-full flex flex-col',
   name: 'Locations',
   children: [
     {
-      id: 'ffb-294',
+      id: 'ffb-238',
       type: 'Section',
       props: {},
       class:
@@ -18,7 +18,7 @@ export default {
       name: 'Locations intro',
       children: [
         {
-          id: 'ffb-292',
+          id: 'ffb-236',
           type: 'Heading',
           props: {
             level: 'h1',
@@ -27,7 +27,7 @@ export default {
           class: 'text-center',
         },
         {
-          id: 'ffb-293',
+          id: 'ffb-237',
           type: 'Text',
           props: {
             variant: 'body',
@@ -38,7 +38,7 @@ export default {
       ],
     },
     {
-      id: 'ffb-301',
+      id: 'ffb-245',
       type: 'Section',
       props: {},
       class:
@@ -46,13 +46,13 @@ export default {
       name: 'Riverside Market',
       children: [
         {
-          id: 'ffb-299',
+          id: 'ffb-243',
           type: 'Stack',
           props: {},
           class: 'mx-auto w-full max-w-site flex flex-col gap-2 justify-center items-start',
           children: [
             {
-              id: 'ffb-295',
+              id: 'ffb-239',
               type: 'Heading',
               props: {
                 level: 'h2',
@@ -60,7 +60,7 @@ export default {
               },
             },
             {
-              id: 'ffb-296',
+              id: 'ffb-240',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -68,7 +68,7 @@ export default {
               },
             },
             {
-              id: 'ffb-297',
+              id: 'ffb-241',
               type: 'Text',
               props: {
                 variant: 'meta',
@@ -76,7 +76,7 @@ export default {
               },
             },
             {
-              id: 'ffb-298',
+              id: 'ffb-242',
               type: 'Button',
               props: {
                 label: 'Order Pickup',
@@ -87,7 +87,7 @@ export default {
           ],
         },
         {
-          id: 'ffb-300',
+          id: 'ffb-244',
           type: 'Map',
           props: {
             query: '214 Orchard Lane, Riverside, CA 92501',
@@ -96,7 +96,7 @@ export default {
       ],
     },
     {
-      id: 'ffb-308',
+      id: 'ffb-252',
       type: 'Section',
       props: {},
       class:
@@ -104,13 +104,13 @@ export default {
       name: 'Downtown Commons',
       children: [
         {
-          id: 'ffb-306',
+          id: 'ffb-250',
           type: 'Stack',
           props: {},
           class: 'mx-auto w-full max-w-site flex flex-col gap-2 justify-center items-start',
           children: [
             {
-              id: 'ffb-302',
+              id: 'ffb-246',
               type: 'Heading',
               props: {
                 level: 'h2',
@@ -118,7 +118,7 @@ export default {
               },
             },
             {
-              id: 'ffb-303',
+              id: 'ffb-247',
               type: 'Text',
               props: {
                 variant: 'body',
@@ -126,7 +126,7 @@ export default {
               },
             },
             {
-              id: 'ffb-304',
+              id: 'ffb-248',
               type: 'Text',
               props: {
                 variant: 'meta',
@@ -134,7 +134,7 @@ export default {
               },
             },
             {
-              id: 'ffb-305',
+              id: 'ffb-249',
               type: 'Button',
               props: {
                 label: 'Order Pickup',
@@ -145,7 +145,7 @@ export default {
           ],
         },
         {
-          id: 'ffb-307',
+          id: 'ffb-251',
           type: 'Map',
           props: {
             query: '88 Maple Street, Suite B, Riverside, CA 92507',

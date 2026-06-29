@@ -1,11 +1,11 @@
-import Link from 'next/link';
 import { Truck, Plus } from 'lucide-react';
 
-import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
 
+import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
@@ -52,9 +52,14 @@ export default async function SuppliersPage({ searchParams }: PageProps) {
           }
           description="Vendors you purchase stock from. Each supplier carries contact + default terms; per-variant purchasing detail (their part number, cost, MOQ) is set on the supplier's detail page and feeds purchase orders, receiving, and the moving-average cost basis."
           actions={
-            <Button color="module" asChild leftIcon={<Plus className="h-4 w-4" />}>
-              <Link href="/inventory/suppliers/new">New</Link>
-            </Button>
+            <EntityCreateButton
+              entityType="supplier"
+              newHref="/inventory/suppliers/new"
+              color="module"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New
+            </EntityCreateButton>
           }
         />
 
@@ -67,9 +72,14 @@ export default async function SuppliersPage({ searchParams }: PageProps) {
               title={total === 0 ? 'No suppliers yet' : 'No suppliers on this page'}
               description="Add your first supplier to start tracking who you buy from. Purchase orders and receiving build on suppliers."
               action={
-                <Button color="module" asChild leftIcon={<Plus className="h-4 w-4" />}>
-                  <Link href="/inventory/suppliers/new">New</Link>
-                </Button>
+                <EntityCreateButton
+                  entityType="supplier"
+                  newHref="/inventory/suppliers/new"
+                  color="module"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New
+                </EntityCreateButton>
               }
             />
           </Card>

@@ -5,12 +5,16 @@
 // Request a demo, Customers, Customer Story), then `emails` (Welcome, Product Tips).
 // Reorder a property and every downstream id shifts, so KEEP this order stable.
 //
-// `brand`, `theme`, `assets`, `content` are pure data imported above — no node() calls,
-// so no ids are minted until `layout.tree` evaluates.
+// `brand`, `theme`, `assets` are pure data imported above — no node() calls, so no ids
+// are minted until `layout.tree` evaluates.
+//
+// Presentation-only (the four-axis provisioning model): the blueprint ships the LOOK —
+// brand, theme, layout, pages, emails — but NO content of its own. A tenant gets the
+// styled SaaS site; customer stories fill in from their own CMS (or industry sample
+// data), and the Customers index is an empty state until any exist.
 
 import { brand, theme } from './theme';
 import { brandAssets } from './logo';
-import { content, storyCovers } from './cms';
 import { layoutTree } from './layout';
 import { homeTree } from './pages/home';
 import { pricingTree } from './pages/pricing';
@@ -22,7 +26,7 @@ import { welcomeEmail, productTipsEmail } from './email';
 
 export const manifest = {
   key: 'mosaic',
-  version: '1.0.0',
+  version: '1.1.0',
   name: 'Mosaic',
   summary:
     'A clean, modern marketing site for an AI-workspace / productivity SaaS — a bento-driven home page with a browser-chrome product preview, a scrolling logo wall, agent and assistant showcases, social proof and stats, plus Pricing, Enterprise, a Request-a-demo page, customer stories, and brand-voiced emails. A ready-to-edit services starter.',
@@ -33,10 +37,9 @@ export const manifest = {
 
   theme,
 
-  // Customer-story covers (data-URI panels) + the brand logo/favicon (data-URI SVG).
-  assets: [...storyCovers, ...brandAssets],
-
-  content,
+  // The brand logo/favicon only (data-URI SVG). Customer-story covers are gone with the
+  // content strip — the story template binds the tenant's own media.
+  assets: [...brandAssets],
 
   layout: { name: 'Mosaic layout', tree: layoutTree(), makeActive: true },
 

@@ -1,9 +1,13 @@
 # sparx Platform — Dashboard Working-Area Standard
 
-**Version:** 1.8
+**Version:** 1.8.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-25
+**Last Updated:** 2026-06-29
 
+> **1.8.2 (2026-06-29):** **Create/edit forms, wizard steps, and editable detail panels use neutral `<Card variant="default">` field cards — not the module tint.** A single-module working surface gains nothing from the tint (it differentiates nothing there); identity rides the frame chrome + `color="module"` Save button + the faint `SurfaceFrame` summary rail (now at the same 12% as a module card). The module tint stays for cross-module overview/dashboard surfaces; a read-only detail/transaction view may keep one tinted KPI accent card.
+>
+> **1.8.1 (2026-06-29):** **`Card variant="module"` now tints the whole card background** (a subtle `--module-active` tint over `--color-bg-surface`, theme-aware) instead of drawing a 3px top stripe (§10). On dense cross-module pages, tint only **one card per module hue** — the section's primary card — and leave the rest plain; `OverviewCard` gained a `plain` prop that renders `variant="default"`.
+>
 > **1.8 (2026-06-25):** **Complex tabbed records carry a context rail** (§4 Archetype 3, §5). A record spanning many panels (product, and in time customer / B2B) renders a full-height **context rail** beside its tabs — a non-editable summary of its vitals (price, variant/media counts, inventory totals, reach) built on the `SurfaceSummary` primitives, mirroring the create wizard's draft summary. The body renders full-bleed (a two-pane) so the rail **fills its column edge-to-edge** and the Save **floors** below the scroll instead of overlapping it. Full mechanics in [docs/86](86-surface-frame-pattern.md) §5.2.
 >
 > **1.7 (2026-06-25):** **Record-detail headers carry the body's status + lifecycle actions** (§4 Archetype 3, §5). A detail body teleports its status badge + lifecycle actions (Publish/Archive/Preview/…) into the active frame header via the `DetailHeaderSlot` pattern (docs/86 §5.1) — never a bespoke in-body "Status" card; secondary actions render **icon-only with tooltips**. And **entity identity appears once**: name/slug is the editable field, not also a read-only heading (read-only/transaction details keep their heading). Full-page detail routes get the `DetailPageShell` (back-link + the teleported actions + presentation switch).
@@ -38,7 +42,7 @@ Today that working area is improvised per page. A live audit of 19 representativ
 
 1. **Archetype, not improvisation.** Every working-area page is exactly one of six archetypes (§4). The archetype dictates the layout; pages do not invent their own.
 2. **Compose primitives, never restyle them.** The building blocks live in `@sparx/ui` (`Container`, `Card`, `Stat`, `DataTable`, `EmptyState`, `Tabs`, `Grid`, `Stack`, `Form`). Feature code arranges them; it never reaches for raw Tailwind or one-off colors. (Per [doc 23](23-frontend-component-architecture.md) §1.)
-3. **The module color is automatic — let it be.** Every surface is wrapped in `<ModuleProvider>`, which sets `--module-active`. Primary actions, card stripes, tab underlines, and stat icons all read that variable. A page should never hardcode indigo (or any hue) — if it looks indigo on a Commerce page, the primary action is missing `color="module"`. This holds in the drawer/modal too: the `@detail` slot renders outside the module layout, so it wraps content in the record's owning `ModuleProvider` (keyed by entity type) — never assume the route's layout supplies the color.
+3. **The module color is automatic — let it be.** Every surface is wrapped in `<ModuleProvider>`, which sets `--module-active`. Primary actions, card tints, tab underlines, and stat icons all read that variable. A page should never hardcode indigo (or any hue) — if it looks indigo on a Commerce page, the primary action is missing `color="module"`. This holds in the drawer/modal too: the `@detail` slot renders outside the module layout, so it wraps content in the record's owning `ModuleProvider` (keyed by entity type) — never assume the route's layout supplies the color.
 4. **One primary action per header, top-right.** Actions live in the page header, right-aligned. Never below the header, never duplicated into the body, never a second competing primary.
 5. **The breadcrumb is the back button.** The shell breadcrumb already provides up-navigation. The working area carries no in-content "← Back to X" link.
 6. **Section navigation belongs to the shell, not the content.** Switching between a module's sections is the contextual sidebar's job (§11), not in-content tabs or a card grid. The working area is for _content_; in-content tabs are reserved for the facets of a single record (§11.1).
@@ -149,10 +153,10 @@ Mirror `defaultDetailView` exactly ([doc 24](24-dashboard-shell.md) §4.6): a si
 
 ## 8. Empty States — `EmptyState` (exists, `@sparx/ui`)
 
-The audit found three treatments (an inline icon-left card on Home; a bare gray box with no CTA on Orders; a stripe-card-wrapping-a-gray-box with a _duplicated_ CTA on Discounts and Media). Use the single `EmptyState` component (`packages/ui/src/components/data/empty-state.tsx`) everywhere:
+The audit found three treatments (an inline icon-left card on Home; a bare gray box with no CTA on Orders; a module-card-wrapping-a-gray-box with a _duplicated_ CTA on Discounts and Media). Use the single `EmptyState` component (`packages/ui/src/components/data/empty-state.tsx`) everywhere:
 
 - Centered: icon-in-circle, title, **one-line** description, **one** action.
-- Rendered **directly** in the content region (or as the `DataTable` zero-row fallback) — **never** double-nested (stripe Card → gray box → content).
+- Rendered **directly** in the content region (or as the `DataTable` zero-row fallback) — **never** double-nested (module Card → gray box → content).
 - The action is `Button variant="module"`. It must **not** duplicate the header's primary action — if the header already has "Create discount", the empty state either has no button or a clearly distinct affordance (e.g. "Import"). A list whose header carries the create action shows a buttonless empty state.
 - The bare-gray-box-with-no-CTA (Orders) gains a CTA; the indigo CTA (Discounts) becomes `variant="module"`.
 
@@ -172,10 +176,11 @@ Three KPI surfaces today (4 bordered cards on Home; 4 gray cards 2×2 on Commerc
 
 ## 10. Section / Nav-Card Grid — `Card variant="module"` + `Grid`
 
-Five variants in the audit (Home "Active modules", Commerce "Manage", Email "Surfaces", Settings, B2B "What ships") differing on columns, top-stripe, and whether the whole card or a button navigates. One pattern:
+Five variants in the audit (Home "Active modules", Commerce "Manage", Email "Surfaces", Settings, B2B "What ships") differing on columns, tint treatment, and whether the whole card or a button navigates. One pattern:
 
-- `Card variant="module"` (the 3px `--module-active` top stripe, `card.tsx:11`) in a responsive `Grid` (3-col wide → 1-col mobile).
+- `Card variant="module"` (a subtle `--module-active` tint over the surface — `color-mix(in oklab, var(--module-active) 12%, var(--color-bg-surface))`, theme-aware, `card.tsx`) in a responsive `Grid` (3-col wide → 1-col mobile).
 - Card content: icon + title + one-line description + optional status/"Soon" badge.
+- **On a dense cross-module page, tint only ONE card per module hue** — the section's "primary" card — and leave every other card plain (neutral), so the tint stays a signal, not a wash. `OverviewCard` takes a `plain` prop that renders `variant="default"` for the non-primary cards.
 - **Whole card is the link.** No "Open" button/link in the corner (drop the Settings "Open" and Email "Open X" buttons); a disabled/"Soon" card is non-interactive with a muted badge.
 - **This grid is a _launchpad_, not navigation chrome.** It appears on the Module Overview (§12) and the Settings Index (§4) as a rich, described entry point — never as the _only_ way to reach a section (the contextual sidebar in §11 is the persistent nav). The B2B/AI/Dropship "What ships" grid is the same component with a "Planned" badge.
 
@@ -330,4 +335,4 @@ The three layout primitives (built 2026-05-31 — pure layout containers; action
 - [23-frontend-component-architecture.md](23-frontend-component-architecture.md) — the primitives, CVA pattern, token rules this doc composes.
 - [24-dashboard-shell.md](24-dashboard-shell.md) — the chrome around the working area.
 - [18-frontend-architecture.md](18-frontend-architecture.md) — app-level architecture.
-- [sparx-brand-guide.md](sparx-brand-guide.md) — module colors, the wordmark, the 3px stripe.
+- [sparx-brand-guide.md](sparx-brand-guide.md) — module colors, the wordmark, the module tint.

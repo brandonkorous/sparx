@@ -27,11 +27,16 @@ import type {
 } from '../_data/overview';
 import type { PaymentConfigState, SparxPayBalance } from '../payments/actions';
 
-// The Finance Overview cards (docs/110 Slice 2). Each card is one financial signal,
-// wrapped in its own <ModuleProvider> so color follows functionality (docs/109,
-// CLAUDE.md): commerce hue for acceptance/payouts/channels, invoicing for receivables,
-// neutral platform for the sparx bill — money-out never wears a commerce color (F4).
-// Every card carries a calm empty/zero state; nothing renders a broken metric.
+// The Finance Overview cards (docs/110 Slice 2). Each card is one financial signal.
+// Finance owns a hue now (docs/109), so a tinted card wears the Finance green and a
+// finance signal stays finance-colored even when surfaced inside another module (e.g.
+// the Payouts card on the Commerce overview).
+//
+// Tint follows the module-card-tint rule (root CLAUDE.md): on a hue-dense page tint
+// only ONE card per hue — the headline "primary" — and leave the rest plain, so the
+// screen reads as wayfinding rather than competing washes. Every card is finance-hue,
+// so exactly one passes `primary` (the page decides which); the rest drop to a neutral
+// surface but keep their green icon. Every card carries a calm empty/zero state.
 
 const GATEWAY_LABEL: Record<string, string> = {
   sparx_pay: 'sparx Pay',
@@ -45,6 +50,7 @@ function OverviewCard({
   icon: Icon,
   title,
   badge,
+  plain,
   children,
 }: {
   module: SparxModule;
@@ -52,11 +58,15 @@ function OverviewCard({
   icon: LucideIcon;
   title: string;
   badge?: React.ReactNode;
+  /** Tint the card with the module hue when false; render a neutral surface when
+   *  true. Per the one-primary-card-per-hue rule, only the page's anchor card is
+   *  tinted — the rest pass plain (their icon stays module-colored regardless). */
+  plain?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <ModuleProvider module={module} className="h-full">
-      <Card variant="module" className="flex h-full flex-col">
+      <Card variant={plain ? 'default' : 'module'} className="flex h-full flex-col">
         <CardHeader>
           <Stack direction="row" align="center" gap={2} className="justify-between">
             <Stack direction="row" align="center" gap={2}>
@@ -115,15 +125,22 @@ function EmptyState({ text }: { text: string }) {
   );
 }
 
-export function PaymentsCard({ payments }: { payments: PaymentConfigState }) {
+export function PaymentsCard({
+  payments,
+  primary,
+}: {
+  payments: PaymentConfigState;
+  primary?: boolean;
+}) {
   const live = payments.isActive;
   const label = GATEWAY_LABEL[payments.gatewayId] ?? payments.gatewayId;
   return (
     <OverviewCard
-      module="commerce"
+      module="finance"
       href="/finance/payments"
       icon={Wallet}
       title="Payments"
+      plain={!primary}
       badge={
         <Badge color={live ? 'success' : 'warning'} variant="soft">
           {live ? 'Accepting payments' : 'Setup needed'}
@@ -141,29 +158,27 @@ export function PaymentsCard({ payments }: { payments: PaymentConfigState }) {
 export function PayoutsCard({
   balance,
   settlement,
+  primary,
 }: {
   balance: SparxPayBalance | null;
   settlement: SettlementSummary | null;
+  primary?: boolean;
 }) {
+  let badge: React.ReactNode;
+  let body: React.ReactNode;
+
   if (balance) {
     const cadence =
       balance.payoutInterval && balance.payoutInterval !== 'manual'
         ? `${statusLabel(balance.payoutInterval)} payouts`
         : null;
-    return (
-      <OverviewCard
-        module="commerce"
-        href="/finance/payouts"
-        icon={Banknote}
-        title="Payouts"
-        badge={
-          cadence ? (
-            <Badge color="neutral" variant="soft">
-              {cadence}
-            </Badge>
-          ) : undefined
-        }
-      >
+    badge = cadence ? (
+      <Badge color="neutral" variant="soft">
+        {cadence}
+      </Badge>
+    ) : undefined;
+    body = (
+      <>
         <Metric
           value={fmtCents(balance.availableCents, balance.currency)}
           label="Available to pay out"
@@ -171,40 +186,62 @@ export function PayoutsCard({
         <Text size="sm" variant="muted" className="mt-2">
           {fmtCents(balance.pendingCents, balance.currency)} settling
         </Text>
-      </OverviewCard>
+      </>
     );
-  }
-  if (settlement && settlement.orderCount > 0) {
-    return (
-      <OverviewCard module="commerce" href="/finance/payouts" icon={Banknote} title="Payouts">
+  } else if (settlement && settlement.orderCount > 0) {
+    body = (
+      <>
         <Metric value={fmtCents(settlement.pendingCents)} label="Pending marketplace settlement" />
         <Text size="sm" variant="muted" className="mt-2">
           {fmtCents(settlement.paidCents)} paid out · {settlement.orderCount} orders
         </Text>
-      </OverviewCard>
+      </>
     );
+  } else {
+    body = <EmptyState text="No payouts yet — finish sparx Pay setup to start receiving money." />;
   }
+
   return (
-    <OverviewCard module="commerce" href="/finance/payouts" icon={Banknote} title="Payouts">
-      <EmptyState text="No payouts yet — finish sparx Pay setup to start receiving money." />
+    <OverviewCard
+      module="finance"
+      href="/finance/payouts"
+      icon={Banknote}
+      title="Payouts"
+      plain={!primary}
+      badge={badge}
+    >
+      {body}
     </OverviewCard>
   );
 }
 
-export function ChannelsCard({ channels }: { channels: ChannelTotals }) {
+export function ChannelsCard({
+  channels,
+  primary,
+}: {
+  channels: ChannelTotals;
+  primary?: boolean;
+}) {
   if (channels.totalOrders === 0) {
     return (
-      <OverviewCard module="commerce" href="/finance/channels" icon={Store} title="Channels">
+      <OverviewCard
+        module="finance"
+        href="/finance/channels"
+        icon={Store}
+        title="Channels"
+        plain={!primary}
+      >
         <EmptyState text="No sales across your channels in the last 30 days yet." />
       </OverviewCard>
     );
   }
   return (
     <OverviewCard
-      module="commerce"
+      module="finance"
       href="/finance/channels"
       icon={Store}
       title="Channels"
+      plain={!primary}
       badge={
         <Badge color="neutral" variant="soft">
           {channels.rangeLabel}
@@ -223,14 +260,15 @@ export function ChannelsCard({ channels }: { channels: ChannelTotals }) {
   );
 }
 
-export function ReceivablesCard({ ar }: { ar: ArSummary }) {
+export function ReceivablesCard({ ar, primary }: { ar: ArSummary; primary?: boolean }) {
   if (ar.totalCount === 0) {
     return (
       <OverviewCard
-        module="invoicing"
+        module="finance"
         href="/finance/receivables"
         icon={ReceiptText}
         title="Receivables"
+        plain={!primary}
         badge={
           <Badge color="success" variant="soft">
             All current
@@ -244,10 +282,11 @@ export function ReceivablesCard({ ar }: { ar: ArSummary }) {
   const overdue = ar.overdue > 0;
   return (
     <OverviewCard
-      module="invoicing"
+      module="finance"
       href="/finance/receivables"
       icon={ReceiptText}
       title="Receivables"
+      plain={!primary}
       badge={
         overdue ? (
           <Badge color="danger" variant="soft">
@@ -268,63 +307,45 @@ export function ReceivablesCard({ ar }: { ar: ArSummary }) {
   );
 }
 
-export function SubscriptionCard({ sub }: { sub: SubscriptionSummary | null }) {
+export function SubscriptionCard({
+  sub,
+  primary,
+}: {
+  sub: SubscriptionSummary | null;
+  primary?: boolean;
+}) {
+  let badge: React.ReactNode;
+  let body: React.ReactNode;
+
   if (!sub) {
-    return (
-      <OverviewCard
-        module="platform"
-        href="/finance/subscription"
-        icon={CreditCard}
-        title="sparx subscription"
-      >
-        <EmptyState text="View your plan, status, and invoices." />
-      </OverviewCard>
+    body = <EmptyState text="View your plan, status, and invoices." />;
+  } else if (sub.planType === 'enterprise') {
+    badge = (
+      <Badge color="info" variant="soft">
+        Enterprise
+      </Badge>
     );
-  }
-  if (sub.planType === 'enterprise') {
-    return (
-      <OverviewCard
-        module="platform"
-        href="/finance/subscription"
-        icon={CreditCard}
-        title="sparx subscription"
-        badge={
-          <Badge color="info" variant="soft">
-            Enterprise
-          </Badge>
-        }
-      >
-        <Metric value="Managed" label="Your account team handles billing" />
-      </OverviewCard>
-    );
-  }
-  const interval = sub.billingInterval === 'annual' ? '/yr' : '/mo';
-  const status = sub.subscriptionStatus;
-  const nextBilling = fmtDate(sub.currentPeriodEnd);
-  const trialEnds = fmtDate(sub.trialEndsAt);
-  const sublabel =
-    status === 'trialing' && trialEnds
-      ? `Free trial ends ${trialEnds}`
-      : nextBilling
-        ? `Next billing ${nextBilling}`
-        : sub.billingActive
-          ? `${sub.planModuleCount} module${sub.planModuleCount === 1 ? '' : 's'} active`
-          : 'Billing isn’t live yet — this is what you’ll pay';
-  return (
-    <OverviewCard
-      module="platform"
-      href="/finance/subscription"
-      icon={CreditCard}
-      title="sparx subscription"
-      badge={
-        status ? (
-          <Badge color={statusTone(status)} variant="soft">
-            {statusLabel(status)}
-            {sub.cancelAtPeriodEnd ? ' · cancels' : ''}
-          </Badge>
-        ) : undefined
-      }
-    >
+    body = <Metric value="Managed" label="Your account team handles billing" />;
+  } else {
+    const interval = sub.billingInterval === 'annual' ? '/yr' : '/mo';
+    const status = sub.subscriptionStatus;
+    const nextBilling = fmtDate(sub.currentPeriodEnd);
+    const trialEnds = fmtDate(sub.trialEndsAt);
+    const sublabel =
+      status === 'trialing' && trialEnds
+        ? `Free trial ends ${trialEnds}`
+        : nextBilling
+          ? `Next billing ${nextBilling}`
+          : sub.billingActive
+            ? `${sub.planModuleCount} module${sub.planModuleCount === 1 ? '' : 's'} active`
+            : 'Billing isn’t live yet — this is what you’ll pay';
+    badge = status ? (
+      <Badge color={statusTone(status)} variant="soft">
+        {statusLabel(status)}
+        {sub.cancelAtPeriodEnd ? ' · cancels' : ''}
+      </Badge>
+    ) : undefined;
+    body = (
       <Metric
         value={
           <>
@@ -336,6 +357,19 @@ export function SubscriptionCard({ sub }: { sub: SubscriptionSummary | null }) {
         }
         label={sublabel}
       />
+    );
+  }
+
+  return (
+    <OverviewCard
+      module="finance"
+      href="/finance/subscription"
+      icon={CreditCard}
+      title="sparx subscription"
+      plain={!primary}
+      badge={badge}
+    >
+      {body}
     </OverviewCard>
   );
 }

@@ -127,6 +127,7 @@ import sitebuilderRoutes from './routes/v1/sitebuilder/index.js';
 import builderRoutes from './routes/v1/builder/index.js';
 import commerceRoutes from './routes/v1/commerce/index.js';
 import presetRoutes from './routes/v1/presets.js';
+import industryStarterRoutes from './routes/v1/industry-starters.js';
 import dropshipRoutes from './routes/v1/dropship/index.js';
 import inventoryRoutes from './routes/v1/inventory/index.js';
 import marketRoutes from './routes/v1/market/index.js';
@@ -807,6 +808,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(builderRoutes);
   await app.register(commerceRoutes);
   await app.register(presetRoutes);
+  await app.register(industryStarterRoutes);
   await app.register(dropshipRoutes);
   await app.register(inventoryRoutes);
   await app.register(channelRoutes);
