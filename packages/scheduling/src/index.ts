@@ -46,6 +46,14 @@ export {
   getCalendar,
 } from './booking-queries';
 export {
+  type BookingAuditAction,
+  type BookingTimelineEntry,
+  type CustomerBookingStats,
+  recordBookingEvent,
+  getBookingTimeline,
+  getCustomerBookingStats,
+} from './booking-history';
+export {
   createResource,
   updateResource,
   getResource,

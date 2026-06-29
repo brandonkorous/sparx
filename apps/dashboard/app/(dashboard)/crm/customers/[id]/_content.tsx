@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Building2, Mail, Phone, CreditCard, CheckSquare } from 'lucide-react';
+import { Building2, Mail, Phone, CreditCard, CheckSquare, CalendarClock } from 'lucide-react';
 
 import {
   Badge,
@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
   Heading,
+  ModuleProvider,
   Stack,
   statusLabel,
   statusTone,
@@ -75,6 +76,18 @@ interface B2bAccountSummary {
   status: string;
 }
 
+// Per-customer booking reliability (Scheduling module). Best-effort: the fetch
+// returns null when Scheduling is inactive, so the card only shows for tenants
+// that book this customer.
+interface CustomerBookingStats {
+  total: number;
+  completed: number;
+  cancelled: number;
+  noShow: number;
+  upcoming: number;
+  noShowRatePct: number;
+}
+
 // Detail content for a CRM customer. Mounted by both the full-page route
 // (crm/customers/[id]/page.tsx) and the dashboard shell's drawer / modal
 // panel. Container width + back chrome live in the route wrapper.
@@ -94,7 +107,7 @@ export async function CustomerDetailContent({ id }: Props) {
     throw err;
   }
 
-  const [activities, openTasks, b2bAccount, siteScope] = await Promise.all([
+  const [activities, openTasks, b2bAccount, siteScope, bookingStats] = await Promise.all([
     api.get<CustomerActivity[]>(`/v1/crm/activities?customer_id=${id}&limit=100`),
     api.get<CustomerTask[]>(`/v1/crm/tasks?customer_id=${id}&status=open&take=25`),
     customer.b2bAccountId
@@ -103,6 +116,7 @@ export async function CustomerDetailContent({ id }: Props) {
           .catch(() => null)
       : Promise.resolve(null),
     resolveSiteScope(),
+    api.get<CustomerBookingStats>(`/v1/scheduling/customers/${id}/booking-stats`).catch(() => null),
   ]);
 
   const displayName =
@@ -117,7 +131,10 @@ export async function CustomerDetailContent({ id }: Props) {
   );
 
   return (
-    <Stack gap={6}>
+    // @container so the two-column body responds to its OWN width — the same
+    // content mounts full-page (wide → 3-col) and in the detail drawer (narrow →
+    // stacked), so the rail never gets crushed into a horizontal scroll.
+    <Stack gap={6} className="@container">
       <Stack gap={2}>
         <Stack direction="row" align="center" gap={3} wrap>
           <Heading level={1}>{displayName}</Heading>
@@ -177,8 +194,8 @@ export async function CustomerDetailContent({ id }: Props) {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 gap-6 @[820px]:grid-cols-3">
+        <div className="@[820px]:col-span-2">
           <Tabs defaultValue="activity">
             <TabsList>
               <TabsTrigger value="activity">
@@ -324,7 +341,7 @@ export async function CustomerDetailContent({ id }: Props) {
           </Card>
 
           {siteScope.multiSite && (
-            <Card variant="module">
+            <Card variant="default">
               <CardHeader>
                 <CardTitle>Site</CardTitle>
               </CardHeader>
@@ -339,6 +356,10 @@ export async function CustomerDetailContent({ id }: Props) {
           )}
 
           {b2bAccount && <B2BAccountCard account={b2bAccount} />}
+
+          {bookingStats && bookingStats.total > 0 && (
+            <BookingReliabilityCard stats={bookingStats} />
+          )}
 
           <Card>
             <CardHeader>
@@ -382,6 +403,41 @@ function StatItem({ label, value }: { label: string; value: string }) {
   );
 }
 
+// Scheduling reliability — the "problematic client" view from the CRM side. Wears
+// the scheduling accent via a nested ModuleProvider (color-follows-functionality)
+// and flags repeated no-shows.
+function BookingReliabilityCard({ stats }: { stats: CustomerBookingStats }) {
+  const unreliable = stats.noShow >= 2 && stats.noShowRatePct >= 25;
+  return (
+    <ModuleProvider module="scheduling">
+      <Card variant="default">
+        <CardHeader>
+          <Stack direction="row" align="center" justify="between">
+            <Stack direction="row" align="center" gap={2}>
+              <CalendarClock className="h-4 w-4" />
+              <CardTitle>Bookings</CardTitle>
+            </Stack>
+            {unreliable && (
+              <Badge color="warning" variant="soft" size="sm">
+                High no-show rate
+              </Badge>
+            )}
+          </Stack>
+        </CardHeader>
+        <CardContent>
+          <Stack direction="row" gap={6} wrap>
+            <StatItem label="Total" value={String(stats.total)} />
+            <StatItem label="Completed" value={String(stats.completed)} />
+            <StatItem label="No-shows" value={String(stats.noShow)} />
+            <StatItem label="Cancelled" value={String(stats.cancelled)} />
+            <StatItem label="Upcoming" value={String(stats.upcoming)} />
+          </Stack>
+        </CardContent>
+      </Card>
+    </ModuleProvider>
+  );
+}
+
 function B2BAccountCard({
   account,
 }: {
@@ -400,7 +456,7 @@ function B2BAccountCard({
   const pct = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
 
   return (
-    <Card variant="module">
+    <Card variant="default">
       <CardHeader>
         <Stack direction="row" align="center" gap={2}>
           <Building2 className="h-4 w-4" />

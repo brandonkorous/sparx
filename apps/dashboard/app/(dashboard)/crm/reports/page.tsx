@@ -273,7 +273,7 @@ export default async function ReportsPage() {
         </Card>
 
         {snapshot.overdueTasks > 0 && (
-          <Card variant="module">
+          <Card variant="default">
             <CardContent>
               <Stack direction="row" align="center" gap={3}>
                 <AlertCircle className="h-5 w-5 text-[var(--color-warning-500)]" />

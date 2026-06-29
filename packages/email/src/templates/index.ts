@@ -23,3 +23,9 @@ export {
   domainRenewalReminderSubject,
   type DomainRenewalReminderEmailProps,
 } from './domain-renewal-reminder';
+
+export {
+  FeedbackResponseEmail,
+  feedbackResponseSubject,
+  type FeedbackResponseEmailProps,
+} from './feedback-response';

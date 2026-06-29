@@ -1,336 +1,137 @@
-import Link from 'next/link';
-import { requireSession, type ModuleSlug } from '@sparx/auth';
+import { requireSession } from '@sparx/auth';
+import { Container, Grid, Heading, Stack, Text } from '@sparx/ui';
+
+import { api } from '@/lib/api-rest-client';
 import { OnboardingBanner } from './_components/onboarding-banner';
 import { LegalReacceptBanner } from './_components/legal-reaccept-banner';
 import { loadOnboardingProgress } from './welcome/onboarding';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  Code,
-  Container,
-  EmptyState,
-  Grid,
-  Heading,
-  ModuleProvider,
-  Stack,
-  Stat,
-  Text,
-  type SparxModule,
-} from '@sparx/ui';
-import {
-  Building2,
-  CalendarClock,
-  Layers,
-  LayoutTemplate,
-  Mail,
-  MessagesSquare,
-  Package,
-  Plus,
-  ShoppingCart,
-  Sparkles,
-  Truck,
-  Users,
-} from 'lucide-react';
-import { api } from '@/lib/api-rest-client';
-import { OverviewChartCard, SAMPLE_REVENUE_14D } from './_components/overview-charts';
 
-// First real dashboard page. Minimal but representative — Stats row + active
-// modules grid + an empty-state placeholder for tasks. All DB-backed bits
-// resolve through api-rest (`/v1/dashboard/home`, `/v1/tenant/onboarding/progress`).
+import { loadDashboard } from './_home/data';
+import { RangeControl } from './_home/controls';
+import { CreateMenu } from './_home/create-menu';
+import { NeedsAttention } from './_home/needs-attention';
+import { KpiStrip } from './_home/kpi-strip';
+import { PerformancePanel } from './_home/performance-panel';
+import { ConversionFunnel } from './_home/funnel-card';
+import { TrafficSourcesCard, TopPagesCard } from './_home/acquisition';
+import { SalesByChannelCard, TopListsCard } from './_home/cards-commerce';
+import { CrmPipelineCard, EmailCard, ContentCard } from './_home/cards-engagement';
+import { ActivityFeed } from './_home/activity-feed';
+import { WebVitalsCard } from './_home/vitals-card';
 
-interface ModuleSummary {
-  id: SparxModule;
-  label: string;
-  description: string;
-  metric: string;
-  href: string;
-}
-
-interface ModuleEntry {
-  slug: ModuleSlug;
-  id: SparxModule;
-  href: string;
-  label: string;
-  description: string;
-  icon: React.ReactNode;
-}
+// The command center — the business-OS home. Not a launcher (the sidebar is
+// navigation): a one-screen, at-a-glance read on the whole business. Built on
+// the inverted pyramid — attention → KPIs → trend → funnel → module deep-dives
+// → activity — and ordered by the GA4 lifecycle (acquisition → engagement →
+// monetization → retention) so it stays a real command center for a content-only
+// tenant too. Everything is real, module-gated, fail-soft data (see _home/).
 
 export const dynamic = 'force-dynamic';
 
-// Single source of metadata for every module that can appear on the home
-// dashboard. The Active grid pulls from this filtered by enabled flag; the
-// Discover grid pulls from this filtered by the opposite. Slug values match
-// the ModuleSlug enum so they line up with /settings/modules.
-const MODULE_REGISTRY: ModuleEntry[] = [
-  {
-    slug: 'builder',
-    id: 'builder',
-    href: '/builder',
-    label: 'Builder',
-    description: 'Themes, layouts, pages, visual editor',
-    icon: <LayoutTemplate className="h-4 w-4" />,
-  },
-  {
-    slug: 'commerce',
-    id: 'commerce',
-    href: '/commerce',
-    label: 'Commerce',
-    description: 'Products, orders, checkout',
-    icon: <ShoppingCart className="h-4 w-4" />,
-  },
-  {
-    slug: 'cms',
-    id: 'cms',
-    href: '/cms',
-    label: 'CMS',
-    description: 'Pages, blog posts, media library',
-    icon: <Layers className="h-4 w-4" />,
-  },
-  {
-    slug: 'crm',
-    id: 'crm',
-    href: '/crm',
-    label: 'CRM',
-    description: 'Customers, pipeline, automation',
-    icon: <Users className="h-4 w-4" />,
-  },
-  {
-    slug: 'email',
-    id: 'email',
-    href: '/email',
-    label: 'Email',
-    description: 'Templates, broadcasts, flows',
-    icon: <Mail className="h-4 w-4" />,
-  },
-  {
-    slug: 'b2b',
-    id: 'b2b',
-    href: '/b2b',
-    label: 'B2B',
-    description: 'Wholesale, fleet, net terms',
-    icon: <Building2 className="h-4 w-4" />,
-  },
-  {
-    slug: 'scheduling',
-    id: 'scheduling',
-    href: '/scheduling',
-    label: 'Scheduling',
-    description: 'Appointments, classes, reservations',
-    icon: <CalendarClock className="h-4 w-4" />,
-  },
-  {
-    slug: 'dropship',
-    id: 'dropship',
-    href: '/dropship',
-    label: 'Dropship',
-    description: 'Suppliers, routing, reconciliation',
-    icon: <Truck className="h-4 w-4" />,
-  },
-  {
-    slug: 'chat',
-    id: 'chat',
-    href: '/chat',
-    label: 'Live Chat',
-    description: 'Widget, AI replies, staff inbox',
-    icon: <MessagesSquare className="h-4 w-4" />,
-  },
-  {
-    slug: 'ai',
-    id: 'ai',
-    href: '/ai',
-    label: 'AI',
-    description: 'MCP server, copilots, agents',
-    icon: <Sparkles className="h-4 w-4" />,
-  },
-];
-
-interface HomeResponse {
-  modules: { slug: string; enabled: boolean; metric: string | null }[];
+function greeting(): string {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 18) return 'Good afternoon';
+  return 'Good evening';
 }
 
-function joinHome(home: HomeResponse): {
-  active: ModuleSummary[];
-  inactive: ModuleEntry[];
-} {
-  const byslug = new Map(home.modules.map((m) => [m.slug, m]));
-  const active: ModuleSummary[] = [];
-  const inactive: ModuleEntry[] = [];
-  for (const entry of MODULE_REGISTRY) {
-    const state = byslug.get(entry.slug);
-    if (state?.enabled) {
-      active.push({
-        id: entry.id,
-        label: entry.label,
-        description: entry.description,
-        metric: state.metric ?? '—',
-        href: entry.href,
-      });
-    } else {
-      inactive.push(entry);
-    }
-  }
-  return { active, inactive };
-}
+const present = (v: unknown): boolean => v != null;
 
-export default async function DashboardHome() {
+export default async function DashboardHome({
+  searchParams,
+}: {
+  searchParams: Promise<{ range?: string; compare?: string; metric?: string }>;
+}): Promise<React.JSX.Element> {
+  const sp = await searchParams;
   const { user } = await requireSession();
-  const [home, onboarding, legalStatus] = await Promise.all([
-    api.get<HomeResponse>('/v1/dashboard/home'),
-    loadOnboardingProgress(user.tenantId),
+  const [data, onboarding, legalStatus] = await Promise.all([
+    loadDashboard(sp),
+    // Both banners are non-critical chrome — never let one failing read take
+    // down the whole command center.
+    loadOnboardingProgress(user.tenantId).catch(() => null),
     api.get<{ stale: string[] }>('/v1/me/legal-status').catch(() => ({ stale: [] as string[] })),
   ]);
-  const { active: activeModules, inactive: discoverModules } = joinHome(home);
+  const m = data.modules;
+  const showAcquisition =
+    m.has('builder') && (present(data.funnel) || present(data.sources) || present(data.topPages));
+  const showDeepDive =
+    (m.has('commerce') &&
+      (present(data.channels) || present(data.topProducts) || present(data.topCustomers))) ||
+    (m.has('crm') && present(data.crm)) ||
+    (m.has('email') && (present(data.email.overview) || present(data.email.growth))) ||
+    (m.has('cms') && present(data.cms.summary));
 
   return (
     <Container size="xl">
       <Stack gap={8} className="py-8">
-        <Stack direction="row" align="end" justify="between">
+        <Stack direction="row" align="end" justify="between" gap={4} className="flex-wrap">
           <Stack gap={1}>
-            <Heading level={1}>Good morning</Heading>
-            <Text variant="muted">Here&apos;s a quick snapshot of your site.</Text>
+            <Heading level={1}>{greeting()}</Heading>
+            <Text variant="muted">Your business at a glance · {data.range.label}</Text>
           </Stack>
-          <Button leftIcon={<Plus className="h-4 w-4" />}>New product</Button>
+          <Stack direction="row" align="center" gap={2} className="flex-wrap">
+            <RangeControl active={data.range.key} />
+            <CreateMenu modules={m} />
+          </Stack>
         </Stack>
 
         <LegalReacceptBanner staleDocs={legalStatus.stale} />
-        <OnboardingBanner progress={onboarding} />
+        {onboarding && <OnboardingBanner progress={onboarding} />}
 
-        <Grid cols={1} mdCols={2} lgCols={4} gap={4}>
-          <Stat
-            label="Revenue (30d)"
-            value="$12,408"
-            delta={{ value: '+12.4%', trend: 'up' }}
-            icon={<ShoppingCart className="h-4 w-4" />}
-          />
-          <Stat
-            label="Orders (30d)"
-            value="184"
-            delta={{ value: '+8 today', trend: 'up' }}
-            icon={<Package className="h-4 w-4" />}
-          />
-          <Stat
-            label="New customers"
-            value="42"
-            delta={{ value: '+3.2%', trend: 'up' }}
-            icon={<Users className="h-4 w-4" />}
-          />
-          <Stat
-            label="Storage"
-            value="48 GB"
-            delta={{ value: 'of 100', trend: 'neutral' }}
-            icon={<Layers className="h-4 w-4" />}
-          />
-        </Grid>
+        {/* 1 · Needs attention — collapses when clean. */}
+        <NeedsAttention items={data.actionItems} />
 
-        <Grid cols={1} mdCols={2} gap={4}>
-          <OverviewChartCard
-            title="Revenue"
-            description="Net revenue, last 14 days"
-            data={SAMPLE_REVENUE_14D}
-            series={[{ key: 'revenue', label: 'Revenue', color: 'commerce' }]}
-            type="area"
-            format="currency"
-          />
-          <OverviewChartCard
-            title="Orders"
-            description="Orders placed, last 14 days"
-            data={SAMPLE_REVENUE_14D}
-            series={[{ key: 'orders', label: 'Orders', color: 'commerce' }]}
-            type="bar"
-            format="number"
-          />
-        </Grid>
+        {/* 2 · Headline KPIs. */}
+        <KpiStrip kpis={data.kpis} />
 
-        <Stack gap={3}>
-          <Stack direction="row" align="end" justify="between">
-            <Heading level={3}>Active modules</Heading>
-            <Text size="xs" variant="muted">
-              {activeModules.length} of 8 modules active
-            </Text>
-          </Stack>
-          <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
-            {activeModules.map((m) => (
-              <ModuleProvider key={m.id} module={m.id}>
-                <Card variant="module">
-                  <CardHeader>
-                    <CardDescription>{m.description}</CardDescription>
-                    <CardTitle>{m.label}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Stack direction="row" align="center" gap={2}>
-                      <Badge color="module">Active</Badge>
-                      <Text size="xs" variant="muted">
-                        {m.metric}
-                      </Text>
-                    </Stack>
-                  </CardContent>
-                  <CardFooter>
-                    <Button color="module" size="sm" asChild>
-                      <Link href={m.href}>Open</Link>
-                    </Button>
-                  </CardFooter>
-                </Card>
-              </ModuleProvider>
-            ))}
+        {/* 3 · Hero trend. */}
+        {data.perf && <PerformancePanel perf={data.perf} rangeLabel={data.range.label} />}
+
+        {/* 4 · Acquisition — funnel + sources + top pages. */}
+        {showAcquisition && (
+          <Grid cols={1} lgCols={3} gap={4}>
+            {data.funnel && <ConversionFunnel stages={data.funnel} isSample={data.funnelSample} />}
+            {data.sources && (
+              <TrafficSourcesCard sources={data.sources} isSample={data.sourcesSample} />
+            )}
+            {data.topPages && <TopPagesCard pages={data.topPages} isSample={data.topPagesSample} />}
           </Grid>
-        </Stack>
+        )}
 
-        <Stack gap={3}>
-          <Heading level={3}>Discover</Heading>
-          <Grid cols={1} mdCols={3} gap={4}>
-            {discoverModules.map((m) => (
-              <Link key={m.label} href={m.href} className="block">
-                <Card variant="subtle">
-                  <Stack gap={2}>
-                    <Stack direction="row" align="center" gap={2}>
-                      <span aria-hidden className="text-[var(--color-text-secondary)]">
-                        {m.icon}
-                      </span>
-                      <Text weight="medium">{m.label}</Text>
-                      <Badge color="info" variant="soft" size="sm">
-                        Preview
-                      </Badge>
-                    </Stack>
-                    <Text size="xs" variant="muted">
-                      {m.description}
-                    </Text>
-                  </Stack>
-                </Card>
-              </Link>
-            ))}
+        {/* 5 · Module deep-dives — GA4 lifecycle order, one tinted card per hue. */}
+        {showDeepDive && (
+          <Grid cols={1} lgCols={2} gap={4}>
+            {m.has('commerce') && data.channels && <SalesByChannelCard channels={data.channels} />}
+            {m.has('commerce') && (present(data.topProducts) || present(data.topCustomers)) && (
+              <TopListsCard products={data.topProducts} customers={data.topCustomers} />
+            )}
+            {m.has('crm') && data.crm && (
+              <CrmPipelineCard crm={data.crm} acquisition={data.acquisition} />
+            )}
+            {m.has('email') && (present(data.email.overview) || present(data.email.growth)) && (
+              <EmailCard overview={data.email.overview} growth={data.email.growth} />
+            )}
+            {m.has('cms') && data.cms.summary && (
+              <ContentCard
+                summary={data.cms.summary}
+                cadence={data.cms.cadence}
+                topContent={data.cms.topContent}
+              />
+            )}
           </Grid>
-        </Stack>
+        )}
 
-        <Stack gap={3}>
-          <Heading level={3}>Tasks</Heading>
-          <Card padding="none">
-            <EmptyState
-              icon={<Sparkles className="h-5 w-5" />}
-              title="No tasks for today"
-              description="When you have things to do, they'll show up here."
-              action={
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/cms/content">Create your first content</Link>
-                </Button>
-              }
-            />
-          </Card>
-        </Stack>
-
-        <Stack direction="row" align="center" gap={1}>
-          <Text size="xs" variant="muted">
-            Want to see every <Code>@sparx/ui</Code> component?
-          </Text>
-          <Button color="primary" variant="link" size="xs" asChild>
-            <Link href="/showcase">Visit /showcase</Link>
-          </Button>
-        </Stack>
+        {/* 6 · Recent activity (+ site speed when a site is live). */}
+        {m.has('builder') ? (
+          <Grid cols={1} lgCols={3} gap={4}>
+            <div className="lg:col-span-2">
+              <ActivityFeed items={data.activity} />
+            </div>
+            <WebVitalsCard vitals={data.vitals} />
+          </Grid>
+        ) : (
+          <ActivityFeed items={data.activity} />
+        )}
       </Stack>
     </Container>
   );

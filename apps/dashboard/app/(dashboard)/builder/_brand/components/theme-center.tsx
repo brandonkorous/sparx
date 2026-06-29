@@ -9,8 +9,11 @@
 //
 //   edit → compileThemeForTenant(themeKey, brand, presentation)
 //        → buildThemeCssV2(..., { rootSelector:'#st-theme-preview' })   ← scoped, instant
-//        → debounced updateBrand / updateSettings                       ← persists
+//        → (no autosave) the edit rides the unsaved draft                ← `dirty`
+//   Save → flushAll(): selectTheme + updateSettings + updateBrand + identity     ← persists
 //
+// Explicit-save (no autosave, docs/86): edits accumulate in the form and the Save
+// button persists the whole draft at once; a leave-guard confirms before discarding.
 // The same compile runs server-side on publish, so the showcase tells the truth.
 // Brand-owned slots persist via /v1/brand; presentation via the site config —
 // the two owners stay clean even though they share one form (docs/33 §3.6).
@@ -39,7 +42,6 @@ import {
   type PresentationOverlayV2,
 } from '@sparx/site-themes';
 import {
-  applySavedTheme,
   deleteSavedTheme,
   publishNow,
   saveTheme,
@@ -65,13 +67,17 @@ import { BrandThemeControls, type MediaState } from './brand-theme-controls';
 import { BrandPaletteImport, type AppliedRoles } from './brand-palette-import';
 import { ThemeShowcase } from './theme-showcase';
 import { SitePreviewFrame } from './site-preview-frame';
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
 type Mode = 'light' | 'dark';
-type SaveState = 'idle' | 'saving' | 'saved' | 'error';
+type SaveState = 'idle' | 'unsaved' | 'saving' | 'saved' | 'error';
 
-// Toolbar autosave label — mirrors the page/site editors' bx-savestate (docs/45).
+// Toolbar save-status label — Brand & Theme is explicit-save (no autosave, like
+// every other editor): control edits show "Unsaved changes" until the Save button
+// persists them (mirrors the page/site editors' bx-savestate slot, docs/45/86).
 const SAVE_LABEL: Record<SaveState, string> = {
   idle: '',
+  unsaved: 'Unsaved changes',
   saving: 'Saving…',
   saved: 'Saved',
   error: 'Save failed',
@@ -103,7 +109,7 @@ const COPYABLE_MODE_KEYS = [
 
 // The brand identity colours that carry a per-swatch "revert" affordance. Held
 // as the last-SAVED snapshot so a swatch only shows its reset control while it
-// differs from what's persisted (it clears once the debounced save commits).
+// differs from what's persisted (it clears once Save commits the draft).
 interface BrandColorSnapshot {
   colorPrimary: string | null;
   colorPrimaryForeground: string | null;
@@ -207,21 +213,6 @@ export interface ThemeCenterProps {
   // Where the live "Site" preview iframe points (docs/49) — the active site's
   // public origin + tenant/property slugs.
   sitePreview: SitePreviewConfig;
-  // ── Unified studio embedding (docs/builder/03 §2.3) ──────────────────────────
-  // 'page' (default): the standalone /builder/brand surface — toolbar, context bar,
-  // and the live preview column. 'inspector': mounted as the Theme-node inspector
-  // inside the unified studio — controls + theme switcher only; the studio CANVAS is
-  // the live preview, so this variant reports its compiled theme up via `onCanvasCss`
-  // (no own preview) and hides the global Save/Publish (the studio toolbar owns them).
-  variant?: 'page' | 'inspector';
-  // 'inspector' only: receives the compiled theme as CSS scoped to `.bx-canvas` on
-  // every edit, so the studio's page-in-chrome canvas re-themes live as you tune the
-  // brand — the "stacked Theme › Site › Page" feel (docs/builder/03 §2.3).
-  onCanvasCss?: (css: string) => void;
-  // 'inspector' only: the studio populates this with a force-flush of the debounced
-  // brand/site/settings autosave, so the unified toolbar's Save/Publish persists the
-  // latest theme edit before it acts (parity with the page/site flushSave).
-  flushRef?: React.MutableRefObject<(() => Promise<void>) | null>;
 }
 
 export function ThemeCenter({
@@ -232,9 +223,6 @@ export function ThemeCenter({
   savedThemes: initialSaved,
   media,
   sitePreview,
-  variant = 'page',
-  onCanvasCss,
-  flushRef,
 }: ThemeCenterProps) {
   // ── Per-site identity (persists on the Property, docs/49) ──────────────────
   // The customer-facing SITE name (Property.name) — NOT the tenant's legal name.
@@ -256,7 +244,7 @@ export function ThemeCenter({
     brand.colorSecondaryForeground
   );
   // Last-saved brand identity colours — drives each swatch's "revert" control so
-  // it only appears while a colour is edited-but-unsaved (see the brand autosave).
+  // it only appears while a colour is edited-but-unsaved (re-baselined on Save).
   const [savedBrandColors, setSavedBrandColors] = React.useState<BrandColorSnapshot>(() =>
     pickBrandColors(brand)
   );
@@ -285,9 +273,9 @@ export function ThemeCenter({
 
   const [savedThemes, setSavedThemes] = React.useState<SiteThemeDto[]>(initialSaved);
   // The saved theme currently selected for editing (null = editing a prebuilt
-  // base). When set, presentation edits write back into that theme (below).
-  // Seeded from the persisted draft so the rail restores the selection on reload
-  // — the pointer rides in draftSettings (see the settings autosave).
+  // base). When set, Save writes the brand + presentation back into that theme
+  // (flushAll). Seeded from the persisted draft so the rail restores the selection
+  // on reload — the pointer rides in draftSettings (persisted on Save).
   const [activeSavedThemeId, setActiveSavedThemeId] = React.useState<string | null>(
     config.draftSettings.activeSavedThemeId ?? null
   );
@@ -343,27 +331,13 @@ export function ThemeCenter({
   // on every edit). Separate from `css` only in selector scope.
   const rootCss = React.useMemo(() => buildThemeCssV2(compiled), [compiled]);
 
-  // Unified-studio embedding (docs/builder/03 §2.3): the SAME compiled theme scoped
-  // to the studio canvas, reported up on every edit so the page-in-chrome preview
-  // re-themes live. Only computed/reported in the 'inspector' variant.
-  const canvasCss = React.useMemo(
-    () =>
-      variant === 'inspector' ? buildThemeCssV2(compiled, { rootSelector: '.bx-canvas' }) : '',
-    [compiled, variant]
-  );
-  const onCanvasCssRef = React.useRef(onCanvasCss);
-  onCanvasCssRef.current = onCanvasCss;
-  React.useEffect(() => {
-    if (variant === 'inspector') onCanvasCssRef.current?.(canvasCss);
-  }, [canvasCss, variant]);
-
   // Which preview the right column shows: the component showcase (default) or the
   // tenant's live site in an iframe (docs/49). The site origin always resolves in
   // practice; guard anyway so a missing origin just hides the toggle.
   const [previewSurface, setPreviewSurface] = React.useState<'components' | 'site'>('components');
   const canPreviewSite = Boolean(sitePreview.origin && sitePreview.tenantSlug);
 
-  // ── Debounced autosave: brand ──────────────────────────────────────────────
+  // ── Brand patch (persisted on Save) ────────────────────────────────────────
   // The brand fields to persist. `businessName` is NOT here — it's deprecated as a
   // name source (the site name is Property.name, saved separately). For a primary
   // site this is the /v1/brand PATCH body; for a non-primary site the same field
@@ -451,138 +425,36 @@ export function ThemeCenter({
     });
   }, [site.isPrimary, site.id, brandPatch, currentBrand, baseBrand]);
 
+  // ── Explicit-save baselines (no autosave) ───────────────────────────────────
+  // The last-PERSISTED signature of each tracked slice. Edits diverge these from
+  // the live state → `dirty` (below) → the toolbar shows "Unsaved changes" and the
+  // Save button (flushAll) is the ONLY thing that persists, then re-baselines. The
+  // draft config-level tokens/customCss aren't edited here — passed through on save.
   const savedBrandRef = React.useRef(JSON.stringify(brandPatch));
-  React.useEffect(() => {
-    const cur = JSON.stringify(brandPatch);
-    if (cur === savedBrandRef.current) return;
-    setStatus('saving');
-    const t = setTimeout(() => {
-      void (async () => {
-        const res = await saveBrand();
-        if (res.ok) {
-          savedBrandRef.current = cur;
-          setSavedBrandColors(pickBrandColors(brandPatch));
-          setStatus('saved');
-        } else {
-          setError(res.error ?? 'Could not save your brand.');
-          setStatus('error');
-          toast.error(res.error ?? 'Could not save your brand changes.');
-        }
-      })();
-    }, 600);
-    return () => clearTimeout(t);
-  }, [brandPatch, saveBrand]);
-
-  // ── Debounced autosave: site name + social links (per-site, on the Property) ─
   const savedSiteRef = React.useRef(JSON.stringify({ name: siteName, socials }));
-  React.useEffect(() => {
-    if (!site.id) return; // brand-new tenant with no property yet — nothing to save
-    const cur = JSON.stringify({ name: siteName, socials });
-    if (cur === savedSiteRef.current) return;
-    setStatus('saving');
-    const t = setTimeout(() => {
-      void (async () => {
-        const cleanSocials = socials
-          .map((s) => ({ platform: s.platform.trim(), url: s.url.trim() }))
-          .filter((s) => s.platform && s.url);
-        const res = await updateSiteIdentity(site.id, {
-          name: siteName.trim() || undefined,
-          socials: cleanSocials,
-        });
-        if (res.ok) {
-          savedSiteRef.current = cur;
-          setStatus('saved');
-        } else {
-          setError(res.error ?? 'Could not save your site details.');
-          setStatus('error');
-          toast.error(res.error ?? 'Could not save your site details.');
-        }
-      })();
-    }, 600);
-    return () => clearTimeout(t);
-  }, [siteName, socials, site.id]);
-
-  // ── Write brand "look" edits back into the selected saved theme ─────────────
-  // Separate from the tenant-brand save above: that always persists to /v1/brand
-  // (so "apply to brand everywhere" works); this only fires when a saved theme is
-  // selected, snapshotting the look into it so re-applying it later restores the
-  // edit. On selection/apply/detach we re-baseline without writing.
-  const themeBrandBaselineRef = React.useRef<string | null>(null);
-  const prevActiveSavedRef = React.useRef<string | null>(null);
-  React.useEffect(() => {
-    const sid = activeSavedThemeId;
-    const cur = JSON.stringify(brandCols);
-    if (sid !== prevActiveSavedRef.current) {
-      prevActiveSavedRef.current = sid;
-      themeBrandBaselineRef.current = sid ? cur : null;
-      return;
-    }
-    if (!sid || cur === themeBrandBaselineRef.current) return;
-    const t = setTimeout(() => {
-      void (async () => {
-        const res = await updateSavedTheme(sid, { brand: brandCols });
-        if (res.ok && res.data) {
-          const saved = res.data;
-          themeBrandBaselineRef.current = cur;
-          setSavedThemes((s) => s.map((x) => (x.id === sid ? saved : x)));
-        } else {
-          setError(res.error ?? 'Could not update this theme.');
-          setStatus('error');
-        }
-      })();
-    }, 600);
-    return () => clearTimeout(t);
-  }, [brandCols, activeSavedThemeId]);
-
-  // ── Debounced autosave: presentation + active-theme pointer ─────────────────
-  // Both live in draftSettings, and updateSettings REPLACES that JSON, so they
-  // must save through ONE effect — two effects would each send a partial
-  // settings object and race on the full-replace, dropping a field. Fires when
-  // either the presentation overlay or the active-saved-theme pointer changes.
   const draftTokens = React.useRef(config.draftSettings.tokens);
   const draftCss = React.useRef(config.draftSettings.customCss);
-  const savedSettingsRef = React.useRef(JSON.stringify({ presentation, activeSavedThemeId }));
-  React.useEffect(() => {
-    const cur = JSON.stringify({ presentation, activeSavedThemeId });
-    if (cur === savedSettingsRef.current) return;
-    setStatus('saving');
-    const t = setTimeout(() => {
-      void (async () => {
-        const res = await updateSettings({
-          settings: {
-            tokens: draftTokens.current,
-            customCss: draftCss.current,
-            presentation,
-            activeSavedThemeId,
-          },
-        });
-        if (!res.ok) {
-          setError(res.error ?? 'Could not save theme settings.');
-          setStatus('error');
-          toast.error(res.error ?? 'Could not save theme settings.');
-          return;
-        }
-        // If a saved theme is selected, the same presentation edit also writes
-        // back into that theme so "select and tweak" actually modifies it.
-        const sid = activeSavedIdRef.current;
-        if (sid) {
-          const upd = await updateSavedTheme(sid, { presentation });
-          if (upd.ok && upd.data) {
-            const saved = upd.data;
-            setSavedThemes((s) => s.map((x) => (x.id === sid ? saved : x)));
-          } else {
-            setError(upd.error ?? 'Could not update this theme.');
-            setStatus('error');
-            savedSettingsRef.current = cur; // config saved — don't re-loop on it
-            return;
-          }
-        }
-        savedSettingsRef.current = cur;
-        setStatus('saved');
-      })();
-    }, 600);
-    return () => clearTimeout(t);
-  }, [presentation, activeSavedThemeId]);
+  const savedSettingsRef = React.useRef(
+    JSON.stringify({ themeKey, presentation, activeSavedThemeId, policy })
+  );
+
+  // True whenever any tracked slice diverges from its last-saved baseline. Reading
+  // the baseline refs in render is safe: they only change in lockstep with a state
+  // update (flushAll / the discrete theme actions), so a re-render always recomputes.
+  const dirty =
+    JSON.stringify(brandPatch) !== savedBrandRef.current ||
+    (Boolean(site.id) && JSON.stringify({ name: siteName, socials }) !== savedSiteRef.current) ||
+    JSON.stringify({ themeKey, presentation, activeSavedThemeId, policy }) !==
+      savedSettingsRef.current;
+
+  // Confirm before navigating away with unsaved edits (docs/86 leave-guard) — the
+  // platform pattern shared by every explicit-save editor.
+  useUnsavedGuard(dirty, { kind: 'edit', noun: 'theme' });
+
+  // What the toolbar's status slot shows: an in-flight save / its result wins,
+  // otherwise the dirty flag drives "Unsaved changes" vs the resting "Saved"/idle.
+  const saveState: SaveState =
+    status === 'saving' ? 'saving' : status === 'error' ? 'error' : dirty ? 'unsaved' : status;
 
   // ── Theme / saved-theme actions ────────────────────────────────────────────
 
@@ -602,8 +474,8 @@ export function ThemeCenter({
   };
 
   // Apply a pasted sparx palette (docs/33 brand colours) by driving the same
-  // setters the swatches use — the brand autosave then persists it to the right
-  // scope (base brand / per-site override). "Keep current" roles arrive as null.
+  // setters the swatches use — Save then persists it to the right scope (flushAll:
+  // base brand / per-site override). "Keep current" roles arrive as null.
   const applyPalette = (roles: AppliedRoles) => {
     if (roles.primary) {
       setColorPrimary(roles.primary.fill);
@@ -627,28 +499,13 @@ export function ThemeCenter({
     // …and adopts the preset's palette: without this, brand primary/accent
     // overrides would keep the old colours and the theme would look "not applied".
     clearBrandColorOverrides();
-    startTransition(async () => {
-      setStatus('saving');
-      const res = await selectTheme(key);
-      if (res.ok) setStatus('saved');
-      else {
-        setError(res.error ?? 'Could not switch theme.');
-        setStatus('error');
-      }
-    });
+    // No immediate persist — the new base + cleared overrides ride the unsaved
+    // draft until Save (flushAll persists the base preset via selectTheme).
   };
 
   const onPolicyChange = (p: AppearancePolicy) => {
+    // Persisted on Save (flushAll → updateSettings appearancePolicy).
     setPolicy(p);
-    startTransition(async () => {
-      setStatus('saving');
-      const res = await updateSettings({ appearancePolicy: p });
-      if (res.ok) setStatus('saved');
-      else {
-        setError(res.error ?? 'Could not save appearance.');
-        setStatus('error');
-      }
-    });
   };
 
   const onSaveCurrent = (name: string) => {
@@ -666,8 +523,8 @@ export function ThemeCenter({
         const created = res.data;
         setSavedThemes((s) => [...s, created]);
         // The freshly-saved theme becomes the one you're editing, so further
-        // tweaks flow back into it. The settings autosave (keyed on
-        // activeSavedThemeId) then persists the pointer.
+        // tweaks flow back into it on Save (the active-theme pointer rides the
+        // unsaved draft until then).
         setActiveSavedThemeId(created.id);
         setStatus('saved');
         toast.success(`Saved “${name}” to your themes.`);
@@ -726,13 +583,11 @@ export function ThemeCenter({
     setThemeKey(t.basePresetKey);
     setPresentation(t.presentation);
     // Load the theme's captured brand "look" into state. That changes the brand
-    // form, so the brand autosave persists it through saveBrand() — which routes
-    // to the RIGHT place for the active site (docs/49): the tenant base brand for
-    // the primary site, or THIS site's override for a non-primary one. So applying
-    // a theme on a non-primary site recolours only that site, never the base. The
-    // server apply endpoint writes the per-site config (preset/presentation) only,
-    // never the brand. Legacy themes with no snapshot (brand === null) leave the
-    // current brand untouched.
+    // form; on Save, flushAll persists it through saveBrand() — which routes to the
+    // RIGHT place for the active site (docs/49): the tenant base brand for the
+    // primary site, or THIS site's override for a non-primary one. So applying a
+    // theme on a non-primary site recolours only that site, never the base. Legacy
+    // themes with no snapshot (brand === null) leave the current brand untouched.
     const tb = t.brand;
     if (tb) {
       setColorPrimary(tb.colorPrimary ?? null);
@@ -744,39 +599,23 @@ export function ThemeCenter({
       setFontHeading(tb.fontHeading ?? null);
       setFontBody(tb.fontBody ?? null);
       setTokens(tb.tokens ?? {});
-      // The brand autosave (saveBrand) persists these to the right scope, so seed
-      // the "saved" baseline now — no stale per-swatch revert affordance flashes.
+      // Seed the per-swatch "saved" baseline to the theme's colours now, so the
+      // swatch revert affordances don't all flash (Save persists via saveBrand).
       setSavedBrandColors(pickBrandColors(tb));
     }
-    // This saved theme is now the one being edited — presentation AND brand edits
-    // write back into it (see the autosave effects).
+    // This saved theme is now the one being edited — Save persists the base preset
+    // + presentation + the active-theme pointer, and writes brand/presentation
+    // edits back into it (flushAll). No immediate persist: it rides the unsaved
+    // draft until Save, so the live preview updates now and the store updates on Save.
     setActiveSavedThemeId(id);
-    // The apply endpoint persists base + presentation + the active-theme pointer
-    // server-side; mark the settings snapshot as saved so the autosave effect
-    // doesn't redundantly re-PATCH them.
-    savedSettingsRef.current = JSON.stringify({
-      presentation: t.presentation,
-      activeSavedThemeId: id,
-    });
-    startTransition(async () => {
-      setStatus('saving');
-      const res = await applySavedTheme(id);
-      if (res.ok) {
-        setStatus('saved');
-        toast.success(`Applied “${t.name}”.`);
-      } else {
-        setError(res.error ?? 'Could not apply this theme.');
-        setStatus('error');
-        toast.error(res.error ?? 'Could not apply this theme.');
-      }
-    });
+    toast(`Loaded “${t.name}” — Save to apply it.`);
   };
 
   // ── Toolbar: switcher · new/rename/delete · save · publish (docs/45 parity) ──
   // The brand editor adopts the page/site editors' toolbar so all three Builder
   // surfaces share one shape. The theme switcher (saved + prebuilt) replaces the
-  // old "My themes" rail; New saves the current look as a theme; Save force-flushes
-  // the debounced autosave; Publish compiles the draft into the live storefront.
+  // old "My themes" rail; New saves the current look as a theme; Save persists the
+  // draft (explicit-save); Publish compiles the draft into the live storefront.
   const [renaming, setRenaming] = React.useState(false);
   const [nameDraft, setNameDraft] = React.useState('');
   const skipRenameCommit = React.useRef(false);
@@ -829,17 +668,22 @@ export function ThemeCenter({
     onRenameSaved(id, name);
   };
 
-  // Force-flush the debounced autosave: persist brand + settings + site identity
-  // now, awaitably. The standalone "Save" wraps this in a transition; the unified
-  // studio (docs/builder/03) awaits it via `flushRef` before Save/Publish so the
-  // latest theme edit lands first. Returns true on full success.
+  // Persist the WHOLE draft (explicit-save): the base preset, the settings overlay
+  // (tokens/customCss/presentation/active-theme pointer/appearance policy), the
+  // brand, the per-site identity, and — when a saved theme is active — a writeback
+  // of the brand + presentation into it ("select and tweak"). The Save button wraps
+  // this in a transition; Publish awaits it first. Returns true on full success;
+  // a no-op true when nothing is dirty.
   const flushAll = React.useCallback(async (): Promise<boolean> => {
+    if (!dirty) return true;
     setStatus('saving');
     const cleanSocials = socials
       .map((s) => ({ platform: s.platform.trim(), url: s.url.trim() }))
       .filter((s) => s.platform && s.url);
-    const [b, s, identity] = await Promise.all([
-      saveBrand(),
+    // The base preset and the settings JSON both live on the config row, so persist
+    // the preset first, then the independent endpoints in parallel.
+    const themeRes = await selectTheme(themeKey);
+    const [settingsRes, brandRes, identityRes, writebackRes] = await Promise.all([
       updateSettings({
         settings: {
           tokens: draftTokens.current,
@@ -847,45 +691,66 @@ export function ThemeCenter({
           presentation,
           activeSavedThemeId,
         },
+        appearancePolicy: policy,
       }),
+      saveBrand(),
       site.id
         ? updateSiteIdentity(site.id, {
             name: siteName.trim() || undefined,
             socials: cleanSocials,
           })
         : Promise.resolve({ ok: true } as const),
+      activeSavedThemeId
+        ? updateSavedTheme(activeSavedThemeId, { brand: brandCols, presentation })
+        : Promise.resolve({ ok: true } as const),
     ]);
-    if (b.ok && s.ok && identity.ok) {
+    if (themeRes.ok && settingsRes.ok && brandRes.ok && identityRes.ok && writebackRes.ok) {
       savedBrandRef.current = JSON.stringify(brandPatch);
       setSavedBrandColors(pickBrandColors(brandPatch));
-      savedSettingsRef.current = JSON.stringify({ presentation, activeSavedThemeId });
+      savedSettingsRef.current = JSON.stringify({
+        themeKey,
+        presentation,
+        activeSavedThemeId,
+        policy,
+      });
       savedSiteRef.current = JSON.stringify({ name: siteName, socials });
+      if ('data' in writebackRes && writebackRes.data) {
+        const saved = writebackRes.data;
+        setSavedThemes((list) => list.map((x) => (x.id === saved.id ? saved : x)));
+      }
       setStatus('saved');
       return true;
     }
-    const identityErr = 'error' in identity ? identity.error : undefined;
-    setError((b.ok ? (s.ok ? identityErr : s.error) : b.error) ?? 'Could not save.');
+    setError(
+      themeRes.error ??
+        settingsRes.error ??
+        brandRes.error ??
+        ('error' in identityRes ? identityRes.error : undefined) ??
+        ('error' in writebackRes ? writebackRes.error : undefined) ??
+        'Could not save.'
+    );
     setStatus('error');
     toast.error('Could not save your changes.');
     return false;
-  }, [socials, saveBrand, presentation, activeSavedThemeId, site.id, siteName, brandPatch]);
+  }, [
+    dirty,
+    socials,
+    saveBrand,
+    presentation,
+    activeSavedThemeId,
+    themeKey,
+    policy,
+    site.id,
+    siteName,
+    brandPatch,
+    brandCols,
+  ]);
 
   const onSaveNow = () => {
     startTransition(() => {
       void flushAll();
     });
   };
-
-  // Expose the awaitable flush to the unified studio's toolbar (docs/builder/03 §2.8).
-  const flushAllRef = React.useRef(flushAll);
-  flushAllRef.current = flushAll;
-  React.useEffect(() => {
-    if (!flushRef) return;
-    flushRef.current = () => flushAllRef.current().then(() => undefined);
-    return () => {
-      flushRef.current = null;
-    };
-  }, [flushRef]);
 
   // Publish compiles the draft theme's light tokens into the live storefront
   // (docs/51) — the same backend the storefront reads. Gated behind a confirm.
@@ -899,6 +764,9 @@ export function ThemeCenter({
       });
       if (!ok) return;
       startTransition(async () => {
+        // Save any unsaved edits first, so Publish always pushes what's on screen.
+        const saved = await flushAll();
+        if (!saved) return; // flushAll surfaced the save error already
         setStatus('saving');
         const res = await publishNow();
         if (res.ok) {
@@ -936,8 +804,8 @@ export function ThemeCenter({
     })();
   };
 
-  // The theme switcher (saved + prebuilt dropdown) + new/rename/delete — shared by
-  // the standalone toolbar and the unified-studio Theme inspector (docs/builder/03).
+  // The theme switcher (saved + prebuilt dropdown) + new/rename/delete, in the
+  // Brand & Theme toolbar.
   const themeChooser = renaming ? (
     <Input
       ref={renameInputRef}
@@ -1110,36 +978,6 @@ export function ThemeCenter({
     />
   );
 
-  // Unified-studio Theme inspector (docs/builder/03 §2.3): the theme switcher,
-  // Light/Dark + Copy-to-mode, and the full controls — but NO Save/Publish (the
-  // studio toolbar owns them) and NO preview column (the studio CANVAS is the live
-  // preview, re-themed via `onCanvasCss`). Save status rides the studio toolbar.
-  if (variant === 'inspector') {
-    return (
-      <div className="bx-theme-ins">
-        <div className="bx-theme-ins__switch">{themeChooser}</div>
-        <div className="bx-theme-ins__actions">
-          {themeActions}
-          {paletteImport}
-        </div>
-        <div className="bx-theme-ins__modes">
-          <div className="bx-toolbar__devices">{lightDarkToggle}</div>
-          <Button
-            size="sm"
-            variant="ghost"
-            leftIcon={<Copy className="h-3.5 w-3.5" />}
-            onClick={onCopyToOtherMode}
-            disabled={pending}
-            title={`Copy the ${mode} palette onto ${otherMode} mode`}
-          >
-            Copy to {otherMode}
-          </Button>
-        </div>
-        {controls}
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col">
       {/* Toolbar — the shared Builder shape (docs/45): theme switcher (saved +
@@ -1168,20 +1006,20 @@ export function ThemeCenter({
         </Button>
 
         <div className="bx-toolbar__actions">
-          {status !== 'idle' ? (
+          {saveState !== 'idle' ? (
             <span
               className="bx-savestate"
-              data-state={status}
-              title={status === 'error' ? (error ?? undefined) : undefined}
+              data-state={saveState}
+              title={saveState === 'error' ? (error ?? undefined) : undefined}
             >
-              {SAVE_LABEL[status]}
+              {SAVE_LABEL[saveState]}
             </span>
           ) : null}
           <Button
             size="sm"
             variant="soft"
             leftIcon={<Save className="h-3.5 w-3.5" />}
-            disabled={pending}
+            disabled={pending || !dirty}
             onClick={onSaveNow}
           >
             Save
@@ -1202,8 +1040,8 @@ export function ThemeCenter({
       <div className="bx-ctx">
         <span className="bx-ctx__lead">Your brand identity &amp; theme</span>
         <span className="bx-ctx__note">
-          Pick a theme, tune identity and surfaces, and preview live below. Edits save to your
-          draft; <strong>Publish</strong> pushes the theme across your site.
+          Pick a theme, tune identity and surfaces, and preview live below. <strong>Save</strong>{' '}
+          keeps your changes; <strong>Publish</strong> pushes the theme across your site.
         </span>
       </div>
 

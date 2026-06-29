@@ -228,7 +228,7 @@ export function MenuEditor({
 
   return (
     <Stack gap={5}>
-      <Card variant="module">
+      <Card variant="default">
         <CardHeader>
           <Heading level={3}>Menu name</Heading>
           <CardDescription>
@@ -251,7 +251,7 @@ export function MenuEditor({
         </CardContent>
       </Card>
 
-      <Card variant="module">
+      <Card variant="default">
         <CardHeader>
           <Stack direction="row" align="center" justify="between">
             <Stack gap={1}>

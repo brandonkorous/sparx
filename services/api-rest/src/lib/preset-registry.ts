@@ -28,6 +28,7 @@ import { b2bPresets, crmPresets, invoicingPresets } from '@sparx/crm';
 import { withTenant, type TenantContext } from '@sparx/db';
 import { conflict, moduleDisabled, notFound } from '@sparx/api-core/errors';
 
+import { aiPresets } from './presets/ai';
 import { cmsPresets } from './presets/cms';
 import { emailPresets } from './presets/email';
 import { schedulingPresets } from './presets/scheduling';
@@ -44,6 +45,7 @@ export const presetRegistry = new ModulePresetRegistry([
   ...cmsPresets,
   ...schedulingPresets,
   ...emailPresets,
+  ...aiPresets,
 ]);
 
 /** Narrow the listing to one module and/or one preset kind (e.g. the fitment

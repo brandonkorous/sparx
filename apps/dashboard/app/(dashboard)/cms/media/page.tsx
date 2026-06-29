@@ -97,7 +97,7 @@ function MediaCard({ asset }: { asset: MediaAsset }) {
   const isImage = asset.mime_type.startsWith('image/');
 
   return (
-    <Card variant="module" padding="none">
+    <Card variant="default" padding="none">
       <EntityRowLink
         href={`/cms/media/${asset.id}`}
         entityType="media"

@@ -161,14 +161,21 @@
   align-items: center;
   justify-content: center;
   gap: 0.5ch;
-  height: var(--st-size-field);
-  padding-inline: 0.95rem;
+  /* Size derives from the tenant `--st-size-field` base unit (daisyUI model) —
+     parity with site-ui button.css: padding + font-size are unitless multiples
+     of the 0.25rem field unit (default = md), NOT a fixed height. So the global
+     Field-size token scales every button, and the showcase matches the storefront. */
+  --sfx-btn-px: 6;
+  --sfx-btn-py: 3;
+  --sfx-btn-fs: 4;
+  padding: calc(var(--st-size-field, 0.25rem) * var(--sfx-btn-py))
+    calc(var(--st-size-field, 0.25rem) * var(--sfx-btn-px));
   border-radius: var(--st-radius-field);
   border: var(--st-border-width) solid transparent;
   font: inherit;
   font-weight: 600;
-  font-size: 0.82rem;
-  line-height: 1;
+  font-size: calc(var(--st-size-field, 0.25rem) * var(--sfx-btn-fs));
+  line-height: 1.2;
   white-space: nowrap;
   cursor: pointer;
   transition: filter 0.15s ease;
@@ -180,9 +187,10 @@
   width: 100%;
 }
 #st-theme-preview .sfx-btn-sm {
-  height: calc(var(--st-size-field) * 0.82);
-  padding-inline: 0.7rem;
-  font-size: 0.78rem;
+  /* Smaller multipliers off the same field unit (parity with .st-btn--sz-sm). */
+  --sfx-btn-px: 4;
+  --sfx-btn-py: 2;
+  --sfx-btn-fs: 3.5;
 }
 #st-theme-preview .sfx-btn-primary {
   background: var(--st-primary);
@@ -311,14 +319,20 @@
 /* ── Inputs ───────────────────────────────────────────────────────────────── */
 #st-theme-preview .sfx-input {
   width: 100%;
-  height: var(--st-size-field);
-  padding-inline: 0.7rem;
+  /* Size derives from `--st-size-field` (daisyUI model) — parity with site-ui
+     input.css: padding + font-size are multiples of the field unit, not a fixed
+     height. */
+  --sfx-input-px: 3;
+  --sfx-input-py: 2;
+  --sfx-input-fs: 4;
+  padding: calc(var(--st-size-field, 0.25rem) * var(--sfx-input-py))
+    calc(var(--st-size-field, 0.25rem) * var(--sfx-input-px));
   border-radius: var(--st-radius-field);
   border: var(--st-border-width) solid var(--st-border);
   background: var(--st-base-100);
   color: var(--st-base-content);
   font: inherit;
-  font-size: 0.82rem;
+  font-size: calc(var(--st-size-field, 0.25rem) * var(--sfx-input-fs));
 }
 #st-theme-preview .sfx-input::placeholder {
   color: var(--st-text-muted);

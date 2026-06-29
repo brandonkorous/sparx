@@ -147,6 +147,15 @@ module "pubsub" {
     "email.send"            = ["email-worker"]
     "email.domain.verified" = []
 
+    # In-product feedback (docs/112). api-rest publishes feedback.submitted when a
+    # dashboard user files feedback; the admin app publishes feedback.responded
+    # when staff reply. Topic-only (empty list = no idle pull subscription) —
+    # the staff notification + analytics consumers ride the automation fan-in /
+    # future admin worker, and the response EMAIL goes via the email.send topic
+    # above (the admin publisher composes the email.send payload directly).
+    "feedback.submitted" = []
+    "feedback.responded" = []
+
     # Web push (docs/69 A-6) — chat escalation fans out push.send per recipient;
     # push-worker (Cloud Run) delivers to staff browser subscriptions via VAPID.
     "push.send" = ["push-worker"]

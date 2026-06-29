@@ -59,6 +59,7 @@ const STARTERS: IndustryStarter[] = [
       ...refs('crm', 'vip-customers', 'email-engaged'),
       ...refs('cms', 'content-testimonial', 'nav-starter'),
       ...refs('email', 'newsletter-campaign', 'promo-campaign'),
+      ...refs('ai', 'ai-prompt-library-core'),
     ],
   },
   {
@@ -80,6 +81,7 @@ const STARTERS: IndustryStarter[] = [
       ...refs('crm', 'vip-customers'),
       ...refs('cms', 'content-recipe', 'nav-starter'),
       ...refs('email', 'newsletter-campaign'),
+      ...refs('ai', 'ai-prompt-library-core'),
     ],
   },
   {
@@ -103,6 +105,7 @@ const STARTERS: IndustryStarter[] = [
       ...refs('crm', 'support'),
       ...refs('cms', 'content-faq', 'nav-starter'),
       ...refs('email', 'newsletter-campaign'),
+      ...refs('ai', 'ai-prompt-library-core'),
     ],
   },
   {
@@ -126,6 +129,7 @@ const STARTERS: IndustryStarter[] = [
       ...refs('invoicing', 'retail-quote'),
       ...refs('cms', 'content-faq', 'nav-starter'),
       ...refs('email', 'newsletter-campaign'),
+      ...refs('ai', 'ai-prompt-library-core'),
     ],
   },
   {
@@ -141,6 +145,7 @@ const STARTERS: IndustryStarter[] = [
       ...refs('cms', 'content-testimonial', 'nav-starter'),
       ...refs('commerce', 'tax-us-sales', 'payments-manual-offline'),
       ...refs('email', 'promo-campaign'),
+      ...refs('ai', 'ai-prompt-library-core'),
     ],
   },
   {
@@ -156,6 +161,7 @@ const STARTERS: IndustryStarter[] = [
       ...refs('cms', 'nav-starter'),
       ...refs('commerce', 'payments-manual-offline'),
       ...refs('email', 'newsletter-campaign'),
+      ...refs('ai', 'ai-prompt-library-core'),
     ],
   },
   {
@@ -171,6 +177,7 @@ const STARTERS: IndustryStarter[] = [
       ...refs('crm', 'b2b-sales'),
       ...refs('cms', 'content-faq', 'nav-starter'),
       ...refs('email', 'newsletter-campaign'),
+      ...refs('ai', 'ai-prompt-library-core'),
     ],
   },
   {
@@ -193,6 +200,7 @@ const STARTERS: IndustryStarter[] = [
       ...refs('invoicing', 'deposit-progress', 'retail-line-types'),
       ...refs('cms', 'nav-starter'),
       ...refs('email', 'newsletter-campaign'),
+      ...refs('ai', 'ai-prompt-library-core'),
     ],
   },
 ];

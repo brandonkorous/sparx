@@ -11,6 +11,14 @@ import { colorClass, treatmentVariants, type ColorKey } from '../_recipes/varian
 // extensible) is applied as a role-var class; `variant` (treatment), `size` and
 // `shape` are CVA variants. color × variant composes through the --c-* role vars.
 
+// Icon slot — `inline-flex items-center` centers the glyph in its own box. The
+// span wrapper is needed for `shrink-0`, but a bare lucide `<svg>` inside renders
+// `display:inline`, which drags a baseline/descender gap below it and floats the
+// icon a couple px above the text's optical center (the classic icon-vs-label
+// misalignment). Centering the icon inside the wrapper removes that gap so the
+// glyph sits true to the label across every button on the platform.
+const ICON_SLOT = 'inline-flex shrink-0 items-center';
+
 const buttonVariants = cva(
   [
     'inline-flex items-center justify-center',
@@ -95,10 +103,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             {loading ? (
               <Spinner size="sm" />
             ) : (
-              leftIcon && <span className="shrink-0">{leftIcon}</span>
+              leftIcon && <span className={ICON_SLOT}>{leftIcon}</span>
             )}
             <Slottable>{children}</Slottable>
-            {rightIcon && !loading && <span className="shrink-0">{rightIcon}</span>}
+            {rightIcon && !loading && <span className={ICON_SLOT}>{rightIcon}</span>}
           </Slot>
         );
       }
@@ -117,9 +125,13 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         aria-busy={loading || undefined}
         {...props}
       >
-        {loading ? <Spinner size="sm" /> : leftIcon && <span className="shrink-0">{leftIcon}</span>}
+        {loading ? (
+          <Spinner size="sm" />
+        ) : (
+          leftIcon && <span className={ICON_SLOT}>{leftIcon}</span>
+        )}
         {children}
-        {rightIcon && !loading && <span className="shrink-0">{rightIcon}</span>}
+        {rightIcon && !loading && <span className={ICON_SLOT}>{rightIcon}</span>}
       </button>
     );
   }

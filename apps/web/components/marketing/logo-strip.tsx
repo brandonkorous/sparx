@@ -43,31 +43,38 @@ export function LogoStrip() {
             — and growing
           </span>
         </div>
-        <div
-          className="mkt-cluster"
-          style={{
-            justifyContent: 'space-between',
-            gap: '32px',
-            rowGap: '20px',
-          }}
-        >
-          {LOGOS.map((logo, i) => (
-            <div key={logo.name} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <LogoMark index={i} />
-              <span
+        {/* Continuous marquee — the list is rendered twice so the -50% scroll
+            loops seamlessly (see .mkt-marquee in marketing.css). */}
+        <div className="mkt-marquee">
+          <div className="mkt-marquee-track">
+            {[...LOGOS, ...LOGOS].map((logo, i) => (
+              <div
+                key={i}
+                aria-hidden={i >= LOGOS.length}
                 style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: 500,
-                  fontSize: '18px',
-                  letterSpacing: '-0.02em',
-                  color: 'var(--color-text-primary)',
-                  whiteSpace: 'nowrap',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  paddingRight: '56px',
+                  flexShrink: 0,
                 }}
               >
-                {logo.name}
-              </span>
-            </div>
-          ))}
+                <LogoMark index={i % LOGOS.length} />
+                <span
+                  style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontWeight: 500,
+                    fontSize: '18px',
+                    letterSpacing: '-0.02em',
+                    color: 'var(--color-text-primary)',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {logo.name}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </Container>
     </section>

@@ -1,8 +1,8 @@
 # sparx Platform — Finance Hub
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-26
+**Last Updated:** 2026-06-29
 
 > **Status: PLANNED.** This is the feature definition + binding decisions; the phased _how_ lives in
 > its companion [110-finance-hub-build-plan.md](110-finance-hub-build-plan.md). It **consolidates**
@@ -104,6 +104,22 @@ no module hue of its own). It registers in the shell like Settings does.
   deep-links to its source. No placeholder/stubbed cards — that would fail the entire brief.
 - **D6 — IA first, go-live second.** Consolidate the surfaces against the existing backends; drive the
   Stripe go-live (live keys, end-to-end) after. Each ships independently (deploy-early).
+- **D7 — Finance owns a hue ("money green" `#16A34A`).** Added in v1.2 (2026-06-29). Finance stays
+  platform-level (no manifest fee), but it owns a module color in `@sparx/ui` (`MODULE_COLORS`) so its
+  hub pops and a finance signal reads as finance wherever it appears — the rail icon, the contextual
+  panel, every `/finance/*` page, and an embedded finance panel in another module (e.g. the Payouts
+  card on the Commerce overview, via a nested `<ModuleProvider module="finance">`). On the Overview the
+  one-primary-card-per-hue rule applies: only the cash-in hero carries the green tint; every other
+  finance card stays plain. **This supersedes the original "neutral chrome / commerce-orange acceptance
+  / invoicing-lime AR / neutral sparx bill" framing** in §4 — finance is no longer hueless. Green-600 is
+  deliberately deeper than the emerald success token (`#10B981`) so chrome never reads as a status.
+- **D8 — Finance is an upsell surface.** It's the one screen every tenant opens for money, so an OFF
+  money-in capability (Commerce / Invoicing / B2B) is surfaced as an opportunity in a **"Grow how you
+  get paid"** subsection — _off-not-empty_ (gated by `isModuleEnabled`, which honors the `BUNDLED_FREE`
+  graph, so Invoicing is never pitched to a Commerce/B2B tenant). Each upsell card wears its **target
+  module's hue** (one card per hue) so it reads as an opportunity, not a finance signal; the CTA
+  activates the module (modules-not-plans). For a content-only tenant this subsection IS the "You get
+  paid" content.
 
 **Phases in the build plan mean _build order_, not scope tiers.** The whole surface is committed; nothing
 here is an "MVP slice" deferred to "if there's time."
@@ -112,18 +128,20 @@ here is an "MVP slice" deferred to "if there's time."
 
 ## 4. Information architecture
 
-A platform-level hub at `/finance` with section nav. Chrome stays neutral; each section wears the hue of
-the money it surfaces via a nested `<ModuleProvider>` (color-follows-functionality) — commerce-orange
-for acceptance/payouts/channels, the invoicing hue for AR, neutral for the sparx bill.
+A platform-level hub at `/finance` with section nav. **Finance owns "money green" `#16A34A` (D7)** — the
+rail icon, contextual panel, and every `/finance/*` page wear it, and an embedded finance signal in
+another module wears it via a nested `<ModuleProvider module="finance">`. On the Overview only the one
+**cash-in hero** is tinted (one-primary-card-per-hue); every other finance card stays plain. _(v1.1 and
+earlier described neutral chrome with per-section commerce/invoicing hues — superseded by D7.)_
 
-| Section                | Route                   | Absorbs / sources                                       | Purpose                                                                                                                                                                                          |
-| ---------------------- | ----------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Overview**           | `/finance`              | new; reads existing APIs                                | The "one screen": gateway status, payout balance + next payout, marketplace settlement owed, AR + aging, 30-day revenue, and a **separated** _"You pay sparx"_ card. Every card deep-links down. |
-| **Payments**           | `/finance/payments`     | Settings → Payments **+ PayPal**                        | The single door to "how I accept money": gateway choice + Connect onboarding + PayPal.                                                                                                           |
-| **Payouts**            | `/finance/payouts`      | Connect payouts + sparx.market settlement + ACH account | "Where your money lands" — consolidates the two payout stories into one.                                                                                                                         |
-| **Channels**           | `/finance/channels`     | Channel-revenue report                                  | Revenue / fees / net by channel. Rows deep-link to Settings → Channels to connect/sync (D4).                                                                                                     |
-| **Receivables**        | `/finance/receivables`  | Invoicing + B2B AR                                      | AR aging + recent payments rollup; deep-links into the Invoicing module to author (D4).                                                                                                          |
-| **sparx subscription** | `/finance/subscription` | Settings → Billing (`@sparx/billing`)                   | "You pay sparx," visually separated from money-in. Plan, status, Stripe portal.                                                                                                                  |
+| Section                | Route                   | Absorbs / sources                                       | Purpose                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ---------------------- | ----------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Overview**           | `/finance`              | new; reads existing APIs                                | The platform's **money dashboard**: a headline KPI strip (revenue · available to pay out · outstanding AR · what you pay sparx), a cash-in **trend chart**, payout balance + recent payouts, AR aging + collections health, channel mix, payment status, the sparx plan + per-module breakdown, and a **"Grow how you get paid"** upsell subsection (D8). **Adaptive** by tenant — a commerce shop sees the full dashboard, a service/invoicing tenant sees cash-collected + AR, a content-only publisher sees the upsell menu. Money-flow split + every card deep-links down. |
+| **Payments**           | `/finance/payments`     | Settings → Payments **+ PayPal**                        | The single door to "how I accept money": gateway choice + Connect onboarding + PayPal.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **Payouts**            | `/finance/payouts`      | Connect payouts + sparx.market settlement + ACH account | "Where your money lands" — consolidates the two payout stories into one.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **Channels**           | `/finance/channels`     | Channel-revenue report                                  | Revenue / fees / net by channel. Rows deep-link to Settings → Channels to connect/sync (D4).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **Receivables**        | `/finance/receivables`  | Invoicing + B2B AR                                      | AR aging + recent payments rollup; deep-links into the Invoicing module to author (D4).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| **sparx subscription** | `/finance/subscription` | Settings → Billing (`@sparx/billing`)                   | "You pay sparx," visually separated from money-in. Plan, status, Stripe portal.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 
 ### 4.1 The money-flow split (the visual contract)
 
@@ -170,6 +188,16 @@ Both gaps are closed. GAP A shipped as a small additive read (no schema change);
 new — the unscoped aging endpoint already aggregates across Invoicing and B2B. Details in the build
 plan ([110 §4](110-finance-hub-build-plan.md#4-data-reads-to-add)).
 
+**Overview expanded to the full money dashboard (v1.2, 2026-06-29)** on the same real-data discipline.
+Beyond the cards above it now composes, all live and guarded: `revenue-summary` + `revenue-timeseries`
+(the cash-in KPI + trend), `invoicing/reports/collected-timeseries` (the store-less cash-in fallback —
+cash collected when there's no storefront), `invoicing/reports/collections` (avg days-to-pay, deposits),
+`invoicing/reports/customer-breakdown` (who owes the most), and `market/settlement/runs` (recent
+payouts). The **one** concession to D5 is the cash-in trend _chart_: when an active selling tenant has no
+orders in the window yet it shows a clearly-badged illustrative series (the platform's
+`liveOr`/`SampleBadge` convention) and auto-flips to real on the first sale — the sanctioned pattern
+across every module overview, not a stubbed card. KPI/summary figures are always real or "—".
+
 ---
 
 ## 7. Non-goals
@@ -192,6 +220,8 @@ plan ([110 §4](110-finance-hub-build-plan.md#4-data-reads-to-add)).
 - The **Overview** shows every card in [§6](#6-overview-data-sources-and-the-two-real-gaps) backed by live
   data, each deep-linking to its source (D5).
 - The **money-flow split** ([§4.1](#41-the-money-flow-split-the-visual-contract)) is visually unmistakable.
+- Finance **owns its hue** (D7) — green rail icon/panel/pages, one tinted Overview card — and doubles as
+  an **upsell surface** (D8): off money-in modules surface in "Grow how you get paid."
 - Payment acceptance has **one door**; Commerce → Providers no longer shows a `payment` kind (D2).
 - Settings → Payments / Billing / channel-revenue **redirect** into Finance; no duplicated live surface.
 - sparx.market payouts/settlement appear under Finance → Payouts; participation/profile/listings remain in

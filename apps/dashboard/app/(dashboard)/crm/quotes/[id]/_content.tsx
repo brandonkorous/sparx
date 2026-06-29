@@ -91,7 +91,9 @@ export async function QuoteDetailContent({ id }: Props) {
     : null;
 
   return (
-    <Stack gap={6}>
+    // @container so the body responds to its OWN width — full-page (wide) vs. the
+    // detail drawer (narrow), where viewport breakpoints would crush the columns.
+    <Stack gap={6} className="@container">
       <Stack gap={2}>
         <Stack direction="row" align="center" justify="between" wrap gap={3}>
           <Stack direction="row" align="center" gap={3} wrap>
@@ -121,7 +123,7 @@ export async function QuoteDetailContent({ id }: Props) {
         </Stack>
       </Stack>
 
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 @[440px]:grid-cols-2 @[820px]:grid-cols-4">
         <Card variant="module">
           <CardContent className="py-4">
             <Stat
@@ -224,7 +226,7 @@ export async function QuoteDetailContent({ id }: Props) {
       </Card>
 
       {(quote.customerNote ?? quote.internalNote) && (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 @[680px]:grid-cols-2">
           {quote.customerNote && (
             <Card>
               <CardHeader>

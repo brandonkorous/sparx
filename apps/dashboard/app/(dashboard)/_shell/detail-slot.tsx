@@ -99,6 +99,7 @@ import { SubscriptionDetailContent } from '../commerce/subscriptions/[id]/_conte
 import { TaxZoneDetailContent } from '../commerce/tax/zones/[id]/_content';
 import { WarehouseDetailContent } from '../inventory/warehouses/[id]/_content';
 import { ComponentDetailContent } from '../builder/components/[type]/_content';
+import { BookingDetailContent } from '../scheduling/bookings/[id]/_content';
 
 // Server-only registry mapping a manifest entity type id → its detail content
 // component. These are React Server Components that fetch their own data
@@ -146,6 +147,8 @@ const detailComponents: Record<string, DetailComponent> = {
   'tax-zone': TaxZoneDetailContent,
   // Builder
   'builder-component': ComponentDetailContent,
+  // Scheduling
+  booking: BookingDetailContent,
 };
 
 // Each entity type's owning module. The `@detail` slot renders OUTSIDE any
@@ -216,7 +219,8 @@ const detailModules: Record<string, SparxModule> = {
   'gift-card': 'commerce',
   'account-credit': 'commerce',
   discount: 'commerce',
-  // Scheduling — create-only overlays (lists edit via a self-owned modal)
+  // Scheduling — service/resource/policy are create-only overlays (lists edit via
+  // a self-owned modal); booking ALSO has a detail view (registered above).
   service: 'scheduling',
   resource: 'scheduling',
   'booking-policy': 'scheduling',

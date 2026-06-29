@@ -1,4 +1,5 @@
 import { Section, SectionHeader, Spark } from './primitives';
+import { Reveal } from './reveal';
 
 const OLD_STACK = [
   {
@@ -56,7 +57,7 @@ const NEW_STACK = [
 export function StackReplacement() {
   return (
     <Section id="platform" padding="lg">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
+      <Reveal style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
         <SectionHeader
           headline={
             <>
@@ -179,7 +180,7 @@ export function StackReplacement() {
             ))}
           </Panel>
         </div>
-      </div>
+      </Reveal>
     </Section>
   );
 }

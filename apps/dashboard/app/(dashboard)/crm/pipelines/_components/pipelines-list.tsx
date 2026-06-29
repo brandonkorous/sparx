@@ -148,7 +148,7 @@ export function PipelinesList({ pipelines, view }: PipelinesListProps) {
   const card: SelectionCard<PipelineRow> = {
     title: (p) => nameCell(p, 'hover:text-[var(--module-active)] hover:underline'),
     render: (p) => (
-      <Card variant={p.archivedAt ? 'default' : 'module'}>
+      <Card variant="default">
         <CardHeader>
           <Stack direction="row" align="center" justify="between" wrap>
             <Stack gap={1}>

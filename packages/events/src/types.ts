@@ -193,7 +193,17 @@ export type EventType =
   // ─── Import / Export (docs/68) ───────────────────────────────────────
   // Emitted by api-rest when a tenant submits a CSV import job. Consumed by
   // import-worker (Cloud Run) which processes rows and updates the job row.
-  | 'import.job.created';
+  | 'import.job.created'
+  // ─── In-product feedback (docs/112) ─────────────────────────────────
+  // A dashboard user submitted feedback (idea / problem / question / praise).
+  // Consumed for the admin-staff notification, analytics ingestion, and the
+  // automation fan-in. Published by api-rest on POST /v1/me/feedback.
+  | 'feedback.submitted'
+  // WizeWorks staff responded to a submission (a reply or a notify-worthy
+  // status change). Published by the admin app; consumed by email-worker
+  // (the feedback-response email) + analytics. Defined here so the future
+  // admin publisher shares the canonical name.
+  | 'feedback.responded';
 
 /** Payload for `domain.purchased`. Consumed by the domain-worker to poll DNS
  *  propagation and mark the domain active once resolved (docs/24 §4 step 5). */
@@ -264,7 +274,8 @@ export interface EmailSendPayload {
     | 'welcome-merchant'
     | 'email-verification'
     | 'domain-renewal-reminder'
-    | 'market-settlement-report';
+    | 'market-settlement-report'
+    | 'feedback-response';
   /** Shape is enforced by @sparx/email's TemplateSend.props on render. */
   props: Record<string, unknown>;
   /** Optional From override; defaults to SPARX_EMAIL_FROM env in worker. */
@@ -316,4 +327,31 @@ export interface VariantCostUpdatedPayload {
   basis: 'variant_cost' | 'supplier_cost';
   prevCostCents: number | null;
   newCostCents: number | null;
+}
+
+/** Payload for `feedback.submitted` (docs/112 §8). Published by api-rest when a
+ *  dashboard user files feedback; consumed by the admin-staff notification,
+ *  analytics ingestion, and the automation fan-in. The `context` is the captured
+ *  client context (docs/112 §4) — kept opaque here so the contract doesn't bind
+ *  to its exact shape. */
+export interface FeedbackSubmittedPayload {
+  submissionId: string;
+  source: 'button' | 'pulse' | 'command';
+  category: 'idea' | 'problem' | 'question' | 'praise';
+  subject: string | null;
+  sentiment: number | null;
+  /** Resolved route module, for "which surface generates friction" rollups. */
+  module: string | null;
+  submitterEmail: string | null;
+}
+
+/** Payload for `feedback.responded` (docs/112 §8). Published by the admin app
+ *  when staff reply or make a notify-worthy status change; consumed by
+ *  email-worker (the feedback-response email) + analytics. */
+export interface FeedbackRespondedPayload {
+  submissionId: string;
+  status: string;
+  /** The staff reply body, when the response carried one (vs. a silent status flip). */
+  messagePreview: string | null;
+  recipientEmail: string;
 }

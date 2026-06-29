@@ -46,6 +46,12 @@ model ApiKey {
   // on tool calls made with this key.
   createdByUserId String? @map("created_by_user_id") @db.Uuid
 
+  // Which AI client this key was issued for, set by the "Connect your assistant"
+  // flow (docs/07 §5): claude | chatgpt | copilot | custom (null = unspecified).
+  // Descriptive metadata only — it never affects verification or scope; it lets the
+  // AI Integrations dashboard label each connection by its client.
+  client String? @db.VarChar(24)
+
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 

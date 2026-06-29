@@ -48,7 +48,7 @@ export default async function CmsNavigationPage() {
             const existing = byLocation.get(location);
             const count = existing ? topLevelCount(existing.items) : 0;
             return (
-              <Card key={location} variant="module" padding="md">
+              <Card key={location} variant="default" padding="md">
                 <Stack direction="row" align="center" justify="between" gap={3}>
                   <Stack gap={1}>
                     <Stack direction="row" align="center" gap={2}>
@@ -78,7 +78,7 @@ export default async function CmsNavigationPage() {
             <Heading level={4}>Custom menus</Heading>
             <div className="grid gap-2">
               {customMenus.map((m) => (
-                <Card key={m.id} variant="module" padding="md">
+                <Card key={m.id} variant="default" padding="md">
                   <Stack direction="row" align="center" justify="between" gap={3}>
                     <Stack gap={1}>
                       <Heading level={4}>{m.name}</Heading>

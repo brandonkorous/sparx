@@ -113,7 +113,7 @@ export function SchemaEditor({
   return (
     <form onSubmit={onSubmit} noValidate>
       <Stack gap={5}>
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <Heading level={3}>Identity</Heading>
             <CardDescription>
@@ -179,7 +179,7 @@ export function SchemaEditor({
           </CardContent>
         </Card>
 
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <Heading level={3}>Schema JSON</Heading>
             <CardDescription>

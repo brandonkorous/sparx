@@ -23,6 +23,7 @@ import {
   BarList,
   Button,
   Container,
+  EmptyState,
   Grid,
   PageHeader,
   Stack,
@@ -33,10 +34,6 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  Timeline,
-  TimelineItem,
-  TimelineTime,
-  TimelineTitle,
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
@@ -45,20 +42,16 @@ import {
   CardLink,
   OverviewCard,
   OverviewRow,
-  SampleBadge,
   fmtMoneyCents,
   fmtNumber,
-  liveOr,
 } from '../_components/overview-bits';
 
 // B2B overview — the wholesale book at a glance: revenue pulse, the daily
 // action queue, A/R aging (the signature cashflow-risk card), open quotes, and
-// the account roster. KPIs, the action queue, A/R aging, the revenue chart, open
-// quotes, top accounts and price tiers are LIVE from /v1/b2b/reports/* (summary
-// + order/revenue timeseries + open-quotes + top-accounts), falling back to a
-// badged example only until the tenant has B2B data. Pending applications (no
-// application model) and the activity feed (no event log) stay sample. Warm
-// colors (amber/red) stay strictly semantic — overdue invoices, aging risk.
+// the account roster. Every section is wired to the live /v1/b2b/reports/*
+// endpoints; a section with no data yet renders a compact empty state rather
+// than illustrative sample data. Warm colors (amber/red) stay strictly semantic
+// — overdue invoices, aging risk.
 
 export const dynamic = 'force-dynamic';
 
@@ -134,32 +127,6 @@ function bucketLabel(bucket: string): string {
   });
 }
 
-// ── Sample data (shown badged only until the tenant has B2B data) ──
-
-const SAMPLE_REVENUE_14D: { label: string; revenue: number }[] = [
-  { label: 'May 31', revenue: 5120 },
-  { label: 'Jun 1', revenue: 4980 },
-  { label: 'Jun 2', revenue: 6240 },
-  { label: 'Jun 3', revenue: 5860 },
-  { label: 'Jun 4', revenue: 6580 },
-  { label: 'Jun 5', revenue: 6010 },
-  { label: 'Jun 6', revenue: 7340 },
-  { label: 'Jun 7', revenue: 6720 },
-  { label: 'Jun 8', revenue: 8210 },
-  { label: 'Jun 9', revenue: 7480 },
-  { label: 'Jun 10', revenue: 9120 },
-  { label: 'Jun 11', revenue: 8460 },
-  { label: 'Jun 12', revenue: 10240 },
-  { label: 'Jun 14', revenue: 9680 },
-];
-
-const SAMPLE_AGING: { label: string; value: number; display: string; color: string }[] = [
-  { label: 'Current', value: 34200, display: '$34,200', color: 'module' },
-  { label: '1–30 days', value: 11400, display: '$11,400', color: 'module' },
-  { label: '31–60 days', value: 4100, display: '$4,100', color: 'warning' },
-  { label: '60+ days', value: 2400, display: '$2,400', color: 'danger' },
-];
-
 interface QuoteRow {
   key: string;
   label: string;
@@ -170,58 +137,6 @@ interface QuoteRow {
   status: string;
   tone: string;
 }
-const SAMPLE_QUOTES: QuoteRow[] = [
-  {
-    key: 'Q-318',
-    label: 'Q-318',
-    account: 'Foglight Café',
-    value: '$2,840',
-    sent: 'Jun 12',
-    expires: 'Jun 19',
-    status: 'Sent',
-    tone: 'warning',
-  },
-  {
-    key: 'Q-317',
-    label: 'Q-317',
-    account: 'Meridian Offices',
-    value: '$5,210',
-    sent: 'Jun 10',
-    expires: 'Jun 17',
-    status: 'Sent',
-    tone: 'warning',
-  },
-  {
-    key: 'Q-315',
-    label: 'Q-315',
-    account: 'Harbor Grocery Co.',
-    value: '$8,900',
-    sent: 'Jun 8',
-    expires: 'Jun 15',
-    status: 'Sent',
-    tone: 'warning',
-  },
-  {
-    key: 'Q-314',
-    label: 'Q-314',
-    account: 'Tideline Coffee Club',
-    value: '$1,620',
-    sent: 'Jun 6',
-    expires: 'Jun 13',
-    status: 'Draft',
-    tone: 'neutral',
-  },
-  {
-    key: 'Q-311',
-    label: 'Q-311',
-    account: 'Granite City Diner',
-    value: '$3,400',
-    sent: 'Jun 3',
-    expires: 'Jun 10',
-    status: 'Draft',
-    tone: 'neutral',
-  },
-];
 
 interface AccountRow {
   key: string;
@@ -230,60 +145,12 @@ interface AccountRow {
   terms: string;
   spend: string;
 }
-const SAMPLE_TOP_ACCOUNTS: AccountRow[] = [
-  {
-    key: 'a1',
-    name: 'Foglight Café',
-    tier: 'Gold',
-    terms: 'Net 30 · 14 invoices',
-    spend: '$12,400',
-  },
-  {
-    key: 'a2',
-    name: 'Meridian Offices',
-    tier: 'Gold',
-    terms: 'Net 30 · 11 invoices',
-    spend: '$9,800',
-  },
-  {
-    key: 'a3',
-    name: 'Harbor Grocery Co.',
-    tier: 'Silver',
-    terms: 'Net 45 · 9 invoices',
-    spend: '$7,100',
-  },
-  {
-    key: 'a4',
-    name: 'Tideline Coffee Club',
-    tier: 'Silver',
-    terms: 'Net 15 · 7 invoices',
-    spend: '$4,900',
-  },
-];
 
 interface TierRow {
   key: string;
   name: string;
   accounts: string;
 }
-const SAMPLE_TIERS: TierRow[] = [
-  { key: 't1', name: 'Wholesale', accounts: '38 accounts' },
-  { key: 't2', name: 'Distributor', accounts: '9 accounts' },
-  { key: 't3', name: 'Office / Corporate', accounts: '17 accounts' },
-];
-
-const SAMPLE_APPLICATIONS = [
-  { name: 'Granite City Diner', meta: 'Applied Jun 12 · Net 30 requested', action: 'Approve' },
-  { name: 'Eastside Bakehouse', meta: 'Applied Jun 11 · Wholesale tier', action: 'Review' },
-  { name: 'Cloudpeak Catering', meta: 'Applied Jun 9 · Distributor tier', action: 'Review' },
-] as const;
-
-const SAMPLE_ACTIVITY = [
-  { title: 'New PO — Foglight Café ($2,840)', when: '2 hours ago', muted: false },
-  { title: 'Invoice paid — Meridian Offices ($5,210)', when: '5 hours ago', muted: false },
-  { title: 'Quote viewed — Harbor Grocery Co.', when: '1 day ago', muted: true },
-  { title: 'You approved Tideline Coffee Club', when: '2 days ago', muted: false },
-] as const;
 
 export default async function B2bPage() {
   await requireSession();
@@ -309,8 +176,7 @@ export default async function B2bPage() {
       ? ts.points
           .slice(-14)
           .map((p) => ({ label: bucketLabel(p.bucket), revenue: p.revenueCents / 100 }))
-      : null;
-  const rev14 = liveOr(revPoints, SAMPLE_REVENUE_14D);
+      : [];
   const aov30 =
     ts && ts.totals.ordersCount > 0
       ? Math.round(ts.totals.revenueCents / ts.totals.ordersCount)
@@ -345,51 +211,38 @@ export default async function B2bPage() {
             color: 'danger',
           },
         ]
-      : null;
-  const aging = liveOr(agingItems, SAMPLE_AGING);
+      : [];
 
   // Open quotes table.
-  const quoteRows: QuoteRow[] | null =
-    openQuotes && openQuotes.length > 0
-      ? openQuotes.map((q) => {
-          const meta = QUOTE_STATUS_TONE[q.status] ?? { tone: 'neutral', label: q.status };
-          return {
-            key: q.id,
-            label: q.quoteNumber,
-            account: q.account,
-            value: fmtMoneyCents(q.totalCents),
-            sent: shortDate(q.sentAt),
-            expires: shortDate(q.expiresAt),
-            status: meta.label,
-            tone: meta.tone,
-          };
-        })
-      : null;
-  const quotes = liveOr(quoteRows, SAMPLE_QUOTES);
+  const quoteRows: QuoteRow[] = (openQuotes ?? []).map((q) => {
+    const meta = QUOTE_STATUS_TONE[q.status] ?? { tone: 'neutral', label: q.status };
+    return {
+      key: q.id,
+      label: q.quoteNumber,
+      account: q.account,
+      value: fmtMoneyCents(q.totalCents),
+      sent: shortDate(q.sentAt),
+      expires: shortDate(q.expiresAt),
+      status: meta.label,
+      tone: meta.tone,
+    };
+  });
 
   // Top accounts by invoiced amount.
-  const accountRows: AccountRow[] | null =
-    topAccounts && topAccounts.length > 0
-      ? topAccounts.map((a) => ({
-          key: a.accountId,
-          name: a.name,
-          tier: a.tier ?? '—',
-          terms: `${a.paymentTerms ?? 'No terms'} · ${fmtNumber(a.invoiceCount)} invoice${a.invoiceCount === 1 ? '' : 's'}`,
-          spend: fmtMoneyCents(a.invoicedCents),
-        }))
-      : null;
-  const accounts = liveOr(accountRows, SAMPLE_TOP_ACCOUNTS);
+  const accountRows: AccountRow[] = (topAccounts ?? []).map((a) => ({
+    key: a.accountId,
+    name: a.name,
+    tier: a.tier ?? '—',
+    terms: `${a.paymentTerms ?? 'No terms'} · ${fmtNumber(a.invoiceCount)} invoice${a.invoiceCount === 1 ? '' : 's'}`,
+    spend: fmtMoneyCents(a.invoicedCents),
+  }));
 
   // Price tiers by account count.
-  const tierRows: TierRow[] | null =
-    summary && summary.byTier.length > 0
-      ? summary.byTier.map((t) => ({
-          key: t.tier,
-          name: t.tier,
-          accounts: `${fmtNumber(t.count)} account${t.count === 1 ? '' : 's'}`,
-        }))
-      : null;
-  const tiers = liveOr(tierRows, SAMPLE_TIERS);
+  const tierRows: TierRow[] = (summary?.byTier ?? []).map((t) => ({
+    key: t.tier,
+    name: t.tier,
+    accounts: `${fmtNumber(t.count)} account${t.count === 1 ? '' : 's'}`,
+  }));
 
   return (
     <Container size="xl">
@@ -486,66 +339,88 @@ export default async function B2bPage() {
           </ActionTile>
         </ActionQueue>
 
-        {/* Accounts receivable / aging (signature) + wholesale revenue chart */}
+        {/* Accounts receivable / aging (signature, tinted) + wholesale revenue chart */}
         <div className={AGING_ROW}>
           <OverviewCard
             title="Accounts receivable"
             icon={<Receipt className="h-4 w-4" />}
             description="Outstanding by age"
-            right={aging.isSample ? <SampleBadge reason="no-data" /> : undefined}
           >
-            <p className="text-[1.65rem] leading-none font-medium">
-              {summary ? fmtMoneyCents(summary.invoices.outstandingCents) : '—'}
-            </p>
-            <p className="mt-1.5 mb-4 text-sm text-[var(--color-text-tertiary)]">
-              Outstanding across{' '}
-              <span className="text-[var(--color-text-secondary)]">
-                {summary ? fmtNumber(summary.invoices.outstandingCount) : '—'} invoices
-              </span>
-            </p>
-            <BarList items={aging.data} />
-            {summary && summary.invoices.overdueCount > 0 ? (
-              <div className="mt-4 flex items-center gap-2 border-t border-[var(--color-border-default)] pt-3">
-                <AlertTriangle aria-hidden className="h-4 w-4 text-[var(--color-danger-text)]" />
-                <span className="text-xs text-[var(--color-text-tertiary)]">
-                  <span className="font-medium text-[var(--color-danger-text)]">
-                    {fmtNumber(summary.invoices.overdueCount)} past due
-                  </span>{' '}
-                  · oldest {fmtNumber(summary.invoices.oldestOverdueDays)} days
-                </span>
-              </div>
-            ) : null}
+            {summary && summary.invoices.outstandingCount > 0 ? (
+              <>
+                <p className="text-[1.65rem] leading-none font-medium">
+                  {fmtMoneyCents(summary.invoices.outstandingCents)}
+                </p>
+                <p className="mt-1.5 mb-4 text-sm text-[var(--color-text-tertiary)]">
+                  Outstanding across{' '}
+                  <span className="text-[var(--color-text-secondary)]">
+                    {fmtNumber(summary.invoices.outstandingCount)} invoices
+                  </span>
+                </p>
+                <BarList items={agingItems} />
+                {summary.invoices.overdueCount > 0 ? (
+                  <div className="mt-4 flex items-center gap-2 border-t border-[var(--color-border-default)] pt-3">
+                    <AlertTriangle
+                      aria-hidden
+                      className="h-4 w-4 text-[var(--color-danger-text)]"
+                    />
+                    <span className="text-xs text-[var(--color-text-tertiary)]">
+                      <span className="font-medium text-[var(--color-danger-text)]">
+                        {fmtNumber(summary.invoices.overdueCount)} past due
+                      </span>{' '}
+                      · oldest {fmtNumber(summary.invoices.oldestOverdueDays)} days
+                    </span>
+                  </div>
+                ) : null}
+              </>
+            ) : (
+              <EmptyState
+                icon={<Receipt className="h-5 w-5" />}
+                title="Nothing outstanding"
+                description="Unpaid invoices and their aging will show here."
+              />
+            )}
           </OverviewCard>
 
           <OverviewCard
             title="Wholesale revenue"
             icon={<TrendingUp className="h-4 w-4" />}
             description="Net B2B-portal sales · last 14 days"
-            right={rev14.isSample ? <SampleBadge reason="no-data" /> : undefined}
+            plain
           >
-            <AreaChart
-              data={rev14.data}
-              series={[{ key: 'revenue', label: 'Revenue', color: 'module' }]}
-              xKey="label"
-              height={210}
-              valueFormat="currency"
-              ariaLabel="Wholesale revenue, last 14 days"
-            />
-            <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
-              {[
-                ['Orders · 30d', ts ? fmtNumber(ts.totals.ordersCount) : '—'],
-                ['AOV', aov30 > 0 ? fmtMoneyCents(aov30) : '—'],
-                [
-                  'Outstanding A/R',
-                  summary ? fmtMoneyCents(summary.invoices.outstandingCents) : '—',
-                ],
-              ].map(([label, value]) => (
-                <div key={label}>
-                  <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
-                  <div className="font-medium">{value}</div>
+            {revPoints.length ? (
+              <>
+                <AreaChart
+                  data={revPoints}
+                  series={[{ key: 'revenue', label: 'Revenue', color: 'module' }]}
+                  xKey="label"
+                  height={210}
+                  valueFormat="currency"
+                  ariaLabel="Wholesale revenue, last 14 days"
+                />
+                <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
+                  {[
+                    ['Orders · 30d', ts ? fmtNumber(ts.totals.ordersCount) : '—'],
+                    ['AOV', aov30 > 0 ? fmtMoneyCents(aov30) : '—'],
+                    [
+                      'Outstanding A/R',
+                      summary ? fmtMoneyCents(summary.invoices.outstandingCents) : '—',
+                    ],
+                  ].map(([label, value]) => (
+                    <div key={label}>
+                      <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
+                      <div className="font-medium">{value}</div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            ) : (
+              <EmptyState
+                icon={<TrendingUp className="h-5 w-5" />}
+                title="No wholesale revenue yet"
+                description="Daily B2B-portal sales appear here once orders land."
+              />
+            )}
           </OverviewCard>
         </div>
 
@@ -554,158 +429,149 @@ export default async function B2bPage() {
           <OverviewCard
             title="Open quotes"
             icon={<FileText className="h-4 w-4" />}
-            right={
-              quotes.isSample ? (
-                <SampleBadge reason="no-data" />
-              ) : (
-                <CardLink href="/b2b/quotes">All quotes</CardLink>
-              )
-            }
+            right={<CardLink href="/b2b/quotes">All quotes</CardLink>}
+            plain
           >
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Quote</TableHead>
-                  <TableHead>Account</TableHead>
-                  <TableHead className="text-right">Value</TableHead>
-                  <TableHead className="text-right">Sent</TableHead>
-                  <TableHead className="text-right">Expires</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {quotes.data.map((q) => (
-                  <TableRow key={q.key}>
-                    <TableCell className="font-mono text-xs text-[var(--module-active-text)]">
-                      {q.label}
-                    </TableCell>
-                    <TableCell className="font-medium">{q.account}</TableCell>
-                    <TableCell className="text-right tabular-nums">{q.value}</TableCell>
-                    <TableCell className="text-right text-[var(--color-text-tertiary)] tabular-nums">
-                      {q.sent}
-                    </TableCell>
-                    <TableCell className="text-right text-[var(--color-text-tertiary)] tabular-nums">
-                      {q.expires}
-                    </TableCell>
-                    <TableCell>
-                      <Badge color={q.tone} variant="soft">
-                        {q.status}
-                      </Badge>
-                    </TableCell>
+            {quoteRows.length ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Quote</TableHead>
+                    <TableHead>Account</TableHead>
+                    <TableHead className="text-right">Value</TableHead>
+                    <TableHead className="text-right">Sent</TableHead>
+                    <TableHead className="text-right">Expires</TableHead>
+                    <TableHead>Status</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {quoteRows.map((q) => (
+                    <TableRow key={q.key}>
+                      <TableCell className="font-mono text-xs text-[var(--module-active-text)]">
+                        {q.label}
+                      </TableCell>
+                      <TableCell className="font-medium">{q.account}</TableCell>
+                      <TableCell className="text-right tabular-nums">{q.value}</TableCell>
+                      <TableCell className="text-right text-[var(--color-text-tertiary)] tabular-nums">
+                        {q.sent}
+                      </TableCell>
+                      <TableCell className="text-right text-[var(--color-text-tertiary)] tabular-nums">
+                        {q.expires}
+                      </TableCell>
+                      <TableCell>
+                        <Badge color={q.tone} variant="soft">
+                          {q.status}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <EmptyState
+                icon={<FileText className="h-5 w-5" />}
+                title="No open quotes"
+                description="Quotes awaiting a buyer response will show here."
+                action={
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/b2b/quotes/new">New quote</Link>
+                  </Button>
+                }
+              />
+            )}
           </OverviewCard>
 
           <OverviewCard
             title="Top accounts"
             icon={<Building2 className="h-4 w-4" />}
-            right={
-              accounts.isSample ? (
-                <SampleBadge reason="no-data" />
-              ) : (
-                <CardLink href="/b2b/accounts">All accounts</CardLink>
-              )
-            }
+            right={<CardLink href="/b2b/accounts">All accounts</CardLink>}
+            plain
           >
-            {accounts.data.map((a) => (
-              <OverviewRow
-                key={a.key}
-                icon={<Building2 className="h-4 w-4" />}
-                tone="module"
-                title={
-                  <span className="flex items-center gap-2">
-                    {a.name}
-                    {a.tier !== '—' ? (
-                      <Badge color="neutral" variant="soft">
-                        {a.tier}
-                      </Badge>
-                    ) : null}
-                  </span>
+            {accountRows.length ? (
+              accountRows.map((a) => (
+                <OverviewRow
+                  key={a.key}
+                  icon={<Building2 className="h-4 w-4" />}
+                  tone="module"
+                  title={
+                    <span className="flex items-center gap-2">
+                      {a.name}
+                      {a.tier !== '—' ? (
+                        <Badge color="neutral" variant="soft">
+                          {a.tier}
+                        </Badge>
+                      ) : null}
+                    </span>
+                  }
+                  hint={a.terms}
+                  right={a.spend}
+                />
+              ))
+            ) : (
+              <EmptyState
+                icon={<Building2 className="h-5 w-5" />}
+                title="No accounts yet"
+                description="Your highest-value wholesale accounts will rank here."
+                action={
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/b2b/accounts/new">New account</Link>
+                  </Button>
                 }
-                hint={a.terms}
-                right={a.spend}
               />
-            ))}
+            )}
           </OverviewCard>
         </div>
 
-        {/* Pending applications (sample) + price tiers (live) + recent activity (sample) */}
+        {/* Pending applications + price tiers + recent activity */}
         <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
           <OverviewCard
             title="Pending applications"
             icon={<CheckCircle2 className="h-4 w-4" />}
-            right={<SampleBadge />}
+            plain
           >
-            {SAMPLE_APPLICATIONS.map((app) => (
-              <OverviewRow
-                key={app.name}
-                icon={<Building2 className="h-4 w-4" />}
-                tone="warning"
-                title={app.name}
-                hint={app.meta}
-                right={
-                  app.action === 'Approve' ? (
-                    <Button asChild color="module" size="sm">
-                      <Link href="/b2b/accounts">Approve</Link>
-                    </Button>
-                  ) : (
-                    <Button asChild variant="ghost" size="sm">
-                      <Link href="/b2b/accounts">Review</Link>
-                    </Button>
-                  )
-                }
-              />
-            ))}
+            <EmptyState
+              icon={<CheckCircle2 className="h-5 w-5" />}
+              title="No pending applications"
+              description="New wholesale account requests will queue here for review."
+            />
           </OverviewCard>
 
           <OverviewCard
             title="Price tiers"
             icon={<Tag className="h-4 w-4" />}
-            right={
-              tiers.isSample ? (
-                <SampleBadge reason="no-data" />
-              ) : (
-                <CardLink href="/b2b/price-lists">Manage</CardLink>
-              )
-            }
+            right={<CardLink href="/b2b/price-lists">Manage</CardLink>}
+            plain
           >
-            {tiers.data.map((t) => (
-              <OverviewRow
-                key={t.key}
-                icon={<Percent className="h-4 w-4" />}
-                tone="module"
-                title={t.name}
-                right={t.accounts}
+            {tierRows.length ? (
+              tierRows.map((t) => (
+                <OverviewRow
+                  key={t.key}
+                  icon={<Percent className="h-4 w-4" />}
+                  tone="module"
+                  title={t.name}
+                  right={t.accounts}
+                />
+              ))
+            ) : (
+              <EmptyState
+                icon={<Tag className="h-5 w-5" />}
+                title="No price tiers yet"
+                description="Group accounts into tiers to apply wholesale pricing."
+                action={
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/b2b/price-lists">Create tier</Link>
+                  </Button>
+                }
               />
-            ))}
+            )}
           </OverviewCard>
 
-          <OverviewCard
-            title="Recent activity"
-            icon={<Clock className="h-4 w-4" />}
-            right={<SampleBadge />}
-          >
-            <Timeline>
-              {SAMPLE_ACTIVITY.map((ev, i) => (
-                <TimelineItem
-                  key={ev.title}
-                  showConnector={i < SAMPLE_ACTIVITY.length - 1}
-                  marker={
-                    ev.muted ? (
-                      <span
-                        aria-hidden
-                        className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[var(--color-text-tertiary)]"
-                      />
-                    ) : undefined
-                  }
-                >
-                  <TimelineTitle>{ev.title}</TimelineTitle>
-                  <TimelineTime>{ev.when}</TimelineTime>
-                </TimelineItem>
-              ))}
-            </Timeline>
+          <OverviewCard title="Recent activity" icon={<Clock className="h-4 w-4" />} plain>
+            <EmptyState
+              icon={<Clock className="h-5 w-5" />}
+              title="No recent activity"
+              description="Account, quote, and invoice updates will show up here."
+            />
           </OverviewCard>
         </Grid>
       </Stack>

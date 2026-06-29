@@ -1,0 +1,110 @@
+// In-product feedback — submissions, the message thread, and the pulse
+// frequency-cap state (docs/112-feedback.md, docs/apps/admin/feedback.md).
+//
+// A logged-in dashboard user sends WizeWorks an idea / problem / question /
+// praise with their context attached; WizeWorks staff triage + respond from the
+// admin portal (the "back door"), and responses return to the submitter.
+//
+// Keyed on (user_id, tenant_id) — NOT a `tenant_membership_id` row — because the
+// platform's User model still carries `tenantId` directly (one user, one tenant
+// today). When Better Auth's organization plugin lands and introduces real
+// membership rows, this migrates cleanly to membership, exactly like the shell
+// tables in 06-shell.prisma. All three tables are tenant-scoped → FORCE RLS +
+// tenant_isolation (hand-edited into the migration SQL).
+//
+// `assignee_staff_id`, `author_id` (for staff authors), and `internal_tags` are
+// WizeWorks-staff concerns owned by the admin app; no FK — staff identities live
+// outside this tenant schema. They are never returned by any tenant-facing route.
+
+model FeedbackSubmission {
+  id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String  @map("tenant_id") @db.Uuid
+  // The submitter. SetNull (not Cascade) so a deleted user leaves the feedback
+  // for admin history; the snapshot below keeps their identity legible after.
+  userId   String? @map("user_id") @db.Uuid
+
+  // Identity snapshot — resilient to user deletion, and what the admin inbox shows.
+  submitterName  String? @map("submitter_name") @db.VarChar(255)
+  submitterEmail String? @map("submitter_email") @db.VarChar(255)
+
+  source   String  @default("button") @db.VarChar(20) // button | pulse | command
+  category String  @db.VarChar(20) // idea | problem | question | praise
+  subject  String? @db.VarChar(160)
+  body     String  @db.Text
+  sentiment Int?   @db.SmallInt // 1..4 from the pulse, null otherwise
+
+  // The captured context payload (docs/112 §4) + the asset ids of any
+  // screenshot / file attachments (asset storage; FK-less scalar list).
+  context            Json     @default("{}")
+  attachmentAssetIds String[] @default([]) @map("attachment_asset_ids") @db.Uuid
+
+  // Triage (admin-owned; docs/apps/admin/feedback.md §6)
+  status          String   @default("new") @db.VarChar(20) // new | triaged | planned | in_progress | shipped | declined | answered
+  assigneeStaffId String?  @map("assignee_staff_id") @db.Uuid
+  internalTags    String[] @default([]) @map("internal_tags")
+
+  // Loop state — set when staff responds (docs/112 §8).
+  lastResponseAt DateTime? @map("last_response_at") @db.Timestamptz
+  userUnread     Boolean   @default(false) @map("user_unread")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user     User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  messages FeedbackMessage[]
+
+  @@index([tenantId, createdAt(sort: Desc)])
+  @@index([tenantId, userId, createdAt(sort: Desc)])
+  @@index([tenantId, status, createdAt(sort: Desc)])
+  @@map("feedback_submissions")
+}
+
+// The reply thread. Both the user and WizeWorks staff post here; the original
+// submission body stays canonical on the submission (this holds replies only).
+// Append-only — no updated_at, like CrmActivity.
+model FeedbackMessage {
+  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String @map("tenant_id") @db.Uuid
+  submissionId String @map("submission_id") @db.Uuid
+
+  authorKind String @map("author_kind") @db.VarChar(10) // staff | user
+  authorId   String @map("author_id") @db.Uuid // user_id, or a WizeWorks staff id (no FK)
+  authorName String @map("author_name") @db.VarChar(255) // snapshot for display
+  body       String @db.Text
+
+  attachmentAssetIds String[] @default([]) @map("attachment_asset_ids") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant     Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  submission FeedbackSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, submissionId, createdAt])
+  @@map("feedback_messages")
+}
+
+// Per-user pulse frequency-cap state (docs/112 §5). One row per (user, tenant);
+// the server reads it to decide pulse eligibility and writes it on
+// shown / dismissed / answered.
+model FeedbackPulseState {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  userId   String @map("user_id") @db.Uuid
+
+  lastShownAt           DateTime? @map("last_shown_at") @db.Timestamptz
+  lastDismissedAt       DateTime? @map("last_dismissed_at") @db.Timestamptz
+  consecutiveDismissals Int       @default(0) @map("consecutive_dismissals") @db.SmallInt
+  lastSubmittedAt       DateTime? @map("last_submitted_at") @db.Timestamptz
+  lastSentiment         Int?      @map("last_sentiment") @db.SmallInt
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tenantId], map: "feedback_pulse_state_user_tenant_unique")
+  @@index([tenantId])
+  @@map("feedback_pulse_state")
+}

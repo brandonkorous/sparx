@@ -72,7 +72,9 @@ export async function SegmentDetailContent({ id }: Props) {
   const total = (meta?.total as number | undefined) ?? members.length;
 
   return (
-    <Stack gap={6}>
+    // @container so the body responds to its OWN width — full-page (wide) vs. the
+    // detail drawer (narrow), where viewport breakpoints would crush the columns.
+    <Stack gap={6} className="@container">
       <Stack gap={2}>
         <Stack direction="row" align="center" justify="between" wrap gap={3}>
           <Stack direction="row" align="center" gap={3} wrap>
@@ -94,7 +96,7 @@ export async function SegmentDetailContent({ id }: Props) {
         {segment.description && <Text variant="muted">{segment.description}</Text>}
       </Stack>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 @[600px]:grid-cols-3">
         <Card variant="module">
           <CardContent className="py-4">
             <Stat label="Members" value={total.toLocaleString()} />

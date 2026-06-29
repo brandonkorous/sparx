@@ -101,7 +101,7 @@ export function TermsManager({
 
   return (
     <Stack gap={5}>
-      <Card variant="module">
+      <Card variant="default">
         <CardHeader>
           <Heading level={3}>Add term</Heading>
           <CardDescription>
@@ -182,7 +182,7 @@ export function TermsManager({
         </form>
       </Card>
 
-      <Card variant="module">
+      <Card variant="default">
         <CardHeader>
           <Heading level={3}>Terms</Heading>
         </CardHeader>

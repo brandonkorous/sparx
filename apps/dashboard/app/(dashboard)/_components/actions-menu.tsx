@@ -26,6 +26,7 @@ import {
   ExternalLink,
   LayoutGrid,
   Layout,
+  MessageSquarePlus,
   MoreHorizontal,
   PanelRight,
   Rows3,
@@ -103,6 +104,13 @@ export function ActionsMenu({ favorites, preferences }: ActionsMenuProps) {
   function handleOpenInNewTab() {
     close();
     window.open(window.location.href, '_blank', 'noopener');
+  }
+
+  function handleSendFeedback() {
+    close();
+    // Decoupled from the menu — the FeedbackProvider listens for this
+    // (docs/112 §2.3), mirroring the ⌘K "Send feedback" command.
+    window.dispatchEvent(new CustomEvent('sparx:open-feedback', { detail: { source: 'command' } }));
   }
 
   function handleToggleFavorite() {
@@ -255,6 +263,18 @@ export function ActionsMenu({ favorites, preferences }: ActionsMenuProps) {
                   </CommandItem>
                 );
               })}
+            </CommandGroup>
+
+            <CommandSeparator />
+
+            <CommandGroup heading="Feedback">
+              <CommandItem
+                value="send feedback suggestion idea bug problem question praise"
+                onSelect={handleSendFeedback}
+              >
+                <MessageSquarePlus className="h-4 w-4" />
+                Send feedback
+              </CommandItem>
             </CommandGroup>
           </CommandList>
         </Command>

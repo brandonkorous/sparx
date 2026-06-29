@@ -1,8 +1,8 @@
 # sparx Platform — Finance Hub Build Plan
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-26
+**Last Updated:** 2026-06-29
 
 > **Build status (v1.1):** Slices 0–5 are landed — the hub shell, the real-data
 > Overview, Payouts, Subscription, Channels, Receivables, and the payment-kind fold are
@@ -10,6 +10,14 @@
 > be **already closed** — `GET /v1/invoicing/aging` with no scope already spans Invoicing
 > documents and B2B invoices (one `BillingDocument` substrate since Phase 8), so no new
 > AR endpoint was needed. Only **Slice 6 — Stripe go-live** remains as the trailing strand.
+>
+> **Build status (v1.2, 2026-06-29):** the Overview grew from a consolidation _lens_ into the platform's
+> full **money dashboard** — a headline KPI strip, a cash-in trend chart, payout balance + recent
+> payouts, AR aging + collections health, channel mix, payment status, and the sparx plan + per-module
+> breakdown — all real reads (the new ones in [§4](#4-data-reads-to-add)). Finance also gained its own
+> **hue** (money green `#16A34A`, [109 D7](109-finance-hub.md#3-binding-decisions-do-not-re-litigate))
+> and doubles as an **upsell surface** ([109 D8](109-finance-hub.md#3-binding-decisions-do-not-re-litigate)) —
+> a "Grow how you get paid" subsection for OFF money-in modules. Slice 6 still trails.
 
 ---
 
@@ -143,6 +151,15 @@ sources. Output: docs 109 + 110. **Done when** both docs land.
   Invoicing documents AND B2B invoices, because both are the one `BillingDocument` substrate since
   Phase 8. The Overview card and the Receivables section both consume it directly — no generalization
   of the B2B `ar-aging-summary` was needed.
+- **Overview money-dashboard reads (v1.2) — all pre-existing, no new endpoints.** The expanded Overview
+  (see the v1.2 build-status note at the top) composes reads that already shipped for the per-module overviews:
+  `GET /v1/commerce/reports/revenue-summary` + `…/revenue-timeseries` (KPI + cash-in trend; `netCents`
+  per bucket), `GET /v1/invoicing/reports/collected-timeseries` (store-less cash-in fallback —
+  `collectedCents`/`billedCents`), `GET /v1/invoicing/reports/collections` (`avgDaysToPay`, deposits),
+  `GET /v1/invoicing/reports/customer-breakdown?limit=3` (top debtor), and
+  `GET /v1/market/settlement/runs?take=4` (recent payouts). All guarded (disabled module / unreachable →
+  null → calm empty or badged-sample state). The data layer normalizes commerce-vs-invoicing into one
+  `cashIn` series in `finance/_data/overview.ts` so the hero chart is source-agnostic.
 
 ---
 
@@ -157,9 +174,15 @@ sources. Output: docs 109 + 110. **Done when** both docs land.
   the registration.
 - **F3 — Redirects, not copies.** Settings → Payments/Billing/channels become redirects so they can't
   drift from the Finance source. Don't leave two live editors for the same config.
-- **F4 — Color follows functionality.** The hub chrome is neutral; tint each section via nested
-  `<ModuleProvider>` (commerce for acceptance/payouts/channels, invoicing for AR, neutral for the sparx
-  bill). The subscription section must **not** wear a commerce hue — it's money-out.
+- **F4 — Finance owns a hue (money green `#16A34A`), superseding "neutral chrome."** As of v1.2
+  ([109 D7](109-finance-hub.md#3-binding-decisions-do-not-re-litigate)) Finance has its own module color
+  in `@sparx/ui` — the rail icon, contextual panel, and every `/finance/*` page wear finance green, NOT
+  a per-section borrow of commerce/invoicing hues. On the Overview tint exactly ONE finance card (the
+  cash-in hero); the rest stay plain (one-primary-card-per-hue, root CLAUDE.md). A finance signal
+  embedded in another module wears finance green via a nested `<ModuleProvider module="finance">`.
+  **Upsell cards are the exception** — each wears its TARGET module's hue (one card per hue) so it reads
+  as an opportunity, not a finance signal. The subscription ("you pay sparx") section is finance-green
+  like the rest and must never read as a commerce hue.
 - **F5 — Settlement email + onboarding deep links.** Updating where payouts live changes the weekly
   settlement email's link target and any onboarding "set up payments" step — update those when the moves
   land (Slices 3 + 1).

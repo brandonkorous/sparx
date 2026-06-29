@@ -52,7 +52,8 @@ export type ModulePresetKind =
   | 'b2b-approval'
   | 'scheduling'
   | 'invoicing'
-  | 'payments';
+  | 'payments'
+  | 'ai-prompts';
 
 /** A single picker chip summarizing the pack's shape/scale, e.g.
  *  `{ label: 'Make → Model → Engine · Year' }` or `{ label: '4 makes',

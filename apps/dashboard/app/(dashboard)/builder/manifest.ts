@@ -8,7 +8,7 @@
 // migration completes, at which point the `storefront` id retires.
 
 import type { ModuleManifest } from '@sparx/ui/shell';
-import { Boxes, Component, LayoutTemplate, Mail, Pencil } from 'lucide-react';
+import { Boxes, Component, LayoutTemplate, Mail, Palette, Pencil } from 'lucide-react';
 
 export const builderManifest: ModuleManifest = {
   id: 'builder',
@@ -24,12 +24,18 @@ export const builderManifest: ModuleManifest = {
     // browse-everything Marketplace stays rail-pinned at /marketplace (platform-wide,
     // reachable when Builder is off, since installing a blueprint enables Builder);
     // /builder/blueprints links out to it. Placed under the auto-injected Overview,
-    // above Brand. Its href is inside `routePrefix`, so it claims the active panel.
+    // above Brand & Theme. Its href is inside `routePrefix`, so it claims the active panel.
     { id: 'blueprints', label: 'Blueprints', icon: LayoutTemplate, href: '/builder/blueprints' },
-    // Editor — the unified studio (docs/builder/03): brand theme › site layout ›
-    // the active page, all on one live canvas. The Phase-7 cutover (docs/builder/07)
-    // retired the three split editors — /builder/brand|site|page now redirect to a
-    // zone of this one editor — so the sub-nav carries a single Editor entry.
+    // Brand & Theme — the site's identity + presentation, on its OWN surface (not a
+    // zone of the editor). The full ThemeCenter (variant="page"): a controls column
+    // beside a live preview that toggles between the component showcase and the real
+    // site iframe — a richer surface than the editor canvas can host. Authors the
+    // active site's name, socials, brand colours/type/logo, and theme; Publish pushes
+    // the theme across the site (docs/49 per-site brand).
+    { id: 'brand', label: 'Brand & Theme', icon: Palette, href: '/builder/brand' },
+    // Editor — the unified studio (docs/builder/03): site layout › the active page,
+    // on one live canvas. Theme editing lives on its own Brand & Theme surface
+    // (above); the editor canvas still PREVIEWS the saved theme but doesn't edit it.
     { id: 'editor', label: 'Editor', icon: Pencil, href: '/builder/studio' },
     // Email — the Email Builder: one self-contained email per document (docs/52).
     { id: 'email', label: 'Email', icon: Mail, href: '/builder/email' },

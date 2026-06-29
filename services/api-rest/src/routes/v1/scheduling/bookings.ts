@@ -7,6 +7,7 @@
 //   GET    /v1/scheduling/bookings/calendar         → calendar events in a range
 //   POST   /v1/scheduling/bookings                  → create
 //   GET    /v1/scheduling/bookings/:id              → get one (with relations)
+//   GET    /v1/scheduling/bookings/:id/timeline     → lifecycle history (audit trail)
 //   PATCH  /v1/scheduling/bookings/:id              → staff edits (notes/parts/asset)
 //   POST   /v1/scheduling/bookings/:id/confirm      → approve a requested booking
 //   POST   /v1/scheduling/bookings/:id/cancel       → cancel + release the slot
@@ -14,6 +15,7 @@
 //   POST   /v1/scheduling/bookings/:id/check-in     → mark in-progress / check attendee in
 //   POST   /v1/scheduling/bookings/:id/complete     → mark completed
 //   POST   /v1/scheduling/bookings/:id/no-show      → mark no-show + release the slot
+//   GET    /v1/scheduling/customers/:customerId/booking-stats → per-customer reliability
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -37,6 +39,8 @@ import {
   completeBooking,
   noShowBooking,
   getBooking,
+  getBookingTimeline,
+  getCustomerBookingStats,
   listBookings,
   getCalendar,
   type BookingWithRelations,
@@ -89,6 +93,15 @@ const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
     return ok(await getCalendar(tenantId, q));
   });
 
+  // Per-customer reliability ("problematic clients") — completed / no-show /
+  // cancelled counts computed on read from this customer's row-owned bookings.
+  app.get('/v1/scheduling/customers/:customerId/booking-stats', async (request) => {
+    await requireSchedulingModule(request);
+    const { tenantId } = toSchedulingContext(request);
+    const { customerId } = z.object({ customerId: z.string().uuid() }).parse(request.params);
+    return ok(await getCustomerBookingStats(tenantId, customerId));
+  });
+
   app.post('/v1/scheduling/bookings', async (request, reply) => {
     await requireSchedulingModule(request);
     requireRole(request, 'editor');
@@ -108,6 +121,15 @@ const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     return ok(bookingView(await getBooking(tenantId, id)));
+  });
+
+  // The booking's lifecycle trail (audit_logs, oldest first) — created, confirmed,
+  // rescheduled (with old→new times), cancelled, etc., with actor attribution.
+  app.get('/v1/scheduling/bookings/:id/timeline', async (request) => {
+    await requireSchedulingModule(request);
+    const { tenantId } = toSchedulingContext(request);
+    const { id } = PathId.parse(request.params);
+    return ok(await getBookingTimeline(tenantId, id));
   });
 
   app.patch('/v1/scheduling/bookings/:id', async (request) => {
@@ -136,7 +158,7 @@ const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     const input = CancelBookingInput.parse({ ...(request.body as object), id });
-    await cancelBooking(tenantId, input);
+    await cancelBooking(tenantId, input, userId);
     // Settle the deposit/hold per policy (release, refund, or capture a late fee).
     await settleBookingPayment(request.log, tenantId, id, 'cancel');
     await publishBookingEvent('booking.cancelled', tenantId, userId, {
@@ -152,7 +174,7 @@ const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     const input = RescheduleBookingInput.parse({ ...(request.body as object), id });
-    await rescheduleBooking(tenantId, input);
+    await rescheduleBooking(tenantId, input, userId);
     await publishBookingEvent('booking.rescheduled', tenantId, userId, {
       bookingId: id,
       startAt: input.startAt,
@@ -163,10 +185,10 @@ const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/scheduling/bookings/:id/check-in', async (request) => {
     await requireSchedulingModule(request);
     requireRole(request, 'editor');
-    const { tenantId } = toSchedulingContext(request);
+    const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     const input = CheckInInput.parse({ ...(request.body as object), bookingId: id });
-    await checkInBooking(tenantId, input);
+    await checkInBooking(tenantId, input, userId);
     return ok(bookingView(await getBooking(tenantId, id)));
   });
 
@@ -175,7 +197,7 @@ const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'editor');
     const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
-    await completeBooking(tenantId, id);
+    await completeBooking(tenantId, id, userId);
     // Service happened: release a card hold (the deposit/prepay charge is kept).
     await settleBookingPayment(request.log, tenantId, id, 'complete');
     await publishBookingEvent('booking.completed', tenantId, userId, { bookingId: id });
@@ -188,7 +210,7 @@ const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     const input = NoShowBookingInput.parse({ ...(request.body as object), id });
-    await noShowBooking(tenantId, input);
+    await noShowBooking(tenantId, input, userId);
     // No-show: capture the policy's no-show fee from the hold (or forfeit a deposit).
     await settleBookingPayment(request.log, tenantId, id, 'no_show');
     await publishBookingEvent('booking.no_show', tenantId, userId, { bookingId: id });

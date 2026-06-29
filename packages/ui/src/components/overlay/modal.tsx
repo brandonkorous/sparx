@@ -54,23 +54,32 @@ const modalContentVariants = cva(
   }
 );
 
+// Below `md`, anchor the panel to the bottom as a near-full-height sheet
+// (thumb-reachable, no dead side gutters) instead of a small centered dialog.
+// Opt-in via `mobileSheet` — the `max-md:` utilities override the centered base
+// only on small screens, so default modals are untouched.
+const MOBILE_SHEET =
+  'max-md:top-auto max-md:bottom-0 max-md:left-0 max-md:right-0 max-md:translate-x-0 max-md:translate-y-0 max-md:h-[92dvh] max-md:max-h-none max-md:w-full max-md:max-w-none max-md:rounded-b-none max-md:rounded-t-2xl';
+
 export interface ModalContentProps
   extends
     React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>,
     VariantProps<typeof modalContentVariants> {
   /** Hide the built-in close (X) button in the top-right. */
   hideClose?: boolean;
+  /** Below `md`, render as a bottom-anchored full-height sheet. Default false. */
+  mobileSheet?: boolean;
 }
 
 export const ModalContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   ModalContentProps
->(({ className, size, hideClose = false, children, ...props }, ref) => (
+>(({ className, size, hideClose = false, mobileSheet = false, children, ...props }, ref) => (
   <ModalPortal>
     <ModalOverlay />
     <DialogPrimitive.Content
       ref={ref}
-      className={cn(modalContentVariants({ size }), className)}
+      className={cn(modalContentVariants({ size }), mobileSheet && MOBILE_SHEET, className)}
       {...props}
     >
       {children}

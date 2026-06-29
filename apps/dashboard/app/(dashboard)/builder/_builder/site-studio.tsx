@@ -2,25 +2,24 @@
 
 // SiteStudio — the unified builder shell for the SITE surface (docs/builder/03).
 //
-// One editor, three ownership zones, one canvas: the brand `Theme` wraps the site
-// `layout` chrome, which wraps the active `page` at its Outlet — exactly the stack
-// the storefront ships ([45], [36]). You edit the page INSIDE its real header and
-// footer, themed by the live brand; switching the page swaps only the Outlet; the
-// Theme node opens the brand controls and re-themes the canvas live.
+// One editor, two ownership zones, one canvas: the site `layout` chrome wraps the
+// active `page` at its Outlet — exactly the stack the storefront ships ([45], [36]).
+// You edit the page INSIDE its real header and footer; switching the page swaps only
+// the Outlet. The canvas is themed by the SAVED brand theme (the route injects it as
+// a static `.bx-canvas` style) — brand & theme are edited on their own surface
+// (/builder/brand, the full ThemeCenter), not as a zone here.
 //
-// The editing brain is `useStudioEditor` (the three-zone autosave router — a layout
-// edit, a page edit, and a theme edit each persist to their OWN store on their OWN
-// debounce, so none can stomp another). The Theme zone is the ThemeCenter panel in
-// its `inspector` variant, reporting its compiled theme up so the canvas re-themes.
-// The canvas is the Phase-2 unified renderer with `chromeLocked={false}` so the
-// chrome is selectable alongside the page.
+// The editing brain is `useStudioEditor` (the two-zone autosave router — a layout
+// edit and a page edit each persist to their OWN store on their OWN debounce, so
+// neither can stomp the other). The canvas is the Phase-2 unified renderer with
+// `chromeLocked={false}` so the chrome is selectable alongside the page.
 //
 // Catalog scope: SiteStudio owns the FULL builder catalog (docs/builder/07 — the
 // cutover folded in the retired per-surface editors). It edits any saved layout
 // (switch/new/rename/delete/make-live, in the layout zone's settings) + the full
-// page catalog (switch/new/rename/delete/slug/SEO) + saved themes, imports/exports
-// either the page or the layout (the zone-aware toolbar control), and publishes the
-// visible stack (brand + chrome + page, activating the layout if it isn't live).
+// page catalog (switch/new/rename/delete/slug/SEO), imports/exports either the page
+// or the layout (the zone-aware toolbar control), and publishes the visible stack
+// (chrome + page, activating the layout if it isn't live).
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
@@ -104,19 +103,9 @@ import {
   setPageSlug,
   updatePageSeo,
 } from '../_lib/actions';
-import { publishNow } from '../_brand/lib/actions';
 import { copyComponent } from '../components/_lib/component-actions';
 import { createArchetype } from '../_governance/lib/archetype-actions';
 import { getContentTypeSchema, saveContentTypeSchema } from '../_lib/schema-actions';
-import { ThemeCenter } from '../_brand/components/theme-center';
-import type {
-  BrandDto,
-  BrandMediaUrls,
-  SiteConfigDto,
-  SiteDto,
-  SitePreviewConfig,
-  SiteThemeDto,
-} from '../_brand/lib/types';
 
 // ── Working shapes ────────────────────────────────────────────────────────────
 
@@ -290,22 +279,12 @@ export interface SiteStudioProps {
   sitePreview?: SitePreviewData | null;
   /** Deep-link: open this page in the Outlet on mount. */
   initialPageId?: string;
-  /** Deep-link: open a non-page zone on mount (the cutover redirects /builder/brand
-   *  → `theme`, /builder/site → `layout`; docs/builder/07 §2.2). Default: page. */
-  initialZone?: 'theme' | 'layout';
+  /** Deep-link: open the layout zone on mount (the cutover redirects /builder/site
+   *  → `layout`; docs/builder/07 §2.2). Default: the page zone. */
+  initialZone?: 'layout';
   /** Tenant slug + active property slug for the Preview tab. */
   tenantSlug?: string;
   previewPropertySlug?: string;
-  /** The Theme zone's data (docs/49) — feeds the ThemeCenter inspector panel. */
-  theme: {
-    brand: BrandDto;
-    baseBrand: BrandDto;
-    site: SiteDto;
-    config: SiteConfigDto;
-    savedThemes: SiteThemeDto[];
-    media: BrandMediaUrls;
-    sitePreview: SitePreviewConfig;
-  };
 }
 
 export function SiteStudio({
@@ -320,7 +299,6 @@ export function SiteStudio({
   initialZone,
   tenantSlug,
   previewPropertySlug,
-  theme,
 }: SiteStudioProps) {
   const router = useRouter();
   const confirm = useConfirm();
@@ -361,11 +339,7 @@ export function SiteStudio({
   // The home singleton serves at "/" — used to resolve the Preview path.
   const homeId = pages.find((p) => p.kind === 'singleton' && !p.slug)?.id ?? null;
 
-  // ── Theme zone wiring (ThemeCenter inspector → canvas CSS + flush) ──────────
-  const [themeCanvasCss, setThemeCanvasCss] = React.useState('');
-  const themeFlushRef = React.useRef<(() => Promise<void>) | null>(null);
-
-  // ── The three-zone editing brain ────────────────────────────────────────────
+  // ── The two-zone editing brain ──────────────────────────────────────────────
   const studio = useStudioEditor({
     layoutTree: editingLayout?.tree ?? null,
     pageTree: activePage?.tree ?? null,
@@ -380,9 +354,6 @@ export function SiteStudio({
       setLayouts((ls) => ls.map((l) => (l.id === editingLayout?.id ? { ...l, tree: next } : l))),
     onPageChange: (next) =>
       setPages((ps) => ps.map((p) => (p.id === activePage?.id ? { ...p, tree: next } : p))),
-    flushTheme: async () => {
-      await themeFlushRef.current?.();
-    },
   });
 
   // A synthetic root over BOTH trees so the live-utility compile + component-version
@@ -402,15 +373,14 @@ export function SiteStudio({
   const previewCss = useSurfacePreview(combinedTree);
   const resolveVersion = useComponentVersions(componentsByKey, combinedTree);
 
-  // Deep-link zone (docs/builder/07 §2.2): the cutover redirects /builder/brand →
-  // the Theme inspector and /builder/site → the layout zone. Apply once on mount;
-  // the page zone is the default, so no action is needed for /builder/page.
+  // Deep-link zone (docs/builder/07 §2.2): the cutover redirects /builder/site →
+  // the layout zone. Apply once on mount; the page zone is the default, so no action
+  // is needed for /builder/page.
   const didInitZone = React.useRef(false);
   React.useEffect(() => {
     if (didInitZone.current) return;
     didInitZone.current = true;
-    if (initialZone === 'theme') studio.selectTheme();
-    else if (initialZone === 'layout') studio.selectZoneHome('layout');
+    if (initialZone === 'layout') studio.selectZoneHome('layout');
   }, [initialZone, studio]);
 
   // ── Desktop chrome (resizable rail + collapsible inspector) ─────────────────
@@ -418,7 +388,7 @@ export function SiteStudio({
   const [railW, setRailW] = useRailWidth();
   const [sideCollapsed, setSideCollapsed] = useSideCollapsed();
   const effectiveCollapsed = sideCollapsed && isDesktop;
-  // Any selection (a node OR the Theme/settings zones) surfaces the inspector.
+  // Any selection (a node OR a zone's settings home) surfaces the inspector.
   React.useEffect(() => {
     setSideCollapsed(false);
   }, [studio.selection.zone, studio.selection.id, setSideCollapsed]);
@@ -440,13 +410,11 @@ export function SiteStudio({
     nudge: studio.nudge,
     save: () => void studio.flushAll(),
     toggleHelp: () => setShowShortcuts((v) => !v),
-    hasSelection: studio.selection.zone !== 'theme' && studio.selection.id !== null,
+    hasSelection: studio.selection.id !== null,
   });
 
   // The Fields tab only exists for a CMS collection template; fall back to Layers.
   const railTab = studio.railTab === 'fields' && !contentTypeKey ? 'layers' : studio.railTab;
-  // The Add palette only makes sense in a node zone (you don't add nodes to a theme).
-  const showAddTab = studio.activeZone !== null;
 
   // ── Page catalog ops (parity with the page editor) ──────────────────────────
   const onSelectPage = (id: string) => {
@@ -646,7 +614,7 @@ export function SiteStudio({
       node.id,
       makeCustomNode(created.key, created.latestVersion, makeId('custom'))
     );
-    if (studio.activeZone) await studio.flushZone(studio.activeZone);
+    await studio.flushZone(studio.activeZone);
     setBusy(false);
     studio.setSaveStatus('saved');
     router.refresh();
@@ -810,25 +778,22 @@ export function SiteStudio({
     window.open(url, '_blank', 'noopener');
   };
 
-  // ── Publish the visible site stack (theme + chrome + active page) ───────────
+  // ── Publish the visible site stack (chrome + active page) ───────────────────
+  // Brand & theme publish from their own surface (/builder/brand), so the editor's
+  // Publish covers the layout chrome + the current page only.
   const onPublish = async () => {
     if (!editingLayout || !activePage) return;
     const layoutId = editingLayout.id;
     const ok = await confirm({
       title: 'Publish your site?',
-      description:
-        'Publishes your brand & theme, the site layout, and the current page live across your site.',
+      description: 'Publishes the site layout and the current page live across your site.',
       confirmLabel: 'Publish',
       tone: 'module',
     });
     if (!ok) return;
     setBusy(true);
     await studio.flushAll();
-    const [brand, layout, page] = await Promise.all([
-      publishNow(),
-      publishLayout(layoutId),
-      publishPage(activePage.id),
-    ]);
+    const [layout, page] = await Promise.all([publishLayout(layoutId), publishPage(activePage.id)]);
     // If the published layout isn't yet the live one, activate it (a published
     // layout can be idle; the studio publishes the one you're viewing, so make it
     // live — exactly one stays active).
@@ -837,7 +802,7 @@ export function SiteStudio({
       if (act.ok) setLayouts((ls) => ls.map((l) => ({ ...l, isActive: l.id === layoutId })));
     }
     setBusy(false);
-    if (brand.ok && layout.ok && page.ok) {
+    if (layout.ok && page.ok) {
       if (layout.data)
         setLayouts((ls) => ls.map((l) => (l.id === layoutId ? { ...l, published: true } : l)));
       if (page.data)
@@ -881,12 +846,7 @@ export function SiteStudio({
   }
 
   const zone = studio.selection.zone;
-  const zoneLabel =
-    zone === 'theme'
-      ? 'Brand theme'
-      : zone === 'layout'
-        ? 'Site layout'
-        : templateLabel(activePage);
+  const zoneLabel = zone === 'layout' ? 'Site layout' : templateLabel(activePage);
 
   const bodyStyle = {
     '--bx-rail-w': `${railW}px`,
@@ -895,10 +855,9 @@ export function SiteStudio({
 
   return (
     <ModuleProvider module="builder">
-      {/* The compiled tenant theme for the canvas, reported live by the Theme panel
-          (docs/builder/03 §2.3). Falls back to the route's server-compiled CSS until
-          the first edit. */}
-      {themeCanvasCss ? <style dangerouslySetInnerHTML={{ __html: themeCanvasCss }} /> : null}
+      {/* The canvas is themed by the route's server-compiled `.bx-canvas` style
+          (canvas-theme.ts); brand & theme are edited on their own surface
+          (/builder/brand), so the editor just previews the saved theme. */}
       {previewCss ? <style dangerouslySetInnerHTML={{ __html: previewCss }} /> : null}
       <ShortcutsOverlay open={showShortcuts} onClose={() => setShowShortcuts(false)} />
       <div className="bx-shell">
@@ -1032,8 +991,7 @@ export function SiteStudio({
               Preview
             </Button>
             {/* Import/Export acts on the active zone's document (docs/builder/07
-                §2.6 parity) — the page in the Outlet, or the layout chrome; the
-                Theme zone exports its CSS via the Theme panel's Copy instead. */}
+                §2.6 parity) — the page in the Outlet, or the layout chrome. */}
             {studio.activeZone === 'page' ? (
               <ImportExportControls
                 kind="page"
@@ -1125,16 +1083,14 @@ export function SiteStudio({
               >
                 <Layers aria-hidden /> Layers
               </button>
-              {showAddTab ? (
-                <button
-                  type="button"
-                  className="bx-rail__tab"
-                  data-on={railTab === 'add'}
-                  onClick={() => studio.setRailTab('add')}
-                >
-                  <Plus aria-hidden /> Add
-                </button>
-              ) : null}
+              <button
+                type="button"
+                className="bx-rail__tab"
+                data-on={railTab === 'add'}
+                onClick={() => studio.setRailTab('add')}
+              >
+                <Plus aria-hidden /> Add
+              </button>
               {contentTypeKey ? (
                 <button
                   type="button"
@@ -1156,7 +1112,6 @@ export function SiteStudio({
                   components={componentsByKey}
                   selection={studio.selection}
                   pageLabel={activePage.name}
-                  onSelectTheme={studio.selectTheme}
                   // The "Site layout" root row opens the layout CATALOG (zone home →
                   // LayoutSettings), not the rarely-edited root Section — which stays
                   // reachable by clicking the chrome on the canvas (docs/builder/07 §1).
@@ -1170,7 +1125,7 @@ export function SiteStudio({
                 />
               ) : railTab === 'fields' && contentTypeKey ? (
                 <FieldsPanel typeKey={contentTypeKey} />
-              ) : showAddTab ? (
+              ) : (
                 <AddPalette
                   targetName={studio.targetName}
                   onAdd={studio.onAdd}
@@ -1179,8 +1134,6 @@ export function SiteStudio({
                   customComponents={components.length ? components : undefined}
                   archetypes={archetypes.length ? archetypes : undefined}
                 />
-              ) : (
-                <p className="bx-inspector__tip">Select a page or layout layer to add blocks.</p>
               )}
             </ScrollArea>
           </aside>
@@ -1201,8 +1154,8 @@ export function SiteStudio({
               components={componentsByKey}
               resolveVersion={resolveVersion}
               device={studio.device}
-              selectedId={studio.selection.zone === 'theme' ? null : studio.selection.id}
-              selectedIds={studio.selection.zone === 'theme' ? [] : studio.selection.ids}
+              selectedId={studio.selection.id}
+              selectedIds={studio.selection.ids}
               onSelect={studio.selectNode}
               onMove={studio.onMove}
               chrome={editingLayout.tree}
@@ -1256,77 +1209,60 @@ export function SiteStudio({
                   </div>
                 ) : null}
                 <ScrollArea className="bx-side__scroll">
-                  {zone === 'theme' ? (
-                    <div className="bx-theme-zone">
-                      <ThemeCenter
-                        variant="inspector"
-                        brand={theme.brand}
-                        baseBrand={theme.baseBrand}
-                        site={theme.site}
-                        config={theme.config}
-                        savedThemes={theme.savedThemes}
-                        media={theme.media}
-                        sitePreview={theme.sitePreview}
-                        onCanvasCss={setThemeCanvasCss}
-                        flushRef={themeFlushRef}
-                      />
-                    </div>
-                  ) : (
-                    <Inspector
-                      node={studio.selectedNode}
-                      catalog={studio.activeCatalog}
-                      scope={studio.scope}
-                      surface={zone === 'layout' ? 'site' : 'page'}
-                      settings={
-                        zone === 'layout' ? (
-                          <LayoutSettings
-                            name={editingLayout.name}
-                            layouts={layouts}
-                            editingId={editingLayout.id}
-                            busy={busy}
-                            onSelect={onSelectLayout}
-                            onNew={() => void onNewLayout()}
-                            onRename={(n) => void onRenameLayout(n)}
-                            onDelete={() => void onDeleteLayout()}
-                            onActivate={() => void onActivateLayout()}
-                          />
-                        ) : (
-                          <PageSettings
-                            pageId={activePage.id}
-                            name={activePage.name}
-                            slug={activePage.slug}
-                            kind={activePage.kind}
-                            recordType={activePage.recordType ?? null}
-                            isDefault={activePage.isDefault}
-                            catalog={pageCatalog}
-                            seo={activePage.seo}
-                            onSlug={onSlug}
-                            onSeo={onSeo}
-                            onRetarget={onRetarget}
-                            onMakeDefault={onMakeDefault}
-                          />
-                        )
-                      }
-                      components={componentsByKey}
-                      contentTypeKey={zone === 'page' ? contentTypeKey : null}
-                      onAddField={zone === 'page' ? onAddField : undefined}
-                      onSaveAsComponent={onSaveAsComponent}
-                      onSaveAsArchetype={onSaveAsArchetype}
-                      onBack={() => studio.selectZoneHome(zone === 'layout' ? 'layout' : 'page')}
-                      onName={studio.onName}
-                      onClass={studio.onClass}
-                      onBind={studio.onBind}
-                      onProp={studio.onProp}
-                      onRetype={studio.onRetype}
-                      selectionCount={studio.selection.ids.length}
-                      onDuplicate={studio.duplicateSelection}
-                      onDelete={studio.deleteSelection}
-                      onCopy={studio.copySelection}
-                      onCopyStyles={studio.copyStyles}
-                      onPasteStyles={studio.pasteStyles}
-                      canPasteStyles={studio.canPasteStyles}
-                    />
-                  )}
+                  <Inspector
+                    node={studio.selectedNode}
+                    catalog={studio.activeCatalog}
+                    scope={studio.scope}
+                    surface={zone === 'layout' ? 'site' : 'page'}
+                    settings={
+                      zone === 'layout' ? (
+                        <LayoutSettings
+                          name={editingLayout.name}
+                          layouts={layouts}
+                          editingId={editingLayout.id}
+                          busy={busy}
+                          onSelect={onSelectLayout}
+                          onNew={() => void onNewLayout()}
+                          onRename={(n) => void onRenameLayout(n)}
+                          onDelete={() => void onDeleteLayout()}
+                          onActivate={() => void onActivateLayout()}
+                        />
+                      ) : (
+                        <PageSettings
+                          pageId={activePage.id}
+                          name={activePage.name}
+                          slug={activePage.slug}
+                          kind={activePage.kind}
+                          recordType={activePage.recordType ?? null}
+                          isDefault={activePage.isDefault}
+                          catalog={pageCatalog}
+                          seo={activePage.seo}
+                          onSlug={onSlug}
+                          onSeo={onSeo}
+                          onRetarget={onRetarget}
+                          onMakeDefault={onMakeDefault}
+                        />
+                      )
+                    }
+                    components={componentsByKey}
+                    contentTypeKey={zone === 'page' ? contentTypeKey : null}
+                    onAddField={zone === 'page' ? onAddField : undefined}
+                    onSaveAsComponent={onSaveAsComponent}
+                    onSaveAsArchetype={onSaveAsArchetype}
+                    onBack={() => studio.selectZoneHome(zone === 'layout' ? 'layout' : 'page')}
+                    onName={studio.onName}
+                    onClass={studio.onClass}
+                    onBind={studio.onBind}
+                    onProp={studio.onProp}
+                    onRetype={studio.onRetype}
+                    selectionCount={studio.selection.ids.length}
+                    onDuplicate={studio.duplicateSelection}
+                    onDelete={studio.deleteSelection}
+                    onCopy={studio.copySelection}
+                    onCopyStyles={studio.copyStyles}
+                    onPasteStyles={studio.pasteStyles}
+                    canPasteStyles={studio.canPasteStyles}
+                  />
                 </ScrollArea>
               </>
             )}

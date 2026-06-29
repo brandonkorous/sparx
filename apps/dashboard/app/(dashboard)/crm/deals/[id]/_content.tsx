@@ -132,7 +132,9 @@ export async function DealDetailContent({ id }: Props) {
   const stage = pipeline.stages.find((s) => s.id === deal.stageId);
 
   return (
-    <Stack gap={6}>
+    // @container so the body responds to its OWN width — full-page (wide) vs. the
+    // detail drawer (narrow), where viewport breakpoints would crush the columns.
+    <Stack gap={6} className="@container">
       <Stack gap={2}>
         <Stack direction="row" align="center" gap={3} wrap>
           <Heading level={1}>{deal.title}</Heading>
@@ -191,7 +193,7 @@ export async function DealDetailContent({ id }: Props) {
         </Stack>
       </Stack>
 
-      <div className="grid gap-6 lg:grid-cols-[2fr,1fr]">
+      <div className="grid gap-6 @[820px]:grid-cols-[2fr_1fr]">
         <Stack gap={6}>
           <Card>
             <CardHeader>

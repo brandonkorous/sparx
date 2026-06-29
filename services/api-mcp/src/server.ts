@@ -16,6 +16,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { isModuleEnabled, type ModuleSlug } from '@sparx/auth';
 import type { McpAuthContext } from './auth.js';
 import { recordToolInvocation } from './audit.js';
+import { loadDisabledTools } from './tool-policy.js';
 import { ALL_MCP_TOOLS, type AnyMcpTool } from './tool-registry.js';
 
 const SERVER_INFO = { name: 'sparx-mcp', version: '1.0.0' } as const;
@@ -38,10 +39,16 @@ const MODULE_BY_SCOPE: Record<string, ModuleSlug> = {
   'write:scheduling': 'scheduling',
 };
 
-export function buildServerForRequest(auth: McpAuthContext): McpServer {
+export async function buildServerForRequest(auth: McpAuthContext): Promise<McpServer> {
   const server = new McpServer(SERVER_INFO);
 
+  // Per-tenant tool-policy overlay (docs/07 §9): tools the tenant disabled are not
+  // registered at all — so they're absent from tools/list AND the SDK rejects any
+  // direct tools/call for an unregistered name. Registration-skip IS the enforcement.
+  const disabledTools = await loadDisabledTools(auth.tenantId);
+
   for (const tool of ALL_MCP_TOOLS) {
+    if (disabledTools.has(tool.name)) continue;
     // ZodObject is `AnySchema`-compatible — pass it through so the SDK can
     // derive the JSON-schema for the client without us re-deriving the shape.
     const inputSchema = tool.input as Parameters<typeof server.registerTool>[1]['inputSchema'];

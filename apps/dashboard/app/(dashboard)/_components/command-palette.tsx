@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Gauge, Plus } from 'lucide-react';
+import { Gauge, MessageSquarePlus, Plus } from 'lucide-react';
 import { keepPreviousData, queryKeys, useQuery } from '@sparx/query';
 import {
   CommandEmpty,
@@ -47,9 +47,12 @@ const DEBOUNCE_MS = 200;
 interface PlatformCommand {
   id: string;
   label: string;
-  href: string;
+  /** Navigate here on select. Omitted for action commands (use `action`). */
+  href?: string;
   keywords: string;
   icon: React.ComponentType<{ className?: string }>;
+  /** Run instead of navigating (e.g. open the feedback modal). */
+  action?: () => void;
 }
 const PLATFORM_COMMANDS: readonly PlatformCommand[] = [
   {
@@ -58,6 +61,18 @@ const PLATFORM_COMMANDS: readonly PlatformCommand[] = [
     href: '/seo',
     keywords: 'seo audit score search discoverability',
     icon: Gauge,
+  },
+  {
+    id: 'platform.feedback',
+    label: 'Send feedback',
+    keywords: 'feedback suggestion idea bug problem issue report praise contact help',
+    icon: MessageSquarePlus,
+    // Decoupled from the palette — the FeedbackProvider listens for this event
+    // (docs/112 §2.3), so the palette doesn't import feedback internals.
+    action: () =>
+      window.dispatchEvent(
+        new CustomEvent('sparx:open-feedback', { detail: { source: 'command' } })
+      ),
   },
 ];
 
@@ -255,7 +270,18 @@ export function CommandPalette({ favorites, recents, enabledModules }: CommandPa
             {visiblePlatform.map((item) => {
               const Icon = item.icon;
               return (
-                <CommandItem key={item.id} value={`nav-${item.id}`} onSelect={() => go(item.href)}>
+                <CommandItem
+                  key={item.id}
+                  value={`nav-${item.id}`}
+                  onSelect={() => {
+                    if (item.action) {
+                      setOpen(false);
+                      item.action();
+                    } else if (item.href) {
+                      go(item.href);
+                    }
+                  }}
+                >
                   <Icon className="h-4 w-4" />
                   {item.label}
                   <CommandShortcut>platform</CommandShortcut>

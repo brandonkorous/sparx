@@ -3,13 +3,13 @@ import {
   AlertTriangle,
   Box,
   Boxes,
+  CheckCircle2,
   DollarSign,
   History,
   MapPin,
   Package,
   Plus,
   SlidersHorizontal,
-  Truck,
   Warehouse,
 } from 'lucide-react';
 
@@ -23,6 +23,7 @@ import {
   Button,
   Container,
   DonutChart,
+  EmptyState,
   Grid,
   PageHeader,
   Stack,
@@ -40,16 +41,12 @@ import {
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
-import { EntityCreateButton } from '../_components/entity-create-button';
 import {
   CardLink,
   MetricTile,
   OverviewCard,
-  OverviewRow,
-  SampleBadge,
   fmtMoneyCents,
   fmtNumber,
-  liveOr,
 } from '../_components/overview-bits';
 
 // Inventory overview — the stock-keeper's glance: what's in stock, what's low,
@@ -57,13 +54,12 @@ import {
 // — which is ALSO the semantic warning hue — so amber drives the module chrome
 // while OUT-OF-STOCK stays unmistakably red (danger) and "low" reads as a
 // warning badge. Valuation, stock-status counts, the low/out table, per-location
-// quantities, source-feed health, the recent-change feed, and the value-over-
-// time chart are wired LIVE to /v1/inventory/reports/* (fail-soft to "—" / badged
-// sample). The value chart reads daily valuation snapshots
+// quantities, the recent-change feed, and the value-over-time chart are wired
+// LIVE to /v1/inventory/reports/* (fail-soft to "—" or a compact empty state).
+// The value chart reads daily valuation snapshots
 // (rollup_inventory_daily_valuation) + a live-overlay of today, so it builds
-// forward from first capture. Purchase orders (no PO model) stay sample — they
-// need backing data the module doesn't capture yet. The inventory layout wraps
-// this in <ModuleProvider module="inventory">.
+// forward from first capture. The inventory layout wraps this in
+// <ModuleProvider module="inventory">.
 
 export const dynamic = 'force-dynamic';
 
@@ -155,36 +151,6 @@ interface ValuationTimeseries {
   points: { bucket: string; units: number; costCents: number; retailCents: number }[];
 }
 
-// ── Sample data (shown badged only until the tenant has stock data) ──
-const SAMPLE_VALUE_14D = [
-  { label: 'May 31', value: 119400 },
-  { label: 'Jun 1', value: 120800 },
-  { label: 'Jun 2', value: 122100 },
-  { label: 'Jun 3', value: 121300 },
-  { label: 'Jun 4', value: 123600 },
-  { label: 'Jun 5', value: 122900 },
-  { label: 'Jun 6', value: 124800 },
-  { label: 'Jun 7', value: 123700 },
-  { label: 'Jun 8', value: 125900 },
-  { label: 'Jun 9', value: 125100 },
-  { label: 'Jun 10', value: 127200 },
-  { label: 'Jun 11', value: 126400 },
-  { label: 'Jun 12', value: 128000 },
-  { label: 'Jun 13', value: 128400 },
-] as const;
-
-const SAMPLE_BY_LOCATION: { label: string; value: number; color?: string }[] = [
-  { label: 'Main', value: 5710, color: 'module' },
-  { label: 'Retail', value: 2360, color: '#fbbf24' },
-  { label: '3PL', value: 1770, color: '#fcd34d' },
-];
-
-const SAMPLE_POS = [
-  { name: 'PO-218 · Cascade', when: 'Arrives Jun 18', units: '1,200' },
-  { name: 'PO-217 · Andes', when: 'Arrives Jun 21', units: '800' },
-  { name: 'PO-215 · PourCraft', when: 'Arrives Jun 24', units: '60' },
-] as const;
-
 // Short UTC day label ("Jun 13") for the value-over-time chart x-axis.
 function shortDay(bucket: string): string {
   return new Date(`${bucket}T00:00:00.000Z`).toLocaleDateString('en-US', {
@@ -229,15 +195,14 @@ export default async function InventoryPage() {
     : (sources?.data.filter((s) => s.status !== 'active').length ?? 0);
   const currency = summary?.valuation.currency ?? 'USD';
 
-  // Inventory value over time — daily snapshots (+ live-overlaid today). Live once
-  // ≥2 days have been captured (a single point isn't a trend); else badged sample.
+  // Inventory value over time — daily snapshots (+ live-overlaid today). A trend
+  // needs ≥2 captured days; a single point isn't a chart.
   const valuePoints =
-    valueSeries && valueSeries.points.length > 0
+    valueSeries && valueSeries.points.length >= 2
       ? valueSeries.points.map((p) => ({ label: shortDay(p.bucket), value: p.costCents }))
-      : null;
-  const valueChart = liveOr(valuePoints, [...SAMPLE_VALUE_14D], { min: 2 });
+      : [];
 
-  // Per-location units — live from the summary, else the badged sample.
+  // Per-location units — live from the summary.
   const hasLocations = !!(summary && summary.byLocation.length > 0);
   const byLocation = hasLocations
     ? summary.byLocation.map((l, i) => ({
@@ -245,7 +210,7 @@ export default async function InventoryPage() {
         value: l.onHand,
         color: LOCATION_COLORS[i % LOCATION_COLORS.length],
       }))
-    : SAMPLE_BY_LOCATION.map((s) => ({ ...s }));
+    : [];
 
   const hasLowOut = !!(summary && summary.lowOrOut.length > 0);
   const hasActivity = !!(activity && activity.length > 0);
@@ -308,109 +273,116 @@ export default async function InventoryPage() {
           />
         </Grid>
 
-        {/* Needs attention — out/low live; reorder + POs sample */}
-        <ActionQueue
-          title="Needs attention"
-          icon={<AlertTriangle className="h-4 w-4" />}
-          meta={summary ? undefined : <SampleBadge />}
-        >
-          <ActionTile
-            asChild
-            icon={<AlertTriangle className="h-5 w-5" />}
-            count={summary?.stockStatus.outOfStock ?? 2}
-            label="Out of stock"
-            tone="danger"
+        {/* Needs attention — all live from the reporting summary */}
+        {summary && (
+          <ActionQueue
+            title="Needs attention"
+            icon={<AlertTriangle className="h-4 w-4" />}
+            columns={3}
           >
-            <Link href="/inventory/reorder" />
-          </ActionTile>
-          <ActionTile
-            asChild
-            icon={<Box className="h-5 w-5" />}
-            count={summary?.stockStatus.lowStock ?? 5}
-            label="Low stock"
-            tone="warning"
-          >
-            <Link href="/inventory/reorder" />
-          </ActionTile>
-          <ActionTile
-            asChild
-            icon={<SlidersHorizontal className="h-5 w-5" />}
-            count={summary?.sources.error ?? 0}
-            label="Feeds erroring"
-            tone="danger"
-          >
-            <Link href="/inventory/sources" />
-          </ActionTile>
-          <ActionTile
-            asChild
-            icon={<Truck className="h-5 w-5" />}
-            count={3}
-            label="Incoming POs"
-            tone="module"
-          >
-            <Link href="/inventory/purchase-orders" />
-          </ActionTile>
-        </ActionQueue>
+            <ActionTile
+              asChild
+              icon={<AlertTriangle className="h-5 w-5" />}
+              count={summary.stockStatus.outOfStock}
+              label="Out of stock"
+              tone="danger"
+            >
+              <Link href="/inventory/reorder" />
+            </ActionTile>
+            <ActionTile
+              asChild
+              icon={<Box className="h-5 w-5" />}
+              count={summary.stockStatus.lowStock}
+              label="Low stock"
+              tone="warning"
+            >
+              <Link href="/inventory/reorder" />
+            </ActionTile>
+            <ActionTile
+              asChild
+              icon={<SlidersHorizontal className="h-5 w-5" />}
+              count={summary.sources.error}
+              label="Feeds erroring"
+              tone="danger"
+            >
+              <Link href="/inventory/sources" />
+            </ActionTile>
+          </ActionQueue>
+        )}
 
-        {/* Inventory value (chart sample, footer live) + by location */}
+        {/* Inventory value (the page's primary tinted card) + by location */}
         <div className={TWO_COL}>
           <OverviewCard
             title="Inventory value"
             icon={<Warehouse className="h-4 w-4" />}
-            description="At cost · last 14 days"
-            right={valueChart.isSample ? <SampleBadge reason="no-data" /> : undefined}
+            description="At cost · daily snapshots"
           >
-            <AreaChart
-              data={valueChart.data}
-              series={[{ key: 'value', label: 'Value', color: 'module' }]}
-              xKey="label"
-              height={210}
-              valueFormat={{ kind: 'currency', currency }}
-              ariaLabel="Inventory value at cost over time"
-            />
-            <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
-              {[
-                ['SKUs', summary ? fmtNumber(summary.stockStatus.skuCount) : '—'],
-                ['Units', summary ? fmtNumber(summary.valuation.totalUnits) : '—'],
-                ['Available', summary ? fmtNumber(summary.valuation.totalAvailable) : '—'],
-                [
-                  'Retail value',
-                  summary ? fmtMoneyCents(summary.valuation.totalRetailCents, currency) : '—',
-                ],
-              ].map(([label, value]) => (
-                <div key={label}>
-                  <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
-                  <div className="font-medium">{value}</div>
+            {valuePoints.length ? (
+              <>
+                <AreaChart
+                  data={valuePoints}
+                  series={[{ key: 'value', label: 'Value', color: 'module' }]}
+                  xKey="label"
+                  height={210}
+                  valueFormat={{ kind: 'currency', currency }}
+                  ariaLabel="Inventory value at cost over time"
+                />
+                <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
+                  {[
+                    ['SKUs', summary ? fmtNumber(summary.stockStatus.skuCount) : '—'],
+                    ['Units', summary ? fmtNumber(summary.valuation.totalUnits) : '—'],
+                    ['Available', summary ? fmtNumber(summary.valuation.totalAvailable) : '—'],
+                    [
+                      'Retail value',
+                      summary ? fmtMoneyCents(summary.valuation.totalRetailCents, currency) : '—',
+                    ],
+                  ].map(([label, value]) => (
+                    <div key={label}>
+                      <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
+                      <div className="font-medium">{value}</div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            ) : (
+              <EmptyState
+                icon={<Warehouse className="h-5 w-5" />}
+                title="No valuation history yet"
+                description="Inventory value plots here once a couple of daily snapshots are captured."
+              />
+            )}
           </OverviewCard>
 
           <OverviewCard
             title="By location"
             icon={<MapPin className="h-4 w-4" />}
-            right={
-              hasLocations ? (
-                <CardLink href="/inventory/warehouses">All</CardLink>
-              ) : (
-                <SampleBadge reason="no-data" />
-              )
-            }
+            right={hasLocations ? <CardLink href="/inventory/warehouses">All</CardLink> : undefined}
+            plain
           >
-            <DonutChart
-              data={byLocation}
-              valueFormat="number"
-              centerValue={summary ? fmtNumber(summary.valuation.totalUnits) : '9,840'}
-              centerLabel="units"
-              ariaLabel="Units by location"
-            />
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              <MetricTile value={fmtNumber(locationCount)} label="Locations" />
-              <MetricTile
-                value={summary ? fmtNumber(summary.valuation.totalAllocated) : '—'}
-                label="Allocated"
+            {hasLocations ? (
+              <>
+                <DonutChart
+                  data={byLocation}
+                  valueFormat="number"
+                  centerValue={summary ? fmtNumber(summary.valuation.totalUnits) : '—'}
+                  centerLabel="units"
+                  ariaLabel="Units by location"
+                />
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  <MetricTile value={fmtNumber(locationCount)} label="Locations" />
+                  <MetricTile
+                    value={summary ? fmtNumber(summary.valuation.totalAllocated) : '—'}
+                    label="Allocated"
+                  />
+                </div>
+              </>
+            ) : (
+              <EmptyState
+                icon={<MapPin className="h-5 w-5" />}
+                title="No location stock yet"
+                description="Units split by location appear once stock is tracked."
               />
-            </div>
+            )}
           </OverviewCard>
         </div>
 
@@ -419,13 +391,8 @@ export default async function InventoryPage() {
           title="Low & out of stock"
           icon={<AlertTriangle className="h-4 w-4" />}
           description={`Available at or below ${summary?.lowStockThreshold ?? 5} units · across all locations`}
-          right={
-            hasLowOut ? (
-              <CardLink href="/inventory/reorder">Reorder</CardLink>
-            ) : (
-              <SampleBadge reason="no-data" />
-            )
-          }
+          right={hasLowOut ? <CardLink href="/inventory/reorder">Reorder</CardLink> : undefined}
+          plain
         >
           {hasLowOut ? (
             <Table>
@@ -465,70 +432,49 @@ export default async function InventoryPage() {
               </TableBody>
             </Table>
           ) : (
-            <p className="py-8 text-center text-sm text-[var(--color-text-tertiary)]">
-              Everything is well-stocked — no items at or below the low-stock threshold.
-            </p>
+            <EmptyState
+              icon={<CheckCircle2 className="h-5 w-5" />}
+              title="Everything is well-stocked"
+              description="No items at or below the low-stock threshold."
+            />
           )}
         </OverviewCard>
 
-        {/* Stock by location + incoming POs + recent activity */}
-        <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
+        {/* Stock by location + recent activity */}
+        <div className={TWO_COL}>
           <OverviewCard
             title="Stock by location"
             icon={<Warehouse className="h-4 w-4" />}
             right={
-              hasLocations ? (
-                <CardLink href="/inventory/warehouses">Manage</CardLink>
-              ) : (
-                <SampleBadge reason="no-data" />
-              )
+              hasLocations ? <CardLink href="/inventory/warehouses">Manage</CardLink> : undefined
             }
+            plain
           >
-            <BarList
-              items={byLocation.map((l) => ({ ...l }))}
-              color="module"
-              valueFormat="number"
-            />
-            <p className="mt-4 border-t border-[var(--color-border-default)] pt-3 text-xs text-[var(--color-text-tertiary)]">
-              Total on hand ·{' '}
-              <span className="font-medium text-[var(--color-text-secondary)]">
-                {summary ? fmtNumber(summary.valuation.totalUnits) : '9,840'} units
-              </span>{' '}
-              across {fmtNumber(locationCount)} locations
-            </p>
-          </OverviewCard>
-
-          <OverviewCard
-            title="Incoming POs"
-            icon={<Truck className="h-4 w-4" />}
-            right={<SampleBadge />}
-          >
-            {SAMPLE_POS.map((po) => (
-              <OverviewRow
-                key={po.name}
-                icon={<Package className="h-4 w-4" />}
-                tone="module"
-                title={po.name}
-                hint={po.when}
-                right={`${po.units} units`}
+            {hasLocations ? (
+              <>
+                <BarList
+                  items={byLocation.map((l) => ({ ...l }))}
+                  color="module"
+                  valueFormat="number"
+                />
+                <p className="mt-4 border-t border-[var(--color-border-default)] pt-3 text-xs text-[var(--color-text-tertiary)]">
+                  Total on hand ·{' '}
+                  <span className="font-medium text-[var(--color-text-secondary)]">
+                    {summary ? fmtNumber(summary.valuation.totalUnits) : '—'} units
+                  </span>{' '}
+                  across {fmtNumber(locationCount)} locations
+                </p>
+              </>
+            ) : (
+              <EmptyState
+                icon={<Warehouse className="h-5 w-5" />}
+                title="No stock by location yet"
+                description="Stock distribution across locations appears here once tracked."
               />
-            ))}
-            <EntityCreateButton
-              entityType="purchase-order"
-              newHref="/inventory/purchase-orders/new"
-              variant="outline"
-              size="sm"
-              className="mt-4 w-full"
-            >
-              Create purchase order
-            </EntityCreateButton>
+            )}
           </OverviewCard>
 
-          <OverviewCard
-            title="Recent stock changes"
-            icon={<History className="h-4 w-4" />}
-            right={hasActivity ? undefined : <SampleBadge reason="no-data" />}
-          >
+          <OverviewCard title="Recent stock changes" icon={<History className="h-4 w-4" />} plain>
             {hasActivity ? (
               <Timeline>
                 {activity.map((a, i) => (
@@ -547,12 +493,14 @@ export default async function InventoryPage() {
                 ))}
               </Timeline>
             ) : (
-              <p className="py-8 text-center text-sm text-[var(--color-text-tertiary)]">
-                No stock changes recorded yet.
-              </p>
+              <EmptyState
+                icon={<History className="h-5 w-5" />}
+                title="No stock changes yet"
+                description="Stock movements show up here as they happen."
+              />
             )}
           </OverviewCard>
-        </Grid>
+        </div>
       </Stack>
     </Container>
   );

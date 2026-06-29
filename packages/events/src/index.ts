@@ -5,6 +5,8 @@ export type {
   EmailSendPayload,
   SearchEntityChangedPayload,
   TenantCreatedPayload,
+  FeedbackSubmittedPayload,
+  FeedbackRespondedPayload,
 } from './types';
 export {
   createPublisher,

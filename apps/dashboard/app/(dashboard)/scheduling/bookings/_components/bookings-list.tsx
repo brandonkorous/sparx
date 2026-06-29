@@ -1,5 +1,6 @@
 import { Badge, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@sparx/ui';
 
+import { EntityRowLink } from '../../../_components/entity-row-link';
 import type { Booking } from '../../_lib/types';
 import { BOOKING_TYPE_LABEL, formatDateTime } from '../../_lib/format';
 import { StatusBadge } from '../../_components/status-badge';
@@ -53,7 +54,16 @@ export function BookingsList({ bookings }: { bookings: Booking[] }) {
       <TableBody>
         {bookings.map((b) => (
           <TableRow key={b.id}>
-            <TableCell className="font-medium">{formatDateTime(b.startAt, b.timezone)}</TableCell>
+            <TableCell className="font-medium">
+              <EntityRowLink
+                href={`/scheduling/bookings/${b.id}`}
+                entityType="booking"
+                entityId={b.id}
+                className="hover:text-[var(--module-active)] hover:underline"
+              >
+                {formatDateTime(b.startAt, b.timezone)}
+              </EntityRowLink>
+            </TableCell>
             <TableCell>
               <span className="flex flex-col">
                 <span>{b.service.name}</span>

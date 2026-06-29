@@ -4,7 +4,9 @@
 // build-it-yourself surfaces grid, which now open the unified editor
 // (/builder/studio) after the Phase-7 cutover (docs/builder/07).
 //
-// LIVE today (real `/v1` reads, each fail-soft behind <SampleBadge/> / an em dash):
+// Every section reads LIVE from `/v1` (each fail-soft behind `.catch(() => null)`);
+// a section with no data yet renders a compact empty state rather than
+// illustrative sample data:
 //   · Blueprint teaser — /v1/blueprints
 //   · Pages & content + status hero (pages live · last published · unpublished
 //     changes) — /v1/builder/pages + /v1/builder/layouts (the catalog timestamps)
@@ -14,9 +16,7 @@
 //   · Analytics cards — visitors / pageviews / signups KPIs, the traffic chart,
 //     sources, top pages, and the "Avg. load time" web-vitals KPI — from
 //     /v1/builder/analytics/* (first-party, cookieless capture via the storefront
-//     beacon; per active site). Each falls back to a badged sample until the site
-//     has traffic; "Avg. load time" shows real-user load/LCP/CLS once the beacon
-//     captures timing.
+//     beacon; per active site).
 //
 // The builder layout is gate-only (no ModuleProvider, so the editor's full-height
 // shell isn't disturbed), so this page supplies its own module color via
@@ -36,9 +36,7 @@ import {
   Fingerprint,
   Gauge,
   Globe,
-  Image,
   LayoutTemplate,
-  Link2,
   Lock,
   Mail,
   Palette,
@@ -46,7 +44,6 @@ import {
   Rocket,
   Search,
   ShieldCheck,
-  Smartphone,
   Target,
   TrendingUp,
   Users,
@@ -64,6 +61,7 @@ import {
   CardHeader,
   CardTitle,
   Container,
+  EmptyState,
   Grid,
   Heading,
   ModuleProvider,
@@ -88,11 +86,9 @@ import type { SeoAuditRow } from '@/components/seo/types';
 import {
   CardLink,
   fmtNumber,
-  liveOr,
   MetricTile,
   OverviewCard,
   OverviewRow,
-  SampleBadge,
 } from '../_components/overview-bits';
 import { listComponentsFull, listLayouts, listPages } from './_lib/api';
 
@@ -100,113 +96,6 @@ export const dynamic = 'force-dynamic';
 
 const TWO_COL = 'grid grid-cols-1 gap-4 lg:grid-cols-[1.9fr_1fr]';
 const TWO_COL_WIDE = 'grid grid-cols-1 gap-4 lg:grid-cols-[1.7fr_1fr]';
-
-// ── Sample data (illustrative until the matching endpoints land) ──
-const SAMPLE_TRAFFIC_14D = [
-  { label: 'May 31', visitors: 420, pageviews: 1180 },
-  { label: 'Jun 1', visitors: 468, pageviews: 1290 },
-  { label: 'Jun 2', visitors: 451, pageviews: 1240 },
-  { label: 'Jun 3', visitors: 520, pageviews: 1460 },
-  { label: 'Jun 4', visitors: 558, pageviews: 1580 },
-  { label: 'Jun 5', visitors: 532, pageviews: 1490 },
-  { label: 'Jun 6', visitors: 604, pageviews: 1710 },
-  { label: 'Jun 7', visitors: 588, pageviews: 1650 },
-  { label: 'Jun 8', visitors: 662, pageviews: 1880 },
-  { label: 'Jun 9', visitors: 701, pageviews: 1990 },
-  { label: 'Jun 10', visitors: 648, pageviews: 1840 },
-  { label: 'Jun 11', visitors: 742, pageviews: 2110 },
-  { label: 'Jun 12', visitors: 781, pageviews: 2230 },
-  { label: 'Jun 13', visitors: 728, pageviews: 2070 },
-] as const;
-
-const SAMPLE_SOURCES = [
-  { label: 'Search', value: 48, display: '48%' },
-  { label: 'Direct', value: 26, display: '26%' },
-  { label: 'Social', value: 18, display: '18%', color: 'var(--module-active-tint)' },
-  { label: 'Referral', value: 8, display: '8%', color: 'var(--module-active-tint)' },
-];
-
-const SAMPLE_TOP_PAGES = [
-  { page: 'Home', path: '/', views: '9,840', time: '1m 12s', conv: '4.1%' },
-  { page: 'Shop', path: '/shop', views: '6,210', time: '2m 04s', conv: '6.8%' },
-  { page: 'Subscriptions', path: '/subscriptions', views: '3,005', time: '2m 41s', conv: '9.2%' },
-  { page: 'Our Story', path: '/about', views: '1,690', time: '0m 58s', conv: '2.0%' },
-  { page: 'Wholesale', path: '/wholesale', views: '1,120', time: '1m 36s', conv: '7.4%' },
-] as const;
-
-const SAMPLE_ATTENTION = [
-  {
-    icon: <Search className="h-4 w-4" />,
-    tone: 'warning',
-    title: '2 pages missing meta descriptions',
-    hint: 'Home · Wholesale — hurts search ranking',
-    action: 'Fix',
-  },
-  {
-    icon: <Link2 className="h-4 w-4" />,
-    tone: 'warning',
-    title: '2 broken links',
-    hint: 'In the footer & the Cold Brew product page',
-    action: 'Review',
-  },
-  {
-    icon: <Image className="h-4 w-4" />,
-    tone: 'warning',
-    title: '5 images missing alt text',
-    hint: 'Affects accessibility & image search',
-    action: 'Fix',
-  },
-  {
-    icon: <Globe className="h-4 w-4" />,
-    tone: 'module',
-    title: 'Connect a marketing pixel',
-    hint: 'No analytics tag detected yet',
-    action: 'Add',
-  },
-] as const;
-
-const SAMPLE_HEALTH = [
-  { icon: <Gauge className="h-4 w-4" />, tone: 'success', title: 'Performance', right: '94 / 100' },
-  {
-    icon: <Smartphone className="h-4 w-4" />,
-    tone: 'success',
-    title: 'Mobile-friendly',
-    right: (
-      <Badge color="success" variant="soft">
-        Pass
-      </Badge>
-    ),
-  },
-  {
-    icon: <ShieldCheck className="h-4 w-4" />,
-    tone: 'success',
-    title: 'SSL & HTTPS',
-    right: (
-      <Badge color="success" variant="soft">
-        Active
-      </Badge>
-    ),
-  },
-  {
-    icon: <CheckCircle2 className="h-4 w-4" />,
-    tone: 'success',
-    title: 'Sitemap submitted',
-    right: 'Jun 12',
-  },
-  {
-    icon: <AlertTriangle className="h-4 w-4" />,
-    tone: 'warning',
-    title: 'SEO metadata',
-    right: '12 / 14',
-  },
-] as const;
-
-const SAMPLE_ACTIVITY = [
-  { title: 'You published the site', time: '2 days ago' },
-  { title: 'Sam Ortiz edited Shop — added 3 products', time: '3 days ago' },
-  { title: 'You changed the brand accent to Ember Orange', time: '5 days ago' },
-  { title: 'You added a new page: Wholesale', time: '1 week ago' },
-] as const;
 
 // The build-it-yourself entry points. Brand / Site / Page open the unified editor
 // at the matching zone (docs/builder/07 §2.1 — the three split routes redirect
@@ -290,9 +179,6 @@ function SitePreview() {
     </div>
   );
 }
-
-const ATTENTION_TONE: Record<string, string> = { warning: 'warning', module: 'module' };
-const HEALTH_TONE: Record<string, string> = { success: 'success', warning: 'warning' };
 
 // ── Live-data shapes + derivations ───────────────────────────────────────────
 /** The fields the overview reads off `GET /v1/domains` (the full view has more). */
@@ -425,7 +311,7 @@ const SOURCE_LABEL: Record<string, string> = {
 
 export default async function BuilderOverviewPage() {
   // Teaser the blueprint catalog in-context (count + a few names). Degrades to a
-  // plain CTA if the catalog read fails — this is the one piece of LIVE data here.
+  // plain CTA if the catalog read fails — this is one of the live reads here.
   let teaser: { count: number; names: string[] } | null = null;
   try {
     const { data: blueprints, meta } = await api.getPaged<{ name: string }[]>('/v1/blueprints');
@@ -437,8 +323,8 @@ export default async function BuilderOverviewPage() {
 
   // ── Live reads (all fail-soft; the page is force-dynamic + tenant/property-scoped) ──
   // The builder catalog + its SEO snapshots + the active property's domains are the
-  // real signals behind this overview; analytics (visitors / pageviews / traffic)
-  // has no endpoint yet, so those cards stay on the sample data above.
+  // real signals behind this overview; the analytics endpoints feed visitors /
+  // pageviews / traffic / sources / top-pages / web vitals.
   const [
     pages,
     layouts,
@@ -465,20 +351,18 @@ export default async function BuilderOverviewPage() {
     api.get<SiteVitals>('/v1/builder/analytics/vitals').catch(() => null),
   ]);
 
-  // Site analytics — live once the active site has captured any pageview, else
-  // the illustrative sample (visitors / pageviews / signups KPIs + the traffic
-  // chart, sources, and top-pages cards).
+  // Site analytics — live once the active site has captured any pageview, else a
+  // compact empty state (visitors / pageviews / signups KPIs + the traffic chart,
+  // sources, and top-pages cards).
   const anLive = anSummary != null && anSummary.pageviews > 0;
-  const visitorsKpi = anLive ? fmtNumber(anSummary.visitors) : '8,420';
-  const pageviewsKpi = anLive ? fmtNumber(anSummary.pageviews) : '23,180';
-  const pageviewsHint = anLive
-    ? `${anSummary.pagesPerVisit} pages per visit`
-    : '2.75 pages per visit';
-  const signupsKpi = anLive ? fmtNumber(anSummary.signups) : '312';
+  const visitorsKpi = anLive ? fmtNumber(anSummary.visitors) : '—';
+  const pageviewsKpi = anLive ? fmtNumber(anSummary.pageviews) : '—';
+  const pageviewsHint = anLive ? `${anSummary.pagesPerVisit} pages per visit` : 'Pages per visit';
+  const signupsKpi = anLive ? fmtNumber(anSummary.signups) : '—';
 
   // Real-user web vitals — live once the beacon has captured timing samples.
   const vitalsLive = anVitals != null && anVitals.samples > 0 && anVitals.load != null;
-  const loadKpi = vitalsLive ? `${(anVitals.load! / 1000).toFixed(1)}s` : '0.9s';
+  const loadKpi = vitalsLive ? `${(anVitals.load! / 1000).toFixed(1)}s` : '—';
   const loadHint = vitalsLive
     ? [
         anVitals.lcp != null ? `LCP ${(anVitals.lcp / 1000).toFixed(1)}s` : null,
@@ -486,9 +370,10 @@ export default async function BuilderOverviewPage() {
       ]
         .filter(Boolean)
         .join(' · ') || 'Real-user timing'
-    : 'LCP 1.2s · CLS 0.02';
+    : 'Real-user timing';
 
-  const trafficChart = liveOr(
+  // Traffic chart — visitors & pageviews per day once the beacon captures data.
+  const trafficChart =
     anTimeseries && anTimeseries.totals.pageviews > 0
       ? anTimeseries.points.map((p) => ({
           label: new Date(`${p.bucket}T00:00:00Z`).toLocaleDateString('en-US', {
@@ -499,23 +384,21 @@ export default async function BuilderOverviewPage() {
           visitors: p.visitors,
           pageviews: p.pageviews,
         }))
-      : null,
-    [...SAMPLE_TRAFFIC_14D]
-  );
+      : [];
 
+  // Where visitors come from — source split once any visit is attributed.
   const totalSourceVisits = (anSources ?? []).reduce((s, r) => s + r.visits, 0);
-  const sourceBars = liveOr(
+  const sourceBars =
     anSources && totalSourceVisits > 0
       ? anSources.map((r) => ({
           label: SOURCE_LABEL[r.source] ?? r.source,
           value: Math.round((r.visits / totalSourceVisits) * 100),
           display: `${Math.round((r.visits / totalSourceVisits) * 100)}%`,
         }))
-      : null,
-    SAMPLE_SOURCES
-  );
+      : [];
 
-  const topPagesLive = liveOr(
+  // Top pages — by views once the beacon captures any pageview.
+  const topPages =
     anTopPages && anTopPages.length > 0
       ? anTopPages.map((p) => ({
           page: p.path === '/' ? 'Home' : p.path.replace(/^\//, ''),
@@ -523,17 +406,7 @@ export default async function BuilderOverviewPage() {
           views: fmtNumber(p.views),
           visitors: fmtNumber(p.visitors),
         }))
-      : null,
-    SAMPLE_TOP_PAGES.map((p) => ({
-      page: p.page,
-      path: p.path,
-      views: p.views,
-      // ~72% of views as unique visitors — illustrative only.
-      visitors: Math.round(Number.parseInt(p.views.replace(/,/g, ''), 10) * 0.72).toLocaleString(
-        'en-US'
-      ),
-    }))
-  );
+      : [];
 
   // Pages & content — published vs pure-draft pages + saved components.
   const catalog =
@@ -544,7 +417,6 @@ export default async function BuilderOverviewPage() {
           components: components.length,
         }
       : null;
-  const cat = liveOr(catalog, { published: 14, drafts: 3, components: 9 });
 
   // Status hero — a draft is "unpublished" when it was never published OR edited
   // since its last snapshot; `lastPublishedAt` is the newest snapshot across the
@@ -600,12 +472,9 @@ export default async function BuilderOverviewPage() {
             }
           />
 
-          {/* Status hero — the live-site glance: domain/SSL + real publish state. */}
-          <OverviewCard
-            title="Your site"
-            icon={<Globe className="h-4 w-4" />}
-            right={status.live ? undefined : <SampleBadge />}
-          >
+          {/* Status hero — the live-site glance: domain/SSL + real publish state.
+              This is the Builder overview's primary (tinted) card. */}
+          <OverviewCard title="Your site" icon={<Globe className="h-4 w-4" />}>
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-[18rem_1fr_auto] lg:items-center">
               <SitePreview />
 
@@ -689,7 +558,7 @@ export default async function BuilderOverviewPage() {
             </div>
           </OverviewCard>
 
-          {/* KPI strip — all illustrative. */}
+          {/* KPI strip — live site analytics; "—" until the beacon captures data. */}
           <Grid cols={1} mdCols={2} lgCols={4} gap={4}>
             <Stat
               icon={<Users className="h-4 w-4" />}
@@ -716,56 +585,61 @@ export default async function BuilderOverviewPage() {
               hint="Storefront newsletter signups"
             />
           </Grid>
-          {!anLive ? (
-            <div className="-mt-2">
-              <SampleBadge />
-            </div>
-          ) : null}
 
           {/* Traffic + sources. */}
           <div className={TWO_COL}>
             <OverviewCard
               title="Traffic"
               icon={<TrendingUp className="h-4 w-4" />}
-              description="Visitors & pageviews · last 14 days"
-              right={trafficChart.isSample ? <SampleBadge reason="no-data" /> : undefined}
+              description={trafficChart.length ? 'Visitors & pageviews · last 14 days' : undefined}
+              plain
             >
-              <AreaChart
-                data={trafficChart.data}
-                series={[
-                  { key: 'visitors', label: 'Visitors', color: 'module' },
-                  { key: 'pageviews', label: 'Pageviews', color: 'var(--module-active-tint)' },
-                ]}
-                xKey="label"
-                height={210}
-                valueFormat="number"
-                ariaLabel="Site traffic, last 14 days"
-              />
+              {trafficChart.length ? (
+                <AreaChart
+                  data={trafficChart}
+                  series={[
+                    { key: 'visitors', label: 'Visitors', color: 'module' },
+                    { key: 'pageviews', label: 'Pageviews', color: 'var(--module-active-tint)' },
+                  ]}
+                  xKey="label"
+                  height={210}
+                  valueFormat="number"
+                  ariaLabel="Site traffic, last 14 days"
+                />
+              ) : (
+                <EmptyState
+                  icon={<TrendingUp className="h-5 w-5" />}
+                  title="No traffic yet"
+                  description="Visitors and pageviews appear here once your site goes live."
+                />
+              )}
             </OverviewCard>
 
             <OverviewCard
               title="Where visitors come from"
               icon={<Target className="h-4 w-4" />}
-              right={sourceBars.isSample ? <SampleBadge reason="no-data" /> : undefined}
+              plain
             >
-              <BarList items={sourceBars.data} color="module" />
-              {anLive && anSummary.topReferrerHost ? (
-                <p className="mt-4 border-t border-[var(--color-border-default)] pt-3 text-xs text-[var(--color-text-tertiary)]">
-                  Top referrer ·{' '}
-                  <span className="font-medium text-[var(--color-text-secondary)]">
-                    {anSummary.topReferrerHost}
-                  </span>{' '}
-                  — {fmtNumber(anSummary.topReferrerVisits)} visits
-                </p>
-              ) : !anLive ? (
-                <p className="mt-4 border-t border-[var(--color-border-default)] pt-3 text-xs text-[var(--color-text-tertiary)]">
-                  Top referrer ·{' '}
-                  <span className="font-medium text-[var(--color-text-secondary)]">
-                    instagram.com
-                  </span>{' '}
-                  — 1,140 visits
-                </p>
-              ) : null}
+              {sourceBars.length ? (
+                <>
+                  <BarList items={sourceBars} color="module" />
+                  {anLive && anSummary.topReferrerHost ? (
+                    <p className="mt-4 border-t border-[var(--color-border-default)] pt-3 text-xs text-[var(--color-text-tertiary)]">
+                      Top referrer ·{' '}
+                      <span className="font-medium text-[var(--color-text-secondary)]">
+                        {anSummary.topReferrerHost}
+                      </span>{' '}
+                      — {fmtNumber(anSummary.topReferrerVisits)} visits
+                    </p>
+                  ) : null}
+                </>
+              ) : (
+                <EmptyState
+                  icon={<Target className="h-5 w-5" />}
+                  title="No sources yet"
+                  description="Where your visitors come from shows here once you have traffic."
+                />
+              )}
             </OverviewCard>
           </div>
 
@@ -775,62 +649,56 @@ export default async function BuilderOverviewPage() {
               title="Top pages"
               icon={<FileText className="h-4 w-4" />}
               right={<CardLink href="/builder/studio">All pages</CardLink>}
+              plain
             >
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Page</TableHead>
-                    <TableHead className="text-right">Views</TableHead>
-                    <TableHead className="text-right">Visitors</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {topPagesLive.data.map((p) => (
-                    <TableRow key={p.path}>
-                      <TableCell>
-                        <div className="font-medium text-[var(--color-text-primary)]">{p.page}</div>
-                        <div className="font-mono text-xs text-[var(--module-active-text)]">
-                          {p.path}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">{p.views}</TableCell>
-                      <TableCell className="text-right tabular-nums">{p.visitors}</TableCell>
+              {topPages.length ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Page</TableHead>
+                      <TableHead className="text-right">Views</TableHead>
+                      <TableHead className="text-right">Visitors</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              {topPagesLive.isSample ? (
-                <div className="mt-3">
-                  <SampleBadge reason="no-data" />
-                </div>
-              ) : null}
+                  </TableHeader>
+                  <TableBody>
+                    {topPages.map((p) => (
+                      <TableRow key={p.path}>
+                        <TableCell>
+                          <div className="font-medium text-[var(--color-text-primary)]">
+                            {p.page}
+                          </div>
+                          <div className="font-mono text-xs text-[var(--module-active-text)]">
+                            {p.path}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">{p.views}</TableCell>
+                        <TableCell className="text-right tabular-nums">{p.visitors}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <EmptyState
+                  icon={<FileText className="h-5 w-5" />}
+                  title="No page views yet"
+                  description="Your most-visited pages will rank here once your site has traffic."
+                />
+              )}
             </OverviewCard>
 
             <OverviewCard
               title="Needs attention"
               icon={<AlertTriangle className="h-4 w-4" />}
-              description={
-                seoAttention
-                  ? 'SEO issues from your latest page audits'
-                  : 'Fix these to improve reach & quality'
-              }
-              right={seoAttention ? <CardLink href="/seo">SEO report</CardLink> : <SampleBadge />}
+              description={seoAttention ? 'SEO issues from your latest page audits' : undefined}
+              right={seoAttention ? <CardLink href="/seo">SEO report</CardLink> : undefined}
+              plain
             >
               {seoAttention === null ? (
-                SAMPLE_ATTENTION.map((a) => (
-                  <OverviewRow
-                    key={a.title}
-                    icon={a.icon}
-                    tone={ATTENTION_TONE[a.tone]}
-                    title={a.title}
-                    hint={a.hint}
-                    right={
-                      <Badge color={a.tone === 'module' ? 'module' : 'warning'} variant="soft">
-                        {a.action}
-                      </Badge>
-                    }
-                  />
-                ))
+                <EmptyState
+                  icon={<Search className="h-5 w-5" />}
+                  title="No audits yet"
+                  description="Run a page audit to surface SEO issues to fix."
+                />
               ) : seoAttention.length === 0 ? (
                 <OverviewRow
                   icon={<CheckCircle2 className="h-4 w-4" />}
@@ -876,12 +744,9 @@ export default async function BuilderOverviewPage() {
                       ? 'Good'
                       : 'Review'}
                   </Badge>
-                ) : (
-                  <Badge color="success" variant="soft">
-                    Good
-                  </Badge>
-                )
+                ) : undefined
               }
+              plain
             >
               {audits || domains ? (
                 <>
@@ -915,20 +780,11 @@ export default async function BuilderOverviewPage() {
                   ) : null}
                 </>
               ) : (
-                <>
-                  {SAMPLE_HEALTH.map((h) => (
-                    <OverviewRow
-                      key={h.title}
-                      icon={h.icon}
-                      tone={HEALTH_TONE[h.tone]}
-                      title={h.title}
-                      right={h.right}
-                    />
-                  ))}
-                  <div className="mt-3">
-                    <SampleBadge />
-                  </div>
-                </>
+                <EmptyState
+                  icon={<Zap className="h-5 w-5" />}
+                  title="No health checks yet"
+                  description="SSL and SEO checks appear once you connect a domain and audit pages."
+                />
               )}
             </OverviewCard>
 
@@ -936,37 +792,44 @@ export default async function BuilderOverviewPage() {
               title="Pages & content"
               icon={<FileText className="h-4 w-4" />}
               right={<CardLink href="/builder/studio">Manage</CardLink>}
+              plain
             >
-              <div className="mb-3 grid grid-cols-2 gap-3">
-                <MetricTile value={String(cat.data.published)} label="Published" />
-                <MetricTile value={String(cat.data.drafts)} label="Drafts" tone="warning" />
-              </div>
-              <OverviewRow
-                icon={<Palette className="h-4 w-4" />}
-                tone="module"
-                title="Theme"
-                hint="Your site's colors, type & rounding"
-                right={<CardLink href="/builder/studio?zone=theme">Edit</CardLink>}
-              />
-              <OverviewRow
-                icon={<Component className="h-4 w-4" />}
-                tone="module"
-                title="Components"
-                hint={`${cat.data.components} saved`}
-                right={<CardLink href="/builder/components">Open</CardLink>}
-              />
-              {cat.isSample ? (
-                <div className="mt-3">
-                  <SampleBadge />
-                </div>
-              ) : null}
+              {catalog ? (
+                <>
+                  <div className="mb-3 grid grid-cols-2 gap-3">
+                    <MetricTile value={String(catalog.published)} label="Published" />
+                    <MetricTile value={String(catalog.drafts)} label="Drafts" tone="warning" />
+                  </div>
+                  <OverviewRow
+                    icon={<Palette className="h-4 w-4" />}
+                    tone="module"
+                    title="Theme"
+                    hint="Your site's colors, type & rounding"
+                    right={<CardLink href="/builder/studio?zone=theme">Edit</CardLink>}
+                  />
+                  <OverviewRow
+                    icon={<Component className="h-4 w-4" />}
+                    tone="module"
+                    title="Components"
+                    hint={`${catalog.components} saved`}
+                    right={<CardLink href="/builder/components">Open</CardLink>}
+                  />
+                </>
+              ) : (
+                <EmptyState
+                  icon={<FileText className="h-5 w-5" />}
+                  title="No pages yet"
+                  description="Create your first page to start building your site."
+                  action={
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href="/builder/studio">Open editor</Link>
+                    </Button>
+                  }
+                />
+              )}
             </OverviewCard>
 
-            <OverviewCard
-              title="Recent activity"
-              icon={<Clock className="h-4 w-4" />}
-              right={activity ? undefined : <SampleBadge />}
-            >
+            <OverviewCard title="Recent activity" icon={<Clock className="h-4 w-4" />} plain>
               {activity && activity.length > 0 ? (
                 <Timeline>
                   {activity.map((a, i) => (
@@ -979,26 +842,19 @@ export default async function BuilderOverviewPage() {
                     </TimelineItem>
                   ))}
                 </Timeline>
-              ) : activity ? (
-                <Text size="sm" variant="muted">
-                  No activity yet — your edits and publishes will show up here.
-                </Text>
               ) : (
-                <Timeline>
-                  {SAMPLE_ACTIVITY.map((a, i) => (
-                    <TimelineItem key={a.title} showConnector={i < SAMPLE_ACTIVITY.length - 1}>
-                      <TimelineTitle>{a.title}</TimelineTitle>
-                      <TimelineTime>{a.time}</TimelineTime>
-                    </TimelineItem>
-                  ))}
-                </Timeline>
+                <EmptyState
+                  icon={<Clock className="h-5 w-5" />}
+                  title="No activity yet"
+                  description="Your edits and publishes will show up here."
+                />
               )}
             </OverviewCard>
           </Grid>
 
           {/* Surface picker — preserved from the original Builder landing. The
-              blueprint teaser below is the one LIVE read on this page. */}
-          <Card variant="module">
+              blueprint teaser below is a LIVE read on this page. */}
+          <Card variant="default">
             <CardHeader>
               <Stack direction="row" align="center" gap={2}>
                 <LayoutTemplate className="h-5 w-5 text-[var(--module-active)]" />
@@ -1034,7 +890,7 @@ export default async function BuilderOverviewPage() {
             <Heading level={3}>Or build it yourself</Heading>
             <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
               {SURFACES.map(({ href, icon: Icon, title, description }) => (
-                <Card key={href} variant="module">
+                <Card key={href} variant="default">
                   <CardHeader>
                     <Stack direction="row" align="center" gap={2}>
                       <Icon className="h-4 w-4 text-[var(--module-active)]" />

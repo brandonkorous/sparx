@@ -12,19 +12,18 @@ import { useRouter } from 'next/navigation';
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Badge,
   Button,
   Card,
   CardContent,
   Input,
   Label,
+  Modal,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
   NativeSelect,
   Stack,
   Switch,
@@ -248,18 +247,16 @@ function ArchetypeDialog({
   };
 
   return (
-    <AlertDialog open={open} onOpenChange={(next) => !busy && !next && onClose()}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>
-            {editing ? 'Edit brand section' : 'New brand section'}
-          </AlertDialogTitle>
-          <AlertDialogDescription>
+    <Modal open={open} onOpenChange={(next) => !busy && !next && onClose()}>
+      <ModalContent size="sm">
+        <ModalHeader>
+          <ModalTitle>{editing ? 'Edit brand section' : 'New brand section'}</ModalTitle>
+          <ModalDescription>
             {editing
               ? 'Rename or recategorize this section. Edit its content from the editor.'
               : 'Name your section, then compose its content in the editor.'}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
+          </ModalDescription>
+        </ModalHeader>
         <Stack gap={3}>
           <div>
             <Label htmlFor="archetype-name">Name</Label>
@@ -294,13 +291,15 @@ function ArchetypeDialog({
             </NativeSelect>
           </div>
         </Stack>
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={busy}>Cancel</AlertDialogCancel>
+        <ModalFooter>
+          <Button variant="ghost" disabled={busy} onClick={onClose}>
+            Cancel
+          </Button>
           <Button variant="solid" disabled={!trimmed || busy} onClick={() => void onSubmit()}>
             {busy ? 'Saving…' : editing ? 'Save' : 'Create'}
           </Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 }

@@ -126,7 +126,7 @@ export default async function RevisionDiffPage({ params }: PageParams) {
 
         <SeoDiff revision={revision.seo} current={current.seo} />
 
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <Stack direction="row" align="center" gap={2}>
               <Heading level={3}>Body</Heading>
@@ -170,7 +170,7 @@ function FieldDiff({
 }) {
   const changed = revision !== current;
   return (
-    <Card variant="module">
+    <Card variant="default">
       <CardHeader>
         <Stack direction="row" align="center" gap={2}>
           <Heading level={4}>{label}</Heading>
@@ -224,7 +224,7 @@ function SeoDiff({
   const unchangedRows = rows.filter((r) => r.rev === r.cur);
 
   return (
-    <Card variant="module">
+    <Card variant="default">
       <CardHeader>
         <Stack direction="row" align="center" gap={2}>
           <Heading level={4}>SEO</Heading>

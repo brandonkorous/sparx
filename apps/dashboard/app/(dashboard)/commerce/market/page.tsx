@@ -71,7 +71,7 @@ export default async function MarketPage(): Promise<React.JSX.Element> {
 
           {profile.enabled && (
             <>
-              <Card variant="module">
+              <Card variant="default">
                 <CardHeader>
                   <CardTitle>Earnings & payouts</CardTitle>
                 </CardHeader>
@@ -91,7 +91,7 @@ export default async function MarketPage(): Promise<React.JSX.Element> {
                 </CardContent>
               </Card>
 
-              <Card variant="module">
+              <Card variant="default">
                 <CardHeader>
                   <CardTitle>Seller profile</CardTitle>
                 </CardHeader>
@@ -100,7 +100,7 @@ export default async function MarketPage(): Promise<React.JSX.Element> {
                 </CardContent>
               </Card>
 
-              <Card variant="module">
+              <Card variant="default">
                 <CardHeader>
                   <CardTitle>Listed products</CardTitle>
                 </CardHeader>

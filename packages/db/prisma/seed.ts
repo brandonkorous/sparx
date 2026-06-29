@@ -3731,6 +3731,17 @@ async function main(): Promise<void> {
     );
   }
 
+  // Demo in-product feedback (docs/112) — a handful of submissions in varied
+  // states, two with staff replies + an unread flag, so the feedback button dot,
+  // history list, status badges, and thread view all show real data locally.
+  try {
+    await seedDemoFeedback(tenant.id);
+  } catch (err) {
+    console.warn(
+      `[seed] demo feedback seed skipped: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
+
   // sparx-core marketplace catalog (docs/60) — platform data, independent of the
   // e2e tenant. Wrapped so a catalog hiccup never blocks the rest of the seed.
   try {
@@ -3760,6 +3771,148 @@ async function main(): Promise<void> {
       `[seed] legal pages backfill skipped: ${err instanceof Error ? err.message : String(err)}`
     );
   }
+}
+
+// Demo in-product feedback (docs/112). A spread of categories, sources, and
+// lifecycle states for the tenant's owner — two carry a staff reply (one unread)
+// so the dashboard's unread dot + thread view have something to show. Idempotent:
+// skips when the tenant already has feedback.
+async function seedDemoFeedback(tenantId: string): Promise<void> {
+  await prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+
+    const existing = await tx.feedbackSubmission.count({ where: { tenantId } });
+    if (existing > 0) return;
+
+    const owner = await tx.user.findFirst({ where: { tenantId, role: 'owner' } });
+    if (!owner) return;
+
+    const submitter = { name: owner.name ?? 'Owner', email: owner.email };
+    const daysAgo = (n: number) => new Date(Date.now() - n * 24 * 60 * 60 * 1000);
+    const ctx = (route: string, module: string | null, section: string | null) => ({
+      route,
+      routePattern: route,
+      module,
+      section,
+      entity: null,
+      pageTitle: 'sparx',
+      device: 'desktop' as const,
+      theme: 'light' as const,
+      locale: 'en-US',
+      appVersion: 'dev',
+    });
+
+    // 1 — an idea, planned (no reply yet).
+    await tx.feedbackSubmission.create({
+      data: {
+        tenantId,
+        userId: owner.id,
+        submitterName: submitter.name,
+        submitterEmail: submitter.email,
+        source: 'button',
+        category: 'idea',
+        subject: 'Bulk-edit product prices',
+        body: 'It would save me a ton of time to select multiple products and adjust prices together.',
+        status: 'planned',
+        context: ctx('/commerce/products', 'commerce', 'products'),
+        createdAt: daysAgo(12),
+        updatedAt: daysAgo(8),
+      },
+    });
+
+    // 2 — a problem, shipped, WITH a staff reply marked unread (lights the dot).
+    const fixed = await tx.feedbackSubmission.create({
+      data: {
+        tenantId,
+        userId: owner.id,
+        submitterName: submitter.name,
+        submitterEmail: submitter.email,
+        source: 'button',
+        category: 'problem',
+        subject: 'CSV import failed silently',
+        body: 'I uploaded a customer CSV and nothing happened — no error, no rows. Took me a while to notice.',
+        status: 'shipped',
+        context: ctx('/crm/customers', 'crm', 'customers'),
+        lastResponseAt: daysAgo(1),
+        userUnread: true,
+        createdAt: daysAgo(6),
+        updatedAt: daysAgo(1),
+      },
+    });
+    await tx.feedbackMessage.create({
+      data: {
+        tenantId,
+        submissionId: fixed.id,
+        authorKind: 'staff',
+        authorId: owner.id,
+        authorName: 'Brandon',
+        body: 'Thanks for the detailed report — we shipped a fix that now surfaces import errors inline. Give it another try!',
+        createdAt: daysAgo(1),
+      },
+    });
+
+    // 3 — a question, answered (read), with a back-and-forth.
+    const answered = await tx.feedbackSubmission.create({
+      data: {
+        tenantId,
+        userId: owner.id,
+        submitterName: submitter.name,
+        submitterEmail: submitter.email,
+        source: 'command',
+        category: 'question',
+        subject: 'Can I schedule a discount in advance?',
+        body: 'Is there a way to set a discount to start automatically next Monday?',
+        status: 'answered',
+        context: ctx('/commerce/discounts', 'commerce', 'discounts'),
+        lastResponseAt: daysAgo(3),
+        userUnread: false,
+        createdAt: daysAgo(4),
+        updatedAt: daysAgo(3),
+      },
+    });
+    await tx.feedbackMessage.createMany({
+      data: [
+        {
+          tenantId,
+          submissionId: answered.id,
+          authorKind: 'staff',
+          authorId: owner.id,
+          authorName: 'Brandon',
+          body: 'Yes — when creating a discount, set the "Starts" date to next Monday and it activates automatically.',
+          createdAt: daysAgo(3),
+        },
+        {
+          tenantId,
+          submissionId: answered.id,
+          authorKind: 'user',
+          authorId: owner.id,
+          authorName: submitter.name,
+          body: 'Perfect, found it. Thank you!',
+          createdAt: daysAgo(3),
+        },
+      ],
+    });
+
+    // 4 — praise via the pulse, brand new.
+    await tx.feedbackSubmission.create({
+      data: {
+        tenantId,
+        userId: owner.id,
+        submitterName: submitter.name,
+        submitterEmail: submitter.email,
+        source: 'pulse',
+        category: 'praise',
+        sentiment: 4,
+        body: 'The new dashboard is so much faster. Loving it.',
+        status: 'new',
+        context: ctx('/', null, null),
+        createdAt: daysAgo(2),
+        updatedAt: daysAgo(2),
+      },
+    });
+
+    console.log(`Seeded demo feedback for tenant ${tenantId}`);
+  });
 }
 
 main()

@@ -68,7 +68,9 @@ export default async function PayoutsPage(): Promise<React.JSX.Element> {
           {marketEnabled ? (
             <>
               <SettlementPanel summary={summary} runs={runs} />
-              <Card variant="module">
+              {/* Neutral — the sparx Pay balance card above is this page's single
+                  finance-tinted (primary) card; the rest stay plain. */}
+              <Card>
                 <CardHeader>
                   <CardTitle>Marketplace payout account</CardTitle>
                 </CardHeader>
@@ -78,7 +80,7 @@ export default async function PayoutsPage(): Promise<React.JSX.Element> {
               </Card>
             </>
           ) : (
-            <Card variant="module">
+            <Card>
               <CardHeader>
                 <CardTitle>sparx.market earnings</CardTitle>
               </CardHeader>

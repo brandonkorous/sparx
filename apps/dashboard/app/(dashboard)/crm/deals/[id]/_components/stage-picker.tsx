@@ -9,7 +9,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { toast } from '@sparx/ui';
+import { NativeSelect, toast } from '@sparx/ui';
 
 import { moveDealStageAction } from '../../../deal-actions';
 
@@ -24,9 +24,6 @@ interface StagePickerProps {
   currentStageId: string;
   stages: StageOption[];
 }
-
-const SELECT_CLASS =
-  'h-7 rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-2 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]';
 
 export function StagePicker({ dealId, currentStageId, stages }: StagePickerProps) {
   const router = useRouter();
@@ -55,8 +52,8 @@ export function StagePicker({ dealId, currentStageId, stages }: StagePickerProps
   return (
     <label className="flex items-center gap-1.5">
       <span className="sr-only">Move to stage</span>
-      <select
-        className={SELECT_CLASS}
+      <NativeSelect
+        className="h-7 px-2 text-xs"
         value={optimisticStageId}
         onChange={onChange}
         disabled={pending}
@@ -67,7 +64,7 @@ export function StagePicker({ dealId, currentStageId, stages }: StagePickerProps
             {stage.name} · {stage.probability}%
           </option>
         ))}
-      </select>
+      </NativeSelect>
     </label>
   );
 }

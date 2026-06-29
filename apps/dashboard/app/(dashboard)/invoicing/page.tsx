@@ -2,6 +2,7 @@ import Link from 'next/link';
 import {
   AlertTriangle,
   CalendarClock,
+  CheckCircle2,
   Clock,
   DollarSign,
   FileText,
@@ -21,6 +22,7 @@ import {
   BarList,
   Button,
   Container,
+  EmptyState,
   Grid,
   PageHeader,
   Stack,
@@ -40,12 +42,10 @@ import {
   MetricTile,
   OverviewCard,
   OverviewRow,
-  SampleBadge,
   fmtMoney,
   fmtMoneyCents,
   fmtNumber,
   fmtPercentRatio,
-  liveOr,
 } from '../_components/overview-bits';
 
 // Invoicing overview — the founder's "am I getting paid?" glance. The signature
@@ -160,61 +160,6 @@ const AGING_TONE: Record<AgingBucket['key'], string> = {
 // Anything beyond "current" is past due.
 const OVERDUE_KEYS: AgingBucket['key'][] = ['d1_30', 'd31_60', 'd61_90', 'd90_plus'];
 
-// ── Sample data (illustrative until the matching reporting endpoints land) ──
-
-// Money collected per week — the second half of "am I getting paid?". The
-// illustrative fallback shown (badged) until the tenant has real payments; the
-// live series comes from /v1/invoicing/reports/collected-timeseries.
-const SAMPLE_COLLECTED_12W: { label: string; collected: number; billed: number }[] = [
-  { label: 'Mar 24', collected: 8120, billed: 9400 },
-  { label: 'Mar 31', collected: 9340, billed: 10100 },
-  { label: 'Apr 7', collected: 7610, billed: 8800 },
-  { label: 'Apr 14', collected: 10980, billed: 11200 },
-  { label: 'Apr 21', collected: 12450, billed: 12900 },
-  { label: 'Apr 28', collected: 11230, billed: 11800 },
-  { label: 'May 5', collected: 9870, billed: 10400 },
-  { label: 'May 12', collected: 13420, billed: 13900 },
-  { label: 'May 19', collected: 14110, billed: 14600 },
-  { label: 'May 26', collected: 12880, billed: 13500 },
-  { label: 'Jun 2', collected: 15240, billed: 15800 },
-  { label: 'Jun 9', collected: 16030, billed: 16400 },
-];
-
-// Customer breakdown of what's outstanding — who owes the most.
-const SAMPLE_TOP_DEBTORS = [
-  { name: 'Foglight Café', meta: 'Net 30 · 4 open invoices', balance: '$8,420', tone: 'module' },
-  {
-    name: 'Meridian Offices',
-    meta: 'Net 30 · oldest 41 days',
-    balance: '$6,210',
-    tone: 'warning',
-  },
-  {
-    name: 'Harbor Grocery Co.',
-    meta: 'Net 45 · oldest 12 days',
-    balance: '$4,900',
-    tone: 'module',
-  },
-  {
-    name: 'Tideline Coffee Club',
-    meta: 'Net 15 · oldest 74 days',
-    balance: '$3,180',
-    tone: 'danger',
-  },
-  {
-    name: 'Granite City Diner',
-    meta: 'Net 30 · 2 open invoices',
-    balance: '$1,640',
-    tone: 'module',
-  },
-] as const;
-
-const DEBTOR_TONE: Record<string, string> = {
-  module: 'module',
-  warning: 'warning',
-  danger: 'danger',
-};
-
 export default async function InvoicingPage() {
   await requireSession();
 
@@ -250,9 +195,9 @@ export default async function InvoicingPage() {
   const currency = documents[0]?.currency ?? collectedTs?.currency ?? 'USD';
 
   // Collected-vs-billed chart + footer: live the moment the tenant has any
-  // payments or billed documents in the window, else the illustrative sample
-  // (docs/97 §9). The endpoint returns a continuous zero-filled weekly series, so
-  // we gate on the window totals rather than point count.
+  // payments or billed documents in the window (docs/97 §9). The endpoint returns
+  // a continuous zero-filled weekly series, so we gate on the window totals
+  // rather than point count; an empty window renders a compact empty state.
   const collectedPoints =
     collectedTs && (collectedTs.totals.collectedCents > 0 || collectedTs.totals.billedCents > 0)
       ? collectedTs.points.map((p) => ({
@@ -265,23 +210,17 @@ export default async function InvoicingPage() {
           billed: p.billedCents / 100,
         }))
       : null;
-  const collected12w = liveOr(collectedPoints, SAMPLE_COLLECTED_12W);
   const collectionRate =
     collectedTs && collectedTs.totals.billedCents > 0
       ? collectedTs.totals.collectedCents / collectedTs.totals.billedCents
       : null;
-  const collectedFooter: [string, string][] =
-    !collected12w.isSample && collectedTs
-      ? [
-          ['Collected · 12w', fmtMoneyCents(collectedTs.totals.collectedCents, currency)],
-          ['Billed · 12w', fmtMoneyCents(collectedTs.totals.billedCents, currency)],
-          ['Collection rate', fmtPercentRatio(collectionRate)],
-        ]
-      : [
-          ['Collected · 12w', '$145,290'],
-          ['Billed · 12w', '$152,700'],
-          ['Collection rate', '95.1%'],
-        ];
+  const collectedFooter: [string, string][] = collectedTs
+    ? [
+        ['Collected · 12w', fmtMoneyCents(collectedTs.totals.collectedCents, currency)],
+        ['Billed · 12w', fmtMoneyCents(collectedTs.totals.billedCents, currency)],
+        ['Collection rate', fmtPercentRatio(collectionRate)],
+      ]
+    : [];
 
   const stageLabels: Record<string, string> = {};
   for (const w of workflows ?? []) for (const s of w.stages) stageLabels[s.id] = s.customerLabel;
@@ -305,8 +244,12 @@ export default async function InvoicingPage() {
     key: b.key,
   }));
 
-  // Draft documents still need to be sent before they can be collected.
+  // Draft documents still need to be sent before they can be collected; partially
+  // paid documents are mid-collection. Both come straight off the recent docs page.
   const draftCount = documents.filter((d) => d.status === 'unpaid').length;
+  const partialCount = documents.filter((d) => d.status === 'partial').length;
+  // Estimates awaiting approval — not yet billable — from the collections rollup.
+  const estimatesAwaitingCount = collections?.openBalance.estimatesCount ?? 0;
 
   // Collections trend: this month vs. last (month-over-month change in cash in).
   const collectedTrend =
@@ -383,12 +326,8 @@ export default async function InvoicingPage() {
           />
         </Grid>
 
-        {/* Daily action queue — what's blocking the next dollar */}
-        <ActionQueue
-          title="Needs attention"
-          icon={<AlertTriangle className="h-4 w-4" />}
-          meta={<SampleBadge />}
-        >
+        {/* Daily action queue — what's blocking the next dollar, every tile live */}
+        <ActionQueue title="Needs attention" icon={<AlertTriangle className="h-4 w-4" />}>
           <ActionTile
             asChild
             icon={<AlertTriangle className="h-5 w-5" />}
@@ -401,7 +340,7 @@ export default async function InvoicingPage() {
           <ActionTile
             asChild
             icon={<Send className="h-5 w-5" />}
-            count={5}
+            count={draftCount}
             label="Drafts to send"
             tone="warning"
           >
@@ -410,7 +349,7 @@ export default async function InvoicingPage() {
           <ActionTile
             asChild
             icon={<Clock className="h-5 w-5" />}
-            count={3}
+            count={estimatesAwaitingCount}
             label="Awaiting approval"
             tone="module"
           >
@@ -419,7 +358,7 @@ export default async function InvoicingPage() {
           <ActionTile
             asChild
             icon={<DollarSign className="h-5 w-5" />}
-            count={4}
+            count={partialCount}
             label="Partially paid"
             tone="module"
           >
@@ -467,27 +406,37 @@ export default async function InvoicingPage() {
             title="Collected over time"
             icon={<TrendingUp className="h-4 w-4" />}
             description="Payments received vs. billed · last 12 weeks"
-            right={collected12w.isSample ? <SampleBadge reason="no-data" /> : undefined}
+            plain
           >
-            <AreaChart
-              data={collected12w.data}
-              series={[
-                { key: 'collected', label: 'Collected', color: 'module' },
-                { key: 'billed', label: 'Billed', color: 'var(--module-active-tint)' },
-              ]}
-              xKey="label"
-              height={210}
-              valueFormat={{ kind: 'currency', currency }}
-              ariaLabel="Collected vs. billed, last 12 weeks"
-            />
-            <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
-              {collectedFooter.map(([label, value]) => (
-                <div key={label}>
-                  <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
-                  <div className="font-medium">{value}</div>
+            {collectedPoints ? (
+              <>
+                <AreaChart
+                  data={collectedPoints}
+                  series={[
+                    { key: 'collected', label: 'Collected', color: 'module' },
+                    { key: 'billed', label: 'Billed', color: 'var(--module-active-tint)' },
+                  ]}
+                  xKey="label"
+                  height={210}
+                  valueFormat={{ kind: 'currency', currency }}
+                  ariaLabel="Collected vs. billed, last 12 weeks"
+                />
+                <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
+                  {collectedFooter.map(([label, value]) => (
+                    <div key={label}>
+                      <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
+                      <div className="font-medium">{value}</div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            ) : (
+              <EmptyState
+                icon={<TrendingUp className="h-5 w-5" />}
+                title="No payments yet"
+                description="Collected vs. billed appears as invoices get paid."
+              />
+            )}
           </OverviewCard>
         </div>
 
@@ -498,6 +447,7 @@ export default async function InvoicingPage() {
             icon={<FileText className="h-4 w-4" />}
             description={`${fmtNumber(totalDocuments)} total`}
             right={<CardLink href="/invoicing/documents">All documents</CardLink>}
+            plain
           >
             {documents.length > 0 ? (
               <Table>
@@ -539,17 +489,20 @@ export default async function InvoicingPage() {
                 </TableBody>
               </Table>
             ) : (
-              <p className="py-8 text-center text-sm text-[var(--color-text-tertiary)]">
-                No documents yet — create an estimate or invoice to get started.
-              </p>
+              <EmptyState
+                icon={<FileText className="h-5 w-5" />}
+                title="No documents yet"
+                description="Create an estimate or invoice to get started."
+                action={
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/invoicing/documents/new">New document</Link>
+                  </Button>
+                }
+              />
             )}
           </OverviewCard>
 
-          <OverviewCard
-            title="Collections"
-            icon={<DollarSign className="h-4 w-4" />}
-            right={collections ? undefined : <SampleBadge />}
-          >
+          <OverviewCard title="Collections" icon={<DollarSign className="h-4 w-4" />} plain>
             <p className="text-[1.65rem] leading-none font-medium">
               {collections ? fmtMoneyCents(collections.collectedThisMonthCents, currency) : '—'}
             </p>
@@ -605,149 +558,144 @@ export default async function InvoicingPage() {
             right={
               liveDebtors ? (
                 <CardLink href="/invoicing/documents?status=overdue">All</CardLink>
-              ) : (
-                <SampleBadge reason="no-data" />
-              )
+              ) : undefined
             }
+            plain
           >
-            {liveDebtors
-              ? liveDebtors.map((c) => (
-                  <OverviewRow
-                    key={c.customerId}
-                    icon={<Users className="h-4 w-4" />}
-                    tone={debtorTone(c.oldestOverdueDays)}
-                    title={c.name}
-                    hint={
-                      c.oldestOverdueDays != null
-                        ? `${fmtNumber(c.openInvoices)} open · oldest ${fmtNumber(c.oldestOverdueDays)}d past due`
-                        : `${fmtNumber(c.openInvoices)} open · within terms`
-                    }
-                    right={fmtMoneyCents(c.outstandingCents, currency)}
-                  />
-                ))
-              : SAMPLE_TOP_DEBTORS.map((c) => (
-                  <OverviewRow
-                    key={c.name}
-                    icon={<Users className="h-4 w-4" />}
-                    tone={DEBTOR_TONE[c.tone]}
-                    title={c.name}
-                    hint={c.meta}
-                    right={c.balance}
-                  />
-                ))}
+            {liveDebtors ? (
+              liveDebtors.map((c) => (
+                <OverviewRow
+                  key={c.customerId}
+                  icon={<Users className="h-4 w-4" />}
+                  tone={debtorTone(c.oldestOverdueDays)}
+                  title={c.name}
+                  hint={
+                    c.oldestOverdueDays != null
+                      ? `${fmtNumber(c.openInvoices)} open · oldest ${fmtNumber(c.oldestOverdueDays)}d past due`
+                      : `${fmtNumber(c.openInvoices)} open · within terms`
+                  }
+                  right={fmtMoneyCents(c.outstandingCents, currency)}
+                />
+              ))
+            ) : (
+              <EmptyState
+                icon={<CheckCircle2 className="h-5 w-5" />}
+                title="Nothing outstanding"
+                description="Customers with open balances will appear here."
+              />
+            )}
           </OverviewCard>
 
           <OverviewCard
             title="Open balance by stage"
             icon={<ReceiptText className="h-4 w-4" />}
-            right={collections ? undefined : <SampleBadge />}
+            plain
           >
-            <div className="mb-3 grid grid-cols-3 gap-3 text-center">
-              <MetricTile
-                value={
-                  collections
-                    ? fmtMoneyCents(collections.openBalance.estimatesCents, currency)
-                    : '—'
-                }
-                label="Estimates"
-                tone="module"
+            {collections ? (
+              <>
+                <div className="mb-3 grid grid-cols-3 gap-3 text-center">
+                  <MetricTile
+                    value={fmtMoneyCents(collections.openBalance.estimatesCents, currency)}
+                    label="Estimates"
+                    tone="module"
+                  />
+                  <MetricTile
+                    value={fmtMoneyCents(collections.openBalance.invoicedOpenCents, currency)}
+                    label="Invoiced"
+                    tone="warning"
+                  />
+                  <MetricTile
+                    value={fmtMoneyCents(collections.openBalance.overdueCents, currency)}
+                    label="Overdue"
+                    tone="danger"
+                  />
+                </div>
+                <OverviewRow
+                  icon={<FileText className="h-4 w-4" />}
+                  tone="module"
+                  title="Estimates awaiting approval"
+                  hint="Not yet billable"
+                  right={
+                    <Badge color="neutral" variant="soft">
+                      {fmtNumber(collections.openBalance.estimatesCount)} open
+                    </Badge>
+                  }
+                />
+                <OverviewRow
+                  icon={<DollarSign className="h-4 w-4" />}
+                  tone="warning"
+                  title="Invoiced, unpaid"
+                  hint="Within terms"
+                  right={
+                    <Badge color="warning" variant="soft">
+                      {fmtNumber(collections.openBalance.invoicedOpenCount)} open
+                    </Badge>
+                  }
+                />
+                <OverviewRow
+                  icon={<AlertTriangle className="h-4 w-4" />}
+                  tone="danger"
+                  title="Past due"
+                  hint="Needs a follow-up"
+                  right={
+                    <Badge color="danger" variant="soft">
+                      {fmtNumber(collections.openBalance.overdueCount)} open
+                    </Badge>
+                  }
+                />
+              </>
+            ) : (
+              <EmptyState
+                icon={<ReceiptText className="h-5 w-5" />}
+                title="No open balances yet"
+                description="Estimates, invoices, and overdue totals split out here."
               />
-              <MetricTile
-                value={
-                  collections
-                    ? fmtMoneyCents(collections.openBalance.invoicedOpenCents, currency)
-                    : '—'
-                }
-                label="Invoiced"
-                tone="warning"
-              />
-              <MetricTile
-                value={
-                  collections ? fmtMoneyCents(collections.openBalance.overdueCents, currency) : '—'
-                }
-                label="Overdue"
-                tone="danger"
-              />
-            </div>
-            <OverviewRow
-              icon={<FileText className="h-4 w-4" />}
-              tone="module"
-              title="Estimates awaiting approval"
-              hint="Not yet billable"
-              right={
-                <Badge color="neutral" variant="soft">
-                  {fmtNumber(collections?.openBalance.estimatesCount ?? 0)} open
-                </Badge>
-              }
-            />
-            <OverviewRow
-              icon={<DollarSign className="h-4 w-4" />}
-              tone="warning"
-              title="Invoiced, unpaid"
-              hint="Within terms"
-              right={
-                <Badge color="warning" variant="soft">
-                  {fmtNumber(collections?.openBalance.invoicedOpenCount ?? 0)} open
-                </Badge>
-              }
-            />
-            <OverviewRow
-              icon={<AlertTriangle className="h-4 w-4" />}
-              tone="danger"
-              title="Past due"
-              hint="Needs a follow-up"
-              right={
-                <Badge color="danger" variant="soft">
-                  {fmtNumber(collections?.openBalance.overdueCount ?? overdueCount ?? 0)} open
-                </Badge>
-              }
-            />
+            )}
           </OverviewCard>
 
           <OverviewCard
             title="Send & collect"
             icon={<Send className="h-4 w-4" />}
             right={<CardLink href="/invoicing/documents/new">New</CardLink>}
+            plain
           >
-            <OverviewRow
-              icon={<Send className="h-4 w-4" />}
-              tone="module"
-              title="Drafts ready to send"
-              hint="Finalize to start the clock"
-              right={
-                <Badge color="module" variant="soft">
-                  {fmtNumber(draftCount || 5)}
-                </Badge>
-              }
-            />
-            <OverviewRow
-              icon={<DollarSign className="h-4 w-4" />}
-              tone="success"
-              title="Payment links live"
-              hint="Hosted checkout open balances"
-              right={
-                <Badge color="success" variant="soft">
-                  Active
-                </Badge>
-              }
-            />
-            <OverviewRow
-              icon={<Clock className="h-4 w-4" />}
-              tone="warning"
-              title="Reminders due"
-              hint="Past-due follow-ups to send"
-              right={
-                <Badge color="warning" variant="soft">
-                  {fmtNumber(overdueCount)}
-                </Badge>
-              }
-            />
-            <div className="mt-3 flex items-center gap-2">
-              <SampleBadge />
-              <span className="text-xs text-[var(--color-text-tertiary)]">
-                Reminder automation illustrative
-              </span>
-            </div>
+            {draftCount > 0 || (overdueCount ?? 0) > 0 ? (
+              <>
+                <OverviewRow
+                  icon={<Send className="h-4 w-4" />}
+                  tone="module"
+                  title="Drafts ready to send"
+                  hint="Finalize to start the clock"
+                  right={
+                    <Badge color="module" variant="soft">
+                      {fmtNumber(draftCount)}
+                    </Badge>
+                  }
+                />
+                <OverviewRow
+                  icon={<Clock className="h-4 w-4" />}
+                  tone="warning"
+                  title="Reminders due"
+                  hint="Past-due follow-ups to send"
+                  right={
+                    <Badge color="warning" variant="soft">
+                      {fmtNumber(overdueCount ?? 0)}
+                    </Badge>
+                  }
+                />
+              </>
+            ) : (
+              <EmptyState
+                icon={<Send className="h-5 w-5" />}
+                title="Nothing to send"
+                description="Drafts to send and reminders due will surface here."
+                action={
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/invoicing/documents/new">New document</Link>
+                  </Button>
+                }
+              />
+            )}
           </OverviewCard>
         </Grid>
       </Stack>

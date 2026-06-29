@@ -123,7 +123,7 @@ export default async function BuilderComponentsPage({ searchParams }: PageProps)
         ) : view === 'card' ? (
           <Grid minItemWidth="20rem" gap={4}>
             {items.map((entry) => (
-              <Card key={`${entry.provenance}:${entry.id}`} variant="module" padding="md">
+              <Card key={`${entry.provenance}:${entry.id}`} variant="default" padding="md">
                 <Stack gap={3}>
                   <Stack direction="row" align="start" justify="between" gap={2}>
                     <Stack direction="row" align="center" gap={2} className="min-w-0">

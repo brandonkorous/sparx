@@ -51,7 +51,7 @@ export function SeoAuditList({ rows, view }: SeoAuditListProps) {
   const card: SelectionCard<SeoAuditRow> = {
     title: rowLink,
     render: (r) => (
-      <Card variant="module" padding="md">
+      <Card variant="default" padding="md">
         <Stack direction="row" gap={3} align="start">
           <SeoScoreBadge score={r.score} grade={r.grade} size={36} />
           <Stack gap={1} className="min-w-0 flex-1">

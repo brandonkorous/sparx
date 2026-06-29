@@ -102,7 +102,7 @@ export default async function RevisionsPage({ params }: { params: Promise<{ id: 
         ) : (
           <Stack gap={3}>
             {revisions.map((r) => (
-              <Card key={r.revision_number} variant="module">
+              <Card key={r.revision_number} variant="default">
                 <CardHeader>
                   <Stack direction="row" align="center" justify="between">
                     <Stack direction="row" align="center" gap={3}>

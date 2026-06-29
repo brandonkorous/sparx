@@ -1113,3 +1113,149 @@
     transform: none;
   }
 }
+
+/* ── SPARK MASCOT ────────────────────────────────────────────────
+   The brand "spark" character (components/marketing/spark-mascot.tsx). Body is
+   spark.svg's silhouette; the face (eyes + mouth) is a separate animatable
+   layer. Motion is CSS-only: an idle bob + a blink. transform-box: fill-box is
+   REQUIRED so each eye scales around its OWN centre — SVG's default
+   transform-origin is the viewBox centre, which would make the eyes drift
+   up/out as they blink or change expression. Expression set + face geometry
+   live in the component. */
+.spark-mascot {
+  display: inline-block;
+  line-height: 0;
+}
+.spark-mascot--bob {
+  animation: spark-bob 4.4s ease-in-out infinite;
+  transform-origin: 50% 60%;
+}
+.spark-mascot__eyes {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.spark-mascot__eyes--blink {
+  animation: spark-blink 4.6s infinite;
+}
+.spark-mascot__eye {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.14s ease;
+}
+.spark-mascot__mouth {
+  transition: d 0.3s ease;
+}
+@keyframes spark-bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1.5deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(1.5deg);
+  }
+}
+@keyframes spark-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  96% {
+    transform: scaleY(0.12);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spark-mascot--bob,
+  .spark-mascot__eyes--blink {
+    animation: none;
+  }
+}
+
+/* Two-column hero: a copy column + a figure column (mascot stacked directly over
+   the CTAs and centred, so the mascot "presents" the buttons instead of floating
+   in the corner). Both stack on tablet down. */
+.mkt-hero-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 56px;
+  width: 100%;
+}
+.mkt-hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  flex: 1;
+  min-width: 0;
+}
+.mkt-hero-figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  flex-shrink: 0;
+}
+@media (max-width: 1024px) {
+  .mkt-hero-grid {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 36px;
+  }
+  .mkt-hero-figure {
+    align-items: flex-start;
+  }
+}
+
+/* ── SCROLL REVEAL ───────────────────────────────────────────────
+   Content fades + rises as it scrolls into view. Driven by the <Reveal>
+   component (IntersectionObserver adds `.in`). `--i` staggers siblings. */
+.mkt-reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--i, 0) * 80ms);
+}
+.mkt-reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── LOGO MARQUEE ────────────────────────────────────────────────
+   The track is rendered twice and scrolls -50% for a seamless loop; both edges
+   fade via an alpha MASK (an invisible cut-out, not a visible colour gradient).
+   Pauses on hover. */
+.mkt-marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+}
+.mkt-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: mkt-marquee-scroll 38s linear infinite;
+}
+.mkt-marquee:hover .mkt-marquee-track {
+  animation-play-state: paused;
+}
+@keyframes mkt-marquee-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mkt-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .mkt-marquee-track {
+    animation: none;
+  }
+  .mkt-marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}

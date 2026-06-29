@@ -10,6 +10,7 @@ import { BreadcrumbTrail } from './breadcrumb-trail';
 import { CommandPalette } from './command-palette';
 import { ContextualPanel, resolvePanelContext } from './contextual-panel';
 import { DashboardHeader } from './dashboard-header';
+import { FeedbackProvider } from './feedback/feedback-provider';
 import { InlineDetailContent, ModalDetailContent, useDetailTarget } from './detail-panel';
 import { MobileNav } from './mobile-nav';
 import { PreferencesProvider } from './preferences-provider';
@@ -78,65 +79,71 @@ export function DashboardShell({
   // already carries the module switcher + platform links.
   const hasPanel = resolvePanelContext(pathname, enabledModules).kind !== 'none';
 
+  // The active web property (site) for the feedback context payload (docs/112 §4).
+  const activeSite = sites.find((s) => s.id === activePropertyId) ?? sites[0] ?? null;
+  const activeProperty = activeSite ? { id: activeSite.id, name: activeSite.name } : null;
+
   return (
     <PreferencesProvider value={preferences}>
-      <SidebarAppShell
-        pathname={pathname}
-        rail={
-          <RailNav
-            pathname={pathname}
-            enabledModules={enabledModules}
-            favorites={favorites}
-            recents={recents}
-          />
-        }
-        panel={
-          hasPanel ? (
-            <ContextualPanel
+      <FeedbackProvider activeProperty={activeProperty}>
+        <SidebarAppShell
+          pathname={pathname}
+          rail={
+            <RailNav
               pathname={pathname}
               enabledModules={enabledModules}
-              tenantName={tenantName}
+              favorites={favorites}
+              recents={recents}
             />
-          ) : null
-        }
-        mobileNav={
-          <MobileNav
-            pathname={pathname}
-            enabledModules={enabledModules}
-            favorites={favorites}
-            recents={recents}
-          />
-        }
-        headerStart={
-          <BreadcrumbTrail
-            tenantName={tenantName}
-            enabledModules={enabledModules}
-            sites={sites}
-            activePropertyId={activePropertyId}
-          />
-        }
-        headerActions={
-          <>
-            <DashboardHeader favorites={favorites} preferences={preferences} />
-            <UserMenu user={user} displayName={displayName} />
-          </>
-        }
-        detail={inlineDetail}
-        onDetailClose={closeDetail}
-      >
-        {children}
-      </SidebarAppShell>
-      {/* Modal overlay is rendered separately — it's not part of the
+          }
+          panel={
+            hasPanel ? (
+              <ContextualPanel
+                pathname={pathname}
+                enabledModules={enabledModules}
+                tenantName={tenantName}
+              />
+            ) : null
+          }
+          mobileNav={
+            <MobileNav
+              pathname={pathname}
+              enabledModules={enabledModules}
+              favorites={favorites}
+              recents={recents}
+            />
+          }
+          headerStart={
+            <BreadcrumbTrail
+              tenantName={tenantName}
+              enabledModules={enabledModules}
+              sites={sites}
+              activePropertyId={activePropertyId}
+            />
+          }
+          headerActions={
+            <>
+              <DashboardHeader favorites={favorites} preferences={preferences} />
+              <UserMenu user={user} displayName={displayName} />
+            </>
+          }
+          detail={inlineDetail}
+          onDetailClose={closeDetail}
+        >
+          {children}
+        </SidebarAppShell>
+        {/* Modal overlay is rendered separately — it's not part of the
           shell's split layout. */}
-      {detailTarget?.mode === 'modal' && detail && (
-        <ModalDetailContent target={detailTarget} onClose={closeDetail}>
-          {detail}
-        </ModalDetailContent>
-      )}
-      {/* ⌘K palette — mounted once at the shell, listens globally for the
+        {detailTarget?.mode === 'modal' && detail && (
+          <ModalDetailContent target={detailTarget} onClose={closeDetail}>
+            {detail}
+          </ModalDetailContent>
+        )}
+        {/* ⌘K palette — mounted once at the shell, listens globally for the
           shortcut. Receives favorites + recents so they appear at the top
           of the search results without an extra fetch. */}
-      <CommandPalette favorites={favorites} recents={recents} enabledModules={enabledModules} />
+        <CommandPalette favorites={favorites} recents={recents} enabledModules={enabledModules} />
+      </FeedbackProvider>
     </PreferencesProvider>
   );
 }

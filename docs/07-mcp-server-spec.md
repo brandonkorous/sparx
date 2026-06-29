@@ -1,8 +1,8 @@
 # WizeWorks Platform — MCP Server Specification
 
-**Version:** 1.3  
+**Version:** 1.4  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-06-17
+**Last Updated:** 2026-06-29
 
 ---
 
@@ -10,7 +10,7 @@
 
 The WizeWorks MCP (Model Context Protocol) Server is a first-class platform service that exposes tenant business data to AI assistants — Claude, ChatGPT, and Microsoft Copilot. It enables natural language interaction with live business data without any custom integration work by the tenant.
 
-The MCP server runs as a dedicated Kubernetes deployment. Access is gated by the **`ai` module** (the AI-Integrations capability), consistent with sparx's module-based model — a tenant activates the `ai` module to use MCP, exactly as it activates any other module. There are **no plan tiers** (no Starter/Pro/Enterprise); "a tenant pays only for what it uses." A request from a tenant without the `ai` module active is rejected at the transport. Per-tool scopes then decide which module's tools each call can run.
+The MCP server runs as a dedicated Kubernetes deployment. Access is gated by the **`ai` module** (the AI-Integrations capability), consistent with sparx's module-based model — a tenant activates the `ai` module to use MCP, exactly as it activates any other module. There are **no plan tiers** (no Starter/Pro/Enterprise); "a tenant pays only for what it uses." A request from a tenant without the `ai` module active is rejected at the transport. Per-tool scopes then decide which module's tools each call can run, and a tenant may additionally **disable individual tools** for all of its connections — the per-tenant tool policy (§9).
 
 ---
 
@@ -145,7 +145,7 @@ Best performing product: Bosch Injector Set at $12,400."
 
 1. Tenant opens **Settings → AI Integrations**
 2. Selects AI client (Claude, ChatGPT, Copilot)
-3. Clicks "Connect" — generates a scoped API key
+3. Clicks "Connect" — generates a scoped API key. The chosen client is recorded on the key (`api_keys.client` ∈ `claude | chatgpt | copilot | custom`) so the dashboard can label each connection by its assistant. This is descriptive metadata only — it never affects verification or scope.
 4. Copies the MCP server URL + API key into their AI client
 5. AI client can now access their tenant data
 
@@ -226,3 +226,26 @@ All MCP tool calls are logged to the audit log with:
 - Timestamp
 
 Tenants can view their full AI interaction history in the dashboard.
+
+> **Implementation note (v1.4).** The audit row's `entity_id` column is a `uuid`; the tool **name** lives in `action` (`mcp.<tool>`), never in `entity_id`. (An earlier build wrote the name into `entity_id`, which failed the uuid cast and was swallowed by the audit writer's catch — so no `McpToolCall` rows persisted. Fixed by leaving `entity_id` null.) The dashboard's `/v1/ai/reports/*` aggregates read `action` + `diff.outcome` + `actor_id` only.
+
+---
+
+## 9. Per-Tenant Tool Policy
+
+The tool catalog (§3) is code-defined and identical for every tenant; **scopes + the `ai` module gate** decide what a given API key can call. On top of that, a tenant may **disable individual tools** for ALL of its connections — a per-tenant allow/deny overlay (the kill switch a cautious tenant wants for, say, `update_order_status` or `purchase_domain`, without revoking the whole key).
+
+- **Storage:** `ai_tool_policies` (tenant-scoped, FORCE RLS) — one row per overridden tool: `{ tool_name, enabled }`. **Absence of a row = exposed** (the default-on behavior, so a tenant that never touches this surface sees no change). A row with `enabled = false` disables the tool.
+- **Enforcement (`services/api-mcp`):** the per-request server factory loads the tenant's disabled set once (`loadDisabledTools`, under the tenant GUC) and **does not register** disabled tools. They are therefore absent from `tools/list`, and the MCP SDK rejects any direct `tools/call` for an unregistered name — registration-skip IS the enforcement. The policy load fails **open** (all tools exposed) on a read error, so a transient DB blip never silently strips the assistant.
+- **Management:** `GET /v1/ai/tool-policies` returns the full catalog with each tool's effective exposure; `PUT /v1/ai/tool-policies/:tool` (`{enabled}`) flips one; `DELETE /v1/ai/tool-policies/:tool` resets one to default; `POST /v1/ai/tool-policies/reset` clears every override. Reads are viewer; writes are **admin** (a security control, same bar as issuing an API key). Surfaced in the dashboard at **/ai/tools**.
+
+---
+
+## 10. AI Prompt-Template Library
+
+A tenant-scoped library of reusable, named AI prompts — a support-assistant **persona** plus authoring prompts for product copy, lifecycle email, support replies, SEO, social, and review responses.
+
+- **Storage:** `ai_prompt_templates` (tenant-scoped, FORCE RLS): `{ key, name, description, category, body, variables, model, enabled, metadata }`. `key` is a per-tenant unique slug (the idempotency handle); `body` may carry `{{variable}}` placeholders the consuming flow fills; `category ∈ persona | support | email | product | seo | social | crm | general`; `model` is an optional per-prompt model override.
+- **Seeded via the real provisioning paths:** the **`ai` module preset** (`ai-prompt-library-core`) installs the platform default library (ensure-by-key, idempotent — never overwrites a tenant's edited copy), and every **industry starter** references it, so picking a vertical with AI active seeds the prompts too. Sample data adds demo prompts (cleared by "Clear sample data").
+- **Consumed (not a CRUD island):** the live-chat first-responder (`services/api-rest/src/lib/chat/ai-handler.ts`) reads the tenant's active enabled **`persona`** template to ground its system prompt and pick its model — falling back to the platform default voice. The functional tool contract (the `respond` tool + confidence + escalation) is always appended and is never overridable by a persona.
+- **Management:** `GET/POST /v1/ai/prompt-templates`, `GET/PATCH/DELETE /v1/ai/prompt-templates/:id`, and `POST /v1/ai/prompt-templates/install-defaults`. Reads are viewer, writes are editor, the bulk default-install is admin. Surfaced in the dashboard at **/ai/prompts**.

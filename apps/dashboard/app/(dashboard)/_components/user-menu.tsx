@@ -14,8 +14,11 @@ import {
   DropdownMenuTrigger,
   toast,
 } from '@sparx/ui';
-import { LogOut, Settings, User as UserIcon } from 'lucide-react';
+import { LogOut, MessageSquarePlus, Settings, User as UserIcon } from 'lucide-react';
 import { authClient } from '@sparx/auth/client';
+import { useQuery } from '@sparx/query';
+import { useFeedback } from './feedback/feedback-provider';
+import { getFeedbackUnreadCountAction } from '../_shell/feedback-actions';
 
 export interface UserMenuUser {
   id: string;
@@ -28,7 +31,15 @@ export interface UserMenuUser {
 // and sign-out.
 export function UserMenu({ user, displayName }: { user: UserMenuUser; displayName: string }) {
   const router = useRouter();
+  const feedback = useFeedback();
   const [signingOut, setSigningOut] = React.useState(false);
+  const { data: unreadCount = 0 } = useQuery({
+    queryKey: ['feedback', 'unread-count'],
+    queryFn: getFeedbackUnreadCountAction,
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: true,
+    staleTime: 30_000,
+  });
 
   async function handleSignOut() {
     setSigningOut(true);
@@ -66,6 +77,21 @@ export function UserMenu({ user, displayName }: { user: UserMenuUser; displayNam
             Settings
             <DropdownMenuShortcut>⌘,</DropdownMenuShortcut>
           </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onSelect={() => feedback.openSend({ source: 'button' })}>
+          <MessageSquarePlus className="h-4 w-4" />
+          Send feedback
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => feedback.openHistory()}>
+          <MessageSquarePlus className="h-4 w-4" />
+          Your feedback
+          {unreadCount > 0 && (
+            <span
+              className="ml-auto h-2 w-2 rounded-full bg-[var(--color-text-link)]"
+              aria-hidden
+            />
+          )}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={handleSignOut} disabled={signingOut}>

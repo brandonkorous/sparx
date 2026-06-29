@@ -15,10 +15,13 @@ export interface StatProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 't
   delta?: StatDelta;
   icon?: React.ReactNode;
   hint?: React.ReactNode;
+  /** Optional inline visual (e.g. a <Sparkline/>) rendered to the right of the
+   *  delta/hint — turns a bare metric tile into a KPI tile with a trend. */
+  chart?: React.ReactNode;
 }
 
 export const Stat = React.forwardRef<HTMLDivElement, StatProps>(
-  ({ className, label, value, delta, icon, hint, ...props }, ref) => (
+  ({ className, label, value, delta, icon, hint, chart, ...props }, ref) => (
     <div
       ref={ref}
       className={cn('rounded-lg bg-[var(--color-bg-subtle)] p-4', className)}
@@ -35,19 +38,24 @@ export const Stat = React.forwardRef<HTMLDivElement, StatProps>(
         )}
       </div>
       <p className="text-2xl font-medium text-[var(--color-text-primary)]">{value}</p>
-      {delta && (
-        <p
-          className={cn(
-            'mt-1 text-xs',
-            delta.trend === 'up' && 'text-[var(--color-success-text)]',
-            delta.trend === 'down' && 'text-[var(--color-danger-text)]',
-            delta.trend === 'neutral' && 'text-[var(--color-text-tertiary)]'
+      <div className="mt-1 flex items-end justify-between gap-2">
+        <div className="min-w-0">
+          {delta && (
+            <p
+              className={cn(
+                'text-xs font-medium',
+                delta.trend === 'up' && 'text-[var(--color-success-text)]',
+                delta.trend === 'down' && 'text-[var(--color-danger-text)]',
+                delta.trend === 'neutral' && 'text-[var(--color-text-tertiary)]'
+              )}
+            >
+              {delta.value}
+            </p>
           )}
-        >
-          {delta.value}
-        </p>
-      )}
-      {hint && !delta && <p className="mt-1 text-xs text-[var(--color-text-tertiary)]">{hint}</p>}
+          {hint && !delta && <p className="text-xs text-[var(--color-text-tertiary)]">{hint}</p>}
+        </div>
+        {chart && <div className="h-8 w-24 shrink-0">{chart}</div>}
+      </div>
     </div>
   )
 );

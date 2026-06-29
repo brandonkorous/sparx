@@ -110,6 +110,12 @@ model Tenant {
   userFavorites UserFavorite[]
   userRecents   UserRecent[]
 
+  // In-product feedback (docs/112) — submissions, the reply thread, and the
+  // per-user pulse frequency-cap state.
+  feedbackSubmissions FeedbackSubmission[]
+  feedbackMessages    FeedbackMessage[]
+  feedbackPulseStates FeedbackPulseState[]
+
   // CMS module
   pages                Page[]
   contentTypes         ContentType[]
@@ -347,6 +353,11 @@ model Tenant {
   chatConversations ChatConversation[]
   chatMessages      ChatMessage[]
   chatQuickReplies  ChatQuickReply[]
+
+  // AI module (docs/07) — the prompt-template library + the per-tenant MCP
+  // tool-exposure overrides (the rest of the AI surface lives in api_keys / audit_logs).
+  aiPromptTemplates AiPromptTemplate[]
+  aiToolPolicies    AiToolPolicy[]
 
   // B2B pricing (docs/10, docs/64) — pricing tiers, per-product overrides, invoices, portal contacts, approval rules
   b2bPricingTiers            B2bPricingTier[]

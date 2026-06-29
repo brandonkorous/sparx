@@ -144,6 +144,9 @@ export default tseslint.config(
       // preset contract.
       'packages/*/src/presets/**',
       'services/*/src/lib/presets/**',
+      // Industry sample-data packs (Wave 5) — per-vertical catalogs + activity
+      // authored as declarative data, same as the catalogs/presets above.
+      'packages/db/src/sample-data/packs/**',
       '**/seed.ts',
       '**/_lib/catalog.ts',
       '**/module-catalog.ts',

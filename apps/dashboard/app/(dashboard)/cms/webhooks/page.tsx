@@ -66,7 +66,7 @@ export default function WebhooksPage() {
           </CardContent>
         </Card>
 
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <Heading level={3}>Events you can subscribe to</Heading>
             <CardDescription>

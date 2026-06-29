@@ -126,7 +126,7 @@ export function BlueprintsList({ rows, view, canInstall }: BlueprintsListProps) 
   const card: SelectionCard<BlueprintListItem> = {
     title: () => null,
     render: (bp) => (
-      <Card variant="module" padding="none" className="overflow-hidden">
+      <Card variant="default" padding="none" className="overflow-hidden">
         {bp.preview ? (
           <img
             src={bp.preview}

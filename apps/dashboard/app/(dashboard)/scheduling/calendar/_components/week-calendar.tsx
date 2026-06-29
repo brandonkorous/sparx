@@ -10,10 +10,10 @@
 // `?from=YYYY-MM-DD` (week's Sunday) the server reads to fetch that week.
 
 import * as React from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Badge, Button, Text } from '@sparx/ui';
+import { EntityRowLink } from '../../../_components/entity-row-link';
 import type { CalendarEvent, BookingStatus } from '../../_lib/types';
 import { minuteOfDay, statusColor, STATUS_LABEL } from '../../_lib/format';
 
@@ -218,8 +218,10 @@ function EventBlock({ p, top, bottom }: { p: Positioned; top: number; bottom: nu
   const widthPct = 100 / p.lanes;
   const tall = bottom - top > 7;
   return (
-    <Link
-      href="/scheduling/bookings"
+    <EntityRowLink
+      href={`/scheduling/bookings/${p.ev.id}`}
+      entityType="booking"
+      entityId={p.ev.id}
       className="absolute overflow-hidden rounded-md border-l-2 px-2 py-1 text-left hover:z-20 hover:shadow-md"
       style={{
         top: `calc(${top}% + 1px)`,
@@ -248,6 +250,6 @@ function EventBlock({ p, top, bottom }: { p: Positioned; top: number; bottom: nu
           </Badge>
         </div>
       ) : null}
-    </Link>
+    </EntityRowLink>
   );
 }

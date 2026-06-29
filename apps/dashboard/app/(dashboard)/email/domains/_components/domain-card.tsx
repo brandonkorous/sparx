@@ -43,7 +43,7 @@ export function DomainCard({ domain }: { domain: SendingDomainRow }) {
   const badge = STATE_BADGE[domain.state];
 
   return (
-    <Card variant="module">
+    <Card variant="default">
       <CardHeader>
         <Stack direction="row" align="center" justify="between" gap={3} className="flex-wrap">
           <Stack direction="row" align="center" gap={2}>

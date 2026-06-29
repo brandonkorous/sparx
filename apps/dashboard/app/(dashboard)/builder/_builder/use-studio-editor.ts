@@ -2,20 +2,19 @@
 
 // useStudioEditor — the editing BRAIN of the unified builder shell (docs/builder/03).
 //
-// The unified studio composes THREE ownership zones into one editor: the brand
-// `theme`, the site `layout` (chrome), and the active `page` in the Outlet. This
-// hook is the three-zone autosave ROUTER the phase turns on: it owns a single
-// `{zone, id, ids}` selection spanning the layout + page trees, routes every
-// mutation to the tree that owns the selected node, and persists each zone through
-// its OWN debounced save bound to its OWN store. That last point is the safety
-// property — a layout edit and a page edit never share a debounce or a save call,
-// so one can never stomp the other (docs/builder/03 §6, "a mis-routed save is a
-// data-loss class of bug"). The zone of a node is derived from WHICH tree
-// physically holds it, so routing can't drift from the data.
+// The studio composes TWO ownership zones into one editor: the site `layout`
+// (chrome) and the active `page` in the Outlet. This hook is the two-zone autosave
+// ROUTER: it owns a single `{zone, id, ids}` selection spanning the layout + page
+// trees, routes every mutation to the tree that owns the selected node, and
+// persists each zone through its OWN debounced save bound to its OWN store. That
+// last point is the safety property — a layout edit and a page edit never share a
+// debounce or a save call, so one can never stomp the other (docs/builder/03 §6,
+// "a mis-routed save is a data-loss class of bug"). The zone of a node is derived
+// from WHICH tree physically holds it, so routing can't drift from the data.
 //
-// The `theme` zone is edited by the ThemeCenter panel (its own debounced autosave
-// to /v1/brand + the site config); this hook only force-flushes it via `flushTheme`
-// when the unified toolbar's Save/Publish needs the latest brand on disk first.
+// Brand + theme are NOT a zone of this editor — they live on their own surface
+// (/builder/brand, the full ThemeCenter); the editor canvas only PREVIEWS the saved
+// theme (the route injects it as a static `.bx-canvas` style), it doesn't edit it.
 //
 // It deliberately mirrors `use-builder-editor` (selection, scope, the tree
 // mutations, the confirm-gated delete/retype, AND the Phase-5 affordances: undo/
@@ -63,24 +62,24 @@ import { parseClipboard, serializeClipboard } from './editor-clipboard';
 import { applyClassChangeToSibling } from './class-conflicts';
 import type { MobilePane, RailTab, SaveStatus, SelectMods } from './use-builder-editor';
 
-// The three ownership zones (docs/builder/03 §2.1). `theme` carries no node id
-// (the brand is the theme root, not a draggable node — §2.3); `layout`/`page`
-// carry the selected node id, or null for that zone's settings home.
-export type StudioZone = 'theme' | 'layout' | 'page';
+// The two ownership zones (docs/builder/03 §2.1) — `layout` (chrome) and `page`
+// (the Outlet). Each carries the selected node id, or null for that zone's
+// settings home. (Brand/theme is a separate surface, not a zone — see the header.)
+export type StudioZone = 'layout' | 'page';
 
 export interface StudioSelection {
   zone: StudioZone;
-  /** The PRIMARY selected node id within a `layout`/`page` zone (the inspector's
-   *  focus), or null for that zone's settings home. Always null for `theme`. */
+  /** The PRIMARY selected node id within the zone (the inspector's focus), or null
+   *  for that zone's settings home. */
   id: string | null;
   /** The full selection set within the active zone (docs/builder/05 §2.2), in
-   *  selection order — `id` is its last member. Empty for a settings home / theme. */
+   *  selection order — `id` is its last member. Empty for a settings home. */
   ids: string[];
 }
 
-/** The persisted, node-bearing zones — everything this hook autosaves + mutates.
- *  `theme` is excluded: it routes to the ThemeCenter panel, not a node tree. */
-type NodeZone = 'layout' | 'page';
+/** Alias kept for the per-zone autosave plumbing's intent — every studio zone is a
+ *  node-bearing tree this hook autosaves + mutates. */
+type NodeZone = StudioZone;
 
 /** An undo snapshot of the whole studio (docs/builder/05 §2.1): both node trees +
  *  the selection. Restoring applies only the tree(s) that actually changed. */
@@ -147,24 +146,19 @@ export interface UseStudioEditorArgs {
   onLayoutChange: (next: BuilderNode) => void;
   /** Apply an optimistic page tree to the owner's catalog state. */
   onPageChange: (next: BuilderNode) => void;
-  /** Force-flush the THEME zone's debounced autosave (ThemeCenter), so the unified
-   *  Save/Publish persists the latest brand before acting. */
-  flushTheme: () => Promise<void>;
 }
 
 export interface StudioEditor {
-  // ── Shared UI state (one selection / device / rail across all zones) ──────────
+  // ── Shared UI state (one selection / device / rail across both zones) ─────────
   selection: StudioSelection;
-  /** Select the brand theme root → the Theme inspector (docs/builder/03 §2.3). */
-  selectTheme: () => void;
   /** Select a zone's settings home (no node) → that zone's settings panel. */
   selectZoneHome: (zone: NodeZone) => void;
   /** Select a node by id — the zone is RESOLVED from which tree holds it, so the
    *  canvas/layers never have to know a node's zone. Click modifiers build a
    *  multi-selection WITHIN that zone (docs/builder/05 §2.2). null → clear to the
-   *  current node-zone's settings home (or page settings if currently on Theme). */
+   *  current zone's settings home. */
   selectNode: (id: string | null, mods?: SelectMods) => void;
-  /** Select every node in the active zone (Cmd/Ctrl+A). No-op on theme. */
+  /** Select every node in the active zone (Cmd/Ctrl+A). */
   selectAll: () => void;
   /** Move the selection to the primary's parent (Cmd/Ctrl+↑); clears at a root. */
   selectParent: () => void;
@@ -176,8 +170,8 @@ export interface StudioEditor {
   setMobilePane: (p: MobilePane) => void;
 
   // ── Derived from the active zone + selection ──────────────────────────────────
-  /** The active node-bearing zone (`layout`/`page`), or null while on `theme`. */
-  activeZone: NodeZone | null;
+  /** The active zone (`layout`/`page`) — always one of the two. */
+  activeZone: NodeZone;
   selectedNode: BuilderNode | null;
   /** The binding catalog of the active zone (drives the inspector's data picker). */
   activeCatalog: BindingCatalog;
@@ -200,7 +194,7 @@ export interface StudioEditor {
   setSaveStatus: (s: SaveStatus) => void;
   /** Flush a single zone's pending save now. */
   flushZone: (zone: NodeZone) => Promise<void>;
-  /** Flush EVERY zone (theme + layout + page) — await before publish / site swap. */
+  /** Flush BOTH zones (layout + page) — await before publish / site swap. */
   flushAll: () => Promise<void>;
 
   // ── Mutations (route to the selected node's zone; schedule that zone's save) ───
@@ -239,7 +233,6 @@ export function useStudioEditor({
   savePage,
   onLayoutChange,
   onPageChange,
-  flushTheme,
 }: UseStudioEditorArgs): StudioEditor {
   const confirm = useConfirm();
   const [selection, setSelectionState] = React.useState<StudioSelection>({
@@ -317,8 +310,8 @@ export function useStudioEditor({
   );
 
   const flushAll = React.useCallback(async () => {
-    await Promise.all([flushZone('layout'), flushZone('page'), flushTheme()]);
-  }, [flushZone, flushTheme]);
+    await Promise.all([flushZone('layout'), flushZone('page')]);
+  }, [flushZone]);
 
   // ── Undo/redo history (docs/builder/05 §2.1) ──────────────────────────────────
   const history = useHistory<StudioSnapshot>();
@@ -349,11 +342,6 @@ export function useStudioEditor({
   );
 
   // ── Selection ────────────────────────────────────────────────────────────────
-  const selectTheme = React.useCallback(() => {
-    anchorRef.current = null;
-    setSelection({ zone: 'theme', id: null, ids: [] });
-  }, [setSelection]);
-
   const selectZoneHome = React.useCallback(
     (zone: NodeZone) => {
       anchorRef.current = null;
@@ -366,11 +354,7 @@ export function useStudioEditor({
     (id: string | null, mods?: SelectMods) => {
       if (id === null) {
         anchorRef.current = null;
-        setSelection({
-          zone: selectionRef.current.zone === 'theme' ? 'page' : selectionRef.current.zone,
-          id: null,
-          ids: [],
-        });
+        setSelection({ zone: selectionRef.current.zone, id: null, ids: [] });
         return;
       }
       const zone = zoneOf(id);
@@ -403,7 +387,6 @@ export function useStudioEditor({
 
   const selectAll = React.useCallback(() => {
     const cur = selectionRef.current;
-    if (cur.zone === 'theme') return;
     const tree = treesRef.current[cur.zone];
     if (!tree) return;
     const ids: string[] = [];
@@ -421,7 +404,7 @@ export function useStudioEditor({
 
   const selectParent = React.useCallback(() => {
     const cur = selectionRef.current;
-    if (cur.zone === 'theme' || !cur.id) return;
+    if (!cur.id) return;
     const tree = treesRef.current[cur.zone];
     if (!tree) return;
     const parent = findParent(tree, cur.id);
@@ -434,8 +417,8 @@ export function useStudioEditor({
   }, [setSelection]);
 
   // ── Derived (active zone) ─────────────────────────────────────────────────────
-  const activeZone: NodeZone | null = selection.zone === 'theme' ? null : selection.zone;
-  const activeTree = activeZone ? (activeZone === 'page' ? pageTree : layoutTree) : null;
+  const activeZone: NodeZone = selection.zone;
+  const activeTree = activeZone === 'page' ? pageTree : layoutTree;
   const activeCatalog = selection.zone === 'layout' ? layoutCatalog : pageCatalog;
 
   const selectedNode = activeTree && selection.id ? findNode(activeTree, selection.id) : null;
@@ -494,7 +477,6 @@ export function useStudioEditor({
   const updateActiveTree = React.useCallback(
     (fn: (t: BuilderNode) => BuilderNode, selAfter?: StudioSelection) => {
       const zone = selectionRef.current.zone;
-      if (zone === 'theme') return;
       const tree = treesRef.current[zone];
       if (!tree) return;
       const next = fn(tree);
@@ -516,10 +498,9 @@ export function useStudioEditor({
         scheduleSave('page', snap.page);
       }
       setSelection(snap.selection);
-      anchorRef.current =
-        snap.selection.zone !== 'theme' && snap.selection.id
-          ? { zone: snap.selection.zone, id: snap.selection.id }
-          : null;
+      anchorRef.current = snap.selection.id
+        ? { zone: snap.selection.zone, id: snap.selection.id }
+        : null;
     },
     [scheduleSave, setSelection]
   );
@@ -685,7 +666,6 @@ export function useStudioEditor({
   // Delete the WHOLE active-zone selection (docs/builder/05 §2.2) — confirm once.
   const deleteSelection = () => {
     const cur = selectionRef.current;
-    if (cur.zone === 'theme') return;
     const tree = treesRef.current[cur.zone];
     if (!tree) return;
     const zone = cur.zone;
@@ -769,7 +749,6 @@ export function useStudioEditor({
   // ── Clipboard + duplicate + copy-styles (docs/builder/05 §2.5) ────────────────
   const copySelection = () => {
     const cur = selectionRef.current;
-    if (cur.zone === 'theme') return;
     const tree = treesRef.current[cur.zone];
     if (!tree) return;
     const tops = topLevelSelected(tree, new Set(cur.ids));
@@ -783,7 +762,6 @@ export function useStudioEditor({
 
   const paste = async () => {
     const cur = selectionRef.current;
-    if (cur.zone === 'theme') return;
     const zone = cur.zone;
     const tree = treesRef.current[zone];
     if (!tree) return;
@@ -816,7 +794,6 @@ export function useStudioEditor({
 
   const duplicateSelection = () => {
     const cur = selectionRef.current;
-    if (cur.zone === 'theme') return;
     const zone = cur.zone;
     const tree = treesRef.current[zone];
     if (!tree) return;
@@ -837,7 +814,7 @@ export function useStudioEditor({
 
   const copyStyles = () => {
     const cur = selectionRef.current;
-    if (cur.zone === 'theme' || !cur.id) return;
+    if (!cur.id) return;
     const tree = treesRef.current[cur.zone];
     const node = tree ? findNode(tree, cur.id) : null;
     if (!node) return;
@@ -848,7 +825,7 @@ export function useStudioEditor({
     const cls = stylesClipRef.current;
     if (cls === null) return;
     const cur = selectionRef.current;
-    if (cur.zone === 'theme' || cur.ids.length === 0) return;
+    if (cur.ids.length === 0) return;
     updateActiveTree((t) =>
       cur.ids.reduce(
         (acc, id) => updateNode(acc, id, (n) => ({ ...n, class: cls || undefined })),
@@ -859,7 +836,7 @@ export function useStudioEditor({
 
   const nudge = (dir: 'up' | 'down' | 'left' | 'right') => {
     const cur = selectionRef.current;
-    if (cur.zone === 'theme' || !cur.id) return;
+    if (!cur.id) return;
     const tree = treesRef.current[cur.zone];
     if (!tree) return;
     const primary = cur.id;
@@ -893,7 +870,6 @@ export function useStudioEditor({
 
   return {
     selection,
-    selectTheme,
     selectZoneHome,
     selectNode,
     selectAll,

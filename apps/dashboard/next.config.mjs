@@ -43,13 +43,13 @@ const config = {
       // onboarding hand-off working.
       { source: '/settings/payments', destination: '/finance/payments', permanent: true },
       { source: '/settings/billing', destination: '/finance/subscription', permanent: true },
-      // Builder cutover (docs/builder/07 §2.2): the three split editors are now
-      // zones of the one unified editor at /builder/studio. /builder/page carries
+      // Builder cutover (docs/builder/07 §2.2): the split page/layout editors are
+      // now zones of the one unified editor at /builder/studio. /builder/page carries
       // its `?page=<id>` deep link through automatically (no query on the
-      // destination); brand/site open the matching zone. Keeps external links,
-      // bookmarks, and the onboarding hand-off working.
+      // destination); site opens the layout zone. Brand & Theme is its OWN surface
+      // again (/builder/brand) — no redirect. Keeps external links, bookmarks, and
+      // the onboarding hand-off working.
       { source: '/builder/page', destination: '/builder/studio', permanent: true },
-      { source: '/builder/brand', destination: '/builder/studio?zone=theme', permanent: true },
       { source: '/builder/site', destination: '/builder/studio?zone=layout', permanent: true },
     ];
   },

@@ -5,11 +5,14 @@ import { Button, Tooltip, TooltipContent, TooltipTrigger, useTheme } from '@spar
 import { Clock, Moon, Sun } from 'lucide-react';
 import { ActionsMenu } from './actions-menu';
 import { StarButton } from './star-button';
+import { FeedbackButton } from './feedback/feedback-button';
 import type { FavoriteRow } from '../_shell/service';
 import type { UserPreferences } from '../_shell/preferences-types';
 
 // Right-side header controls. Order (left to right): last-activity, ⋯,
-// star, theme. See docs/24-dashboard-shell.md §4.5.
+// star, feedback, theme. See docs/24-dashboard-shell.md §4.5 + docs/112 §2.1.
+// The Feedback control is icon-only here; it also lives in the user menu (so
+// it survives the mobile header collapse).
 
 interface DashboardHeaderProps {
   favorites: FavoriteRow[];
@@ -22,6 +25,9 @@ export function DashboardHeader({ favorites, preferences }: DashboardHeaderProps
       <LastActivityButton />
       <ActionsMenu favorites={favorites} preferences={preferences} />
       <StarButton favorites={favorites} />
+      <span className="hidden sm:inline-flex">
+        <FeedbackButton />
+      </span>
       <ThemeToggleButton />
     </>
   );

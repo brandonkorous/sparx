@@ -17,6 +17,7 @@ import { withTenant } from '@sparx/db';
 import type { TenantContext } from '@sparx/db';
 
 import { resolveActivePropertyName } from '../property.js';
+import { getActivePersona } from '../ai/prompt-templates.js';
 import { env } from '../../env.js';
 import { conversationService } from './index.js';
 import { getChatConfig, isWithinOperatingHours } from './config.js';
@@ -149,17 +150,27 @@ function stripHtml(html: string): string {
     .trim();
 }
 
-function buildSystemPrompt(g: GroundingDto): string {
+function buildSystemPrompt(g: GroundingDto, persona: string | null): string {
   const catalog = g.products.length
     ? `Products currently sold:\n${g.products.map((p) => `- ${p}`).join('\n')}`
     : 'No product catalog is available.';
   const info = g.pages.length
     ? `Information / policy pages on the site: ${g.pages.join(', ')}.`
     : '';
+  // The tenant's active `persona` prompt-template (docs/07 §9) supplies the
+  // assistant's voice + guardrails, with `{{business_name}}` resolved to the
+  // customer-facing site name. Falls back to the platform default voice. Either way
+  // the functional tool contract below is ALWAYS appended — the `respond` tool +
+  // confidence + escalation are wired to tool_choice and must not be overridable.
+  const intro = persona
+    ? persona.replace(/\{\{\s*business_name\s*\}\}/g, g.siteName)
+    : [
+        `You are the customer-support assistant for ${g.siteName}, embedded in its storefront chat widget.`,
+        'Answer concisely and only from the context below. If the customer asks about an order, account, refund, a specific price, availability, or anything not covered by the context, do NOT guess.',
+      ].join('\n\n');
   return [
-    `You are the customer-support assistant for ${g.siteName}, embedded in its storefront chat widget.`,
-    'Answer concisely and only from the context below. If the customer asks about an order, account, refund, a specific price, availability, or anything not covered by the context, do NOT guess — set escalate to true so a human takes over.',
-    'Always call the `respond` tool. Set confidence between 0 and 1 for how sure you are the answer is correct and grounded. Be honest: low confidence is better than a wrong answer.',
+    intro,
+    'Always call the `respond` tool. Set confidence between 0 and 1 for how sure you are the answer is correct and grounded — be honest, low confidence beats a wrong answer. If the question needs order/account/refund specifics, an exact price/availability, or anything not in the context below, set escalate to true so a human takes over.',
     catalog,
     info,
   ]
@@ -174,7 +185,10 @@ async function askClaude(
   logger: FastifyBaseLogger
 ): Promise<AiDecision | null> {
   try {
-    const grounding = await buildGrounding(tenantId);
+    const [grounding, persona] = await Promise.all([
+      buildGrounding(tenantId),
+      getActivePersona(tenantId),
+    ]);
     const anthropic = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
 
     // Map the thread to Anthropic turns: customer → user, staff/ai → assistant.
@@ -186,9 +200,9 @@ async function askClaude(
     }));
 
     const response = await anthropic.messages.create({
-      model: MODEL,
+      model: persona?.model ?? MODEL,
       max_tokens: 512,
-      system: buildSystemPrompt(grounding),
+      system: buildSystemPrompt(grounding, persona?.body ?? null),
       messages: turns,
       tools: [
         {

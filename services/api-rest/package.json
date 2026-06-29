@@ -10,6 +10,7 @@
     "start": "node --import tsx src/index.ts",
     "marketplace:ingest": "node --import tsx src/scripts/marketplace-ingest.ts",
     "marketplace:purge-blueprints": "node --import tsx src/scripts/marketplace-purge-blueprints.ts",
+    "seed:demo": "node --import tsx src/scripts/seed-demo.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",

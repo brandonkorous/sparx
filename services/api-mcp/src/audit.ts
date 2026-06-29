@@ -28,7 +28,11 @@ export async function recordToolInvocation(args: AuditArgs): Promise<void> {
           actorType: 'api',
           action: `mcp.${args.toolName}`,
           entityType: 'McpToolCall',
-          entityId: args.toolName,
+          // entity_id is a UUID column — the tool NAME lives in `action`
+          // (`mcp.<tool>`), never here. (Writing the name here threw an invalid-uuid
+          // cast that the catch below swallowed, so NO McpToolCall rows persisted and
+          // the /ai dashboard read empty — fixed by leaving entity_id null.)
+          entityId: null,
           diff: {
             input: args.input as never,
             outcome: args.outcome,

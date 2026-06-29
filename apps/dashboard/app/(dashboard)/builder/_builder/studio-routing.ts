@@ -10,8 +10,8 @@
 
 import { findNode, type BuilderNode } from './model';
 
-/** The node-bearing zones the studio persists + mutates (the brand `theme` zone is
- *  edited via the ThemeCenter panel, not a node tree). */
+/** The node-bearing zones the studio persists + mutates. (Brand & theme are edited
+ *  on their own surface, /builder/brand — not a zone of this editor.) */
 export type StudioNodeZone = 'layout' | 'page';
 
 /** Which node-bearing zone owns `id` — derived purely from which tree physically

@@ -1,14 +1,12 @@
 'use client';
 
 // The unified studio's Layers tree (docs/builder/03 §2.1) — ONE structural view
-// of the whole stack: the brand `Theme` root, the site `layout` chrome, and the
-// active `page` grafted at the layout's Outlet ("Page content"). It mirrors the
-// per-surface LayersPanel (flat list + one dnd SortableContext, the layers-tree.ts
-// projection) but composes two trees and tags every row with its OWNERSHIP ZONE,
-// so the author can see — and the editor can route by — which store a node belongs
-// to.
+// of the whole stack: the site `layout` chrome and the active `page` grafted at the
+// layout's Outlet ("Page content"). It mirrors the per-surface LayersPanel (flat
+// list + one dnd SortableContext, the layers-tree.ts projection) but composes two
+// trees and tags every row with its OWNERSHIP ZONE, so the author can see — and the
+// editor can route by — which store a node belongs to.
 //
-//   ⚙ Theme              ← the brand/theme root (not a node; opens the Theme panel)
 //   ▾ Site layout        ← the active layout root (layout zone)
 //     ▸ Header
 //     ▾ Page content     ← the Outlet (layout zone)
@@ -23,10 +21,9 @@
 // draggable.
 
 import * as React from 'react';
-import { ChevronsDownUp, ChevronsUpDown, Palette } from 'lucide-react';
+import { ChevronsDownUp, ChevronsUpDown } from 'lucide-react';
 import { DndContext } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { cn } from '@sparx/ui';
 import type { BindingCatalog, ComponentDto } from '@sparx/builder-schemas';
 
 import { updateNode, type BuilderNode } from './model';
@@ -47,7 +44,6 @@ export function StudioLayers({
   components,
   selection,
   pageLabel,
-  onSelectTheme,
   onSelectNode,
   onRemove,
   onMove,
@@ -60,15 +56,13 @@ export function StudioLayers({
   selection: StudioSelection;
   /** The active page's display name, used to label its root row. */
   pageLabel: string;
-  onSelectTheme: () => void;
   onSelectNode: (id: string, mods?: SelectMods) => void;
   onRemove: (id: string) => void;
   onMove: (dragId: string, parentId: string, index: number) => void;
 }) {
   // Secondary-selected rows within the active zone (all selected except primary).
   const multiSet = React.useMemo(
-    () =>
-      new Set(selection.zone === 'theme' ? [] : selection.ids.filter((id) => id !== selection.id)),
+    () => new Set(selection.ids.filter((id) => id !== selection.id)),
     [selection]
   );
   // The COMPOSED display tree: the page grafted in as the Outlet's child, so one
@@ -97,7 +91,7 @@ export function StudioLayers({
     [layoutTree.id, pageTree]
   );
 
-  const selectedId = selection.zone === 'theme' ? null : selection.id;
+  const selectedId = selection.id;
 
   // Collapse + flat + dnd + select→reveal, SHARED with the per-surface LayersPanel
   // via useLayerTree (over the COMPOSED tree). The studio's one extra rule lives in
@@ -133,22 +127,6 @@ export function StudioLayers({
           <ChevronsDownUp aria-hidden /> Collapse all
         </button>
       </div>
-      {/* The Theme root (docs/builder/03 §2.3) — the brand/theme context that wraps
-          the whole stack. Not a node: it can't be dragged, removed, or nested;
-          selecting it opens the Theme panel. */}
-      <button
-        type="button"
-        className={cn('bx-layers__home', selection.zone === 'theme' && 'bx-layers__home--on')}
-        aria-pressed={selection.zone === 'theme'}
-        onClick={onSelectTheme}
-      >
-        <span className="bx-layer__caret bx-layer__caret--spacer" aria-hidden />
-        <Palette className="bx-layer__icon" aria-hidden />
-        <span className="bx-layer__name">Theme</span>
-        <span className="bx-layer__zone" data-zone="theme" aria-hidden>
-          Brand
-        </span>
-      </button>
       <DndContext {...dndContextProps}>
         <SortableContext items={rowIds} strategy={verticalListSortingStrategy}>
           {flat.map((f) => {

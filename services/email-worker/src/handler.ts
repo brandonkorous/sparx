@@ -131,6 +131,18 @@ const TemplateSendSchema = z.discriminatedUnion('template', [
       settlementUrl: z.string().url(),
     }),
   }),
+  z.object({
+    template: z.literal('feedback-response'),
+    ...TemplateMeta,
+    props: z.object({
+      recipientName: z.string().nullable().optional(),
+      feedbackTitle: z.string().min(1),
+      responseBody: z.string().min(1),
+      responderName: z.string().min(1),
+      statusLabel: z.string().optional(),
+      threadUrl: z.string().url(),
+    }),
+  }),
 ]);
 
 // Pre-rendered "raw" send — used by broadcasts (render once, send to many) and

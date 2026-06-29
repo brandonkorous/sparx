@@ -1,6 +1,7 @@
 import { Button } from '@sparx/ui';
 import { Container, Display, Spark } from './primitives';
 import { RotatingWord } from './rotating-word';
+import { SparkMascot } from './spark-mascot';
 
 // The hero tagline rotates its leading noun through every offering, so the
 // one-liner speaks for the whole platform — not just commerce. "ignited."
@@ -56,67 +57,77 @@ export function Hero() {
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
         backgroundColor: 'var(--sparx-primary)',
-        // Soft top-left sheen for depth without shifting the hue.
+        // Faint dot-grid texture for depth — a tiled SVG pattern, NOT a gradient
+        // (gradients are banned brand-wide as an AI-slop tell).
         backgroundImage:
-          'radial-gradient(135% 120% at 0% 0%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 50%)',
+          "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='1' cy='1' r='1' fill='white' fill-opacity='0.16'/%3E%3C/svg%3E\")",
+        backgroundSize: '40px 40px',
       }}
     >
       <Container style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '1100px' }}>
-          <Display as="h1" size={120} lineHeight={104} color={ON}>
-            <RotatingWord words={ROTATING_WORDS} />,
-          </Display>
-          <Display as="h1" size={120} lineHeight={104} color={ON}>
-            ignited
-            <Spark color={ON} />
-          </Display>
-        </div>
-
-        <div
-          className="mkt-stack-on-tablet mkt-align-end-on-desktop"
-          style={{
-            justifyContent: 'space-between',
-            gap: '40px',
-            maxWidth: '1280px',
-          }}
-        >
-          <p
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontWeight: 400,
-              fontSize: 'clamp(16px, 1.6vw, 20px)',
-              lineHeight: 1.55,
-              color: ON_STRONG,
-              maxWidth: '560px',
-              margin: 0,
-            }}
-          >
-            A modular content and commerce OS. Builder, CRM, CMS, email, B2B, and AI — one platform,
-            one bill, one data layer. Pay only for what you use. Live in five minutes.
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <div className="mkt-cluster" style={{ gap: '12px' }}>
-              <Button size="lg" style={{ backgroundColor: ON, color: ON_CTA_TEXT }}>
-                Launch your site
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                style={{ backgroundColor: 'transparent', color: ON, borderColor: ON_RING }}
-              >
-                See the platform
-              </Button>
+        {/* Two-column hero: copy left; the mascot sits directly above the CTAs on
+            the right (centred) so it presents the action instead of floating in
+            the corner. Stacks on tablet down. */}
+        <div className="mkt-hero-grid" style={{ maxWidth: '1280px' }}>
+          <div className="mkt-hero-copy">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <Display as="h1" size={120} lineHeight={104} color={ON}>
+                <RotatingWord words={ROTATING_WORDS} />,
+              </Display>
+              <Display as="h1" size={120} lineHeight={104} color={ON}>
+                ignited
+                <Spark color={ON} />
+              </Display>
             </div>
-            <span
+            <p
               style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '12px',
-                color: ON_MUTED,
+                fontFamily: 'var(--font-sans)',
+                fontWeight: 400,
+                fontSize: 'clamp(16px, 1.6vw, 20px)',
+                lineHeight: 1.55,
+                color: ON_STRONG,
+                maxWidth: '560px',
+                margin: 0,
               }}
             >
-              No credit card · Cancel anytime
-            </span>
+              A modular content and commerce OS. Builder, CRM, CMS, email, B2B, and AI — one
+              platform, one bill, one data layer. Pay only for what you use. Live in five minutes.
+            </p>
+          </div>
+
+          <div className="mkt-hero-figure">
+            {/* bob off: a still body keeps focus on the rotating headline; the
+                face still blinks and cycles expressions. */}
+            <SparkMascot
+              cycle={['neutral', 'happy', 'wink', 'excited']}
+              size={232}
+              tone="white"
+              bob={false}
+            />
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '14px',
+                alignItems: 'center',
+              }}
+            >
+              <div className="mkt-cluster" style={{ gap: '12px', justifyContent: 'center' }}>
+                <Button size="lg" style={{ backgroundColor: ON, color: ON_CTA_TEXT }}>
+                  Launch your site
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  style={{ backgroundColor: 'transparent', color: ON, borderColor: ON_RING }}
+                >
+                  See the platform
+                </Button>
+              </div>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: ON_MUTED }}>
+                No credit card · Cancel anytime
+              </span>
+            </div>
           </div>
         </div>
 

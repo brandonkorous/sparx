@@ -47,7 +47,10 @@ export function SettlementPanel({
   const currency = runs[0]?.currency ?? 'USD';
 
   return (
-    <Card variant="module">
+    // Neutral: the sparx Pay balance card up the page is this finance surface's one
+    // tinted (primary) card — a second finance tint here would be competing washes,
+    // not wayfinding (one-tinted-card-per-hue). The hue rides the chrome + badges.
+    <Card>
       <CardHeader>
         <Stack direction="row" align="center" justify="between" gap={2} wrap>
           <CardTitle>Marketplace earnings</CardTitle>

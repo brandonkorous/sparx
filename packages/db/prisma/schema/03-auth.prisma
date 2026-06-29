@@ -60,6 +60,10 @@ model User {
   favorites UserFavorite[]
   recents   UserRecent[]
 
+  // In-product feedback (docs/112) — submissions this user filed + their pulse state
+  feedbackSubmissions FeedbackSubmission[]
+  feedbackPulseStates FeedbackPulseState[]
+
   // Platform legal — Sparx ToS/Privacy/AUP/DPA acceptance (docs/42 §6)
   legalAcceptances PlatformLegalAcceptance[]
 

@@ -22,6 +22,7 @@ import {
   Button,
   Container,
   DonutChart,
+  EmptyState,
   Grid,
   PageHeader,
   Stack,
@@ -44,10 +45,8 @@ import {
   MetricTile,
   OverviewCard,
   OverviewRow,
-  SampleBadge,
   fmtNumber,
   fmtPercentRatio,
-  liveOr,
 } from '../_components/overview-bits';
 import type { ConversationStatus, ConversationSummaryDto } from './_lib/types';
 
@@ -56,11 +55,11 @@ import type { ConversationStatus, ConversationSummaryDto } from './_lib/types';
 // channel mix, agent performance, and the activity feed are all LIVE: the
 // recent-conversations table + counts from /v1/chat/conversations, and the
 // reporting figures from /v1/chat/analytics/* (summary, timeseries, agents,
-// activity). Each falls back to a badged sample until the tenant has chat
-// history. CSAT alone stays sample — there's no rating-capture model yet
-// (workload B, docs/97 §4). The /chat layout wraps this in
-// <ModuleProvider module="chat"> + the module gate, so the page never re-wraps.
-// The working inbox lives at /chat/inbox.
+// activity). Each section renders a compact empty state until the tenant has
+// chat history. CSAT has no rating-capture model yet (workload B, docs/97 §4),
+// so it reads "—". The /chat layout wraps this in <ModuleProvider module="chat">
+// + the module gate, so the page never re-wraps. The working inbox lives at
+// /chat/inbox.
 
 export const dynamic = 'force-dynamic';
 
@@ -108,8 +107,7 @@ interface ChatActivityItem {
   createdAt: string;
 }
 
-// The normalized rows the cards render — shared by live + sample so liveOr can
-// fall back cleanly.
+// The normalized rows the cards render from the live analytics responses.
 interface ChannelRow {
   label: string;
   value: number;
@@ -160,44 +158,6 @@ function activityVerb(senderType: string, aiGenerated: boolean): string {
   return 'New message from';
 }
 
-// ── Sample data (illustrative until chat reporting endpoints land) ──
-const SAMPLE_CONVOS_14D = [
-  { label: 'May 31', started: 118, resolved: 110 },
-  { label: 'Jun 1', started: 104, resolved: 101 },
-  { label: 'Jun 2', started: 132, resolved: 124 },
-  { label: 'Jun 3', started: 126, resolved: 122 },
-  { label: 'Jun 4', started: 112, resolved: 108 },
-  { label: 'Jun 5', started: 144, resolved: 138 },
-  { label: 'Jun 6', started: 138, resolved: 132 },
-  { label: 'Jun 7', started: 158, resolved: 150 },
-  { label: 'Jun 8', started: 150, resolved: 146 },
-  { label: 'Jun 9', started: 172, resolved: 165 },
-  { label: 'Jun 10', started: 164, resolved: 159 },
-  { label: 'Jun 11', started: 186, resolved: 178 },
-  { label: 'Jun 12', started: 178, resolved: 174 },
-  { label: 'Jun 13', started: 196, resolved: 188 },
-] as const;
-
-const SAMPLE_CHANNELS: ChannelRow[] = [
-  { label: 'Website', value: 58 },
-  { label: 'Email', value: 22 },
-  { label: 'Instagram', value: 12 },
-  { label: 'Facebook', value: 8 },
-];
-
-const SAMPLE_AGENTS: AgentDisplayRow[] = [
-  { key: 'a1', isAi: false, name: 'Sam Ortiz', hint: '142 handled · 1m 20s avg' },
-  { key: 'a2', isAi: false, name: 'You', hint: '88 handled · 2m 05s avg' },
-  { key: 'a3', isAi: true, name: 'AI assistant', hint: '1,180 handled · instant' },
-];
-
-const SAMPLE_ACTIVITY: ActivityEntry[] = [
-  { key: 'e1', title: 'AI replied to Maya Chen', when: 'just now' },
-  { key: 'e2', title: 'Staff replied to Theo Marsh', when: '4m ago' },
-  { key: 'e3', title: 'New message from Devon Walls', when: '12m ago' },
-  { key: 'e4', title: 'AI replied to Priya Nair', when: '28m ago' },
-];
-
 function waitLabel(c: ConversationSummaryDto): string {
   if (c.status === 'resolved' || c.status === 'spam' || !c.lastMessageAt) return '—';
   const secs = Math.max(0, Math.round((Date.now() - new Date(c.lastMessageAt).getTime()) / 1000));
@@ -231,29 +191,21 @@ export default async function ChatPage() {
     .sort((a, b) => (b.lastMessageAt ?? '').localeCompare(a.lastMessageAt ?? ''))
     .slice(0, 6);
 
-  // KPI values — live from the summary, else the representative sample figure.
-  const avgFirstResponse =
-    summary?.avgFirstResponseSeconds != null
-      ? fmtDuration(summary.avgFirstResponseSeconds)
-      : '1m 48s';
-  const aiHandled =
-    summary?.aiHandledPct != null ? fmtPercentRatio(summary.aiHandledPct, 0) : '64%';
+  // KPI values — live from the summary, else an em dash. CSAT has no capture
+  // model yet, so it reads "—".
+  const avgFirstResponse = fmtDuration(summary?.avgFirstResponseSeconds);
+  const aiHandled = summary?.aiHandledPct != null ? fmtPercentRatio(summary.aiHandledPct, 0) : '—';
 
   // AI-vs-human resolution split — live once any conversation has resolved.
   const resolvedClassified = (summary?.aiResolved ?? 0) + (summary?.humanResolved ?? 0);
   const resolutionLive = summary != null && resolvedClassified > 0;
   const aiShare = resolutionLive
     ? Math.round(((summary?.aiResolved ?? 0) / resolvedClassified) * 100)
-    : 64;
-  const donutData = resolutionLive
-    ? [
-        { label: 'AI-resolved', value: summary?.aiResolved ?? 0, color: 'module' },
-        { label: 'Human', value: summary?.humanResolved ?? 0, color: 'var(--module-active-tint)' },
-      ]
-    : [
-        { label: 'AI-resolved', value: 64, color: 'module' },
-        { label: 'Human', value: 36, color: 'var(--module-active-tint)' },
-      ];
+    : 0;
+  const donutData = [
+    { label: 'AI-resolved', value: summary?.aiResolved ?? 0, color: 'module' },
+    { label: 'Human', value: summary?.humanResolved ?? 0, color: 'var(--module-active-tint)' },
+  ];
 
   // Conversations-over-time area — live once the window has any started convo.
   const tsPoints =
@@ -268,9 +220,8 @@ export default async function ChatPage() {
           resolved: p.resolved,
         }))
       : null;
-  const convos14d = liveOr(tsPoints, [...SAMPLE_CONVOS_14D]);
 
-  // By channel — live source mix, else the representative sample.
+  // By channel — live source mix, else null (renders the empty state).
   const channelRows: ChannelRow[] | null =
     summary && summary.byChannel.length > 0
       ? summary.byChannel.map((c) => ({
@@ -278,9 +229,8 @@ export default async function ChatPage() {
           value: c.count,
         }))
       : null;
-  const channels = liveOr<ChannelRow[]>(channelRows, SAMPLE_CHANNELS);
 
-  // Agent performance — first-responder rollup, else sample.
+  // Agent performance — first-responder rollup, else null.
   const agentRows: AgentDisplayRow[] | null =
     agents && agents.length > 0
       ? agents.map((a) => ({
@@ -292,9 +242,8 @@ export default async function ChatPage() {
           }`,
         }))
       : null;
-  const agentList = liveOr<AgentDisplayRow[]>(agentRows, SAMPLE_AGENTS);
 
-  // Recent activity — live message feed, else sample.
+  // Recent activity — live message feed, else null.
   const activityRows: ActivityEntry[] | null =
     activity && activity.length > 0
       ? activity.map((a) => ({
@@ -303,7 +252,6 @@ export default async function ChatPage() {
           when: timeAgo(a.createdAt, nowMs),
         }))
       : null;
-  const activityFeed = liveOr<ActivityEntry[]>(activityRows, SAMPLE_ACTIVITY);
 
   return (
     <Container size="xl">
@@ -350,16 +298,16 @@ export default async function ChatPage() {
           <Stat
             icon={<Star className="h-4 w-4" />}
             label="CSAT"
-            value="4.6 / 5"
-            hint="212 ratings"
+            value="—"
+            hint="No ratings captured yet"
           />
         </Grid>
 
-        {/* Needs attention — unassigned live, rest sample */}
+        {/* Needs attention — unassigned + active open conversations, both live */}
         <ActionQueue
           title="Needs attention"
           icon={<AlertTriangle className="h-4 w-4" />}
-          meta={<SampleBadge />}
+          columns={2}
         >
           <ActionTile
             asChild
@@ -373,87 +321,85 @@ export default async function ChatPage() {
           <ActionTile
             asChild
             icon={<Clock className="h-5 w-5" />}
-            count={3}
-            label="Waiting on you"
-            tone="danger"
-          >
-            <Link href="/chat/inbox" />
-          </ActionTile>
-          <ActionTile
-            asChild
-            icon={<Bot className="h-5 w-5" />}
-            count={2}
-            label="AI-escalated"
-            tone="warning"
-          >
-            <Link href="/chat/inbox" />
-          </ActionTile>
-          <ActionTile
-            asChild
-            icon={<AlertTriangle className="h-5 w-5" />}
-            count={4}
-            label="Follow-ups due"
+            count={activeCount}
+            label="Active conversations"
             tone="warning"
           >
             <Link href="/chat/inbox" />
           </ActionTile>
         </ActionQueue>
 
-        {/* Resolution (signature): AI vs human + conversations over time */}
+        {/* Resolution: AI vs human + conversations over time */}
         <div className={TWO_COL_FLIP}>
-          <OverviewCard
-            title="AI vs human"
-            icon={<Bot className="h-4 w-4" />}
-            right={resolutionLive ? undefined : <SampleBadge reason="no-data" />}
-          >
-            <DonutChart
-              data={donutData}
-              valueFormat={resolutionLive ? 'number' : 'percent'}
-              centerValue={`${aiShare}%`}
-              centerLabel="AI-resolved"
-              ariaLabel="AI vs human resolution"
-            />
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              <MetricTile
-                value={resolutionLive ? fmtNumber(summary?.resolvedInRange ?? 0) : '1,790'}
-                label="Resolved · 30d"
+          <OverviewCard title="AI vs human" icon={<Bot className="h-4 w-4" />} plain>
+            {resolutionLive ? (
+              <>
+                <DonutChart
+                  data={donutData}
+                  valueFormat="number"
+                  centerValue={`${aiShare}%`}
+                  centerLabel="AI-resolved"
+                  ariaLabel="AI vs human resolution"
+                />
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  <MetricTile
+                    value={fmtNumber(summary?.resolvedInRange ?? 0)}
+                    label="Resolved · 30d"
+                  />
+                  <MetricTile value={avgFirstResponse} label="Avg. response" />
+                </div>
+              </>
+            ) : (
+              <EmptyState
+                icon={<Bot className="h-5 w-5" />}
+                title="No resolutions yet"
+                description="The AI-vs-human split appears once conversations start resolving."
               />
-              <MetricTile value={avgFirstResponse} label="Avg. response" />
-            </div>
+            )}
           </OverviewCard>
 
           <OverviewCard
             title="Conversations over time"
             icon={<TrendingUp className="h-4 w-4" />}
-            description="Started & resolved · last 14 days"
-            right={convos14d.isSample ? <SampleBadge reason="no-data" /> : undefined}
+            description={tsPoints ? 'Started & resolved · last 14 days' : undefined}
+            plain
           >
-            <AreaChart
-              data={convos14d.data}
-              series={[
-                { key: 'started', label: 'Started', color: 'module' },
-                { key: 'resolved', label: 'Resolved', color: 'var(--module-active-tint)' },
-              ]}
-              xKey="label"
-              height={210}
-              valueFormat="number"
-              ariaLabel="Conversations started and resolved, last 14 days"
-            />
-            <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
-              {(
-                [
-                  ['Started', fmtNumber(timeseries?.totals.started ?? 1840)],
-                  ['Resolved', fmtNumber(timeseries?.totals.resolved ?? 1790)],
-                  ['Avg. response', avgFirstResponse],
-                  ['AI-handled', aiHandled],
-                ] as [string, string][]
-              ).map(([label, value]) => (
-                <div key={label}>
-                  <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
-                  <div className="font-medium">{value}</div>
+            {tsPoints ? (
+              <>
+                <AreaChart
+                  data={tsPoints}
+                  series={[
+                    { key: 'started', label: 'Started', color: 'module' },
+                    { key: 'resolved', label: 'Resolved', color: 'var(--module-active-tint)' },
+                  ]}
+                  xKey="label"
+                  height={210}
+                  valueFormat="number"
+                  ariaLabel="Conversations started and resolved, last 14 days"
+                />
+                <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
+                  {(
+                    [
+                      ['Started', fmtNumber(timeseries?.totals.started ?? 0)],
+                      ['Resolved', fmtNumber(timeseries?.totals.resolved ?? 0)],
+                      ['Avg. response', avgFirstResponse],
+                      ['AI-handled', aiHandled],
+                    ] as [string, string][]
+                  ).map(([label, value]) => (
+                    <div key={label}>
+                      <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
+                      <div className="font-medium">{value}</div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            ) : (
+              <EmptyState
+                icon={<TrendingUp className="h-5 w-5" />}
+                title="No conversation volume yet"
+                description="Daily started and resolved counts chart here as chats come in."
+              />
+            )}
           </OverviewCard>
         </div>
 
@@ -464,9 +410,16 @@ export default async function ChatPage() {
           right={<CardLink href="/chat/inbox">Open inbox</CardLink>}
         >
           {recent.length === 0 ? (
-            <p className="py-6 text-sm text-[var(--color-text-tertiary)]">
-              No conversations yet — they’ll appear here as customers reach out.
-            </p>
+            <EmptyState
+              icon={<MessagesSquare className="h-5 w-5" />}
+              title="No conversations yet"
+              description="Conversations appear here as customers reach out across your channels."
+              action={
+                <Button variant="outline" size="sm" asChild>
+                  <Link href="/chat/inbox">Open inbox</Link>
+                </Button>
+              }
+            />
           ) : (
             <Table>
               <TableHeader>
@@ -520,55 +473,64 @@ export default async function ChatPage() {
 
         {/* By channel + agent performance + recent activity */}
         <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
-          <OverviewCard
-            title="By channel"
-            icon={<TrendingUp className="h-4 w-4" />}
-            right={channels.isSample ? <SampleBadge reason="no-data" /> : undefined}
-          >
-            <BarList
-              items={channels.data.map((c) => ({ ...c }))}
-              color="module"
-              valueFormat={channels.isSample ? 'percent' : 'number'}
-            />
-            <p className="mt-4 border-t border-[var(--color-border-default)] pt-3 text-xs text-[var(--color-text-tertiary)]">
-              Top source ·{' '}
-              <span className="font-medium text-[var(--color-text-secondary)]">
-                {channels.data[0]?.label ?? '—'}
-              </span>{' '}
-              — {fmtNumber(channels.data[0]?.value ?? 0)}
-              {channels.isSample ? '%' : ' chats'}
-            </p>
-          </OverviewCard>
-
-          <OverviewCard
-            title="Agent performance"
-            icon={<Users className="h-4 w-4" />}
-            right={agentList.isSample ? <SampleBadge reason="no-data" /> : undefined}
-          >
-            {agentList.data.map((a) => (
-              <OverviewRow
-                key={a.key}
-                icon={a.isAi ? <Bot className="h-4 w-4" /> : <Users className="h-4 w-4" />}
-                tone="module"
-                title={a.name}
-                hint={a.hint}
+          <OverviewCard title="By channel" icon={<TrendingUp className="h-4 w-4" />} plain>
+            {channelRows ? (
+              <>
+                <BarList items={channelRows} color="module" valueFormat="number" />
+                <p className="mt-4 border-t border-[var(--color-border-default)] pt-3 text-xs text-[var(--color-text-tertiary)]">
+                  Top source ·{' '}
+                  <span className="font-medium text-[var(--color-text-secondary)]">
+                    {channelRows[0]?.label ?? '—'}
+                  </span>{' '}
+                  — {fmtNumber(channelRows[0]?.value ?? 0)} chats
+                </p>
+              </>
+            ) : (
+              <EmptyState
+                icon={<TrendingUp className="h-5 w-5" />}
+                title="No channel data yet"
+                description="Conversation volume by source appears as chats arrive."
               />
-            ))}
+            )}
           </OverviewCard>
 
-          <OverviewCard
-            title="Recent activity"
-            icon={<Clock className="h-4 w-4" />}
-            right={activityFeed.isSample ? <SampleBadge reason="no-data" /> : undefined}
-          >
-            <Timeline>
-              {activityFeed.data.map((a, i) => (
-                <TimelineItem key={a.key} showConnector={i < activityFeed.data.length - 1}>
-                  <TimelineTitle>{a.title}</TimelineTitle>
-                  <TimelineTime>{a.when}</TimelineTime>
-                </TimelineItem>
-              ))}
-            </Timeline>
+          <OverviewCard title="Agent performance" icon={<Users className="h-4 w-4" />} plain>
+            {agentRows ? (
+              agentRows.map((a) => (
+                <OverviewRow
+                  key={a.key}
+                  icon={a.isAi ? <Bot className="h-4 w-4" /> : <Users className="h-4 w-4" />}
+                  tone="module"
+                  title={a.name}
+                  hint={a.hint}
+                />
+              ))
+            ) : (
+              <EmptyState
+                icon={<Users className="h-5 w-5" />}
+                title="No agent activity yet"
+                description="First-responder stats appear once your team handles chats."
+              />
+            )}
+          </OverviewCard>
+
+          <OverviewCard title="Recent activity" icon={<Clock className="h-4 w-4" />} plain>
+            {activityRows ? (
+              <Timeline>
+                {activityRows.map((a, i) => (
+                  <TimelineItem key={a.key} showConnector={i < activityRows.length - 1}>
+                    <TimelineTitle>{a.title}</TimelineTitle>
+                    <TimelineTime>{a.when}</TimelineTime>
+                  </TimelineItem>
+                ))}
+              </Timeline>
+            ) : (
+              <EmptyState
+                icon={<Clock className="h-5 w-5" />}
+                title="No recent activity"
+                description="Replies and new messages show up here as they happen."
+              />
+            )}
           </OverviewCard>
         </Grid>
       </Stack>

@@ -102,7 +102,7 @@ export async function createApp(): Promise<FastifyInstance> {
           isWriteCall: isWriteToolCall(request.body),
         });
       }
-      const server = buildServerForRequest(auth);
+      const server = await buildServerForRequest(auth);
       // Stateless mode — no session id, every request stands alone.
       const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
       await server.connect(transport);

@@ -5,7 +5,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  Grid,
   Heading,
   Stack,
   Text,
@@ -74,7 +73,10 @@ export async function MediaAssetDetailContent({ id }: Props) {
     asset.original_url;
 
   return (
-    <Stack gap={6}>
+    // @container so the two-column body responds to its OWN width — full-page
+    // (wide → 3-col) vs. the detail drawer (narrow → stacked), where viewport
+    // breakpoints would keep it 3-up and force a horizontal scroll.
+    <Stack gap={6} className="@container">
       <Stack gap={2}>
         <Heading level={1}>{asset.original_filename}</Heading>
         <Stack direction="row" gap={2} align="center">
@@ -93,8 +95,8 @@ export async function MediaAssetDetailContent({ id }: Props) {
         )}
       </Stack>
 
-      <Grid cols={1} lgCols={3} gap={6}>
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 gap-6 @[820px]:grid-cols-3">
+        <div className="@[820px]:col-span-2">
           <Card variant="module">
             <CardHeader>
               <Heading level={3}>Preview &amp; focal point</Heading>
@@ -116,7 +118,7 @@ export async function MediaAssetDetailContent({ id }: Props) {
           </Card>
         </div>
 
-        <Card variant="module">
+        <Card variant="default">
           <CardHeader>
             <Heading level={3}>Variants</Heading>
             <CardDescription>
@@ -152,7 +154,7 @@ export async function MediaAssetDetailContent({ id }: Props) {
             )}
           </CardContent>
         </Card>
-      </Grid>
+      </div>
     </Stack>
   );
 }

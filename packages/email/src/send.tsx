@@ -34,6 +34,11 @@ import {
   marketSettlementReportSubject,
   type MarketSettlementReportEmailProps,
 } from './templates/market-settlement-report';
+import {
+  FeedbackResponseEmail,
+  feedbackResponseSubject,
+  type FeedbackResponseEmailProps,
+} from './templates/feedback-response';
 
 // Template registry + dispatcher. Two surfaces:
 //
@@ -62,7 +67,8 @@ export type TemplateId =
   | 'email-verification'
   | 'domain-renewal-reminder'
   | 'chat-notification'
-  | 'market-settlement-report';
+  | 'market-settlement-report'
+  | 'feedback-response';
 
 export type TemplateSend =
   | {
@@ -104,6 +110,13 @@ export type TemplateSend =
       template: 'market-settlement-report';
       to: string;
       props: MarketSettlementReportEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'feedback-response';
+      to: string;
+      props: FeedbackResponseEmailProps;
       from?: string;
       replyTo?: string;
     };
@@ -227,6 +240,22 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'market-settlement-report',
+      };
+    }
+    case 'feedback-response': {
+      const element = wrap(<FeedbackResponseEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: feedbackResponseSubject(input.props.feedbackTitle),
+        html,
+        text,
+        templateId: 'feedback-response',
       };
     }
   }

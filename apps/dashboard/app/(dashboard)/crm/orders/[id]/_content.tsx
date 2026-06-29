@@ -105,7 +105,9 @@ export async function OrderDetailContent({ id }: Props) {
   ]);
 
   return (
-    <Stack gap={6}>
+    // @container so the body responds to its OWN width — full-page (wide) vs. the
+    // detail drawer (narrow), where viewport breakpoints would crush the columns.
+    <Stack gap={6} className="@container">
       <Stack gap={2}>
         <Stack direction="row" align="center" gap={3} wrap>
           <Heading level={1}>{order.orderNumber}</Heading>
@@ -127,7 +129,7 @@ export async function OrderDetailContent({ id }: Props) {
         </Stack>
       </Stack>
 
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 @[440px]:grid-cols-2 @[820px]:grid-cols-4">
         <Card variant="module">
           <CardContent className="py-4">
             <Stat
@@ -211,7 +213,7 @@ export async function OrderDetailContent({ id }: Props) {
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 @[680px]:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>

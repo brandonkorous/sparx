@@ -78,7 +78,7 @@ export function LegalChecklist({ data }: { data: ChecklistData }) {
 
       <Stack gap={3}>
         {data.items.map((item) => (
-          <Card key={item.legalKind} variant="module">
+          <Card key={item.legalKind} variant="default">
             <CardContent className="flex flex-wrap items-center justify-between gap-3 py-4">
               <div className="flex min-w-0 items-center gap-3">
                 <FileText className="size-4 shrink-0 text-[var(--color-text-tertiary)]" />

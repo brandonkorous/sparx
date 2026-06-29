@@ -147,11 +147,16 @@
   align-items: center;
   gap: 8px;
 }
-/* Autosave status — quiet text beside the actions. */
+/* Save status — quiet text beside the actions. Explicit-save editors light this
+   up amber while there are unsaved edits, so the Save button reads as "do this". */
 .bx-savestate {
   font-size: 12px;
   color: var(--color-text-muted);
   white-space: nowrap;
+}
+.bx-savestate[data-state='unsaved'] {
+  color: var(--color-text-warning, #b45309);
+  font-weight: 600;
 }
 
 /* Import notice — a visible, dismissible result anchored under the Import button
@@ -3036,45 +3041,6 @@
 .bx-layer__zone[data-zone='page'] {
   color: var(--color-text-secondary);
   background: color-mix(in srgb, var(--color-text-secondary) 14%, transparent);
-}
-
-/* The Theme-node inspector (ThemeCenter variant="inspector"): the switcher, the
-   Light/Dark + Copy controls, then the brand controls — stacked for the narrow
-   inspector column. */
-.bx-theme-zone {
-  display: block;
-}
-.bx-theme-ins {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 12px;
-}
-.bx-theme-ins__switch {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-}
-/* In the inspector the theme chooser is its own full-width row; the rename
-   input and the dropdown trigger both carry `.bx-tplselect`. */
-.bx-theme-ins__switch .bx-tplselect {
-  width: 100%;
-  max-width: none;
-}
-/* The theme action buttons (rename · save · delete · import) sit on their own
-   row beneath the full-width chooser. */
-.bx-theme-ins__actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-}
-.bx-theme-ins__modes {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
 }
 
 /* ── Themed colour swatch picker (color-swatch.tsx) ───────────────────────────

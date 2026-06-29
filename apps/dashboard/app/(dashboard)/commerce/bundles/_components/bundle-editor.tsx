@@ -510,7 +510,7 @@ export function BundleEditor({
           }}
         >
           <Stack gap={6}>
-            <Card variant="module">
+            <Card variant="default">
               <CardHeader>
                 <CardTitle>Wrapper & pricing</CardTitle>
                 <CardDescription>
@@ -604,7 +604,7 @@ export function BundleEditor({
               </CardContent>
             </Card>
 
-            <Card variant="module">
+            <Card variant="default">
               <CardContent className="py-6">{componentsSection}</CardContent>
             </Card>
           </Stack>

@@ -2,6 +2,7 @@ import type { LucideIcon } from 'lucide-react';
 import {
   Bell,
   Compass,
+  FlaskConical,
   Globe,
   GlobeLock,
   KeyRound,
@@ -62,6 +63,15 @@ export const SETTINGS_NAV: readonly SettingsNavItem[] = [
     description: 'Stamp starter config for your industry across the modules you’ve enabled.',
     icon: Compass,
     href: '/settings/industry',
+    ready: true,
+  },
+  {
+    id: 'sample-data',
+    label: 'Sample data',
+    description:
+      'Load a complete example dataset for your industry — or clear it — across enabled modules.',
+    icon: FlaskConical,
+    href: '/settings/sample-data',
     ready: true,
   },
   {

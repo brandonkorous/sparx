@@ -24,6 +24,7 @@ import {
   ServiceNotFoundError,
   SlotUnavailableError,
 } from './errors';
+import { recordBookingEvent } from './booking-history';
 import {
   cancelBookingNotifications,
   dropPendingBookingNotifications,
@@ -164,7 +165,7 @@ export async function createBooking(
   createdByUserId?: string,
   opts: CreateBookingOptions = {}
 ): Promise<CreatedBooking> {
-  return withTenant({ tenantId }, async (tx) => {
+  const created = await withTenant({ tenantId }, async (tx) => {
     const service = await tx.schedulingService.findFirst({
       where: { id: input.serviceId, deletedAt: null },
     });
@@ -248,6 +249,11 @@ export async function createBooking(
     }
     return { booking, resourceIds: picks.map((p) => p.resourceId) };
   });
+  await recordBookingEvent(tenantId, created.booking.id, 'booking.created', createdByUserId, {
+    source: input.source,
+    serviceId: input.serviceId,
+  });
+  return created;
 }
 
 function buildAttendees(
@@ -301,30 +307,36 @@ export async function confirmBooking(
   id: string,
   userId?: string
 ): Promise<Booking> {
-  return withTenant({ tenantId }, async (tx) => {
+  const confirmed = await withTenant({ tenantId }, async (tx) => {
     const booking = await loadBooking(tx, id);
     if (booking.status !== 'requested') {
       throw new InvalidBookingStateError(`Cannot confirm a booking that is ${booking.status}`);
     }
     await setAllocationStatus(tx, id, 'confirmed');
-    const confirmed = await tx.booking.update({
+    const updated = await tx.booking.update({
       where: { id },
       data: { status: 'confirmed', confirmedAt: new Date(), confirmedByUserId: userId ?? null },
     });
-    await scheduleBookingNotifications(tx, tenantId, confirmed);
-    return confirmed;
+    await scheduleBookingNotifications(tx, tenantId, updated);
+    return updated;
   });
+  await recordBookingEvent(tenantId, id, 'booking.confirmed', userId);
+  return confirmed;
 }
 
-export async function cancelBooking(tenantId: string, input: CancelBookingInput): Promise<Booking> {
-  return withTenant({ tenantId }, async (tx) => {
+export async function cancelBooking(
+  tenantId: string,
+  input: CancelBookingInput,
+  actorId?: string
+): Promise<Booking> {
+  const cancelled = await withTenant({ tenantId }, async (tx) => {
     const booking = await loadBooking(tx, input.id);
     if (['cancelled', 'completed', 'no_show'].includes(booking.status)) {
       throw new InvalidBookingStateError(`Cannot cancel a booking that is ${booking.status}`);
     }
     // Release the resources so the slot frees immediately (partial EXCLUDE drops them).
     await setAllocationStatus(tx, input.id, 'cancelled');
-    const cancelled = await tx.booking.update({
+    const updated = await tx.booking.update({
       where: { id: input.id },
       data: {
         status: 'cancelled',
@@ -332,9 +344,13 @@ export async function cancelBooking(tenantId: string, input: CancelBookingInput)
         cancellationReason: input.reason ?? null,
       },
     });
-    await cancelBookingNotifications(tx, tenantId, cancelled);
-    return cancelled;
+    await cancelBookingNotifications(tx, tenantId, updated);
+    return updated;
   });
+  await recordBookingEvent(tenantId, input.id, 'booking.cancelled', actorId, {
+    ...(input.reason ? { reason: input.reason } : {}),
+  });
+  return cancelled;
 }
 
 /** Staff-side edits that don't move the booking in time (notes, parts, asset,
@@ -358,13 +374,20 @@ export async function updateBooking(tenantId: string, input: UpdateBookingInput)
 
 export async function rescheduleBooking(
   tenantId: string,
-  input: RescheduleBookingInput
+  input: RescheduleBookingInput,
+  actorId?: string
 ): Promise<Booking> {
-  return withTenant({ tenantId }, async (tx) => {
+  // Captured inside the tx (where the prior time is still known) for the history
+  // diff — the booking row overwrites startAt/endAt, so this is the only record.
+  let fromStartAt = '';
+  let fromEndAt = '';
+  const moved = await withTenant({ tenantId }, async (tx) => {
     const booking = await loadBooking(tx, input.id);
     if (['cancelled', 'completed', 'no_show'].includes(booking.status)) {
       throw new InvalidBookingStateError(`Cannot reschedule a booking that is ${booking.status}`);
     }
+    fromStartAt = booking.startAt.toISOString();
+    fromEndAt = booking.endAt.toISOString();
     const service = await tx.schedulingService.findFirst({ where: { id: booking.serviceId } });
     if (!service) throw new ServiceNotFoundError(booking.serviceId);
 
@@ -396,21 +419,32 @@ export async function rescheduleBooking(
           status: booking.status,
         })),
       });
-      const moved = await tx.booking.update({
+      const updated = await tx.booking.update({
         where: { id: input.id },
         data: { startAt, endAt },
       });
-      await rescheduleBookingNotifications(tx, tenantId, moved);
-      return moved;
+      await rescheduleBookingNotifications(tx, tenantId, updated);
+      return updated;
     } catch (err) {
       if (isExclusionViolation(err)) throw new SlotUnavailableError();
       throw err;
     }
   });
+  await recordBookingEvent(tenantId, input.id, 'booking.rescheduled', actorId, {
+    fromStartAt,
+    toStartAt: moved.startAt.toISOString(),
+    fromEndAt,
+    toEndAt: moved.endAt.toISOString(),
+  });
+  return moved;
 }
 
-export async function checkInBooking(tenantId: string, input: CheckInInput): Promise<Booking> {
-  return withTenant({ tenantId }, async (tx) => {
+export async function checkInBooking(
+  tenantId: string,
+  input: CheckInInput,
+  actorId?: string
+): Promise<Booking> {
+  const checkedIn = await withTenant({ tenantId }, async (tx) => {
     const booking = await loadBooking(tx, input.bookingId);
     if (!['confirmed', 'requested', 'in_progress'].includes(booking.status)) {
       throw new InvalidBookingStateError(`Cannot check in a booking that is ${booking.status}`);
@@ -426,10 +460,16 @@ export async function checkInBooking(tenantId: string, input: CheckInInput): Pro
       data: { status: 'in_progress', checkedInAt: booking.checkedInAt ?? new Date() },
     });
   });
+  await recordBookingEvent(tenantId, input.bookingId, 'booking.checked_in', actorId);
+  return checkedIn;
 }
 
-export async function completeBooking(tenantId: string, id: string): Promise<Booking> {
-  return withTenant({ tenantId }, async (tx) => {
+export async function completeBooking(
+  tenantId: string,
+  id: string,
+  actorId?: string
+): Promise<Booking> {
+  const completed = await withTenant({ tenantId }, async (tx) => {
     const booking = await loadBooking(tx, id);
     if (['cancelled', 'no_show'].includes(booking.status)) {
       throw new InvalidBookingStateError(`Cannot complete a booking that is ${booking.status}`);
@@ -441,10 +481,16 @@ export async function completeBooking(tenantId: string, id: string): Promise<Boo
       data: { status: 'completed', completedAt: new Date() },
     });
   });
+  await recordBookingEvent(tenantId, id, 'booking.completed', actorId);
+  return completed;
 }
 
-export async function noShowBooking(tenantId: string, input: NoShowBookingInput): Promise<Booking> {
-  return withTenant({ tenantId }, async (tx) => {
+export async function noShowBooking(
+  tenantId: string,
+  input: NoShowBookingInput,
+  actorId?: string
+): Promise<Booking> {
+  const noShow = await withTenant({ tenantId }, async (tx) => {
     const booking = await loadBooking(tx, input.id);
     if (['cancelled', 'completed'].includes(booking.status)) {
       throw new InvalidBookingStateError(
@@ -458,4 +504,6 @@ export async function noShowBooking(tenantId: string, input: NoShowBookingInput)
       data: { status: 'no_show', noShowAt: new Date() },
     });
   });
+  await recordBookingEvent(tenantId, input.id, 'booking.no_show', actorId);
+  return noShow;
 }

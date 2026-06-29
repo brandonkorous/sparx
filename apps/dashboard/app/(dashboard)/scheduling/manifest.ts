@@ -28,14 +28,24 @@ export const schedulingManifest: ModuleManifest = {
     { id: 'reports', label: 'Reports', icon: BarChart3, href: '/scheduling/reports' },
   ],
   actions: [],
-  // Create-only overlay entities (no `hasDetailView`: these list surfaces edit via
-  // a self-owned modal, not a detail-view drawer). The manifest entry gives the
-  // create overlay chrome a label + the "open in full page" href; the single-step
-  // SurfaceFrame create opts into drawer/modal via CREATE_VIEW_TYPES + detail-slot.
+  // service/resource/booking-policy are create-only overlay entities (no
+  // `hasDetailView`: these list surfaces edit via a self-owned modal, not a
+  // detail-view drawer). The manifest entry gives the create overlay chrome a
+  // label + the "open in full page" href; the single-step SurfaceFrame create
+  // opts into drawer/modal via CREATE_VIEW_TYPES + detail-slot.
+  //
+  // `booking` has BOTH a create overlay AND a detail view: a calendar block or a
+  // bookings-list row opens the booking's detail (view + reschedule + lifecycle)
+  // in the user's preferred surface, so it carries `hasDetailView: true`.
   entityTypes: [
     { id: 'service', label: 'Service', routePrefix: '/scheduling/services' },
     { id: 'resource', label: 'Resource', routePrefix: '/scheduling/resources' },
     { id: 'booking-policy', label: 'Booking policy', routePrefix: '/scheduling/policies' },
-    { id: 'booking', label: 'Booking', routePrefix: '/scheduling/bookings' },
+    {
+      id: 'booking',
+      label: 'Booking',
+      routePrefix: '/scheduling/bookings',
+      hasDetailView: true,
+    },
   ],
 };

@@ -71,13 +71,13 @@ default · editors are not forms._
    template editor, CMS schema/menu editors, scheduling availability) keep their own chrome and are
    excluded from this backlog — never wizard-ify them.
 
-| WS      | What                                                                 | Maps to              | Status                               |
-| ------- | -------------------------------------------------------------------- | -------------------- | ------------------------------------ |
-| **WS1** | Collapse the multi-step create wizards to single-page                | _new_ (was Wave 1+)  | ✅ done (7 collapsed + product kept) |
-| **WS2** | Full-page-only create forms → overlay (single-page, honor pref)      | old Wave 2           | ✅ done (CRM/inv/invoicing/cms)      |
-| **WS3** | Editor exclusion — formally drop editor-class surfaces from this doc | "Design calls" below | ✅ done (exclusion list recorded)    |
-| **WS4** | Inline detail-page edit/record forms → standardize                   | old Wave 4           | pending                              |
-| **WS5** | Substantive dialogs → standard overlay/dialog                        | old Wave 5           | ✅ done (most already on `Modal`)    |
+| WS      | What                                                                 | Maps to              | Status                                |
+| ------- | -------------------------------------------------------------------- | -------------------- | ------------------------------------- |
+| **WS1** | Collapse the multi-step create wizards to single-page                | _new_ (was Wave 1+)  | ✅ done (7 collapsed + product kept)  |
+| **WS2** | Full-page-only create forms → overlay (single-page, honor pref)      | old Wave 2           | ✅ done (CRM/inv/invoicing/cms)       |
+| **WS3** | Editor exclusion — formally drop editor-class surfaces from this doc | "Design calls" below | ✅ done (exclusion list recorded)     |
+| **WS4** | Inline detail-page edit/record forms → standardize                   | old Wave 4           | ✅ done (already remediated; audited) |
+| **WS5** | Substantive dialogs → standard overlay/dialog                        | old Wave 5           | ✅ done (most already on `Modal`)     |
 
 ### WS1 — collapse the multi-step create wizards to single-page (the new headline work)
 
@@ -608,6 +608,40 @@ dev lifecycle.
 ---
 
 ## Progress log
+
+- **2026-06-29 — Cross-module coverage sweep (beyond the WS census) ✅ gate-clean.** Repo-wide fingerprint scan
+  across ALL dashboard modules for form/dialog anti-patterns (raw `<input>/<select>/<textarea>`,
+  `text-[var(--color-danger)]` spans, `AlertDialog`-for-data-entry). Enumerated every `/new` create route (10
+  modules) — all map to entities already standardized in WS1/WS2/Wave-3. **Two genuine gaps found + fixed in
+  modules the WS census didn't enumerate:** (1) builder governance `_governance/components/archetype-catalog`
+  rendered its new/edit "brand section" form (Name + Category) inside an `AlertDialog` — converted to `Modal`
+  (the new-component-button anti-pattern); (2) CRM `deals/[id]/stage-picker` used a raw re-skinned `<select>`
+  (hand-built `SELECT_CLASS` fill+border) — swapped to `NativeSelect`. **Verified clean / correctly excluded:**
+  `automations/new` = the `AutomationEditor` canvas (WS3 editor exclusion); settings general/chat/ai/domains
+  forms all design-system-clean (purchase-dialog's only raw input is a `type="hidden"`); `terms-manager` +
+  `redirects-list` `AlertDialog`s are legit DELETE confirmations (not data entry). **Lower-priority, left
+  as-is (editor/grid contexts):** `commerce/bundles/bundle-editor` (WS3 editor-class, raw `<select>`s by
+  design) and `invoicing/documents/_lib/markup` (a dense grid-cell native-select skin). With this,
+  data-entry-in-`AlertDialog` is fully eliminated dashboard-wide. `@sparx/dashboard` tsc clean · ESLint 0
+  errors · prettier clean.
+
+- **2026-06-29 — WS4 audited COMPLETE: inline detail-page edit/record forms already standardized.** Audited the
+  full WS4 list on a clean tree (after the card-tint sweep + prior "surface polish" commits landed). **Finding:
+  WS4's "raw forms clobbering the chrome" was already remediated incrementally** — every form now uses the
+  `@sparx/ui` design system (no raw `<input>/<select>/<textarea>`, no `text-[var(--color-danger)]` spans, no
+  `AlertDialog`-for-data-entry, proper `<Card variant="default">` + `<Label>` + `color="module"` + error/saved
+  states + `useUnsavedGuard`/`useConfirm` where relevant). **Verified compliant (read in full):** commerce
+  returns approval/inspection/refund, reviews `respond-form`, qa `answer-form`, shipping `new-rate-form`, CMS
+  `consent-settings-form`, `authors/[id]/author-edit-form`. **Verified clean (fingerprint scan):**
+  `markup-rules-manager`, `surcharges-manager`, b2b `quote-respond-editor`, `cms/[id]/edit-form`,
+  `types/[typeKey]/[id]/edit-entry-form`, `taxonomy/[key]/terms-manager`, `media/[id]/edit-form`. **Excluded:**
+  `fitment-reference-editor` (fitment seam — a parallel agent's, off-limits) and `schema-editor` (WS3 editor
+  exclusion). **Residual is NOT a compliance fix but a design-pattern call** (left as-is, flagged for an
+  eyes-on/user decision): the markup/surcharge managers use _heavy expand-in-place_ and the b2b
+  `quote-respond-editor` is a _wide pricing workspace_ — the docs only ever "likely"-flagged these as
+  candidates to lift into an overlay/own-route; they're already design-system-clean, so lifting them is a UX
+  preference, not a defect. No code change made (the surfaces were already correct; manufacturing edits on
+  clean files would be churn). **WS4 done.**
 
 - **2026-06-29 — WS5 COMPLETE: substantive dialogs → standard `Modal` ✅ gate-clean.** Key finding: **most WS5
   "substantive dialogs" were already on the standard `@sparx/ui` `Modal`/`useConfirm`** — the census's

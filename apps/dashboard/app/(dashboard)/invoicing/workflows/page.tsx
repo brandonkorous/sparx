@@ -73,7 +73,7 @@ export default async function InvoicingWorkflowsPage() {
             {workflows.map((wf) => {
               const stages = wf.stages.slice().sort((a, b) => a.sortOrder - b.sortOrder);
               return (
-                <Card key={wf.id} variant="module">
+                <Card key={wf.id} variant="default">
                   <CardContent className="py-4">
                     <Stack direction="row" align="center" justify="between" gap={3} wrap>
                       <Stack gap={2} className="min-w-0">

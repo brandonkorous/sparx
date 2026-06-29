@@ -116,7 +116,7 @@ export function SegmentsList({ segments, view }: SegmentsListProps) {
     title: (s) =>
       nameLink(s, 'text-base font-medium hover:text-[var(--module-active)] hover:underline'),
     render: (s) => (
-      <Card variant={s.archivedAt ? 'default' : 'module'} padding="md">
+      <Card variant="default" padding="md">
         <Stack direction="row" align="center" justify="between" wrap gap={3}>
           <Stack gap={1} className="min-w-0 flex-1">
             <Stack direction="row" align="center" gap={2} wrap>

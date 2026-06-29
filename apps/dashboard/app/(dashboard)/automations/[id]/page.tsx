@@ -102,7 +102,7 @@ export default async function AutomationDetailPage({ params }: PageProps) {
         )}
 
         {automation.draft && !automation.locked && (
-          <Card variant="module">
+          <Card variant="default">
             <CardContent className="flex flex-wrap items-center justify-between gap-3">
               <Text size="sm">
                 This automation has <strong>unpublished changes</strong>. The live version (v

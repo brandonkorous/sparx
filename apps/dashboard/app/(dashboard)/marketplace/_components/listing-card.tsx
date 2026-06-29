@@ -55,7 +55,7 @@ export function ListingCard({
   const badges = listingBadges(item);
 
   return (
-    <Card variant="module" className="flex flex-col overflow-hidden">
+    <Card variant="default" className="flex flex-col overflow-hidden">
       {preview ? (
         <Link href={href} className="block">
           <img

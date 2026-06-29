@@ -2,6 +2,21 @@ export { prisma } from './client';
 export { withTenant, withSystem } from './tenant-context';
 export type { TenantContext, TxClient } from './tenant-context';
 
+// Sample data (docs/104, Wave 5) — load/clear/status + the per-industry packs,
+// shared by the dev/e2e seed and the api-rest production seam.
+export {
+  loadSampleData,
+  clearSampleData,
+  sampleDataStatus,
+  resolveSamplePack,
+  getSamplePack,
+  packModules,
+  countsTotal,
+  SAMPLE_DATA_PACKS,
+  GENERIC_INDUSTRY,
+} from './sample-data';
+export type { SampleDataPack, SampleDataCounts, SampleDataStatus } from './sample-data';
+
 export type {
   Tenant,
   OnboardingChecklist,
@@ -178,6 +193,9 @@ export type {
   ChatConversation,
   ChatMessage,
   ChatQuickReply,
+  // AI module (docs/07)
+  AiPromptTemplate,
+  AiToolPolicy,
   // Scheduling (docs/79)
   SchedulingResource,
   SchedulingService,
