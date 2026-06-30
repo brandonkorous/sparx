@@ -1,4 +1,5 @@
 import { Section, SectionHeader, Spark, Wordmark } from './primitives';
+import { Reveal } from './reveal';
 
 type Cell = { kind: 'check' } | { kind: 'cross' } | { kind: 'text'; text: string; color?: string };
 
@@ -114,8 +115,8 @@ const COL_WIDTHS = ['160px', '140px', '140px', '140px'] as const;
 
 export function CompareTable() {
   return (
-    <Section surface="surface" padding="xl">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
+    <Section surface="surface" padding="xl" className="mkt-stage">
+      <Reveal style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
         <SectionHeader
           headline={
             <>
@@ -216,7 +217,7 @@ export function CompareTable() {
             ))}
           </div>
         </div>
-      </div>
+      </Reveal>
     </Section>
   );
 }

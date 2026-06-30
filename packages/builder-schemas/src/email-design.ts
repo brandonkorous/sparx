@@ -47,9 +47,9 @@ export const EMAIL_DESIGN = {
       lineHeight: '24px',
     },
     body: {
-      fontSize: 14,
+      fontSize: 16,
       fontWeight: 400,
-      lineHeight: '22px',
+      lineHeight: '24px',
     },
     muted: {
       fontSize: 12,

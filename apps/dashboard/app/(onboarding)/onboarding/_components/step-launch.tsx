@@ -86,7 +86,9 @@ export function StepLaunch({
   monthlyElsewhere: number;
   /** A paid domain chosen earlier — charged + registered when they publish. */
   pendingDomain: PendingDomain | null;
-  onDifferentTemplate: () => void;
+  /** Jump back to re-pick the blueprint. Omitted where there's no template step
+   *  to return to (the story flow), which hides the affordance. */
+  onDifferentTemplate?: () => void;
 }) {
   const [token, setToken] = React.useState<string | null>(null);
   const host = `${slug}.${SITE_ZONE}`;
@@ -251,15 +253,17 @@ export function StepLaunch({
         >
           <Link href={BUILDER_HREF}>Customize first</Link>
         </Button>
-        <Button
-          variant="ghost"
-          color="neutral"
-          size="sm"
-          onClick={onDifferentTemplate}
-          leftIcon={<Shuffle className="h-3.5 w-3.5" />}
-        >
-          Choose a different blueprint
-        </Button>
+        {onDifferentTemplate && (
+          <Button
+            variant="ghost"
+            color="neutral"
+            size="sm"
+            onClick={onDifferentTemplate}
+            leftIcon={<Shuffle className="h-3.5 w-3.5" />}
+          >
+            Choose a different blueprint
+          </Button>
+        )}
       </div>
     </div>
   );

@@ -385,6 +385,31 @@ const ONBOARDING_STEPS = [
 ] as const;
 type OnboardingStep = (typeof ONBOARDING_STEPS)[number];
 
+// The narrative captured by the natural-language "story" onboarding (apps/dashboard
+// `/story`): the composed prose PLUS the structured selection that produced it. We
+// persist the WHOLE story — both as a record of what the tenant told us (a signal we
+// can surface later) and so the flow can resume. `.strict()` keeps it bounded; bump
+// the shape here when the composer grows new fields.
+const StoryNarrative = z
+  .object({
+    // The rendered prose, e.g. "I want to start a salon for people, where they can …".
+    text: z.string().max(8000),
+    tense: z.string().max(32).nullable().optional(),
+    industry: z.string().max(64).nullable().optional(),
+    audience: z.string().max(32).nullable().optional(),
+    name: z.string().max(200).optional(),
+    cust: z.array(z.string().max(40)).max(64).optional(),
+    lines: z
+      .array(z.array(z.string().max(40)).max(64))
+      .max(64)
+      .optional(),
+    slots: z.record(z.string().max(40), z.string().max(400)).optional(),
+    modules: z.array(z.string().max(40)).max(64).optional(),
+    composedAt: z.string().datetime().optional(),
+  })
+  .strict();
+type OnboardingStory = z.infer<typeof StoryNarrative>;
+
 const OnboardingPatch = z.object({
   dismissed: z.boolean().optional(),
   startedAt: z.string().datetime().nullable().optional(),
@@ -396,6 +421,8 @@ const OnboardingPatch = z.object({
   // Both null on the "start from scratch" path (no blueprint installed).
   blueprintKey: z.string().max(64).nullable().optional(),
   installId: z.string().uuid().nullable().optional(),
+  // The full natural-language story, when onboarding came through `/story`.
+  story: StoryNarrative.nullable().optional(),
   completed: z
     .object({
       modules: z.boolean().optional(),
@@ -423,6 +450,7 @@ interface OnboardingState {
   category: string | null;
   blueprintKey: string | null;
   installId: string | null;
+  story: OnboardingStory | null;
   completed: OnboardingCompleted;
 }
 
@@ -442,6 +470,7 @@ const DEFAULT_ONBOARDING: OnboardingState = {
   category: null,
   blueprintKey: null,
   installId: null,
+  story: null,
   completed: DEFAULT_COMPLETED,
 };
 
@@ -455,6 +484,7 @@ function readOnboarding(settings: unknown): OnboardingState {
   }
   const rec = raw as Record<string, unknown>;
   const completedRaw = (rec.completed ?? {}) as Record<string, unknown>;
+  const story = StoryNarrative.safeParse(rec.story);
   return {
     dismissed: typeof rec.dismissed === 'boolean' ? rec.dismissed : false,
     startedAt: typeof rec.startedAt === 'string' ? rec.startedAt : null,
@@ -465,6 +495,7 @@ function readOnboarding(settings: unknown): OnboardingState {
     category: typeof rec.category === 'string' ? rec.category : null,
     blueprintKey: typeof rec.blueprintKey === 'string' ? rec.blueprintKey : null,
     installId: typeof rec.installId === 'string' ? rec.installId : null,
+    story: story.success ? story.data : null,
     completed: {
       modules: completedRaw.modules === true,
       template: completedRaw.template === true,

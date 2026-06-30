@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Six tabs · B — The number that drops</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #18181b;
+        --ink-2: #52525b;
+        --ink-3: #a1a1aa;
+        --ground: #eaecf1;
+        --surface: #ffffff;
+        --border: #e4e4e7;
+        --indigo: #6366f1;
+        --indigo-press: #4f46e5;
+        --red: #dc2626;
+        --green: #16a34a;
+        --green-tint: #ecfdf5;
+        --sans: 'Inter', system-ui, sans-serif;
+        --mono: 'JetBrains Mono', ui-monospace, monospace;
+        --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: var(--sans);
+        background: var(--ground);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+        padding: 72px 0 120px;
+      }
+      .wrap {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 0 32px;
+      }
+      .wordmark {
+        font-weight: 700;
+        font-size: 20px;
+        letter-spacing: -0.03em;
+        margin-bottom: 64px;
+      }
+      .wordmark b {
+        color: var(--indigo);
+      }
+      h1 {
+        font-weight: 500;
+        font-size: clamp(40px, 6vw, 68px);
+        line-height: 0.96;
+        letter-spacing: -0.035em;
+      }
+      h1 .dot {
+        color: var(--indigo);
+      }
+      .lede {
+        margin-top: 24px;
+        max-width: 600px;
+        font-size: 18px;
+        line-height: 1.6;
+        color: var(--ink-2);
+      }
+
+      /* two-column: argument on the left, the pricing/number on the right */
+      .split {
+        margin-top: 52px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 56px;
+        align-items: center;
+      }
+      .copy {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      @media (max-width: 880px) {
+        .split {
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+      }
+
+      /* HERO NUMBER */
+      .hero {
+        margin-top: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .kicker {
+        font-family: var(--mono);
+        font-size: 13px;
+        letter-spacing: 0.04em;
+        color: var(--ink-2);
+        height: 18px;
+        transition: color 0.5s ease;
+      }
+      .kicker.green {
+        color: var(--green);
+      }
+      .bignum {
+        font-weight: 600;
+        font-size: clamp(72px, 16vw, 168px);
+        line-height: 1;
+        letter-spacing: -0.05em;
+        color: var(--red);
+        transition: color 0.7s ease;
+      }
+      .bignum.green {
+        color: var(--green);
+      }
+      .bignum .per {
+        font-size: 0.28em;
+        font-weight: 500;
+        color: var(--ink-3);
+        letter-spacing: -0.02em;
+      }
+      .dropline {
+        width: 1px;
+        height: 34px;
+        background: var(--ink-3);
+        margin: 8px 0;
+        transform: scaleY(0);
+        transform-origin: top;
+        transition: transform 0.5s var(--ease);
+      }
+      .hero.dropped .dropline {
+        transform: scaleY(1);
+      }
+      .savings {
+        margin-top: 26px;
+        font-weight: 500;
+        font-size: clamp(18px, 2.5vw, 24px);
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        opacity: 0;
+        transform: translateY(8px);
+        transition:
+          opacity 0.6s ease,
+          transform 0.6s var(--ease);
+      }
+      .hero.dropped .savings {
+        opacity: 1;
+        transform: none;
+      }
+      .savings b {
+        color: var(--green);
+        font-weight: 600;
+      }
+
+      /* BREAKDOWN (the proof, tucked away) */
+      .proof {
+        margin: 28px 0 0;
+      }
+      .toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--mono);
+        font-size: 13px;
+        color: var(--ink-2);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 6px 0;
+      }
+      .toggle svg {
+        transition: transform 0.25s var(--ease);
+      }
+      .proof.open .toggle svg {
+        transform: rotate(180deg);
+      }
+      .ledger {
+        display: grid;
+        grid-template-rows: 0fr;
+        opacity: 0;
+        transition:
+          grid-template-rows 0.45s var(--ease),
+          opacity 0.4s ease;
+        margin-top: 8px;
+      }
+      .proof.open .ledger {
+        grid-template-rows: 1fr;
+        opacity: 1;
+      }
+      .ledger-inner {
+        overflow: hidden;
+        min-height: 0;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 18px;
+        border-bottom: 1px solid #f4f4f5;
+      }
+      .row:last-child {
+        border-bottom: none;
+      }
+      .row .a {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .row .a .nm {
+        font-size: 13.5px;
+        font-weight: 500;
+      }
+      .row .a .pr,
+      .row .b .pr {
+        font-family: var(--mono);
+        font-size: 12.5px;
+        color: var(--ink-2);
+      }
+      .row .arr {
+        color: var(--ink-3);
+      }
+      .row .b {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+      }
+      .row .b .md {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 13.5px;
+        font-weight: 500;
+      }
+      .row .b .md i {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+      }
+
+      .cta {
+        margin: 30px 0 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: flex-start;
+      }
+      .btn {
+        font-weight: 500;
+        font-size: 15px;
+        border-radius: 10px;
+        padding: 13px 20px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        text-decoration: none;
+      }
+      .btn-primary {
+        background: var(--indigo);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--indigo-press);
+      }
+      .btn-outline {
+        background: transparent;
+        color: var(--ink);
+        border-color: var(--border);
+      }
+      .micro {
+        text-align: left;
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--ink-3);
+        margin-top: 14px;
+      }
+      .replay {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        font-family: var(--mono);
+        font-size: 12px;
+        background: #18181b;
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 9px 16px;
+        cursor: pointer;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .bignum,
+        .kicker,
+        .savings,
+        .dropline {
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <button class="replay" onclick="play()">↻ replay</button>
+    <div class="wrap">
+      <div class="wordmark">spar<b>x</b></div>
+
+      <div class="split">
+        <div class="copy">
+          <h1>Six tabs.<br />One bill<span class="dot">.</span></h1>
+          <p class="lede">
+            A tab for your store, another for email, a CRM that talks to neither, and an automation
+            bill quietly holding it together. Here's what that actually costs you.
+          </p>
+          <div class="cta">
+            <a class="btn btn-primary" href="#">Start my site free →</a>
+            <a class="btn btn-outline" href="#">See the full price list</a>
+          </div>
+          <div class="micro">No card · cancel anytime · switch a module off and its bill stops</div>
+        </div>
+
+        <div class="pricing">
+          <div class="hero" id="hero">
+            <div class="kicker" id="kicker">Your stack today · 6 tools</div>
+            <div class="bignum" id="bignum">$0<span class="per">/mo</span></div>
+            <div class="dropline"></div>
+            <div class="savings">
+              You save <b id="saveNum">$0</b> a year — six tools become one bill.
+            </div>
+          </div>
+
+          <div class="proof" id="proof">
+            <button
+              class="toggle"
+              onclick="document.getElementById('proof').classList.toggle('open')"
+            >
+              See the breakdown
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.6" />
+              </svg>
+            </button>
+            <div class="ledger">
+              <div class="ledger-inner">
+                <div class="row">
+                  <div class="a">
+                    <span class="nm">Online store + checkout</span><span class="pr">$399/mo</span>
+                  </div>
+                  <span class="arr">→</span>
+                  <div class="b">
+                    <span class="md"><i style="background: #f97316"></i>Commerce</span
+                    ><span class="pr">+$49/mo</span>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="a">
+                    <span class="nm">CRM + marketing</span><span class="pr">$1,600/mo</span>
+                  </div>
+                  <span class="arr">→</span>
+                  <div class="b">
+                    <span class="md"><i style="background: #06b6d4"></i>CRM</span
+                    ><span class="pr">+$49/mo</span>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="a">
+                    <span class="nm">Email platform</span><span class="pr">$350/mo</span>
+                  </div>
+                  <span class="arr">→</span>
+                  <div class="b">
+                    <span class="md"><i style="background: #0ea5e9"></i>Email</span
+                    ><span class="pr">+$29/mo</span>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="a">
+                    <span class="nm">CMS + blog</span><span class="pr">$180/mo</span>
+                  </div>
+                  <span class="arr">→</span>
+                  <div class="b">
+                    <span class="md"><i style="background: #14b8a6"></i>CMS</span
+                    ><span class="pr">+$49/mo</span>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="a">
+                    <span class="nm">Automation glue</span><span class="pr">$240/mo</span>
+                  </div>
+                  <span class="arr">→</span>
+                  <div class="b">
+                    <span class="md"><i style="background: #16a34a"></i>Built in</span
+                    ><span class="pr" style="color: #16a34a">$0</span>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="a">
+                    <span class="nm">Site + hosting</span><span class="pr">—</span>
+                  </div>
+                  <span class="arr">→</span>
+                  <div class="b">
+                    <span class="md"><i style="background: #6366f1"></i>Builder</span
+                    ><span class="pr">+$10/mo</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const hero = document.getElementById('hero');
+      const bignum = document.getElementById('bignum');
+      const kicker = document.getElementById('kicker');
+      const saveEl = document.getElementById('saveNum');
+      let timers = [];
+
+      function setNum(el, v) {
+        el.innerHTML = '$' + v.toLocaleString('en-US') + '<span class="per">/mo</span>';
+      }
+      function ramp(el, from, to, dur, render, done) {
+        const start = performance.now();
+        function tick(now) {
+          const t = Math.min(1, (now - start) / dur);
+          const v = Math.round(from + (to - from) * (1 - Math.pow(1 - t, 3)));
+          render(el, v);
+          if (t < 1) requestAnimationFrame(tick);
+          else if (done) done();
+        }
+        requestAnimationFrame(tick);
+      }
+
+      function play() {
+        timers.forEach(clearTimeout);
+        timers = [];
+        hero.classList.remove('dropped');
+        bignum.classList.remove('green');
+        kicker.classList.remove('green');
+        kicker.textContent = 'Your stack today · 6 tools';
+        setNum(bignum, 0);
+        saveEl.textContent = '$0';
+
+        if (reduce) {
+          kicker.textContent = 'On sparx · one bill';
+          kicker.classList.add('green');
+          bignum.classList.add('green');
+          setNum(bignum, 186);
+          saveEl.textContent = '$30,996';
+          hero.classList.add('dropped');
+          return;
+        }
+        // phase 1: count the painful number up (red)
+        ramp(bignum, 0, 2769, 1100, setNum);
+        // phase 2: the number DROPS to the sparx price, color red → green
+        timers.push(
+          setTimeout(() => {
+            kicker.textContent = 'On sparx · one bill';
+            kicker.classList.add('green');
+            bignum.classList.add('green');
+            hero.classList.add('dropped');
+            ramp(bignum, 2769, 186, 900, setNum);
+            ramp(
+              saveEl,
+              0,
+              30996,
+              900,
+              (el, v) => (el.textContent = '$' + v.toLocaleString('en-US'))
+            );
+          }, 1700)
+        );
+      }
+
+      const io = new IntersectionObserver(
+        (es) => {
+          es.forEach((e) => {
+            if (e.isIntersecting) {
+              play();
+              io.disconnect();
+            }
+          });
+        },
+        { threshold: 0.5 }
+      );
+      io.observe(hero);
+    </script>
+  </body>
+</html>

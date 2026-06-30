@@ -17,10 +17,13 @@ const MOD: Record<string, string> = {
   commerce: 'var(--module-commerce)',
   cms: 'var(--module-cms)',
   crm: 'var(--module-crm)',
+  invoicing: 'var(--module-invoicing)',
   email: 'var(--module-email)',
   b2b: 'var(--module-b2b)',
   ai: 'var(--module-ai)',
   dropship: 'var(--module-dropship)',
+  inventory: 'var(--module-inventory)',
+  chat: 'var(--module-chat)',
   scheduling: 'var(--module-scheduling)',
 };
 
@@ -122,7 +125,7 @@ function AlwaysIncluded() {
         <SectionHeader
           headline="Every plan ships with the platform"
           accent="var(--sparx-primary)"
-          lede="You pay for modules. Everything underneath them — the hosting, the security, the API — is included on every plan, from one module to all nine."
+          lede="You pay for modules. Everything underneath them — the hosting, the security, the API — is included on every plan, from one module to all twelve."
         />
         <div
           className="mkt-grid-4-2-1"
@@ -195,13 +198,15 @@ function AlwaysIncluded() {
 
 const STATS: { value: string; suffix?: string; label: string }[] = [
   {
-    value: '$38,000',
+    value: '$41,000',
     suffix: '+/yr',
-    label: 'Kept by running all nine capabilities as sparx instead of nine separate subscriptions.',
+    label:
+      'Kept by running all twelve capabilities as sparx instead of twelve separate subscriptions.',
   },
   {
-    value: '9 → 1',
-    label: 'Nine logins, renewal dates, and support queues collapse into a single monthly invoice.',
+    value: '12 → 1',
+    label:
+      'Twelve logins, renewal dates, and support queues collapse into a single monthly invoice.',
   },
   {
     value: '0%',
@@ -244,6 +249,15 @@ const LEDGER: { key: string; name: string; price: string; alt: string; amt: stri
     alt: 'Acuity — Powerhouse',
     amt: '$61',
   },
+  { key: 'invoicing', name: 'Invoicing', price: '$19', alt: 'FreshBooks — Plus', amt: '$33' },
+  {
+    key: 'inventory',
+    name: 'Inventory',
+    price: '$29',
+    alt: 'Zoho Inventory — Professional',
+    amt: '$99',
+  },
+  { key: 'chat', name: 'Live Chat', price: '$19', alt: 'Intercom — live chat', amt: '$74' },
 ];
 
 const SCENARIOS: {
@@ -263,10 +277,10 @@ const SCENARIOS: {
   },
   {
     title: 'The full platform',
-    sub: 'All nine modules',
-    separate: '$3,626/mo',
-    sparx: '$392/mo',
-    save: 'You keep $3,234/mo — about $38,000 a year',
+    sub: 'All twelve modules — Invoicing & Inventory included free',
+    separate: '$3,832/mo',
+    sparx: '$411/mo',
+    save: 'You keep $3,421/mo — about $41,000 a year',
     featured: true,
   },
 ];
@@ -511,9 +525,11 @@ function CostSavings() {
         >
           Comparison uses publicly listed 2026 monthly prices for representative growth-tier plans
           of the tools each module replaces — Webflow Premium, Shopify Advanced and Plus, a headless
-          CMS, HubSpot Sales Professional, Klaviyo, a dropshipping app, and Zapier for the glue
-          between them. Those prices scale up with seats, contacts, and usage, so a real-world stack
-          usually costs more. sparx is flat — the module price is the price.
+          CMS, HubSpot Sales Professional, Klaviyo, a dropshipping app, FreshBooks, an inventory
+          app, Intercom, and Zapier for the glue between them. Those prices scale up with seats,
+          contacts, and usage, so a real-world stack usually costs more. Invoicing and Inventory
+          come free with Commerce or B2B, so they add $0 to the full-platform total. sparx is flat —
+          the module price is the price.
         </p>
       </div>
     </Section>
@@ -704,6 +720,47 @@ const FEATURES: { key: string; name: string; price: string; repl: string; feats:
       'Auto-promoting waitlists',
       'Email & SMS reminders',
       'Calendar feed + busy import',
+    ],
+  },
+  {
+    key: 'invoicing',
+    name: 'Invoicing',
+    price: '$19/mo',
+    repl: 'Replaces a standalone invoicing tool',
+    feats: [
+      'Quotes that convert to invoices',
+      'Card & ACH payment links',
+      'Recurring & milestone billing',
+      'Automatic overdue reminders',
+      'Tied to the same customer record',
+      'Free with Commerce or B2B',
+    ],
+  },
+  {
+    key: 'inventory',
+    name: 'Inventory',
+    price: '$29/mo',
+    repl: 'Replaces a standalone inventory app',
+    feats: [
+      'Stock across multiple locations',
+      'Reorder points & low-stock alerts',
+      'Real-time sync to every channel',
+      'Transfers, adjustments & counts',
+      'Purchase orders to suppliers',
+      'Free with Commerce or B2B',
+    ],
+  },
+  {
+    key: 'chat',
+    name: 'Live Chat',
+    price: '$19/mo',
+    repl: 'Replaces a live-chat tool like Intercom',
+    feats: [
+      'Live chat widget on your site',
+      'Routed to your shared inbox',
+      'Tied to the customer record',
+      'Canned replies & office hours',
+      'Full history across conversations',
     ],
   },
 ];
@@ -992,7 +1049,7 @@ function Enterprise() {
 const FAQS: { q: string; a: string }[] = [
   {
     q: 'What counts as a module?',
-    a: 'The nine capabilities in the switchboard — Builder, Commerce, CMS, CRM, Email, B2B, AI, Dropship, and Scheduling. Each is a flat monthly price you switch on or off independently. The platform underneath (hosting, security, API) is included on every plan.',
+    a: 'The twelve capabilities in the switchboard — Builder, Commerce, CMS, CRM, Invoicing, Email, B2B, Dropship, Inventory, Live Chat, Scheduling, and AI. Each is a flat monthly price you switch on or off independently — and Invoicing and Inventory come free the moment you turn on Commerce or B2B. The platform underneath (hosting, security, API) is included on every plan.',
   },
   {
     q: 'Do I have to start with Builder?',

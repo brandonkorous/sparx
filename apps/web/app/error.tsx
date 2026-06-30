@@ -5,6 +5,7 @@
 // recover-able message rather than a blank screen.
 
 import { useEffect } from 'react';
+import { SparkMascot } from '@/components/marketing/spark-mascot';
 
 export default function Error({
   error,
@@ -36,18 +37,9 @@ export default function Error({
           borderRadius: '14px',
         }}
       >
-        <p
-          style={{
-            fontFamily: 'var(--font-mono, monospace)',
-            fontSize: '12px',
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            color: '#6366F1',
-            margin: '0 0 12px',
-          }}
-        >
-          Something went wrong
-        </p>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+          <SparkMascot expression="sad" tone="indigo" size={104} bob={false} />
+        </div>
         <h1 style={{ fontSize: '26px', fontWeight: 600, margin: '0 0 10px', color: 'inherit' }}>
           This page hit an error
         </h1>

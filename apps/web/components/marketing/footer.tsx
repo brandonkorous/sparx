@@ -18,6 +18,10 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
       { label: 'AI / MCP', href: '/ai' },
       { label: 'Dropship', href: '/dropship' },
       { label: 'Scheduling', href: '/scheduling' },
+      // No dedicated page yet — point at the pricing switchboard until one ships.
+      { label: 'Invoicing', href: '/pricing' },
+      { label: 'Inventory', href: '/pricing' },
+      { label: 'Live Chat', href: '/pricing' },
     ],
   },
   {

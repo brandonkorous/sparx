@@ -4,19 +4,30 @@ import * as React from 'react';
 import { Badge, Button, Text } from '@sparx/ui';
 import { CheckCircle, CreditCard, Info } from 'lucide-react';
 import { startStripeConnectAction } from '../_lib/actions';
+import type { WizardResult } from '../_lib/types';
 
 // Step 5 — Payments (work pane). Connects Stripe CONNECT — the account that
 // RECEIVES customer money — which the note makes clear is separate from the
 // tenant's own sparx subscription. Continue/Skip lives in the setup card; this
 // body owns the Connect action (a redirect to Stripe OAuth).
-export function StepPayments({ stripeConnected }: { stripeConnected: boolean }) {
+//
+// `connectAction` is the server action that mints the OAuth URL. The classic
+// wizard uses the default (returns to /onboarding); the story flow passes its own
+// variant that marks the flow so the shared callback returns to /story instead.
+export function StepPayments({
+  stripeConnected,
+  connectAction = startStripeConnectAction,
+}: {
+  stripeConnected: boolean;
+  connectAction?: () => Promise<WizardResult<{ url: string }>>;
+}) {
   const [error, setError] = React.useState<string | null>(null);
   const [connecting, startConnect] = React.useTransition();
 
   function onConnectStripe() {
     setError(null);
     startConnect(async () => {
-      const res = await startStripeConnectAction();
+      const res = await connectAction();
       if (res.ok) window.location.href = res.data.url;
       else setError(res.error);
     });

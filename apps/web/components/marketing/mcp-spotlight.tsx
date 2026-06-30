@@ -1,4 +1,5 @@
 import { Container, SectionHeader, Spark } from './primitives';
+import { Reveal } from './reveal';
 
 const FEATURES = [
   {
@@ -51,6 +52,7 @@ const RESULTS = [
 export function McpSpotlight() {
   return (
     <section
+      className="mkt-accent"
       style={{
         paddingTop: 'var(--section-py-xl)',
         paddingBottom: 'var(--section-py-xl)',
@@ -60,82 +62,84 @@ export function McpSpotlight() {
       }}
     >
       <Container style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
-        <SectionHeader
-          invert
-          headlineSize={64}
-          headlineLineHeight={68}
-          headline={
-            <>
-              Ask your AI
-              <br />
-              anything
-              <Spark color="#EC4899" />
-            </>
-          }
-          lede={
-            <>
-              sparx is the first content and commerce platform built around the Model Context
-              Protocol. Connect Claude, ChatGPT, or Copilot once, then read live business data with
-              plain English. No exports. No CSVs. No Zapier.
-            </>
-          }
-        />
+        <Reveal style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
+          <SectionHeader
+            invert
+            headlineSize={64}
+            headlineLineHeight={68}
+            headline={
+              <>
+                Ask your AI
+                <br />
+                anything
+                <Spark color="#EC4899" />
+              </>
+            }
+            lede={
+              <>
+                sparx is the first content and commerce platform built around the Model Context
+                Protocol. Connect Claude, ChatGPT, or Copilot once, then read live business data
+                with plain English. No exports. No CSVs. No Zapier.
+              </>
+            }
+          />
 
-        <div className="mkt-stack-on-tablet" style={{ alignItems: 'stretch', gap: '32px' }}>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              width: '480px',
-              maxWidth: '100%',
-              flexShrink: 0,
-              gap: '32px',
-              paddingTop: '24px',
-            }}
-          >
-            {FEATURES.map((f) => (
-              <div key={f.number} style={{ display: 'flex', gap: '18px' }}>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '13px',
-                    color: '#52525B',
-                    paddingTop: '4px',
-                    width: '30px',
-                    flexShrink: 0,
-                  }}
-                >
-                  {f.number}
-                </span>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div className="mkt-stack-on-tablet" style={{ alignItems: 'stretch', gap: '32px' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                width: '480px',
+                maxWidth: '100%',
+                flexShrink: 0,
+                gap: '32px',
+                paddingTop: '24px',
+              }}
+            >
+              {FEATURES.map((f) => (
+                <div key={f.number} style={{ display: 'flex', gap: '18px' }}>
                   <span
                     style={{
-                      fontFamily: 'var(--font-sans)',
-                      fontWeight: 500,
-                      fontSize: '18px',
-                      letterSpacing: '-0.015em',
-                      color: '#FFFFFF',
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '13px',
+                      color: '#52525B',
+                      paddingTop: '4px',
+                      width: '30px',
+                      flexShrink: 0,
                     }}
                   >
-                    {f.title}
+                    {f.number}
                   </span>
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-sans)',
-                      fontSize: '14px',
-                      lineHeight: '22px',
-                      color: '#A1A1AA',
-                    }}
-                  >
-                    {f.body}
-                  </span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-sans)',
+                        fontWeight: 500,
+                        fontSize: '18px',
+                        letterSpacing: '-0.015em',
+                        color: '#FFFFFF',
+                      }}
+                    >
+                      {f.title}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-sans)',
+                        fontSize: '14px',
+                        lineHeight: '22px',
+                        color: '#A1A1AA',
+                      }}
+                    >
+                      {f.body}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          <ChatCard />
-        </div>
+            <ChatCard />
+          </div>
+        </Reveal>
       </Container>
     </section>
   );

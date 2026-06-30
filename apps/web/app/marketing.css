@@ -30,6 +30,34 @@
   }
 }
 
+/* ── MODULE MENU TILES ───────────────────────────────────────────
+   The "N modules" grid. Each tile wears its module hue as a soft, theme-aware
+   color-mix wash (set per tile via --tile-tint) plus a hairline; the hue
+   otherwise rides the accents. A module MENU is the one place per-card tint reads
+   as a color legend rather than the "wall of competing washes" the platform bans
+   elsewhere — here every tile legitimately IS its module. */
+.mkt-module-tile {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background-color: var(--tile-tint);
+  border: 1px solid var(--color-border-default);
+  border-radius: 12px;
+  padding: 22px;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+a.mkt-module-tile:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in oklab, var(--tile-accent) 42%, var(--color-border-default));
+  box-shadow: 0 10px 28px rgba(9, 9, 11, 0.07);
+}
+
 .mkt-grid-3-2-1 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -106,6 +134,165 @@
   flex-wrap: wrap;
   gap: 16px;
   align-items: center;
+}
+
+/* "Six tabs / One bill" section: the argument + CTA sit in a column on the left,
+   the swap ledger (the proof) on the right. The ledger is dense, so it gets the
+   wider track. Collapses to one column (copy above ledger) on tablet down. */
+.mkt-stack-split {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 56px;
+  align-items: start;
+}
+.mkt-stack-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  align-items: flex-start;
+}
+@media (max-width: 1024px) {
+  .mkt-stack-split {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+/* ── "SIX TABS / ONE BILL" SWAP LEDGER ───────────────────────────
+   Maps each job your current stack does to the sparx module that absorbs it:
+   today-cell · arrow · sparx-cell. 1fr / arrow / 1fr on desktop; on mobile each
+   row stacks (today over sparx) with the arrow rotated to point down. */
+.mkt-swap-row {
+  display: grid;
+  grid-template-columns: 1fr 44px 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 15px 24px;
+}
+.mkt-swap-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
+}
+.mkt-swap-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-tertiary);
+}
+@media (max-width: 640px) {
+  .mkt-swap-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 16px 18px;
+  }
+  .mkt-swap-arrow {
+    transform: rotate(90deg);
+  }
+  /* the column-label header is meaningless once rows stack — hide it (keeps the
+     row's grid intact on desktop, unlike .mkt-hide-on-mobile's display:initial). */
+  .mkt-swap-head {
+    display: none;
+  }
+}
+
+/* ── SURFACE-DEPTH PANEL SYSTEM ──────────────────────────────────
+   Applied to a page's <main>. Three+ depth tiers stack back-to-front:
+     • page         surface-300  — the deepest ground (the <main> itself)
+     • ground       surface-300  — a SECTION dropped flush to the page base
+                                   (.mkt-ground: the recessed "before/baseline"
+                                   beat the rest floats above) — no plate, no round
+     • stage        surface-200  — a recessed shelf for visual EXHIBITS
+                                   (.mkt-stage: modules grid, dashboard, code,
+                                   compare table) — set back one level
+     • content      surface-100  — the off-white TOP reading surface, default
+                                   for any unmarked section (front-of-house copy)
+     • accent       surface-opposite — the cinematic theme-aware inverse beat
+                                   (.mkt-accent: charcoal in light, light in dark)
+     • brand        the flush purple hero/video band (.mkt-brand)
+   Sections are full-bleed with NO gaps between them.
+
+   Rounding reads as physical depth. A section rounds every corner by default,
+   then the shared seam between two SAME-tier neighbours is flattened so they
+   merge into one object. Net effect: rounding (and the deeper page tier peeking
+   through the corner notch) appears ONLY where the depth actually changes; a run
+   of same-tier content reads as one continuous surface, no pinch between equals.
+   Dropping a couple of exhibits to the .mkt-stage tier mid-run is what breaks a
+   long content slab into distinct stacked plates.
+
+   Tier is declared per section with .mkt-accent / .mkt-brand / .mkt-stage /
+   .mkt-ground; anything unmarked is content. The bg overrides win over the components' inline
+   backgrounds
+   (!important) so the page can re-tier without touching every section yet.
+   border-radius alone clips backgrounds, so there's no global overflow:hidden
+   (which would break sticky / :has() inside a section); the one section that
+   clips child media (the video) sets its own. Nav (<header>) and footer
+   (<footer>) aren't <section>, so they stay full width. */
+.mkt-paneled {
+  --panel-radius: clamp(20px, 2vw, 28px);
+  background: var(--color-surface-300);
+}
+.mkt-paneled > section {
+  margin: 0;
+  border: 0 !important;
+  border-radius: var(--panel-radius);
+}
+/* content tier (default for any unmarked section): the off-white TOP reading
+   surface — front-of-house copy, social proof, pricing, FAQ. */
+.mkt-paneled > section:not(.mkt-accent):not(.mkt-brand):not(.mkt-stage):not(.mkt-ground) {
+  background-color: var(--color-surface-100) !important;
+}
+/* stage tier: the recessed surface-200 shelf that visual exhibits sit on (the
+   modules grid, dashboard showcase, code/API panel, comparison table). Set back
+   one level from content, so a long run breaks into distinct stacked plates. */
+.mkt-paneled > section.mkt-stage {
+  background-color: var(--color-surface-200) !important;
+}
+/* ground tier: a section dropped to the page base (surface-300), FLUSH with no
+   plate of its own. No rounding — it IS the reveal colour, so the lifted content
+   above and the stage below notch straight into it. The recessed "baseline /
+   before" beat the rest of the page floats above. */
+.mkt-paneled > section.mkt-ground {
+  background-color: var(--color-surface-300) !important;
+  border-radius: 0;
+}
+/* cinematic accent: theme-aware inverse surface */
+.mkt-paneled > section.mkt-accent {
+  background-color: var(--color-surface-opposite) !important;
+}
+/* brand region (hero + video): a flush full-bleed purple band — it runs up to
+   the header with no seam, and the only rounded element up top is the video
+   itself (.mkt-video-bg), whose corner notches show the purple behind. */
+.mkt-paneled > section.mkt-brand {
+  border-radius: 0;
+}
+/* …but the band rounds at its very bottom (the video section) so the purple
+   wrapper curves into the content below. */
+.mkt-paneled > section.mkt-whoever {
+  border-bottom-left-radius: var(--panel-radius);
+  border-bottom-right-radius: var(--panel-radius);
+}
+/* same-tier merge: flatten the seam between two adjacent same-tier sections so a
+   run reads as one continuous object (content↔content, stage↔stage, accent↔accent).
+   A tier CHANGE keeps both sections' rounding, so the deeper page notches through. */
+.mkt-paneled
+  > section:not(.mkt-accent):not(.mkt-brand):not(.mkt-stage):not(.mkt-ground)
+  + section:not(.mkt-accent):not(.mkt-brand):not(.mkt-stage):not(.mkt-ground),
+.mkt-paneled > section.mkt-stage + section.mkt-stage,
+.mkt-paneled > section.mkt-accent + section.mkt-accent {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+.mkt-paneled
+  > section:not(.mkt-accent):not(.mkt-brand):not(.mkt-stage):not(.mkt-ground):has(
+    + section:not(.mkt-accent):not(.mkt-brand):not(.mkt-stage):not(.mkt-ground)
+  ),
+.mkt-paneled > section.mkt-stage:has(+ section.mkt-stage),
+.mkt-paneled > section.mkt-accent:has(+ section.mkt-accent) {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 /* ── VISIBILITY ──────────────────────────────────────────────── */
@@ -1257,5 +1444,76 @@
   .mkt-marquee {
     -webkit-mask-image: none;
     mask-image: none;
+  }
+}
+
+/* ── "WHOEVER YOU ARE" VIDEO ─────────────────────────────────────
+   Part of the purple brand band (with the hero). The section IS the brand purple;
+   the video (.mkt-video-bg) FILLS it but rounds its corners, so the purple shows
+   through the corner notches and connects to the flush purple hero above. A flat
+   charcoal scrim keeps the headline + CTAs legible over the footage; the type
+   labels run as a ticker along the bottom. */
+.mkt-whoever {
+  position: relative;
+  overflow: hidden;
+  min-height: clamp(560px, 88vh, 880px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--section-py-xl) var(--gutter-page);
+  /* Purple band that matches the hero, so the video's rounded corner notches
+     read as purple and connect to the flush hero above. */
+  background-color: var(--sparx-primary);
+  scroll-margin-top: 80px;
+}
+.mkt-video-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: clamp(18px, 2vw, 26px);
+}
+.mkt-video-el {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.55s ease;
+}
+.mkt-video-el--fading {
+  opacity: 0.12;
+}
+.mkt-video-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(10, 10, 13, 0.64);
+}
+.mkt-video-tags {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 15px var(--gutter-page);
+  background-color: rgba(8, 8, 12, 0.5);
+}
+.mkt-video-tags-inner {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.mkt-video-tag {
+  transition: color 0.4s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mkt-video-el {
+    transition: none;
   }
 }

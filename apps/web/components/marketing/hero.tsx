@@ -51,6 +51,7 @@ const METRICS = [
 export function Hero() {
   return (
     <section
+      className="mkt-brand"
       style={{
         paddingTop: 'clamp(64px, 11vw, 120px)',
         paddingBottom: 'var(--section-py-lg)',

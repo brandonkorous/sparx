@@ -11,16 +11,23 @@
  */
 import * as React from 'react';
 import { SparxMark } from '@sparx/ui';
+// Mirrors the canonical per-module identity in @sparx/ui's ModuleProvider
+// (MODULE_COLORS) — the full billable set, kept in sync by hand because the
+// marketing bundle must not import the server-coupled @sparx/ui shell graph.
+// `color` is the shared token; `tint`/`text` are the light-mode chip values.
 const MODULE_COLORS = {
   builder: { color: 'var(--module-builder)', tint: '#EEF2FF', text: '#4338CA' },
   commerce: { color: 'var(--module-commerce)', tint: '#FFF7ED', text: '#C2410C' },
   cms: { color: 'var(--module-cms)', tint: '#F0FDFA', text: '#0F766E' },
   crm: { color: 'var(--module-crm)', tint: '#ECFEFF', text: '#0E7490' },
+  invoicing: { color: 'var(--module-invoicing)', tint: '#F7FEE7', text: '#3F6212' },
   email: { color: 'var(--module-email)', tint: '#F0F9FF', text: '#0369A1' },
   b2b: { color: 'var(--module-b2b)', tint: '#F1F5F9', text: '#334155' },
-  ai: { color: 'var(--module-ai)', tint: '#FDF2F8', text: '#9D174D' },
   dropship: { color: 'var(--module-dropship)', tint: '#ECFDF5', text: '#065F46' },
+  inventory: { color: 'var(--module-inventory)', tint: '#FFFBEB', text: '#B45309' },
+  chat: { color: 'var(--module-chat)', tint: '#F5F3FF', text: '#6D28D9' },
   scheduling: { color: 'var(--module-scheduling)', tint: '#FFF1F2', text: '#BE123C' },
+  ai: { color: 'var(--module-ai)', tint: '#FDF2F8', text: '#9D174D' },
 } as const;
 
 export type MarketingModule = keyof typeof MODULE_COLORS;
@@ -188,6 +195,7 @@ export function Section({
   padding = 'lg',
   bleed,
   style,
+  className,
 }: {
   id?: string;
   children: React.ReactNode;
@@ -195,6 +203,11 @@ export function Section({
   padding?: 'md' | 'lg' | 'xl';
   bleed?: boolean;
   style?: React.CSSProperties;
+  /** Surface-depth tier hook for the `.mkt-paneled` system — e.g. `mkt-stage`
+   *  to drop a visual exhibit onto the recessed surface-200 stage. The accent/
+   *  brand tiers live on raw `<section>` elements; this lets a primitive-based
+   *  section opt into a tier too. */
+  className?: string;
 }) {
   const surfaceBg =
     surface === 'page'
@@ -211,6 +224,7 @@ export function Section({
   return (
     <section
       id={id}
+      className={className}
       style={{
         backgroundColor: surfaceBg,
         paddingTop: py,
@@ -250,6 +264,7 @@ export function SectionHeader({
   headlineSize,
   headlineLineHeight,
   accent,
+  ledeColor,
 }: {
   /** @deprecated Eyebrows are removed brand-wide (the uppercase kicker reads as
    *  generic-SaaS slop). Kept so existing callers still type-check; the value
@@ -265,9 +280,13 @@ export function SectionHeader({
   /** Section identity. Renders the closing "spark" period in this color at the
    *  end of the headline — carries the section's color with no kicker tier. */
   accent?: string;
+  /** Override the lede color. Defaults to the invert/page secondary gray; pass a
+   *  brighter value when the header sits over media (e.g. the full-bleed video
+   *  section) where the default gray loses contrast against bright frames. */
+  ledeColor?: string;
 }) {
   const textPrimary = invert ? '#FFFFFF' : 'var(--color-text-primary)';
-  const textSecondary = invert ? '#A1A1AA' : 'var(--color-text-secondary)';
+  const textSecondary = ledeColor ?? (invert ? '#A1A1AA' : 'var(--color-text-secondary)');
   return (
     <div
       style={{

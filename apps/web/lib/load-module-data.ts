@@ -5,9 +5,8 @@
 // zero-React helper so the edge-runtime OG / Twitter image routes can import it
 // without dragging react-dom into their bundles.
 
-import type { MarketingModule } from '@/components/marketing/primitives';
-import { MODULES, type ModuleMeta } from '@/lib/modules';
+import { MODULES, type ModuleMeta, type ModulePageSlug } from '@/lib/modules';
 
-export function loadModuleData(slug: MarketingModule): ModuleMeta {
+export function loadModuleData(slug: ModulePageSlug): ModuleMeta {
   return MODULES[slug];
 }

@@ -1136,7 +1136,7 @@ function statusColor(value: string) {
 
 export function DashboardShowcase() {
   return (
-    <Section surface="surface" padding="lg">
+    <Section surface="surface" padding="lg" className="mkt-stage">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
         <SectionHeader
           accent="var(--sparx-primary)"

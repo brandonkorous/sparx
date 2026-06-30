@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Six tabs · One bill — motion concepts</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #18181b;
+        --ink-2: #52525b;
+        --ink-3: #a1a1aa;
+        --ground: #eaecf1;
+        --surface: #ffffff;
+        --border: #e4e4e7;
+        --indigo: #6366f1;
+        --sans: 'Inter', system-ui, sans-serif;
+        --mono: 'JetBrains Mono', ui-monospace, monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: var(--sans);
+        background: var(--ground);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+        padding: 80px 0 120px;
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 0 32px;
+      }
+      .wordmark {
+        font-weight: 700;
+        font-size: 20px;
+        letter-spacing: -0.03em;
+        margin-bottom: 56px;
+      }
+      .wordmark b {
+        color: var(--indigo);
+      }
+      h1 {
+        font-weight: 500;
+        font-size: clamp(34px, 5vw, 52px);
+        line-height: 1.02;
+        letter-spacing: -0.03em;
+      }
+      .lede {
+        margin-top: 18px;
+        max-width: 620px;
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink-2);
+      }
+      .lede code {
+        font-family: var(--mono);
+        font-size: 0.88em;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 1px 6px;
+      }
+      .cards {
+        margin-top: 44px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      @media (max-width: 680px) {
+        .cards {
+          grid-template-columns: 1fr;
+        }
+      }
+      .card {
+        display: block;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 24px;
+        text-decoration: none;
+        color: inherit;
+        transition:
+          transform 0.15s ease,
+          border-color 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+      .card:hover {
+        transform: translateY(-3px);
+        border-color: #c7c7cf;
+        box-shadow: 0 12px 30px rgba(9, 9, 11, 0.08);
+      }
+      .tag {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--indigo);
+        font-weight: 500;
+      }
+      .card h2 {
+        margin-top: 10px;
+        font-weight: 600;
+        font-size: 20px;
+        letter-spacing: -0.02em;
+      }
+      .card p {
+        margin-top: 8px;
+        font-size: 14px;
+        line-height: 1.55;
+        color: var(--ink-2);
+      }
+      .card .open {
+        margin-top: 16px;
+        font-family: var(--mono);
+        font-size: 12.5px;
+        color: var(--ink-3);
+      }
+      .note {
+        margin-top: 36px;
+        font-size: 14px;
+        line-height: 1.6;
+        color: var(--ink-2);
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 18px 20px;
+      }
+      .note b {
+        color: var(--ink);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="wordmark">spar<b>x</b></div>
+      <h1>"Six tabs. One bill.": four ways to make it land.</h1>
+      <p class="lede">
+        Four disposable motion concepts for the same section. Each opens with the same argument and
+        ends at the same payoff (<code>$2,769/mo → $186/mo · save $30,996/yr</code>); they differ in
+        how the story <em>moves</em>. Click into each, watch the animation (hit
+        <code>↻ replay</code>
+        top-right), then tell me which direction to build for real. The receipt/ledger survives in
+        every option as the "show-your-work" proof.
+      </p>
+
+      <div class="cards">
+        <a class="card" href="./a-collapsing-stack.html">
+          <span class="tag">Concept A</span>
+          <h2>Collapsing stack</h2>
+          <p>
+            Six expensive tools pile up while a red total ticks UP, then they snap and merge into
+            one calm sparx bill as the savings count up. The motion performs "many tools → one
+            platform." Most on-thesis.
+          </p>
+          <span class="open">open a-collapsing-stack.html →</span>
+        </a>
+
+        <a class="card" href="./b-number-drops.html">
+          <span class="tag">Concept B</span>
+          <h2>The number that drops</h2>
+          <p>
+            One huge number: it counts up to the painful monthly total in red, then crashes down to
+            the sparx price in green as "save $30,996/yr" ticks up. The ledger tucks behind a
+            "breakdown" toggle. Bold, fast, skimmable.
+          </p>
+          <span class="open">open b-number-drops.html →</span>
+        </a>
+
+        <a class="card" href="./c-tabs-slam.html">
+          <span class="tag">Concept C</span>
+          <h2>Six tabs slam to one</h2>
+          <p>
+            The headline made literal: a browser with six chaotic tabs (a tool + price each) that
+            collapse into a single sparx tab, the body resolving from "6 logins · 6 bills" to one
+            clean bill. Playful, memorable.
+          </p>
+          <span class="open">open c-tabs-slam.html →</span>
+        </a>
+
+        <a class="card" href="./d-tangle-untangles.html">
+          <span class="tag">Concept D</span>
+          <h2>The tangle untangles</h2>
+          <p>
+            The "tools that don't talk" angle: six disconnected nodes in a tangled web resolve into
+            one connected hub, indigo spokes drawing out from a central sparx core. Sells the data
+            layer, not just the cost.
+          </p>
+          <span class="open">open d-tangle-untangles.html →</span>
+        </a>
+      </div>
+
+      <div class="note">
+        <b>How to read these:</b> they're standalone HTML; open them straight from disk, or via the
+        dev server if it's serving the repo. The animation fires on scroll-into-view, and the
+        <code>↻ replay</code> button re-runs it. All honor reduced-motion (final state shown
+        instantly). Once you pick a direction (or a hybrid), I'll build it into the real React
+        section.
+      </div>
+    </div>
+  </body>
+</html>

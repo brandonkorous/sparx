@@ -13,6 +13,7 @@ const METRICS = [
 export function FinalCta() {
   return (
     <section
+      className="mkt-accent"
       style={{
         paddingTop: 'var(--section-py-xl)',
         paddingBottom: 'var(--section-py-xl)',

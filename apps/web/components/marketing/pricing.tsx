@@ -1,19 +1,12 @@
 import { Button } from '@sparx/ui';
-import { Section, SectionHeader } from './primitives';
+import { Section, SectionHeader, getModuleColor } from './primitives';
+import { MODULES, MODULES_ALL_ON_TOTAL } from './modules-catalog';
 
 // Homepage pricing teaser — a short, on-model summary that points to the full
 // /pricing page (the switchboard). Per-module flat pricing from $10/mo; a 14-day
-// trial. No bundle cards (the bundle model was dropped — see docs/17).
-const MODULES: { name: string; price: string; color: string }[] = [
-  { name: 'Builder', price: '$10', color: 'var(--module-builder)' },
-  { name: 'Commerce', price: '$49', color: 'var(--module-commerce)' },
-  { name: 'CMS', price: '$49', color: 'var(--module-cms)' },
-  { name: 'CRM', price: '$49', color: 'var(--module-crm)' },
-  { name: 'Email', price: '$29', color: 'var(--module-email)' },
-  { name: 'B2B · Fleet', price: '$99', color: 'var(--module-b2b)' },
-  { name: 'AI · MCP', price: '$49', color: 'var(--module-ai)' },
-  { name: 'Dropship', price: '$29', color: 'var(--module-dropship)' },
-];
+// trial. No bundle cards (the bundle model was dropped — see docs/17). The chip
+// list and the all-on total both derive from the shared modules-catalog, so this
+// teaser can never drift from the grid or the pricing page again.
 
 const chip = {
   display: 'flex',
@@ -37,14 +30,14 @@ export function Pricing() {
 
         <div className="mkt-grid-4-2-1">
           {MODULES.map((m) => (
-            <div key={m.name} style={chip}>
+            <div key={m.id} style={chip}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span
                   style={{
                     width: 9,
                     height: 9,
                     borderRadius: 9999,
-                    backgroundColor: m.color,
+                    backgroundColor: getModuleColor(m.id).color,
                     flexShrink: 0,
                   }}
                 />
@@ -56,7 +49,7 @@ export function Pricing() {
                     color: 'var(--color-text-primary)',
                   }}
                 >
-                  {m.name}
+                  {m.label}
                 </span>
               </span>
               <span
@@ -66,7 +59,7 @@ export function Pricing() {
                   color: 'var(--color-text-secondary)',
                 }}
               >
-                {m.price}
+                {`$${m.price}`}
                 <span style={{ color: 'var(--color-text-tertiary)' }}>/mo</span>
               </span>
             </div>
@@ -84,10 +77,12 @@ export function Pricing() {
               color: 'var(--color-text-secondary)',
             }}
           >
-            All nine modules run{' '}
-            <strong style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>$392/mo</strong>{' '}
-            — about $38,000 a year less than the same stack bought as separate tools. Turn any
-            module off and billing stops the same day.
+            All {MODULES.length} modules run{' '}
+            <strong style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>
+              ${MODULES_ALL_ON_TOTAL}/mo
+            </strong>{' '}
+            — about $41,000 a year less than the same stack bought as separate tools, with Invoicing
+            and Inventory included free. Turn any module off and billing stops the same day.
           </p>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <a href="/pricing">

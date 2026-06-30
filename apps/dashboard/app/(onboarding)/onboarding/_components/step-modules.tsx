@@ -1,8 +1,9 @@
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link';
 import { Badge, Switch, Text, cn } from '@sparx/ui';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Sparkles } from 'lucide-react';
 import {
   ONBOARDING_MODULES,
   effectiveModuleOn,
@@ -38,6 +39,21 @@ export function StepModules({
 
   return (
     <div className="max-w-[620px]">
+      <Link
+        href="/story"
+        className="mb-4 flex items-center gap-2.5 rounded-xl border border-dashed border-[var(--color-border)] px-4 py-3 text-sm text-[var(--color-text-muted)] transition-colors hover:border-[var(--module-builder)] hover:text-[var(--color-text-primary)]"
+      >
+        <Sparkles size={16} className="shrink-0 text-[var(--module-builder)]" />
+        <span>
+          <span className="font-medium text-[var(--color-text-primary)]">
+            Prefer to describe it in a sentence?
+          </span>{' '}
+          Tell your story and we’ll switch these on for you.
+        </span>
+        <span className="ml-auto shrink-0" aria-hidden>
+          →
+        </span>
+      </Link>
       {ONBOARDING_MODULES.map((m, i) => {
         const firstAddon = m.addon && (i === 0 || !ONBOARDING_MODULES[i - 1]?.addon);
         const lock = moduleLock(value, m.key);

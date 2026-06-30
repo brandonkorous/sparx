@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sparx · Onboarding — Story (natural composer)</title>
+    <!--
+      Onboarding direction "Story" — natural-language composer.
+
+      The owner narrates their business; each phrase activates a module. Grounded
+      in research (2026-06-29): 12 modules, Builder = the always-on base site, so
+      the owner activates 1–11 on top. Grammar (copywriter): clauses auto-FILE by
+      voice into a self-organizing skeleton — it never caps at two sentences:
+
+        [I want to start | run] [a business] for [people | businesses | both]
+        , where they can <customer clauses: book, order, pick up, ask>.
+        I'll <owner clauses: publish a blog, email, keep customers, track stock, send invoices, … AI last>.
+        I also <secondary: sell wholesale, dropship [swag]>.
+
+      Each clause = one module. Dependencies auto-pull SILENTLY (dropship/wholesale
+      pull Commerce — there's always a store to sell on); bundled riders show
+      "Included". An ever-present "add to your story" rail (suggestions + a menu
+      grouped by the 8 movements) means the story is never capped.
+
+      Real prices + dep graph mirror apps/dashboard/lib/modules.ts; colors are the
+      locked tokens (docs/sparx-design-tokens.css). Standalone mockup.
+    -->
+    <!-- impeccable-disable overused-font: Geist is the locked sparx brand font (docs/sparx-design-tokens.css --font-sans / --font-mono); standalone mockup carries its own waiver. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --indigo: #6366f1;
+        --indigo-hover: #4f46e5;
+        --indigo-700: #4338ca;
+        --indigo-tint: #eef2ff;
+        --ink: #0a0a0a;
+        --muted: #52525b;
+        --faint: #a1a1aa;
+        --line: #ececec;
+        --line-soft: #f4f4f5;
+        --bg: #ffffff;
+        --bg-soft: #fafafa;
+        --success: #10b981;
+        --success-tint: #ecfdf5;
+        --success-text: #065f46;
+        --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body {
+        font-family: 'Geist', system-ui, -apple-system, sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        letter-spacing: -0.011em;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+      .mono { font-family: 'Geist Mono', ui-monospace, monospace; }
+      @media (prefers-reduced-motion: reduce) {
+        * { animation: none !important; transition: none !important; }
+      }
+
+      /* ── top bar ──────────────────────────────────────────────── */
+      .topbar {
+        display: flex; align-items: center; justify-content: space-between;
+        height: 64px; padding: 0 40px; border-bottom: 1px solid var(--line);
+        position: sticky; top: 0; z-index: 50;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: saturate(1.4) blur(8px);
+      }
+      .wordmark { font-weight: 500; font-size: 20px; letter-spacing: -0.03em; }
+      .wordmark .x { color: var(--indigo); }
+      .nav { display: flex; align-items: center; gap: 22px; font-size: 14px; color: var(--muted); }
+      .nav a { color: inherit; text-decoration: none; }
+      .nav .classic {
+        display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px;
+        border: 1px solid var(--line); border-radius: 8px; color: var(--ink); font-weight: 500;
+      }
+      .nav .classic:hover { background: var(--bg-soft); border-color: var(--faint); }
+
+      /* ── layout ───────────────────────────────────────────────── */
+      .stage {
+        display: grid; grid-template-columns: 1fr 440px; gap: 56px;
+        max-width: 1380px; margin: 0 auto; padding: 50px 40px 80px; align-items: start;
+      }
+      .lead { font-size: 15px; color: var(--faint); margin: 0 0 18px; max-width: 52ch; }
+      .lead b { color: var(--indigo); font-weight: 500; }
+
+      /* ── the story ────────────────────────────────────────────── */
+      .story { font-size: 32px; font-weight: 400; line-height: 1.6; letter-spacing: -0.02em; }
+      .story .txt { white-space: pre-wrap; }
+      .tok {
+        position: relative; display: inline-flex; align-items: center; gap: 6px;
+        vertical-align: middle; font-family: inherit; font-weight: 500; font-size: 31px;
+        letter-spacing: -0.02em; line-height: 1.05; border: none; border-radius: 10px;
+        padding: 2px 12px 5px; margin: 3px 1px; cursor: pointer;
+        transition: box-shadow 0.14s var(--ease), transform 0.08s var(--ease);
+        animation: tokin 0.24s var(--ease);
+      }
+      @keyframes tokin { from { opacity: 0; transform: translateY(5px) scale(0.95); } }
+      .tok:hover { box-shadow: inset 0 0 0 999px rgba(0, 0, 0, 0.045); }
+      .tok:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+      .tok .ico, .tok .chev { flex-shrink: 0; opacity: 0.78; }
+      .tok .x {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 19px; height: 19px; margin: 0 -5px 0 1px; border-radius: 9999px;
+        opacity: 0.5; transition: all 0.12s var(--ease);
+      }
+      .tok .x:hover { opacity: 1; background: rgba(0, 0, 0, 0.1); }
+
+      .ghost {
+        position: relative; display: inline-flex; align-items: center; gap: 8px;
+        vertical-align: middle; font-family: inherit; font-weight: 500; font-size: 31px;
+        letter-spacing: -0.02em; line-height: 1.05; color: var(--faint); background: transparent;
+        border: 2px dashed #dcdce0; border-radius: 10px; padding: 1px 13px 4px; margin: 3px 1px;
+        cursor: pointer; animation: ghostpulse 2.6s ease-in-out infinite;
+      }
+      .ghost:hover { color: var(--indigo-700); background: var(--indigo-tint); }
+      .ghost .chev { opacity: 0.8; }
+      @keyframes ghostpulse { 0%, 100% { border-color: #e4e4e7; } 50% { border-color: var(--indigo); } }
+
+      .islot {
+        font-family: inherit; font-weight: 500; font-size: 31px; letter-spacing: -0.02em;
+        line-height: 1.05; vertical-align: middle; color: var(--ink); background: var(--line-soft);
+        border: none; border-radius: 10px; padding: 2px 12px 5px; margin: 3px 1px; min-width: 40px;
+        outline: none; caret-color: var(--ink);
+      }
+      .islot::placeholder { color: var(--faint); }
+      .islot:focus { box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18); }
+      /* the closing web-address sentence — "Find me at ___.sparx.zone" — its own line */
+      .domain-line { display: block; margin-top: 24px; }
+      .handle { font-family: 'Geist Mono', ui-monospace, monospace; }
+      .sfx-in { font-family: 'Geist Mono', ui-monospace, monospace; font-weight: 500; color: var(--faint); vertical-align: middle; }
+
+      /* ── add affordance: an inline + at the end of the prose ──── */
+      .addmore {
+        display: inline-flex; align-items: center; gap: 8px; vertical-align: middle;
+        padding: 5px 15px; margin: 3px 2px 3px 8px; border-radius: 9999px;
+        border: 1.5px dashed var(--faint); background: transparent; color: var(--muted);
+        font-family: inherit; font-size: 18px; font-weight: 500; cursor: pointer;
+        position: relative; transition: all 0.14s var(--ease);
+        animation: ghostpulse 2.6s ease-in-out infinite;
+      }
+      .addmore:hover { border-color: var(--indigo); color: var(--indigo); border-style: solid; }
+      .addmore .pl { display: inline-flex; }
+      /* ── the inline "+" — ONE look everywhere ──────────────────────
+         size of the end-of-sentence +, color + border + pulse of the
+         new-sentence +. Per-sentence (.addin) and new-sentence (.addnext)
+         are visually identical; only their margins differ by position. */
+      .addnext, .addin {
+        position: relative; display: inline-flex; align-items: center; justify-content: center;
+        vertical-align: middle; width: 30px; height: 30px; border-radius: 9999px;
+        border: 2px dashed #dcdce0; background: transparent; color: var(--faint); cursor: pointer;
+        transition: all 0.14s var(--ease); animation: ghostpulse 2.6s ease-in-out infinite;
+      }
+      .addnext:hover, .addin:hover { border-color: var(--indigo); color: var(--indigo); border-style: solid; }
+      .addnext svg, .addin svg { width: 12px; height: 12px; }
+      /* a per-sentence + hugs the preceding word; a new-sentence + gets a touch more room */
+      .addin { margin: 2px 1px 2px 4px; }
+      .addnext { margin: 3px 2px 3px 8px; }
+
+      /* ── popover menu ─────────────────────────────────────────── */
+      .menu {
+        position: absolute; z-index: 60; min-width: 300px; max-height: 64vh; overflow: auto;
+        background: var(--bg); border: 1px solid var(--line); border-radius: 14px;
+        box-shadow: 0 16px 40px -10px rgba(20, 20, 40, 0.22); padding: 8px;
+        animation: pop 0.16s var(--ease);
+      }
+      .menu.below { top: calc(100% + 8px); left: 0; }
+      @keyframes pop { from { opacity: 0; transform: translateY(-6px) scale(0.98); } }
+      .menu .filter {
+        width: 100%; font-family: inherit; font-size: 14px; padding: 9px 12px;
+        border: 1px solid var(--line); border-radius: 9px; margin-bottom: 6px; outline: none;
+      }
+      .menu .filter:focus { border-color: var(--indigo); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.16); }
+      .menu .mhead {
+        font-size: 11px; font-weight: 500; color: var(--faint); padding: 9px 11px 4px;
+        letter-spacing: 0.01em;
+      }
+      .menu .opt {
+        display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+        padding: 9px 11px; border: none; background: none; border-radius: 9px;
+        font-family: inherit; font-size: 15px; color: var(--ink); cursor: pointer;
+      }
+      .menu .opt:hover, .menu .opt.active { background: var(--bg-soft); }
+      .menu .opt .badge {
+        width: 28px; height: 28px; border-radius: 8px; display: inline-flex;
+        align-items: center; justify-content: center; flex-shrink: 0;
+      }
+      .menu .opt .dot { width: 9px; height: 9px; border-radius: 3px; flex-shrink: 0; }
+      .menu .opt .ot { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+      .menu .opt .ot small { font-size: 12px; color: var(--faint); }
+      .menu .opt .ot small .sg { color: var(--success-text); }
+
+      /* ── preview panel ────────────────────────────────────────── */
+      .panel {
+        position: sticky; top: 96px; border: 1px solid var(--line); border-radius: 18px;
+        background: var(--bg); overflow: hidden;
+      }
+      .panel-h {
+        padding: 16px 20px; border-bottom: 1px solid var(--line-soft);
+        display: flex; align-items: center; justify-content: space-between;
+      }
+      .panel-h .t { font-size: 13px; color: var(--faint); }
+      .panel-h .live { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--success-text); }
+      .panel-h .live .dot { width: 7px; height: 7px; border-radius: 9999px; background: var(--success); animation: pulse 2s infinite; }
+      @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.45); } 70% { box-shadow: 0 0 0 7px rgba(16, 185, 129, 0); } }
+      .empty { padding: 30px 20px; text-align: center; color: var(--faint); font-size: 14px; line-height: 1.5; }
+      .sect { padding: 17px 20px; border-bottom: 1px solid var(--line-soft); }
+      .sect-t { font-size: 12px; color: var(--faint); margin: 0 0 12px; display: flex; align-items: center; justify-content: space-between; }
+      .bp { display: flex; gap: 14px; align-items: center; }
+      .thumb { width: 104px; height: 76px; border-radius: 9px; border: 1px solid var(--line); overflow: hidden; flex-shrink: 0; background: #fff; }
+      .thumb .bar { height: 14px; display: flex; align-items: center; gap: 3px; padding: 0 6px; }
+      .thumb .bar i { width: 4px; height: 4px; border-radius: 9999px; background: rgba(0, 0, 0, 0.16); }
+      .thumb .hero { height: 22px; margin: 5px 6px 0; border-radius: 3px; }
+      .thumb .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 5px 6px; }
+      .thumb .grid span { height: 12px; border-radius: 2px; background: var(--line-soft); }
+      .bp .meta .name { font-size: 16px; font-weight: 500; }
+      .bp .meta .sub { font-size: 13px; color: var(--muted); margin-top: 3px; }
+      .mods { display: flex; flex-direction: column; }
+      .mrow { display: flex; align-items: center; gap: 10px; padding: 7px 0; }
+      .mrow .swatch { width: 9px; height: 9px; border-radius: 3px; flex-shrink: 0; }
+      .mrow .mname { font-size: 14.5px; font-weight: 500; }
+      .mrow .mdesc { font-size: 12.5px; color: var(--faint); }
+      .mrow .comes { font-size: 11.5px; color: var(--muted); }
+      .mrow .spacer { flex: 1; }
+      .mrow .mprice { font-size: 13.5px; color: var(--muted); }
+      .mrow .inc { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 9999px; background: var(--success-tint); color: var(--success-text); }
+      .fulfil { display: flex; gap: 7px; margin: 4px 0 0 19px; flex-wrap: wrap; }
+      .ftag { font-size: 11.5px; font-weight: 500; padding: 3px 9px; border-radius: 9999px; border: 1px solid var(--line); color: var(--faint); }
+      .ftag[data-on='true'] { border-color: #f97316; background: #fff7ed; color: #c2410c; }
+      .seed { font-size: 13.5px; line-height: 1.6; color: var(--muted); }
+      .seed b { font-weight: 500; color: var(--ink); }
+      .addr { display: flex; align-items: center; gap: 4px; font-size: 15px; }
+      .addr .addr-ro { font-size: 15px; font-weight: 500; color: var(--ink); }
+      .addr .ok { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--success-text); }
+      .pay { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--muted); }
+      .pay .pi { width: 26px; height: 26px; border-radius: 7px; background: #635bff; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; }
+      .foot { padding: 20px; background: var(--bg-soft); }
+      .total { display: flex; align-items: baseline; gap: 10px; }
+      .total .fig { font-size: 34px; font-weight: 500; letter-spacing: -0.03em; }
+      .total .per { font-size: 14px; color: var(--faint); }
+      .total .save { margin-left: auto; font-size: 12px; text-align: right; color: var(--success-text); background: var(--success-tint); padding: 5px 9px; border-radius: 8px; line-height: 1.3; }
+      .cta { margin-top: 16px; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 15px; border: none; border-radius: 10px; background: var(--indigo); color: #fff; font-family: inherit; font-weight: 500; font-size: 15.5px; cursor: pointer; transition: background 0.15s var(--ease); }
+      .cta:hover { background: var(--indigo-hover); }
+      .foot .alt { margin-top: 12px; text-align: center; font-size: 13px; color: var(--faint); }
+      .foot .alt a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+
+      @media (max-width: 1080px) {
+        .stage { grid-template-columns: 1fr; gap: 40px; }
+        .panel { position: static; }
+        .story, .tok, .ghost, .islot { font-size: 27px; }
+      }
+      @media (max-width: 620px) {
+        .topbar { padding: 0 20px; }
+        .nav .ghost-link { display: none; }
+        .stage { padding: 32px 20px 64px; }
+        .story, .tok, .ghost, .islot { font-size: 22px; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <span class="wordmark">Spar<span class="x">x</span></span>
+      <nav class="nav">
+        <a class="ghost-link" href="#">Platform</a>
+        <a class="ghost-link" href="#">Pricing</a>
+        <a class="classic" href="#">Classic setup
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </nav>
+    </header>
+
+    <main class="stage">
+      <section class="compose">
+        <p class="lead">Tell us your story — start with <b>“I”</b> and build it a piece at a time. There's always room for more.</p>
+        <div class="story" id="story"></div>
+      </section>
+      <aside class="panel" id="panel"></aside>
+    </main>
+
+    <script>
+      // ── locked module palette (docs/sparx-design-tokens.css) ──────────────
+      const C = {
+        builder: { base: '#6366f1', tint: '#eef2ff', text: '#4338ca' },
+        commerce: { base: '#f97316', tint: '#fff7ed', text: '#c2410c' },
+        cms: { base: '#14b8a6', tint: '#f0fdfa', text: '#0f766e' },
+        crm: { base: '#06b6d4', tint: '#ecfeff', text: '#0e7490' },
+        email: { base: '#0ea5e9', tint: '#f0f9ff', text: '#0369a1' },
+        b2b: { base: '#475569', tint: '#f1f5f9', text: '#334155' },
+        ai: { base: '#ec4899', tint: '#fdf2f8', text: '#9d174d' },
+        scheduling: { base: '#f43f5e', tint: '#fff1f2', text: '#be123c' },
+        dropship: { base: '#10b981', tint: '#ecfdf5', text: '#065f46' },
+        invoicing: { base: '#65a30d', tint: '#f7fee7', text: '#3f6212' },
+        inventory: { base: '#f59e0b', tint: '#fffbeb', text: '#b45309' },
+        chat: { base: '#8b5cf6', tint: '#f5f3ff', text: '#6d28d9' },
+      };
+
+      // ── modules: real prices + "replaces" (apps/dashboard/lib/modules.ts) ──
+      const MOD = {
+        builder: { name: 'Builder', desc: 'Your site', price: 10, elsewhere: 39 },
+        commerce: { name: 'Commerce', desc: 'Sell, checkout, orders', price: 49, elsewhere: 399 },
+        cms: { name: 'CMS', desc: 'Blog, content, SEO', price: 49, elsewhere: 99 },
+        crm: { name: 'CRM', desc: 'Customers, pipeline', price: 49, elsewhere: 300 },
+        email: { name: 'Email', desc: 'Newsletters + marketing', price: 29, elsewhere: 165 },
+        b2b: { name: 'B2B · Fleet', desc: 'Wholesale, net terms', price: 99, elsewhere: 2400 },
+        ai: { name: 'AI · MCP', desc: 'AI runs alongside you', price: 49, elsewhere: 103 },
+        scheduling: { name: 'Scheduling', desc: 'Bookings, classes', price: 29, elsewhere: 49 },
+        dropship: { name: 'Dropship', desc: "Sell what you don't stock", price: 29, elsewhere: 60 },
+        invoicing: { name: 'Invoicing', desc: 'Estimates, invoices', price: 19, elsewhere: 30 },
+        inventory: { name: 'Inventory', desc: 'Stock, warehouses', price: 29, elsewhere: 99 },
+        chat: { name: 'Live Chat', desc: 'On-site chat + AI replies', price: 19, elsewhere: 74 },
+      };
+      // billing + narrative requires (b2b→commerce billing; dropship→commerce narrative)
+      const REQ = { b2b: ['commerce'], dropship: ['commerce'] };
+      const BUNDLED_FREE = { invoicing: ['commerce', 'b2b'], inventory: ['commerce', 'b2b'] };
+      const ORDER = ['builder', 'commerce', 'b2b', 'scheduling', 'dropship', 'cms', 'crm', 'email', 'ai', 'chat', 'invoicing', 'inventory'];
+
+      // ── industries (8 real starters + generic) ────────────────────────────
+      const IND = {
+        apparel: { name: 'Apparel & fashion', noun: 'a clothing store', icon: 'shirt', suggest: ['shop', 'ship', 'email', 'crm', 'wholesale'],
+          seed: 'size charts, an apparel catalog, US sales tax, tiered shipping, a VIP segment, and a newsletter', bp: { name: 'Boutique', sub: 'Retail · clean, image-led', accent: '#0a0a0a' } },
+        food: { name: 'Food & beverage', noun: 'a food shop', icon: 'utensils', suggest: ['shop', 'pickup', 'delivery', 'email', 'wholesale'],
+          seed: 'a food catalog, a recipes content type, US sales tax, shipping, and a monthly newsletter', bp: { name: 'Pantry', sub: 'Retail · warm, editorial', accent: '#b45309' } },
+        electronics: { name: 'Electronics & tech', noun: 'a gadget store', icon: 'cpu', suggest: ['shop', 'ship', 'chat', 'email'],
+          seed: 'an electronics catalog, device fitment, a support pipeline, an FAQ, tax, and shipping', bp: { name: 'Circuit', sub: 'Retail · spec-forward', accent: '#0ea5e9' } },
+        'auto-parts': { name: 'Auto parts & accessories', noun: 'an auto-parts store', icon: 'car', suggest: ['shop', 'ship', 'wholesale', 'invoicing', 'chat'],
+          seed: 'year/make/model + tire & wheel fitment, a quote → invoice flow, an FAQ, tax, and shipping', bp: { name: 'Garage', sub: 'Retail · fitment-first', accent: '#ef4444' } },
+        salon: { name: 'Beauty & salon', noun: 'a salon', icon: 'scissors', suggest: ['book', 'shop', 'blog', 'email', 'crm'],
+          seed: 'cut / color / manicure services with a cancellation policy, a VIP segment, and a promo email', bp: { name: 'Salon', sub: 'Services · booking-led', accent: '#db2777' } },
+        fitness: { name: 'Fitness & wellness', noun: 'a fitness studio', icon: 'dumbbell', suggest: ['classes', 'shop', 'email', 'crm'],
+          seed: 'group classes and personal training with seats and a class policy, and a newsletter', bp: { name: 'Studio', sub: 'Services · class schedule', accent: '#16a34a' } },
+        professional: { name: 'Professional services', noun: 'a services firm', icon: 'briefcase', suggest: ['book', 'invoicing', 'blog', 'email', 'crm'],
+          seed: 'consultation booking, quote + subscription invoicing, a B2B sales pipeline, and an FAQ', bp: { name: 'Practice', sub: 'Services · trust-led', accent: '#1e3a5f' } },
+        wholesale: { name: 'Wholesale & distribution', noun: 'a wholesale business', icon: 'warehouse', suggest: ['shop', 'wholesale', 'ship', 'invoicing', 'email'],
+          seed: 'wholesale pricing tiers, purchase approval, a B2B sales pipeline, and deposit invoicing', bp: { name: 'Depot', sub: 'B2B · catalog + terms', accent: '#475569' } },
+        generic: { name: 'Something else', noun: 'something else', icon: 'sparkles', suggest: ['blog', 'shop', 'book', 'email'],
+          seed: 'a clean starter site, a contact pipeline, and a newsletter', bp: { name: 'Plain', sub: 'Blank canvas, your way', accent: '#6366f1' } },
+      };
+      const IND_ORDER = ['apparel', 'food', 'electronics', 'auto-parts', 'salon', 'fitness', 'professional', 'wholesale', 'generic'];
+
+      const TENSE = { future: 'want to start', current: 'run' };
+      const AUD = {
+        people: { label: 'people', sub: 'consumers · D2C', kind: 'crm' },
+        businesses: { label: 'businesses', sub: 'B2B · wholesale', kind: 'b2b' },
+        both: { label: 'people and businesses', sub: 'D2C + B2B', kind: 'crm' },
+      };
+      const AUD_ORDER = ['people', 'businesses', 'both'];
+
+      // ── clause catalog — atoms of the story ───────────────────────────────
+      // place: 'cust' → joins the opening "…where they can ___"; 'owner' → its own
+      // "I'll ___" / "I also ___" sentence (the owner chooses which line it lands in).
+      // cust / owner = the phrasing in that voice. cfg = commerce fulfillment. slot = inline object.
+      const CLAUSE = {
+        book: { mod: 'scheduling', place: 'cust', cust: 'book appointments' },
+        classes: { mod: 'scheduling', place: 'cust', cust: 'sign up for classes' },
+        shop: { mod: 'commerce', place: 'cust', cust: 'order online' },
+        ship: { mod: 'commerce', place: 'cust', cust: 'have it shipped', cfg: 'ship' },
+        pickup: { mod: 'commerce', place: 'cust', cust: 'pick up locally', cfg: 'pickup' },
+        delivery: { mod: 'commerce', place: 'cust', cust: 'get local delivery', cfg: 'delivery' },
+        chat: { mod: 'chat', place: 'cust', cust: 'ask questions on the page' },
+        blog: { mod: 'cms', place: 'owner', owner: 'publish a blog' },
+        crm: { mod: 'crm', place: 'owner', owner: 'keep every customer in one place' },
+        email: { mod: 'email', place: 'owner', owner: 'email my customers' },
+        inventory: { mod: 'inventory', place: 'owner', owner: 'track stock across two locations' },
+        invoicing: { mod: 'invoicing', place: 'owner', owner: 'send estimates and invoices' },
+        ai: { mod: 'ai', place: 'owner', owner: 'let my AI assistant help run it' },
+        wholesale: { mod: 'b2b', place: 'owner', owner: 'sell wholesale to other businesses' },
+        dropship: { mod: 'dropship', place: 'owner', owner: 'offer dropshipped', slot: 'branded swag' },
+      };
+      // The platform's clause groups. Menus render FLAT (no section headers), so this
+      // now just defines the canonical clause ORDER (ALL_CLAUSE_IDS) + documents intent.
+      const MOVEMENTS = [
+        { label: 'Serve & book', ids: ['book', 'classes'] },
+        { label: 'Sell', ids: ['shop', 'ship', 'pickup', 'delivery', 'dropship', 'inventory'] },
+        { label: 'Publish & share', ids: ['blog'] },
+        { label: 'Know my customers', ids: ['crm', 'chat'] },
+        { label: 'Reach out', ids: ['email'] },
+        { label: 'Sell to businesses', ids: ['wholesale'] },
+        { label: 'Run the back office', ids: ['invoicing', 'ai'] },
+      ];
+      const ALL_CLAUSE_IDS = MOVEMENTS.flatMap((m) => m.ids);
+
+      // ── icons ─────────────────────────────────────────────────────────────
+      function icon(key, size) {
+        const s = size || 18;
+        const A = `width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"`;
+        const P = {
+          shirt: '<path d="M20.4 7.5 16 4l-1.5 1A2.5 2.5 0 0 1 12 6a2.5 2.5 0 0 1-2.5-1L8 4 3.6 7.5l2 3 1.4-1V20h10V9.5l1.4 1z"/>',
+          utensils: '<path d="M4 3v6a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V3"/><path d="M6 11v10"/><path d="M16 3c-1.7 0-3 2-3 5s1.3 4 3 4v9"/>',
+          cpu: '<rect x="6" y="6" width="12" height="12" rx="1.5"/><path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/>',
+          car: '<path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11"/><path d="M5 11h14a2 2 0 0 1 2 2v3a1 1 0 0 1-1 1h-1M5 11H4a2 2 0 0 0-2 2v3a1 1 0 0 0 1 1h1"/><circle cx="7.5" cy="16.5" r="1.5"/><circle cx="16.5" cy="16.5" r="1.5"/>',
+          scissors: '<circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><path d="M8 8l12 8M8 16 20 8"/>',
+          dumbbell: '<path d="M6.5 6.5 17.5 17.5M3 8v8M21 8v8M5 6v12M19 6v12"/>',
+          briefcase: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M3 12h18"/>',
+          warehouse: '<path d="M3 21V9l9-5 9 5v12"/><path d="M7 21v-7h10v7"/><path d="M7 14h10"/>',
+          sparkles: '<path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8z"/>',
+        };
+        return `<svg ${A}>${P[key] || P.sparkles}</svg>`;
+      }
+      const CHEV = `<svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+      const XICO = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+      const PLUS = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
+      const ARROW = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
+      const CHECK = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+      // ── state ─────────────────────────────────────────────────────────────
+      // The story is the opening's customer clauses (state.cust → "where they can …")
+      // plus ordered owner SENTENCES (state.lines → "I'll …" / "I also …"). Each line
+      // is a real, separate sentence; "start a new sentence" pushes a new line.
+      const state = { tense: null, industry: null, audience: null, cust: [], lines: [], slots: {}, name: '' };
+      function allClauses() { return [...state.cust, ...state.lines.flat()]; }
+      function inStory(id) { return state.cust.includes(id) || state.lines.some((l) => l.includes(id)); }
+      function clauseVoice(id) { return CLAUSE[id].place === 'cust' ? 'cust' : 'owner'; }
+
+      // ── module resolution (billing + narrative deps) ──────────────────────
+      function activeModules() {
+        const on = new Set();
+        if (state.industry) on.add('builder');
+        allClauses().forEach((id) => on.add(CLAUSE[id].mod));
+        let changed = true;
+        while (changed) {
+          changed = false;
+          [...on].forEach((m) => (REQ[m] || []).forEach((d) => { if (!on.has(d)) { on.add(d); changed = true; } }));
+        }
+        return on;
+      }
+      function lockOf(on, key) {
+        const bundlers = (BUNDLED_FREE[key] || []).filter((p) => on.has(p));
+        if (bundlers.length) return { kind: 'included', by: bundlers };
+        return null;
+      }
+      function billed(on, key) {
+        const l = lockOf(on, key);
+        return l && l.kind === 'included' ? 0 : MOD[key].price;
+      }
+      // a module that's ON but no clause directly named it → auto-pulled; say what pulled it
+      function pulledBy(m) {
+        const namer = allClauses().find((id) => (REQ[CLAUSE[id].mod] || []).includes(m));
+        return namer ? MOD[CLAUSE[namer].mod].name : null;
+      }
+      function directlyNamed(m) {
+        return allClauses().some((id) => CLAUSE[id].mod === m) || m === 'builder';
+      }
+
+      // ── element + menu helpers ────────────────────────────────────────────
+      function el(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+      function txt(s) { const e = el('span', 'txt'); e.textContent = s; return e; }
+      let openMenuEl = null, openMenuAnchor = null;
+      function closeMenu() { if (openMenuEl) openMenuEl.remove(); openMenuEl = null; openMenuAnchor = null; }
+      document.addEventListener('click', (e) => {
+        if (openMenuEl && !openMenuEl.contains(e.target) && e.target !== openMenuAnchor && !openMenuAnchor?.contains(e.target)) closeMenu();
+      });
+      function openMenu(anchor, build) {
+        closeMenu();
+        const menu = el('div', 'menu below');
+        build(menu);
+        anchor.appendChild(menu);
+        openMenuEl = menu; openMenuAnchor = anchor;
+      }
+      function bindMenu(elm, build) {
+        elm.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (openMenuEl && openMenuAnchor === elm) { closeMenu(); return; }
+          openMenu(elm, build);
+        });
+      }
+      function optRow(html, onclick, active) {
+        const b = el('button', 'opt' + (active ? ' active' : ''), html);
+        b.type = 'button';
+        b.addEventListener('click', (e) => { e.stopPropagation(); onclick(); });
+        return b;
+      }
+
+      // ── menu builders ─────────────────────────────────────────────────────
+      function buildTense(menu) {
+        Object.keys(TENSE).forEach((id) =>
+          menu.appendChild(optRow(
+            `<span class="ot"><span>${TENSE[id]}</span><small>${id === 'future' ? 'a new business' : 'an existing business'}</small></span>`,
+            () => { state.tense = id; closeMenu(); render(); }, state.tense === id)));
+      }
+      function buildIndustry(menu) {
+        const f = el('input', 'filter'); f.placeholder = 'Type your business…';
+        f.addEventListener('click', (e) => e.stopPropagation());
+        menu.appendChild(f);
+        const list = el('div'); menu.appendChild(list);
+        function paint() {
+          list.innerHTML = '';
+          const q = f.value.toLowerCase();
+          const hits = IND_ORDER.filter((k) => !q || (IND[k].name + ' ' + IND[k].noun).toLowerCase().includes(q));
+          if (!hits.length) {
+            list.appendChild(optRow(`<span class="badge" style="background:${C.builder.tint};color:${C.builder.text}">${icon('sparkles', 16)}</span><span class="ot"><span>Use “${f.value}”</span><small>starts from the generic kit</small></span>`,
+              () => { setIndustry('generic'); }));
+            return;
+          }
+          hits.forEach((k) => list.appendChild(optRow(
+            `<span class="badge" style="background:${C.builder.tint};color:${C.builder.text}">${icon(IND[k].icon, 16)}</span><span class="ot"><span>${IND[k].name}</span><small>${IND[k].noun}</small></span>`,
+            () => setIndustry(k), state.industry === k)));
+        }
+        paint(); f.addEventListener('input', paint); setTimeout(() => f.focus(), 10);
+      }
+      function buildAudience(menu) {
+        AUD_ORDER.forEach((id) => menu.appendChild(optRow(
+          `<span class="dot" style="background:${C[AUD[id].kind].base}"></span><span class="ot"><span>${AUD[id].label}</span><small>${AUD[id].sub}</small></span>`,
+          () => { state.audience = id; closeMenu(); render(); }, state.audience === id)));
+      }
+      function clauseOpt(id, onPick) {
+        const cl = CLAUSE[id]; const col = C[cl.mod];
+        const on = activeModules();
+        const price = on.has(cl.mod) ? 'included' : '+$' + MOD[cl.mod].price;
+        const phrase = cl.cust || cl.owner;
+        const sug = state.industry && IND[state.industry].suggest.includes(id) ? ' · <span class="sg">suggested</span>' : '';
+        return optRow(`<span class="dot" style="background:${col.base}"></span><span class="ot"><span>${phrase}${cl.slot ? ' …' : ''}</span><small>${MOD[cl.mod].name} · ${price}${sug}</small></span>`,
+          () => (onPick || addNewLine)(id));
+      }
+      // Unused clauses (optionally filtered by voice), suggested-first then catalog
+      // order. Every menu is a FLAT list — no movement section headers.
+      function flatUnused(voice) {
+        const unused = ALL_CLAUSE_IDS.filter((id) => !inStory(id) && (!voice || clauseVoice(id) === voice));
+        const sug = state.industry ? IND[state.industry].suggest.filter((id) => unused.includes(id)) : [];
+        return [...sug, ...unused.filter((id) => !sug.includes(id))];
+      }
+      // The end-of-story "+" — start a NEW sentence (or add anything left).
+      function buildAddMenu(menu) {
+        const ids = flatUnused();
+        if (!ids.length) { menu.appendChild(el('div', 'mhead', "That's the whole platform — nice.")); return; }
+        ids.forEach((id) => menu.appendChild(clauseOpt(id, () => addNewLine(id))));
+      }
+      // Click a clause to CHANGE it (not just delete + re-add): the current pick
+      // sits at top (active), then a FLAT list of alternatives (suggested first, no
+      // section headers). No title / no Remove row — the token's own × handles delete.
+      function buildSwapMenu(menu, currentId) {
+        const cur = clauseOpt(currentId, () => closeMenu());
+        cur.classList.add('active');
+        menu.appendChild(cur);
+        flatUnused().forEach((id) => menu.appendChild(clauseOpt(id, () => swapClause(currentId, id))));
+      }
+
+      // ── mutations ─────────────────────────────────────────────────────────
+      function setIndustry(k) { state.industry = k; closeMenu(); render(); }
+      function primeSlot(id) { if (CLAUSE[id].slot && !state.slots[id]) state.slots[id] = ''; }
+      // Add a customer clause → the opening's "where they can …" list.
+      function addCust(id) { if (!inStory(id)) state.cust.push(id); closeMenu(); render(); }
+      // Add an owner clause to an existing sentence (extend "I'll A and B").
+      function addToLine(li, id) {
+        if (!inStory(id) && state.lines[li]) { state.lines[li].push(id); primeSlot(id); }
+        closeMenu(); render();
+      }
+      // The "start a new sentence" path: owner clause → its own new line; a customer
+      // clause can't be a standalone sentence, so it joins the opening.
+      function addNewLine(id) {
+        if (!inStory(id)) {
+          if (clauseVoice(id) === 'cust') state.cust.push(id);
+          else { state.lines.push([id]); primeSlot(id); }
+        }
+        closeMenu(); render();
+      }
+      function removeClause(id) {
+        state.cust = state.cust.filter((x) => x !== id);
+        state.lines = state.lines.map((l) => l.filter((x) => x !== id)).filter((l) => l.length);
+        delete state.slots[id];
+        closeMenu(); render();
+      }
+      // Replace a clause IN PLACE (keeps its spot). Same voice → swaps within its
+      // sentence; different voice → relocates (opening ↔ a new owner sentence).
+      function swapClause(oldId, newId) {
+        if (oldId === newId) { closeMenu(); return; }
+        if (inStory(newId)) { removeClause(oldId); return; } // target already present — just drop the old
+        const nv = clauseVoice(newId);
+        const ci = state.cust.indexOf(oldId);
+        if (ci !== -1) {
+          if (nv === 'cust') state.cust[ci] = newId;
+          else { state.cust.splice(ci, 1); state.lines.push([newId]); }
+        } else {
+          for (const line of state.lines) {
+            const i = line.indexOf(oldId);
+            if (i === -1) continue;
+            if (nv === 'owner') line[i] = newId;
+            else { line.splice(i, 1); state.cust.push(newId); }
+            break;
+          }
+          state.lines = state.lines.filter((l) => l.length);
+        }
+        delete state.slots[oldId]; primeSlot(newId);
+        closeMenu(); render();
+      }
+
+      // ── tokens ────────────────────────────────────────────────────────────
+      function ghostTok(label, build) { const g = el('button', 'ghost', `<span>${label}</span>${CHEV}`); g.type = 'button'; bindMenu(g, build); return g; }
+      function chipTok(label, bg, fg, build) { const b = el('button', 'tok', `<span>${label}</span>${CHEV}`); b.type = 'button'; b.style.background = bg; b.style.color = fg; bindMenu(b, build); return b; }
+      function industryTok() {
+        const ind = IND[state.industry];
+        const b = el('button', 'tok', `<span class="ico">${icon(ind.icon, 26)}</span><span>${ind.noun}</span>${CHEV}`);
+        b.type = 'button'; b.style.background = C.builder.tint; b.style.color = C.builder.text;
+        bindMenu(b, buildIndustry); return b;
+      }
+      function clauseTok(id, variant) {
+        const cl = CLAUSE[id]; const col = C[cl.mod];
+        const b = el('button', 'tok', `<span>${variant === 'cust' ? cl.cust : cl.owner}</span>${CHEV}<span class="x" title="Remove">${XICO}</span>`);
+        b.type = 'button'; b.style.background = col.tint; b.style.color = col.text; b.title = 'Change this';
+        bindMenu(b, (menu) => buildSwapMenu(menu, id)); // click the body to CHANGE the clause…
+        b.querySelector('.x').addEventListener('click', (e) => { e.stopPropagation(); removeClause(id); }); // …× still one-click removes
+        return b;
+      }
+      function slotInput(id) {
+        const inp = el('input', 'islot'); inp.value = state.slots[id] || ''; inp.placeholder = CLAUSE[id].slot; inp.spellcheck = false;
+        inp.addEventListener('input', () => { state.slots[id] = inp.value; sizeInput(inp); });
+        return inp;
+      }
+      // the closing sentence's editable web handle → "Find me at ___.sparx.zone"
+      function handleInput() {
+        const inp = el('input', 'islot handle'); inp.value = state.name; inp.placeholder = 'your-name'; inp.spellcheck = false;
+        inp.setAttribute('aria-label', 'Your web address');
+        inp.addEventListener('input', () => {
+          state.name = inp.value; sizeInput(inp);
+          const mirror = document.getElementById('addrMirror'); // live-update the panel without re-rendering (keeps focus)
+          if (mirror) mirror.textContent = (slugify(state.name) || 'your-name') + '.sparx.zone';
+        });
+        return inp;
+      }
+      function sfx(text) { const s = el('span', 'sfx-in'); s.textContent = text; return s; }
+      function sizeInput(inp) {
+        const cs = getComputedStyle(inp); // measure with the input's REAL font (set longhands — the `font` shorthand is unreliable in getComputedStyle)
+        const probe = el('span'); probe.style.cssText = 'position:absolute;visibility:hidden;white-space:pre;';
+        probe.style.fontFamily = cs.fontFamily; probe.style.fontSize = cs.fontSize;
+        probe.style.fontWeight = cs.fontWeight; probe.style.letterSpacing = cs.letterSpacing;
+        probe.textContent = inp.value || inp.placeholder;
+        document.body.appendChild(probe); inp.style.width = probe.offsetWidth + 28 + 'px'; probe.remove();
+      }
+      // the always-last sentence — the web address, on its OWN line
+      function appendDomain(root) {
+        const line = el('div', 'domain-line');
+        const A = (n) => line.appendChild(n); const T = (s) => A(txt(s));
+        T('Find me at '); const hi = handleInput(); A(hi); A(sfx('.sparx.zone')); T('.');
+        root.appendChild(line); // attach before sizing so getComputedStyle resolves the font
+        sizeInput(hi);
+      }
+      function conn(i, n) { return i === 0 ? '' : i === n - 1 ? (n > 2 ? ', and ' : ' and ') : ', '; }
+
+      // ── render: story (progressive opening → self-organizing prose) ───────
+      function render() {
+        const root = document.getElementById('story'); root.innerHTML = '';
+        const A = (n) => root.appendChild(n); const T = (s) => A(txt(s));
+
+        T('I ');
+        if (!state.tense) { A(ghostTok('want to start', buildTense)); renderPanel(); return; }
+        A(chipTok(TENSE[state.tense], 'var(--line-soft)', 'var(--muted)', buildTense)); T(' ');
+        if (!state.industry) { A(ghostTok('a business', buildIndustry)); renderPanel(); return; }
+        A(industryTok()); T(' for ');
+        if (!state.audience) { A(ghostTok('who', buildAudience)); renderPanel(); return; }
+        A(chipTok(AUD[state.audience].label, C[AUD[state.audience].kind].tint, C[AUD[state.audience].kind].text, buildAudience));
+
+        // empty story — just the opening + one prominent "add to your story", then the web address
+        if (!allClauses().length) { T('.'); A(addEndBtn(true)); appendDomain(root); renderPanel(); return; }
+
+        // opening sentence — "…where they can A, B, and C"; its "+" extends THIS statement
+        if (state.cust.length) {
+          T(', where they can ');
+          state.cust.forEach((id, i) => { if (i) T(conn(i, state.cust.length)); A(clauseTok(id, 'cust')); });
+        }
+        { const p = custPlus(); if (p) { T(' '); A(p); } }
+        T('.');
+
+        // each owner line is its OWN sentence — first "I'll …", the rest "I also …"
+        state.lines.forEach((line, li) => {
+          T(li === 0 ? ' I’ll ' : ' I also ');
+          line.forEach((id, i) => {
+            if (i) T(conn(i, line.length));
+            A(clauseTok(id, 'owner'));
+            if (CLAUSE[id].slot) { T(' '); const si = slotInput(id); A(si); sizeInput(si); }
+          });
+          const p = linePlus(li); if (p) { T(' '); A(p); } // its "+" extends THIS sentence
+          T('.');
+        });
+
+        // a final "+" — ALWAYS available to start a brand-new sentence / add anything else
+        if (ALL_CLAUSE_IDS.some((id) => !inStory(id))) { T(' '); A(addEndBtn(false)); }
+
+        // the closing line is ALWAYS the web address
+        appendDomain(root);
+        renderPanel();
+      }
+
+      // ── inline "+" at the end of the story prose (never capped) ───────────
+      function addEndBtn(empty) {
+        const b = empty
+          ? el('button', 'addmore', `<span class="pl">${PLUS}</span> add to your story`)
+          : el('button', 'addnext', PLUS);
+        b.type = 'button';
+        b.title = empty ? 'Add to your story' : 'Start a new sentence';
+        bindMenu(b, buildAddMenu);
+        return b;
+      }
+      // small "+" at the end of a sentence — extend THAT sentence (no new line).
+      function inlinePlus(ids, onPick) {
+        if (!ids.length) return null;
+        const b = el('button', 'addin', PLUS);
+        b.type = 'button';
+        b.title = 'Add to this sentence';
+        bindMenu(b, (menu) => ids.forEach((id) => menu.appendChild(clauseOpt(id, () => onPick(id)))));
+        return b;
+      }
+      // the opening's "+" only offers customer clauses ("…where they can ___")
+      function custPlus() { return inlinePlus(flatUnused('cust'), addCust); }
+      // an owner sentence's "+" only offers owner clauses, joining THAT line
+      function linePlus(li) { return inlinePlus(flatUnused('owner'), (id) => addToLine(li, id)); }
+
+      // ── render: panel ─────────────────────────────────────────────────────
+      function slugify(s) { return (s || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
+      function fulfillment() {
+        const set = new Set();
+        allClauses().forEach((id) => { if (CLAUSE[id].cfg) set.add(CLAUSE[id].cfg); });
+        if (activeModules().has('commerce') && !set.has('pickup') && !set.has('delivery')) set.add('ship');
+        return set;
+      }
+      function mrow(on, m) {
+        const col = C[m]; const lock = lockOf(on, m); const pull = !directlyNamed(m) ? pulledBy(m) : null;
+        const right = lock && lock.kind === 'included'
+          ? `<span class="inc">Included</span>`
+          : `<span class="mprice mono">$${MOD[m].price}</span>`;
+        const comes = pull ? `<span class="comes">· comes with ${pull}</span>` : `<span class="mdesc">${MOD[m].desc}</span>`;
+        return `<div class="mrow"><span class="swatch" style="background:${col.base}"></span><span class="mname">${MOD[m].name}</span>${comes}<span class="spacer"></span>${right}</div>`;
+      }
+      function renderPanel() {
+        const panel = document.getElementById('panel');
+        if (!state.industry) {
+          panel.innerHTML = `<div class="panel-h"><span class="t">Your Sparx</span><span class="live"><span class="dot"></span> forming live</span></div><div class="empty">Start your story on the left —<br>your workspace builds itself here as you go.</div>`;
+          return;
+        }
+        const ind = IND[state.industry]; const on = activeModules();
+        const onList = ORDER.filter((m) => on.has(m));
+        let total = 0, save = 0;
+        onList.forEach((m) => { total += billed(on, m); save += billed(on, m) ? MOD[m].elsewhere : 0; });
+        const slug = slugify(state.name) || 'your-name';
+        const selling = ['commerce', 'b2b', 'dropship'].some((m) => on.has(m));
+        const ful = fulfillment(); const fHas = (k) => ful.has(k);
+        const fulRow = on.has('commerce')
+          ? `<div class="fulfil"><span class="ftag" data-on="${fHas('ship')}">Shipping</span><span class="ftag" data-on="${fHas('pickup')}">Local pickup</span><span class="ftag" data-on="${fHas('delivery')}">Local delivery</span></div>` : '';
+        panel.innerHTML = `
+          <div class="panel-h"><span class="t">Your Sparx</span><span class="live"><span class="dot"></span> forming live</span></div>
+          <div class="sect">
+            <div class="sect-t">Your starting point</div>
+            <div class="bp">
+              <div class="thumb"><div class="bar"><i></i><i></i><i></i></div><div class="hero" style="background:${ind.bp.accent}"></div><div class="grid"><span></span><span></span><span></span></div></div>
+              <div class="meta"><div class="name">${ind.bp.name}</div><div class="sub">${ind.bp.sub}</div></div>
+            </div>
+          </div>
+          <div class="sect">
+            <div class="sect-t"><span>Switches on</span><span>${onList.filter((m) => billed(on, m) > 0).length} billed · ${onList.length} on</span></div>
+            <div class="mods">${onList.map((m) => mrow(on, m)).join('')}</div>${fulRow}
+          </div>
+          <div class="sect">
+            <div class="sect-t">We'll preload your ${ind.name.toLowerCase() === 'something else' ? 'starter' : ind.name.toLowerCase()} kit</div>
+            <div class="seed">${ind.seed.replace(/(size charts|apparel catalog|food catalog|recipes|electronics catalog|device fitment|fitment|quote → invoice|cut \/ color \/ manicure|group classes|personal training|consultation booking|wholesale pricing tiers|purchase approval|B2B sales pipeline|VIP segment|newsletter|FAQ|cancellation policy|class policy)/g, '<b>$1</b>')}.</div>
+          </div>
+          <div class="sect">
+            <div class="sect-t">Your web address</div>
+            <div class="addr"><span id="addrMirror" class="addr-ro mono">${slug}.sparx.zone</span><span class="ok">${CHECK} free</span></div>
+          </div>
+          ${selling ? `<div class="sect"><div class="sect-t">Getting paid</div><div class="pay"><span class="pi">S</span><span>Connect <b style="color:var(--ink);font-weight:500">Stripe</b> to take payments — the last beat of the story, before you go live.</span></div></div>` : ''}
+          <div class="foot">
+            <div class="total"><span class="fig mono">$${total}</span><span class="per">/mo · one bill</span><span class="save">Replaces <b>$${save.toLocaleString()}</b>/mo<br>of other tools</span></div>
+            <button class="cta">Build my ${ind.bp.name} ${ARROW}</button>
+            <div class="alt">Rather fill it in yourself? <a>Use the classic step-by-step setup</a></div>
+          </div>`;
+      }
+
+      render();
+    </script>
+  </body>
+</html>

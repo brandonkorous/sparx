@@ -1,0 +1,331 @@
+/* Bespoke visuals for the story composer's sentence canvas. The composer is a novel
+   UI element (an editable inline-prose builder), so its chips/slots/menus live here
+   rather than being re-skinned @sparx/ui controls. Colors come from CSS-var tokens. */
+
+/* the self-assembling sentence (the surrounding page layout is the shared
+   @sparx/ui SurfaceFrame; this module owns only the bespoke sentence canvas) */
+.story {
+  font-weight: 500;
+  font-size: 31px;
+  letter-spacing: -0.02em;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+}
+@media (max-width: 1024px) {
+  .story {
+    font-size: 26px;
+  }
+}
+@media (max-width: 560px) {
+  .story {
+    font-size: 22px;
+  }
+}
+
+/* a chosen token (tense / industry / audience / clause) */
+.tok {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  vertical-align: middle;
+  font: inherit;
+  letter-spacing: inherit;
+  border: none;
+  border-radius: 10px;
+  padding: 2px 12px 5px;
+  margin: 3px 1px;
+  cursor: pointer;
+  transition: box-shadow 0.12s ease;
+}
+.tok:hover {
+  box-shadow: inset 0 0 0 999px rgba(0, 0, 0, 0.045);
+}
+.tok:focus-visible,
+.tokBody:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+/* clause chip: a container span with a toggle body button + a remove button */
+.tokBody {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.x {
+  appearance: none;
+  border: none;
+  background: none;
+}
+.tok .ico,
+.tok .chev {
+  flex-shrink: 0;
+  opacity: 0.78;
+}
+.tok .x {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 1px;
+  opacity: 0.6;
+  border-radius: 5px;
+  padding: 1px;
+}
+.tok .x:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* a dashed "ghost" slot pulsing to invite the next choice */
+.ghost {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  vertical-align: middle;
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: 2px dashed var(--color-border);
+  border-radius: 10px;
+  padding: 1px 13px 4px;
+  margin: 3px 1px;
+  cursor: pointer;
+  animation: storyPulse 2.6s ease-in-out infinite;
+}
+.ghost:hover {
+  color: var(--color-text-primary);
+  background: color-mix(in oklch, var(--module-builder) 12%, transparent);
+}
+.ghost .chev {
+  opacity: 0.8;
+}
+@keyframes storyPulse {
+  0%,
+  100% {
+    border-color: var(--color-border);
+  }
+  50% {
+    border-color: var(--module-builder);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ghost,
+  .addBtn {
+    animation: none;
+  }
+}
+
+/* one unified inline "+" — per-sentence AND new-sentence share this look */
+.addBtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  width: 30px;
+  height: 30px;
+  border-radius: 9999px;
+  border: 2px dashed var(--color-border);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.14s ease;
+  animation: storyPulse 2.6s ease-in-out infinite;
+}
+.addBtn:hover {
+  border-style: solid;
+  border-color: var(--module-builder);
+  color: var(--module-builder);
+}
+.addBtn svg {
+  width: 12px;
+  height: 12px;
+}
+.addIn {
+  margin: 2px 1px 2px 4px;
+}
+.addNext {
+  margin: 3px 2px 3px 8px;
+}
+/* empty-state labeled pill */
+.addMore {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  vertical-align: middle;
+  padding: 5px 15px;
+  margin: 3px 2px 3px 8px;
+  border-radius: 9999px;
+  border: 1.5px dashed var(--color-text-muted);
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 18px;
+  cursor: pointer;
+  animation: storyPulse 2.6s ease-in-out infinite;
+}
+.addMore:hover {
+  border-style: solid;
+  border-color: var(--module-builder);
+  color: var(--module-builder);
+}
+.addMore svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* the closing web-address sentence on its own line */
+.domainLine {
+  display: block;
+  margin-top: 24px;
+}
+.slot,
+.handle {
+  font: inherit;
+  letter-spacing: inherit;
+  vertical-align: middle;
+  color: var(--color-text-primary);
+  background: var(--color-surface-2, rgba(0, 0, 0, 0.05));
+  border: none;
+  border-radius: 10px;
+  padding: 2px 12px 5px;
+  margin: 3px 1px;
+  min-width: 40px;
+  outline: none;
+}
+.handle {
+  font-family: var(--font-geist-mono, ui-monospace, monospace);
+}
+.slot::placeholder,
+.handle::placeholder {
+  color: var(--color-text-muted);
+}
+.slot:focus,
+.handle:focus {
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--module-builder) 22%, transparent);
+}
+.sfx {
+  font-family: var(--font-geist-mono, ui-monospace, monospace);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  vertical-align: middle;
+}
+/* auto-sizing inline input (slot + handle): a hidden span measures the content */
+.autoWrap {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+}
+.measure {
+  position: absolute;
+  visibility: hidden;
+  white-space: pre;
+  font: inherit;
+  letter-spacing: inherit;
+  pointer-events: none;
+}
+
+/* popover menu */
+.popover {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+}
+.menu {
+  position: absolute;
+  z-index: 60;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 300px;
+  max-height: 64vh;
+  overflow: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  box-shadow: 0 16px 40px -10px rgba(20, 20, 40, 0.22);
+  padding: 8px;
+  animation: storyPop 0.16s ease;
+}
+@keyframes storyPop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+}
+.filter {
+  width: 100%;
+  font-family: inherit;
+  font-size: 14px;
+  padding: 9px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  margin-bottom: 6px;
+  outline: none;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+.filter:focus {
+  border-color: var(--module-builder);
+}
+.mhead {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  padding: 9px 11px 4px;
+}
+.opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  padding: 9px 11px;
+  border: none;
+  background: none;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+.opt:hover,
+.optActive {
+  background: var(--color-surface-2, rgba(0, 0, 0, 0.04));
+}
+.opt .badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.opt .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.opt .ot {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.opt .ot small {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+.opt .ot .sg {
+  color: var(--color-success-text, #047857);
+}

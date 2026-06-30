@@ -6,6 +6,15 @@
  */
 import type { MarketingModule } from '@/components/marketing/primitives';
 
+/** The modules that have a dedicated marketing landing page today. Invoicing,
+ *  Inventory, and Live Chat are billable modules (see modules-catalog.ts) but do
+ *  not yet have standalone pages, so they are intentionally absent from this map.
+ *  Add a slug here when its page ships. */
+export type ModulePageSlug = Extract<
+  MarketingModule,
+  'builder' | 'commerce' | 'cms' | 'crm' | 'email' | 'b2b' | 'ai' | 'dropship' | 'scheduling'
+>;
+
 export interface ModuleFeature {
   number: string;
   title: string;
@@ -38,7 +47,7 @@ export interface ModuleMeta {
   marketingDomain?: string;
 }
 
-export const MODULES: Record<MarketingModule, ModuleMeta> = {
+export const MODULES: Record<ModulePageSlug, ModuleMeta> = {
   builder: {
     slug: 'builder',
     module: 'builder',
@@ -494,7 +503,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
   },
 };
 
-export const MODULE_ORDER: MarketingModule[] = [
+export const MODULE_ORDER: ModulePageSlug[] = [
   'builder',
   'commerce',
   'cms',

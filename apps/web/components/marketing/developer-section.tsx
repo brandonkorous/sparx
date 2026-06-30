@@ -1,4 +1,5 @@
 import { Section, SectionHeader, Spark } from './primitives';
+import { Reveal } from './reveal';
 
 const FEATURES = [
   {
@@ -63,8 +64,8 @@ const FEATURES = [
 
 export function DeveloperSection() {
   return (
-    <Section id="docs" padding="xl">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
+    <Section id="docs" padding="xl" className="mkt-stage">
+      <Reveal style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
         <SectionHeader
           headline={
             <>
@@ -129,7 +130,7 @@ export function DeveloperSection() {
 
           <CodeCard />
         </div>
-      </div>
+      </Reveal>
     </Section>
   );
 }

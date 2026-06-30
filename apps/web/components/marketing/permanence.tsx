@@ -3,8 +3,10 @@ import { Container, Display, Spark } from './primitives';
 import { Reveal } from './reveal';
 
 // The permanence beat — the "second promise" from docs/01 §7 and the brand
-// guide §7.2. It sits directly below the hero (indigo) as a near-black band, so
-// the page reads indigo → black → white: the dark surface itself signals
+// guide §7.2. It sits late on the page (after the B2B spotlight, ahead of the
+// Promise/testimonial trust cluster) as a near-black band punctuating the light
+// sections around it, so the durability message reinforces the closing argument
+// rather than competing with the hero — the dark surface itself signals
 // solidity/permanence, the counterpoint to the era of disposable AI-generated
 // sites. NOT a hero carousel slide (slide-2 never gets seen) — a scroll beat,
 // because "fast to start, permanent to keep" is a sequence, not a toggle.
@@ -25,6 +27,7 @@ const PROOF = [
 export function Permanence() {
   return (
     <section
+      className="mkt-accent"
       style={{
         paddingTop: 'var(--section-py-xl)',
         paddingBottom: 'var(--section-py-xl)',

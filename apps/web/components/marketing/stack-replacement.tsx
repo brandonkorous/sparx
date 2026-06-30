@@ -1,336 +1,324 @@
+import { Button } from '@sparx/ui';
 import { Section, SectionHeader, Spark } from './primitives';
 import { Reveal } from './reveal';
 
-const OLD_STACK = [
-  {
-    initial: 'S',
-    name: 'Shopify',
-    sub: 'Site + Commerce',
-    price: '$399',
-    color: '#95BF47',
-    dark: false,
-  },
-  {
-    initial: 'H',
-    name: 'HubSpot',
-    sub: 'CRM + marketing',
-    price: '$1,600',
-    color: '#FF7A59',
-    dark: false,
-  },
-  { initial: 'M', name: 'Mailchimp', sub: 'Email', price: '$350', color: '#FFE01B', dark: true },
-  {
-    initial: 'Z',
-    name: 'Zapier',
-    sub: 'Glue between everything',
-    price: '$240',
-    color: '#FF4F00',
-    dark: false,
-  },
-  {
-    initial: 'W',
-    name: 'WordPress + WooCommerce',
-    sub: 'CMS',
-    price: '$180',
-    color: '#21759B',
-    dark: false,
-  },
-  {
-    initial: '…',
-    name: 'Dropship + Quote + Invoice apps',
-    sub: '3–4 more',
-    price: '$180',
-    color: '#E5E5E5',
-    dark: true,
-  },
-] as const;
+// "Six tabs. One bill." — the cost/fragmentation beat, built as a PAS argument
+// (docs/learnings/landing-page-sections.md §7, §14): name the pain, show its real
+// cost, hand over the fix. The device is a SWAP LEDGER, not two disconnected
+// lists — each line maps the JOB a tool does for you today to the sparx module
+// that absorbs it, so the replacement is *shown*, not told. Framing is
+// category-led (no competitor brand tiles) so it stays durable and non-defensive.
+// Sits on the recessed ground tier (.mkt-ground): the fragmented "before" is the
+// floor the clean receipt lifts off of.
 
-const NEW_STACK = [
-  { initial: 'B', name: 'sparx Builder', color: '#6366F1' },
-  { initial: 'C', name: 'sparx Commerce', color: '#F97316' },
-  { initial: 'C', name: 'sparx CRM', color: '#06B6D4' },
-  { initial: 'E', name: 'sparx Email', color: '#0EA5E9' },
-  { initial: 'C', name: 'sparx CMS', color: '#14B8A6' },
-  { initial: 'A', name: 'sparx AI / MCP', color: '#EC4899' },
-] as const;
+const SIGNUP = 'https://app.sparx.works/sign-up?ref=stack';
+
+interface Swap {
+  today: string;
+  todayNote: string;
+  todayPrice: number | null;
+  module: string;
+  modulePrice: number;
+  color: string;
+}
+
+// Left: realistic market rates for each job. Right: real sparx module prices
+// (the modules catalog). Totals are computed below, never asserted — "show your
+// math" so the savings read audited, not made up.
+//
+// Every job is a NATIVE module, so the right column reads "Built in" for all rows
+// rather than re-listing six module names (which would re-fragment the very thing
+// the section collapses — six tabs into one). `module` stays as data: it labels
+// the row for screen readers and keeps the per-module display one render-swap away;
+// `color` rides along for that same fallback.
+const SWAP: Swap[] = [
+  {
+    today: 'Online store + checkout',
+    todayNote: 'storefront, cart, payments',
+    todayPrice: 399,
+    module: 'Commerce',
+    modulePrice: 49,
+    color: '#F97316',
+  },
+  {
+    today: 'CRM + marketing',
+    todayNote: 'contacts, pipeline, automations',
+    todayPrice: 1600,
+    module: 'CRM',
+    modulePrice: 49,
+    color: '#06B6D4',
+  },
+  {
+    today: 'Email platform',
+    todayNote: 'sending, lists, deliverability',
+    todayPrice: 350,
+    module: 'Email',
+    modulePrice: 29,
+    color: '#0EA5E9',
+  },
+  {
+    today: 'CMS + blog',
+    todayNote: 'content, media, SEO',
+    todayPrice: 180,
+    module: 'CMS',
+    modulePrice: 49,
+    color: '#14B8A6',
+  },
+  {
+    today: 'Automation glue',
+    todayNote: 'the wiring between apps',
+    todayPrice: 240,
+    module: 'Automation',
+    modulePrice: 0,
+    color: 'var(--color-success)',
+  },
+  {
+    today: 'Site + hosting',
+    todayNote: 'usually bundled, never free',
+    todayPrice: null,
+    module: 'Builder',
+    modulePrice: 10,
+    color: '#6366F1',
+  },
+];
+
+const fmt = (n: number) => `$${n.toLocaleString('en-US')}`;
+const beforeTotal = SWAP.reduce((sum, r) => sum + (r.todayPrice ?? 0), 0);
+const afterTotal = SWAP.reduce((sum, r) => sum + r.modulePrice, 0);
+const saveYear = (beforeTotal - afterTotal) * 12;
+
+const LABEL: React.CSSProperties = {
+  fontFamily: 'var(--font-sans)',
+  fontWeight: 500,
+  fontSize: '11px',
+  letterSpacing: '0.08em',
+  textTransform: 'uppercase',
+  color: 'var(--color-text-secondary)',
+};
+const MONO: React.CSSProperties = { fontFamily: 'var(--font-mono)', fontSize: '13px' };
 
 export function StackReplacement() {
   return (
-    <Section id="platform" padding="lg">
-      <Reveal style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
-        <SectionHeader
-          headline={
-            <>
-              Six tabs.
-              <br />
-              One bill
-              <Spark />
-            </>
-          }
-          lede={
-            <>
-              The average growing SMB pays $2,000–$3,000/mo across Shopify, HubSpot, Mailchimp,
-              Zapier, and a dropship app — and still can&apos;t get a unified report. sparx is one
-              system with one data layer.
-            </>
-          }
-        />
-
-        <div className="mkt-stack-on-tablet" style={{ alignItems: 'stretch' }}>
-          <Panel
-            label="Before · Today"
-            labelColor="var(--color-text-secondary)"
-            priceLabel="$2,950/mo"
-            priceColor="var(--color-danger)"
-            heading="A fragmented stack."
-          >
-            {OLD_STACK.map((item, i) => (
-              <Row
-                key={item.name}
-                isLast={i === OLD_STACK.length - 1}
-                left={
-                  <>
-                    <BrandTile color={item.color} dark={item.dark}>
-                      {item.initial}
-                    </BrandTile>
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-sans)',
-                        fontWeight: 500,
-                        fontSize: '14px',
-                        color: 'var(--color-text-primary)',
-                      }}
-                    >
-                      {item.name}
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-sans)',
-                        fontSize: '13px',
-                        color: 'var(--color-text-tertiary)',
-                      }}
-                    >
-                      {item.sub}
-                    </span>
-                  </>
-                }
-                right={
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: '13px',
-                      color: 'var(--color-text-secondary)',
-                    }}
-                  >
-                    {item.price}
-                  </span>
-                }
-              />
-            ))}
-          </Panel>
-
-          <Arrow />
-
-          <Panel
-            label="After · sparx"
-            labelColor="#A1A1AA"
-            priceLabel="$449/mo"
-            priceColor="#818CF8"
-            heading={
+    <Section id="platform" padding="lg" className="mkt-ground">
+      <Reveal className="mkt-stack-split">
+        <div className="mkt-stack-copy">
+          <SectionHeader
+            headline={
               <>
-                One platform
+                Six tabs.
+                <br />
+                One bill
                 <Spark />
               </>
             }
-            invert
-          >
-            {NEW_STACK.map((item, i) => (
-              <Row
-                key={item.name}
-                isLast={i === NEW_STACK.length - 1}
-                invert
-                left={
-                  <>
-                    <BrandTile color={item.color}>{item.initial}</BrandTile>
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-sans)',
-                        fontWeight: 500,
-                        fontSize: '14px',
-                        color: '#FFFFFF',
-                      }}
-                    >
-                      {item.name}
-                    </span>
-                  </>
-                }
-                right={
-                  <span
-                    aria-hidden
-                    style={{
-                      display: 'inline-block',
-                      width: 7,
-                      height: 7,
-                      borderRadius: 9999,
-                      backgroundColor: 'var(--color-success)',
-                    }}
-                  />
-                }
-              />
-            ))}
-          </Panel>
+            lede={
+              <>
+                A tab for your store, another for email, a CRM that talks to neither, and an
+                automation bill quietly holding it together. You&apos;re paying for the seams — and
+                still can&apos;t pull one honest report. sparx is the whole stack on one data layer.
+              </>
+            }
+          />
+          <LedgerActions />
         </div>
+        <SwapLedger />
       </Reveal>
     </Section>
   );
 }
 
-function Panel({
-  label,
-  labelColor,
-  priceLabel,
-  priceColor,
-  heading,
-  invert,
-  children,
-}: {
-  label: string;
-  labelColor: string;
-  priceLabel: string;
-  priceColor: string;
-  heading: React.ReactNode;
-  invert?: boolean;
-  children: React.ReactNode;
-}) {
+// The receipt: column labels → one swap row per job → totals → the savings bottom
+// line. A surface card lifting off the recessed ground tier.
+function SwapLedger() {
   return (
     <div
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        flex: 1,
-        padding: '32px',
-        gap: '24px',
-        backgroundColor: invert ? '#0A0A0A' : 'var(--color-bg-surface)',
-        border: invert ? '1px solid #0A0A0A' : '1px solid var(--color-border-default)',
-        borderTop: invert ? '3px solid var(--sparx-primary)' : undefined,
-        borderRadius: '8px',
+        backgroundColor: 'var(--color-bg-surface)',
+        border: '1px solid var(--color-border-default)',
+        borderRadius: '14px',
+        overflow: 'hidden',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div
+        className="mkt-swap-row mkt-swap-head"
+        style={{
+          padding: '13px 24px',
+          backgroundColor: 'var(--color-bg-subtle)',
+          borderBottom: '1px solid var(--color-border-default)',
+        }}
+      >
+        <span style={LABEL}>Your stack today</span>
+        <span aria-hidden />
+        <span style={LABEL}>On sparx</span>
+      </div>
+
+      {SWAP.map((row, i) => (
+        <SwapRow key={row.today} row={row} isLast={i === SWAP.length - 1} />
+      ))}
+
+      <div className="mkt-swap-row" style={{ borderTop: '2px solid var(--color-border-strong)' }}>
+        <div className="mkt-swap-cell">
+          <span style={{ ...LABEL, color: 'var(--color-text-primary)' }}>Total today</span>
+          <span style={{ ...MONO, fontSize: '15px', color: 'var(--color-danger)' }}>
+            {fmt(beforeTotal)}/mo
+          </span>
+        </div>
+        <Arrow />
+        <div className="mkt-swap-cell">
+          <span style={{ ...LABEL, color: 'var(--color-text-primary)' }}>One bill</span>
+          <span style={{ ...MONO, fontSize: '15px', color: 'var(--sparx-primary)' }}>
+            {fmt(afterTotal)}/mo
+          </span>
+        </div>
+      </div>
+
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'baseline',
+          justifyContent: 'space-between',
+          gap: '6px 24px',
+          padding: '20px 24px',
+          backgroundColor: 'var(--color-success-tint)',
+        }}
+      >
         <span
           style={{
             fontFamily: 'var(--font-sans)',
             fontWeight: 500,
-            fontSize: '11px',
-            letterSpacing: '0.08em',
-            color: labelColor,
-            textTransform: 'uppercase',
+            fontSize: 'clamp(22px, 3vw, 30px)',
+            letterSpacing: '-0.02em',
+            color: 'var(--color-success)',
           }}
         >
-          {label}
+          You save {fmt(saveYear)} a year
         </span>
         <span
           style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '12px',
-            color: priceColor,
+            fontFamily: 'var(--font-sans)',
+            fontSize: '14px',
+            color: 'var(--color-text-secondary)',
           }}
         >
-          {priceLabel}
+          Pay only for the modules you switch on
         </span>
       </div>
-      <div
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontWeight: 500,
-          fontSize: '24px',
-          letterSpacing: '-0.02em',
-          color: invert ? '#FFFFFF' : 'var(--color-text-primary)',
-          paddingTop: '4px',
-        }}
-      >
-        {heading}
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 0, paddingTop: '8px' }}>
-        {children}
-      </div>
     </div>
   );
 }
 
-function Row({
-  left,
-  right,
-  isLast,
-  invert,
-}: {
-  left: React.ReactNode;
-  right: React.ReactNode;
-  isLast?: boolean;
-  invert?: boolean;
-}) {
+function LedgerActions() {
   return (
     <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '14px 0',
-        borderBottom: isLast ? undefined : `1px solid ${invert ? '#2A2A2A' : '#F4F4F5'}`,
-      }}
+      style={{ display: 'flex', flexDirection: 'column', gap: '14px', alignItems: 'flex-start' }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>{left}</div>
-      {right}
+      <div className="mkt-cluster" style={{ gap: '12px' }}>
+        <Button asChild size="lg" color="primary" variant="solid">
+          <a href={SIGNUP}>Start my site free →</a>
+        </Button>
+        <Button asChild size="lg" variant="outline">
+          <a href="/pricing">See the full price list</a>
+        </Button>
+      </div>
+      <span
+        style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: '12px',
+          color: 'var(--color-text-tertiary)',
+        }}
+      >
+        No card · cancel anytime · switch a module off and its bill stops
+      </span>
     </div>
   );
 }
 
-function BrandTile({
-  color,
-  dark,
-  children,
-}: {
-  color: string;
-  dark?: boolean;
-  children: React.ReactNode;
-}) {
+function SwapRow({ row, isLast }: { row: Swap; isLast: boolean }) {
   return (
-    <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 24,
-        height: 24,
-        borderRadius: 5,
-        backgroundColor: color,
-        flexShrink: 0,
-      }}
+    <div
+      className="mkt-swap-row"
+      style={{ borderBottom: isLast ? undefined : '1px solid #F4F4F5' }}
     >
-      <span
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontWeight: 500,
-          fontSize: '12px',
-          color: dark ? '#0A0A0A' : '#FFFFFF',
-        }}
-      >
-        {children}
-      </span>
-    </span>
+      <div className="mkt-swap-cell">
+        <span style={{ display: 'flex', flexDirection: 'column', gap: '2px', minWidth: 0 }}>
+          <span
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontWeight: 500,
+              fontSize: '14px',
+              color: 'var(--color-text-primary)',
+            }}
+          >
+            {row.today}
+          </span>
+          <span
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '12.5px',
+              color: 'var(--color-text-tertiary)',
+            }}
+          >
+            {row.todayNote}
+          </span>
+        </span>
+        <span
+          style={{
+            ...MONO,
+            flexShrink: 0,
+            color: row.todayPrice ? 'var(--color-text-secondary)' : 'var(--color-text-tertiary)',
+          }}
+        >
+          {row.todayPrice ? `${fmt(row.todayPrice)}/mo` : '—'}
+        </span>
+      </div>
+
+      <Arrow />
+
+      <div className="mkt-swap-cell">
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '9px', minWidth: 0 }}>
+          <svg
+            width={13}
+            height={13}
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden
+            style={{ flexShrink: 0, color: 'var(--sparx-primary)' }}
+          >
+            <path d="M5 12L10 17L19 7" stroke="currentColor" strokeWidth={2.6} />
+          </svg>
+          <span
+            aria-label={`${row.module}, built into sparx`}
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontWeight: 500,
+              fontSize: '14px',
+              color: 'var(--color-text-primary)',
+            }}
+          >
+            Built in
+          </span>
+        </span>
+        <span
+          style={{
+            ...MONO,
+            flexShrink: 0,
+            color: row.modulePrice ? 'var(--color-text-secondary)' : 'var(--color-success)',
+          }}
+        >
+          {row.modulePrice ? `+${fmt(row.modulePrice)}/mo` : '$0'}
+        </span>
+      </div>
+    </div>
   );
 }
 
 function Arrow() {
   return (
-    <div className="mkt-arrow-connector">
-      <svg width={60} height={20} viewBox="0 0 60 20" fill="none" aria-hidden>
-        <path
-          d="M0 10H56M56 10L46 1M56 10L46 19"
-          stroke="var(--color-text-tertiary)"
-          strokeWidth={1.5}
-        />
+    <span className="mkt-swap-arrow" aria-hidden>
+      <svg width={22} height={12} viewBox="0 0 22 12" fill="none">
+        <path d="M0 6H19M19 6L14 1M19 6L14 11" stroke="currentColor" strokeWidth={1.5} />
       </svg>
-    </div>
+    </span>
   );
 }

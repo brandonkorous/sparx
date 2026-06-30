@@ -8,6 +8,7 @@ import { EverythingIncluded } from '@/components/marketing/everything-included';
 import { DashboardShowcase } from '@/components/marketing/dashboard-showcase';
 import { McpSpotlight } from '@/components/marketing/mcp-spotlight';
 import { B2bSpotlight } from '@/components/marketing/b2b-spotlight';
+import { WhoeverYouAre } from '@/components/marketing/whoever-you-are';
 import { Promise as PromiseSection } from '@/components/marketing/promise';
 import { Testimonial } from '@/components/marketing/testimonial';
 import { DeveloperSection } from '@/components/marketing/developer-section';
@@ -19,10 +20,10 @@ import { Footer } from '@/components/marketing/footer';
 
 export default function HomePage() {
   return (
-    <main>
+    <main className="mkt-paneled">
       <Nav />
       <Hero />
-      <Permanence />
+      <WhoeverYouAre />
       <LogoStrip />
       <StackReplacement />
       <ModulesGrid />
@@ -30,6 +31,7 @@ export default function HomePage() {
       <DashboardShowcase />
       <McpSpotlight />
       <B2bSpotlight />
+      <Permanence />
       <PromiseSection />
       <Testimonial />
       <DeveloperSection />

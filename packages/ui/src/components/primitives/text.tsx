@@ -25,7 +25,9 @@ const textVariants = cva('', {
     },
   },
   defaultVariants: {
-    size: 'sm',
+    // Body text defaults to 16px (`text-base`). Captions/secondary text opt DOWN
+    // with size="sm" (14px) — never let unspecified body fall below the 16px floor.
+    size: 'md',
     variant: 'default',
     weight: 'regular',
   },

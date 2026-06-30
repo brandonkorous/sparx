@@ -1,4 +1,5 @@
 import { Section, SectionHeader, Spark } from './primitives';
+import { Reveal } from './reveal';
 
 const FEATURES = [
   {
@@ -42,7 +43,7 @@ const FEATURES = [
 export function B2bSpotlight() {
   return (
     <Section padding="xl">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
+      <Reveal style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
         <SectionHeader
           headlineSize={64}
           headlineLineHeight={68}
@@ -124,7 +125,7 @@ export function B2bSpotlight() {
             </div>
           ))}
         </div>
-      </div>
+      </Reveal>
     </Section>
   );
 }

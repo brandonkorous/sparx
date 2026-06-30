@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Six tabs · D — The tangle untangles</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #18181b;
+        --ink-2: #52525b;
+        --ink-3: #a1a1aa;
+        --ground: #eaecf1;
+        --surface: #ffffff;
+        --subtle: #f4f5f8;
+        --border: #e4e4e7;
+        --indigo: #6366f1;
+        --indigo-press: #4f46e5;
+        --red: #dc2626;
+        --green: #16a34a;
+        --sans: 'Inter', system-ui, sans-serif;
+        --mono: 'JetBrains Mono', ui-monospace, monospace;
+        --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: var(--sans);
+        background: var(--ground);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+        padding: 72px 0 120px;
+      }
+      .wrap {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 0 32px;
+      }
+      .wordmark {
+        font-weight: 700;
+        font-size: 20px;
+        letter-spacing: -0.03em;
+        margin-bottom: 64px;
+      }
+      .wordmark b {
+        color: var(--indigo);
+      }
+      h1 {
+        font-weight: 500;
+        font-size: clamp(40px, 6vw, 68px);
+        line-height: 0.96;
+        letter-spacing: -0.035em;
+      }
+      h1 .dot {
+        color: var(--indigo);
+      }
+      .lede {
+        margin-top: 24px;
+        max-width: 600px;
+        font-size: 18px;
+        line-height: 1.6;
+        color: var(--ink-2);
+      }
+
+      .panel {
+        margin-top: 44px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 12px 12px 0;
+        box-shadow: 0 16px 40px rgba(9, 9, 11, 0.08);
+      }
+      .canvas {
+        width: 100%;
+        display: block;
+      }
+      .caption {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 8px 18px;
+        padding: 18px 18px 22px;
+        border-top: 1px solid var(--border);
+      }
+      .caption .state {
+        font-family: var(--mono);
+        font-size: 13px;
+        color: var(--red);
+        transition: color 0.5s ease;
+      }
+      .panel.go .caption .state {
+        color: var(--green);
+      }
+      .caption .save {
+        margin-left: auto;
+        font-weight: 600;
+        font-size: 20px;
+        letter-spacing: -0.01em;
+        color: var(--ink-3);
+        transition: color 0.5s ease;
+      }
+      .panel.go .caption .save {
+        color: var(--green);
+      }
+
+      /* SVG layers */
+      .mess {
+        transition: opacity 0.55s ease;
+      }
+      .panel.go .mess {
+        opacity: 0;
+      }
+      .order {
+        opacity: 0;
+        transition: opacity 0.55s ease 0.15s;
+      }
+      .panel.go .order {
+        opacity: 1;
+      }
+      .spoke {
+        stroke-dasharray: 240;
+        stroke-dashoffset: 240;
+        transition: stroke-dashoffset 0.65s var(--ease);
+      }
+      .panel.go .spoke {
+        stroke-dashoffset: 0;
+        transition-delay: calc(0.3s + var(--i) * 70ms);
+      }
+      .rnode {
+        opacity: 0;
+        transition:
+          opacity 0.4s ease,
+          transform 0.5s var(--ease);
+        transform: translateY(6px);
+        transform-box: fill-box;
+      }
+      .panel.go .rnode {
+        opacity: 1;
+        transform: none;
+        transition-delay: calc(0.45s + var(--i) * 70ms);
+      }
+      .hub {
+        opacity: 0;
+        transform: scale(0.6);
+        transform-box: fill-box;
+        transform-origin: center;
+        transition:
+          opacity 0.4s ease,
+          transform 0.5s var(--ease);
+      }
+      .panel.go .hub {
+        opacity: 1;
+        transform: none;
+      }
+      .nlabel {
+        font-family: var(--sans);
+        font-weight: 500;
+        font-size: 12px;
+        fill: var(--ink);
+      }
+      .nsub {
+        font-family: var(--mono);
+        font-size: 10px;
+        fill: var(--ink-3);
+      }
+      .hublabel {
+        font-family: var(--sans);
+        font-weight: 700;
+        font-size: 16px;
+        letter-spacing: -0.5px;
+        fill: #fff;
+      }
+
+      .cta {
+        margin-top: 32px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+      .btn {
+        font-weight: 500;
+        font-size: 15px;
+        border-radius: 10px;
+        padding: 13px 20px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        text-decoration: none;
+      }
+      .btn-primary {
+        background: var(--indigo);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--indigo-press);
+      }
+      .btn-outline {
+        background: transparent;
+        color: var(--ink);
+        border-color: var(--border);
+      }
+      .micro {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--ink-3);
+        margin-top: 14px;
+      }
+      .replay {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        font-family: var(--mono);
+        font-size: 12px;
+        background: #18181b;
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 9px 16px;
+        cursor: pointer;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .mess,
+        .order,
+        .spoke,
+        .rnode,
+        .hub,
+        .caption .state,
+        .caption .save {
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <button class="replay" onclick="play()">↻ replay</button>
+    <div class="wrap">
+      <div class="wordmark">spar<b>x</b></div>
+      <h1>Six tabs.<br />One bill<span class="dot">.</span></h1>
+      <p class="lede">
+        The real cost isn't just the six bills — it's six tools that don't talk to each other. No
+        single customer. No honest report. Watch them connect.
+      </p>
+
+      <div class="panel" id="panel">
+        <svg
+          class="canvas"
+          viewBox="0 0 640 380"
+          role="img"
+          aria-label="Six disconnected tools resolving into one connected platform"
+        >
+          <!-- TANGLED, DISCONNECTED -->
+          <g class="mess">
+            <g stroke="#cbd5e1" stroke-width="1.5" fill="none" opacity="0.9">
+              <path d="M110 80 C 260 180, 420 20, 540 70" />
+              <path d="M110 80 C 200 260, 60 300, 120 320" />
+              <path d="M540 70 C 480 200, 600 230, 580 270" />
+              <path d="M330 50 C 200 120, 460 240, 360 340" />
+              <path d="M120 320 C 300 280, 380 360, 580 270" />
+              <path d="M330 50 C 420 160, 240 200, 110 80" />
+              <path d="M540 70 C 360 140, 300 300, 360 340" />
+            </g>
+            <g>
+              <g transform="translate(110,80)">
+                <circle r="8" fill="#f97316" />
+                <text class="nlabel" x="14" y="-2">Store</text>
+                <text class="nsub" x="14" y="13">$399</text>
+              </g>
+              <g transform="translate(330,50)">
+                <circle r="8" fill="#06b6d4" />
+                <text class="nlabel" x="14" y="-2">CRM</text>
+                <text class="nsub" x="14" y="13">$1,600</text>
+              </g>
+              <g transform="translate(540,70)">
+                <circle r="8" fill="#0ea5e9" />
+                <text class="nlabel" x="14" y="-2">Email</text>
+                <text class="nsub" x="14" y="13">$350</text>
+              </g>
+              <g transform="translate(120,320)">
+                <circle r="8" fill="#14b8a6" />
+                <text class="nlabel" x="14" y="-2">CMS</text>
+                <text class="nsub" x="14" y="13">$180</text>
+              </g>
+              <g transform="translate(360,340)">
+                <circle r="8" fill="#a1a1aa" />
+                <text class="nlabel" x="14" y="-2">Zapier</text>
+                <text class="nsub" x="14" y="13">$240</text>
+              </g>
+              <g transform="translate(580,270)">
+                <circle r="8" fill="#71717a" />
+                <text class="nlabel" x="-44" y="-2">Host</text>
+              </g>
+            </g>
+          </g>
+
+          <!-- CONNECTED, ONE HUB -->
+          <g class="order">
+            <g stroke="#6366f1" stroke-width="1.75" fill="none" stroke-linecap="round">
+              <path class="spoke" style="--i: 0" d="M320 190 L320 60" />
+              <path class="spoke" style="--i: 1" d="M320 190 L433 125" />
+              <path class="spoke" style="--i: 2" d="M320 190 L433 255" />
+              <path class="spoke" style="--i: 3" d="M320 190 L320 320" />
+              <path class="spoke" style="--i: 4" d="M320 190 L207 255" />
+              <path class="spoke" style="--i: 5" d="M320 190 L207 125" />
+            </g>
+            <g class="rnode" style="--i: 0" transform="translate(320,60)">
+              <circle r="7" fill="#f97316" />
+              <text class="nlabel" x="0" y="-14" text-anchor="middle">Commerce</text>
+            </g>
+            <g class="rnode" style="--i: 1" transform="translate(433,125)">
+              <circle r="7" fill="#06b6d4" />
+              <text class="nlabel" x="14" y="4">CRM</text>
+            </g>
+            <g class="rnode" style="--i: 2" transform="translate(433,255)">
+              <circle r="7" fill="#0ea5e9" />
+              <text class="nlabel" x="14" y="4">Email</text>
+            </g>
+            <g class="rnode" style="--i: 3" transform="translate(320,320)">
+              <circle r="7" fill="#14b8a6" />
+              <text class="nlabel" x="0" y="22" text-anchor="middle">CMS</text>
+            </g>
+            <g class="rnode" style="--i: 4" transform="translate(207,255)">
+              <circle r="7" fill="#6366f1" />
+              <text class="nlabel" x="-14" y="4" text-anchor="end">Builder</text>
+            </g>
+            <g class="rnode" style="--i: 5" transform="translate(207,125)">
+              <circle r="7" fill="#16a34a" />
+              <text class="nlabel" x="-14" y="4" text-anchor="end">Built in</text>
+            </g>
+            <g class="hub" transform="translate(320,190)">
+              <circle r="34" fill="#6366f1" />
+              <text class="hublabel" x="0" y="5" text-anchor="middle">sparx</text>
+            </g>
+          </g>
+        </svg>
+
+        <div class="caption">
+          <span class="state">6 tools that don't talk · 0 unified reports · $2,769/mo</span>
+          <span class="save">save <span id="saveNum">$0</span>/yr</span>
+        </div>
+      </div>
+
+      <div class="cta">
+        <a class="btn btn-primary" href="#">Start my site free →</a>
+        <a class="btn btn-outline" href="#">See the full price list</a>
+      </div>
+      <div class="micro">No card · cancel anytime · switch a module off and its bill stops</div>
+    </div>
+
+    <script>
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const panel = document.getElementById('panel');
+      const saveEl = document.getElementById('saveNum');
+      const states = panel.querySelector('.state');
+      let timers = [];
+
+      function countUp(el, to, dur) {
+        const start = performance.now();
+        function tick(now) {
+          const t = Math.min(1, (now - start) / dur);
+          el.textContent = '$' + Math.round(to * (1 - Math.pow(1 - t, 3))).toLocaleString('en-US');
+          if (t < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      function play() {
+        timers.forEach(clearTimeout);
+        timers = [];
+        panel.classList.remove('go');
+        saveEl.textContent = '$0';
+        states.textContent = "6 tools that don't talk · 0 unified reports · $2,769/mo";
+        if (reduce) {
+          panel.classList.add('go');
+          states.textContent = 'One data layer · one report · $186/mo';
+          saveEl.textContent = '$30,996';
+          return;
+        }
+        void panel.offsetWidth;
+        timers.push(
+          setTimeout(() => {
+            panel.classList.add('go');
+          }, 600)
+        );
+        timers.push(
+          setTimeout(() => {
+            states.textContent = 'One data layer · one report · $186/mo';
+            countUp(saveEl, 30996, 1000);
+          }, 1300)
+        );
+      }
+
+      const io = new IntersectionObserver(
+        (es) => {
+          es.forEach((e) => {
+            if (e.isIntersecting) {
+              play();
+              io.disconnect();
+            }
+          });
+        },
+        { threshold: 0.4 }
+      );
+      io.observe(panel);
+    </script>
+  </body>
+</html>

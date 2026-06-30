@@ -63,6 +63,22 @@
   --color-bg-subtle: #f4f4f5;
   --color-bg-muted: #e4e4e7;
 
+  /* Elevation scale. surface-100 is the topmost content surface (the lightest,
+     easiest reading layer); each step DOWN goes deeper and darker, so
+     surface-300 is the page base. At a section seam the darker/deeper tier
+     "wraps" the lighter one to read as physical depth. */
+  --color-surface-100: #fbfbfd;
+  --color-surface-200: #f4f5f8;
+  --color-surface-300: #eaecf1;
+
+  /* Inverse/accent surface — the OPPOSITE of the page, for cinematic high-
+     contrast sections (hero, video, final CTA). Charcoal in light mode; it
+     FLIPS to a light surface in dark mode so the accent still pops instead of
+     vanishing into the dark page. Pair with the -text / -muted foregrounds. */
+  --color-surface-opposite: #0d0d10;
+  --color-surface-opposite-text: #ffffff;
+  --color-surface-opposite-muted: #a1a1aa;
+
   --color-border-default: #e5e5e5;
   --color-border-strong: #d4d4d8;
   --color-border-focus: #6366f1;
@@ -115,10 +131,10 @@
   --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
   --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
 
-  --text-xs: 0.6875rem; /* 11px */
-  --text-sm: 0.8125rem; /* 13px */
-  --text-base: 0.9375rem; /* 15px */
-  --text-lg: 1.0625rem; /* 17px */
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.875rem; /* 14px — secondary / captions */
+  --text-base: 1rem; /* 16px — body floor (WCAG/2026 standard; never below this) */
+  --text-lg: 1.125rem; /* 18px — long-form / reading */
   --text-xl: 1.25rem; /* 20px */
   --text-2xl: 1.5rem; /* 24px */
   --text-3xl: 1.875rem; /* 30px */
@@ -198,6 +214,20 @@
   --color-bg-elevated: #222222;
   --color-bg-subtle: #1f1f1f;
   --color-bg-muted: #2a2a2a;
+
+  /* Elevation scale (dark). Same semantics, inverted lightness: surface-100 is
+     the topmost content surface (here the LIGHTEST dark-gray, so it lifts toward
+     the light catching a raised surface); surface-300 is the page base (the
+     darkest). Deeper = darker in both themes; content always reads on top. */
+  --color-surface-100: #24252c;
+  --color-surface-200: #17181d;
+  --color-surface-300: #0d0d10;
+
+  /* Inverse/accent surface (dark mode) — flips to a light surface so it still
+     reads as the high-contrast accent against the dark page. */
+  --color-surface-opposite: #eaecf1;
+  --color-surface-opposite-text: #16161a;
+  --color-surface-opposite-muted: #52525b;
 
   --color-border-default: #2a2a2a;
   --color-border-strong: #3f3f46;

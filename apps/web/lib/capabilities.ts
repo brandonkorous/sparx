@@ -2,7 +2,7 @@
  * The full sparx capability catalog — the data behind the `/features` page and
  * the home-page "everything included" band.
  *
- * The marketing site headlines 11 modules; the platform actually ships hundreds
+ * The marketing site headlines 12 modules; the platform actually ships hundreds
  * of discrete capabilities. This file is the marketing-facing projection of
  * docs/89-feature-catalog.md. When a feature's status changes in that doc, change
  * the matching `status` here — the `/features` page and the home teaser both
@@ -29,7 +29,7 @@ export interface CapabilityArea {
   summary: string;
   /** accent color (dot + top stripe). Module areas reuse their brand color. */
   accent: string;
-  /** true for the 11 activatable modules; false for cross-cutting platform areas */
+  /** true for the 12 activatable modules; false for cross-cutting platform areas */
   module: boolean;
   capabilities: Capability[];
 }

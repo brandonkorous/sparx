@@ -8,6 +8,24 @@ Scoped guidance for the platform component library. Loads when working in `@spar
 - Every variant references a CSS custom property from [tokens.css](./src/tokens.css) — **never** a hardcoded color.
 - Module color shifting is automatic via `<ModuleProvider module="…">`. Any component referencing `--module-active` adopts the wrapping module's color — no props, no conditional classes.
 
+## Surface elevation model
+
+Depth is a **4-level elevation stack**, back (deepest) to front. Each level's rounded corners reveal **exactly one level beneath it** (the "corner-wrap cascade"), so stacking reads as physical depth instead of flat bands:
+
+1. **`--color-surface-300`** — the page base / ground (deepest).
+2. **`--color-surface-200`** — the stage, lifted off the ground.
+3. **Content layer** — peers at the same elevation, differing only in _hue_: `--color-surface-100` (neutral), `--color-surface-opposite` (the high-contrast, theme-aware inverse panel), module colors, and semantic colors. A neutral card, a module-tinted card, a dark cinematic panel, and a semantic callout all live here.
+4. **Media** — video and full-bleed imagery, the forward-most layer, sitting _on_ a content surface (the marketing video fills a `primary` content surface; its rounded corners reveal that purple).
+
+Rules:
+
+- **Elevation ≠ intensity.** Inside the content layer, color runs neutral (`100`) → soft tint (module/semantic) → full solid (the hero's primary). That saturation axis is **orthogonal** to elevation — never read "more saturated" as "higher up."
+- **Levels are optional.** Because the cascade only reveals one step down, a region can go content-on-`200`-on-`300` for full depth, or content straight on `300` for a flat beat. `200` (and standalone `300`) sections appear _where the composition needs the depth_, not everywhere.
+- **Color carries the depth**; reach for a hairline or soft shadow only where a step is too subtle to read (e.g. `100` on `200`).
+- Light values get **darker with depth** (`100 #fbfbfd` is the easiest reading surface, down to `300`); dark theme inverts (deeper = darker, content lifts lighter). `surface-100` is always the topmost reading surface in both themes.
+
+This **supersedes the loose neutrals** (`--color-bg-page / -surface / -elevated / -subtle / -muted`) — new work uses the surface scale; those map onto `300/200/100` as we migrate. The marketing site applies the model via `.mkt-paneled` (see [apps/web/app/marketing.css](../../apps/web/app/marketing.css)).
+
 ## Four-axis variant system (color × variant × size)
 
 Every color-bearing component uses **four-axis** `color × variant × size` via a **shared role-var recipe** (`.sx-c-*` in `@sparx/ui`, `.st-c-*` in `@sparx/site-ui`) — never a flat enum. This is not just `<Button>`; it's the rule for elements in general (Badge, etc.). See [docs/35](../../docs/35-ui-variant-system.md).

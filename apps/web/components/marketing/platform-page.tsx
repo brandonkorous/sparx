@@ -10,6 +10,12 @@ import {
   SectionHeader,
   Spark,
 } from './primitives';
+import { MODULE_ORDER } from '@/lib/modules';
+
+// Modules with a dedicated marketing page (MODULE_ORDER). Tiles for modules
+// without one (Invoicing, Inventory, Live Chat) point at /pricing instead of a
+// 404. Sourced from lib/modules so it can't drift as pages ship.
+const HAS_PAGE = new Set<string>(MODULE_ORDER);
 
 /**
  * The /platform marketing page — the "what is sparx as a system" page reached
@@ -247,7 +253,7 @@ function OneSystem() {
                 color: 'var(--color-text-primary)',
               }}
             >
-              <Dot color={MODS[c.module].color} size={8} />
+              <Dot color={getModuleColor(c.module).color} size={8} />
               {c.label}
             </span>
           ))}
@@ -915,6 +921,27 @@ function ModulesStrip() {
       title: 'Every booking, one engine',
       body: 'Appointments, classes, deposits, reminders.',
     },
+    {
+      module: 'invoicing',
+      label: 'Invoicing',
+      price: '$19/mo',
+      title: 'Get paid',
+      body: 'Quotes, invoices, payment links — free with Commerce.',
+    },
+    {
+      module: 'inventory',
+      label: 'Inventory',
+      price: '$29/mo',
+      title: 'Track stock',
+      body: 'Locations, reorder points, live sync — free with Commerce.',
+    },
+    {
+      module: 'chat',
+      label: 'Live Chat',
+      price: '$19/mo',
+      title: 'Talk to visitors',
+      body: 'Live chat tied to the same customer record.',
+    },
   ];
 
   return (
@@ -923,18 +950,18 @@ function ModulesStrip() {
         accent="var(--sparx-primary)"
         headline={
           <>
-            Nine modules.{' '}
+            Twelve modules.{' '}
             <span style={{ color: 'var(--color-text-tertiary)' }}>Mix any combination</span>
           </>
         }
       />
       <div className="mkt-grid-4-2-1" style={{ marginTop: '52px' }}>
         {mods.map((m) => {
-          const c = MODS[m.module];
+          const c = getModuleColor(m.module);
           return (
             <a
               key={m.module}
-              href={`/${m.module}`}
+              href={HAS_PAGE.has(m.module) ? `/${m.module}` : '/pricing'}
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -1351,7 +1378,7 @@ function PricingTeaser() {
   const tiers = [
     { name: 'Start', price: '$10', note: 'one module', highlight: false },
     { name: 'Grow', price: '$108', note: 'Builder + Commerce + CMS', highlight: true },
-    { name: 'Everything', price: '$392', note: 'all nine modules', highlight: false },
+    { name: 'Everything', price: '$411', note: 'all twelve modules', highlight: false },
   ];
 
   return (

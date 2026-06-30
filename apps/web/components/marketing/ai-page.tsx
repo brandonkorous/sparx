@@ -43,17 +43,6 @@ export function AiPage() {
 }
 
 const AI = getModuleColor('ai');
-const MODS = {
-  builder: getModuleColor('builder'),
-  commerce: getModuleColor('commerce'),
-  cms: getModuleColor('cms'),
-  crm: getModuleColor('crm'),
-  email: getModuleColor('email'),
-  b2b: getModuleColor('b2b'),
-  ai: getModuleColor('ai'),
-  dropship: getModuleColor('dropship'),
-  scheduling: getModuleColor('scheduling'),
-} as const;
 
 const SANS = 'var(--font-sans)';
 const MONO = 'var(--font-mono)';
@@ -805,7 +794,7 @@ function ToolSurface() {
 
       <div className="mkt-grid-4-2-1" style={{ marginTop: '52px' }}>
         {groups.map((g) => {
-          const c = MODS[g.module];
+          const c = getModuleColor(g.module);
           return (
             <div
               key={g.label}

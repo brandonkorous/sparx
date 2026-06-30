@@ -41,7 +41,7 @@ export function FeaturesPage() {
           accent="var(--sparx-primary)"
           headline={
             <>
-              Eleven modules.{' '}
+              {counts.modules} modules.{' '}
               <span style={{ color: 'var(--color-text-tertiary)' }}>Activate any combination</span>
             </>
           }

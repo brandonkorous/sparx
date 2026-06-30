@@ -25,6 +25,8 @@ export interface SummaryPlanItem {
   included?: boolean;
   /** Token var for the module's dot color, e.g. `var(--module-builder)`. */
   colorVar: string;
+  /** Optional sub-caption under the name (e.g. the story's "comes with Dropship"). */
+  caption?: string;
 }
 
 export interface SummaryEntry {
@@ -46,6 +48,10 @@ export interface SummaryCardProps {
   /** Past the Modules step the breakdown collapses (it's reference, not the
    *  focus) so the accreting receipt below stays the star — expandable anytime. */
   collapsibleModules?: boolean;
+  /** Optional rich sections rendered between the savings block and the CTA — the
+   *  story flow populates these (starting point, web address, fulfillment, etc.);
+   *  the step-by-step wizard leaves it empty and uses `entries` instead. */
+  extras?: React.ReactNode;
 }
 
 export function SummaryCard({
@@ -55,6 +61,7 @@ export function SummaryCard({
   onBack,
   error,
   collapsibleModules = false,
+  extras,
 }: SummaryCardProps) {
   const savings = Math.max(0, plan.elsewhere - plan.total);
   const [expanded, setExpanded] = React.useState(false);
@@ -110,15 +117,22 @@ export function SummaryCard({
         ) : (
           showList &&
           plan.items.map((m) => (
-            <div key={m.key} className="flex items-center justify-between">
-              <span className="flex items-center gap-2.5">
+            <div key={m.key} className="flex items-start justify-between gap-2">
+              <span className="flex min-w-0 items-start gap-2.5">
                 <span
-                  className="h-2 w-2 shrink-0 rounded-full"
+                  className="mt-1.5 h-2 w-2 shrink-0 rounded-full"
                   style={{ background: m.colorVar }}
                 />
-                <Text size="sm" variant="muted">
-                  {m.name}
-                </Text>
+                <span className="min-w-0">
+                  <Text size="sm" variant="muted">
+                    {m.name}
+                  </Text>
+                  {m.caption && (
+                    <Text size="xs" variant="muted" className="block opacity-80">
+                      {m.caption}
+                    </Text>
+                  )}
+                </span>
               </span>
               <Text
                 size="sm"
@@ -144,15 +158,20 @@ export function SummaryCard({
             </span>
           </div>
           {savings > 0 && (
-            <div className="flex items-center gap-2 rounded-lg bg-[var(--color-success-tint)] px-3 py-2.5">
-              <Check className="h-3.5 w-3.5 text-[var(--color-success-text)]" />
-              <span className="text-xs font-medium text-[var(--color-success-text)]">
-                You save ${savings}/mo on one bill
+            <div className="flex items-center gap-2.5 rounded-lg bg-[var(--color-success-tint)] px-3.5 py-3">
+              <Check className="h-4 w-4 shrink-0 text-[var(--color-success-text)]" />
+              <span className="text-sm text-[var(--color-success-text)]">
+                You save{' '}
+                <span className="text-base font-semibold">${savings.toLocaleString()}/mo</span> on
+                one bill
               </span>
             </div>
           )}
         </div>
       )}
+
+      {/* ── Story extras (starting point, web address, fulfillment, payments) ─── */}
+      {extras}
 
       {/* ── Accreting receipt rows (the choices made downstream) ──────────── */}
       {entries.length > 0 && (

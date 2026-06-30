@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Six tabs · A — Collapsing stack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #18181b;
+        --ink-2: #52525b;
+        --ink-3: #a1a1aa;
+        --ground: #eaecf1;
+        --surface: #ffffff;
+        --border: #e4e4e7;
+        --indigo: #6366f1;
+        --indigo-press: #4f46e5;
+        --red: #dc2626;
+        --green: #16a34a;
+        --green-tint: #ecfdf5;
+        --sans: 'Inter', system-ui, sans-serif;
+        --mono: 'JetBrains Mono', ui-monospace, monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: var(--sans);
+        background: var(--ground);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+        padding: 72px 0 120px;
+      }
+      .wrap {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 0 32px;
+      }
+      .wordmark {
+        font-weight: 700;
+        font-size: 20px;
+        letter-spacing: -0.03em;
+        margin-bottom: 64px;
+      }
+      .wordmark b {
+        color: var(--indigo);
+        font-weight: 700;
+      }
+      h1 {
+        font-weight: 500;
+        font-size: clamp(40px, 6vw, 68px);
+        line-height: 0.96;
+        letter-spacing: -0.035em;
+      }
+      h1 .dot {
+        color: var(--indigo);
+      }
+      .lede {
+        margin-top: 24px;
+        max-width: 600px;
+        font-size: 18px;
+        line-height: 1.6;
+        color: var(--ink-2);
+      }
+      .stage {
+        margin-top: 56px;
+        display: grid;
+        grid-template-columns: 1fr 88px 1fr;
+        align-items: center;
+        gap: 8px;
+      }
+      /* LEFT — the pile of expensive tools */
+      .pile {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .chip {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px 18px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 1px 2px rgba(9, 9, 11, 0.04);
+        opacity: 0;
+        transform: translateY(14px);
+        transition:
+          transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+          opacity 0.45s ease;
+      }
+      .stage.p1 .chip {
+        opacity: 1;
+        transform: none;
+        transition-delay: calc(var(--i) * 70ms);
+      }
+      .stage.p2 .chip {
+        opacity: 0;
+        transform: translate(120px, var(--ty)) scale(0.45);
+        transition:
+          transform 0.7s cubic-bezier(0.5, 0, 0.4, 1),
+          opacity 0.5s ease;
+        transition-delay: calc(var(--i) * 45ms);
+      }
+      .chip .name {
+        font-weight: 500;
+        font-size: 14px;
+      }
+      .chip .sub {
+        font-size: 12px;
+        color: var(--ink-3);
+        margin-top: 2px;
+      }
+      .chip .price {
+        font-family: var(--mono);
+        font-size: 13px;
+        color: var(--ink-2);
+        white-space: nowrap;
+      }
+      .pile-total {
+        margin-top: 6px;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        padding: 8px 18px 0;
+      }
+      .pile-total .lab {
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-2);
+        font-weight: 500;
+      }
+      .pile-total .amt {
+        font-family: var(--mono);
+        font-weight: 500;
+        font-size: 22px;
+        color: var(--red);
+      }
+      .stage.p2 .pile-total {
+        opacity: 0;
+        transition: opacity 0.4s ease;
+      }
+      /* MIDDLE — merge arrow */
+      .merge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--ink-3);
+        opacity: 0;
+        transition: opacity 0.4s ease 0.2s;
+      }
+      .stage.p1 .merge {
+        opacity: 1;
+      }
+      .stage.p2 .merge {
+        opacity: 0;
+      }
+      /* RIGHT — the one bill */
+      .one {
+        position: relative;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-top: 3px solid var(--indigo);
+        border-radius: 16px;
+        padding: 26px;
+        box-shadow: 0 16px 40px rgba(9, 9, 11, 0.1);
+        opacity: 0;
+        transform: scale(0.92);
+        transition:
+          transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+          opacity 0.5s ease;
+      }
+      .stage.p2 .one {
+        opacity: 1;
+        transform: none;
+        transition-delay: 0.25s;
+      }
+      .one .brand {
+        font-weight: 700;
+        font-size: 18px;
+        letter-spacing: -0.03em;
+      }
+      .one .brand b {
+        color: var(--indigo);
+      }
+      .one .mods {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin: 16px 0 20px;
+      }
+      .one .mod {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--ink-2);
+        background: #f4f5f8;
+        border-radius: 999px;
+        padding: 5px 10px;
+      }
+      .one .mod i {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        display: inline-block;
+      }
+      .one .bill {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        border-top: 1px solid var(--border);
+        padding-top: 16px;
+      }
+      .one .bill .lab {
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-2);
+        font-weight: 500;
+      }
+      .one .bill .amt {
+        font-family: var(--mono);
+        font-weight: 500;
+        font-size: 26px;
+        color: var(--indigo);
+      }
+      /* SAVINGS payoff */
+      .save {
+        margin-top: 28px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 8px 20px;
+        padding: 22px 26px;
+        background: var(--green-tint);
+        border-radius: 16px;
+        opacity: 0;
+        transform: translateY(12px);
+        transition:
+          opacity 0.5s ease,
+          transform 0.5s ease;
+      }
+      .stage.p2 ~ .save,
+      .save.show {
+        opacity: 1;
+        transform: none;
+      }
+      .save .big {
+        font-weight: 600;
+        font-size: clamp(26px, 4vw, 38px);
+        letter-spacing: -0.02em;
+        color: var(--green);
+      }
+      .save .small {
+        color: var(--ink-2);
+        font-size: 15px;
+      }
+      .cta {
+        margin-top: 32px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+      .btn {
+        font-family: var(--sans);
+        font-weight: 500;
+        font-size: 15px;
+        border-radius: 10px;
+        padding: 13px 20px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        text-decoration: none;
+      }
+      .btn-primary {
+        background: var(--indigo);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--indigo-press);
+      }
+      .btn-outline {
+        background: transparent;
+        color: var(--ink);
+        border-color: var(--border);
+      }
+      .micro {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--ink-3);
+        margin-top: 14px;
+      }
+      .replay {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        font-family: var(--mono);
+        font-size: 12px;
+        background: #18181b;
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 9px 16px;
+        cursor: pointer;
+      }
+      @media (max-width: 720px) {
+        .stage {
+          grid-template-columns: 1fr;
+          gap: 18px;
+        }
+        .merge {
+          transform: rotate(90deg);
+        }
+        .stage.p2 .chip {
+          transform: translateY(40px) scale(0.5);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .chip,
+        .one,
+        .save,
+        .merge,
+        .pile-total {
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <button class="replay" onclick="play()">↻ replay</button>
+    <div class="wrap">
+      <div class="wordmark">spar<b>x</b></div>
+      <h1>Six tabs.<br />One bill<span class="dot">.</span></h1>
+      <p class="lede">
+        A tab for your store, another for email, a CRM that talks to neither, and an automation bill
+        quietly holding it together. Watch the cost stack up — then collapse.
+      </p>
+
+      <div class="stage" id="stage">
+        <div>
+          <div class="pile" id="pile">
+            <div class="chip" style="--i: 0; --ty: -120px">
+              <div>
+                <div class="name">Online store + checkout</div>
+                <div class="sub">storefront, cart, payments</div>
+              </div>
+              <div class="price">$399/mo</div>
+            </div>
+            <div class="chip" style="--i: 1; --ty: -70px">
+              <div>
+                <div class="name">CRM + marketing</div>
+                <div class="sub">contacts, pipeline, automations</div>
+              </div>
+              <div class="price">$1,600/mo</div>
+            </div>
+            <div class="chip" style="--i: 2; --ty: -25px">
+              <div>
+                <div class="name">Email platform</div>
+                <div class="sub">sending, lists, deliverability</div>
+              </div>
+              <div class="price">$350/mo</div>
+            </div>
+            <div class="chip" style="--i: 3; --ty: 25px">
+              <div>
+                <div class="name">CMS + blog</div>
+                <div class="sub">content, media, SEO</div>
+              </div>
+              <div class="price">$180/mo</div>
+            </div>
+            <div class="chip" style="--i: 4; --ty: 70px">
+              <div>
+                <div class="name">Automation glue</div>
+                <div class="sub">the wiring between apps</div>
+              </div>
+              <div class="price">$240/mo</div>
+            </div>
+            <div class="chip" style="--i: 5; --ty: 120px">
+              <div>
+                <div class="name">Site + hosting</div>
+                <div class="sub">usually bundled, never free</div>
+              </div>
+              <div class="price">—</div>
+            </div>
+          </div>
+          <div class="pile-total">
+            <span class="lab">Total today</span>
+            <span class="amt" id="total">$0/mo</span>
+          </div>
+        </div>
+
+        <div class="merge">
+          <svg width="40" height="16" viewBox="0 0 40 16" fill="none">
+            <path d="M0 8H34M34 8L27 2M34 8L27 14" stroke="currentColor" stroke-width="1.6" />
+          </svg>
+        </div>
+
+        <div class="one">
+          <div class="brand">spar<b>x</b></div>
+          <div class="mods">
+            <span class="mod"><i style="background: #f97316"></i> Commerce</span>
+            <span class="mod"><i style="background: #06b6d4"></i> CRM</span>
+            <span class="mod"><i style="background: #0ea5e9"></i> Email</span>
+            <span class="mod"><i style="background: #14b8a6"></i> CMS</span>
+            <span class="mod"><i style="background: #6366f1"></i> Builder</span>
+          </div>
+          <div class="bill">
+            <span class="lab">One bill</span>
+            <span class="amt">$186/mo</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="save" id="save">
+        <span class="big">You save <span id="saveNum">$0</span> a year</span>
+        <span class="small">Six tools → one platform. Pay only for the modules you switch on.</span>
+      </div>
+
+      <div class="cta">
+        <a class="btn btn-primary" href="#">Start my site free →</a>
+        <a class="btn btn-outline" href="#">See the full price list</a>
+      </div>
+      <div class="micro">No card · cancel anytime · switch a module off and its bill stops</div>
+    </div>
+
+    <script>
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const stage = document.getElementById('stage');
+      const save = document.getElementById('save');
+      const totalEl = document.getElementById('total');
+      const saveEl = document.getElementById('saveNum');
+      let timers = [];
+
+      function countUp(el, to, dur, pre = '$') {
+        const start = performance.now();
+        function tick(now) {
+          const t = Math.min(1, (now - start) / dur);
+          const v = Math.round(to * (1 - Math.pow(1 - t, 3)));
+          el.textContent = pre + v.toLocaleString('en-US');
+          if (t < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      function play() {
+        timers.forEach(clearTimeout);
+        timers = [];
+        stage.classList.remove('p1', 'p2');
+        save.classList.remove('show');
+        totalEl.textContent = '$0/mo';
+        saveEl.textContent = '$0';
+
+        if (reduce) {
+          stage.classList.add('p1', 'p2');
+          save.classList.add('show');
+          totalEl.textContent = '$2,769/mo';
+          saveEl.textContent = '$30,996';
+          return;
+        }
+        // force reflow so the reset takes before re-animating
+        void stage.offsetWidth;
+        timers.push(
+          setTimeout(() => {
+            stage.classList.add('p1');
+            const s = performance.now();
+            const f = (now) => {
+              const t = Math.min(1, (now - s) / 1100);
+              totalEl.textContent =
+                '$' + Math.round(2769 * (1 - Math.pow(1 - t, 3))).toLocaleString('en-US') + '/mo';
+              if (t < 1) requestAnimationFrame(f);
+            };
+            requestAnimationFrame(f);
+          }, 80)
+        );
+        timers.push(
+          setTimeout(() => {
+            stage.classList.add('p2');
+            save.classList.add('show');
+            countUp(saveEl, 30996, 1000);
+          }, 1900)
+        );
+      }
+
+      const io = new IntersectionObserver(
+        (es) => {
+          es.forEach((e) => {
+            if (e.isIntersecting) {
+              play();
+              io.disconnect();
+            }
+          });
+        },
+        { threshold: 0.4 }
+      );
+      io.observe(stage);
+    </script>
+  </body>
+</html>

@@ -1,253 +1,183 @@
-import { ModuleProvider, type SparxModule } from '@sparx/ui';
-import { Section, SectionHeader, Dot, getModuleColor, type MarketingModule } from './primitives';
+import { Section, SectionHeader, Dot, getModuleColor } from './primitives';
+import { Reveal } from './reveal';
+import { MODULES, MODULES_PRICE_FLOOR, type ModuleEntry } from './modules-catalog';
 
-interface ModuleCard {
-  id: SparxModule & MarketingModule;
-  number: string;
-  label: string;
-  title: string;
-  description: string;
-  price: string;
-}
-
-const MODULES: ModuleCard[] = [
-  {
-    id: 'builder',
-    number: '01',
-    label: 'Builder',
-    title: 'Themes, pages, live URLs.',
-    description:
-      'The site builder. Pick a theme, edit blocks, point your domain. No code. No staging dance.',
-    price: '$10/mo',
-  },
-  {
-    id: 'commerce',
-    number: '02',
-    label: 'Commerce',
-    title: 'Cart, checkout, orders.',
-    description: 'Products, inventory, payments. Stripe, PayPal, Klarna. Tax and shipping handled.',
-    price: '+$49/mo',
-  },
-  {
-    id: 'cms',
-    number: '03',
-    label: 'CMS',
-    title: 'Words, media, SEO.',
-    description:
-      'Editor, blog, media library, structured content. Works standalone — no Builder required.',
-    price: '$49/mo',
-  },
-  {
-    id: 'crm',
-    number: '04',
-    label: 'CRM',
-    title: 'Customers, pipeline, signal.',
-    description:
-      'Activity log, automations, segments. Built on your commerce data — not stitched to it.',
-    price: '+$49/mo',
-  },
-  {
-    id: 'email',
-    number: '05',
-    label: 'Email',
-    title: 'Transactional and marketing.',
-    description:
-      'Self-hosted Postal on sparx.email. Your domain, your reputation. No SendGrid markup.',
-    price: '+$29/mo',
-  },
-  {
-    id: 'b2b',
-    number: '06',
-    label: 'B2B',
-    title: 'Accounts, net terms, fleet.',
-    description:
-      'Account pricing, RFQ, purchase orders, fleet accounts. Wholesale on the same engine as retail.',
-    price: '+$99/mo',
-  },
-  {
-    id: 'ai',
-    number: '07',
-    label: 'AI / MCP',
-    title: 'Your AI speaks your data.',
-    description:
-      'First-class MCP server. Claude, ChatGPT, and Copilot read live business data — natively.',
-    price: '+$49/mo',
-  },
-  {
-    id: 'dropship',
-    number: '08',
-    label: 'Dropship',
-    title: 'Suppliers, sync, fulfillment.',
-    description: 'Catalog sync, margin math, automated order routing. Sell without inventory.',
-    price: '+$29/mo',
-  },
-  {
-    id: 'scheduling',
-    number: '09',
-    label: 'Scheduling',
-    title: 'Appointments, classes, bookings.',
-    description:
-      'Appointments, classes, reservations, rentals — one engine, with deposits, reminders, and waitlists.',
-    price: '$29/mo',
-  },
-];
+// The module menu — every billable module on one scannable grid (docs/learnings
+// §1 clarity, §2 "a list with a job"). The job here is BREADTH + the modular
+// promise: this is the whole platform, you switch on only what you need, and some
+// pieces ride along free. The count is DERIVED from the catalog so it can never
+// drift from the product the way the old hardcoded "Nine pieces" did.
+//
+// Cards wear a soft, theme-aware module-tint wash (color-mix into the surface, so
+// it adapts to dark mode) instead of the retired 3px top stripe — matching the
+// dashboard's <Card variant="module">. A module menu is the sanctioned exception
+// to "one tinted card per page": here the tint is a color legend, not noise.
 
 export function ModulesGrid() {
   return (
-    <Section id="modules" surface="surface" padding="lg">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
+    <Section id="modules" surface="surface" padding="lg" className="mkt-stage">
+      <Reveal style={{ display: 'flex', flexDirection: 'column', gap: '56px' }}>
         <SectionHeader
           accent="var(--sparx-primary)"
           headline={
             <>
-              Nine pieces.{' '}
-              <span style={{ color: 'var(--color-text-tertiary)' }}>
-                Activate only what you need
-              </span>
+              {MODULES.length} modules.{' '}
+              <span style={{ color: 'var(--color-text-tertiary)' }}>Switch on what you need</span>
             </>
           }
           lede={
             <>
-              Modules share one data layer, one dashboard, one bill. Turn one on for $29–$99/mo.
-              Turn it off and it stops billing — no migration, no exports, no goodbyes.
+              Every module shares one data layer, one dashboard, one bill — from $
+              {MODULES_PRICE_FLOOR}/mo. Some, like Inventory and Invoicing, come free the moment you
+              add Commerce. Turn a module off and it stops billing — no migration, no exports, no
+              goodbyes.
             </>
           }
         />
 
         <div className="mkt-grid-4-2-1">
-          {MODULES.map((m) => (
-            <ModuleProvider key={m.id} module={m.id} style={{ display: 'flex' }}>
-              <ModuleCard {...m} />
-            </ModuleProvider>
+          {MODULES.map((m, i) => (
+            <Reveal key={m.id} index={i % 4} style={{ display: 'flex' }}>
+              <ModuleTile module={m} />
+            </Reveal>
           ))}
         </div>
-      </div>
+      </Reveal>
     </Section>
   );
 }
 
-function ModuleCard({ id, number, label, title, description, price }: ModuleCard) {
-  const color = getModuleColor(id);
-  return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        width: '100%',
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
-        borderTop: `3px solid ${color.color}`,
-        borderRadius: '8px',
-        padding: '28px',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '12px',
-        }}
-      >
+function ModuleTile({ module: m }: { module: ModuleEntry }) {
+  const color = getModuleColor(m.id);
+  const tileStyle = {
+    // Theme-aware tint: mixes the hue into the live surface token, so it stays a
+    // tinted-white card in light mode and a tinted-dark card in dark mode.
+    ['--tile-tint' as string]: `color-mix(in oklab, ${color.color} 8%, var(--color-bg-surface))`,
+    ['--tile-accent' as string]: color.color,
+  } as React.CSSProperties;
+
+  const body = (
+    <>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+        <Dot color={color.color} size={7} />
         <span
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '4px 10px',
-            backgroundColor: color.tint,
-            borderRadius: '9999px',
+            fontFamily: 'var(--font-sans)',
+            fontWeight: 500,
+            fontSize: '13px',
+            letterSpacing: '0.01em',
+            color: color.text,
           }}
         >
-          <Dot color={color.color} />
-          <span
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontWeight: 500,
-              fontSize: '11px',
-              letterSpacing: '0.05em',
-              color: color.text,
-              textTransform: 'uppercase',
-            }}
-          >
-            {label}
-          </span>
+          {m.label}
         </span>
-        <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '12px',
-            color: 'var(--color-text-tertiary)',
-          }}
-        >
-          {number}
-        </span>
-      </div>
+      </span>
 
       <h3
         style={{
           fontFamily: 'var(--font-sans)',
           fontWeight: 500,
-          fontSize: '24px',
+          fontSize: '19px',
           letterSpacing: '-0.02em',
-          lineHeight: '30px',
+          lineHeight: '24px',
           color: 'var(--color-text-primary)',
-          paddingTop: '40px',
+          paddingTop: '18px',
           margin: 0,
         }}
       >
-        {title}
+        {m.title}
       </h3>
 
       <p
         style={{
           fontFamily: 'var(--font-sans)',
           fontSize: '14px',
-          lineHeight: '22px',
+          lineHeight: '21px',
           color: 'var(--color-text-secondary)',
-          paddingTop: '10px',
+          paddingTop: '8px',
           margin: 0,
         }}
       >
-        {description}
+        {m.description}
       </p>
 
-      <div
+      <ModuleTileFooter module={m} color={color} />
+    </>
+  );
+
+  return m.href ? (
+    <a href={m.href} className="mkt-module-tile" style={tileStyle}>
+      {body}
+    </a>
+  ) : (
+    <div className="mkt-module-tile" style={tileStyle}>
+      {body}
+    </div>
+  );
+}
+
+function ModuleTileFooter({
+  module: m,
+  color,
+}: {
+  module: ModuleEntry;
+  color: ReturnType<typeof getModuleColor>;
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '10px',
+        marginTop: 'auto',
+        paddingTop: '20px',
+      }}
+    >
+      <span
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingTop: '48px',
-          marginTop: '32px',
-          borderTop: '1px solid #F4F4F5',
+          fontFamily: 'var(--font-sans)',
+          fontWeight: 500,
+          fontSize: '15px',
+          color: 'var(--color-text-primary)',
         }}
       >
+        ${m.price}
+        <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 400, fontSize: '13px' }}>
+          /mo
+        </span>
+      </span>
+
+      {m.includedWith ? (
         <span
           style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '5px',
+            padding: '3px 9px',
+            backgroundColor: 'var(--color-success-tint)',
+            borderRadius: '9999px',
             fontFamily: 'var(--font-sans)',
             fontWeight: 500,
-            fontSize: '14px',
-            color: 'var(--color-text-primary)',
+            fontSize: '11px',
+            color: 'var(--color-success)',
+            whiteSpace: 'nowrap',
           }}
         >
-          {price.split('/')[0]}
-          <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 400 }}>
-            /{price.split('/')[1]}
-          </span>
+          Free with {m.includedWith.join(' or ')}
         </span>
-        <a
-          href={`/${id}`}
+      ) : m.href ? (
+        <span
           style={{
             fontFamily: 'var(--font-sans)',
             fontWeight: 500,
             fontSize: '13px',
             color: color.color,
-            textDecoration: 'none',
           }}
         >
           Learn →
-        </a>
-      </div>
+        </span>
+      ) : null}
     </div>
   );
 }

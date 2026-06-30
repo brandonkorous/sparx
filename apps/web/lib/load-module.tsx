@@ -13,10 +13,10 @@ import type { Metadata } from 'next';
 import { Nav } from '@/components/marketing/nav';
 import { Footer } from '@/components/marketing/footer';
 import { ModulePage } from '@/components/marketing/module-page';
-import type { MarketingModule } from '@/components/marketing/primitives';
 import { loadModuleData } from '@/lib/load-module-data';
+import type { ModulePageSlug } from '@/lib/modules';
 
-type ModuleKey = MarketingModule;
+type ModuleKey = ModulePageSlug;
 
 export function makeMetadata(slug: ModuleKey) {
   return function generateMetadata(): Metadata {
