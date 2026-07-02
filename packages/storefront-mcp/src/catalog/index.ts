@@ -8,15 +8,18 @@ import { commerceTools } from './commerce.js';
 import { schedulingTools } from './scheduling.js';
 import { cartTools } from './cart.js';
 import { checkoutTools } from './checkout.js';
+import { accountTools } from './account.js';
 
-/** All Phase-1 shopper tools (anonymous `read` + `guest_write`). Phase-2
- *  `customer`-tier tools are appended here when that tier lands (docs/113 §5). */
+/** Every shopper tool. `read` + `guest_write` are the anonymous surface; the
+ *  `customer`-tier `accountTools` (docs/113 §5) are registered only once the
+ *  shopper authorizes via OAuth (the host filters by `kind`). */
 export const STOREFRONT_TOOLS: StorefrontTool[] = [
   ...storeTools,
   ...commerceTools,
   ...schedulingTools,
   ...cartTools,
   ...checkoutTools,
+  ...accountTools,
 ];
 
 export const TOOLS_BY_NAME: ReadonlyMap<string, StorefrontTool> = new Map(

@@ -18,9 +18,10 @@ import Fastify, {
 } from 'fastify';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { env } from './env.js';
-import { buildStorefrontServer } from './mcp.js';
-import { resolveSite, makeClient, fetchDisabledModules, UnknownStorefrontError } from './site.js';
+import { buildStorefrontServer, invokesCustomerTool } from './mcp.js';
+import { resolveSite, makeClient, fetchStoreInfo, UnknownStorefrontError } from './site.js';
 import { enforceRateLimit, RateLimitError } from './rate-limit.js';
+import { bearerToken, protectedResourceMetadata, wwwAuthenticate } from './oauth-resource.js';
 
 function loggerOptions(): FastifyServerOptions['logger'] {
   if (env.NODE_ENV === 'test') return false;
@@ -54,15 +55,59 @@ async function handleMcp(
     enforceRateLimit(`${site.tenantSlug}:${request.ip}`);
   }
 
-  const ctx = { tenantSlug: site.tenantSlug, propertySlug: site.propertySlug };
-  const client = makeClient(site);
-  const disabledModules = await fetchDisabledModules(client);
+  const bearer = bearerToken(request);
+
+  // Bootstrap the OAuth flow (docs/113 §5): a customer-tier tool call WITHOUT a
+  // bearer is answered with a 401 + RFC 9728 challenge at the HTTP layer so the
+  // shopper's client discovers the store's authorization server and connects. (An
+  // expired/invalid bearer is caught downstream by api-rest, surfaced as a tool
+  // error telling the client to reconnect.)
+  if (request.method === 'POST' && !bearer && invokesCustomerTool(request.body)) {
+    reply
+      .code(401)
+      .header('WWW-Authenticate', wwwAuthenticate(request))
+      .header('access-control-expose-headers', 'WWW-Authenticate')
+      .send({
+        success: false,
+        error: {
+          code: 'UNAUTHORIZED',
+          message: 'Connect your account to use this tool, then try again.',
+          request_id: request.id,
+        },
+      });
+    return;
+  }
+
+  const ctx = {
+    tenantSlug: site.tenantSlug,
+    propertySlug: site.propertySlug,
+    customerBearer: bearer,
+  };
+  const client = makeClient(site, bearer);
+  const { disabledModules } = await fetchStoreInfo(client);
   const server = buildStorefrontServer(client, ctx, disabledModules);
 
   const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
   await server.connect(transport);
   await transport.handleRequest(request.raw, reply.raw, request.body);
   reply.hijack();
+}
+
+/** Serve RFC 9728 Protected Resource Metadata for a store's MCP endpoint (docs/113
+ *  §5) — the shopper's client fetches this from the WWW-Authenticate challenge to
+ *  discover the store's authorization server. Public + cached. */
+async function handleResourceMetadata(
+  request: FastifyRequest,
+  reply: FastifyReply,
+  subpath: SubPath | undefined
+): Promise<void> {
+  const site = await resolveSite(request, subpath);
+  const { siteUrl } = await fetchStoreInfo(makeClient(site));
+  reply
+    .header('access-control-allow-origin', '*')
+    .header('cache-control', 'public, max-age=3600')
+    .code(200)
+    .send(protectedResourceMetadata(request, siteUrl));
 }
 
 export async function createApp(): Promise<FastifyInstance> {
@@ -114,22 +159,34 @@ export async function createApp(): Promise<FastifyInstance> {
 }
 
 /** The MCP endpoint on three URL shapes: per-site `/mcp` (site from Host) and
- *  the canonical `/s/:tenant[/:property]/mcp` (site from the path). */
+ *  the canonical `/s/:tenant[/:property]/mcp` (site from the path). Each shape also
+ *  serves its RFC 9728 resource-metadata doc at `<mcp-path>/.well-known/
+ *  oauth-protected-resource` (docs/113 §5). */
 function registerMcpRoutes(app: FastifyInstance): void {
   const methods = ['POST', 'GET', 'DELETE'] as const;
+  const WELL_KNOWN = '/.well-known/oauth-protected-resource';
   app.route({
     method: [...methods],
     url: '/mcp',
     handler: (request, reply) => handleMcp(request, reply, undefined),
   });
+  app.get(`/mcp${WELL_KNOWN}`, (request, reply) =>
+    handleResourceMetadata(request, reply, undefined)
+  );
   app.route({
     method: [...methods],
     url: '/s/:tenant/mcp',
     handler: (request, reply) => handleMcp(request, reply, request.params as SubPath),
   });
+  app.get(`/s/:tenant/mcp${WELL_KNOWN}`, (request, reply) =>
+    handleResourceMetadata(request, reply, request.params as SubPath)
+  );
   app.route({
     method: [...methods],
     url: '/s/:tenant/:property/mcp',
     handler: (request, reply) => handleMcp(request, reply, request.params as SubPath),
   });
+  app.get(`/s/:tenant/:property/mcp${WELL_KNOWN}`, (request, reply) =>
+    handleResourceMetadata(request, reply, request.params as SubPath)
+  );
 }

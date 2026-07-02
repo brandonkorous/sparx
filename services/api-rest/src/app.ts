@@ -99,6 +99,7 @@ import publicCartRoutes from './routes/v1/public/cart.js';
 import publicCheckoutRoutes from './routes/v1/public/checkout.js';
 import publicReviewRoutes from './routes/v1/public/reviews.js';
 import publicAccountRoutes from './routes/v1/public/account.js';
+import publicAuthRoutes from './routes/v1/public/auth.js';
 import publicSiteSnapshotRoutes from './routes/v1/public/site-snapshot.js';
 import publicSiteRoutes from './routes/v1/public/site.js';
 import publicStorefrontInfoRoutes from './routes/v1/public/storefront-info.js';
@@ -729,6 +730,10 @@ export async function createApp(): Promise<FastifyInstance> {
         '/v1/openapi.json',
         '/v1/sitemap.xml',
         '/v1/public/',
+        // OAuth discovery for the shopper AS (docs/113 §5) — RFC 8414 mandates the
+        // metadata at the store-root `.well-known`, outside `/v1/public/`. Public
+        // by definition (a client must read it pre-token).
+        '/.well-known/',
         // Local-mode media upload endpoints — issued by `presignPut` and
         // self-authorising via the in-URL object key. Skipping the Bearer
         // check here mirrors the GCS signed-URL contract.
@@ -785,6 +790,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(publicMarketRoutes);
   await app.register(publicReviewRoutes);
   await app.register(publicAccountRoutes);
+  await app.register(publicAuthRoutes);
   await app.register(publicB2bPortalRoutes);
   await app.register(publicB2bSchedulingRoutes);
   await app.register(publicSchedulingRoutes);

@@ -5,6 +5,7 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import {
+  getStorefrontTool,
   toolsForModules,
   mcpAnnotations,
   StorefrontApiError,
@@ -14,6 +15,24 @@ import {
 } from '@sparx/storefront-mcp';
 
 const SERVER_INFO = { name: 'sparx-storefront-mcp', version: '1.0.0' };
+
+interface JsonRpcCall {
+  method?: unknown;
+  params?: { name?: unknown } | null;
+}
+
+/** True when a JSON-RPC body invokes a `customer`-tier tool (single or batch) —
+ *  those need a verified shopper bearer, so an unauthenticated call is answered
+ *  with a 401 + WWW-Authenticate to bootstrap the OAuth flow (docs/113 §5). */
+export function invokesCustomerTool(body: unknown): boolean {
+  const calls: unknown[] = Array.isArray(body) ? body : [body];
+  return calls.some((c) => {
+    const call = c as JsonRpcCall;
+    if (call?.method !== 'tools/call') return false;
+    const name = call.params?.name;
+    return typeof name === 'string' && getStorefrontTool(name)?.kind === 'customer';
+  });
+}
 
 interface ToolResult {
   content: { type: 'text'; text: string }[];
@@ -27,9 +46,11 @@ export function buildStorefrontServer(
 ): McpServer {
   const server = new McpServer(SERVER_INFO);
 
-  // Skip modules the tenant switched off (cleaner tools/list) and the Phase-2
-  // customer tier (not wired yet).
-  const tools = toolsForModules(disabledModules).filter((t) => t.kind !== 'customer');
+  // Skip modules the tenant switched off (cleaner tools/list). Customer-tier tools
+  // ARE registered so the client can see the capability; a call without a valid
+  // bearer is challenged at the HTTP layer (app.ts) and, once authorized, api-rest
+  // verifies + scope-gates the relayed bearer.
+  const tools = toolsForModules(disabledModules);
 
   for (const tool of tools) {
     const inputSchema = tool.input as Parameters<typeof server.registerTool>[1]['inputSchema'];

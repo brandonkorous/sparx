@@ -54,9 +54,15 @@ async function bookingContext(request: FastifyRequest): Promise<CustomerAuthCont
 }
 
 /** The signed-in customer id for the active site, or 401 (docs/27 v2 — session →
- *  Better Auth user → per-site membership, resolved in lib/customer-session). */
-function requireCustomer(request: FastifyRequest, ctx: CustomerAuthContext): Promise<string> {
-  return requireCustomerId(request, ctx);
+ *  Better Auth user → per-site membership, resolved in lib/customer-session).
+ *  `scope` gates a customer MCP OAuth bearer (docs/113 §5); a cookie session always
+ *  passes. */
+function requireCustomer(
+  request: FastifyRequest,
+  ctx: CustomerAuthContext,
+  scope: string
+): Promise<string> {
+  return requireCustomerId(request, ctx, scope);
 }
 
 const MODIFIABLE = ['requested', 'confirmed'];
@@ -116,7 +122,7 @@ const schedulingAccountRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/public/scheduling/account/bookings', async (request) => {
     const { scope, page, pageSize } = ListQuery.parse(request.query);
     const ctx = await bookingContext(request);
-    const customerId = await requireCustomer(request, ctx);
+    const customerId = await requireCustomer(request, ctx, 'bookings:read');
     const nowIso = new Date().toISOString();
     const { rows, total } = await listBookings(ctx.tenantId, {
       customerId,
@@ -136,7 +142,7 @@ const schedulingAccountRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/public/scheduling/account/bookings/:bookingId', async (request) => {
     const { bookingId } = IdParam.parse(request.params);
     const ctx = await bookingContext(request);
-    const customerId = await requireCustomer(request, ctx);
+    const customerId = await requireCustomer(request, ctx, 'bookings:read');
     const booking = await ownedBooking(ctx.tenantId, bookingId, customerId);
     return ok(toBookingDto(booking, Date.now(), ctx.tenantId));
   });
@@ -145,7 +151,7 @@ const schedulingAccountRoutes: FastifyPluginAsync = async (app) => {
     const { bookingId } = IdParam.parse(request.params);
     const body = CancelBody.parse(request.body ?? {});
     const ctx = await bookingContext(request);
-    const customerId = await requireCustomer(request, ctx);
+    const customerId = await requireCustomer(request, ctx, 'bookings:write');
     // Ownership first — a 404 here means "not yours", indistinguishable from
     // "doesn't exist". The engine then enforces the cancellable-state machine.
     await ownedBooking(ctx.tenantId, bookingId, customerId);
@@ -172,7 +178,7 @@ const schedulingAccountRoutes: FastifyPluginAsync = async (app) => {
     const { bookingId } = IdParam.parse(request.params);
     const body = RescheduleBody.parse(request.body);
     const ctx = await bookingContext(request);
-    const customerId = await requireCustomer(request, ctx);
+    const customerId = await requireCustomer(request, ctx, 'bookings:write');
     await ownedBooking(ctx.tenantId, bookingId, customerId);
     // resourceIds empty → keep the same resources at the new time; the engine's
     // EXCLUDE constraint re-checks availability and throws SlotUnavailable (→409).

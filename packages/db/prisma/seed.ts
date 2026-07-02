@@ -1,7 +1,8 @@
 // Dev seed — idempotent: re-running upserts in place, so it's safe to call
 // `pnpm --filter @sparx/db db:seed` repeatedly.
 //
-// Creates the "E2E Store" tenant with one staff user
+// Creates the "WizeWorks LLC" dogfood tenant (slug `wizeworks`, matching the
+// prod platform tenant) with one staff user
 // (e2e-staff@sparx.test / e2e-test-password) — these credentials are baked
 // into Playwright tests and any local dashboard smoke test. The password hash
 // is produced by Better Auth's own hasher (scrypt, via better-auth/crypto) so
@@ -35,7 +36,9 @@ function ownerDatabaseUrl(): string | undefined {
   return process.env.DATABASE_URL;
 }
 
-const TENANT_SLUG = 'e2e-store';
+// Dev dogfood tenant — slug matches the prod platform tenant (`wizeworks`) so
+// first-party surfaces (/careers, /early) resolve to the same slug in both envs.
+const TENANT_SLUG = 'wizeworks';
 const STAFF_EMAIL = 'e2e-staff@sparx.test';
 const STAFF_PASSWORD = 'e2e-test-password';
 
@@ -3599,7 +3602,7 @@ async function main(): Promise<void> {
     update: {},
     create: {
       slug: TENANT_SLUG,
-      name: 'E2E Store',
+      name: 'WizeWorks LLC',
       email: STAFF_EMAIL,
       plan: 'starter',
       status: 'active',
@@ -3683,7 +3686,7 @@ async function main(): Promise<void> {
     });
   } catch (err) {
     console.warn(
-      `[seed] e2e-store staff user upsert skipped: ${err instanceof Error ? err.message : String(err)}`
+      `[seed] wizeworks staff user upsert skipped: ${err instanceof Error ? err.message : String(err)}`
     );
   }
 

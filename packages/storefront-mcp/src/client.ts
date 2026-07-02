@@ -80,7 +80,11 @@ export class StorefrontApiClient {
     const headers: Record<string, string> = { accept: 'application/json' };
     if (req.body !== undefined) headers['content-type'] = 'application/json';
     if (req.cartToken) headers['x-cart-token'] = req.cartToken;
-    if (this.ctx.customerSession) {
+    // Returning-customer credential (customer-tier tools). The MCP holds a bearer;
+    // the concierge holds a cookie. api-rest accepts either (lib/customer-session).
+    if (this.ctx.customerBearer) {
+      headers.authorization = `Bearer ${this.ctx.customerBearer}`;
+    } else if (this.ctx.customerSession) {
       headers.cookie = `sparx_customer_session=${this.ctx.customerSession}`;
     }
 

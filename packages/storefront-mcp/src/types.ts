@@ -23,13 +23,18 @@ export type ToolKind = 'read' | 'guest_write' | 'customer';
 export type ToolModule = 'commerce' | 'scheduling' | 'crm' | 'builder' | 'inventory' | 'email';
 
 /** The resolved storefront a tool call targets. Threaded onto every public-API
- *  request as `?tenant=&property=`. `customerSession` is Phase 2 only. */
+ *  request as `?tenant=&property=`. The customer credentials are `customer`-tier
+ *  only (docs/113 §5). */
 export interface StorefrontCtx {
   tenantSlug: string;
   propertySlug?: string | null;
   /** Returning-customer session cookie value, relayed as `sparx_customer_session`
-   *  on `customer`-tier calls (Phase 2). */
+   *  on `customer`-tier calls (the storefront concierge, which holds a cookie). */
   customerSession?: string | null;
+  /** Returning-customer MCP OAuth access token, relayed as `Authorization: Bearer`
+   *  on `customer`-tier calls (the storefront MCP, which holds a bearer). api-rest
+   *  verifies it (expiry + client-enabled + tenant scope) and enforces its scopes. */
+  customerBearer?: string | null;
 }
 
 /** What a tool returns to the caller. `meta` carries pagination/facets when the

@@ -10,13 +10,14 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { mcp } from 'better-auth/plugins';
+import { APIError, createAuthMiddleware, getSessionFromCtx } from 'better-auth/api';
 
 import { hashPassword, verifyPassword } from './hash';
 import { publishCustomerAuthEmail } from './email';
 import { resolveStoreBaseUrl } from './store-url';
 import { SESSION_COOKIE_NAME } from './session';
 import { tenantScopedClient } from './tenant-adapter';
-import { CUSTOMER_MCP_SCOPES } from './mcp-scopes';
+import { CUSTOMER_MCP_SCOPES, verifyCustomerConsentGrant } from './mcp-scopes';
 
 declare global {
   var __sparxCustomerAuth: ReturnType<typeof createCustomerAuth> | undefined;
@@ -24,6 +25,81 @@ declare global {
 
 /** Reset-token lifetime surfaced in the email copy (Better Auth default is 1h). */
 const RESET_EXPIRES_MINUTES = 60;
+
+/** The secret the customer Better Auth instance is constructed with — the SINGLE
+ *  source so the consent-grant minter (api-rest) and the /mcp/authorize guard
+ *  (which reads `ctx.context.secret`) sign + verify with the identical key. */
+export function customerAuthSecret(): string {
+  return process.env.CUSTOMER_AUTH_SECRET ?? process.env.BETTER_AUTH_SECRET ?? '';
+}
+
+/** Reconstruct the store's own public origin from the forwarded request headers.
+ *  The AS lives on the store origin (Caddy routes `<store>/v1/public/auth/*` to
+ *  api-rest), so the browser stays same-origin with its session cookie. api-rest
+ *  runs behind Caddy (trustProxy), which sets X-Forwarded-Host/Proto. */
+function storeOriginFromHeaders(headers: Headers | undefined): string | null {
+  if (!headers) return null;
+  const host = headers.get('x-forwarded-host') ?? headers.get('host');
+  if (!host) return null;
+  const firstHost = host.split(',')[0]?.trim();
+  if (!firstHost) return null;
+  const rawProto = headers.get('x-forwarded-proto')?.split(',')[0]?.trim();
+  const proto = rawProto && rawProto.length > 0 ? rawProto : 'https';
+  return `${proto}://${firstHost}`;
+}
+
+// Consent guard for the customer instance's `/mcp/authorize` (mirrors the operator
+// flow, @sparx/auth server.ts). That endpoint mints an auth code for ANY requested
+// scope the moment a shopper has a session — it only shows a consent screen on
+// `prompt=consent`, which an attacker's self-registered DCR client won't send. On
+// a PUBLIC surface that is a confused-deputy hole. So we require a signed,
+// session-bound, short-lived consent grant (minted only by the store-branded
+// consent page after the shopper explicitly picks scopes); any /mcp/authorize hit
+// without a valid grant is bounced to that page ON THE STORE'S OWN ORIGIN.
+const customerMcpAuthorizeGuard = createAuthMiddleware(async (ctx) => {
+  if (ctx.path !== '/mcp/authorize') return;
+
+  const storeOrigin = storeOriginFromHeaders(ctx.headers);
+  const query = (ctx.query ?? {}) as Record<string, unknown>;
+
+  // Rebuild the consent-page URL (store origin) from the original authorize params
+  // (minus our own grant param). toConsent() returns `never`, so each guard below
+  // both terminates and narrows. If we can't resolve the store origin we cannot
+  // safely build a redirect — fail closed with a plain error.
+  const toConsent = (): never => {
+    if (!storeOrigin)
+      throw new APIError('BAD_REQUEST', { message: 'Unable to resolve store origin.' });
+    const params = new URLSearchParams();
+    for (const [k, v] of Object.entries(query)) {
+      if (k === 'sparx_grant') continue;
+      if (typeof v === 'string') params.set(k, v);
+    }
+    throw ctx.redirect(`${storeOrigin}/account/authorize?${params.toString()}`);
+  };
+
+  const grant = verifyCustomerConsentGrant(
+    typeof query.sparx_grant === 'string' ? query.sparx_grant : null,
+    ctx.context.secret
+  );
+  if (!grant) return toConsent();
+
+  // The grant must bind the EXACT client, redirect, and scope in this request — a
+  // signed approval can't be replayed onto a different one.
+  if (
+    grant.clientId !== query.client_id ||
+    grant.redirectUri !== query.redirect_uri ||
+    grant.scope !== query.scope
+  ) {
+    return toConsent();
+  }
+
+  // …and it must belong to the shopper who is actually signed in now (their
+  // session cookie, resolved under RLS via the ambient tenantStore).
+  const session = await getSessionFromCtx(ctx);
+  if (session?.user.id !== grant.userId) return toConsent();
+
+  // Valid, bound, and session-matched — let Better Auth mint the code.
+});
 
 /** The shopper MCP OAuth authorization server (docs/113 customer tier). Hardened
  *  per OAuth 2.1: PKCE-S256 only, short TTLs, our shopper scope vocabulary. The
@@ -49,6 +125,27 @@ function customerMcpPlugin() {
   });
 }
 
+// Session config, extracted so createCustomerAuth stays cohesive. cookieCache is
+// DELIBERATELY OFF (docs/27 §3): it stores the session in a secret-signed cookie
+// and returns it WITHOUT a DB read — bypassing the RLS tenant scoping. Because the
+// same person can hold a session at multiple tenants, a cached cookie presented
+// under another tenant's context would resolve to the wrong tenant's user (a
+// cross-tenant leak — caught by the smoke test). Every getSession must hit
+// customer_sessions under withTenant so RLS enforces isolation (a single indexed
+// query). `tenantId` is surfaced as an additionalField (populated by the DB
+// default under withTenant) so getCustomerSession can assert it matches the
+// request tenant — an app-layer check INDEPENDENT of RLS. input:false so it is
+// never client-settable; no defaultValue so BA omits it on insert.
+const CUSTOMER_SESSION_CONFIG = {
+  modelName: 'customerSession',
+  expiresIn: 60 * 60 * 24 * 30, // 30 days
+  updateAge: 60 * 60 * 24, // slide daily
+  cookieCache: { enabled: false },
+  additionalFields: {
+    tenantId: { type: 'string', input: false, required: false },
+  },
+} as const;
+
 function createCustomerAuth() {
   return betterAuth({
     appName: 'sparx-customer',
@@ -56,7 +153,7 @@ function createCustomerAuth() {
     // api-rest origin; the storefront reaches it through its /api/sparx proxy.
     baseURL: process.env.CUSTOMER_AUTH_URL ?? 'http://localhost:3100',
     basePath: '/v1/public/auth',
-    secret: process.env.CUSTOMER_AUTH_SECRET ?? process.env.BETTER_AUTH_SECRET,
+    secret: customerAuthSecret(),
     database: prismaAdapter(tenantScopedClient, { provider: 'postgresql' }),
 
     // Core model → tenant-scoped Prisma model key (the supported remap; the
@@ -64,27 +161,7 @@ function createCustomerAuth() {
     user: { modelName: 'customerUser' },
     account: { modelName: 'customerAccount' },
     verification: { modelName: 'customerVerification' },
-    session: {
-      modelName: 'customerSession',
-      expiresIn: 60 * 60 * 24 * 30, // 30 days
-      updateAge: 60 * 60 * 24, // slide daily
-      // cookieCache is DELIBERATELY OFF (docs/27 §3). It stores the session in a
-      // secret-signed cookie and returns it WITHOUT a DB read — which bypasses the
-      // RLS tenant scoping. Because the same person can hold a session at multiple
-      // tenants, a cached cookie presented under another tenant's context would
-      // resolve to the wrong tenant's user (a cross-tenant leak — caught by the
-      // smoke test). Every getSession must hit customer_sessions under withTenant
-      // so RLS enforces isolation. The lookup is a single indexed query.
-      cookieCache: { enabled: false },
-      // Surface the session's tenant_id (populated by the DB default under
-      // withTenant) so getCustomerSession can assert it matches the request tenant
-      // — an app-layer isolation check INDEPENDENT of RLS (docs/27 §3). input:false
-      // so it's never client-settable; no defaultValue so Better Auth omits it on
-      // insert and the `tenant_id DEFAULT current_tenant_id()` column fills it.
-      additionalFields: {
-        tenantId: { type: 'string', input: false, required: false },
-      },
-    },
+    session: CUSTOMER_SESSION_CONFIG,
 
     emailAndPassword: {
       enabled: true,
@@ -127,6 +204,13 @@ function createCustomerAuth() {
         '/mcp/authorize': { window: 60, max: 30 },
         '/mcp/token': { window: 60, max: 60 },
       },
+    },
+
+    // Guard /mcp/authorize (docs/113 §5). See customerMcpAuthorizeGuard: bounce
+    // any authorize without a valid, session-bound consent grant to the store's
+    // own /account/authorize consent page.
+    hooks: {
+      before: customerMcpAuthorizeGuard,
     },
 
     plugins: [customerMcpPlugin()],

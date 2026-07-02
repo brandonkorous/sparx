@@ -1,6 +1,6 @@
 # sparx Platform — Customer Accounts & Site Authentication (Layer 2)
 
-**Version:** 2.1
+**Version:** 2.2
 **Author:** Brandon Korous
 **Last Updated:** 2026-07-02
 
@@ -280,13 +280,45 @@ served by api-rest, not mounted in `apps/site`:
   and a token-verify query that checks expiry + client-enabled (never a bare row lookup). The
   `loginPage` is the store's `/account/login` (a browser redirect across origins is fine).
 - The storefront MCP resource server (`services/mcp-storefront`, docs/113) advertises this AS via
-  `WWW-Authenticate` + `/.well-known/oauth-protected-resource`, and **verifies bearer tokens** with
-  a `verifyCustomerMcpToken(accessToken) → { tenantId, userId, scopes }` query (mirroring the
-  operator `verifyMcpOAuthToken`). It then resolves the per-site membership via `ensureMembership`
-  and unlocks the `customer`-kind tools (my orders / bookings / reschedule / cancel / wishlist /
-  addresses / B2B portal).
+  `WWW-Authenticate` + `/.well-known/oauth-protected-resource`, relays the shopper's bearer, and —
+  because it holds **no DB** — bearer **verification happens in api-rest**: the `customer`-tier
+  public routes accept an `Authorization: Bearer` credential (verified with
+  `verifyCustomerMcpToken(tenantId, token)` — expiry + client-enabled + tenant-scoping via RLS),
+  resolve the per-site membership via `ensureMembership`, and **scope-gate** each route on the
+  token's grant. This unlocks the `customer`-kind tools (my orders / bookings / reschedule / cancel
+  / wishlist / addresses / B2B portal).
 
-The precise route/discovery wiring is finalized in the Phase 2G build (docs/113 §customer-tier).
+### 6.1 The finalized topology — the AS lives on the store's OWN origin (Phase 2G, built)
+
+The one load-bearing decision: Better Auth's `/mcp/authorize` must read the shopper's session cookie
+to know who is consenting, and a cookie is only sent to its own origin. So the AS is reached **on the
+store's own origin**, not on a shared api-rest host:
+
+- **Caddy** carves `<store>/v1/public/auth*` and the store-root
+  `/.well-known/oauth-authorization-server` + `/.well-known/openid-configuration` out to api-rest
+  (Host preserved), alongside the existing `/mcp*` → mcp-storefront carve-out. So the whole OAuth
+  flow — discovery, DCR, authorize, consent, token — happens on `https://<store>`; the browser keeps
+  its `sparx_customer_session` cookie throughout, and **tenant resolves from the Host**
+  (`resolveSiteByHost`, `?tenant=` fallback for local dev).
+- **Discovery.** mcp-storefront answers an unauthenticated `customer`-tool call with `401` +
+  `WWW-Authenticate: resource_metadata="…/mcp/.well-known/oauth-protected-resource"`; that doc's
+  `authorization_servers` points at the store's own origin (`siteUrl`, from `storefront-info`).
+  api-rest serves **our own** AS metadata at `<store>/.well-known/oauth-authorization-server` (Better
+  Auth's default only advertises the openid framing scopes, so we replace it) listing the real
+  shopper scope vocabulary + the store-origin `/v1/public/auth/mcp/{authorize,token,register}`
+  endpoints.
+- **Consent.** The `/mcp/authorize` guard (`@sparx/customer-auth` server.ts, mirroring the operator
+  `mcpAuthorizeGuard`) bounces any authorize without a valid grant to the **store-branded**
+  `<store>/account/authorize` page (`apps/site`). That page confirms the signed-in shopper (redirects
+  to the store `/account/login` otherwise), shows the scope picker, and POSTs to
+  `/v1/public/auth/consent`, which caps the selected scopes, mints a **signed, session-bound consent
+  grant** (HMAC on the customer secret, `signCustomerConsentGrant`), and returns the store-origin
+  `/mcp/authorize?…&sparx_grant=` URL. The guard verifies the grant binds the exact client + redirect
+  - scope + the signed-in user before Better Auth mints the code.
+- **api-rest ↔ Web bridge.** The Better Auth `handler(Request): Promise<Response>` is mounted via a
+  Fastify↔Web adapter (`lib/customer-oauth.ts`) run inside `tenantStore.run(tenantId, …)`; a child
+  route scope keeps RAW-string content-type parsers so BA re-parses the form-encoded token body
+  itself, without disturbing the JSON consent routes.
 
 ---
 

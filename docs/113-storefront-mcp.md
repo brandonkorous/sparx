@@ -1,6 +1,6 @@
 # Storefront MCP — the shopper-facing agent surface
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
 **Last Updated:** 2026-07-02
 
@@ -170,16 +170,18 @@ bearer token — a mismatch for MCP. Tools split by tier:
   (email inline — **no login; the haircut case works fully anonymously**), cart
   operations (owned by an `x-cart-token` the MCP mints on `create_cart` and holds for
   the session), checkout, submit_review. Marked `destructiveHint` so clients confirm.
-- **`customer` (returning-customer, Phase 2):** my orders, my bookings,
-  reschedule/cancel my booking, wishlist, addresses, B2B portal. Requires standing up a
-  **customer-side OAuth provider** — the exact Better Auth machinery from
-  [docs/07](07-mcp-server-spec.md) §5, but pointed at the **customer** account tier
-  (issuing tokens the storefront MCP exchanges for a `sparx_customer_session`), with a
-  shopper scope vocabulary (`read:orders`, `manage:bookings`, …) and its own
-  `/oauth/consent` on the storefront.
+- **`customer` (returning-customer — BUILT, Phase 2G):** my profile, orders, bookings,
+  reschedule/cancel my booking, wishlist, addresses, B2B portal. Runs on the **customer Better
+  Auth `mcp()` OAuth server** ([docs/27](27-customer-accounts-site-auth.md) §6) — the same hardened
+  machinery as the operator flow ([docs/07](07-mcp-server-spec.md) §5) but pointed at the customer
+  account tier, with the shopper scope vocabulary (`account:read/write`, `orders:read`,
+  `bookings:read/write`, `b2b:read`) and a **store-branded `/account/authorize` consent page**. The
+  AS lives on the store's own origin (docs/27 §6.1) so the shopper stays same-origin with their
+  session cookie. mcp-storefront relays the bearer; **api-rest verifies + scope-gates** it on each
+  `customer`-tier public route (mcp-storefront holds no DB).
 
 **Phase 1 ships `read` + `guest_write`** — a complete, valuable surface (books
-appointments, shops, checks out end to end). **Phase 2** adds the `customer` tier.
+appointments, shops, checks out end to end). **Phase 2G** adds the `customer` tier (built).
 
 ## 6. Tool catalog (Phase 1)
 
@@ -288,13 +290,19 @@ settings, unauthenticated `b2b/service-types`. Customer-tier tools (`my orders`,
 7. **Local `.env`** + `k8s/sparx-prod/app-env-configmap.yaml`: `SPARX_API_REST_URL`,
    `STOREFRONT_MCP_PUBLIC_ORIGIN`, port.
 
-### Phase 2 — returning-customer tier
+### Phase 2G — returning-customer tier (BUILT)
 
-8. Customer-side OAuth provider (Better Auth `mcp()`/`oidcProvider` pointed at the
-   customer account tier; shopper scope vocab; storefront `/oauth/consent`), token →
-   `sparx_customer_session` exchange, `oauth-protected-resource` on the service, and the
-   `customer`-tier tools (my orders/bookings, reschedule/cancel, wishlist, addresses,
-   B2B portal — after the B2B `requireContactRole` fix).
+8. Customer-side OAuth on the customer Better Auth `mcp()` provider (docs/27 §6): the AS is served
+   by api-rest under `<store>/v1/public/auth/*` on the store's OWN origin (Caddy carve-out, tenant
+   from Host), with our own AS metadata (real shopper scope vocab), a `/mcp/authorize` consent guard,
+   and a store-branded `/account/authorize` consent page in `apps/site`. The bearer is **verified in
+   api-rest** (not the DB-less mcp-storefront): the `customer`-tier public routes accept
+   `Authorization: Bearer`, verify it (`verifyCustomerMcpToken`), resolve the per-site membership,
+   and scope-gate. mcp-storefront advertises `oauth-protected-resource` + challenges unauthenticated
+   `customer`-tool calls with `401 + WWW-Authenticate`. Tools: `get_my_profile`, `list_my_orders`,
+   `get_my_order`, `list/add_my_address(es)`, `list/add/remove …wishlist`, `list/get_my_booking(s)`,
+   `reschedule/cancel_my_booking`, `list/get_my_b2b_account(s)`, `list_my_b2b_invoices`. (The B2B
+   `requireContactRole` gap was already closed in Phase 1's punch-list.)
 
 ## 10. Testing
 

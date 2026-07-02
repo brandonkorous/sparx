@@ -54,23 +54,41 @@ export async function resolveSite(
   return { tenantSlug: body.data.tenantSlug, propertySlug: body.data.propertySlug ?? null };
 }
 
-export function makeClient(site: SiteRoute): StorefrontApiClient {
-  const ctx: StorefrontCtx = { tenantSlug: site.tenantSlug, propertySlug: site.propertySlug };
+export function makeClient(site: SiteRoute, customerBearer?: string | null): StorefrontApiClient {
+  const ctx: StorefrontCtx = {
+    tenantSlug: site.tenantSlug,
+    propertySlug: site.propertySlug,
+    customerBearer: customerBearer ?? null,
+  };
   return new StorefrontApiClient(env.SPARX_API_REST_URL, ctx);
 }
 
-/** Best-effort read of the tenant's disabled modules (from storefront-info) so
- *  we can skip registering tools for modules that are off. Fails OPEN — on any
- *  error we register the full catalog and let the public route reject calls. */
-export async function fetchDisabledModules(client: StorefrontApiClient): Promise<string[]> {
+export interface StoreInfo {
+  /** Modules the tenant switched off — used to skip registering their tools. */
+  disabledModules: string[];
+  /** The store's canonical public origin — the shopper OAuth authorization-server
+   *  origin (docs/113 §5), where its sparx_customer_session cookie lives. null on a
+   *  failed lookup (the customer tier then can't advertise an AS). */
+  siteUrl: string | null;
+}
+
+/** Best-effort read of the store's projected info (from storefront-info): its
+ *  disabled modules + canonical origin. Fails OPEN on modules (register the full
+ *  catalog, let the public route reject) and returns a null siteUrl on error. */
+export async function fetchStoreInfo(client: StorefrontApiClient): Promise<StoreInfo> {
   try {
-    const { data } = await client.request<{ disabledModules?: unknown }>({
+    const { data } = await client.request<{ disabledModules?: unknown; siteUrl?: unknown }>({
       method: 'GET',
       path: '/v1/public/storefront-info',
     });
     const list = data?.disabledModules;
-    return Array.isArray(list) ? list.filter((m): m is string => typeof m === 'string') : [];
+    return {
+      disabledModules: Array.isArray(list)
+        ? list.filter((m): m is string => typeof m === 'string')
+        : [],
+      siteUrl: typeof data?.siteUrl === 'string' ? data.siteUrl : null,
+    };
   } catch {
-    return [];
+    return { disabledModules: [], siteUrl: null };
   }
 }

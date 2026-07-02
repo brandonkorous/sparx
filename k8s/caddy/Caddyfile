@@ -221,8 +221,16 @@ sparx.zone, www.sparx.zone {
 # `/mcp*` on ANY storefront host is carved out to the shopper-facing MCP
 # (docs/113) — so `<store-domain>/mcp` and `<slug>.sparx.zone/mcp` reach
 # mcp-storefront, which resolves the site from the Host header. `handle` (not
-# `handle_path`) preserves the /mcp path the service routes on. Everything else
-# falls through to the storefront app.
+# `handle_path`) preserves the /mcp path the service routes on.
+#
+# The shopper OAuth authorization server (docs/113 §5) also lives on the store's
+# OWN origin so the browser keeps its sparx_customer_session cookie through the
+# authorize → consent flow: `/v1/public/auth*` (Better Auth handler + consent) and
+# the AS discovery docs are carved out to api-rest with the Host preserved (tenant
+# resolves from it). Only the oauth-authorization-server / openid-configuration
+# well-knowns route to api-rest — every other `/.well-known/*` (incl.
+# `/mcp/.well-known/oauth-protected-resource`, served by mcp-storefront via the
+# /mcp carve-out) still reaches the storefront app. Everything else falls through.
 :443 {
   tls {
     on_demand
@@ -230,6 +238,15 @@ sparx.zone, www.sparx.zone {
   import security_headers
   handle /mcp* {
     reverse_proxy mcp-storefront.sparx-prod.svc.cluster.local:3200
+  }
+  handle /v1/public/auth* {
+    reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000
+  }
+  handle /.well-known/oauth-authorization-server* {
+    reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000
+  }
+  handle /.well-known/openid-configuration* {
+    reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000
   }
   handle {
     reverse_proxy site.sparx-prod.svc.cluster.local:3000

@@ -233,7 +233,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
 
   app.get('/v1/public/commerce/account/me', async (request) => {
     const ctx = await accountContext(request);
-    const customerId = await requireCustomerId(request, ctx);
+    const customerId = await requireCustomerId(request, ctx, 'account:read');
     const customer = await loadProfile(ctx, customerId);
     if (!customer) throw notFound('Customer', customerId);
     return ok({ customer });
@@ -242,7 +242,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.patch('/v1/public/commerce/account/me', async (request) => {
     const body = ProfileBody.parse(request.body);
     const ctx = await accountContext(request);
-    const customerId = await requireCustomerId(request, ctx);
+    const customerId = await requireCustomerId(request, ctx, 'account:write');
     await withTenant(ctx, (tx) =>
       tx.customer.updateMany({
         where: { id: customerId, deletedAt: null },
@@ -278,7 +278,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/public/commerce/account/orders', async (request) => {
     const { page, pageSize } = OrdersQuery.parse(request.query);
     const ctx = await accountContext(request);
-    const customerId = await requireCustomerId(request, ctx);
+    const customerId = await requireCustomerId(request, ctx, 'orders:read');
     const { items, total } = await orderService.list(ctx, {
       customerId,
       take: pageSize,
@@ -301,7 +301,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/public/commerce/account/orders/:orderId', async (request) => {
     const { orderId } = OrderParam.parse(request.params);
     const ctx = await accountContext(request);
-    const customerId = await requireCustomerId(request, ctx);
+    const customerId = await requireCustomerId(request, ctx, 'orders:read');
     const order = await orderService.get(ctx, orderId);
     // get() scopes to tenant, not customer — enforce ownership without leaking
     // existence of other customers' orders.
@@ -333,7 +333,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   // ── Addresses ─────────────────────────────────────────────────────────
   app.get('/v1/public/commerce/account/addresses', async (request) => {
     const ctx = await accountContext(request);
-    const customerId = await requireCustomerId(request, ctx);
+    const customerId = await requireCustomerId(request, ctx, 'account:read');
     const addresses = await withTenant(ctx, (tx) =>
       tx.customerAddress.findMany({
         where: { customerId },
@@ -346,7 +346,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/public/commerce/account/addresses', async (request) => {
     const body = AddressBody.parse(request.body);
     const ctx = await accountContext(request);
-    const customerId = await requireCustomerId(request, ctx);
+    const customerId = await requireCustomerId(request, ctx, 'account:write');
     const address = await withTenant(ctx, async (tx) => {
       if (body.isDefault) {
         await tx.customerAddress.updateMany({ where: { customerId }, data: { isDefault: false } });
@@ -362,7 +362,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
     const { addressId } = AddressParam.parse(request.params);
     const body = AddressBody.partial().parse(request.body);
     const ctx = await accountContext(request);
-    const customerId = await requireCustomerId(request, ctx);
+    const customerId = await requireCustomerId(request, ctx, 'account:write');
     const updated = await withTenant(ctx, async (tx) => {
       const owned = await tx.customerAddress.findFirst({
         where: { id: addressId, customerId },
@@ -384,7 +384,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.delete('/v1/public/commerce/account/addresses/:addressId', async (request) => {
     const { addressId } = AddressParam.parse(request.params);
     const ctx = await accountContext(request);
-    const customerId = await requireCustomerId(request, ctx);
+    const customerId = await requireCustomerId(request, ctx, 'account:write');
     await withTenant(ctx, (tx) =>
       tx.customerAddress.deleteMany({ where: { id: addressId, customerId } })
     );
@@ -394,7 +394,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   // ── Wishlist (variant-keyed; responses carry the parent product) ────────
   app.get('/v1/public/commerce/account/wishlist', async (request) => {
     const ctx = await accountContext(request);
-    const customerId = await requireCustomerId(request, ctx);
+    const customerId = await requireCustomerId(request, ctx, 'account:read');
     const items = await withTenant(ctx, async (tx) => {
       const wishlist = await tx.wishlist.findFirst({
         where: { customerId },
@@ -444,7 +444,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/public/commerce/account/wishlist', async (request) => {
     const body = WishlistAddBody.parse(request.body);
     const ctx = await accountContext(request);
-    const customerId = await requireCustomerId(request, ctx);
+    const customerId = await requireCustomerId(request, ctx, 'account:write');
     await withTenant(ctx, async (tx) => {
       let wishlist = await tx.wishlist.findFirst({
         where: { customerId },
@@ -472,7 +472,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.delete('/v1/public/commerce/account/wishlist/:variantId', async (request) => {
     const { variantId } = WishlistParam.parse(request.params);
     const ctx = await accountContext(request);
-    const customerId = await requireCustomerId(request, ctx);
+    const customerId = await requireCustomerId(request, ctx, 'account:write');
     await withTenant(ctx, (tx) =>
       tx.wishlistItem.deleteMany({ where: { variantId, wishlist: { customerId } } })
     );

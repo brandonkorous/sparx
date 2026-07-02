@@ -3,7 +3,7 @@
 // consumed by api-rest's public account routes + the storefront-MCP customer
 // tier. The storefront never imports this directly (it talks to api-rest).
 
-export { getCustomerAuth, type CustomerAuth } from './server';
+export { getCustomerAuth, customerAuthSecret, type CustomerAuth } from './server';
 
 export {
   signUpCustomer,
@@ -36,6 +36,30 @@ export {
   RESET_TTL_SECONDS,
 } from './session';
 
-export { CUSTOMER_MCP_SCOPES, type CustomerMcpScope } from './mcp-scopes';
+// Shopper MCP OAuth: scope vocabulary + consent-grant crypto (docs/113 §5).
+export {
+  CUSTOMER_MCP_SCOPES,
+  CUSTOMER_OIDC_BASE_SCOPES,
+  CUSTOMER_ALL_OAUTH_SCOPES,
+  CUSTOMER_MCP_SCOPE_CATALOG,
+  capCustomerScopes,
+  signCustomerConsentGrant,
+  verifyCustomerConsentGrant,
+  type CustomerMcpScope,
+  type CustomerScopeMeta,
+  type CustomerConsentGrantPayload,
+} from './mcp-scopes';
+
+// Shopper OAuth authorization-server metadata + authorize-request validation.
+export {
+  buildCustomerAuthServerMetadata,
+  getRegisteredCustomerMcpClient,
+  parseCustomerAuthorizeParams,
+  customerAuthorizeParamsRecord,
+  validateCustomerAuthorizeRequest,
+  type RegisteredCustomerMcpClient,
+  type CustomerAuthorizeParams,
+  type CustomerAuthorizeValidation,
+} from './as-metadata';
 
 export { hashPassword, verifyPassword } from './hash';

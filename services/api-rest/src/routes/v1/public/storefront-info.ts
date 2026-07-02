@@ -14,6 +14,7 @@ import { prisma, withTenant } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
 import { notFound } from '@sparx/api-core/errors';
 import { resolvePublicPropertyId, resolveActivePropertyName } from '../../../lib/property.js';
+import { mintZoneHost } from '../../../lib/domain.js';
 
 const Query = z.object({
   tenant: z.string().min(1).max(63),
@@ -84,7 +85,7 @@ const storefrontInfoRoutes: FastifyPluginAsync = (app) => {
       withTenant({ tenantId }, (tx) =>
         tx.property.findUnique({
           where: { id: propertyId },
-          select: { settings: true, moduleScope: true },
+          select: { settings: true, moduleScope: true, slug: true, isPrimary: true },
         })
       ),
       resolveActivePropertyName(tenantId, propertyId),
@@ -111,12 +112,24 @@ const storefrontInfoRoutes: FastifyPluginAsync = (app) => {
       ? property.moduleScope.filter((v): v is string => typeof v === 'string')
       : [];
 
+    // The store's canonical public origin — the shopper OAuth AS origin (docs/113
+    // §5), where the sparx_customer_session cookie lives. A configured custom
+    // primary domain wins; otherwise the minted `*.sparx.zone` host.
+    const primaryDomain =
+      readString(property?.settings, 'primaryDomain') ??
+      readString(tenant.settings, 'primaryDomain');
+    const host =
+      primaryDomain ??
+      mintZoneHost(q.tenant, property?.slug ?? q.tenant, property?.isPrimary ?? true);
+    const siteUrl = `https://${host}`;
+
     return ok({
       name,
       description: readDescription(property?.settings, tenant.settings),
       socials: readSiteSocials(property?.settings, tenant.socials),
       policies,
       disabledModules,
+      siteUrl,
     });
   });
   return Promise.resolve();

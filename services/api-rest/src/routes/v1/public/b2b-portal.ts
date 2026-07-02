@@ -48,9 +48,11 @@ const HoldsQuery = z.object({
 });
 
 /** The signed-in customer id for the active site, or 401 (docs/27 v2 — resolved
- *  in lib/customer-session: session → Better Auth user → per-site membership). */
+ *  in lib/customer-session: session → Better Auth user → per-site membership). The
+ *  whole portal is read-only, so a customer MCP OAuth bearer needs `b2b:read`
+ *  (docs/113 §5); a cookie session always passes. */
 function requirePortalCustomer(request: FastifyRequest, ctx: CustomerAuthContext): Promise<string> {
-  return requireCustomerId(request, ctx);
+  return requireCustomerId(request, ctx, 'b2b:read');
 }
 
 /** Verify the customer has an active contact role on `accountId` and return the
