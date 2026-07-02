@@ -35,6 +35,7 @@ on:
           - workers
           - workers-prune
           - storefront-teardown
+          - mcp-storefront-teardown
           - cronjobs
           # Postal was deprecated 2026-05-29 (Postal's smtp_relays can't
           # auth to Mailgun by design — config_schema.rb:79 drops
@@ -324,6 +325,29 @@ jobs:
           set -euo pipefail
           for kind in deployment service hpa pdb; do
             kubectl delete "$kind" storefront -n "$NAMESPACE" --ignore-not-found
+          done
+
+      # One-shot teardown of the orphaned pre-rename `mcp-storefront` service.
+      # The shopper-facing MCP plane was renamed `mcp-storefront` -> `mcp-site`
+      # (k8s/apps/mcp-site.yaml, docs/113). `components=apps` applies the new
+      # `mcp-site` Deployment + Service, but `kubectl apply -k` does NOT prune
+      # the resources dropped from the kustomization, so the old
+      # `mcp-storefront` Deployment + Service linger in-cluster and keep the
+      # (now stale) pod running. Delete them explicitly here.
+      #
+      # WHEN TO RUN: after `components=apps` has created `mcp-site` AND
+      # `components=caddy` has re-applied the Caddyfile so `mcp.sparx.zone` and
+      # the `/mcp*` carve-out proxy to `mcp-site` — running this earlier drops
+      # the only backend Caddy is still routing to. mcp-site defines only a
+      # Deployment + Service (no HPA/PDB); the hpa/pdb deletes are harmless
+      # --ignore-not-found no-ops kept for symmetry with storefront-teardown.
+      # NOT in all-platform — deliberate human-gated lever.
+      - name: Tear down orphaned mcp-storefront service
+        if: ${{ inputs.components == 'mcp-storefront-teardown' }}
+        run: |
+          set -euo pipefail
+          for kind in deployment service hpa pdb; do
+            kubectl delete "$kind" mcp-storefront -n "$NAMESPACE" --ignore-not-found
           done
 
       # Postal — self-hosted email server in its own namespace. Lives
