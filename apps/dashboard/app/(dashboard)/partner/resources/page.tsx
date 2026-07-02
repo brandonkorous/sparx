@@ -21,7 +21,7 @@ import type { SparxModule } from '@sparx/ui';
 // module onboarding guides each wear their target module's hue via a nested
 // ModuleProvider — a legit cross-module wayfinding moment, not decoration.
 
-export const dynamic = 'force-static';
+export const dynamic = 'force-dynamic';
 
 interface Resource {
   title: string;
