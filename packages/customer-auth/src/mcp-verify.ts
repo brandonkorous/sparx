@@ -1,7 +1,7 @@
 // Shopper MCP OAuth access-token verification — the resource-server side
 // (docs/113 customer tier). Mirrors the operator `verifyMcpOAuthToken` shape.
 //
-// The storefront MCP resource server ALWAYS knows its store (per-site host), so
+// The site MCP resource server ALWAYS knows its store (per-site host), so
 // unlike the single-host operator flow this runs inside withTenant(knownTenant):
 // RLS scopes the lookup, so a token issued for one store presented to another
 // resolves to zero rows. We do NOT use Better Auth's getMcpSession (a bare row

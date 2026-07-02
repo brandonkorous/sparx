@@ -1,7 +1,7 @@
-// @sparx/customer-auth — Layer-2 storefront shopper authentication, on a
+// @sparx/customer-auth — Layer-2 site shopper authentication, on a
 // dedicated tenant-scoped Better Auth instance (docs/27 v2). Server-only;
-// consumed by api-rest's public account routes + the storefront-MCP customer
-// tier. The storefront never imports this directly (it talks to api-rest).
+// consumed by api-rest's public account routes + the site-MCP customer
+// tier. The site never imports this directly (it talks to api-rest).
 
 export { getCustomerAuth, customerAuthSecret, type CustomerAuth } from './server';
 

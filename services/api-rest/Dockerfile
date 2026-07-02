@@ -66,9 +66,9 @@ COPY packages/registrar ./packages/registrar
 COPY packages/godaddy ./packages/godaddy
 COPY packages/payments ./packages/payments
 # Shopper-facing MCP tool catalog (docs/113) — the concierge (ai-handler.ts)
-# imports @sparx/storefront-mcp to ground answers via the public API. Depends
+# imports @sparx/site-mcp to ground answers via the public API. Depends
 # only on zod, so no extra transitive COPY. Missing → boot crashloop.
-COPY packages/storefront-mcp ./packages/storefront-mcp
+COPY packages/site-mcp ./packages/site-mcp
 COPY services/api-rest ./services/api-rest
 
 # First-party marketplace bundles (docs/85). Read at ingest time by

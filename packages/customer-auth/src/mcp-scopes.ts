@@ -27,7 +27,7 @@ export const CUSTOMER_OIDC_BASE_SCOPES = ['openid', 'offline_access'] as const;
 
 /** The shopper capability scopes. Each maps to one or more customer-tier tools
  *  and is enforced on the backing public route. Keep in lockstep with the
- *  storefront-MCP `customer`-tier tool catalog. */
+ *  site-MCP `customer`-tier tool catalog. */
 export const CUSTOMER_MCP_SCOPES = [
   'account:read', // profile, saved addresses, wishlist (read)
   'account:write', // update profile, manage addresses + wishlist

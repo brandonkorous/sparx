@@ -79,7 +79,7 @@ mcp.sparx.works {
   reverse_proxy api-mcp.sparx-prod.svc.cluster.local:3000
 }
 
-# Canonical shopper-facing storefront MCP host (docs/113). A reserved slug, so
+# Canonical shopper-facing site MCP host (docs/113). A reserved slug, so
 # no tenant owns it; authorized as a static platform host in
 # /internal/domain-check. The store is named in the path
 # (/s/<tenant>[/<property>]/mcp) since a fixed host can't encode it.
@@ -88,7 +88,7 @@ mcp.sparx.zone {
     on_demand
   }
   import security_headers
-  reverse_proxy mcp-storefront.sparx-prod.svc.cluster.local:3200
+  reverse_proxy mcp-site.sparx-prod.svc.cluster.local:3200
 }
 
 app.sparx.works {
@@ -218,9 +218,9 @@ sparx.zone, www.sparx.zone {
 # to customers.sparx.zone. The /internal/domain-check API decides if a
 # cert is issued.
 #
-# `/mcp*` on ANY storefront host is carved out to the shopper-facing MCP
+# `/mcp*` on ANY site host is carved out to the shopper-facing MCP
 # (docs/113) — so `<store-domain>/mcp` and `<slug>.sparx.zone/mcp` reach
-# mcp-storefront, which resolves the site from the Host header. `handle` (not
+# mcp-site, which resolves the site from the Host header. `handle` (not
 # `handle_path`) preserves the /mcp path the service routes on.
 #
 # The shopper OAuth authorization server (docs/113 §5) also lives on the store's
@@ -229,15 +229,15 @@ sparx.zone, www.sparx.zone {
 # the AS discovery docs are carved out to api-rest with the Host preserved (tenant
 # resolves from it). Only the oauth-authorization-server / openid-configuration
 # well-knowns route to api-rest — every other `/.well-known/*` (incl.
-# `/mcp/.well-known/oauth-protected-resource`, served by mcp-storefront via the
-# /mcp carve-out) still reaches the storefront app. Everything else falls through.
+# `/mcp/.well-known/oauth-protected-resource`, served by mcp-site via the
+# /mcp carve-out) still reaches the site app. Everything else falls through.
 :443 {
   tls {
     on_demand
   }
   import security_headers
   handle /mcp* {
-    reverse_proxy mcp-storefront.sparx-prod.svc.cluster.local:3200
+    reverse_proxy mcp-site.sparx-prod.svc.cluster.local:3200
   }
   handle /v1/public/auth* {
     reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000

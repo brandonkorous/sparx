@@ -181,7 +181,7 @@ resource "cloudflare_record" "sparx_zone_customers" {
   comment         = "Tenant custom-domain CNAME target — see docs/04-domain-ssl-automation.md"
 }
 
-# Canonical shopper-facing storefront MCP host (docs/113). The `*` wildcard above
+# Canonical shopper-facing site MCP host (docs/113). The `*` wildcard above
 # already resolves it, but an explicit node documents it as first-class. DNS-only
 # for the same reason as the wildcard — Caddy on-demand TLS terminates it.
 resource "cloudflare_record" "sparx_zone_mcp" {
@@ -193,7 +193,7 @@ resource "cloudflare_record" "sparx_zone_mcp" {
   ttl             = 1
   proxied         = false
   allow_overwrite = true
-  comment         = "Shopper-facing storefront MCP (mcp-storefront) — see docs/113-storefront-mcp.md"
+  comment         = "Shopper-facing site MCP (mcp-site) — see docs/113-site-mcp.md"
 }
 
 # =========================================================================

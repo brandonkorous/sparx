@@ -1,6 +1,6 @@
-// Resource-server OAuth surface for the storefront MCP customer tier (docs/113
-// §5, RFC 9728). mcp-storefront is the OAuth *resource* server: it advertises the
-// authorization server (the store's own origin — where the shopper signs in and
+// Resource-server OAuth surface for the site MCP customer tier (docs/113
+// §5, RFC 9728). mcp-site is the OAuth *resource* server: it advertises the
+// authorization server (the site's own origin — where the shopper signs in and
 // the customer Better Auth AS lives) via Protected Resource Metadata + a
 // `WWW-Authenticate` challenge on an unauthenticated customer-tool call. Token
 // issuance + verification live elsewhere (the AS mints; api-rest verifies the
@@ -9,7 +9,7 @@
 import type { FastifyRequest } from 'fastify';
 
 // The shopper OAuth scope vocabulary. SOURCE OF TRUTH is @sparx/customer-auth
-// (CUSTOMER_MCP_SCOPES); duplicated here as a plain list because mcp-storefront is
+// (CUSTOMER_MCP_SCOPES); duplicated here as a plain list because mcp-site is
 // deliberately DB-less (docs/113 §3.2) and must not import that package. Advertised
 // for discovery only — api-rest enforces the real gate. Keep in sync.
 const CUSTOMER_MCP_SCOPES = [
@@ -54,14 +54,14 @@ export function pathOnly(url: string): string {
   return url.split('?')[0] ?? url;
 }
 
-/** The MCP resource identifier for a request — the store-facing MCP endpoint URL
+/** The MCP resource identifier for a request — the site-facing MCP endpoint URL
  *  (`<origin>/mcp` or `<origin>/s/<tenant>[/<property>]/mcp`). */
 export function resourceUrl(request: FastifyRequest): string {
   return `${requestOrigin(request)}${pathOnly(request.url)}`;
 }
 
 /** The absolute Protected Resource Metadata URL to advertise in WWW-Authenticate —
- *  the MCP endpoint path + the well-known suffix (reachable via the same store
+ *  the MCP endpoint path + the well-known suffix (reachable via the same site
  *  `/mcp*` route). */
 export function resourceMetadataUrl(request: FastifyRequest): string {
   return `${resourceUrl(request)}/.well-known/oauth-protected-resource`;
@@ -72,9 +72,9 @@ export function wwwAuthenticate(request: FastifyRequest): string {
   return `Bearer resource_metadata="${resourceMetadataUrl(request)}"`;
 }
 
-/** RFC 9728 Protected Resource Metadata: this resource + the store's AS. `resource`
+/** RFC 9728 Protected Resource Metadata: this resource + the site's AS. `resource`
  *  is the MCP endpoint (strip the well-known suffix from the metadata request URL);
- *  `authServer` is the store's canonical origin (from storefront-info). */
+ *  `authServer` is the site's canonical origin (from site-info). */
 export function protectedResourceMetadata(
   request: FastifyRequest,
   authServer: string | null

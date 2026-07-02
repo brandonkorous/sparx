@@ -1,13 +1,13 @@
-// Storefront MCP tool contract (docs/113 §3.3).
+// Site MCP tool contract (docs/113 §3.3).
 //
-// A StorefrontTool is a declarative adapter over ONE public REST endpoint. The
+// A SiteTool is a declarative adapter over ONE public REST endpoint. The
 // tool never touches a database or a module service — it validates its input,
-// calls the public route via a StorefrontApiClient, and returns the unwrapped
-// payload. The SAME catalog powers the shopper MCP service AND the storefront
+// calls the public route via a SiteApiClient, and returns the unwrapped
+// payload. The SAME catalog powers the shopper MCP service AND the site
 // concierge (docs/56), so a tool added here reaches both at once.
 
 import type { z } from 'zod';
-import type { StorefrontApiClient } from './client.js';
+import type { SiteApiClient } from './client.js';
 
 /** Auth tier + intent of a tool. Drives the MCP `destructiveHint` and gating:
  *  - `read`         — anonymous, side-effect-free.
@@ -22,29 +22,29 @@ export type ToolKind = 'read' | 'guest_write' | 'customer';
  *  module (cleaner tools/list). */
 export type ToolModule = 'commerce' | 'scheduling' | 'crm' | 'builder' | 'inventory' | 'email';
 
-/** The resolved storefront a tool call targets. Threaded onto every public-API
+/** The resolved site a tool call targets. Threaded onto every public-API
  *  request as `?tenant=&property=`. The customer credentials are `customer`-tier
  *  only (docs/113 §5). */
-export interface StorefrontCtx {
+export interface SiteCtx {
   tenantSlug: string;
   propertySlug?: string | null;
   /** Returning-customer session cookie value, relayed as `sparx_customer_session`
-   *  on `customer`-tier calls (the storefront concierge, which holds a cookie). */
+   *  on `customer`-tier calls (the site concierge, which holds a cookie). */
   customerSession?: string | null;
   /** Returning-customer MCP OAuth access token, relayed as `Authorization: Bearer`
-   *  on `customer`-tier calls (the storefront MCP, which holds a bearer). api-rest
+   *  on `customer`-tier calls (the site MCP, which holds a bearer). api-rest
    *  verifies it (expiry + client-enabled + tenant scope) and enforces its scopes. */
   customerBearer?: string | null;
 }
 
 /** What a tool returns to the caller. `meta` carries pagination/facets when the
  *  underlying route is paged. */
-export interface StorefrontToolResult {
+export interface SiteToolResult {
   data: unknown;
   meta?: unknown;
 }
 
-export interface StorefrontTool {
+export interface SiteTool {
   /** Shopper-facing, LLM-readable name (snake_case), e.g. `book_appointment`. */
   name: string;
   description: string;
@@ -55,9 +55,5 @@ export interface StorefrontTool {
    *  it via `z.toJSONSchema`. */
   input: z.ZodType;
   /** Execute the tool: validated `input`, resolved `ctx`, the shared client. */
-  call(
-    client: StorefrontApiClient,
-    ctx: StorefrontCtx,
-    input: unknown
-  ): Promise<StorefrontToolResult>;
+  call(client: SiteApiClient, ctx: SiteCtx, input: unknown): Promise<SiteToolResult>;
 }

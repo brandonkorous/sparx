@@ -1,8 +1,8 @@
 {
-  "name": "@sparx/mcp-storefront",
+  "name": "@sparx/mcp-site",
   "version": "0.0.0",
   "private": true,
-  "description": "sparx Storefront MCP server (docs/113) — the shopper-facing MCP plane. A thin, stateless MCP over the public /v1/public/* REST API: shoppers point their own LLM at a store to browse, check availability, book, and check out. No DB, no module packages — every tool is an HTTP adapter over the public API (@sparx/storefront-mcp).",
+  "description": "sparx Site MCP server (docs/113) — the shopper-facing MCP plane. A thin, stateless MCP over the public /v1/public/* REST API: shoppers point their own LLM at a store to browse, check availability, book, and check out. No DB, no module packages — every tool is an HTTP adapter over the public API (@sparx/site-mcp).",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
-    "@sparx/storefront-mcp": "workspace:*",
+    "@sparx/site-mcp": "workspace:*",
     "fastify": "^5.6.1",
     "pino": "^9.5.0",
     "zod": "^4.4.3"

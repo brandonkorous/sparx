@@ -1,8 +1,8 @@
-// Lean, projected storefront summary for AI/agent surfaces (docs/113 §7).
+// Lean, projected site summary for AI/agent surfaces (docs/113 §7).
 //
-//   GET /v1/public/storefront-info  ?tenant=<slug>[&property=<slug>]
+//   GET /v1/public/site-info  ?tenant=<slug>[&property=<slug>]
 //
-// Backs the storefront MCP's `get_store_info` tool and its per-request tool
+// Backs the site MCP's `get_site_info` tool and its per-request tool
 // filtering. DELIBERATELY a small projection — name, description, socials,
 // footer policy links, and disabledModules — NOT the raw `tenant.settings`
 // blob the /tenants/:slug bootstrap returns (that verbatim exposure is exactly
@@ -69,8 +69,8 @@ function prettifySlug(slug: string): string {
     .join(' ');
 }
 
-const storefrontInfoRoutes: FastifyPluginAsync = (app) => {
-  app.get('/v1/public/storefront-info', async (request) => {
+const siteInfoRoutes: FastifyPluginAsync = (app) => {
+  app.get('/v1/public/site-info', async (request) => {
     const q = Query.parse(request.query);
     const tenant = await prisma.tenant.findUnique({
       where: { slug: q.tenant },
@@ -135,4 +135,4 @@ const storefrontInfoRoutes: FastifyPluginAsync = (app) => {
   return Promise.resolve();
 };
 
-export default storefrontInfoRoutes;
+export default siteInfoRoutes;

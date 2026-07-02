@@ -155,7 +155,7 @@ export function signInCustomer(
 // ─── sign up ─────────────────────────────────────────────────────────────────
 
 /**
- * Create a storefront account. On a fresh email, creates the user + credential +
+ * Create a site account. On a fresh email, creates the user + credential +
  * session (userPreexisted: false). If the email already has a login (same tenant
  * or a sister site), falls back to sign-in with the supplied password to prove
  * ownership (userPreexisted: true) — the route's ensureMembership then decides

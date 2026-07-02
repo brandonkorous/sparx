@@ -1,6 +1,6 @@
-# Storefront MCP — the shopper-facing agent surface
+# Site MCP — the shopper-facing agent surface
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
 **Last Updated:** 2026-07-02
 
@@ -12,12 +12,12 @@ sparx already ships **one** MCP server: `mcp.sparx.works`, the **operator plane*
 tenant's _staff/owner_ connects their own Claude/ChatGPT and runs the business
 (orders, CRM, inventory, email, domains…), gated by staff OAuth ([docs/07](07-mcp-server-spec.md) §5).
 
-This document specs the **second, distinct plane**: the **storefront MCP** — the
+This document specs the **second, distinct plane**: the **site MCP** — the
 tenant's _customers_ (a shopper, someone booking a haircut) point **their own** LLM
 at the tenant's site and get real answers + take real actions: browse the catalog,
 check availability, **book an appointment**, add to cart, check out, read reviews.
 
-|               | Operator MCP (`mcp.sparx.works`) — built       | Storefront MCP (this doc) — new                                     |
+|               | Operator MCP (`mcp.sparx.works`) — built       | Site MCP (this doc) — new                                           |
 | ------------- | ---------------------------------------------- | ------------------------------------------------------------------- |
 | Who connects  | Tenant **staff/owner**                         | The tenant's **customers**                                          |
 | Their LLM     | Claude signed into their business              | The shopper's own Claude/ChatGPT                                    |
@@ -27,23 +27,23 @@ check availability, **book an appointment**, add to cart, check out, read review
 | Data boundary | In-process module services (full admin)        | **The public `/v1/public/*` REST API only**                         |
 
 These are siblings, **never merged**. Merging would put an admin tool graph one
-misconfiguration away from an anonymous surface. The storefront MCP has **no**
+misconfiguration away from an anonymous surface. The site MCP has **no**
 access to admin scopes, module services, or the DB — it can only do what an
-anonymous browser at the storefront can already do.
+anonymous browser at the site can already do.
 
 `works = run the business · zone = shop the business.`
 
 ## 2. What already exists (do not rebuild)
 
-The storefront MCP is mostly _assembly_, because the platform is API-first:
+The site MCP is mostly _assembly_, because the platform is API-first:
 
 - **The entire data + action plane exists as public REST** under
   `services/api-rest/src/routes/v1/public/` — catalog, search, scheduling (guest +
   account), cart, checkout, content, reviews, account, B2B portal. Every route already
   enforces tenant isolation (RLS via `withTenant`), public visibility
   (`status='active'`/`published`, site-visibility), module gating, and
-  enumeration-safety. **This is the contract the storefront MCP wraps.**
-- **An AI concierge already runs on the storefront** — the Live Chat module
+  enumeration-safety. **This is the contract the site MCP wraps.**
+- **An AI concierge already runs on the site** — the Live Chat module
   ([docs/56](56-live-chat-module.md)) answers shopper questions with Claude Haiku
   (`services/api-rest/src/lib/chat/ai-handler.ts`). But it is **RAG-lite**: it stuffs
   ~30 product titles + 20 page titles into the system prompt with a single `respond`
@@ -63,7 +63,7 @@ The storefront MCP is mostly _assembly_, because the platform is API-first:
 
 ### 3.1 A thin MCP adapter over the public REST API
 
-The storefront MCP does **not** touch the database or import module packages. Every
+The site MCP does **not** touch the database or import module packages. Every
 tool is a declarative adapter that:
 
 1. resolves the target site → `{ tenantId/slug, propertySlug }`,
@@ -75,10 +75,10 @@ tool is a declarative adapter that:
 
 Consequences: reuses **all** existing public-safety logic (visibility, module gating,
 rate limits, projections); the new service's Docker closure is tiny (no `@sparx/*`
-module packages, no `@sparx/db`, no Prisma); and storefront/MCP parity is automatic —
+module packages, no `@sparx/db`, no Prisma); and site/MCP parity is automatic —
 a fix in a public route fixes the tool.
 
-### 3.2 New service — `services/mcp-storefront`
+### 3.2 New service — `services/mcp-site`
 
 Mirrors `api-mcp`'s transport pattern (Fastify + `@modelcontextprotocol/sdk`,
 **stateless per-request**: fresh `McpServer` + `StreamableHTTPServerTransport({
@@ -86,7 +86,7 @@ sessionIdGenerator: undefined })`, `reply.hijack()`), but with a different auth
 pipeline and **no module bundling**.
 
 - **Deps:** `fastify`, `fastify-plugin`, `@modelcontextprotocol/sdk`, `zod`, `pino`,
-  `@sparx/storefront-mcp` (the catalog), `@sparx/api-core` (envelope types). That's it.
+  `@sparx/site-mcp` (the catalog), `@sparx/api-core` (envelope types). That's it.
 - **Endpoints:**
   - `POST|GET|DELETE /mcp` — per-site (site from forwarded Host).
   - `POST|GET|DELETE /s/:tenant/:property?/mcp` — canonical (site from subpath, for
@@ -94,41 +94,41 @@ pipeline and **no module bundling**.
   - `GET /health`.
   - `GET /.well-known/oauth-protected-resource` — Phase 2 (returning-customer OAuth).
 - **Site resolution:** subpath if present; else `GET ${SPARX_API_REST_URL}/v1/public/
-site-by-host?host=<x-forwarded-host>`. A 404 → MCP error result "unknown storefront".
+site-by-host?host=<x-forwarded-host>`. A 404 → MCP error result "unknown site".
 - **Env:** `SPARX_API_REST_URL`, `PORT` (new port, e.g. `3200`), `HOST`, `LOG_LEVEL`,
-  `STOREFRONT_MCP_PUBLIC_ORIGIN` (for discovery URLs), and (Phase 2)
+  `SITE_MCP_PUBLIC_ORIGIN` (for discovery URLs), and (Phase 2)
   `BETTER_AUTH_URL`/customer-OAuth wiring. No DB URLs.
 - **Rate limiting:** coarse per-(tenant, client-ip) token bucket in-process (the public
   routes are also rate-limited downstream); mirror `api-mcp/src/rate-limit.ts`.
 
-### 3.3 Shared tool catalog — `@sparx/storefront-mcp`
+### 3.3 Shared tool catalog — `@sparx/site-mcp`
 
 A new package holding the **single source of truth** for shopper tools, consumed by
 both the service and the concierge:
 
 ```ts
-interface StorefrontTool {
+interface SiteTool {
   name: string; // 'search_products', 'book_appointment'
   description: string; // shopper-facing, LLM-readable
   kind: 'read' | 'guest_write' | 'customer'; // auth tier + confirmation hint
   module?: ModuleSlug; // gate: tool absent unless module active
   input: z.ZodType; // Zod → JSON schema for the SDK/Anthropic
   // executor: turn validated input + site + creds into a public-API call
-  call(client: StorefrontApiClient, ctx: StorefrontCtx, input: unknown): Promise<unknown>;
+  call(client: SiteApiClient, ctx: SiteCtx, input: unknown): Promise<unknown>;
 }
 ```
 
-- `StorefrontApiClient` — a typed fetch wrapper over `/v1/public/*` (adds
+- `SiteApiClient` — a typed fetch wrapper over `/v1/public/*` (adds
   `?tenant=&property=`, relays `x-cart-token` / customer session, unwraps the envelope).
-- `STOREFRONT_TOOLS: StorefrontTool[]` — the catalog (§6).
+- `SITE_TOOLS: SiteTool[]` — the catalog (§6).
 - Also exports the tools as **Anthropic tool definitions** (`toAnthropicTools()`) so the
   concierge can register the identical set.
 
 ### 3.4 Concierge upgrade (same catalog, real tools)
 
-`ai-handler.ts` graduates from RAG-lite to tool use: register `STOREFRONT_TOOLS`
+`ai-handler.ts` graduates from RAG-lite to tool use: register `SITE_TOOLS`
 (read + guest_write) as Anthropic tools alongside `respond`, run the tool loop against
-`StorefrontApiClient` (base URL = api-rest, tenant already known), and let Haiku call
+`SiteApiClient` (base URL = api-rest, tenant already known), and let Haiku call
 `check_availability` / `search_products` / `book_appointment` for grounded, actionable
 answers. The `respond`/confidence/escalation contract stays. Persona/tool-policy
 ([docs/07](07-mcp-server-spec.md) §9) can disable individual tools per tenant.
@@ -138,18 +138,18 @@ answers. The `respond`/confidence/escalation contract stays. Persona/tool-policy
 **Primary — per-site `/mcp` on the store's own origin.** `daisysalon.com/mcp` and
 `daisysalon.sparx.zone/mcp`. Caddy's catch-all `:443` (which already routes every
 `*.sparx.zone` + every custom domain to `apps/site`) gets a `/mcp*` carve-out **above**
-the site fallback → `mcp-storefront`. Zero new DNS/TLS: those hosts are already
+the site fallback → `mcp-site`. Zero new DNS/TLS: those hosts are already
 authorized by the on-demand-TLS ask (`internal/domain-check.ts`). The store's MCP lives
 at the store's address and is advertised in its own `llms.txt`.
 
 ```
 # k8s/caddy/Caddyfile — inside the catch-all :443 block, BEFORE `reverse_proxy … site`
-handle_path /mcp* { reverse_proxy mcp-storefront.sparx-prod.svc.cluster.local:3200 }
+handle_path /mcp* { reverse_proxy mcp-site.sparx-prod.svc.cluster.local:3200 }
 ```
 
 **Canonical — `mcp.sparx.zone/s/<tenant>[/<property>]`.** A distinct, discoverable host
 for stores without a custom domain. Needs: an explicit Caddy host block →
-`mcp-storefront`; `'mcp.sparx.zone'` added to `PLATFORM_HOSTNAMES` in
+`mcp-site`; `'mcp.sparx.zone'` added to `PLATFORM_HOSTNAMES` in
 `internal/domain-check.ts` (else the on-demand ask 403s, since no tenant owns slug
 `mcp`); optionally an explicit `cloudflare_record.sparx_zone_mcp` (A → ingress IP,
 `proxied = false`) in `terraform/envs/prod/cloudflare.tf` (the `*` wildcard already
@@ -177,8 +177,8 @@ bearer token — a mismatch for MCP. Tools split by tier:
   account tier, with the shopper scope vocabulary (`account:read/write`, `orders:read`,
   `bookings:read/write`, `b2b:read`) and a **store-branded `/account/authorize` consent page**. The
   AS lives on the store's own origin (docs/27 §6.1) so the shopper stays same-origin with their
-  session cookie. mcp-storefront relays the bearer; **api-rest verifies + scope-gates** it on each
-  `customer`-tier public route (mcp-storefront holds no DB).
+  session cookie. mcp-site relays the bearer; **api-rest verifies + scope-gates** it on each
+  `customer`-tier public route (mcp-site holds no DB).
 
 **Phase 1 ships `read` + `guest_write`** — a complete, valuable surface (books
 appointments, shops, checks out end to end). **Phase 2G** adds the `customer` tier (built).
@@ -190,7 +190,7 @@ Each tool wraps the named public route. `property` is threaded on every call.
 **Discovery / store**
 | tool | kind | public route |
 | --- | --- | --- |
-| `get_store_info` | read | **new** lean `GET /v1/public/storefront-info` (projected: name, tagline, hours, contact, socials, policy links) — _not_ raw `tenants/:slug` |
+| `get_site_info` | read | **new** lean `GET /v1/public/site-info` (projected: name, tagline, hours, contact, socials, policy links) — _not_ raw `tenants/:slug` |
 | `search_site` | read | `GET /v1/public/search` (products + collections + pages) |
 
 **Catalog**
@@ -240,7 +240,7 @@ settings, unauthenticated `b2b/service-types`. Customer-tier tools (`my orders`,
   wrapped as-is: `GET /content/types/:key` (returns the full unprojected `ContentType`
   row), `GET /tenants/:slug` (returns `tenant.settings` verbatim), and
   `GET /b2b/service-types` (no auth/contact check). Add a lean projected
-  `GET /v1/public/storefront-info` for `get_store_info`; fix the B2B route's missing
+  `GET /v1/public/site-info` for `get_site_info`; fix the B2B route's missing
   `requireContactRole` before any B2B tool ships (tracked here, not in Phase 1).
 - **Guest writes have side effects** — booking/waitlist/class-join **create a CRM
   customer by email**; newsletter/signup create prospects + capture IP. Every such tool
@@ -267,28 +267,28 @@ settings, unauthenticated `b2b/service-types`. Customer-tier tools (`my orders`,
 
 ### Phase 0 — shared catalog package
 
-1. `packages/storefront-mcp/` (`@sparx/storefront-mcp`): `StorefrontApiClient`,
-   `StorefrontTool` type, `STOREFRONT_TOOLS` (§6 read + guest_write), `toAnthropicTools()`,
+1. `packages/site-mcp/` (`@sparx/site-mcp`): `SiteApiClient`,
+   `SiteTool` type, `SITE_TOOLS` (§6 read + guest_write), `toAnthropicTools()`,
    `toMcpRegistrations()`. Zod schemas per tool. Unit tests for schema + client URL/relay.
 
 ### Phase 1 — service + concierge + routing (anonymous/guest)
 
-2. `services/mcp-storefront/`: Fastify app mirroring `api-mcp` (`app.ts`, `server.ts`,
+2. `services/mcp-site/`: Fastify app mirroring `api-mcp` (`app.ts`, `server.ts`,
    `env.ts`, `rate-limit.ts`, `index.ts`), stateless transport, `/mcp` + `/s/:tenant/:property?/mcp`
    - `/health`. Site resolution via api-rest `site-by-host` / subpath.
-3. **New lean endpoint** `GET /v1/public/storefront-info` in api-rest (projected store
-   info) to back `get_store_info` without leaking `settings`.
-4. **Concierge upgrade** — `ai-handler.ts` registers `STOREFRONT_TOOLS` (read +
-   guest_write) as Anthropic tools + runs the tool loop via `StorefrontApiClient`.
+3. **New lean endpoint** `GET /v1/public/site-info` in api-rest (projected store
+   info) to back `get_site_info` without leaking `settings`.
+4. **Concierge upgrade** — `ai-handler.ts` registers `SITE_TOOLS` (read +
+   guest_write) as Anthropic tools + runs the tool loop via `SiteApiClient`.
 5. **Discovery** — add the MCP pointer to `llms.txt`.
-6. **Infra**: `services/mcp-storefront/Dockerfile` (tiny closure — no module packages);
-   `k8s/apps/mcp-storefront.yaml` (Deployment+Service, port 3200, reuse `sparx-app-env`/
+6. **Infra**: `services/mcp-site/Dockerfile` (tiny closure — no module packages);
+   `k8s/apps/mcp-site.yaml` (Deployment+Service, port 3200, reuse `sparx-app-env`/
    `sparx-app-secrets`, `sparx-app` SA); add to `k8s/apps/kustomization.yaml`; Caddyfile
    `/mcp*` carve-out in the catch-all + explicit `mcp.sparx.zone` block; `'mcp.sparx.zone'`
    in `PLATFORM_HOSTNAMES`; matrix entry in `build-images.yml`; rollout entry in
    `deploy-prod.yml`; optional DNS record + uptime check.
 7. **Local `.env`** + `k8s/sparx-prod/app-env-configmap.yaml`: `SPARX_API_REST_URL`,
-   `STOREFRONT_MCP_PUBLIC_ORIGIN`, port.
+   `SITE_MCP_PUBLIC_ORIGIN`, port.
 
 ### Phase 2G — returning-customer tier (BUILT)
 
@@ -296,9 +296,9 @@ settings, unauthenticated `b2b/service-types`. Customer-tier tools (`my orders`,
    by api-rest under `<store>/v1/public/auth/*` on the store's OWN origin (Caddy carve-out, tenant
    from Host), with our own AS metadata (real shopper scope vocab), a `/mcp/authorize` consent guard,
    and a store-branded `/account/authorize` consent page in `apps/site`. The bearer is **verified in
-   api-rest** (not the DB-less mcp-storefront): the `customer`-tier public routes accept
+   api-rest** (not the DB-less mcp-site): the `customer`-tier public routes accept
    `Authorization: Bearer`, verify it (`verifyCustomerMcpToken`), resolve the per-site membership,
-   and scope-gate. mcp-storefront advertises `oauth-protected-resource` + challenges unauthenticated
+   and scope-gate. mcp-site advertises `oauth-protected-resource` + challenges unauthenticated
    `customer`-tool calls with `401 + WWW-Authenticate`. Tools: `get_my_profile`, `list_my_orders`,
    `get_my_order`, `list/add_my_address(es)`, `list/add/remove …wishlist`, `list/get_my_booking(s)`,
    `reschedule/cancel_my_booking`, `list/get_my_b2b_account(s)`, `list_my_b2b_invoices`. (The B2B
@@ -316,7 +316,7 @@ tests.
 
 ## 11. Open decisions
 
-- **Service/package names** — `mcp-storefront` / `@sparx/storefront-mcp` (proposed).
+- **Service/package names** — `mcp-site` / `@sparx/site-mcp` (proposed).
 - **Canonical host shape** — `mcp.sparx.zone/s/<tenant>[/<property>]` vs `?tenant=`
   query. Subpath proposed (cleaner, cache-friendly).
 - **Phase 2 cut line** — build now vs immediately-next (see §5).

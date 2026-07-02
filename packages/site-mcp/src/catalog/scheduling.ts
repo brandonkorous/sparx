@@ -3,7 +3,7 @@
 // under /v1/public/scheduling. Module-gated on `scheduling` downstream.
 
 import { z } from 'zod';
-import type { StorefrontTool } from '../types.js';
+import type { SiteTool } from '../types.js';
 
 const iso = z.string().datetime({ offset: true });
 const serviceId = z.string().uuid();
@@ -13,7 +13,7 @@ const guest = z.object({
   phone: z.string().max(32).optional(),
 });
 
-const listServices: StorefrontTool = {
+const listServices: SiteTool = {
   name: 'list_services',
   description:
     'List services a customer can book online (name, duration, price, capacity, booking type).',
@@ -23,7 +23,7 @@ const listServices: StorefrontTool = {
   call: (client) => client.request({ method: 'GET', path: '/v1/public/scheduling/services' }),
 };
 
-const getServiceResources: StorefrontTool = {
+const getServiceResources: SiteTool = {
   name: 'get_service_resources',
   description:
     'For a service that lets the customer choose a provider/resource (stylist, room, table…), list the pickable options.',
@@ -39,7 +39,7 @@ const getServiceResources: StorefrontTool = {
   },
 };
 
-const checkAvailability: StorefrontTool = {
+const checkAvailability: SiteTool = {
   name: 'check_availability',
   description:
     'Open appointment slots for a service in a date/time window. Returns {startAt, endAt, remaining}. Use before booking.',
@@ -60,7 +60,7 @@ const checkAvailability: StorefrontTool = {
     }),
 };
 
-const listClassSessions: StorefrontTool = {
+const listClassSessions: SiteTool = {
   name: 'list_class_sessions',
   description: 'Open class/group sessions for a service in a window (with remaining seats).',
   kind: 'read',
@@ -74,7 +74,7 @@ const listClassSessions: StorefrontTool = {
     }),
 };
 
-const bookAppointment: StorefrontTool = {
+const bookAppointment: SiteTool = {
   name: 'book_appointment',
   description:
     'Book an appointment for a service at a start time. Guest booking — provide the customer’s name + email; no account needed. Confirm the slot with check_availability first.',
@@ -92,7 +92,7 @@ const bookAppointment: StorefrontTool = {
     client.request({ method: 'POST', path: '/v1/public/scheduling/bookings', body: input }),
 };
 
-const joinWaitlist: StorefrontTool = {
+const joinWaitlist: SiteTool = {
   name: 'join_waitlist',
   description: 'Join the waitlist for a service across a desired window when no slot is open.',
   kind: 'guest_write',
@@ -107,7 +107,7 @@ const joinWaitlist: StorefrontTool = {
     client.request({ method: 'POST', path: '/v1/public/scheduling/waitlist', body: input }),
 };
 
-const joinClass: StorefrontTool = {
+const joinClass: SiteTool = {
   name: 'join_class',
   description: 'Take a seat in an open class session (by session/booking id).',
   kind: 'guest_write',
@@ -127,7 +127,7 @@ const joinClass: StorefrontTool = {
   },
 };
 
-export const schedulingTools: StorefrontTool[] = [
+export const schedulingTools: SiteTool[] = [
   listServices,
   getServiceResources,
   checkAvailability,

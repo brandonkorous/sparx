@@ -4,12 +4,12 @@
 // turns) and are relayed as the `x-cart-token` header. Wraps /v1/public/commerce/cart.
 
 import { z } from 'zod';
-import type { StorefrontTool } from '../types.js';
+import type { SiteTool } from '../types.js';
 
 const cartId = z.string().uuid();
 const cartToken = z.string().min(1).describe('The cart token returned by create_cart.');
 
-const createCart: StorefrontTool = {
+const createCart: SiteTool = {
   name: 'create_cart',
   description:
     'Create a new guest cart. Returns the cart plus a `token` — keep the cartId AND token and pass them to every later cart/checkout tool.',
@@ -19,7 +19,7 @@ const createCart: StorefrontTool = {
   call: (client) => client.request({ method: 'POST', path: '/v1/public/commerce/cart' }),
 };
 
-const getCart: StorefrontTool = {
+const getCart: SiteTool = {
   name: 'get_cart',
   description: 'Read the current contents + totals of a cart.',
   kind: 'read',
@@ -35,7 +35,7 @@ const getCart: StorefrontTool = {
   },
 };
 
-const addToCart: StorefrontTool = {
+const addToCart: SiteTool = {
   name: 'add_to_cart',
   description: 'Add a product variant to the cart.',
   kind: 'guest_write',
@@ -67,7 +67,7 @@ const addToCart: StorefrontTool = {
   },
 };
 
-const updateCartItem: StorefrontTool = {
+const updateCartItem: SiteTool = {
   name: 'update_cart_item',
   description: 'Set the quantity of a cart line (0 removes it).',
   kind: 'guest_write',
@@ -99,7 +99,7 @@ const updateCartItem: StorefrontTool = {
   },
 };
 
-const removeCartItem: StorefrontTool = {
+const removeCartItem: SiteTool = {
   name: 'remove_cart_item',
   description: 'Remove a line from the cart.',
   kind: 'guest_write',
@@ -123,7 +123,7 @@ const removeCartItem: StorefrontTool = {
   },
 };
 
-const applyDiscount: StorefrontTool = {
+const applyDiscount: SiteTool = {
   name: 'apply_discount',
   description: 'Apply a discount code to the cart.',
   kind: 'guest_write',
@@ -148,7 +148,7 @@ const applyDiscount: StorefrontTool = {
   },
 };
 
-const removeDiscount: StorefrontTool = {
+const removeDiscount: SiteTool = {
   name: 'remove_discount',
   description: 'Remove a previously applied discount code from the cart.',
   kind: 'guest_write',
@@ -172,7 +172,7 @@ const removeDiscount: StorefrontTool = {
   },
 };
 
-export const cartTools: StorefrontTool[] = [
+export const cartTools: SiteTool[] = [
   createCart,
   getCart,
   addToCart,

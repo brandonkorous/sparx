@@ -2,11 +2,11 @@
 // turn it into the shapes each host needs:
 //   • toAnthropicTools() — Anthropic Messages `tools` (for the concierge loop).
 //   • mcpAnnotations()   — MCP `annotations` (destructiveHint / openWorldHint).
-// The mcp-storefront service passes each tool's `input` ZodObject straight to
+// The mcp-site service passes each tool's `input` ZodObject straight to
 // the SDK's registerTool (same as api-mcp), so no MCP-schema adapter is needed.
 
 import { z } from 'zod';
-import type { StorefrontTool } from './types.js';
+import type { SiteTool } from './types.js';
 
 export interface AnthropicToolDef {
   name: string;
@@ -15,7 +15,7 @@ export interface AnthropicToolDef {
 }
 
 /** Convert catalog tools to Anthropic tool definitions (JSON-schema inputs). */
-export function toAnthropicTools(tools: readonly StorefrontTool[]): AnthropicToolDef[] {
+export function toAnthropicTools(tools: readonly SiteTool[]): AnthropicToolDef[] {
   return tools.map((t) => ({
     name: t.name,
     description: t.description,
@@ -25,7 +25,7 @@ export function toAnthropicTools(tools: readonly StorefrontTool[]): AnthropicToo
 
 /** MCP tool annotations: non-read tools mutate state, so hint clients to confirm
  *  and mark them open-world (they reach beyond a closed read set). */
-export function mcpAnnotations(tool: StorefrontTool): {
+export function mcpAnnotations(tool: SiteTool): {
   destructiveHint: boolean;
   openWorldHint: boolean;
 } {

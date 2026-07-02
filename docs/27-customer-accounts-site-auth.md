@@ -1,6 +1,6 @@
 # sparx Platform — Customer Accounts & Site Authentication (Layer 2)
 
-**Version:** 2.2
+**Version:** 2.3
 **Author:** Brandon Korous
 **Last Updated:** 2026-07-02
 
@@ -14,8 +14,8 @@ _not_ Better Auth because Better Auth keys credential sign-in on a **globally un
 and shoppers must be able to register the same email at different tenants as separate accounts.
 
 That reasoning was correct for password login. It is **no longer sufficient**, because Layer 2
-now has to issue **OAuth 2.1 access tokens to shoppers** — the storefront MCP plane
-([docs/113](113-storefront-mcp.md)) lets a tenant's customers point their own LLM at a store to
+now has to issue **OAuth 2.1 access tokens to shoppers** — the site MCP plane
+([docs/113](113-site-mcp.md)) lets a tenant's customers point their own LLM at a store to
 browse, book, and buy. A shopper authenticating an MCP client is an OAuth authorization-code +
 DCR + PKCE flow. We already built exactly that flow, hardened per OAuth 2.1, for **staff**
 ([docs/07 §5](07-mcp-server-spec.md)) — as Better Auth's `mcp()` plugin on the staff instance.
@@ -84,7 +84,7 @@ either alone cannot leak across tenants.
 
 ### 3.1 Request-scoped tenant context (AsyncLocalStorage)
 
-For a shopper the tenant is known **before** authentication — it is the storefront host
+For a shopper the tenant is known **before** authentication — it is the site host
 (`acme.sparx.zone`, or `?tenant=acme`), resolved exactly as the rest of the public surface
 already does. api-rest carries it to the adapter through a new **request-scoped
 `AsyncLocalStorage`** (`@sparx/db` → `tenantStore`): a Fastify `preHandler` on the customer-auth
@@ -279,7 +279,7 @@ served by api-rest, not mounted in `apps/site`:
   first-party consent page bound to the shopper's session, `requirePKCE` + S256 only, short TTLs,
   and a token-verify query that checks expiry + client-enabled (never a bare row lookup). The
   `loginPage` is the store's `/account/login` (a browser redirect across origins is fine).
-- The storefront MCP resource server (`services/mcp-storefront`, docs/113) advertises this AS via
+- The site MCP resource server (`services/mcp-site`, docs/113) advertises this AS via
   `WWW-Authenticate` + `/.well-known/oauth-protected-resource`, relays the shopper's bearer, and —
   because it holds **no DB** — bearer **verification happens in api-rest**: the `customer`-tier
   public routes accept an `Authorization: Bearer` credential (verified with
@@ -296,13 +296,13 @@ store's own origin**, not on a shared api-rest host:
 
 - **Caddy** carves `<store>/v1/public/auth*` and the store-root
   `/.well-known/oauth-authorization-server` + `/.well-known/openid-configuration` out to api-rest
-  (Host preserved), alongside the existing `/mcp*` → mcp-storefront carve-out. So the whole OAuth
+  (Host preserved), alongside the existing `/mcp*` → mcp-site carve-out. So the whole OAuth
   flow — discovery, DCR, authorize, consent, token — happens on `https://<store>`; the browser keeps
   its `sparx_customer_session` cookie throughout, and **tenant resolves from the Host**
   (`resolveSiteByHost`, `?tenant=` fallback for local dev).
-- **Discovery.** mcp-storefront answers an unauthenticated `customer`-tool call with `401` +
+- **Discovery.** mcp-site answers an unauthenticated `customer`-tool call with `401` +
   `WWW-Authenticate: resource_metadata="…/mcp/.well-known/oauth-protected-resource"`; that doc's
-  `authorization_servers` points at the store's own origin (`siteUrl`, from `storefront-info`).
+  `authorization_servers` points at the store's own origin (`siteUrl`, from `site-info`).
   api-rest serves **our own** AS metadata at `<store>/.well-known/oauth-authorization-server` (Better
   Auth's default only advertises the openid framing scopes, so we replace it) listing the real
   shopper scope vocabulary + the store-origin `/v1/public/auth/mcp/{authorize,token,register}`
@@ -342,7 +342,7 @@ the engine swap must not quietly drop them:
 - **Guest checkout stays first-class.** A `customers` row with `auth_user_id = null` is a valid
   guest; cart-claim on auth is unchanged.
 - **Cookie scope & custom domains.** `sparx_customer_session` is httpOnly / SameSite=Lax / Path=/
-  (`Secure` in prod), first-party per storefront origin, no `Domain=` — each origin isolates.
+  (`Secure` in prod), first-party per site origin, no `Domain=` — each origin isolates.
 - **No cross-package contamination.** Customer auth never imports or mutates `@sparx/auth` (the
   staff instance) or its tables, and vice-versa.
 
@@ -371,7 +371,7 @@ the engine swap must not quietly drop them:
 ## 9. Open decisions
 
 - **Social login default.** Google/Apple are now possible per-tenant but ship **dark** (no provider
-  registered until a tenant enables it), so the storefront login stays password-only by default —
+  registered until a tenant enables it), so the site login stays password-only by default —
   matching the old "keeps it clean" stance until a tenant opts in.
 - **Email verification before first login.** Still `false` by default (the 5-minute-store goal),
   opt-in per tenant later — unchanged from v1.x §10.

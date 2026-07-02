@@ -1,8 +1,8 @@
 {
-  "name": "@sparx/storefront-mcp",
+  "name": "@sparx/site-mcp",
   "version": "0.0.0",
   "private": true,
-  "description": "sparx Storefront MCP — the shopper-facing tool catalog (docs/113). A thin, declarative set of tools over the public /v1/public/* REST API, shared by the mcp-storefront service and the storefront concierge (docs/56). No DB, no module packages: every tool is an HTTP adapter over the public API contract.",
+  "description": "sparx Site MCP — the shopper-facing tool catalog (docs/113). A thin, declarative set of tools over the public /v1/public/* REST API, shared by the mcp-site service and the site concierge (docs/56). No DB, no module packages: every tool is an HTTP adapter over the public API contract.",
   "type": "module",
   "exports": {
     ".": {

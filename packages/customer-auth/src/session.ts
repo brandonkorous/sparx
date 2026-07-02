@@ -1,10 +1,10 @@
 // Session cookie constants shared with the api-rest route layer. The token
 // itself is now a Better Auth session token (customer_sessions.token); Better
 // Auth is configured (server.ts `advanced.cookies.session_token.name`) to
-// deliver it in this first-party httpOnly cookie so the storefront + /api/sparx
+// deliver it in this first-party httpOnly cookie so the site + /api/sparx
 // proxy + the /account routes are unchanged from the pre-Better-Auth design.
 
-/** The first-party httpOnly cookie carrying the storefront session token. */
+/** The first-party httpOnly cookie carrying the site session token. */
 export const SESSION_COOKIE_NAME = 'sparx_customer_session';
 
 /** Session lifetime (matches server.ts `session.expiresIn`). Sessions slide

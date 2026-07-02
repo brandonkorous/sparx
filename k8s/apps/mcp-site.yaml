@@ -1,7 +1,7 @@
-# services/mcp-storefront — production manifest (docs/113). The shopper-facing
+# services/mcp-site — production manifest (docs/113). The shopper-facing
 # MCP plane. Mirrors api-mcp.yaml; the differences:
-#   - Image tag `mcp-storefront`, port 3200
-#   - Fronted by the Caddy `/mcp*` carve-out on every storefront host AND the
+#   - Image tag `mcp-site`, port 3200
+#   - Fronted by the Caddy `/mcp*` carve-out on every site host AND the
 #     canonical `mcp.sparx.zone` block (k8s/caddy/Caddyfile)
 #   - No DB / no module bundling: it is a thin MCP adapter over the public REST
 #     API. It reads only SPARX_API_REST_URL (from sparx-app-env) — the rest of
@@ -14,10 +14,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mcp-storefront
+  name: mcp-site
   namespace: sparx-prod
   labels:
-    app: mcp-storefront
+    app: mcp-site
     tier: api
 spec:
   replicas: 1
@@ -29,17 +29,17 @@ spec:
       maxUnavailable: 0
   selector:
     matchLabels:
-      app: mcp-storefront
+      app: mcp-site
   template:
     metadata:
       labels:
-        app: mcp-storefront
+        app: mcp-site
         tier: api
     spec:
       serviceAccountName: sparx-app
       containers:
-        - name: mcp-storefront
-          image: us-central1-docker.pkg.dev/sparxworks/sparx/mcp-storefront:latest
+        - name: mcp-site
+          image: us-central1-docker.pkg.dev/sparxworks/sparx/mcp-site:latest
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -53,7 +53,7 @@ spec:
             - name: NODE_ENV
               value: production
             - name: SERVICE_NAME
-              value: mcp-storefront
+              value: mcp-site
             - name: PORT
               value: '3200'
             - name: LOG_LEVEL
@@ -96,7 +96,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mcp-storefront
+  name: mcp-site
   namespace: sparx-prod
 spec:
   type: ClusterIP
@@ -105,4 +105,4 @@ spec:
       port: 3200
       targetPort: 3200
   selector:
-    app: mcp-storefront
+    app: mcp-site

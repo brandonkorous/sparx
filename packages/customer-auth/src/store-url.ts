@@ -1,7 +1,7 @@
-// Resolves the shopper-facing base URL for the ambient tenant's storefront — its
+// Resolves the shopper-facing base URL for the ambient tenant's site — its
 // custom primary domain if set, else the <slug>.sparx.zone subdomain. Used to
 // build the password-reset link so the email points at the shopper's ACTUAL
-// storefront, never a client-supplied origin (a token-phishing vector). Mirrors
+// site, never a client-supplied origin (a token-phishing vector). Mirrors
 // the api-rest `siteBaseUrl` helper.
 
 import { prisma, tenantStore } from '@sparx/db';

@@ -102,7 +102,7 @@ import publicAccountRoutes from './routes/v1/public/account.js';
 import publicAuthRoutes from './routes/v1/public/auth.js';
 import publicSiteSnapshotRoutes from './routes/v1/public/site-snapshot.js';
 import publicSiteRoutes from './routes/v1/public/site.js';
-import publicStorefrontInfoRoutes from './routes/v1/public/storefront-info.js';
+import publicSiteInfoRoutes from './routes/v1/public/site-info.js';
 import publicBuilderRoutes from './routes/v1/public/builder.js';
 import publicMediaRoutes from './routes/v1/public/media.js';
 import marketplaceMediaRoutes from './routes/v1/public/marketplace-media.js';
@@ -799,7 +799,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(schedulingCalendarPushRoutes);
   await app.register(publicSiteSnapshotRoutes);
   await app.register(publicSiteRoutes);
-  await app.register(publicStorefrontInfoRoutes);
+  await app.register(publicSiteInfoRoutes);
   await app.register(publicBuilderRoutes);
   await app.register(publicMediaRoutes);
   await app.register(marketplaceMediaRoutes);

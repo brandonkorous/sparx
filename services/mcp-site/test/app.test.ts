@@ -6,7 +6,7 @@ process.env.NODE_ENV = 'test';
 
 const { createApp } = await import('../src/app.js');
 
-describe('mcp-storefront app', () => {
+describe('mcp-site app', () => {
   afterEach(() => vi.unstubAllGlobals());
 
   it('health returns ok', async () => {
@@ -17,7 +17,7 @@ describe('mcp-storefront app', () => {
     await app.close();
   });
 
-  it('returns 404 UNKNOWN_STOREFRONT for an unresolvable host', async () => {
+  it('returns 404 UNKNOWN_SITE for an unresolvable host', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(() => Promise.resolve(new Response('not found', { status: 404 })))
@@ -30,7 +30,7 @@ describe('mcp-storefront app', () => {
       payload: { jsonrpc: '2.0', id: 1, method: 'tools/list' },
     });
     expect(res.statusCode).toBe(404);
-    expect(res.json().error.code).toBe('UNKNOWN_STOREFRONT');
+    expect(res.json().error.code).toBe('UNKNOWN_SITE');
     await app.close();
   });
 });

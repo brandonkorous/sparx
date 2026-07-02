@@ -5,7 +5,7 @@
 // never handles raw card data. Wraps /v1/public/commerce/checkout.
 
 import { z } from 'zod';
-import type { StorefrontTool } from '../types.js';
+import type { SiteTool } from '../types.js';
 
 const sessionId = z.string().uuid();
 const cartToken = z
@@ -24,7 +24,7 @@ const address = z.object({
   phone: z.string().max(32).optional(),
 });
 
-const startCheckout: StorefrontTool = {
+const startCheckout: SiteTool = {
   name: 'start_checkout',
   description: 'Start a checkout session from a cart. Returns the session (step + totals).',
   kind: 'guest_write',
@@ -41,7 +41,7 @@ const startCheckout: StorefrontTool = {
   },
 };
 
-const getCheckout: StorefrontTool = {
+const getCheckout: SiteTool = {
   name: 'get_checkout',
   description: 'Read the current state of a checkout session.',
   kind: 'read',
@@ -57,7 +57,7 @@ const getCheckout: StorefrontTool = {
   },
 };
 
-const setCheckoutContact: StorefrontTool = {
+const setCheckoutContact: SiteTool = {
   name: 'set_checkout_contact',
   description: 'Set the contact email/phone on a checkout session.',
   kind: 'guest_write',
@@ -87,7 +87,7 @@ const setCheckoutContact: StorefrontTool = {
   },
 };
 
-const getShippingQuotes: StorefrontTool = {
+const getShippingQuotes: SiteTool = {
   name: 'get_shipping_quotes',
   description: 'Get shipping rate options for a checkout session and destination.',
   kind: 'guest_write',
@@ -116,7 +116,7 @@ const getShippingQuotes: StorefrontTool = {
   },
 };
 
-const setCheckoutShipping: StorefrontTool = {
+const setCheckoutShipping: SiteTool = {
   name: 'set_checkout_shipping',
   description: 'Set the shipping (and optional billing) address + chosen shipping rate.',
   kind: 'guest_write',
@@ -147,7 +147,7 @@ const setCheckoutShipping: StorefrontTool = {
   },
 };
 
-const applyCheckoutDiscount: StorefrontTool = {
+const applyCheckoutDiscount: SiteTool = {
   name: 'apply_checkout_discount',
   description: 'Apply a discount code to a checkout session.',
   kind: 'guest_write',
@@ -172,7 +172,7 @@ const applyCheckoutDiscount: StorefrontTool = {
   },
 };
 
-const createPaymentIntent: StorefrontTool = {
+const createPaymentIntent: SiteTool = {
   name: 'create_payment_intent',
   description:
     'Begin payment for a checkout session. Returns a client secret / redirect URL the SHOPPER completes in a browser — the assistant never handles card details. Provide return/cancel URLs for the redirect flow.',
@@ -202,7 +202,7 @@ const createPaymentIntent: StorefrontTool = {
   },
 };
 
-const completeCheckout: StorefrontTool = {
+const completeCheckout: SiteTool = {
   name: 'complete_checkout',
   description:
     'Finalize a checkout into an order once payment is authorized (e.g. after a redirect-return or terms/PO flow). Returns {orderId, orderNumber}.',
@@ -231,7 +231,7 @@ const completeCheckout: StorefrontTool = {
   },
 };
 
-export const checkoutTools: StorefrontTool[] = [
+export const checkoutTools: SiteTool[] = [
   startCheckout,
   getCheckout,
   setCheckoutContact,

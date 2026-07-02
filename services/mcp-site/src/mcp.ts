@@ -1,20 +1,20 @@
 // Per-request McpServer factory (docs/113 §3.2). Mirrors api-mcp's pattern: a
 // fresh McpServer per HTTP request (stateless transport). Tools come from the
-// shared @sparx/storefront-mcp catalog; each dispatch is an HTTP call to a
+// shared @sparx/site-mcp catalog; each dispatch is an HTTP call to a
 // public route. Phase 1 registers `read` + `guest_write` tools only.
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import {
-  getStorefrontTool,
+  getSiteTool,
   toolsForModules,
   mcpAnnotations,
-  StorefrontApiError,
-  type StorefrontApiClient,
-  type StorefrontCtx,
-  type StorefrontTool,
-} from '@sparx/storefront-mcp';
+  SiteApiError,
+  type SiteApiClient,
+  type SiteCtx,
+  type SiteTool,
+} from '@sparx/site-mcp';
 
-const SERVER_INFO = { name: 'sparx-storefront-mcp', version: '1.0.0' };
+const SERVER_INFO = { name: 'sparx-site-mcp', version: '1.0.0' };
 
 interface JsonRpcCall {
   method?: unknown;
@@ -30,7 +30,7 @@ export function invokesCustomerTool(body: unknown): boolean {
     const call = c as JsonRpcCall;
     if (call?.method !== 'tools/call') return false;
     const name = call.params?.name;
-    return typeof name === 'string' && getStorefrontTool(name)?.kind === 'customer';
+    return typeof name === 'string' && getSiteTool(name)?.kind === 'customer';
   });
 }
 
@@ -39,9 +39,9 @@ interface ToolResult {
   isError?: boolean;
 }
 
-export function buildStorefrontServer(
-  client: StorefrontApiClient,
-  ctx: StorefrontCtx,
+export function buildSiteServer(
+  client: SiteApiClient,
+  ctx: SiteCtx,
   disabledModules: readonly string[]
 ): McpServer {
   const server = new McpServer(SERVER_INFO);
@@ -67,9 +67,9 @@ export function buildStorefrontServer(
 }
 
 async function dispatch(
-  tool: StorefrontTool,
-  client: StorefrontApiClient,
-  ctx: StorefrontCtx,
+  tool: SiteTool,
+  client: SiteApiClient,
+  ctx: SiteCtx,
   input: unknown
 ): Promise<ToolResult> {
   try {
@@ -79,7 +79,7 @@ async function dispatch(
       result.meta !== undefined ? { data: result.data, meta: result.meta } : result.data;
     return { content: [{ type: 'text', text: JSON.stringify(payload) }] };
   } catch (err) {
-    if (err instanceof StorefrontApiError) {
+    if (err instanceof SiteApiError) {
       // The public route rejected the call (module off, not found, validation…).
       // Surface it as an error RESULT so the LLM can see why and reroute.
       return { isError: true, content: [{ type: 'text', text: `${err.code}: ${err.message}` }] };

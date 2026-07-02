@@ -1,4 +1,4 @@
-// Coarse per-(storefront, client-ip) rate limit (docs/113 §7). In-process token
+// Coarse per-(site, client-ip) rate limit (docs/113 §7). In-process token
 // buckets — the public routes downstream are also rate-limited, so this is just
 // a blunt abuse cap. Replicas are few; per-instance drift is acceptable.
 

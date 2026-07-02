@@ -104,14 +104,14 @@ const customerMcpAuthorizeGuard = createAuthMiddleware(async (ctx) => {
 /** The shopper MCP OAuth authorization server (docs/113 customer tier). Hardened
  *  per OAuth 2.1: PKCE-S256 only, short TTLs, our shopper scope vocabulary. The
  *  handler mount + first-party consent guard + per-store login-page redirect +
- *  resource-server advertisement are wired in the storefront-MCP customer-tier
+ *  resource-server advertisement are wired in the site-MCP customer-tier
  *  slice (docs/27 §6); this registration makes the instance + its tenant-scoped
  *  oauth tables OAuth-ready. Extracted so createCustomerAuth stays cohesive. */
 function customerMcpPlugin() {
   const loginPage = process.env.CUSTOMER_MCP_LOGIN_PAGE ?? '/account/login';
   return mcp({
     loginPage,
-    resource: process.env.STOREFRONT_MCP_PUBLIC_ORIGIN ?? 'http://localhost:3200',
+    resource: process.env.SITE_MCP_PUBLIC_ORIGIN ?? 'http://localhost:3200',
     oidcConfig: {
       loginPage,
       requirePKCE: true,
@@ -150,7 +150,7 @@ function createCustomerAuth() {
   return betterAuth({
     appName: 'sparx-customer',
     // Mounted by api-rest at /v1/public/auth/* (docs/27 §6). baseURL is the
-    // api-rest origin; the storefront reaches it through its /api/sparx proxy.
+    // api-rest origin; the site reaches it through its /api/sparx proxy.
     baseURL: process.env.CUSTOMER_AUTH_URL ?? 'http://localhost:3100',
     basePath: '/v1/public/auth',
     secret: customerAuthSecret(),
@@ -176,7 +176,7 @@ function createCustomerAuth() {
       },
       // Publish `email.send` (never a direct send) — same path as staff auth.
       // BA's own `url` points at api-rest's baseURL; we build the STORE url so the
-      // link lands on the shopper's actual storefront (never a client-supplied
+      // link lands on the shopper's actual site (never a client-supplied
       // origin — a token-phishing vector). Tenant comes from the ambient store.
       sendResetPassword: async ({ user, token }) => {
         const base = await resolveStoreBaseUrl();
@@ -192,7 +192,7 @@ function createCustomerAuth() {
     advanced: {
       // DB generates ids (gen_random_uuid()), mirroring the staff instance.
       database: { generateId: false },
-      // First-party cookie name expected by the storefront + the /account routes.
+      // First-party cookie name expected by the site + the /account routes.
       cookies: { session_token: { name: SESSION_COOKIE_NAME } },
     },
 

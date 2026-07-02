@@ -1,15 +1,15 @@
-// Typed fetch wrapper over the public storefront REST API (docs/113 §3.3).
+// Typed fetch wrapper over the public site REST API (docs/113 §3.3).
 //
 // Injects the resolved `?tenant=&property=` on every call, relays the guest
 // cart token (`x-cart-token`) and — Phase 2 — the customer session cookie,
 // unwraps the `{ success, data, meta }` envelope (packages/api-core/envelope),
-// and turns a non-2xx / `success:false` body into a StorefrontApiError the tool
+// and turns a non-2xx / `success:false` body into a SiteApiError the tool
 // layer can surface to the LLM. No SDK, no DB — just the public API contract.
 
-import type { StorefrontCtx } from './types.js';
+import type { SiteCtx } from './types.js';
 
 /** Pagination/facet metadata echoed from a paged public route. */
-export interface StorefrontMeta {
+export interface SiteMeta {
   page?: number;
   per_page?: number;
   total?: number;
@@ -18,27 +18,27 @@ export interface StorefrontMeta {
   [key: string]: unknown;
 }
 
-export interface StorefrontResponse<T = unknown> {
+export interface SiteResponse<T = unknown> {
   data: T;
-  meta?: StorefrontMeta;
+  meta?: SiteMeta;
 }
 
 /** A public-API call that failed. `status` is the HTTP status; `code` is the
  *  platform error code (e.g. `MODULE_DISABLED`, `NOT_FOUND`) when present. */
-export class StorefrontApiError extends Error {
+export class SiteApiError extends Error {
   constructor(
     readonly status: number,
     readonly code: string,
     message: string
   ) {
     super(message);
-    this.name = 'StorefrontApiError';
+    this.name = 'SiteApiError';
   }
 }
 
 export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
-export interface StorefrontRequest {
+export interface SiteRequest {
   method: HttpMethod;
   /** Path under the api-rest origin, e.g. `/v1/public/commerce/products`. */
   path: string;
@@ -52,24 +52,24 @@ export interface StorefrontRequest {
 interface EnvelopeBody {
   success?: boolean;
   data?: unknown;
-  meta?: StorefrontMeta;
+  meta?: SiteMeta;
   error?: unknown;
 }
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;
 
-export class StorefrontApiClient {
+export class SiteApiClient {
   /**
    * @param baseUrl api-rest origin (e.g. `http://localhost:3100` /
    *                `http://api-rest.sparx-prod.svc.cluster.local:3000`).
-   * @param ctx     resolved storefront (tenant + optional property + session).
+   * @param ctx     resolved site (tenant + optional property + session).
    */
   constructor(
     private readonly baseUrl: string,
-    private readonly ctx: StorefrontCtx
+    private readonly ctx: SiteCtx
   ) {}
 
-  async request<T = unknown>(req: StorefrontRequest): Promise<StorefrontResponse<T>> {
+  async request<T = unknown>(req: SiteRequest): Promise<SiteResponse<T>> {
     const url = new URL(req.path, this.baseUrl);
     url.searchParams.set('tenant', this.ctx.tenantSlug);
     if (this.ctx.propertySlug) url.searchParams.set('property', this.ctx.propertySlug);
@@ -97,11 +97,7 @@ export class StorefrontApiClient {
       });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      throw new StorefrontApiError(
-        0,
-        'UPSTREAM_UNREACHABLE',
-        `storefront API unreachable: ${message}`
-      );
+      throw new SiteApiError(0, 'UPSTREAM_UNREACHABLE', `site API unreachable: ${message}`);
     }
 
     const text = await res.text();
@@ -119,7 +115,7 @@ export class StorefrontApiClient {
       const code = typeof err.code === 'string' ? err.code : `HTTP_${res.status}`;
       const message =
         typeof err.message === 'string' ? err.message : `request failed (${res.status})`;
-      throw new StorefrontApiError(res.status, code, message);
+      throw new SiteApiError(res.status, code, message);
     }
 
     return { data: parsed.data as T, meta: parsed.meta };

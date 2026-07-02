@@ -1,4 +1,4 @@
-// Entrypoint for the storefront MCP server (docs/113).
+// Entrypoint for the site MCP server (docs/113).
 
 import { createApp } from './app.js';
 import { env } from './env.js';
@@ -18,6 +18,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((err) => {
-  console.error('[mcp-storefront] failed to start', err);
+  console.error('[mcp-site] failed to start', err);
   process.exit(1);
 });

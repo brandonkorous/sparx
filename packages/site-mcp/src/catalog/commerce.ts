@@ -1,14 +1,14 @@
-// Commerce catalog tools (docs/113 §6) — read the storefront catalog + submit
+// Commerce catalog tools (docs/113 §6) — read the site catalog + submit
 // reviews/questions. Each wraps a route under /v1/public/commerce.
 
 import { z } from 'zod';
-import type { StorefrontTool } from '../types.js';
+import type { SiteTool } from '../types.js';
 
 const handle = z.string().min(1).max(255);
 const page = z.number().int().min(1).default(1);
 const perPage = z.number().int().min(1).max(100).default(24);
 
-const searchProducts: StorefrontTool = {
+const searchProducts: SiteTool = {
   name: 'search_products',
   description:
     'Faceted product search across this store (full-text + filters). Use for "do you sell X", price/stock/fitment questions, and browsing.',
@@ -40,7 +40,7 @@ const searchProducts: StorefrontTool = {
     }),
 };
 
-const listProducts: StorefrontTool = {
+const listProducts: SiteTool = {
   name: 'list_products',
   description: 'List/browse products with simple filters (no search index needed).',
   kind: 'read',
@@ -63,7 +63,7 @@ const listProducts: StorefrontTool = {
     }),
 };
 
-const getProduct: StorefrontTool = {
+const getProduct: SiteTool = {
   name: 'get_product',
   description:
     'Full detail for one product by its handle: description, variants, options, images, price range, stock, and fitment.',
@@ -79,7 +79,7 @@ const getProduct: StorefrontTool = {
   },
 };
 
-const listCollections: StorefrontTool = {
+const listCollections: SiteTool = {
   name: 'list_collections',
   description: 'List the store’s product collections (curated groups).',
   kind: 'read',
@@ -88,7 +88,7 @@ const listCollections: StorefrontTool = {
   call: (client) => client.request({ method: 'GET', path: '/v1/public/commerce/collections' }),
 };
 
-const getCollectionProducts: StorefrontTool = {
+const getCollectionProducts: SiteTool = {
   name: 'get_collection_products',
   description: 'List products in a collection by the collection handle.',
   kind: 'read',
@@ -104,7 +104,7 @@ const getCollectionProducts: StorefrontTool = {
   },
 };
 
-const listCategories: StorefrontTool = {
+const listCategories: SiteTool = {
   name: 'list_categories',
   description: 'The store’s category tree.',
   kind: 'read',
@@ -113,7 +113,7 @@ const listCategories: StorefrontTool = {
   call: (client) => client.request({ method: 'GET', path: '/v1/public/commerce/categories' }),
 };
 
-const getProductReviews: StorefrontTool = {
+const getProductReviews: SiteTool = {
   name: 'get_product_reviews',
   description: 'Published customer reviews + rating summary for a product handle.',
   kind: 'read',
@@ -129,7 +129,7 @@ const getProductReviews: StorefrontTool = {
   },
 };
 
-const getProductQuestions: StorefrontTool = {
+const getProductQuestions: SiteTool = {
   name: 'get_product_questions',
   description: 'Published questions and answers for a product handle.',
   kind: 'read',
@@ -144,7 +144,7 @@ const getProductQuestions: StorefrontTool = {
   },
 };
 
-const submitProductReview: StorefrontTool = {
+const submitProductReview: SiteTool = {
   name: 'submit_product_review',
   description:
     'Submit a product review (enters moderation before it appears). Requires a rating and body.',
@@ -167,7 +167,7 @@ const submitProductReview: StorefrontTool = {
   },
 };
 
-const askProductQuestion: StorefrontTool = {
+const askProductQuestion: SiteTool = {
   name: 'ask_product_question',
   description: 'Ask a question about a product (enters moderation).',
   kind: 'guest_write',
@@ -187,7 +187,7 @@ const askProductQuestion: StorefrontTool = {
   },
 };
 
-export const commerceTools: StorefrontTool[] = [
+export const commerceTools: SiteTool[] = [
   searchProducts,
   listProducts,
   getProduct,

@@ -1,4 +1,4 @@
-// Fastify factory for the storefront MCP server (docs/113 §3.2).
+// Fastify factory for the site MCP server (docs/113 §3.2).
 //
 // Surface:
 //   • GET    /health                              — liveness/readiness
@@ -6,7 +6,7 @@
 //   • *      /s/:tenant/mcp                        — canonical (primary site)
 //   • *      /s/:tenant/:property/mcp              — canonical (named property)
 //
-// No auth in Phase 1 — the tools can only do what an anonymous storefront
+// No auth in Phase 1 — the tools can only do what an anonymous site
 // visitor can already do. One McpServer + transport per request (stateless).
 
 import { randomUUID } from 'node:crypto';
@@ -18,8 +18,8 @@ import Fastify, {
 } from 'fastify';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { env } from './env.js';
-import { buildStorefrontServer, invokesCustomerTool } from './mcp.js';
-import { resolveSite, makeClient, fetchStoreInfo, UnknownStorefrontError } from './site.js';
+import { buildSiteServer, invokesCustomerTool } from './mcp.js';
+import { resolveSite, makeClient, fetchSiteInfo, UnknownSiteError } from './site.js';
 import { enforceRateLimit, RateLimitError } from './rate-limit.js';
 import { bearerToken, protectedResourceMetadata, wwwAuthenticate } from './oauth-resource.js';
 
@@ -59,7 +59,7 @@ async function handleMcp(
 
   // Bootstrap the OAuth flow (docs/113 §5): a customer-tier tool call WITHOUT a
   // bearer is answered with a 401 + RFC 9728 challenge at the HTTP layer so the
-  // shopper's client discovers the store's authorization server and connects. (An
+  // shopper's client discovers the site's authorization server and connects. (An
   // expired/invalid bearer is caught downstream by api-rest, surfaced as a tool
   // error telling the client to reconnect.)
   if (request.method === 'POST' && !bearer && invokesCustomerTool(request.body)) {
@@ -84,8 +84,8 @@ async function handleMcp(
     customerBearer: bearer,
   };
   const client = makeClient(site, bearer);
-  const { disabledModules } = await fetchStoreInfo(client);
-  const server = buildStorefrontServer(client, ctx, disabledModules);
+  const { disabledModules } = await fetchSiteInfo(client);
+  const server = buildSiteServer(client, ctx, disabledModules);
 
   const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
   await server.connect(transport);
@@ -93,16 +93,16 @@ async function handleMcp(
   reply.hijack();
 }
 
-/** Serve RFC 9728 Protected Resource Metadata for a store's MCP endpoint (docs/113
+/** Serve RFC 9728 Protected Resource Metadata for a site's MCP endpoint (docs/113
  *  §5) — the shopper's client fetches this from the WWW-Authenticate challenge to
- *  discover the store's authorization server. Public + cached. */
+ *  discover the site's authorization server. Public + cached. */
 async function handleResourceMetadata(
   request: FastifyRequest,
   reply: FastifyReply,
   subpath: SubPath | undefined
 ): Promise<void> {
   const site = await resolveSite(request, subpath);
-  const { siteUrl } = await fetchStoreInfo(makeClient(site));
+  const { siteUrl } = await fetchSiteInfo(makeClient(site));
   reply
     .header('access-control-allow-origin', '*')
     .header('cache-control', 'public, max-age=3600')
@@ -121,10 +121,10 @@ export async function createApp(): Promise<FastifyInstance> {
   });
 
   app.setErrorHandler((err, request, reply) => {
-    if (err instanceof UnknownStorefrontError) {
+    if (err instanceof UnknownSiteError) {
       return reply.code(404).send({
         success: false,
-        error: { code: 'UNKNOWN_STOREFRONT', message: err.message, request_id: request.id },
+        error: { code: 'UNKNOWN_SITE', message: err.message, request_id: request.id },
       });
     }
     if (err instanceof RateLimitError) {
@@ -139,7 +139,7 @@ export async function createApp(): Promise<FastifyInstance> {
         },
       });
     }
-    request.log.error({ err }, 'unhandled storefront-mcp error');
+    request.log.error({ err }, 'unhandled site-mcp error');
     return reply.code(500).send({
       success: false,
       error: {

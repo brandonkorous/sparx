@@ -15,12 +15,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import type { FastifyBaseLogger } from 'fastify';
 import { withTenant, prisma } from '@sparx/db';
 import type { TenantContext } from '@sparx/db';
-import {
-  STOREFRONT_TOOLS,
-  toAnthropicTools,
-  StorefrontApiClient,
-  StorefrontApiError,
-} from '@sparx/storefront-mcp';
+import { SITE_TOOLS, toAnthropicTools, SiteApiClient, SiteApiError } from '@sparx/site-mcp';
 
 import { resolveActivePropertyName } from '../property.js';
 import { getActivePersona } from '../ai/prompt-templates.js';
@@ -46,7 +41,7 @@ const MAX_TOOL_RESULT_CHARS = 6000;
 // (book/cart) are deliberately withheld from the bot — mutations run through the
 // external shopper MCP, where the shopper's own client confirms — so the
 // concierge can look anything up but never acts on the customer's behalf.
-const CONCIERGE_TOOLS = STOREFRONT_TOOLS.filter((t) => t.kind === 'read');
+const CONCIERGE_TOOLS = SITE_TOOLS.filter((t) => t.kind === 'read');
 
 const RESPOND_TOOL: Anthropic.Tool = {
   name: 'respond',
@@ -256,7 +251,7 @@ async function askClaude(
     const anthropic = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
     // The concierge calls the storefront's OWN public API — the same routes the
     // shopper MCP uses — over a loopback call. One execution path, real parity.
-    const client = new StorefrontApiClient(`http://127.0.0.1:${env.PORT}`, { tenantSlug });
+    const client = new SiteApiClient(`http://127.0.0.1:${env.PORT}`, { tenantSlug });
 
     // Map the thread to Anthropic turns: customer → user, staff/ai → assistant.
     // The thread always opens with the customer's first message, so it starts on
@@ -317,7 +312,7 @@ function parseDecision(input: unknown): AiDecision | null {
  *  lookup becomes an is_error result the model can see and route around — it
  *  never throws out of the loop. */
 async function runConciergeTool(
-  client: StorefrontApiClient,
+  client: SiteApiClient,
   tenantSlug: string,
   use: Anthropic.ToolUseBlock,
   logger: FastifyBaseLogger
@@ -333,7 +328,7 @@ async function runConciergeTool(
     return { ...base, content: JSON.stringify(payload).slice(0, MAX_TOOL_RESULT_CHARS) };
   } catch (err) {
     const message =
-      err instanceof StorefrontApiError
+      err instanceof SiteApiError
         ? `${err.code}: ${err.message}`
         : err instanceof Error
           ? err.message

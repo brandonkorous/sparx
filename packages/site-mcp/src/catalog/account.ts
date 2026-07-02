@@ -1,20 +1,20 @@
 // Customer-tier tools (docs/113 §5) — the RETURNING-customer surface: my profile,
 // orders, saved addresses, wishlist, appointments (view + reschedule/cancel), and
 // B2B portal. Every tool is `kind: 'customer'`, so it is registered only once the
-// shopper has authorized via OAuth (the storefront MCP relays their bearer, which
+// shopper has authorized via OAuth (the site MCP relays their bearer, which
 // api-rest verifies + scope-gates). These wrap the authenticated
 // /v1/public/commerce/account, /v1/public/scheduling/account, and /v1/public/b2b
 // public routes — the client's bearer carries the granted scopes each route enforces.
 
 import { z } from 'zod';
-import type { StorefrontTool } from '../types.js';
+import type { SiteTool } from '../types.js';
 
 const uuid = z.string().uuid();
 const iso = z.string().datetime({ offset: true });
 
 // ── Profile ──────────────────────────────────────────────────────────────────
 
-const getMyProfile: StorefrontTool = {
+const getMyProfile: SiteTool = {
   name: 'get_my_profile',
   description: 'Get the signed-in customer’s profile (name, email, phone). Requires account:read.',
   kind: 'customer',
@@ -24,7 +24,7 @@ const getMyProfile: StorefrontTool = {
 
 // ── Orders ───────────────────────────────────────────────────────────────────
 
-const listMyOrders: StorefrontTool = {
+const listMyOrders: SiteTool = {
   name: 'list_my_orders',
   description:
     'List the signed-in customer’s past orders (paged, newest first). Requires orders:read.',
@@ -42,7 +42,7 @@ const listMyOrders: StorefrontTool = {
     }),
 };
 
-const getMyOrder: StorefrontTool = {
+const getMyOrder: SiteTool = {
   name: 'get_my_order',
   description:
     'Get one of the signed-in customer’s orders in full (line items, totals, shipping address). Requires orders:read.',
@@ -60,7 +60,7 @@ const getMyOrder: StorefrontTool = {
 
 // ── Addresses ────────────────────────────────────────────────────────────────
 
-const listMyAddresses: StorefrontTool = {
+const listMyAddresses: SiteTool = {
   name: 'list_my_addresses',
   description: 'List the signed-in customer’s saved addresses. Requires account:read.',
   kind: 'customer',
@@ -70,7 +70,7 @@ const listMyAddresses: StorefrontTool = {
     client.request({ method: 'GET', path: '/v1/public/commerce/account/addresses' }),
 };
 
-const addMyAddress: StorefrontTool = {
+const addMyAddress: SiteTool = {
   name: 'add_my_address',
   description:
     'Save a new address to the signed-in customer’s address book. Requires account:write.',
@@ -96,7 +96,7 @@ const addMyAddress: StorefrontTool = {
 
 // ── Wishlist ─────────────────────────────────────────────────────────────────
 
-const listMyWishlist: StorefrontTool = {
+const listMyWishlist: SiteTool = {
   name: 'list_my_wishlist',
   description: 'List the signed-in customer’s wishlist items. Requires account:read.',
   kind: 'customer',
@@ -105,7 +105,7 @@ const listMyWishlist: StorefrontTool = {
   call: (client) => client.request({ method: 'GET', path: '/v1/public/commerce/account/wishlist' }),
 };
 
-const addToWishlist: StorefrontTool = {
+const addToWishlist: SiteTool = {
   name: 'add_to_wishlist',
   description:
     'Add a product variant to the signed-in customer’s wishlist. Requires account:write.',
@@ -116,7 +116,7 @@ const addToWishlist: StorefrontTool = {
     client.request({ method: 'POST', path: '/v1/public/commerce/account/wishlist', body: input }),
 };
 
-const removeFromWishlist: StorefrontTool = {
+const removeFromWishlist: SiteTool = {
   name: 'remove_from_wishlist',
   description: 'Remove a variant from the signed-in customer’s wishlist. Requires account:write.',
   kind: 'customer',
@@ -133,7 +133,7 @@ const removeFromWishlist: StorefrontTool = {
 
 // ── Appointments ─────────────────────────────────────────────────────────────
 
-const listMyBookings: StorefrontTool = {
+const listMyBookings: SiteTool = {
   name: 'list_my_bookings',
   description:
     'List the signed-in customer’s appointments (scope: upcoming | past | all). Requires bookings:read.',
@@ -152,7 +152,7 @@ const listMyBookings: StorefrontTool = {
     }),
 };
 
-const getMyBooking: StorefrontTool = {
+const getMyBooking: SiteTool = {
   name: 'get_my_booking',
   description: 'Get one of the signed-in customer’s appointments in full. Requires bookings:read.',
   kind: 'customer',
@@ -167,7 +167,7 @@ const getMyBooking: StorefrontTool = {
   },
 };
 
-const rescheduleMyBooking: StorefrontTool = {
+const rescheduleMyBooking: SiteTool = {
   name: 'reschedule_my_booking',
   description:
     'Move one of the signed-in customer’s appointments to a new start time. Confirm the new slot with check_availability first. Requires bookings:write.',
@@ -184,10 +184,10 @@ const rescheduleMyBooking: StorefrontTool = {
   },
 };
 
-const cancelMyBooking: StorefrontTool = {
+const cancelMyBooking: SiteTool = {
   name: 'cancel_my_booking',
   description:
-    'Cancel one of the signed-in customer’s appointments (a cancellation fee may apply per the store’s policy). Requires bookings:write.',
+    'Cancel one of the signed-in customer’s appointments (a cancellation fee may apply per the site’s policy). Requires bookings:write.',
   kind: 'customer',
   module: 'scheduling',
   input: z.object({ bookingId: uuid, reason: z.string().max(500).optional() }),
@@ -203,7 +203,7 @@ const cancelMyBooking: StorefrontTool = {
 
 // ── B2B portal ───────────────────────────────────────────────────────────────
 
-const listMyB2bAccounts: StorefrontTool = {
+const listMyB2bAccounts: SiteTool = {
   name: 'list_my_b2b_accounts',
   description:
     'List the B2B/wholesale accounts the signed-in customer is a contact on (company, credit, terms). Requires b2b:read.',
@@ -212,7 +212,7 @@ const listMyB2bAccounts: StorefrontTool = {
   call: (client) => client.request({ method: 'GET', path: '/v1/public/b2b/portal' }),
 };
 
-const getMyB2bAccount: StorefrontTool = {
+const getMyB2bAccount: SiteTool = {
   name: 'get_my_b2b_account',
   description:
     'Summary for one of the signed-in customer’s B2B accounts (credit, receivables, recent orders). Requires b2b:read.',
@@ -227,7 +227,7 @@ const getMyB2bAccount: StorefrontTool = {
   },
 };
 
-const listMyB2bInvoices: StorefrontTool = {
+const listMyB2bInvoices: SiteTool = {
   name: 'list_my_b2b_invoices',
   description: 'List invoices for one of the signed-in customer’s B2B accounts. Requires b2b:read.',
   kind: 'customer',
@@ -246,7 +246,7 @@ const listMyB2bInvoices: StorefrontTool = {
   },
 };
 
-export const accountTools: StorefrontTool[] = [
+export const accountTools: SiteTool[] = [
   getMyProfile,
   listMyOrders,
   getMyOrder,
