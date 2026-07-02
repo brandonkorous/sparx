@@ -10,16 +10,20 @@
 // headers (read by resolveSite) AND persist them as cookies so navigating between
 // pages keeps the active site without re-appending the query param.
 //
-// IMPORTANT (multi-site routing footgun, fixed 2026-06-20): the `?tenant=`/
-// `?property=` override and its cookies are a LOCAL-DEV affordance ONLY. In
-// production every site has a real Host (`<slug>.<tenant>.sparx.zone` or a custom
-// domain), and `resolveSiteRoute` honors `x-tenant-slug` BEFORE the Host. So if a
-// production browser ever picked up a `sparx_dev_tenant` cookie (e.g. by visiting a
-// storefront once with `?tenant=`), EVERY `*.sparx.zone` host it opened would be
-// pinned to that one site — which is exactly the "all my sites load the same one"
-// bug. The override is therefore gated strictly to LOCAL hosts; on any real host we
-// never set those headers AND we actively EXPIRE the dev cookies, so an already-
-// affected browser self-heals on its next request (no manual cookie clearing).
+// IMPORTANT (multi-site routing footgun): the `?tenant=`/`?property=` override and
+// its cookies are a LOCAL-DEV affordance ONLY. In production every site has a real
+// Host (`<slug>.<tenant>.sparx.zone` or a custom domain). If a production browser
+// ever picked up a `sparx_dev_tenant` cookie (e.g. by visiting a storefront once
+// with `?tenant=`), a resolver that trusted that override would pin EVERY
+// `*.sparx.zone` host it opened to one site — and, since the cookie carries only the
+// TENANT slug, to that tenant's PRIMARY site: the "all my sites load the same one"
+// bug. Defense in depth closes it from both ends: (a) here, the override is gated
+// strictly to LOCAL hosts — decided from the real public host (`publicHost`), not
+// `req.nextUrl.hostname` — and on any real host we never set those headers AND we
+// actively EXPIRE the dev cookies, so an already-affected browser self-heals on its
+// next request; and (b) the resolver (lib/site-context `resolveSiteRoute`) treats the
+// public host as authoritative and consults the override ONLY on a local-dev host, so
+// even a leaked override header can never re-point a real host.
 //
 // Site preview: the page components read the `?sparxSitePreview=` draft token
 // straight off their `searchParams`, but the root layout (which renders the
@@ -40,8 +44,8 @@ const PROPERTY_COOKIE = 'sparx_dev_property';
 // per-tenant DNS. Every production host (a real `*.sparx.zone` subdomain or a
 // connected custom domain) carries the site in the Host header, so it must resolve
 // by Host alone and never trust the `?tenant=`/`?property=` cookies.
-function isLocalDevHost(hostname: string): boolean {
-  const h = hostname.toLowerCase();
+function isLocalDevHost(host: string): boolean {
+  const h = host.split(':')[0]?.toLowerCase() ?? '';
   return (
     h === 'localhost' ||
     h === '127.0.0.1' ||
@@ -49,6 +53,16 @@ function isLocalDevHost(hostname: string): boolean {
     h === '::1' ||
     h.endsWith('.localhost')
   );
+}
+
+// The real PUBLIC host. We deliberately read the forwarded/Host header rather than
+// `req.nextUrl.hostname`: behind the ingress (Caddy/GKE) `req.nextUrl.hostname` can
+// resolve to an INTERNAL address, which would mis-classify a real `*.sparx.zone`
+// request as local-dev — firing the dev override in production AND skipping the
+// cookie-expiry below, so a poisoned `sparx_dev_tenant` cookie would never self-heal.
+// The header carries the same public host the resolver keys off (lib/site-context).
+function publicHost(req: NextRequest): string {
+  return req.headers.get('x-forwarded-host') ?? req.headers.get('host') ?? req.nextUrl.hostname;
 }
 
 export function proxy(req: NextRequest) {
@@ -60,7 +74,7 @@ export function proxy(req: NextRequest) {
   if (previewToken) requestHeaders.set('x-sparx-site-preview', previewToken);
 
   // ── Local dev: honor the `?tenant=`/`?property=` site override ──────────────
-  if (isLocalDevHost(req.nextUrl.hostname)) {
+  if (isLocalDevHost(publicHost(req))) {
     const fromQuery = req.nextUrl.searchParams.get('tenant');
     const fromCookie = req.cookies.get(COOKIE)?.value;
     const slug = fromQuery ?? fromCookie;

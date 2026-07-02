@@ -172,22 +172,38 @@ async function fetchSiteByHost(host: string): Promise<SiteRoute | null> {
   }
 }
 
-// Resolves the active site (tenant + property). Order: dev-fallback headers (set
-// by the proxy from `?tenant=` / `?property=`), then our self-describing
-// `*.sparx.zone` subdomains decoded straight from the host, then the domains-table
-// lookup for arbitrary custom domains.
+// Hosts with no per-tenant DNS — the ONLY place the dev `?tenant=`/`?property=`
+// override (relayed by the proxy as x-tenant-slug/x-property-slug) may steer site
+// selection. Mirrors apps/site/proxy.ts `isLocalDevHost` (port-tolerant).
+function isLocalDevHost(host: string): boolean {
+  const h = host.split(':')[0]?.toLowerCase() ?? '';
+  return (
+    h === 'localhost' ||
+    h === '127.0.0.1' ||
+    h === '0.0.0.0' ||
+    h === '::1' ||
+    h.endsWith('.localhost')
+  );
+}
+
+// Resolves the active site (tenant + property). The PUBLIC HOST is authoritative:
+//   1. Our self-describing `*.sparx.zone` subdomains, decoded straight from the
+//      host (no API round-trip, no override consulted).
+//   2. The dev `?tenant=`/`?property=` override (via x-tenant-slug/x-property-slug)
+//      — ONLY on a local-dev host, where there's no per-tenant DNS.
+//   3. Arbitrary custom domains → the domains table.
+//
+// Ordering here is a CORRECTNESS invariant, not a mere preference. The dev override
+// used to be consulted FIRST, before the host — so a single leaked/stale
+// `sparx_dev_tenant` cookie (relayed to x-tenant-slug) pinned EVERY `*.sparx.zone`
+// host in that browser to one site, and — because the cookie carries only the
+// TENANT slug — to that tenant's PRIMARY site. That is the "all my sites load the
+// same one" bug. The host now wins first, and the override is gated strictly to
+// local-dev hosts, so a real host can never be re-pointed by an override header —
+// even if a stale or misbehaving proxy in front of us relays one. This resolver is
+// the backstop; the proxy (apps/site/proxy.ts) is the first line. Do not reorder.
 export const resolveSiteRoute = cache(async (): Promise<SiteRoute | null> => {
   const hdrs = await headers();
-  // The proxy stashes the dev-fallback slugs here so Server Components can read
-  // them without re-parsing searchParams on every page. LOCAL-DEV ONLY: the proxy
-  // sets these only on local hosts and strips them on any real host (it also
-  // expires the backing cookies), so in production this branch never fires and
-  // every site resolves purely by Host. Do not re-broaden this — it's the
-  // multi-site "all sites load the same one" footgun (see apps/site/proxy.ts).
-  const devTenant = hdrs.get('x-tenant-slug');
-  if (devTenant) {
-    return { tenantSlug: devTenant, propertySlug: hdrs.get('x-property-slug') };
-  }
   // The real public host can arrive on EITHER header: behind Caddy (GKE) the
   // original `Host` is preserved, while a proxy that rewrites Host (e.g. Cloud Run)
   // carries the public host on `x-forwarded-host`. Consider both — for OUR
@@ -197,18 +213,29 @@ export const resolveSiteRoute = cache(async (): Promise<SiteRoute | null> => {
   const candidates = [hdrs.get('x-forwarded-host'), hdrs.get('host')].filter(
     (h): h is string => !!h
   );
-  const primaryHost = candidates[0];
-  if (!primaryHost) return null;
+  const primaryHost = candidates[0] ?? null;
 
-  // Our own subdomains are self-describing — decode tenant + property straight
-  // from the host. No API round-trip, so a stale/unreachable site-by-host can
-  // never 404 a live tenant site.
+  // (1) Public host is authoritative. Our own subdomains are self-describing —
+  // decode tenant + property straight from the host, with NO regard to any override
+  // header. A stale/unreachable site-by-host can never 404 a live tenant site, and a
+  // leaked override can never re-point a real host.
   for (const cand of candidates) {
     const zoneRoute = zoneSiteRoute(cand);
     if (zoneRoute) return zoneRoute;
   }
 
-  // Custom domain: the domains table is the only source of truth.
+  // (2) Dev override — honored ONLY on a local-dev host (or when no host arrived at
+  // all, e.g. an internal call). Never on a real `*.sparx.zone` host (handled above)
+  // or a custom domain (handled below).
+  if (!primaryHost || isLocalDevHost(primaryHost)) {
+    const devTenant = hdrs.get('x-tenant-slug');
+    if (devTenant) {
+      return { tenantSlug: devTenant, propertySlug: hdrs.get('x-property-slug') };
+    }
+    if (!primaryHost) return null;
+  }
+
+  // (3) Custom domain: the domains table is the only source of truth.
   return fetchSiteByHost(primaryHost);
 });
 
