@@ -63,7 +63,12 @@ export const CreateCaldavConnectionInput = z.object({
 });
 export type CreateCaldavConnectionInput = z.infer<typeof CreateCaldavConnectionInput>;
 
-// Start a platform-app OAuth flow — returns the provider consent URL.
+// Start an OAuth flow (docs/79 §8.3) — returns the provider consent URL the browser
+// is redirected to. The platform path uses the verified WizeWorks app (server-side
+// client config); a BYO tenant supplies their OWN client id + secret (the secret is
+// encrypted at rest on the connection row before the redirect). `redirectUri` is the
+// dashboard callback the provider returns to — replayed verbatim on the token
+// exchange, so it's carried in the signed state.
 export const StartCalendarOAuthInput = z.object({
   resourceId: Uuid,
   provider: z.enum(['google', 'microsoft']),
@@ -72,5 +77,16 @@ export const StartCalendarOAuthInput = z.object({
   oauthClientId: z.string().max(512).optional(),
   oauthClientSecret: z.string().max(512).optional(),
   redirectUri: z.string().url().max(2048),
+  // Pre-fills the provider account chooser with the staff member's email.
+  loginHint: z.string().max(255).optional(),
 });
 export type StartCalendarOAuthInput = z.infer<typeof StartCalendarOAuthInput>;
+
+// Complete an OAuth flow — the dashboard callback posts the provider's `code` + the
+// signed `state` back; the service verifies state, exchanges the code for tokens,
+// stores them encrypted, and runs the first sync.
+export const CompleteCalendarOAuthInput = z.object({
+  code: z.string().min(1).max(4096),
+  state: z.string().min(1).max(4096),
+});
+export type CompleteCalendarOAuthInput = z.infer<typeof CompleteCalendarOAuthInput>;

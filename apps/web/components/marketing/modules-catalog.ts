@@ -15,6 +15,21 @@
 // Order here matches the dashboard sidebar so the marketing menu and the product
 // read identically. Data-as-code: exempt from the file/function size rule.
 
+import type { LucideIcon } from 'lucide-react';
+import {
+  Boxes,
+  Building2,
+  CalendarClock,
+  FileText,
+  MessagesSquare,
+  ReceiptText,
+  Send,
+  ShoppingCart,
+  Sparkles,
+  Truck,
+  Users,
+  Warehouse,
+} from 'lucide-react';
 import type { MarketingModule } from './primitives';
 
 export interface ModuleEntry {
@@ -147,6 +162,43 @@ export const MODULES: ModuleEntry[] = [
     href: '/ai',
   },
 ];
+
+/** Module brand hex, mirroring @sparx/ui ModuleProvider's MODULE_COLORS. These
+ *  are the CONSTANT brand hues (the `--module-*` tokens resolve to exactly these
+ *  in every theme), kept as literal hex because the module strip also renders in
+ *  the edge-runtime OG images, where Satori cannot resolve CSS custom properties. */
+export const MODULE_HEX: Record<MarketingModule, string> = {
+  builder: '#6366F1',
+  commerce: '#F97316',
+  cms: '#14B8A6',
+  crm: '#06B6D4',
+  invoicing: '#65A30D',
+  email: '#0EA5E9',
+  b2b: '#475569',
+  dropship: '#10B981',
+  inventory: '#F59E0B',
+  chat: '#8B5CF6',
+  scheduling: '#F43F5E',
+  ai: '#EC4899',
+};
+
+/** Module glyphs — the SAME Lucide icons the dashboard sidebar uses (each
+ *  module's manifest `icon`). A typed Record so adding a module to the union
+ *  forces a matching icon here, rather than silently falling back to a dot. */
+export const MODULE_ICON: Record<MarketingModule, LucideIcon> = {
+  builder: Boxes,
+  commerce: ShoppingCart,
+  cms: FileText,
+  crm: Users,
+  invoicing: ReceiptText,
+  email: Send,
+  b2b: Building2,
+  dropship: Truck,
+  inventory: Warehouse,
+  chat: MessagesSquare,
+  scheduling: CalendarClock,
+  ai: Sparkles,
+};
 
 /** Lowest module price, for "from $N/mo" copy. Derived so it never drifts. */
 export const MODULES_PRICE_FLOOR = Math.min(...MODULES.map((m) => m.price));

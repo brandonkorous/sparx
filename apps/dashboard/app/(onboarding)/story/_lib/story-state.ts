@@ -58,7 +58,8 @@ export interface PersistedStory {
 
 /** Rebuild the editable `StoryState` from a persisted narrative — so the page can
  *  resume the post-commit tail (e.g. after the Stripe OAuth round-trip reloads it)
- *  with the same prose + plan the owner composed. */
+ *  OR resume an in-progress compose draft, with the same prose + plan the owner
+ *  composed. */
 export function storyFromPersisted(p: PersistedStory): StoryState {
   return {
     tense: (p.tense as TenseKey | null) ?? null,
@@ -68,6 +69,38 @@ export function storyFromPersisted(p: PersistedStory): StoryState {
     lines: p.lines ?? [],
     slots: p.slots ?? {},
     name: p.name ?? '',
+  };
+}
+
+/** The narrative as persisted under `settings.onboarding.story` (the api-rest
+ *  `StoryNarrative` shape, minus the server-stamped `composedAt`): the composed prose
+ *  plus the structured selection that produced it. */
+export interface StoryPayload {
+  text: string;
+  tense: string | null;
+  industry: string | null;
+  audience: string | null;
+  name: string;
+  cust: string[];
+  lines: string[][];
+  slots: Record<string, string>;
+  modules: string[];
+}
+
+/** Build the persist payload from the live editable state. Used for BOTH the final
+ *  commit and the debounced in-progress draft save — one source of truth so the
+ *  resumed draft and the committed narrative are byte-identical. */
+export function toPersistPayload(s: StoryState): StoryPayload {
+  return {
+    text: toProse(s),
+    tense: s.tense,
+    industry: s.industry,
+    audience: s.audience,
+    name: s.name,
+    cust: s.cust,
+    lines: s.lines,
+    slots: s.slots,
+    modules: enabledModuleKeys(s),
   };
 }
 

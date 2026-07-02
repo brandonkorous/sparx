@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { listEnabledModules, requireSession } from '@sparx/auth';
 import { api } from '@/lib/api-rest-client';
+import { onboardingEntryHref } from '@/lib/onboarding-entry';
 import { listProperties, getActivePropertyId, type Property } from '@/lib/sites';
 import { DashboardShell } from './_components/dashboard-shell';
 import { EmailVerificationBanner } from './_components/email-verification-banner';
@@ -28,15 +29,22 @@ export default async function DashboardLayout({
   const { user } = await requireSession();
 
   // Mandatory onboarding: a tenant that hasn't finished setup is always routed
-  // to the wizard before it can reach any dashboard page. `finishedAt` is set
-  // when the wizard finishes (or the user explicitly bows out). Fail OPEN on a
-  // read error so an API hiccup can never lock anyone out or cause a loop — the
-  // (onboarding) group has its own layout, so it's exempt from this guard.
+  // to the right onboarding front end before it can reach any dashboard page.
+  // `onboardingEntryHref` picks the natural-language story flow (the primary) for
+  // fresh/story tenants and the classic wizard for anyone mid-way through it.
+  // `finishedAt` is set when onboarding finishes (or the user explicitly bows out).
+  // Fail OPEN on a read error so an API hiccup can never lock anyone out or cause a
+  // loop — the (onboarding) group has its own layout, so it's exempt from this guard.
   const onboarding = await api
-    .get<{ finishedAt: string | null }>('/v1/tenant/onboarding')
+    .get<{
+      finishedAt: string | null;
+      story: Record<string, unknown> | null;
+      currentStep: string;
+      completed: Record<string, boolean>;
+    }>('/v1/tenant/onboarding')
     .catch(() => null);
   if (onboarding && !onboarding.finishedAt) {
-    redirect('/onboarding');
+    redirect(onboardingEntryHref(onboarding));
   }
 
   const ctx = { userId: user.id, tenantId: user.tenantId };

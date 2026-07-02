@@ -115,6 +115,7 @@ import publicB2bSchedulingRoutes from './routes/v1/public/b2b-scheduling.js';
 import publicSchedulingRoutes from './routes/v1/public/scheduling.js';
 import schedulingAccountRoutes from './routes/v1/public/scheduling-account.js';
 import schedulingCalendarRoutes from './routes/v1/public/scheduling-calendar.js';
+import schedulingCalendarPushRoutes from './routes/v1/public/scheduling-calendar-push.js';
 import uploadRoutes from './routes/v1/media/uploads.js';
 import mediaAssetRoutes from './routes/v1/media/assets.js';
 import crmRoutes from './routes/v1/crm/index.js';
@@ -787,6 +788,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(publicSchedulingRoutes);
   await app.register(schedulingAccountRoutes);
   await app.register(schedulingCalendarRoutes);
+  await app.register(schedulingCalendarPushRoutes);
   await app.register(publicSiteSnapshotRoutes);
   await app.register(publicSiteRoutes);
   await app.register(publicBuilderRoutes);

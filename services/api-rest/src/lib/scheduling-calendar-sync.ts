@@ -20,6 +20,7 @@ import { decryptCalendarSecret, isCalendarCryptoConfigured } from './scheduling-
 import { publishBookingEvent } from './scheduling-events.js';
 import { assertPublicHttpsUrl, CalendarFeedError } from './scheduling-url-guard.js';
 import { APPLE_ICLOUD_CALDAV, fetchCalDavBusyIcs } from './caldav-client.js';
+import { syncOAuthConnection } from './scheduling-calendar-oauth-sync.js';
 
 const CALENDAR_SYNC_LOCK_KEY = 4242_4246;
 const DEFAULT_INTERVAL_MS = 300_000; // tick every 5 min
@@ -239,12 +240,16 @@ export async function runCalendarSyncTick(
     let processed = 0;
     let errors = 0;
     for (const row of due) {
-      // ical_feed (Layer 2) + caldav (Layer 3) pull here; oauth push lands later.
+      // ical_feed (Layer 2) polls; caldav + oauth (Layer 3) pull/refresh here. OAuth
+      // rows surface only once the migration broadens this scan (push + inline-connect
+      // sync work without it); this tick is the renewal + safety-net poll.
       let outcome: CalendarSyncOutcome | null = null;
       if (row.connection_kind === 'ical_feed') {
         outcome = await syncIcalConnection(logger, row.tenant_id, row.id);
       } else if (row.connection_kind === 'caldav') {
         outcome = await syncCalDavConnection(logger, row.tenant_id, row.id);
+      } else if (row.connection_kind === 'oauth') {
+        outcome = await syncOAuthConnection(logger, row.tenant_id, row.id);
       }
       if (!outcome) continue;
       if (outcome.ok) processed += 1;

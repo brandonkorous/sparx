@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og';
-import { CAPABILITY_AREAS, capabilityCounts } from '@/lib/capabilities';
+import { capabilityCounts } from '@/lib/capabilities';
+import { ModuleStrip } from '@/components/marketing/module-strip';
 
 // Per-route OG image. Without this file the /features page emits no og:image —
 // a page-level `openGraph` block in page.tsx stops Next from inheriting the root
@@ -12,8 +13,6 @@ export const runtime = 'nodejs';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 export const alt = 'Everything inside sparx — over 300 capabilities, one platform.';
-
-const MODULE_DOTS = CAPABILITY_AREAS.filter((a) => a.module).map((a) => a.accent);
 
 export default function Image() {
   const counts = capabilityCounts();
@@ -130,14 +129,7 @@ export default function Image() {
           >
             {counts.modules} modules
           </span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {MODULE_DOTS.map((color) => (
-              <div
-                key={color}
-                style={{ width: 14, height: 14, borderRadius: 9999, backgroundColor: color }}
-              />
-            ))}
-          </div>
+          <ModuleStrip size={30} gap={10} wrap={false} />
         </div>
         <span style={{ fontSize: 18, color: '#52525B' }}>sparx.works/features</span>
       </div>

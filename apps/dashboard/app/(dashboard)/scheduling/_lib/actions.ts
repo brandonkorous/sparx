@@ -206,6 +206,59 @@ export async function deleteCalendarConnectionAction(id: string): Promise<Action
   }
 }
 
+// ── Layer-3 OAuth calendar sync (Google / Microsoft, docs/79 §8.3) ───────────
+export async function getCalendarOAuthProvidersAction(): Promise<
+  ActionResult<{ cryptoConfigured: boolean; google: boolean; microsoft: boolean }>
+> {
+  try {
+    const data = await api.get<{ cryptoConfigured: boolean; google: boolean; microsoft: boolean }>(
+      '/v1/scheduling/calendar/oauth/providers'
+    );
+    return { ok: true, data };
+  } catch (err) {
+    return fail(err, 'Failed to load calendar providers');
+  }
+}
+
+/** Begin an OAuth connect — returns the provider consent URL the browser redirects
+ *  to. A BYO connection passes the tenant's own client id + secret. */
+export async function startCalendarOAuthAction(body: {
+  resourceId: string;
+  provider: 'google' | 'microsoft';
+  redirectUri: string;
+  credentialSource?: 'platform' | 'tenant_byo';
+  oauthClientId?: string;
+  oauthClientSecret?: string;
+  loginHint?: string;
+}): Promise<ActionResult<{ authorizeUrl: string; connectionId: string }>> {
+  try {
+    const data = await api.post<{ authorizeUrl: string; connectionId: string }>(
+      '/v1/scheduling/calendar/connections/oauth/start',
+      body
+    );
+    return { ok: true, data };
+  } catch (err) {
+    return fail(err, 'Failed to start the calendar connection');
+  }
+}
+
+/** Complete an OAuth connect from the dashboard callback — posts the provider code +
+ *  signed state back to exchange tokens and run the first sync. */
+export async function completeCalendarOAuthAction(body: {
+  code: string;
+  state: string;
+}): Promise<ActionResult<CalendarConnection & { sync?: { ok: boolean; error?: string } }>> {
+  try {
+    const data = await api.post<CalendarConnection & { sync?: { ok: boolean; error?: string } }>(
+      '/v1/scheduling/calendar/connections/oauth/complete',
+      body
+    );
+    return { ok: true, data };
+  } catch (err) {
+    return fail(err, 'Failed to finish connecting the calendar');
+  }
+}
+
 // ── Reports (docs/79 §12) ────────────────────────────────────────────────────
 export async function getSchedulingReportAction(
   from: string,

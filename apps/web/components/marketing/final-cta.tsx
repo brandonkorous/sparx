@@ -1,10 +1,11 @@
 import { Button } from '@sparx/ui';
 import { Container, Display, Spark } from './primitives';
 import { Reveal } from './reveal';
+import { MODULES } from './modules-catalog';
 
 const METRICS = [
   { value: '5 minutes', subtitle: 'average time-to-live' },
-  { value: '8 modules', accent: '#6366F1', subtitle: 'activate any combination' },
+  { value: `${MODULES.length} modules`, accent: '#6366F1', subtitle: 'activate any combination' },
   { value: '$26K /yr saved', accent: '#6366F1', subtitle: 'average vs Shopify + HubSpot stack' },
   { value: '99.95% uptime', accent: '#6366F1', subtitle: '99.99% on Enterprise' },
   { value: 'MCP', spark: '#EC4899', subtitle: 'first content & commerce platform' },

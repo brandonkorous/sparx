@@ -15,6 +15,15 @@ export interface OnboardingState {
   startedAt: string | null;
   /** ISO timestamp when the user finished or dismissed onboarding. */
   finishedAt: string | null;
+  // Routing hints carried on reads (the api-rest state has them); optional so a
+  // partial PATCH need not supply them. `onboardingEntryHref` uses these to resume
+  // the right onboarding front end (story flow vs classic wizard).
+  /** Current classic-wizard step, when one is in progress. */
+  currentStep?: string;
+  /** The natural-language story narrative, when onboarding came through /story. */
+  story?: Record<string, unknown> | null;
+  /** Per-step completion flags from the classic wizard. */
+  completed?: Record<string, boolean>;
 }
 
 export const DEFAULT_ONBOARDING: OnboardingState = {

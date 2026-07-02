@@ -66,14 +66,14 @@ export default function SignUpPage() {
         return;
       }
       if (result.userId) identifyWithFirstTouch(result.userId);
-      // Carry the marketplace funnel's template pick into onboarding so a referred
-      // visitor lands on their chosen template pre-selected (docs/60 Ph5). Read it
-      // from the URL at submit time (client-only) rather than useSearchParams, which
-      // would force this page out of static prerender and break `next build`.
+      // The natural-language story flow (/story) is the primary onboarding entry. A
+      // visitor who arrived with a pre-picked blueprint (the marketplace/template
+      // funnel, docs/60 Ph5) instead lands in the classic wizard, whose template step
+      // honors that selection. Read the param from the URL at submit time (client-only)
+      // rather than useSearchParams, which would force this page out of static
+      // prerender and break `next build`.
       const blueprint = new URLSearchParams(window.location.search).get('blueprint');
-      router.push(
-        blueprint ? `/onboarding?blueprint=${encodeURIComponent(blueprint)}` : '/onboarding'
-      );
+      router.push(blueprint ? `/onboarding?blueprint=${encodeURIComponent(blueprint)}` : '/story');
       router.refresh();
     });
   }
@@ -99,7 +99,7 @@ export default function SignUpPage() {
         <div>
           <Heading level={2}>Create your account</Heading>
           <Text variant="muted">
-            Start a 14-day free trial. You&apos;ll name your workspace in the next step.
+            Start a 14-day free trial. Next, tell us about your business and we&apos;ll set it up.
           </Text>
         </div>
 

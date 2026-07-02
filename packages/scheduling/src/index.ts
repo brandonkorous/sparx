@@ -157,6 +157,37 @@ export {
 } from './rrule';
 export { type BusyParseOptions, parseBusyIntervals, parseIcsDuration } from './ical-parse';
 export {
+  type CalendarOAuthProvider,
+  type AuthorizeUrlParams,
+  type TokenExchangeParams,
+  type TokenRefreshParams,
+  type OAuthTokens,
+  GOOGLE_CALENDAR_SCOPES,
+  MICROSOFT_CALENDAR_SCOPES,
+  microsoftTenant,
+  calendarScopes,
+  calendarTokenUrl,
+  buildCalendarAuthorizeUrl,
+  buildTokenExchangeBody,
+  buildTokenRefreshBody,
+  parseTokenResponse,
+  isAccessTokenExpired,
+} from './calendar-oauth';
+export {
+  type BusyWindow,
+  type OutboundBookingEvent,
+  parseGoogleBusy,
+  googleSyncTokenFrom,
+  googleNextPageTokenFrom,
+  googleItemsFrom,
+  parseMicrosoftBusy,
+  microsoftDeltaLinkFrom,
+  microsoftNextLinkFrom,
+  microsoftValueFrom,
+  bookingICalUid,
+  buildGoogleImportEvent,
+} from './calendar-events';
+export {
   type CalDavCalendar,
   extractElements,
   extractFirst,

@@ -157,6 +157,26 @@ const EnvSchema = z
     // Scheduling, incl. outbound iCal, is unaffected). Rotating it invalidates
     // every stored calendar credential (tenants reconnect) — never log it.
     SCHEDULING_CALENDAR_TOKEN_KEY: z.string().optional(),
+    // Layer-3 OAuth calendar sync (docs/79 §8.3, §8.5). Google reuses the shared
+    // GOOGLE_OAUTH_CLIENT_ID/_SECRET (the same OAuth web client, with the Calendar
+    // scopes added) — no separate key. Microsoft needs its own Azure app:
+    //   MICROSOFT_OAUTH_CLIENT_ID / _SECRET — the registered app (multitenant; the
+    //     per-org admin grants Calendars.ReadWrite consent on connect).
+    //   MICROSOFT_OAUTH_TENANT — the directory the authorize/token calls target
+    //     ('common' default = any work/school OR personal account; an org may pin
+    //     its own tenant id). A set CLIENT_ID requires the matching _SECRET +
+    //     SCHEDULING_CALENDAR_TOKEN_KEY (the OAuth tokens are encrypted at rest),
+    //     validated below. Until set, the Microsoft connect button reports
+    //     "not configured" and BYO/iCal remain the fallbacks.
+    MICROSOFT_OAUTH_CLIENT_ID: z.string().optional(),
+    MICROSOFT_OAUTH_CLIENT_SECRET: z.string().optional(),
+    MICROSOFT_OAUTH_TENANT: z.string().optional(),
+    // Public api-rest origin used as the push-notification target for Google
+    // watch-channels + Microsoft Graph subscriptions (docs/79 §8.3). Must be a
+    // public HTTPS URL the provider can POST to; unset (or localhost) → push
+    // channels are skipped and the connection falls back to the polling tick. Also
+    // the base the outbound `.ics` feed links use (lib/scheduling-ical.ts).
+    SPARX_PUBLIC_API_REST_URL: z.string().optional(),
     // Channel integrations (docs/106) — connect external sales channels (Google
     // Shopping, Meta, Pinterest, …) so catalog/inventory sync out. Per-tenant OAuth
     // tokens are AES-256-GCM encrypted at rest in channel_connections, keyed by
@@ -273,6 +293,26 @@ const EnvSchema = z
         path: ['SCHEDULING_CALENDAR_TOKEN_KEY'],
         message: 'Must be a 32-byte key encoded as base64 (44 chars) or hex (64 chars).',
       });
+    }
+    // Microsoft calendar OAuth: enabling the client means the secret + the
+    // token-encryption key are mandatory — a half-configured app would store
+    // plaintext tokens or fail every exchange. Validate as a set (mirrors Google
+    // above). Google calendar reuses GOOGLE_OAUTH_CLIENT_ID, already validated.
+    if (data.MICROSOFT_OAUTH_CLIENT_ID) {
+      if (!data.MICROSOFT_OAUTH_CLIENT_SECRET) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['MICROSOFT_OAUTH_CLIENT_SECRET'],
+          message: 'Required when MICROSOFT_OAUTH_CLIENT_ID is set.',
+        });
+      }
+      if (!data.SCHEDULING_CALENDAR_TOKEN_KEY) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['SCHEDULING_CALENDAR_TOKEN_KEY'],
+          message: 'Required when MICROSOFT_OAUTH_CLIENT_ID is set (encrypts stored tokens).',
+        });
+      }
     }
   });
 

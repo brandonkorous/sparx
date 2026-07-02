@@ -86,16 +86,23 @@ export default async function StoryOnboardingPage({
         blueprintKey={state.blueprintKey}
         initialStage={state.currentStep === 'payments' ? 'payments' : 'launch'}
         stripeConnected={sp.stripe_connected === '1'}
+        stripeError={sp.stripe_error ?? null}
         siteOrigin={siteOrigin}
         useTenantParam={isDev}
       />
     );
   }
 
+  // A saved-but-not-yet-committed narrative → resume the COMPOSE phase with the owner's
+  // story (the draft-resume path: they composed, then refreshed or stepped away before
+  // building). Otherwise start fresh on the curated examples.
+  const draft = state.story ? storyFromPersisted(state.story) : null;
+
   return (
     <StoryComposer
       blueprints={blueprints}
       initialName={slug}
+      initialStory={draft}
       siteOrigin={siteOrigin}
       useTenantParam={isDev}
     />

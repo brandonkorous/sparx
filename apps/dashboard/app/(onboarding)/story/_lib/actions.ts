@@ -15,7 +15,7 @@ import {
   finishOnboardingAction,
 } from '../../onboarding/_lib/actions';
 import type { OnboardingStepKey, WizardResult } from '../../onboarding/_lib/types';
-import { handleSlug } from './story-state';
+import { handleSlug, type StoryPayload } from './story-state';
 import { ONBOARDING_FLOW_COOKIE } from './flow';
 
 // The natural-language "story" onboarding commits through the SAME pipeline as the
@@ -45,21 +45,6 @@ export async function startStripeConnectStoryAction(): Promise<WizardResult<{ ur
   return startStripeConnectAction();
 }
 
-/** The narrative we persist under `settings.onboarding.story` — the composed prose
- *  plus the structured selection that produced it. Shape mirrors the api-rest
- *  `StoryNarrative` zod schema (composedAt is stamped server-side). */
-export interface StoryPayload {
-  text: string;
-  tense: string | null;
-  industry: string | null;
-  audience: string | null;
-  name: string;
-  cust: string[];
-  lines: string[][];
-  slots: Record<string, string>;
-  modules: string[];
-}
-
 export interface CommitStoryInput {
   modules: Record<string, boolean>;
   /** Industry slug → `settings.category`. */
@@ -82,6 +67,24 @@ function titleCase(slug: string): string {
     .filter(Boolean)
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(' ');
+}
+
+/** Persist the in-progress narrative WITHOUT running the commit pipeline — just the
+ *  story draft, so a refresh or a trip away (reading the legal pages, an interrupted
+ *  session) resumes the compose phase instead of losing it. This mirrors how the
+ *  classic wizard already persists each step as you go; it does NOT touch `currentStep`
+ *  or `completed`, so the page resumes the COMPOSER (not the payments/launch tail) and
+ *  no modules are activated until the owner actually hits "Build". Best-effort: a failed
+ *  save just means the draft isn't captured this tick, never a blocked compose. */
+export async function saveStoryDraftAction(story: StoryPayload): Promise<WizardResult<null>> {
+  try {
+    await api.patch('/v1/tenant/onboarding', {
+      story: { ...story, composedAt: new Date().toISOString() },
+    });
+    return { ok: true, data: null };
+  } catch (err) {
+    return fail(err);
+  }
 }
 
 export async function commitStoryAction(input: CommitStoryInput): Promise<

@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og';
+import { ModuleStrip } from '@/components/marketing/module-strip';
 
 // The /pricing OG card. Hand-built (not the per-module renderer) — mirrors the
 // /platform card's structure (wordmark + tag, big headline, module-dot footer)
@@ -7,21 +8,6 @@ export const runtime = 'edge';
 export const alt = 'sparx — Switch on what you use. Per-module pricing from $10/mo.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
-
-const MODULE_DOTS = [
-  '#6366F1', // builder
-  '#F97316', // commerce
-  '#14B8A6', // cms
-  '#06B6D4', // crm
-  '#0EA5E9', // email
-  '#475569', // b2b
-  '#EC4899', // ai
-  '#10B981', // dropship
-  '#F43F5E', // scheduling
-  '#65A30D', // invoicing
-  '#F59E0B', // inventory
-  '#8B5CF6', // chat
-] as const;
 
 export default function Image() {
   return new ImageResponse(
@@ -134,14 +120,7 @@ export default function Image() {
           >
             12 modules
           </span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {MODULE_DOTS.map((color) => (
-              <div
-                key={color}
-                style={{ width: 14, height: 14, borderRadius: 9999, backgroundColor: color }}
-              />
-            ))}
-          </div>
+          <ModuleStrip size={30} gap={10} wrap={false} />
         </div>
         <span style={{ fontSize: 18, color: '#52525B' }}>sparx.works/pricing</span>
       </div>

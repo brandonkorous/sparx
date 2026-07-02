@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition, type ReactNode } from 'react';
+import { useEffect, useRef, useState, useTransition, type ReactNode } from 'react';
 import { SurfaceFrame, type SurfaceStepDef } from '@sparx/ui';
 import { SummaryCard } from '../../onboarding/_components/summary-card';
 import { RailFooter } from '../../onboarding/_components/rail-footer';
@@ -10,17 +10,16 @@ import {
   addCust,
   addNewLine,
   addToLine,
-  enabledModuleKeys,
   handleSlug,
   pickBlueprint,
   removeClause,
   resolveModules,
   swapClause,
-  toProse,
+  toPersistPayload,
   type StoryState,
 } from '../_lib/story-state';
 import { STORY_EXAMPLES } from '../_lib/story-examples';
-import { commitStoryAction } from '../_lib/actions';
+import { commitStoryAction, saveStoryDraftAction } from '../_lib/actions';
 import type { WizardBlueprint } from '../../onboarding/_lib/types';
 import { type StoryDispatch } from './story-canvas';
 import { StoryComposeStage } from './story-compose-stage';
@@ -49,17 +48,22 @@ function cloneStory(s: StoryState): StoryState {
 export function StoryComposer({
   blueprints,
   initialName,
+  initialStory,
   siteOrigin,
   useTenantParam,
 }: {
   blueprints: WizardBlueprint[];
   initialName: string;
+  /** A saved-but-not-committed draft to resume composing (null → start on examples). */
+  initialStory?: StoryState | null;
   siteOrigin: string;
   useTenantParam: boolean;
 }): ReactNode {
-  const [started, setStarted] = useState(false);
+  const [started, setStarted] = useState(!!initialStory);
   const [exampleIdx, setExampleIdx] = useState(0);
-  const [story, setStory] = useState<StoryState>({ ...EMPTY_STORY, name: initialName });
+  const [story, setStory] = useState<StoryState>(
+    initialStory ?? { ...EMPTY_STORY, name: initialName }
+  );
   const [committed, setCommitted] = useState<Committed | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -76,6 +80,27 @@ export function StoryComposer({
     setSlot: (id, v) => setStory((s) => ({ ...s, slots: { ...s.slots, [id]: v } })),
     setName: (v) => setStory((s) => ({ ...s, name: v })),
   };
+
+  // Persist the in-progress narrative as the owner composes, so a refresh or a trip
+  // away resumes the story instead of losing it (the classic wizard already persists
+  // each step as you go). Debounced to coalesce rapid edits; the server keeps
+  // `currentStep` put, so the page resumes the COMPOSE phase — not the tail — and the
+  // draft is superseded by the final narrative on commit. Only runs once the owner is
+  // actually composing (`started`) and before the in-page hand-off (`committed`).
+  const savedDraft = useRef<string>(
+    initialStory ? JSON.stringify(toPersistPayload(initialStory)) : ''
+  );
+  useEffect(() => {
+    if (!started || committed) return;
+    const payload = toPersistPayload(story);
+    const serial = JSON.stringify(payload);
+    if (serial === savedDraft.current) return;
+    const timer = setTimeout(() => {
+      savedDraft.current = serial;
+      void saveStoryDraftAction(payload);
+    }, 900);
+    return () => clearTimeout(timer);
+  }, [story, started, committed]);
 
   // Once built, the same page continues through the tail — no wizard redirect.
   if (committed) {
@@ -124,17 +149,7 @@ export function StoryComposer({
         industry,
         blueprintKey: blueprint?.key ?? null,
         selling,
-        story: {
-          text: toProse(story),
-          tense: story.tense,
-          industry: story.industry,
-          audience: story.audience,
-          name: story.name,
-          cust: story.cust,
-          lines: story.lines,
-          slots: story.slots,
-          modules: enabledModuleKeys(story),
-        },
+        story: toPersistPayload(story),
       });
       if (res.ok) {
         setCommitted({

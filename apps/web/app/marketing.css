@@ -241,7 +241,8 @@ a.mkt-module-tile:hover {
 }
 /* content tier (default for any unmarked section): the off-white TOP reading
    surface — front-of-house copy, social proof, pricing, FAQ. */
-.mkt-paneled > section:not(.mkt-accent):not(.mkt-brand):not(.mkt-stage):not(.mkt-ground) {
+.mkt-paneled
+  > section:not(.mkt-accent):not(.mkt-brand):not(.mkt-stage):not(.mkt-ground):not(.mkt-secondary) {
   background-color: var(--color-surface-100) !important;
 }
 /* stage tier: the recessed surface-200 shelf that visual exhibits sit on (the
@@ -274,20 +275,31 @@ a.mkt-module-tile:hover {
   border-bottom-left-radius: var(--panel-radius);
   border-bottom-right-radius: var(--panel-radius);
 }
+/* secondary band: a solid BRAND-secondary (deep pink) content-tier surface — the
+   warm counterweight to the indigo hero, used for the developer/API beat. A
+   colored plate between the neutral surfaces above and below; it rounds like any
+   plate so the deeper page notches through its corners. Content inside inverts to
+   on-color (white). Pulls --sparx-secondary (the brand pink), NOT the neutral
+   slate --color-secondary UI token. */
+.mkt-paneled > section.mkt-secondary {
+  background-color: var(--sparx-secondary) !important;
+}
 /* same-tier merge: flatten the seam between two adjacent same-tier sections so a
    run reads as one continuous object (content↔content, stage↔stage, accent↔accent).
    A tier CHANGE keeps both sections' rounding, so the deeper page notches through. */
 .mkt-paneled
-  > section:not(.mkt-accent):not(.mkt-brand):not(.mkt-stage):not(.mkt-ground)
-  + section:not(.mkt-accent):not(.mkt-brand):not(.mkt-stage):not(.mkt-ground),
+  > section:not(.mkt-accent):not(.mkt-brand):not(.mkt-stage):not(.mkt-ground):not(.mkt-secondary)
+  + section:not(.mkt-accent):not(.mkt-brand):not(.mkt-stage):not(.mkt-ground):not(.mkt-secondary),
 .mkt-paneled > section.mkt-stage + section.mkt-stage,
 .mkt-paneled > section.mkt-accent + section.mkt-accent {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
 .mkt-paneled
-  > section:not(.mkt-accent):not(.mkt-brand):not(.mkt-stage):not(.mkt-ground):has(
-    + section:not(.mkt-accent):not(.mkt-brand):not(.mkt-stage):not(.mkt-ground)
+  > section:not(.mkt-accent):not(.mkt-brand):not(.mkt-stage):not(.mkt-ground):not(
+    .mkt-secondary
+  ):has(
+    + section:not(.mkt-accent):not(.mkt-brand):not(.mkt-stage):not(.mkt-ground):not(.mkt-secondary)
   ),
 .mkt-paneled > section.mkt-stage:has(+ section.mkt-stage),
 .mkt-paneled > section.mkt-accent:has(+ section.mkt-accent) {

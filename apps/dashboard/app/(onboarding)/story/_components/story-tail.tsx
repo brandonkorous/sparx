@@ -36,6 +36,18 @@ const STEP_PAYMENTS: SurfaceStepDef = {
 const STEP_LAUNCH: SurfaceStepDef = { key: 'launch', label: 'Go live', sublabel: 'Publish' };
 const STEP_STORY_DONE: SurfaceStepDef = { key: 'story', label: 'Your story', sublabel: 'Composed' };
 
+// A failed Stripe Connect round-trip comes back as `?stripe_error=<code>` (the OAuth
+// callback can't render its own UI). Humanize the few known codes; everything else gets
+// a calm, recoverable message — connecting is always skippable.
+function stripeErrorMessage(code: string | null | undefined): string | null {
+  if (!code) return null;
+  if (code === 'access_denied')
+    return 'Stripe connection was cancelled. Try again, or skip for now.';
+  if (code === 'missing_params')
+    return 'Stripe sign-in didn’t complete. Please try connecting again.';
+  return 'Couldn’t connect Stripe. Try again, or skip for now.';
+}
+
 const LEDE: Record<TailStage, { title: string; blurb: string; context: string }> = {
   payments: {
     title: 'Get paid.',
@@ -64,6 +76,7 @@ export function StoryTail({
   blueprintKey,
   initialStage,
   stripeConnected: initialStripe,
+  stripeError,
   siteOrigin,
   useTenantParam,
 }: {
@@ -73,6 +86,8 @@ export function StoryTail({
   blueprintKey: string | null;
   initialStage: TailStage;
   stripeConnected: boolean;
+  /** A failed Stripe Connect round-trip's `?stripe_error` code, surfaced on resume. */
+  stripeError?: string | null;
   siteOrigin: string;
   useTenantParam: boolean;
 }): ReactNode {
@@ -84,7 +99,9 @@ export function StoryTail({
   // which reloads the page and re-reads this prop.
   const stripeConnected = initialStripe;
   const [published, setPublished] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // Seed the error from a failed Stripe round-trip (we land here at the payments stage);
+  // it clears the moment the owner retries or skips.
+  const [error, setError] = useState<string | null>(stripeErrorMessage(stripeError));
   const [pending, startTransition] = useTransition();
 
   const { total, elsewhere } = storyTotals(story);

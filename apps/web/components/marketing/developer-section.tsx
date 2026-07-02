@@ -5,11 +5,7 @@ const FEATURES = [
   {
     icon: (
       <svg width={16} height={16} viewBox="0 0 24 24" fill="none" aria-hidden>
-        <path
-          d="M8 5L3 12L8 19M16 5L21 12L16 19"
-          stroke="var(--color-text-primary)"
-          strokeWidth={2}
-        />
+        <path d="M8 5L3 12L8 19M16 5L21 12L16 19" stroke="#FFFFFF" strokeWidth={2} />
       </svg>
     ),
     title: 'REST + GraphQL',
@@ -18,10 +14,10 @@ const FEATURES = [
   {
     icon: (
       <svg width={16} height={16} viewBox="0 0 24 24" fill="none" aria-hidden>
-        <circle cx={12} cy={12} r={3} stroke="var(--color-text-primary)" strokeWidth={2} />
+        <circle cx={12} cy={12} r={3} stroke="#FFFFFF" strokeWidth={2} />
         <path
           d="M12 1V5M12 19V23M4.2 4.2L7 7M17 17L19.8 19.8M1 12H5M19 12H23M4.2 19.8L7 17M17 7L19.8 4.2"
-          stroke="var(--color-text-primary)"
+          stroke="#FFFFFF"
           strokeWidth={2}
         />
       </svg>
@@ -32,16 +28,8 @@ const FEATURES = [
   {
     icon: (
       <svg width={16} height={16} viewBox="0 0 24 24" fill="none" aria-hidden>
-        <rect
-          x={3}
-          y={3}
-          width={18}
-          height={18}
-          rx={2}
-          stroke="var(--color-text-primary)"
-          strokeWidth={2}
-        />
-        <path d="M9 9H15V15H9V9Z" stroke="var(--color-text-primary)" strokeWidth={2} />
+        <rect x={3} y={3} width={18} height={18} rx={2} stroke="#FFFFFF" strokeWidth={2} />
+        <path d="M9 9H15V15H9V9Z" stroke="#FFFFFF" strokeWidth={2} />
       </svg>
     ),
     title: 'Headless SDKs',
@@ -50,11 +38,7 @@ const FEATURES = [
   {
     icon: (
       <svg width={16} height={16} viewBox="0 0 24 24" fill="none" aria-hidden>
-        <path
-          d="M21 16V8L12 3L3 8V16L12 21L21 16Z"
-          stroke="var(--color-text-primary)"
-          strokeWidth={2}
-        />
+        <path d="M21 16V8L12 3L3 8V16L12 21L21 16Z" stroke="#FFFFFF" strokeWidth={2} />
       </svg>
     ),
     title: 'Self-host or managed',
@@ -64,15 +48,17 @@ const FEATURES = [
 
 export function DeveloperSection() {
   return (
-    <Section id="docs" padding="xl" className="mkt-stage">
+    <Section id="docs" padding="xl" className="mkt-secondary">
       <Reveal style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
         <SectionHeader
+          invert
+          ledeColor="rgba(255, 255, 255, 0.8)"
           headline={
             <>
               API-first means
               <br />
               the UI is one consumer
-              <Spark />
+              <Spark color="var(--sparx-primary-subtle)" />
             </>
           }
           lede={
@@ -95,9 +81,9 @@ export function DeveloperSection() {
                   display: 'flex',
                   flexDirection: 'column',
                   padding: '24px',
-                  backgroundColor: 'var(--color-bg-surface)',
-                  border: '1px solid var(--color-border-default)',
-                  borderRadius: '8px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '10px',
                   gap: '8px',
                 }}
               >
@@ -108,7 +94,7 @@ export function DeveloperSection() {
                       fontFamily: 'var(--font-sans)',
                       fontWeight: 500,
                       fontSize: '15px',
-                      color: 'var(--color-text-primary)',
+                      color: '#FFFFFF',
                     }}
                   >
                     {f.title}
@@ -119,7 +105,7 @@ export function DeveloperSection() {
                     fontFamily: 'var(--font-sans)',
                     fontSize: '13px',
                     lineHeight: '20px',
-                    color: 'var(--color-text-secondary)',
+                    color: 'rgba(255, 255, 255, 0.72)',
                   }}
                 >
                   {f.body}

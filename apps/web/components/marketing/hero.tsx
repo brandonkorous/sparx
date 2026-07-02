@@ -2,6 +2,8 @@ import { Button } from '@sparx/ui';
 import { Container, Display, Spark } from './primitives';
 import { RotatingWord } from './rotating-word';
 import { SparkMascot } from './spark-mascot';
+import { MODULES } from './modules-catalog';
+import { ModuleStrip } from './module-strip';
 
 // The hero tagline rotates its leading noun through every offering, so the
 // one-liner speaks for the whole platform — not just commerce. "ignited."
@@ -20,26 +22,17 @@ const ROTATING_WORDS = [
 // The hero runs on our primary indigo, so content is inverted to "on-color":
 // white at varying opacity reads cleaner on saturated indigo than the gray
 // invert scale used on the near-black sections. Elements that are normally
-// the primary color (the eyebrow dot, the "ignited." spark, the builder
-// module dot) are re-cast to white / ringed so they stay visible. To revert
-// the purple hero, restore this file from git.
+// the primary color (the eyebrow dot, the "ignited." spark) are re-cast to white
+// so they stay visible. The module strip uses the SAME Lucide glyphs as the
+// dashboard sidebar (MODULE_ICON): each chip wears its module hue with a white
+// glyph + a faint white border, so even the builder chip (indigo, == the hero
+// field) stays delineated. To revert the purple hero, restore from git.
 const ON = '#FFFFFF';
 const ON_STRONG = 'rgba(255, 255, 255, 0.82)';
 const ON_MUTED = 'rgba(255, 255, 255, 0.62)';
 const ON_BORDER = 'rgba(255, 255, 255, 0.18)';
 const ON_RING = 'rgba(255, 255, 255, 0.45)';
 const ON_CTA_TEXT = '#4F46E5'; // indigo-600 — AA on the white primary button
-
-const MODULE_DOTS = [
-  '#6366F1',
-  '#F97316',
-  '#14B8A6',
-  '#06B6D4',
-  '#0EA5E9',
-  '#475569',
-  '#EC4899',
-  '#10B981',
-] as const;
 
 const METRICS = [
   { value: '5 min', subtitle: 'to a live site' },
@@ -132,76 +125,61 @@ export function Hero() {
           </div>
         </div>
 
-        <div
-          className="mkt-cluster"
-          style={{
-            justifyContent: 'space-between',
-            paddingTop: '32px',
-            marginTop: '32px',
-            borderTop: `1px solid ${ON_BORDER}`,
-            gap: '32px',
-            rowGap: '24px',
-          }}
-        >
-          <div className="mkt-cluster" style={{ gap: '24px' }}>
-            <span style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: ON_MUTED }}>
-              8 modules
-            </span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              {MODULE_DOTS.map((c) => (
-                // A white ring keeps every dot legible on the indigo field —
-                // including the builder dot, which is the primary itself.
-                <span
-                  key={c}
-                  style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: 9999,
-                    backgroundColor: c,
-                    boxShadow: `0 0 0 1px ${ON_RING}`,
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-          <div
-            className="mkt-cluster"
-            style={{ gap: '40px', rowGap: '20px', justifyContent: 'flex-end' }}
-          >
-            {METRICS.map((m) => (
-              <div
-                key={m.subtitle}
-                style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}
-              >
-                <span
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontWeight: 500,
-                    fontSize: '24px',
-                    letterSpacing: '-0.02em',
-                    color: ON,
-                  }}
-                >
-                  {m.value}
-                  {'valueSuffix' in m && m.valueSuffix ? (
-                    <span style={{ color: ON_MUTED }}>{m.valueSuffix}</span>
-                  ) : null}
-                  {'valueSpark' in m && m.valueSpark ? <Spark color="#F9A8D4" /> : null}
-                </span>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: '12px',
-                    color: ON_MUTED,
-                  }}
-                >
-                  {m.subtitle}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+        <HeroStatBar />
       </Container>
     </section>
+  );
+}
+
+// The trust/breadth footer under the hero: the module strip (count + the same
+// Lucide glyphs as the dashboard sidebar) on the left, headline metrics on the
+// right. Wraps to its own row on narrower viewports via .mkt-cluster.
+function HeroStatBar() {
+  return (
+    <div
+      className="mkt-cluster"
+      style={{
+        justifyContent: 'space-between',
+        paddingTop: '32px',
+        marginTop: '32px',
+        borderTop: `1px solid ${ON_BORDER}`,
+        gap: '32px',
+        rowGap: '24px',
+      }}
+    >
+      <div className="mkt-cluster" style={{ gap: '20px' }}>
+        <span style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: ON_MUTED }}>
+          {MODULES.length} modules
+        </span>
+        <ModuleStrip />
+      </div>
+      <div
+        className="mkt-cluster"
+        style={{ gap: '40px', rowGap: '20px', justifyContent: 'flex-end' }}
+      >
+        {METRICS.map((m) => (
+          <div key={m.subtitle} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontWeight: 500,
+                fontSize: '24px',
+                letterSpacing: '-0.02em',
+                color: ON,
+              }}
+            >
+              {m.value}
+              {'valueSuffix' in m && m.valueSuffix ? (
+                <span style={{ color: ON_MUTED }}>{m.valueSuffix}</span>
+              ) : null}
+              {'valueSpark' in m && m.valueSpark ? <Spark color="#F9A8D4" /> : null}
+            </span>
+            <span style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: ON_MUTED }}>
+              {m.subtitle}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

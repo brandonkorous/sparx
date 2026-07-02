@@ -28,8 +28,9 @@ export default function SignInPage() {
       return;
     }
 
-    // Land on '/'. The dashboard guard routes to /onboarding if setup isn't
-    // finished, or to the dashboard if it is.
+    // Land on '/'. The dashboard guard resumes onboarding (the story flow or the
+    // classic wizard, whichever the tenant is in) if setup isn't finished, or shows
+    // the dashboard if it is.
     router.push('/');
     router.refresh();
   }

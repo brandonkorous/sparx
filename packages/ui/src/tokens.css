@@ -13,9 +13,20 @@
 /* ── SPARX BRAND ──────────────────────────────────────────── */
 :root {
   --sparx-primary: #6366f1;
+  --sparx-primary-content: #eef2ff;
   --sparx-primary-hover: #4f46e5;
   --sparx-primary-subtle: #818cf8;
   --sparx-primary-tint: #eef2ff;
+
+  /* Brand SECONDARY — a deep pink that complements the indigo primary. This is a
+     BRAND accent for marketing bands/sparks (e.g. the .mkt-secondary panel), the
+     warm counterweight to the cool primary. Deliberately NOT the AI module pink
+     (#ec4899, brighter) so it reads as brand, not "the AI section", and NOT the
+     neutral slate `--color-secondary` UI token that paints secondary buttons —
+     that stays slate so this never repaints dashboard chrome. Constant across
+     themes, like --sparx-primary. */
+  --sparx-secondary: #db2777;
+  --sparx-secondary-content: #ffffff;
 
   /* ── MODULE COLORS ─────────────────────────────────────── */
   --module-builder: #6366f1;
@@ -98,10 +109,10 @@
      custom theme color only needs to override the base.
      ──────────────────────────────────────────────────────────── */
   --color-primary: var(--sparx-primary);
-  --color-primary-content: #ffffff;
+  --color-primary-content: var(--sparx-primary-content);
 
-  --color-secondary: #64748b;
-  --color-secondary-content: #ffffff;
+  --color-secondary: var(--sparx-secondary);
+  --color-secondary-content: var(--sparx-secondary-content);
 
   --color-accent: #8b5cf6;
   --color-accent-content: #ffffff;

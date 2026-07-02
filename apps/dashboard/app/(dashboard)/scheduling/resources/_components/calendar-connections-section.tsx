@@ -18,6 +18,7 @@ import {
   syncCalendarConnectionAction,
 } from '../../_lib/actions';
 import { CaldavConnectForm } from './caldav-connect-form';
+import { OAuthConnectForm } from './oauth-connect-form';
 
 /** A human label for a connection row across kinds (iCal feed vs CalDAV account). */
 function connLabel(c: CalendarConnection): string {
@@ -104,6 +105,10 @@ export function CalendarConnectionsSection({ resourceId }: { resourceId: string 
 
   return (
     <div className="flex flex-col gap-3">
+      <OAuthConnectForm resourceId={resourceId} />
+
+      <hr className="border-[var(--color-border)]" />
+
       <div>
         <p className="text-sm font-medium">Block times from a calendar link</p>
         <p className="text-xs text-[var(--color-muted-foreground)]">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 /**
  * SparkMascot — the sparx "spark" brand character.
@@ -85,10 +85,11 @@ const TONES = {
   // The body is an OUTLINED (hollow) star, so the face sits over the open centre
   // rather than on a fill. The face is drawn in the SAME colour as the outline
   // so the whole mark is one consistent monochrome stroke on any surface: pure
-  // white linework on the indigo hero, brand indigo on a light surface.
-  // (outline+face colour / drop-shadow tint)
-  white: { ink: '#ffffff', shadow: 'rgba(18,16,68,0.42)' },
-  indigo: { ink: 'var(--sparx-primary, #6366f1)', shadow: 'rgba(79,70,229,0.22)' },
+  // white linework on the indigo hero, brand indigo on a light surface. No drop
+  // shadow — the mark is flat linework so it sits flush with the rest of the UI,
+  // which carries no shadows of its own.
+  white: { ink: '#ffffff' },
+  indigo: { ink: 'var(--sparx-primary, #6366f1)' },
 } as const;
 
 export function SparkMascot({
@@ -117,7 +118,6 @@ export function SparkMascot({
   className?: string;
 }) {
   const [step, setStep] = useState(0);
-  const uid = useId();
 
   useEffect(() => {
     if (!cycle || cycle.length < 2) return;
@@ -131,7 +131,6 @@ export function SparkMascot({
     : expression;
   const face = FACES[active];
   const palette = TONES[tone];
-  const shadowId = `spark-sh-${uid}`;
 
   return (
     <span
@@ -147,12 +146,7 @@ export function SparkMascot({
         aria-label={title}
         style={{ width: '100%', height: 'auto', overflow: 'visible' }}
       >
-        <defs>
-          <filter id={shadowId} x="-40%" y="-40%" width="180%" height="180%">
-            <feDropShadow dx="0" dy="9" stdDeviation="11" floodColor={palette.shadow} />
-          </filter>
-        </defs>
-        <path d={BODY_PATH} fill={palette.ink} fillRule="evenodd" filter={`url(#${shadowId})`} />
+        <path d={BODY_PATH} fill={palette.ink} fillRule="evenodd" />
         {/* Face layer, scaled down a touch so it sits inside the hollow outline.
             The eyes scale around their OWN centre (transform-box: fill-box in
             CSS) so blink + expression changes happen in place. */}

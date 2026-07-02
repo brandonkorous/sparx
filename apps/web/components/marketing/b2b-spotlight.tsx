@@ -1,5 +1,13 @@
-import { Section, SectionHeader, Spark } from './primitives';
+import type { ReactNode } from 'react';
+import { Section, SectionHeader, Spark, getModuleColor } from './primitives';
 import { Reveal } from './reveal';
+
+// B2B is the slate module. Carried as a soft tint on the icon chips + the one
+// price-contrast panel (the section's single tinted accent); the feature cards
+// stay neutral so six same-hue cards don't read as a wall of identical wash.
+const B2B = getModuleColor('b2b');
+const CHIP_BG = `color-mix(in oklab, ${B2B.color} 13%, var(--color-bg-surface))`;
+const PANEL_BG = `color-mix(in oklab, ${B2B.color} 7%, var(--color-bg-surface))`;
 
 const FEATURES = [
   {
@@ -17,8 +25,8 @@ const FEATURES = [
   {
     icon: <FleetIcon />,
     number: '03',
-    title: 'Fleet accounts',
-    body: 'Vehicles, drivers, VIN-aware ordering. Service history per unit. PO routing per cost center.',
+    title: 'Fleet & location accounts',
+    body: 'Order per vehicle or per site, with budgets, service history, and PO routing rolled up by cost center.',
   },
   {
     icon: <RfqIcon />,
@@ -36,97 +44,231 @@ const FEATURES = [
     icon: <ShieldIcon />,
     number: '06',
     title: 'Approval workflows',
-    body: 'Spend caps per buyer. Manager approval for orders over a threshold. Multi-step approvals for enterprise customers.',
+    body: 'Spend caps per buyer. Manager approval for orders over a threshold. Multi-step approvals for bigger customers.',
   },
 ] as const;
 
 export function B2bSpotlight() {
   return (
     <Section padding="xl">
-      <Reveal style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
-        <SectionHeader
-          headlineSize={64}
-          headlineLineHeight={68}
-          headline={
-            <>
-              Industrial-grade,
-              <br />
-              out of the box
-              <Spark color="#475569" />
-            </>
-          }
-          lede={
-            <>
-              Shopify charges $2,400/mo for B2B and still doesn&apos;t do net terms properly. sparx
-              ships wholesale pricing, RFQ, purchase orders, and fleet accounts natively. $99/mo.
-              Built for the way industrial actually works.
-            </>
-          }
-        />
+      <Reveal style={{ display: 'flex', flexDirection: 'column', gap: '72px' }}>
+        {/* Two-column header — argument left, the price contrast right. A
+            deliberate break from the page's repeated full-width left headers,
+            and it surfaces the "$2,400 vs $99" hook as a visual instead of a
+            buried sentence. */}
+        <div
+          className="mkt-stack-on-tablet"
+          style={{ justifyContent: 'space-between', alignItems: 'flex-start', gap: '48px' }}
+        >
+          <div style={{ flex: 1, maxWidth: '600px' }}>
+            <SectionHeader
+              headlineSize={54}
+              headline={
+                <>
+                  Wholesale,
+                  <br />
+                  built in
+                  <Spark color={B2B.color} />
+                </>
+              }
+              lede={
+                <>
+                  Whether you supply salons, stock corner stores, or sell wholesale to boutiques,
+                  your business accounts get account pricing, net terms, POs, RFQs, and approvals —
+                  all native, with no enterprise tier to unlock.
+                </>
+              }
+            />
+          </div>
+          <PricePanel />
+        </div>
 
         <div className="mkt-grid-3-2-1">
           {FEATURES.map((f) => (
-            <div
-              key={f.number}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                padding: '32px',
-                backgroundColor: 'var(--color-bg-surface)',
-                border: '1px solid var(--color-border-default)',
-                borderTop: '3px solid #475569',
-                borderRadius: '8px',
-                gap: '14px',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                {f.icon}
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '12px',
-                    color: 'var(--color-text-tertiary)',
-                  }}
-                >
-                  {f.number}
-                </span>
-              </div>
-              <h3
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: 500,
-                  fontSize: '20px',
-                  letterSpacing: '-0.02em',
-                  lineHeight: '26px',
-                  color: 'var(--color-text-primary)',
-                  paddingTop: '8px',
-                  margin: 0,
-                }}
-              >
-                {f.title}
-              </h3>
-              <p
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '13px',
-                  lineHeight: '20px',
-                  color: 'var(--color-text-secondary)',
-                  margin: 0,
-                }}
-              >
-                {f.body}
-              </p>
-            </div>
+            <FeatureCard key={f.number} {...f} />
           ))}
         </div>
       </Reveal>
     </Section>
+  );
+}
+
+function FeatureCard({
+  icon,
+  number,
+  title,
+  body,
+}: {
+  icon: ReactNode;
+  number: string;
+  title: string;
+  body: string;
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '28px',
+        backgroundColor: 'var(--color-bg-surface)',
+        border: '1px solid var(--color-border-default)',
+        borderRadius: '12px',
+        gap: '16px',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 46,
+            height: 46,
+            borderRadius: 12,
+            backgroundColor: CHIP_BG,
+          }}
+        >
+          {icon}
+        </span>
+        <span
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '12px',
+            color: 'var(--color-text-tertiary)',
+          }}
+        >
+          {number}
+        </span>
+      </div>
+      <h3
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontWeight: 500,
+          fontSize: '20px',
+          letterSpacing: '-0.02em',
+          lineHeight: '26px',
+          color: 'var(--color-text-primary)',
+          margin: 0,
+        }}
+      >
+        {title}
+      </h3>
+      <p
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontSize: '13px',
+          lineHeight: '20px',
+          color: 'var(--color-text-secondary)',
+          margin: 0,
+        }}
+      >
+        {body}
+      </p>
+    </div>
+  );
+}
+
+// The section's one tinted element: the competitor's B2B tier vs sparx's, framed
+// as a two-row ledger (the same "show the swap" device the cost section uses).
+function PricePanel() {
+  return (
+    <div
+      style={{
+        width: '100%',
+        maxWidth: '384px',
+        flexShrink: 0,
+        backgroundColor: PANEL_BG,
+        border: '1px solid var(--color-border-default)',
+        borderRadius: '16px',
+        padding: '26px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '18px',
+      }}
+    >
+      <span
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontWeight: 500,
+          fontSize: '13px',
+          color: B2B.text,
+        }}
+      >
+        The same wholesale toolkit, priced sanely
+      </span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <PriceRow vendor="Shopify Plus, for B2B" amount="$2,400" muted />
+        <PriceRow vendor="sparx B2B module" amount="$99" />
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'baseline',
+          justifyContent: 'space-between',
+          gap: '12px',
+          padding: '12px 14px',
+          borderRadius: '10px',
+          backgroundColor: `color-mix(in oklab, ${B2B.color} 16%, var(--color-bg-surface))`,
+        }}
+      >
+        <span
+          style={{
+            fontFamily: 'var(--font-sans)',
+            fontWeight: 500,
+            fontSize: '14px',
+            color: B2B.text,
+          }}
+        >
+          You keep $2,301/mo
+        </span>
+        <span
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '12px',
+            color: B2B.text,
+          }}
+        >
+          ~1/24 the price
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function PriceRow({ vendor, amount, muted }: { vendor: string; amount: string; muted?: boolean }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'baseline',
+        justifyContent: 'space-between',
+        gap: '12px',
+      }}
+    >
+      <span
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontSize: '14px',
+          color: muted ? 'var(--color-text-tertiary)' : 'var(--color-text-primary)',
+        }}
+      >
+        {vendor}
+      </span>
+      <span
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontWeight: muted ? 400 : 500,
+          fontSize: muted ? '18px' : '24px',
+          letterSpacing: '-0.02em',
+          color: muted ? 'var(--color-text-tertiary)' : B2B.text,
+        }}
+      >
+        {amount}
+        <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--color-text-tertiary)' }}>
+          /mo
+        </span>
+      </span>
+    </div>
   );
 }
 

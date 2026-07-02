@@ -1,15 +1,17 @@
 import Link from 'next/link';
 import { Badge, Button, Card, Heading, Stack, Text } from '@sparx/ui';
 import { ArrowRight } from 'lucide-react';
+import { onboardingEntryHref } from '@/lib/onboarding-entry';
 import type { OnboardingProgress } from '../welcome/onboarding';
 
 // Compact welcome banner shown on the dashboard home until the tenant
 // either finishes every actionable step OR dismisses onboarding, whichever
 // comes first. Shown for at most 7 days after the wizard finishes.
 //
-// If the guided wizard hasn't been finished yet: CTA resumes it (/onboarding
-// picks up at the saved step). Once finished: CTA points at the day-0+
-// checklist (/welcome) and the 7-day countdown starts.
+// If onboarding hasn't been finished yet: CTA resumes it at the right front end
+// (onboardingEntryHref — the story flow or the classic wizard, picking up where the
+// tenant left off). Once finished: CTA points at the day-0+ checklist (/welcome) and
+// the 7-day countdown starts.
 
 const DAYS_7_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -35,7 +37,7 @@ export function OnboardingBanner({ progress }: OnboardingBannerProps) {
   const pct = Math.round(progress.completion * 100);
   const cta = wizardFinished
     ? { href: '/welcome', label: 'Open checklist' }
-    : { href: '/onboarding', label: 'Resume setup' };
+    : { href: onboardingEntryHref(progress.state), label: 'Resume setup' };
 
   return (
     <Card variant="subtle">

@@ -14,7 +14,12 @@ import type { CalendarConnection } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
 import { badRequest } from '@sparx/api-core/errors';
 import { requireRole } from '@sparx/api-core/auth';
-import { CreateCaldavConnectionInput, CreateIcalFeedInput } from '@sparx/scheduling-schemas';
+import {
+  CompleteCalendarOAuthInput,
+  CreateCaldavConnectionInput,
+  CreateIcalFeedInput,
+  StartCalendarOAuthInput,
+} from '@sparx/scheduling-schemas';
 import {
   createCalendarConnection,
   deleteCalendarConnection,
@@ -29,6 +34,14 @@ import {
 } from '../../../lib/scheduling-calendar-crypto.js';
 import { assertPublicHttpsUrl, CalendarFeedError } from '../../../lib/scheduling-url-guard.js';
 import { syncCalDavConnection, syncIcalConnection } from '../../../lib/scheduling-calendar-sync.js';
+import {
+  beginOAuthConnection,
+  completeOAuthConnection,
+} from '../../../lib/scheduling-calendar-oauth-sync.js';
+import {
+  isOAuthProviderConfigured,
+  verifyCalendarOAuthState,
+} from '../../../lib/scheduling-calendar-oauth.js';
 import { APPLE_ICLOUD_CALDAV } from '../../../lib/caldav-client.js';
 
 const PathId = z.object({ id: z.string().uuid() });
@@ -135,6 +148,47 @@ const schedulingCalendarConnectionRoutes: FastifyPluginAsync = async (app) => {
     const outcome = await syncCalDavConnection(request.log, tenantId, connection.id);
     const fresh = await getCalendarConnection(tenantId, connection.id);
     return reply.code(201).send(ok({ ...connectionView(fresh), sync: outcome }));
+  });
+
+  // Which OAuth providers the platform app is configured for (drives the dashboard's
+  // "Connect Google / Microsoft" buttons; BYO works regardless of platform config).
+  app.get('/v1/scheduling/calendar/oauth/providers', async (request) => {
+    await requireSchedulingModule(request);
+    return ok({
+      cryptoConfigured: isCalendarCryptoConfigured(),
+      google: isOAuthProviderConfigured('google'),
+      microsoft: isOAuthProviderConfigured('microsoft'),
+    });
+  });
+
+  // Begin an OAuth connect: creates the token-less connection row + returns the
+  // provider consent URL the dashboard redirects the browser to.
+  app.post('/v1/scheduling/calendar/connections/oauth/start', async (request) => {
+    await requireSchedulingModule(request);
+    requireRole(request, 'editor');
+    const { tenantId, userId } = toSchedulingContext(request);
+    const input = StartCalendarOAuthInput.parse(request.body);
+    const result = await beginOAuthConnection(tenantId, userId, input);
+    return ok(result);
+  });
+
+  // Complete an OAuth connect: the dashboard callback posts the provider `code` +
+  // signed `state`; we verify state (CSRF — the tenant must match the caller),
+  // exchange the code, store the encrypted tokens, and run the first sync.
+  app.post('/v1/scheduling/calendar/connections/oauth/complete', async (request) => {
+    await requireSchedulingModule(request);
+    requireRole(request, 'editor');
+    const { tenantId } = toSchedulingContext(request);
+    const { code, state } = CompleteCalendarOAuthInput.parse(request.body);
+    const decoded = await verifyCalendarOAuthState(state);
+    if (decoded.tenantId !== tenantId) {
+      throw badRequest('This calendar connect link belongs to a different account.');
+    }
+    const conn = await completeOAuthConnection(request.log, decoded, code);
+    return ok({
+      ...connectionView(conn),
+      sync: { ok: conn.status === 'active', error: conn.lastError ?? undefined },
+    });
   });
 
   app.post('/v1/scheduling/calendar/connections/:id/sync', async (request) => {
