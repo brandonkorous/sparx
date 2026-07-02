@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { getModuleColor, Section, SectionHeader } from './primitives';
+import { getModuleColor, moduleTint, Section, SectionHeader } from './primitives';
 
 /**
  * Two more structural devices for the /email page:
@@ -44,7 +44,7 @@ export function EmailKinds() {
         lede="Transactional messages your customers expect and marketing your team chooses to send — same domain, same reputation, same analytics. No second tool, no separate sender."
       />
       <div className="mkt-grid-2-1" style={{ marginTop: '52px', gap: '24px' }}>
-        {panels.map((p) => (
+        {panels.map((p, i) => (
           <div
             key={p.title}
             style={{
@@ -52,9 +52,8 @@ export function EmailKinds() {
               flexDirection: 'column',
               gap: '16px',
               padding: '30px',
-              backgroundColor: 'var(--color-bg-surface)',
+              backgroundColor: i === 0 ? moduleTint(E.color) : 'var(--color-bg-surface)',
               border: '1px solid var(--color-border-default)',
-              borderTop: `3px solid ${E.color}`,
               borderRadius: '14px',
             }}
           >

@@ -5,6 +5,7 @@ import {
   Display,
   Dot,
   getModuleColor,
+  moduleTint,
   Section,
   SectionHeader,
   Spark,
@@ -169,7 +170,7 @@ function SchedulingStandalone() {
         lede="Scheduling is never bundled and never required by another module — it stands fully on its own. But it lives on the same platform as your customers, your money, and your messaging, so connecting them turns booking into a loop instead of an island."
       />
       <div className="mkt-grid-2-1" style={{ marginTop: '52px', gap: '24px' }}>
-        {panels.map((p) => (
+        {panels.map((p, i) => (
           <div
             key={p.title}
             style={{
@@ -177,9 +178,8 @@ function SchedulingStandalone() {
               flexDirection: 'column',
               gap: '16px',
               padding: '32px',
-              backgroundColor: 'var(--color-bg-surface)',
+              backgroundColor: i === 0 ? moduleTint(M.color) : 'var(--color-bg-surface)',
               border: '1px solid var(--color-border-default)',
-              borderTop: `3px solid ${M.color}`,
               borderRadius: '14px',
             }}
           >
@@ -324,9 +324,8 @@ function SchedulingPricing() {
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '40px',
-          backgroundColor: 'var(--color-bg-surface)',
+          backgroundColor: moduleTint(M.color),
           border: '1px solid var(--color-border-default)',
-          borderTop: `3px solid ${M.color}`,
           borderRadius: '14px',
           gap: '32px',
         }}

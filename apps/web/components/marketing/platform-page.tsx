@@ -967,9 +967,10 @@ function ModulesStrip() {
                 flexDirection: 'column',
                 gap: '8px',
                 padding: '22px',
-                backgroundColor: 'var(--color-bg-page)',
+                // Module menu: each tile wears a soft 8% wash of its module hue
+                // (a color legend, like modules-grid) — not the retired stripe.
+                backgroundColor: `color-mix(in oklab, ${c.color} 8%, var(--color-bg-surface))`,
                 border: '1px solid var(--color-border-default)',
-                borderTop: `3px solid ${c.color}`,
                 borderRadius: '10px',
                 minHeight: '142px',
                 textDecoration: 'none',

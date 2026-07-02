@@ -108,9 +108,10 @@ export function CategoryTiles({ counts }: { counts: Record<string, number> }) {
           flexDirection: 'column',
           width: '100%',
           minHeight: '200px',
-          backgroundColor: 'var(--color-bg-surface)',
+          // Category menu: each tile wears a soft 8% wash of its category hue
+          // (a color legend) instead of the retired 3px top stripe.
+          backgroundColor: `color-mix(in oklab, ${cat.accent} 8%, var(--color-bg-surface))`,
           border: '1px solid var(--color-border-default)',
-          borderTop: `3px solid ${cat.accent}`,
           borderRadius: '8px',
           padding: '24px',
           opacity: live ? 1 : 0.72,

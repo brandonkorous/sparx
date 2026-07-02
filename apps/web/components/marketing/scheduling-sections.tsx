@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Dot, getModuleColor, Section, SectionHeader } from './primitives';
+import { Dot, getModuleColor, moduleTint, Section, SectionHeader } from './primitives';
 
 /**
  * The core capability devices for the /scheduling page, split out of
@@ -65,7 +65,7 @@ export function SchedulingShapes() {
         lede="An appointment, a class, a reservation, and a rental aren't four products — they're one booking engine with a type discriminator. The same availability math, the same deposits and reminders, the same reports. Switch on the shapes a business needs; nothing is a separate tool to learn or pay for."
       />
       <div className="mkt-grid-4-2-1" style={{ marginTop: '52px' }}>
-        {shapes.map((s) => (
+        {shapes.map((s, i) => (
           <div
             key={s.type}
             style={{
@@ -73,9 +73,8 @@ export function SchedulingShapes() {
               flexDirection: 'column',
               gap: '14px',
               padding: '26px',
-              backgroundColor: 'var(--color-bg-surface)',
+              backgroundColor: i === 0 ? moduleTint(M.color) : 'var(--color-bg-surface)',
               border: '1px solid var(--color-border-default)',
-              borderTop: `3px solid ${M.color}`,
               borderRadius: '12px',
               minHeight: '236px',
             }}
@@ -284,7 +283,7 @@ export function SchedulingCalendar() {
         lede="No spreadsheet, no copy-paste. Subscribe to your sparx schedule in any calendar, and import the busy time from the calendars you already keep so external commitments block your slots. And whatever a synced feed says, the double-booking guarantee holds at the database — degraded sync never degrades the core promise."
       />
       <div className="mkt-grid-2-1" style={{ marginTop: '52px' }}>
-        {panels.map((p) => (
+        {panels.map((p, i) => (
           <div
             key={p.title}
             style={{
@@ -292,9 +291,8 @@ export function SchedulingCalendar() {
               flexDirection: 'column',
               gap: '16px',
               padding: '32px',
-              backgroundColor: 'var(--color-bg-surface)',
+              backgroundColor: i === 0 ? moduleTint(M.color) : 'var(--color-bg-surface)',
               border: '1px solid var(--color-border-default)',
-              borderTop: `3px solid ${M.color}`,
               borderRadius: '14px',
             }}
           >

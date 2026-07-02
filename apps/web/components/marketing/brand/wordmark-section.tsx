@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Section, SectionHeader } from '../primitives';
+import { moduleTint, Section, SectionHeader } from '../primitives';
 import { CopyValue } from './interactive';
 import { OfficialWordmark } from './assets';
 
@@ -57,9 +57,8 @@ function Showcase() {
         alignItems: 'center',
         justifyContent: 'center',
         padding: 'clamp(44px, 8vw, 96px) 24px',
-        backgroundColor: 'var(--color-bg-page)',
+        backgroundColor: moduleTint('var(--sparx-primary)'),
         border: '1px solid var(--color-border-default)',
-        borderTop: '3px solid var(--sparx-primary)',
         borderRadius: 'var(--radius-xl)',
       }}
     >

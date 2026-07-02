@@ -5,6 +5,7 @@ import {
   Dot,
   getModuleColor,
   type MarketingModule,
+  moduleTint,
   Section,
   SectionHeader,
   Spark,
@@ -213,9 +214,8 @@ function ContrastCard({
         flexDirection: 'column',
         gap: '18px',
         padding: '32px',
-        backgroundColor: 'var(--color-bg-page)',
+        backgroundColor: accent ? moduleTint(AI.color) : 'var(--color-bg-page)',
         border: '1px solid var(--color-border-default)',
-        borderTop: `3px solid ${accent ? AI.color : 'var(--color-border-strong, #D4D4D8)'}`,
         borderRadius: '12px',
       }}
     >
@@ -301,7 +301,7 @@ function HowItWorks() {
       />
 
       <div className="mkt-grid-3-2-1" style={{ marginTop: '56px' }}>
-        {steps.map((s) => (
+        {steps.map((s, i) => (
           <div
             key={s.n}
             style={{
@@ -309,9 +309,8 @@ function HowItWorks() {
               flexDirection: 'column',
               gap: '14px',
               padding: '30px 26px 34px',
-              backgroundColor: 'var(--color-bg-surface)',
+              backgroundColor: i === 0 ? moduleTint(AI.color) : 'var(--color-bg-surface)',
               border: '1px solid var(--color-border-default)',
-              borderTop: `3px solid ${AI.color}`,
               borderRadius: '12px',
               minHeight: '210px',
             }}
@@ -357,9 +356,11 @@ function HowItWorks() {
           justifyContent: 'space-between',
           gap: '24px',
           padding: '26px 30px',
-          backgroundColor: '#0A0A0A',
+          // Dark endpoint exhibit: the soft module card translated to a dark
+          // surface — mix the hue into the near-black bg instead of the retired
+          // 3px stripe (moduleTint() targets the light surface token).
+          backgroundColor: `color-mix(in oklab, ${AI.color} 12%, #0A0A0A)`,
           borderRadius: '14px',
-          borderTop: `3px solid ${AI.color}`,
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: 0 }}>
@@ -1032,9 +1033,8 @@ function AiPricing() {
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '40px',
-          backgroundColor: 'var(--color-bg-surface)',
+          backgroundColor: moduleTint(AI.color),
           border: '1px solid var(--color-border-default)',
-          borderTop: `3px solid ${AI.color}`,
           borderRadius: '12px',
           gap: '32px',
         }}

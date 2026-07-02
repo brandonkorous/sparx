@@ -13,8 +13,8 @@ const PRINCIPLES: { n: string; title: string; body: string }[] = [
   },
   {
     n: '03',
-    title: 'The 3px stripe rule',
-    body: 'Every card, panel, and page header inside a module carries a 3px top border in that module’s color. It tells the tenant exactly where they are with no extra labeling.',
+    title: 'One tinted card per module',
+    body: 'A module’s color surfaces as a soft tint on a single lead card per section — a color-mix wash, never a loud stripe. One tinted card is wayfinding; a wall of them is noise, so the rest of the cards stay neutral.',
   },
   {
     n: '04',

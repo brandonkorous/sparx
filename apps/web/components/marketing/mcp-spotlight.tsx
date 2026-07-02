@@ -154,9 +154,11 @@ function ChatCard() {
         display: 'flex',
         flexDirection: 'column',
         flex: 1,
-        backgroundColor: '#1A1A1A',
+        // Dark AI/MCP exhibit: the soft module card translated to a dark surface
+        // — mix the rose hue into the panel bg instead of the retired 3px stripe
+        // (rose identity still rides the star chip + "Claude" label inside).
+        backgroundColor: 'color-mix(in oklab, #EC4899 12%, #1A1A1A)',
         border: '1px solid #2A2A2A',
-        borderTop: '3px solid #EC4899',
         borderRadius: '12px',
         overflow: 'hidden',
       }}

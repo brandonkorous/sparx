@@ -5,6 +5,7 @@ import {
   Display,
   Dot,
   getModuleColor,
+  moduleTint,
   Section,
   SectionHeader,
   Spark,
@@ -258,9 +259,8 @@ function CmsStandalone() {
               flexDirection: 'column',
               gap: '16px',
               padding: '32px',
-              backgroundColor: 'var(--color-bg-surface)',
+              backgroundColor: moduleTint(w.dot),
               border: '1px solid var(--color-border-default)',
-              borderTop: `3px solid ${w.dot}`,
               borderRadius: '14px',
             }}
           >
@@ -416,9 +416,8 @@ function CmsPricing() {
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '40px',
-          backgroundColor: 'var(--color-bg-surface)',
+          backgroundColor: moduleTint(M.color),
           border: '1px solid var(--color-border-default)',
-          borderTop: `3px solid ${M.color}`,
           borderRadius: '14px',
           gap: '32px',
         }}

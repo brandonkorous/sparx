@@ -5,6 +5,7 @@ import {
   Display,
   Dot,
   getModuleColor,
+  moduleTint,
   Section,
   SectionHeader,
   Spark,
@@ -725,7 +726,7 @@ function HeadlessOrHosted() {
         lede="Commerce is the engine, not the front end. Drive it entirely through the API and MCP, or switch on Builder and get a hosted storefront on your own domain — same data either way."
       />
       <div className="mkt-grid-2-1" style={{ marginTop: '52px', gap: '24px' }}>
-        {ways.map((w) => (
+        {ways.map((w, i) => (
           <div
             key={w.title}
             style={{
@@ -733,9 +734,8 @@ function HeadlessOrHosted() {
               flexDirection: 'column',
               gap: '16px',
               padding: '32px',
-              backgroundColor: 'var(--color-bg-surface)',
+              backgroundColor: i === 0 ? moduleTint(C.color) : 'var(--color-bg-surface)',
               border: '1px solid var(--color-border-default)',
-              borderTop: `3px solid ${C.color}`,
               borderRadius: '14px',
             }}
           >
@@ -890,9 +890,8 @@ function CommercePricing() {
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '40px',
-          backgroundColor: 'var(--color-bg-surface)',
+          backgroundColor: moduleTint(C.color),
           border: '1px solid var(--color-border-default)',
-          borderTop: `3px solid ${C.color}`,
           borderRadius: '14px',
           gap: '32px',
         }}

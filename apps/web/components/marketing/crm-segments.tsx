@@ -1,4 +1,4 @@
-import { getModuleColor, Section, SectionHeader, Dot } from './primitives';
+import { getModuleColor, moduleTint, Section, SectionHeader, Dot } from './primitives';
 
 /**
  * Two /crm structural devices (split for cohesion / line budget):
@@ -41,9 +41,8 @@ export function CrmSegments() {
       <div className="mkt-seg-grid" style={{ marginTop: '52px' }}>
         <div
           style={{
-            backgroundColor: 'var(--color-bg-surface)',
+            backgroundColor: moduleTint(M.color),
             border: '1px solid var(--color-border-default)',
-            borderTop: `3px solid ${M.color}`,
             borderRadius: '14px',
             overflow: 'hidden',
             display: 'flex',

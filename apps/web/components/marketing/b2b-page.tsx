@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Button } from '@sparx/ui';
-import { Container, Display, getModuleColor, Section, Spark } from './primitives';
+import { Container, Display, getModuleColor, moduleTint, Section, Spark } from './primitives';
 import { B2bHero } from './b2b-hero';
 import { B2bPriceList, B2bRfq } from './b2b-sections';
 import { B2bTerms, B2bBulkPo } from './b2b-devices';
@@ -190,9 +190,8 @@ function B2bPricing() {
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '40px',
-          backgroundColor: 'var(--color-bg-surface)',
+          backgroundColor: moduleTint(M.color),
           border: '1px solid var(--color-border-default)',
-          borderTop: `3px solid ${M.color}`,
           borderRadius: '14px',
           gap: '32px',
         }}

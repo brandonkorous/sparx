@@ -1,13 +1,13 @@
 import { Button } from '@sparx/ui';
-import { Container, Display, Dot, getModuleColor, Section, Spark } from './primitives';
+import { Container, Display, Dot, getModuleColor, moduleTint, Section, Spark } from './primitives';
 import { type ModuleMeta } from '@/lib/modules';
 
 /**
  * Reusable per-module marketing page. Each module's route
  * (`app/builder/page.tsx`, etc.) renders this with its `ModuleMeta`.
- * The module color is pulled from tokens via `getModuleColor()` so the
- * hero spark accent, feature card stripes, and pricing chip stay consistent
- * with the rest of the brand.
+ * The module color is pulled from tokens via `getModuleColor()` so the hero
+ * spark accent, the one soft-tinted lead feature card, and the pricing strip
+ * stay consistent with the rest of the brand.
  */
 export function ModulePage({ meta }: { meta: ModuleMeta }) {
   const color = getModuleColor(meta.module);
@@ -115,16 +115,15 @@ function ModuleFeatures({ meta, color }: { meta: ModuleMeta; color: ModuleColor 
         </div>
 
         <div className="mkt-grid-3-2-1">
-          {meta.features.map((f) => (
+          {meta.features.map((f, i) => (
             <div
               key={f.number}
               style={{
                 display: 'flex',
                 flexDirection: 'column',
                 padding: '32px',
-                backgroundColor: 'var(--color-bg-page)',
+                backgroundColor: i === 0 ? moduleTint(color.color) : 'var(--color-bg-page)',
                 border: '1px solid var(--color-border-default)',
-                borderTop: `3px solid ${color.color}`,
                 borderRadius: '8px',
                 gap: '14px',
               }}
@@ -201,9 +200,8 @@ function ModulePricingStrip({ meta, color }: { meta: ModuleMeta; color: ModuleCo
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '40px',
-          backgroundColor: 'var(--color-bg-surface)',
+          backgroundColor: moduleTint(color.color),
           border: '1px solid var(--color-border-default)',
-          borderTop: `3px solid ${color.color}`,
           borderRadius: '12px',
           gap: '32px',
         }}

@@ -4,6 +4,7 @@ import {
   Display,
   Dot,
   getModuleColor,
+  moduleTint,
   Section,
   SectionHeader,
   Spark,
@@ -168,7 +169,7 @@ function TheArc() {
         />
       </div>
       <div className="mkt-grid-2-1" style={{ marginTop: '52px', gap: '24px' }}>
-        {cards.map((c) => (
+        {cards.map((c, i) => (
           <div
             key={c.title}
             style={{
@@ -176,9 +177,8 @@ function TheArc() {
               flexDirection: 'column',
               gap: '18px',
               padding: '32px',
-              backgroundColor: 'var(--color-bg-page)',
+              backgroundColor: i === 0 ? moduleTint(B.color) : 'var(--color-bg-page)',
               border: '1px solid var(--color-border-default)',
-              borderTop: `3px solid ${B.color}`,
               borderRadius: '12px',
             }}
           >
@@ -276,7 +276,7 @@ function HowItWorks() {
         lede="No integration project, no migration weekend. This is the honest path from nothing to a site on your own domain — and it's the same path whether you're publishing a blog or opening a store."
       />
       <div className="mkt-grid-4-2-1" style={{ marginTop: '52px' }}>
-        {steps.map((s) => (
+        {steps.map((s, i) => (
           <div
             key={s.n}
             style={{
@@ -284,9 +284,8 @@ function HowItWorks() {
               flexDirection: 'column',
               gap: '14px',
               padding: '30px 26px 34px',
-              backgroundColor: 'var(--color-bg-surface)',
+              backgroundColor: i === 0 ? moduleTint(B.color) : 'var(--color-bg-surface)',
               border: '1px solid var(--color-border-default)',
-              borderTop: `3px solid ${B.color}`,
               borderRadius: '12px',
               minHeight: '210px',
             }}
@@ -451,7 +450,7 @@ function CodeOptional() {
         lede="Builder is no-code by default, but it never traps you there. When you need more control, you take the next step down — and the step after that — without leaving sparx or rebuilding anything. You can go as deep as full code, and you're never locked out of going deeper."
       />
       <div className="mkt-grid-4-2-1" style={{ marginTop: '52px' }}>
-        {rungs.map((r) => (
+        {rungs.map((r, i) => (
           <div
             key={r.tag}
             style={{
@@ -459,9 +458,8 @@ function CodeOptional() {
               flexDirection: 'column',
               gap: '12px',
               padding: '28px 24px',
-              backgroundColor: 'var(--color-bg-surface)',
+              backgroundColor: i === 0 ? moduleTint(B.color) : 'var(--color-bg-surface)',
               border: '1px solid var(--color-border-default)',
-              borderTop: `3px solid ${B.color}`,
               borderRadius: '12px',
               minHeight: '200px',
             }}
@@ -647,7 +645,7 @@ function WhatYouCanBuild() {
         lede="Builder renders the site; the modules you turn on decide what it does. A pure content site with no checkout is just as first-class as a full store — selling is one capability, never the assumption."
       />
       <div className="mkt-grid-3-2-1" style={{ marginTop: '52px' }}>
-        {uses.map((u) => (
+        {uses.map((u, i) => (
           <div
             key={u.title}
             style={{
@@ -655,9 +653,8 @@ function WhatYouCanBuild() {
               flexDirection: 'column',
               gap: '12px',
               padding: '28px 26px',
-              backgroundColor: 'var(--color-bg-page)',
+              backgroundColor: i === 0 ? moduleTint(B.color) : 'var(--color-bg-page)',
               border: '1px solid var(--color-border-default)',
-              borderTop: `3px solid ${B.color}`,
               borderRadius: '12px',
               minHeight: '200px',
             }}
@@ -708,9 +705,8 @@ function BuilderPricing() {
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '40px',
-          backgroundColor: 'var(--color-bg-surface)',
+          backgroundColor: moduleTint(B.color),
           border: '1px solid var(--color-border-default)',
-          borderTop: `3px solid ${B.color}`,
           borderRadius: '12px',
           gap: '32px',
         }}

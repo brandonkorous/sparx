@@ -1,4 +1,11 @@
-import { Dot, getModuleColor, type MarketingModule, Section, SectionHeader } from './primitives';
+import {
+  Dot,
+  getModuleColor,
+  type MarketingModule,
+  moduleTint,
+  Section,
+  SectionHeader,
+} from './primitives';
 
 /**
  * Two more structural devices for the /b2b page, split out of b2b-devices.tsx:
@@ -175,9 +182,8 @@ function EngineColumn({ col }: { col: EngineCol }) {
         flexDirection: 'column',
         gap: '16px',
         padding: '32px',
-        backgroundColor: 'var(--color-bg-surface)',
+        backgroundColor: moduleTint(accent.color),
         border: '1px solid var(--color-border-default)',
-        borderTop: `3px solid ${accent.color}`,
         borderRadius: '14px',
       }}
     >

@@ -1,4 +1,4 @@
-import { Dot, getModuleColor, Section, SectionHeader } from './primitives';
+import { Dot, getModuleColor, moduleTint, Section, SectionHeader } from './primitives';
 import { Cycle } from './cycle';
 import { SCHEDULING_SCENES, type SchedulingScene } from './scheduling-data';
 
@@ -68,9 +68,8 @@ function ResourceLane() {
       style={{
         flex: 1,
         minWidth: 0,
-        backgroundColor: 'var(--color-bg-surface)',
+        backgroundColor: moduleTint(M.color),
         border: '1px solid var(--color-border-default)',
-        borderTop: `3px solid ${M.color}`,
         borderRadius: '14px',
         overflow: 'hidden',
       }}
@@ -288,9 +287,8 @@ function ReminderTimeline({ scene: s }: { scene: SchedulingScene }) {
       style={{
         flex: 1,
         minWidth: 0,
-        backgroundColor: 'var(--color-bg-surface)',
+        backgroundColor: moduleTint(M.color),
         border: '1px solid var(--color-border-default)',
-        borderTop: `3px solid ${M.color}`,
         borderRadius: '14px',
         padding: '24px',
         display: 'flex',

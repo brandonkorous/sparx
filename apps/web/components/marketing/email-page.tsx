@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Button } from '@sparx/ui';
-import { Container, Display, getModuleColor, Section, Spark } from './primitives';
+import { Container, Display, getModuleColor, moduleTint, Section, Spark } from './primitives';
 import { EmailHero, EmailPipeline } from './email-sections';
 import { EmailKinds, EmailDeliverability } from './email-deliverability';
 import { EmailBroadcast, EmailAutomations, EmailCapabilities } from './email-devices';
@@ -184,9 +184,8 @@ function EmailPricing() {
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '40px',
-          backgroundColor: 'var(--color-bg-surface)',
+          backgroundColor: moduleTint(E.color),
           border: '1px solid var(--color-border-default)',
-          borderTop: `3px solid ${E.color}`,
           borderRadius: '14px',
           gap: '32px',
         }}

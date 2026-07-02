@@ -4,6 +4,7 @@ import {
   Display,
   Dot,
   getModuleColor,
+  moduleTint,
   Section,
   SectionHeader,
   Spark,
@@ -446,9 +447,8 @@ function SchemaPanel({ fields }: { fields: [string, string][] }) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
+        backgroundColor: moduleTint(M.color),
         border: '1px solid var(--color-border-default)',
-        borderTop: `3px solid ${M.color}`,
         borderRadius: '14px',
         overflow: 'hidden',
         display: 'flex',
@@ -523,7 +523,6 @@ function ResponsePanel() {
       style={{
         backgroundColor: 'var(--color-bg-surface)',
         border: '1px solid var(--color-border-default)',
-        borderTop: `3px solid ${M.color}`,
         borderRadius: '14px',
         overflow: 'hidden',
         display: 'flex',
@@ -856,9 +855,8 @@ export function CmsSeoAudit() {
             flexDirection: 'column',
             gap: '18px',
             padding: '30px',
-            backgroundColor: 'var(--color-bg-surface)',
+            backgroundColor: moduleTint(M.color),
             border: '1px solid var(--color-border-default)',
-            borderTop: `3px solid ${M.color}`,
             borderRadius: '14px',
           }}
         >

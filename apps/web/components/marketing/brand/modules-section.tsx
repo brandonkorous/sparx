@@ -122,7 +122,7 @@ export function ModulesSection() {
               <span style={{ color: 'var(--color-text-tertiary)' }}>One color each</span>
             </>
           }
-          lede="Every module owns a single hue, and it shows up identically in three places: the module’s marketing site, its nav item in the dashboard, and the 3px stripe on every card inside it. The stripe tells a tenant where they are without a single label."
+          lede="Every module owns a single hue, and it surfaces identically in three places: the module’s marketing site, its nav item in the dashboard, and a soft color-mix wash on its cards. One softly-tinted card per module tells a tenant where they are — quiet wayfinding, no loud stripe and no label required."
         />
 
         <div className="mkt-grid-4-2-1">
@@ -134,9 +134,12 @@ export function ModulesSection() {
                 flexDirection: 'column',
                 gap: '16px',
                 padding: '20px',
-                backgroundColor: 'var(--color-bg-surface)',
+                // Legend exception: a module catalog is the one place a per-card
+                // tint reads as a color key rather than the "wall of washes" the
+                // rule bans elsewhere — every card legitimately IS its module.
+                // Softer 8% wash (matching modules-grid) than a lead card's 12%.
+                backgroundColor: `color-mix(in oklab, ${m.hex} 8%, var(--color-bg-surface))`,
                 border: '1px solid var(--color-border-default)',
-                borderTop: `3px solid ${m.hex}`,
                 borderRadius: 'var(--radius-lg)',
               }}
             >

@@ -207,9 +207,10 @@ export default async function ListingDetailPage({
                 width: '100%',
                 position: 'sticky',
                 top: '96px',
-                backgroundColor: 'var(--color-bg-surface)',
+                // The one lead panel on the detail page carries the soft 12%
+                // module wash (the sanctioned single tinted card), no stripe.
+                backgroundColor: `color-mix(in oklab, ${accent} 12%, var(--color-bg-surface))`,
                 border: '1px solid var(--color-border-default)',
-                borderTop: `3px solid ${accent}`,
                 borderRadius: '12px',
                 padding: '28px',
                 display: 'flex',

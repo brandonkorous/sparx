@@ -1,5 +1,5 @@
 import { Button } from '@sparx/ui';
-import { Section, SectionHeader, Display, Spark } from './primitives';
+import { Section, SectionHeader, Display, Spark, moduleTint } from './primitives';
 
 /**
  * The /customers page. Leads with *who* sparx is for — organized by user-type,
@@ -103,9 +103,8 @@ export function CustomersPage() {
                   flexDirection: 'column',
                   gap: '12px',
                   padding: '28px 26px',
-                  backgroundColor: 'var(--color-bg-surface)',
+                  backgroundColor: moduleTint(s.color),
                   border: '1px solid var(--color-border-default)',
-                  borderTop: `3px solid ${s.color}`,
                   borderRadius: '12px',
                   minHeight: '230px',
                 }}
@@ -168,9 +167,8 @@ export function CustomersPage() {
             flexDirection: 'column',
             gap: '28px',
             padding: 'clamp(32px, 5vw, 56px)',
-            backgroundColor: 'var(--color-bg-surface)',
+            backgroundColor: moduleTint('var(--module-b2b)'),
             border: '1px solid var(--color-border-default)',
-            borderTop: '3px solid var(--module-b2b)',
             borderRadius: '16px',
           }}
         >

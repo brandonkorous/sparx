@@ -37,6 +37,29 @@ export function getModuleColor(module: MarketingModule) {
 }
 
 /**
+ * The soft module-tint background — the sanctioned replacement for the retired
+ * 3px top stripe. Mixes the module hue into the live surface token, so it reads
+ * as a tinted-white card in light mode and a tinted-dark card in dark mode
+ * (never a fixed light hex).
+ *
+ * This is a HAND-MIRROR of @sparx/ui's `<Card variant="module">` recipe
+ * (`color-mix(in oklab, var(--module-active) 12%, var(--color-bg-surface))`),
+ * kept in sync by hand for the same reason MODULE_COLORS is: the marketing
+ * bundle must not import the server-coupled @sparx/ui shell graph
+ * (ModuleProvider). A marketing lead card and a dashboard module card therefore
+ * wear the identical tint.
+ *
+ * Brand rule: at most ONE tinted card per module hue per section (the section's
+ * lead card) — the rest stay neutral, so the tint reads as wayfinding, not a
+ * wall of competing washes. The module *menu/legend* in modules-grid.tsx is the
+ * one sanctioned exception (every tile legitimately IS its module) and uses a
+ * softer 8% wash for that density.
+ */
+export function moduleTint(color: string) {
+  return `color-mix(in oklab, ${color} 12%, var(--color-bg-surface))`;
+}
+
+/**
  * The sparx wordmark. The "x" is always indigo. Brand guide §2.
  */
 export function Wordmark({ size = 22, icon = false }: { size?: number; icon?: boolean }) {

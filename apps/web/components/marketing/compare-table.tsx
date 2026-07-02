@@ -1,4 +1,4 @@
-import { Section, SectionHeader, Spark, Wordmark } from './primitives';
+import { moduleTint, Section, SectionHeader, Spark, Wordmark } from './primitives';
 import { Reveal } from './reveal';
 
 type Cell = { kind: 'check' } | { kind: 'cross' } | { kind: 'text'; text: string; color?: string };
@@ -43,14 +43,14 @@ const ROWS: {
             display: 'inline-flex',
             alignItems: 'center',
             padding: '2px 8px',
-            backgroundColor: '#FDF2F8',
-            border: '1px solid #EC4899',
+            backgroundColor: moduleTint('var(--module-ai)'),
+            border: '1px solid var(--module-ai)',
             borderRadius: '9999px',
             fontFamily: 'var(--font-sans)',
             fontWeight: 500,
             fontSize: '10px',
             letterSpacing: '0.05em',
-            color: '#9D174D',
+            color: 'color-mix(in oklab, var(--module-ai) 60%, var(--color-text-primary))',
             textTransform: 'uppercase',
           }}
         >
@@ -195,8 +195,9 @@ export function CompareTable() {
                   alignItems: 'center',
                   padding: '18px 24px',
                   gap: '16px',
-                  borderBottom: i === ROWS.length - 1 ? undefined : '1px solid #F4F4F5',
-                  backgroundColor: row.highlight ? '#FDF2F8' : undefined,
+                  borderBottom:
+                    i === ROWS.length - 1 ? undefined : '1px solid var(--color-bg-subtle)',
+                  backgroundColor: row.highlight ? moduleTint('var(--module-ai)') : undefined,
                 }}
               >
                 <span

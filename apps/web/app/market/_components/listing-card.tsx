@@ -54,7 +54,6 @@ export function ListingCard({ item }: { item: MarketplaceListing }) {
         width: '100%',
         backgroundColor: 'var(--color-bg-surface)',
         border: '1px solid var(--color-border-default)',
-        borderTop: `3px solid ${accent}`,
         borderRadius: '8px',
         overflow: 'hidden',
         textDecoration: 'none',

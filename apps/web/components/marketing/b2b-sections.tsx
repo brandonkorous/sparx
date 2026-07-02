@@ -1,4 +1,4 @@
-import { Dot, getModuleColor, Section, SectionHeader } from './primitives';
+import { Dot, getModuleColor, moduleTint, Section, SectionHeader } from './primitives';
 import { Cycle } from './cycle';
 import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-businesses';
 
@@ -55,9 +55,8 @@ function PriceTierCard({ business }: { business: ExampleBusiness }) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
+        backgroundColor: moduleTint(M.color),
         border: '1px solid var(--color-border-default)',
-        borderTop: `3px solid ${M.color}`,
         borderRadius: '14px',
         padding: '24px',
         display: 'flex',

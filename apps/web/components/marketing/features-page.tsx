@@ -236,9 +236,13 @@ function AreaBlock({ area, surface }: { area: CapabilityArea; surface?: boolean 
     <div
       id={area.id}
       style={{
-        backgroundColor: surface ? 'var(--color-bg-page)' : 'var(--color-bg-surface)',
+        // Legend of capability areas: each block wears a soft 8% wash of its
+        // area hue (a color key, not the retired 3px stripe) — softer than a
+        // lead card's 12% since these are large, stacked surfaces.
+        backgroundColor: `color-mix(in oklab, ${area.accent} 8%, ${
+          surface ? 'var(--color-bg-page)' : 'var(--color-bg-surface)'
+        })`,
         border: '1px solid var(--color-border-default)',
-        borderTop: `3px solid ${area.accent}`,
         borderRadius: '12px',
         padding: '28px',
         scrollMarginTop: '88px',

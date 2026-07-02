@@ -92,7 +92,6 @@ export function FaqSpread({ items, accent }: { items: FaqItem[]; accent: string 
           minWidth: 0,
           backgroundColor: 'var(--color-bg-surface)',
           border: '1px solid var(--color-border-default)',
-          borderTop: `2px solid ${accent}`,
           borderRadius: '12px',
           padding: 'clamp(24px, 3vw, 40px)',
         }}
