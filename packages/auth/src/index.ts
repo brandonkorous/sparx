@@ -57,3 +57,25 @@ export {
   type VerifiedKey,
   type ApiKeySummary,
 } from './api-keys';
+export {
+  OIDC_BASE_SCOPES,
+  MCP_SCOPE_CATALOG,
+  MCP_BUSINESS_SCOPES,
+  MCP_ALL_OAUTH_SCOPES,
+  grantableScopesForRole,
+  capBusinessScopes,
+  signConsentGrant,
+  verifyConsentGrant,
+  type McpBusinessScope,
+  type McpScopeMeta,
+  type ConsentGrantPayload,
+  type StaffRole,
+} from './mcp-scopes';
+export { verifyMcpOAuthToken, type VerifiedMcpOAuth } from './mcp-oauth';
+export {
+  listMcpConnections,
+  revokeMcpConnection,
+  getRegisteredMcpClient,
+  type McpConnectionSummary,
+  type RegisteredMcpClient,
+} from './mcp-connections';

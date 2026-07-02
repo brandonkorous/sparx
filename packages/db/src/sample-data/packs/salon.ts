@@ -591,6 +591,11 @@ export const salonPack: SampleDataPack = {
         ],
       },
     ],
+    // A salon guest books *with a person*, so every service is `customer_choice` —
+    // the storefront widget shows a "choose your stylist / therapist / technician"
+    // step. Haircut services match two stylists (Mira, Theo), so that picker offers
+    // a real choice; single-specialist services (color, nails, massage) still show
+    // the one who does it, which is the honest model here.
     services: [
       {
         key: 'womens-cut-style',
@@ -601,6 +606,7 @@ export const salonPack: SampleDataPack = {
         priceCents: 8500,
         bookingType: 'appointment',
         bufferAfterMin: 10,
+        assignmentStrategy: 'customer_choice',
         resourceRoles: [{ role: 'stylist', kind: 'staff', skill: 'haircut' }],
       },
       {
@@ -611,6 +617,7 @@ export const salonPack: SampleDataPack = {
         durationMinutes: 30,
         priceCents: 4500,
         bookingType: 'appointment',
+        assignmentStrategy: 'customer_choice',
         resourceRoles: [{ role: 'stylist', kind: 'staff', skill: 'haircut' }],
       },
       {
@@ -622,6 +629,7 @@ export const salonPack: SampleDataPack = {
         priceCents: 13500,
         bookingType: 'appointment',
         bufferAfterMin: 15,
+        assignmentStrategy: 'customer_choice',
         resourceRoles: [{ role: 'stylist', kind: 'staff', skill: 'color' }],
       },
       {
@@ -634,6 +642,7 @@ export const salonPack: SampleDataPack = {
         bookingType: 'appointment',
         bufferAfterMin: 15,
         requiresApproval: true,
+        assignmentStrategy: 'customer_choice',
         resourceRoles: [{ role: 'stylist', kind: 'staff', skill: 'balayage' }],
       },
       {
@@ -645,6 +654,7 @@ export const salonPack: SampleDataPack = {
         priceCents: 4000,
         bookingType: 'appointment',
         bufferAfterMin: 10,
+        assignmentStrategy: 'customer_choice',
         resourceRoles: [
           { role: 'tech', kind: 'staff', skill: 'nails' },
           { role: 'station', kind: 'table' },
@@ -659,6 +669,7 @@ export const salonPack: SampleDataPack = {
         priceCents: 9500,
         bookingType: 'appointment',
         bufferAfterMin: 15,
+        assignmentStrategy: 'customer_choice',
         resourceRoles: [
           { role: 'therapist', kind: 'staff', skill: 'massage' },
           { role: 'room', kind: 'space' },
@@ -673,6 +684,7 @@ export const salonPack: SampleDataPack = {
         priceCents: 11000,
         bookingType: 'appointment',
         bufferAfterMin: 15,
+        assignmentStrategy: 'customer_choice',
         resourceRoles: [
           { role: 'therapist', kind: 'staff', skill: 'facial' },
           { role: 'room', kind: 'space' },

@@ -8,6 +8,7 @@ import { api } from '@/lib/api-rest-client';
 import type { CalendarEvent, SchedulingService } from '../_lib/types';
 import { NewBookingButton } from '../bookings/_components/new-booking-button';
 import { WeekCalendar } from './_components/week-calendar';
+import { CalendarFilters, type CalendarResource } from './_components/calendar-filters';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -33,7 +34,7 @@ function weekStartOf(d: Date): Date {
 export default async function SchedulingCalendarPage({
   searchParams,
 }: {
-  searchParams: Promise<{ from?: string }>;
+  searchParams: Promise<{ from?: string; resource?: string; service?: string }>;
 }) {
   const sp = await searchParams;
   const weekStart = weekStartOf(parseFrom(sp.from));
@@ -42,14 +43,20 @@ export default async function SchedulingCalendarPage({
   const rangeFrom = new Date(weekStart.getTime() - DAY_MS).toISOString();
   const rangeTo = new Date(weekStart.getTime() + 8 * DAY_MS).toISOString();
 
-  const [events, services] = await Promise.all([
+  // Filter to one resource / service when the toolbar narrows the view.
+  const calParams = new URLSearchParams({ from: rangeFrom, to: rangeTo });
+  if (sp.resource) calParams.set('resourceId', sp.resource);
+  if (sp.service) calParams.set('serviceId', sp.service);
+
+  const [events, services, resources] = await Promise.all([
     api
-      .get<
-        CalendarEvent[]
-      >(`/v1/scheduling/bookings/calendar?from=${encodeURIComponent(rangeFrom)}&to=${encodeURIComponent(rangeTo)}`)
+      .get<CalendarEvent[]>(`/v1/scheduling/bookings/calendar?${calParams.toString()}`)
       .catch(() => [] as CalendarEvent[]),
     api.get<SchedulingService[]>('/v1/scheduling/services').catch(() => [] as SchedulingService[]),
+    api.get<CalendarResource[]>('/v1/scheduling/resources').catch(() => [] as CalendarResource[]),
   ]);
+
+  const weekYmd = ymd(weekStart);
 
   return (
     // The shell's content area is a non-flex `overflow-y-auto flex-1` region, so a
@@ -60,7 +67,20 @@ export default async function SchedulingCalendarPage({
         icon={<CalendarDays className="h-5 w-5" />}
         title="Calendar"
         description="Your week at a glance — every booking on one grid."
-        actions={services.length > 0 ? <NewBookingButton /> : undefined}
+        actions={
+          services.length > 0 ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <CalendarFilters
+                from={weekYmd}
+                resource={sp.resource ?? ''}
+                service={sp.service ?? ''}
+                resources={resources}
+                services={services.map((s) => ({ id: s.id, name: s.name }))}
+              />
+              <NewBookingButton />
+            </div>
+          ) : undefined
+        }
       />
 
       {services.length === 0 ? (
@@ -76,7 +96,12 @@ export default async function SchedulingCalendarPage({
           />
         </Card>
       ) : (
-        <WeekCalendar weekStartYmd={ymd(weekStart)} events={events} />
+        <WeekCalendar
+          weekStartYmd={weekYmd}
+          events={events}
+          resource={sp.resource ?? ''}
+          service={sp.service ?? ''}
+        />
       )}
     </div>
   );

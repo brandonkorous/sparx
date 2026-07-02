@@ -801,6 +801,10 @@ export const autoPartsPack: SampleDataPack = {
         skills: ['injector', 'fuel', 'general'],
       },
     ],
+    // A service shop assigns work, it doesn't let customers pick the mechanic — so
+    // every job is `round_robin`, balancing the queue across the available techs
+    // (the general-skill DPF job spreads across both Jim and Sara; skill-specific
+    // jobs land on whoever holds that skill).
     services: [
       {
         key: 'diagnostic',
@@ -810,6 +814,7 @@ export const autoPartsPack: SampleDataPack = {
         durationMinutes: 60,
         priceCents: 12900,
         bookingType: 'appointment',
+        assignmentStrategy: 'round_robin',
         resourceRoles: [
           { role: 'tech', kind: 'staff', skill: 'diagnostic' },
           { role: 'bay', kind: 'space' },
@@ -824,6 +829,7 @@ export const autoPartsPack: SampleDataPack = {
         priceCents: 34900,
         bookingType: 'appointment',
         bufferAfterMin: 30,
+        assignmentStrategy: 'round_robin',
         resourceRoles: [
           { role: 'tech', kind: 'staff', skill: 'general' },
           { role: 'bay', kind: 'space' },
@@ -838,6 +844,7 @@ export const autoPartsPack: SampleDataPack = {
         priceCents: 65000,
         bookingType: 'appointment',
         requiresApproval: true,
+        assignmentStrategy: 'round_robin',
         resourceRoles: [
           { role: 'tech', kind: 'staff', skill: 'injector' },
           { role: 'bay', kind: 'space' },

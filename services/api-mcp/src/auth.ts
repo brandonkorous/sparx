@@ -16,7 +16,7 @@
 import fastifyJwt from '@fastify/jwt';
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
-import { isModuleEnabled, verifyApiKey } from '@sparx/auth';
+import { isModuleEnabled, verifyApiKey, verifyMcpOAuthToken } from '@sparx/auth';
 import { env } from './env.js';
 
 export type StaffRole = 'owner' | 'admin' | 'editor' | 'viewer' | 'api';
@@ -53,9 +53,9 @@ export interface McpAuthContext {
   userId: string;
   role: StaffRole;
   scopes: ReadonlySet<string>;
-  /** 'jwt' for first-party staff tokens, 'api_key' for external keys.
-   *  Used by the audit logger to record the right actor_type. */
-  source: 'jwt' | 'api_key';
+  /** 'jwt' for first-party staff tokens, 'api_key' for external sk_live_ keys,
+   *  'oauth' for tokens minted by the MCP OAuth flow (Claude/ChatGPT connectors). */
+  source: 'jwt' | 'api_key' | 'oauth';
 }
 
 interface InternalJwtPayload {
@@ -176,9 +176,18 @@ export async function authenticate(request: FastifyRequest): Promise<McpAuthCont
   }
   const token = header.slice('Bearer '.length).trim();
 
-  const auth = token.startsWith('sk_live_')
-    ? await authenticateApiKey(token)
-    : await authenticateJwt(request);
+  // Route by token shape:
+  //   • sk_live_… → external API key
+  //   • three dot-separated segments → first-party internal JWT (HS256)
+  //   • anything else → opaque MCP OAuth access token (32-char random string)
+  let auth: McpAuthContext;
+  if (token.startsWith('sk_live_')) {
+    auth = await authenticateApiKey(token);
+  } else if (token.split('.').length === 3) {
+    auth = await authenticateJwt(request);
+  } else {
+    auth = await authenticateOAuth(token);
+  }
 
   // MCP is the `ai` module's capability — gate on it (module-based, not a plan
   // tier). A tenant without the AI module active can't reach the MCP server at
@@ -205,6 +214,23 @@ async function authenticateApiKey(token: string): Promise<McpAuthContext> {
     role: 'api',
     scopes: new Set(verified.scopes as McpScope[]),
     source: 'api_key',
+  };
+}
+
+async function authenticateOAuth(token: string): Promise<McpAuthContext> {
+  // Opaque access token minted by the MCP OAuth flow. verifyMcpOAuthToken
+  // enforces expiry + client-not-disabled and resolves the tenant (the plugin's
+  // own getMcpSession skips expiry — see @sparx/auth/mcp-oauth).
+  const verified = await verifyMcpOAuthToken(token);
+  if (!verified) {
+    throw new AuthError('Invalid, expired, or revoked OAuth access token');
+  }
+  return {
+    tenantId: verified.tenantId,
+    userId: verified.userId,
+    role: 'api',
+    scopes: new Set(verified.scopes),
+    source: 'oauth',
   };
 }
 

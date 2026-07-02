@@ -224,6 +224,14 @@ export interface SampleService {
   bufferAfterMin?: number;
   slotIntervalMin?: number;
   requiresApproval?: boolean;
+  /** How a booking is matched to the resources that fulfil each role (docs/79 §7.5).
+   *  `any_available` (default) grabs the first free match; `round_robin` balances
+   *  load across the pool; `collective` books the whole matching set together;
+   *  `customer_choice` lets the storefront visitor pick their specific person, which
+   *  is what surfaces the "choose your {stylist/trainer/…}" step in the booking
+   *  widget. Set this per vertical — a salon guest picks their stylist, a service
+   *  shop round-robins jobs across techs. */
+  assignmentStrategy?: 'any_available' | 'round_robin' | 'collective' | 'customer_choice';
   /** Resource roles this service consumes, e.g.
    *  [{ role: 'stylist', kind: 'staff', skill: 'haircut' }]. The engine matches
    *  each role to a resource (by skill, else by kind) for the generated bookings. */

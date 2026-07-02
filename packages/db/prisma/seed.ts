@@ -1732,6 +1732,10 @@ interface DemoService {
   bufferAfterMin?: number;
   requiresApproval?: boolean;
   slotIntervalMin?: number;
+  // How the booking picks its resources (docs/79 §7.5). Omitted = 'any_available'.
+  // 'customer_choice' surfaces the "choose your {provider}" step in the storefront
+  // widget; 'round_robin' balances load across the eligible pool.
+  assignmentStrategy?: 'any_available' | 'round_robin' | 'collective' | 'customer_choice';
   description: string;
   requirements: { role: string; kind: DemoResource['kind']; skillTags?: string[] }[];
 }
@@ -1835,6 +1839,9 @@ const DEMO_SERVICES: DemoService[] = [
     bookingType: 'appointment',
     durationMinutes: 45,
     priceCents: 4500,
+    // Guests pick their stylist — two staff carry the `haircut` skill (Alex, Jordan),
+    // so the storefront widget shows a real "choose your stylist" step.
+    assignmentStrategy: 'customer_choice',
     description: 'A cut and finish with one of our stylists.',
     requirements: [{ role: 'stylist', kind: 'staff', skillTags: ['haircut'] }],
   },
@@ -1845,6 +1852,8 @@ const DEMO_SERVICES: DemoService[] = [
     durationMinutes: 60,
     priceCents: 9500,
     bufferAfterMin: 15,
+    // A massage is booked with your therapist by name.
+    assignmentStrategy: 'customer_choice',
     description: 'A 60-minute therapeutic massage.',
     requirements: [{ role: 'therapist', kind: 'staff', skillTags: ['massage'] }],
   },
@@ -1855,6 +1864,8 @@ const DEMO_SERVICES: DemoService[] = [
     durationMinutes: 30,
     priceCents: 0,
     requiresApproval: true,
+    // Any staff member can take an intro — round-robin balances them across the team.
+    assignmentStrategy: 'round_robin',
     description: 'A free 30-minute intro consultation (request — we confirm).',
     requirements: [{ role: 'staff', kind: 'staff' }],
   },
@@ -2067,6 +2078,7 @@ async function seedDemoScheduling(tenantId: string): Promise<void> {
           capacity: s.capacity ?? 1,
           slotIntervalMin: s.slotIntervalMin ?? 15,
           requiresApproval: s.requiresApproval ?? false,
+          assignmentStrategy: s.assignmentStrategy ?? 'any_available',
           resourceRequirements: s.requirements,
           settings: { demo: 'scheduling' },
         },

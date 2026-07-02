@@ -1,15 +1,36 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button, Heading, Input, Label, PasswordInput, Stack, Text } from '@sparx/ui';
 import { authClient } from '@sparx/auth/client';
 import { AuthScreen } from '../_components/auth-screen';
 import { SocialAuthSection } from '../_components/social-auth';
 
+/** Only allow same-origin relative paths as a post-login destination — never a
+ *  protocol-relative (`//host`) or absolute URL, which would be an open
+ *  redirect. Used to resume the MCP OAuth consent flow after sign-in. */
+function safeCallback(raw: string | null): string | null {
+  if (!raw) return null;
+  if (!raw.startsWith('/') || raw.startsWith('//') || raw.startsWith('/\\')) return null;
+  return raw;
+}
+
 export default function SignInPage() {
+  // useSearchParams() must sit under a Suspense boundary or Next's static
+  // prerender of this route errors.
+  return (
+    <React.Suspense fallback={null}>
+      <SignInForm />
+    </React.Suspense>
+  );
+}
+
+function SignInForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackURL = safeCallback(searchParams.get('callbackURL'));
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
@@ -28,10 +49,10 @@ export default function SignInPage() {
       return;
     }
 
-    // Land on '/'. The dashboard guard resumes onboarding (the story flow or the
-    // classic wizard, whichever the tenant is in) if setup isn't finished, or shows
-    // the dashboard if it is.
-    router.push('/');
+    // Resume an in-flight flow (e.g. MCP OAuth consent) when a safe callbackURL
+    // was supplied; otherwise land on '/'. The dashboard guard then resumes
+    // onboarding if setup isn't finished, or shows the dashboard if it is.
+    router.push(callbackURL ?? '/');
     router.refresh();
   }
 

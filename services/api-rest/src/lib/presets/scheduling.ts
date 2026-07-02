@@ -33,6 +33,11 @@ interface ServiceDef {
   priceCents: number;
   capacity: number;
   color: string;
+  // Per-vertical booking model (docs/79 §7.5). Omitted = 'any_available'. A salon
+  // guest picks their stylist (`customer_choice`); a service desk round-robins.
+  // Correct from day one so the storefront widget behaves right as the tenant adds
+  // staff — even though the starter pack ships a single resource.
+  assignmentStrategy?: 'any_available' | 'round_robin' | 'collective' | 'customer_choice';
 }
 
 interface ResourceDef {
@@ -85,6 +90,7 @@ async function buildStudio(sx: TenantContext, spec: StudioSpec): Promise<{ id: s
         priceCents: service.priceCents,
         capacity: service.capacity,
         color: service.color,
+        assignmentStrategy: service.assignmentStrategy ?? 'any_available',
         policyId: policy.id,
         locationId,
       },
@@ -146,6 +152,7 @@ export const schedulingPresets: ModulePreset[] = [
       lateCancelFeeType: 'fixed',
       lateCancelFeeValue: 2500,
     },
+    // Salon guests book with a stylist by name — every service is `customer_choice`.
     services: [
       {
         name: 'Women’s cut & style',
@@ -154,6 +161,7 @@ export const schedulingPresets: ModulePreset[] = [
         priceCents: 6500,
         capacity: 1,
         color: '#EC4899',
+        assignmentStrategy: 'customer_choice',
       },
       {
         name: 'Men’s cut',
@@ -162,6 +170,7 @@ export const schedulingPresets: ModulePreset[] = [
         priceCents: 3500,
         capacity: 1,
         color: '#6366F1',
+        assignmentStrategy: 'customer_choice',
       },
       {
         name: 'Color & highlights',
@@ -170,6 +179,7 @@ export const schedulingPresets: ModulePreset[] = [
         priceCents: 12000,
         capacity: 1,
         color: '#8B5CF6',
+        assignmentStrategy: 'customer_choice',
       },
       {
         name: 'Manicure',
@@ -178,6 +188,7 @@ export const schedulingPresets: ModulePreset[] = [
         priceCents: 4000,
         capacity: 1,
         color: '#F59E0B',
+        assignmentStrategy: 'customer_choice',
       },
     ],
     resource: { kind: 'staff', name: 'Stylist', color: '#EC4899' },
@@ -197,6 +208,8 @@ export const schedulingPresets: ModulePreset[] = [
       policyText:
         'Please reschedule at least 24 hours ahead so we can offer the slot to someone else.',
     },
+    // The free intro round-robins across the team; paid sessions are booked with a
+    // specific consultant by name (`customer_choice`).
     services: [
       {
         name: 'Discovery call',
@@ -205,6 +218,7 @@ export const schedulingPresets: ModulePreset[] = [
         priceCents: 0,
         capacity: 1,
         color: '#06B6D4',
+        assignmentStrategy: 'round_robin',
       },
       {
         name: 'Strategy session',
@@ -213,6 +227,7 @@ export const schedulingPresets: ModulePreset[] = [
         priceCents: 20000,
         capacity: 1,
         color: '#6366F1',
+        assignmentStrategy: 'customer_choice',
       },
       {
         name: 'Follow-up',
@@ -221,6 +236,7 @@ export const schedulingPresets: ModulePreset[] = [
         priceCents: 10000,
         capacity: 1,
         color: '#10B981',
+        assignmentStrategy: 'customer_choice',
       },
     ],
     resource: { kind: 'staff', name: 'Consultant', color: '#6366F1' },
@@ -240,6 +256,8 @@ export const schedulingPresets: ModulePreset[] = [
       policyText:
         'Cancel at least 12 hours before class to free your spot and avoid losing the credit.',
     },
+    // Group classes stay `any_available` (you book a seat, not an instructor);
+    // 1-on-1 personal training is booked with your trainer (`customer_choice`).
     services: [
       {
         name: 'Group fitness class',
@@ -264,6 +282,7 @@ export const schedulingPresets: ModulePreset[] = [
         priceCents: 7500,
         capacity: 1,
         color: '#6366F1',
+        assignmentStrategy: 'customer_choice',
       },
     ],
     resource: { kind: 'space', name: 'Studio', color: '#F59E0B' },

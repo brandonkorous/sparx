@@ -14,6 +14,8 @@ import {
   issueApiKey as issueApiKeyService,
   listApiKeys as listApiKeysService,
   revokeApiKey as revokeApiKeyService,
+  listMcpConnections as listMcpConnectionsService,
+  revokeMcpConnection as revokeMcpConnectionService,
 } from '@sparx/auth';
 import { requireSession } from '@sparx/auth';
 
@@ -80,4 +82,32 @@ export async function revokeApiKeyAction(id: string): Promise<ActionResult<{ id:
 export async function listApiKeysForCurrentTenant() {
   const session = await requireSession();
   return listApiKeysService(session.user.tenantId);
+}
+
+// ─── MCP OAuth connections (docs/07 §5) ──────────────────────────────────────
+// Connected assistants that authorized via the OAuth flow (Claude/ChatGPT
+// connectors), as opposed to the manually-issued sk_live_ keys above.
+
+export async function listMcpConnectionsForCurrentTenant() {
+  const session = await requireSession();
+  return listMcpConnectionsService(session.user.tenantId);
+}
+
+/** Revoke an OAuth connection — deletes the tenant's tokens for that client,
+ *  cutting the assistant off immediately. Owner/admin only, same bar as
+ *  revoking an API key. */
+export async function revokeMcpConnectionAction(
+  clientId: string
+): Promise<ActionResult<{ clientId: string; revoked: number }>> {
+  const session = await requireSession();
+  if (session.user.role !== 'owner' && session.user.role !== 'admin') {
+    return { ok: false, error: { message: 'Only owners or admins can revoke connections.' } };
+  }
+  try {
+    const revoked = await revokeMcpConnectionService(session.user.tenantId, clientId);
+    revalidatePath('/settings/ai-integrations');
+    return { ok: true, data: { clientId, revoked } };
+  } catch (err) {
+    return { ok: false, error: { message: err instanceof Error ? err.message : String(err) } };
+  }
 }

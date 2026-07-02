@@ -1,8 +1,8 @@
 # WizeWorks Platform — MCP Server Specification
 
-**Version:** 1.4  
+**Version:** 1.6  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-06-29
+**Last Updated:** 2026-07-02
 
 ---
 
@@ -141,7 +141,30 @@ Best performing product: Bosch Injector Set at $12,400."
 
 ## 5. Authentication
 
-### Tenant Connection Flow
+The transport accepts **three** bearer credentials, discriminated by token shape at `services/api-mcp/src/auth.ts`:
+
+1. **Internal JWT** (HS256, three dot-separated segments) — minted by the dashboard for first-party staff calls.
+2. **API key** (`sk_live_<8>_<32>`) — issued in AI Integrations, verified via `@sparx/auth/api-keys`.
+3. **OAuth 2.1 access token** (opaque 32-char) — issued by the MCP OAuth flow below and verified by `verifyMcpOAuthToken` in `@sparx/auth/mcp-oauth`.
+
+In all three the tenant must have the `ai` module active; per-tool scopes then decide which tools run.
+
+### OAuth 2.1 flow (Claude / ChatGPT connectors)
+
+Remote MCP connectors (Claude Desktop, ChatGPT) speak **only** OAuth 2.1 — Authorization-Code + PKCE with Dynamic Client Registration (RFC 7591). The **dashboard (`app.sparx.works`, Better Auth `mcp()` plugin) is the authorization server**; **api-mcp (`mcp.sparx.works`) is the resource server**. Discovery + hand-off:
+
+1. Client `POST`s `mcp.sparx.works/v1` → **401** with `WWW-Authenticate: Bearer resource_metadata="…/.well-known/oauth-protected-resource"`.
+2. Client fetches that **Protected Resource Metadata** (RFC 9728, served by api-mcp) → `authorization_servers: ["https://app.sparx.works"]` + the MCP scope vocabulary.
+3. Client fetches `app.sparx.works/.well-known/oauth-authorization-server` (served by the dashboard) → authorize / token / register endpoints, `code_challenge_methods_supported: ["S256"]`.
+4. Client **self-registers** at `/api/auth/mcp/register` (rate-limited), then opens `/api/auth/mcp/authorize`.
+5. A `before` hook (`packages/auth/src/server.ts` `mcpAuthorizeGuard`) refuses to mint a code unless the request carries a **signed, session-bound, short-lived consent grant** — so every authorize is funnelled through the first-party **consent + scope-picker** page at `/oauth/consent`. The user signs in (if needed), sees who is connecting + where tokens go, and **picks exactly which scopes to grant** (capped by their role). Approval mints the grant and hands back to the plugin, which issues the code.
+6. Client exchanges the code at `/api/auth/mcp/token` (PKCE verified) for an opaque access token (1h) + refresh token (30d, on `offline_access`).
+
+**Hardening notes (deliberate, since DCR is public):** PKCE is mandatory and **S256-only** (both off by default in the plugin build); redirect URIs are **exact-matched** against the DCR registration; the requested `resource` must be our MCP server (RFC 8707); the plugin's `getMcpSession` does **not** check expiry, so `verifyMcpOAuthToken` enforces `access_token_expires_at` + client-not-disabled in one atomic query as `sparx_owner`. The `oauth_*` tables are `ENABLE`-but-**NO-FORCE** RLS with **no policy** (owner-only; `sparx_app` sees zero rows). Tenants view + revoke connections in **Settings → AI Integrations** ("Connected assistants").
+
+**Schema dependency:** the plugin reuses the `verifications` table as its authorization-code store, serializing the full code payload (client, redirect, scope array, PKCE challenge, state, nonce, user) as JSON into `verifications.value`. That column **must be `TEXT`** — the original `VARCHAR(255)` truncated real requests (~300–450 chars), the authorize insert threw, and the plugin swallowed it as `error=server_error` (no code minted). Widened in migration `20260928000000_widen_verification_value`.
+
+### API-key connection flow (custom clients, scripts)
 
 1. Tenant opens **Settings → AI Integrations**
 2. Selects AI client (Claude, ChatGPT, Copilot)

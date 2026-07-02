@@ -10,6 +10,7 @@ import { ListPager } from '../../_components/list-pager';
 import type { Booking, SchedulingService } from '../_lib/types';
 import { NewBookingButton } from './_components/new-booking-button';
 import { BookingsList } from './_components/bookings-list';
+import { BookingsFilters, type BookingsFilterResource } from './_components/bookings-filters';
 
 const FILTERS: { label: string; status?: string }[] = [
   { label: 'All' },
@@ -28,16 +29,33 @@ export default async function SchedulingBookingsPage({ searchParams }: Props) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
   const status = typeof params.status === 'string' ? params.status : undefined;
+  const resource = typeof params.resource === 'string' ? params.resource : undefined;
+  const service = typeof params.service === 'string' ? params.service : undefined;
 
   const qs = new URLSearchParams({ take: String(take), skip: String(skip), order: 'desc' });
   if (status) qs.set('status', status);
+  if (resource) qs.set('resourceId', resource);
+  if (service) qs.set('serviceId', service);
 
-  const [{ data: bookings, meta }, services] = await Promise.all([
+  const [{ data: bookings, meta }, services, resources] = await Promise.all([
     api
       .getPaged<Booking[]>(`/v1/scheduling/bookings?${qs}`)
       .catch(() => ({ data: [] as Booking[], meta: {}, etag: null })),
     api.get<SchedulingService[]>('/v1/scheduling/services').catch(() => [] as SchedulingService[]),
+    api
+      .get<BookingsFilterResource[]>('/v1/scheduling/resources')
+      .catch(() => [] as BookingsFilterResource[]),
   ]);
+
+  // Preserve the resource/service filters when switching status chips.
+  const chipHref = (nextStatus?: string): string => {
+    const p = new URLSearchParams();
+    if (nextStatus) p.set('status', nextStatus);
+    if (resource) p.set('resource', resource);
+    if (service) p.set('service', service);
+    const s = p.toString();
+    return s ? `/scheduling/bookings?${s}` : '/scheduling/bookings';
+  };
   const total = ((meta as Record<string, unknown>)?.total as number | undefined) ?? bookings.length;
 
   return (
@@ -55,20 +73,26 @@ export default async function SchedulingBookingsPage({ searchParams }: Props) {
           actions={<NewBookingButton />}
         />
 
-        <div className="flex flex-wrap gap-2">
-          {FILTERS.map((f) => {
-            const active = (f.status ?? '') === (status ?? '');
-            const href = f.status
-              ? `/scheduling/bookings?status=${f.status}`
-              : '/scheduling/bookings';
-            return (
-              <Link key={f.label} href={href}>
-                <Badge color={active ? 'module' : 'neutral'} variant={active ? 'solid' : 'soft'}>
-                  {f.label}
-                </Badge>
-              </Link>
-            );
-          })}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap gap-2">
+            {FILTERS.map((f) => {
+              const active = (f.status ?? '') === (status ?? '');
+              return (
+                <Link key={f.label} href={chipHref(f.status)}>
+                  <Badge color={active ? 'module' : 'neutral'} variant={active ? 'solid' : 'soft'}>
+                    {f.label}
+                  </Badge>
+                </Link>
+              );
+            })}
+          </div>
+          <BookingsFilters
+            status={status ?? ''}
+            resource={resource ?? ''}
+            service={service ?? ''}
+            resources={resources}
+            services={services.map((s) => ({ id: s.id, name: s.name }))}
+          />
         </div>
 
         {bookings.length === 0 ? (

@@ -22,6 +22,10 @@ export interface PublicService {
   slotIntervalMin: number;
   minLeadMinutes: number;
   maxAdvanceDays: number;
+  /** When 'customer_choice', the widget shows a "pick your {providerLabel}" step. */
+  assignmentStrategy: 'any_available' | 'round_robin' | 'collective' | 'customer_choice';
+  /** The word for the bookable person ("stylist", "technician", "team member"). */
+  providerLabel: string;
 }
 
 interface Envelope<T> {

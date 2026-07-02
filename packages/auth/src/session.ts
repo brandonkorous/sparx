@@ -33,7 +33,10 @@ export async function getSession(): Promise<SparxSession | null> {
   const result = await auth.api.getSession({ headers: await headers() });
   if (!result) return null;
 
-  const user = result.user as SparxSession['user'];
+  // Cast through unknown: the additionalFields (tenantId/role) aren't in Better
+  // Auth's inferred user shape, and enabling the mcp() plugin narrowed that
+  // inference enough that a direct assertion no longer overlaps.
+  const user = result.user as unknown as SparxSession['user'];
   if (!user.tenantId) {
     // A user row without a tenantId means something hand-edited the DB or our
     // sign-up hook missed a path. Treat it as unauthenticated rather than

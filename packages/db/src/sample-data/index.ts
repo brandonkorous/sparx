@@ -19,6 +19,7 @@ import { applyScheduling } from './engine/scheduling';
 import { applyQuotes, applyDeals } from './engine/sales';
 import { applyBundlesAndConfigurator } from './engine/bundles';
 import { applyAi } from './engine/ai';
+import { hasPhysicalGoods, withFallbacks } from './engine/fallbacks';
 import { clearSampleDataOnTx } from './engine/clear';
 import { countsTotal, summarizeSampleDataOnTx } from './engine/summarize';
 import { type ApplyCtx, emptyCounts } from './engine/context';
@@ -68,11 +69,15 @@ export function resolveSamplePack(industry: string | null | undefined): SampleDa
 export function packModules(pack: SampleDataPack): string[] {
   const mods = new Set<string>();
   if (pack.products.length) mods.add('commerce');
-  if (pack.warehouses?.length) mods.add('inventory');
   if (pack.personas.length) mods.add('crm');
   if (pack.articles?.length) mods.add('cms');
-  if (pack.scheduling) mods.add('scheduling');
-  if (pack.personas.some((p) => p.kind === 'b2b')) mods.add('b2b');
+  // Inventory: authored warehouses OR any physical goods (the engine falls back to a
+  // default stock location). Services/digital-only packs have nothing to stock.
+  if (pack.warehouses?.length || hasPhysicalGoods(pack)) mods.add('inventory');
+  // Scheduling + B2B are module-complete via engine fallbacks — any tenant with the
+  // module on gets a baseline dataset regardless of what the vertical authored.
+  mods.add('scheduling');
+  mods.add('b2b');
   return [...mods];
 }
 
@@ -106,20 +111,23 @@ function buildCtx(
 }
 
 async function applyPack(ctx: ApplyCtx, pack: SampleDataPack): Promise<void> {
-  await applyCatalog(ctx, pack);
-  await applyProductImages(ctx, pack);
-  await applyInventory(ctx, pack);
+  // Splice generic defaults into any section the vertical left blank for an enabled
+  // module, so no enabled module renders empty (e.g. scheduling on an apparel pack).
+  const eff = withFallbacks(pack, ctx.isOn);
+  await applyCatalog(ctx, eff);
+  await applyProductImages(ctx, eff);
+  await applyInventory(ctx, eff);
   if (ctx.isOn('commerce') || ctx.isOn('crm') || ctx.isOn('scheduling') || ctx.isOn('b2b')) {
-    await applyCustomers(ctx, pack);
+    await applyCustomers(ctx, eff);
   }
-  await applyOrders(ctx, pack);
-  await applyReviews(ctx, pack);
-  await applyContent(ctx, pack);
-  await applyScheduling(ctx, pack);
-  await applyQuotes(ctx, pack);
-  await applyDeals(ctx, pack);
-  await applyBundlesAndConfigurator(ctx, pack);
-  await applyAi(ctx, pack);
+  await applyOrders(ctx, eff);
+  await applyReviews(ctx, eff);
+  await applyContent(ctx, eff);
+  await applyScheduling(ctx, eff);
+  await applyQuotes(ctx, eff);
+  await applyDeals(ctx, eff);
+  await applyBundlesAndConfigurator(ctx, eff);
+  await applyAi(ctx, eff);
 }
 
 /**

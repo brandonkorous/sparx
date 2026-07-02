@@ -1,0 +1,107 @@
+// OAuth 2.1 / OIDC provider tables — the MCP authorization server (docs/07 §5).
+//
+// These back Better Auth's `mcp()` plugin (which bundles its `oidcProvider`).
+// The dashboard (app.sparx.works) IS the authorization server: it serves
+// Dynamic Client Registration (RFC 7591), the Authorization-Code + PKCE flow,
+// token issuance, and refresh. api-mcp (mcp.sparx.works) is the resource server
+// — it introspects the opaque access token against `oauth_access_tokens`.
+//
+// FIELD NAMES ARE LOAD-BEARING. Better Auth's prisma adapter addresses these
+// models by the exact keys `oauthApplication` / `oauthAccessToken` /
+// `oauthConsent` (model `Oauth*`, NOT `OAuth*`, so the generated client key
+// matches) and reads/writes the camelCase FIELD names below verbatim. Renaming
+// a field silently breaks the adapter at runtime. Columns are snake_case via
+// @map, mirroring User/Session/Account.
+//
+// NO tenant_id: a client self-registers via public DCR BEFORE any tenant is
+// known, and tokens key on `userId`. Tenant scope is resolved transitively
+// (userId → users.tenant_id) at verification time — see verifyMcpOAuthToken in
+// @sparx/auth. RLS posture is set in the migration: ENABLE + NO FORCE + NO
+// policy, so ONLY the auth service (sparx_owner, table owner) can read these
+// secret-bearing rows; sparx_app is denied entirely. See packages/db/CLAUDE.md.
+
+// A registered OAuth client. Created by Dynamic Client Registration
+// (`POST /api/auth/mcp/register`) — Claude/ChatGPT self-register here. `type`
+// = 'public' (PKCE, no secret) | 'web' (confidential, has clientSecret).
+// `redirectUrls` is a comma-joined allowlist; the authorize endpoint requires
+// an EXACT match against it.
+model OauthApplication {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  // Client display name from DCR (`client_name`). Nullable: DCR permits a
+  // client to register without one.
+  name         String?  @db.VarChar(255)
+  icon         String?  @db.Text
+  // Arbitrary client metadata JSON (stringified) supplied at registration.
+  metadata     String?  @db.Text
+  clientId     String   @unique @map("client_id") @db.VarChar(255)
+  // Confidential clients only; empty/absent for public (PKCE) clients.
+  clientSecret String?  @map("client_secret") @db.Text
+  // Comma-joined allowlist of exact redirect URIs.
+  redirectUrls String   @map("redirect_urls") @db.Text
+  // 'web' | 'public' | 'native' | 'user-agent-based'
+  type         String   @db.VarChar(32)
+  // Kill switch: a disabled client is refused at authorize + token.
+  disabled     Boolean  @default(false)
+  // The staff user who was signed in when the client registered (null for
+  // anonymous DCR). onDelete cascade so removing a user reaps their clients.
+  userId       String?  @map("user_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  user         User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessTokens OauthAccessToken[]
+  consents     OauthConsent[]
+
+  @@index([userId])
+  @@map("oauth_applications")
+}
+
+// An issued access/refresh token pair. `accessToken` + `refreshToken` are
+// 32-char opaque random strings (NOT JWTs, stored raw). The resource server
+// looks a token up here by `accessToken` — Better Auth's getMcpSession does NOT
+// check expiry, so verifyMcpOAuthToken enforces `accessTokenExpiresAt` itself.
+// `scopes` is a space-joined grant string (the platform MCP scope vocabulary,
+// e.g. "read:crm write:commerce") selected by the user at consent.
+model OauthAccessToken {
+  id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  accessToken           String   @unique @map("access_token") @db.Text
+  refreshToken          String   @unique @map("refresh_token") @db.Text
+  accessTokenExpiresAt  DateTime @map("access_token_expires_at") @db.Timestamptz
+  refreshTokenExpiresAt DateTime @map("refresh_token_expires_at") @db.Timestamptz
+  clientId              String   @map("client_id") @db.VarChar(255)
+  userId                String?  @map("user_id") @db.Uuid
+  scopes                String   @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  client OauthApplication @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  user   User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+  @@index([userId])
+  @@index([accessTokenExpiresAt])
+  @@map("oauth_access_tokens")
+}
+
+// A record that a user consented to a client's scopes. Written by the OIDC
+// consent endpoint; our MCP flow drives consent through a first-party page so
+// this may stay sparse, but the table exists for the full plugin contract.
+model OauthConsent {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clientId     String   @map("client_id") @db.VarChar(255)
+  userId       String   @map("user_id") @db.Uuid
+  scopes       String   @db.Text
+  consentGiven Boolean  @map("consent_given")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  client OauthApplication @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  user   User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+  @@index([userId])
+  @@map("oauth_consents")
+}

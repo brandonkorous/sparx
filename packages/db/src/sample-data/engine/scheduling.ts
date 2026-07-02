@@ -136,6 +136,7 @@ export async function applyScheduling(ctx: ApplyCtx, pack: SampleDataPack): Prom
         capacity,
         slotIntervalMin: s.slotIntervalMin ?? 15,
         requiresApproval: s.requiresApproval ?? false,
+        assignmentStrategy: s.assignmentStrategy ?? 'any_available',
         resourceRequirements: requirements,
         settings: SAMPLE_SETTINGS,
       },

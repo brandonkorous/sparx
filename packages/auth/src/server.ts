@@ -1,9 +1,12 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { nextCookies } from 'better-auth/next-js';
+import { mcp } from 'better-auth/plugins';
+import { createAuthMiddleware, getSessionFromCtx } from 'better-auth/api';
 import { authPrisma } from './prisma';
 import { publishAuthEmail } from './email-events';
 import { finalizeOAuthSignup, provisionTenantForOAuth } from './oauth-provisioning';
+import { MCP_ALL_OAUTH_SCOPES, verifyConsentGrant } from './mcp-scopes';
 
 // sparx Better Auth server instance. One per process — same caching strategy
 // as @sparx/db's prisma client so dev HMR does not leak adapters.
@@ -19,6 +22,55 @@ import { finalizeOAuthSignup, provisionTenantForOAuth } from './oauth-provisioni
 declare global {
   var __sparxAuth: ReturnType<typeof createAuth> | undefined;
 }
+
+// Consent guard for Better Auth's `/mcp/authorize` (docs/07 §5). That endpoint
+// mints an auth code for ANY requested scope the moment a staff user has a
+// session — it only shows a consent screen when the client sends
+// `prompt=consent`, which an attacker's self-registered DCR client won't. On a
+// PUBLIC surface that's a confused-deputy hole. So we require a signed,
+// session-bound, short-lived consent grant (minted only by our first-party
+// /oauth/consent page after the user explicitly picks scopes); any
+// /mcp/authorize hit without a valid grant is bounced to that page.
+const mcpAuthorizeGuard = createAuthMiddleware(async (ctx) => {
+  if (ctx.path !== '/mcp/authorize') return;
+
+  const origin = typeof ctx.context.options.baseURL === 'string' ? ctx.context.options.baseURL : '';
+  const query = (ctx.query ?? {}) as Record<string, unknown>;
+
+  // Rebuild the consent-page URL from the original authorize params (minus our
+  // own grant param) so the user can review + approve. toConsent() returns
+  // `never`, so each guard below both terminates and narrows.
+  const toConsent = (): never => {
+    const params = new URLSearchParams();
+    for (const [k, v] of Object.entries(query)) {
+      if (k === 'sparx_grant') continue;
+      if (typeof v === 'string') params.set(k, v);
+    }
+    throw ctx.redirect(`${origin}/oauth/consent?${params.toString()}`);
+  };
+
+  const grant = verifyConsentGrant(
+    typeof query.sparx_grant === 'string' ? query.sparx_grant : null,
+    ctx.context.secret
+  );
+  if (!grant) return toConsent();
+
+  // The grant must bind the EXACT client, redirect, and scope in this request —
+  // a signed approval can't be replayed onto a different one.
+  if (
+    grant.clientId !== query.client_id ||
+    grant.redirectUri !== query.redirect_uri ||
+    grant.scope !== query.scope
+  ) {
+    return toConsent();
+  }
+
+  // …and it must belong to the user who is actually signed in now.
+  const session = await getSessionFromCtx(ctx);
+  if (session?.user.id !== grant.userId) return toConsent();
+
+  // Valid, bound, and session-matched — let Better Auth mint the code.
+});
 
 function createAuth() {
   // Google OAuth is opt-in via env — the provider is only registered when both
@@ -168,8 +220,60 @@ function createAuth() {
       database: { generateId: false },
     },
 
-    plugins: [nextCookies()],
+    // Throttle the public MCP OAuth surface (docs/07 §5). DCR is unauthenticated
+    // so registration is capped hard; authorize/token are per-IP capped to blunt
+    // brute force. Better Auth enables rate limiting in production by default;
+    // these custom rules apply on top. (Memory storage = per-instance; acceptable
+    // at the dashboard's current replica count.)
+    rateLimit: {
+      customRules: {
+        '/mcp/register': { window: 60, max: 5 },
+        '/mcp/authorize': { window: 60, max: 30 },
+        '/mcp/token': { window: 60, max: 60 },
+      },
+    },
+
+    // Guard the MCP authorization endpoint (docs/07 §5). See mcpAuthorizeGuard.
+    hooks: {
+      before: mcpAuthorizeGuard,
+    },
+
+    plugins: [
+      // MCP OAuth authorization server (docs/07 §5). Hardened per OAuth 2.1:
+      //   • requirePKCE + S256 only (both OFF by default in this build).
+      //   • short access-token + code TTLs.
+      //   • our full MCP scope vocabulary is the allow-list; the user picks the
+      //     subset on the consent page (the `before` hook above enforces it).
+      // storeClientSecret stays "plain": the plugin's token endpoint compares
+      // client secrets raw, so hashing would break confidential clients.
+      // Claude connects as a PUBLIC (PKCE, secret-less) client regardless.
+      mcp({
+        loginPage: '/sign-in',
+        resource: mcpResourceUrl(),
+        oidcConfig: {
+          loginPage: '/sign-in',
+          requirePKCE: true,
+          allowPlainCodeChallengeMethod: false,
+          accessTokenExpiresIn: 60 * 60, // 1h
+          refreshTokenExpiresIn: 60 * 60 * 24 * 30, // 30d (offline_access)
+          codeExpiresIn: 5 * 60, // 5m
+          scopes: [...MCP_ALL_OAUTH_SCOPES],
+          metadata: {
+            scopes_supported: [...MCP_ALL_OAUTH_SCOPES],
+          },
+        },
+      }),
+      // nextCookies() must stay LAST so it can flush Set-Cookie for the
+      // plugins registered before it.
+      nextCookies(),
+    ],
   });
+}
+
+/** Canonical resource identifier for the MCP server (the audience the OAuth
+ *  tokens are for). Prod: https://mcp.sparx.works/v1. */
+function mcpResourceUrl(): string {
+  return process.env.MCP_RESOURCE_URL ?? 'http://localhost:3000/v1';
 }
 
 // Construct the Better Auth server lazily, on first property access — NOT at

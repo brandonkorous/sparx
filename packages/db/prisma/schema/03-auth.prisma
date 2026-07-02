@@ -37,6 +37,12 @@ model User {
   // Web Push subscriptions registered from this user's browsers (docs/69 A-6).
   pushSubscriptions PushSubscription[]
 
+  // MCP OAuth provider (docs/07 §5) — clients this user registered/connected,
+  // tokens issued to them, and recorded consents. See 03-auth-oauth.prisma.
+  oauthApplications OauthApplication[]
+  oauthAccessTokens OauthAccessToken[]
+  oauthConsents     OauthConsent[]
+
   // CRM module — staff acting as sales rep / task owner / activity actor
   assignedCustomers        Customer[]                @relation("CustomerAssignedRep")
   assignedB2bAccounts      B2BAccount[]              @relation("B2BAccountAssignedRep")
@@ -124,7 +130,14 @@ model Account {
 model Verification {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   identifier String   @db.VarChar(255)
-  value      String   @db.VarChar(255)
+  // TEXT, not VARCHAR(255): Better Auth's email/reset tokens fit in 255, but the
+  // MCP OAuth provider (docs/07 §5) REUSES this table to stash the full
+  // authorization-code payload as JSON (client id, redirect URI, scope array,
+  // PKCE challenge, state, nonce, userId…). That serialization runs ~300–450
+  // chars for a real connector request, so a 255 cap made the authorize insert
+  // throw → the provider swallowed it as `server_error` and OAuth never
+  // completed. See migration 20260928000000_widen_verification_value.
+  value      String   @db.Text
   expiresAt  DateTime @map("expires_at") @db.Timestamptz
   createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz

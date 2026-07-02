@@ -18,6 +18,7 @@ import authPlugin, { AuthError, authenticate } from './auth.js';
 import { buildServerForRequest } from './server.js';
 import { enforceRateLimit, RateLimitError } from './rate-limit.js';
 import { isWriteToolCall } from './tool-registry.js';
+import { registerOAuthMetadataRoutes, wwwAuthenticate } from './oauth-metadata.js';
 
 function loggerOptions(): FastifyServerOptions['logger'] {
   if (env.NODE_ENV === 'test') return false;
@@ -45,10 +46,17 @@ export async function createApp(): Promise<FastifyInstance> {
 
   app.setErrorHandler((err, request, reply) => {
     if (err instanceof AuthError) {
-      return reply.code(401).send({
-        success: false,
-        error: { code: 'UNAUTHORIZED', message: err.message, request_id: request.id },
-      });
+      // RFC 9728: point the client at our Protected Resource Metadata so it can
+      // discover the authorization server and run the OAuth flow. Expose the
+      // header so browser-based MCP clients can read it cross-origin.
+      return reply
+        .code(401)
+        .header('WWW-Authenticate', wwwAuthenticate(request))
+        .header('access-control-expose-headers', 'WWW-Authenticate')
+        .send({
+          success: false,
+          error: { code: 'UNAUTHORIZED', message: err.message, request_id: request.id },
+        });
     }
     if (err instanceof RateLimitError) {
       if (err.retryAfterSeconds > 0) {
@@ -85,6 +93,9 @@ export async function createApp(): Promise<FastifyInstance> {
   app.get('/health', (_request, reply) => {
     reply.code(200).send({ status: 'ok' });
   });
+
+  // Public OAuth resource-server discovery (docs/07 §5) — no auth.
+  registerOAuthMetadataRoutes(app);
 
   // POST handles initialize + JSON-RPC requests. GET handles the SSE channel
   // the SDK opens for streaming responses; DELETE terminates a session.

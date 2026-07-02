@@ -43,6 +43,30 @@ export interface CreateBookingBody {
   partySize?: number;
   customer: { name: string; email: string; phone?: string };
   notes?: string;
+  /** The customer's chosen resource for a "customer_choice" service. */
+  resourceId?: string;
+}
+
+/** A resource a customer can pick for a "customer_choice" service (docs/79 §7.5). */
+export interface BookableResource {
+  id: string;
+  name: string;
+  kind: string;
+  description: string | null;
+  color: string | null;
+  imageUrl: string | null;
+}
+
+/** The specific resources offered for a service (empty unless it's customer_choice). */
+export async function loadServiceResources(
+  tenantSlug: string,
+  serviceId: string
+): Promise<BookableResource[]> {
+  const qs = new URLSearchParams({ tenant: tenantSlug });
+  const res = await fetch(
+    `${API_BASE}/v1/public/scheduling/services/${serviceId}/resources?${qs.toString()}`
+  );
+  return unwrap<BookableResource[]>(res);
 }
 
 async function unwrap<T>(res: Response): Promise<T> {
@@ -62,10 +86,12 @@ export async function loadSlots(
   serviceId: string,
   fromISO: string,
   toISO: string,
-  partySize?: number
+  partySize?: number,
+  resourceId?: string
 ): Promise<PublicSlot[]> {
   const qs = new URLSearchParams({ tenant: tenantSlug, serviceId, from: fromISO, to: toISO });
   if (partySize) qs.set('partySize', String(partySize));
+  if (resourceId) qs.set('resourceId', resourceId);
   const res = await fetch(`${API_BASE}/v1/public/scheduling/availability?${qs.toString()}`);
   return unwrap<PublicSlot[]>(res);
 }

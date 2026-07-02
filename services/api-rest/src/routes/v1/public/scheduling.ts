@@ -20,6 +20,7 @@ import {
   getAvailability,
   getService,
   joinWaitlist,
+  listBookableResourcesForService,
   listClassSessions,
   listServices,
 } from '@sparx/scheduling';
@@ -40,6 +41,8 @@ const AvailabilityQuery = z.object({
   from: z.string().datetime(),
   to: z.string().datetime(),
   partySize: z.coerce.number().int().min(1).max(100000).optional(),
+  // Narrow slots to one customer-chosen resource (a "customer_choice" service, §7.5).
+  resourceId: z.string().uuid().optional(),
 });
 
 const CustomerInfo = z.object({
@@ -54,6 +57,9 @@ const CreatePublicBooking = z.object({
   partySize: z.coerce.number().int().min(1).max(100000).optional(),
   customer: CustomerInfo,
   notes: z.string().max(2000).optional(),
+  // The customer's chosen resource for a "customer_choice" service (§7.5). Validated
+  // server-side against the service's eligible set before it's honored.
+  resourceId: z.string().uuid().optional(),
 });
 
 const CreatePublicWaitlist = z.object({
@@ -73,6 +79,18 @@ const JoinSession = z.object({
   customer: CustomerInfo,
   partySize: z.coerce.number().int().min(1).max(100000).optional(),
 });
+
+/** The customer-facing label for "who" — the first resource requirement's role
+ *  ("stylist", "technician"), else a neutral default. Drives the picker heading. */
+function providerLabel(resourceRequirements: unknown): string {
+  if (Array.isArray(resourceRequirements)) {
+    for (const r of resourceRequirements) {
+      const role = r && typeof r === 'object' ? (r as { role?: unknown }).role : null;
+      if (typeof role === 'string' && role.trim()) return role.trim();
+    }
+  }
+  return 'team member';
+}
 
 function splitName(name: string): { firstName: string; lastName: string | null } {
   const parts = name.trim().split(/\s+/);
@@ -131,8 +149,22 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
           slotIntervalMin: s.slotIntervalMin,
           minLeadMinutes: s.minLeadMinutes,
           maxAdvanceDays: s.maxAdvanceDays,
+          // Whether the customer picks a specific person, + the word for them.
+          assignmentStrategy: s.assignmentStrategy,
+          providerLabel: providerLabel(s.resourceRequirements),
         }))
     );
+  });
+
+  // The specific resources a customer can pick for a "customer_choice" service
+  // (§7.5) — used by the widget's provider step. Public-safe subset only.
+  app.get('/v1/public/scheduling/services/:id/resources', async (request) => {
+    const tenantId = await requireScheduling(request);
+    const { id } = z.object({ id: z.string().uuid() }).parse(request.params);
+    const service = await getService(tenantId, id).catch(() => null);
+    if (!service || !service.bookableOnline || !service.isActive) throw notFound('Service', id);
+    if (service.assignmentStrategy !== 'customer_choice') return ok([]);
+    return ok(await listBookableResourcesForService(tenantId, id));
   });
 
   app.get('/v1/public/scheduling/availability', async (request) => {
@@ -141,6 +173,12 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
     const service = await getService(tenantId, query.serviceId).catch(() => null);
     if (!service || !service.bookableOnline || !service.isActive) {
       throw notFound('Service', query.serviceId);
+    }
+    // A chosen resource must be one the service actually offers online (guards a
+    // forged/offline id); an ineligible pick yields no slots rather than an error.
+    if (query.resourceId) {
+      const eligible = await listBookableResourcesForService(tenantId, query.serviceId);
+      if (!eligible.some((r) => r.id === query.resourceId)) return ok([]);
     }
     const slots = await getAvailability(tenantId, query, Date.now());
     // Strip candidate resource ids — the public surface only needs times + count.
@@ -165,6 +203,18 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
       throw badRequest('Party size is required for a reservation.');
     }
 
+    // A customer-chosen resource is honored only when it's genuinely eligible for
+    // the service (online-bookable + matches a requirement) — otherwise ignored, so
+    // a tampered id can't book an offline/foreign resource. Empty → engine assigns.
+    let resourceIds: string[] = [];
+    if (body.resourceId) {
+      const eligible = await listBookableResourcesForService(tenantId, body.serviceId);
+      if (!eligible.some((r) => r.id === body.resourceId)) {
+        throw badRequest('That option is no longer available — please pick another.');
+      }
+      resourceIds = [body.resourceId];
+    }
+
     const customerId = await findOrCreateCustomer(tenantId, body.customer);
 
     const created = await createBooking(tenantId, {
@@ -172,7 +222,7 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
       startAt: body.startAt,
       customerId,
       partySize: body.partySize,
-      resourceIds: [],
+      resourceIds,
       partsLinked: [],
       attendees: [
         {

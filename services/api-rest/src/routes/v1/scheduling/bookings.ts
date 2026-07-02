@@ -68,6 +68,7 @@ const CalendarQuery = z.object({
   from: z.string().datetime(),
   to: z.string().datetime(),
   resourceId: z.string().uuid().optional(),
+  serviceId: z.string().uuid().optional(),
   includeReleased: z.coerce.boolean().optional(),
 });
 

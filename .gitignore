@@ -46,6 +46,7 @@ pnpm-debug.log*
 
 # MCP / browser-automation scratch
 .playwright-mcp/
+.playwright-cli/
 postal-*.png
 
 # Marketplace bundle-authoring scratch (docs/85 — regenerated on demand)

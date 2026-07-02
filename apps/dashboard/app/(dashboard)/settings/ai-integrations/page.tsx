@@ -14,14 +14,18 @@ import {
   Text,
 } from '@sparx/ui';
 
-import { listApiKeysForCurrentTenant } from './actions';
+import { listApiKeysForCurrentTenant, listMcpConnectionsForCurrentTenant } from './actions';
 import { IssueKeyForm } from './_components/issue-key-form';
 import { ApiKeyRow } from './_components/api-key-row';
+import { ConnectionRow } from './_components/connection-row';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AiIntegrationsPage() {
-  const keys = await listApiKeysForCurrentTenant();
+  const [keys, connections] = await Promise.all([
+    listApiKeysForCurrentTenant(),
+    listMcpConnectionsForCurrentTenant(),
+  ]);
   const live = keys.filter((k) => !k.revokedAt);
   const revoked = keys.filter((k) => k.revokedAt);
 
@@ -31,9 +35,29 @@ export default async function AiIntegrationsPage() {
         <PageHeader
           icon={<KeyRound className="h-5 w-5" />}
           title="AI Integrations"
-          description="Issue API keys for Claude Desktop, ChatGPT custom GPTs, or Microsoft Copilot. Each key is scoped — grant only the permissions the assistant needs. Keys are shown once at issuance; copy and store securely."
+          description="Connect Claude, ChatGPT, or Copilot to your live data over MCP. Assistants connect via OAuth (recommended) — you approve exactly what they can do — or with a scoped API key. Revoke either anytime."
           actions={<IssueKeyForm />}
         />
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Connected assistants ({connections.length})</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {connections.length === 0 ? (
+              <Text size="sm" variant="muted">
+                No assistants connected via OAuth yet. Add sparx as a connector in Claude, ChatGPT,
+                or Copilot and approve the scopes — the connection appears here.
+              </Text>
+            ) : (
+              <Stack gap={2}>
+                {connections.map((c) => (
+                  <ConnectionRow key={c.clientId} connection={c} />
+                ))}
+              </Stack>
+            )}
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>

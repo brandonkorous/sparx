@@ -785,6 +785,19 @@ export const fitnessPack: SampleDataPack = {
         ],
       },
       {
+        key: 'trainer-nadia',
+        name: 'Nadia (Personal Trainer)',
+        kind: 'staff',
+        skills: ['training'],
+        windows: [
+          { day: 1, startMin: 600, endMin: 1260 },
+          { day: 2, startMin: 600, endMin: 1260 },
+          { day: 4, startMin: 600, endMin: 1260 },
+          { day: 5, startMin: 600, endMin: 1200 },
+          { day: 6, startMin: 480, endMin: 900 },
+        ],
+      },
+      {
         key: 'studio-a',
         name: 'Studio A',
         kind: 'space',
@@ -811,6 +824,10 @@ export const fitnessPack: SampleDataPack = {
         ],
       },
     ],
+    // Group classes stay `any_available` — you book a spot in the class and the
+    // instructor is whoever teaches it, not a choice. The 1-on-1 services are
+    // `customer_choice`: personal training lets you pick your trainer (Sam or Nadia),
+    // and the free intro consult is left `any_available` (whoever can take it first).
     services: [
       {
         key: 'vinyasa-yoga',
@@ -882,6 +899,7 @@ export const fitnessPack: SampleDataPack = {
         capacity: 1,
         bookingType: 'appointment',
         bufferAfterMin: 15,
+        assignmentStrategy: 'customer_choice',
         resourceRoles: [
           { role: 'trainer', kind: 'staff', skill: 'training' },
           { role: 'studio', kind: 'space' },

@@ -15,6 +15,15 @@ data:
   # Better Auth / dashboard need to know the canonical public origin so the
   # OAuth/session cookies scope correctly. NOT a secret.
   BETTER_AUTH_URL: https://app.sparx.works
+  # MCP OAuth (docs/07 §5). MCP_RESOURCE_URL is the canonical resource
+  # identifier of the MCP server (the audience OAuth tokens target); the
+  # dashboard validates it at consent + advertises it, and api-mcp echoes it in
+  # its protected-resource metadata. MCP_AUTH_SERVER_URL is the authorization
+  # server (this dashboard/Better Auth origin) that api-mcp points clients at.
+  # NOT secrets. (AUTH_DATABASE_URL, used by api-mcp to introspect OAuth tokens
+  # as sparx_owner, lives in sparx-app-secrets alongside the other DB URLs.)
+  MCP_RESOURCE_URL: https://mcp.sparx.works/v1
+  MCP_AUTH_SERVER_URL: https://app.sparx.works
   NEXT_PUBLIC_APP_URL: https://app.sparx.works
   NEXT_PUBLIC_API_URL: https://api.sparx.works
   NEXT_PUBLIC_MARKETING_URL: https://sparx.works

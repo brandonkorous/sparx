@@ -1,8 +1,8 @@
 # 79 — sparx Scheduling Module Spec
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-20
+**Last Updated:** 2026-07-01
 
 ---
 
@@ -335,6 +335,15 @@ the specific stylist/artist/practitioner — with portfolio, §13.1). Skill-tag 
 filters candidates first (a "balayage" service only offers stylists tagged for it; a
 "turbo rebuild" only offers techs with that skill).
 
+**Implementation note (shipped).** `customer_choice` is wired end-to-end: the public
+availability + booking endpoints accept a customer-chosen `resourceId`, the engine honors
+an explicit `resourceIds` pick (`pickForRole` `explicitIds`), and a chosen resource is
+**server-side validated** against the service's eligible set (`listBookableResourcesForService`
+— online-bookable, active resources whose kind + skill-tags satisfy a requirement) so a
+tampered id can't book an offline/foreign resource. A generic single-resource shop just uses
+`any_available` (no picker); a beauty shop tags each staff resource and uses `customer_choice`
+so the visitor books a specific person. Portfolio cards on the picker remain spec (§13.1).
+
 ### 7.6 Recurrence & series
 
 `booking_series` holds an RRULE + the service/resource/customer; the scheduling-worker
@@ -612,6 +621,12 @@ responsive by default, accessible. Also shipped as an **embeddable widget** (scr
 for tenants whose marketing site lives off-platform — still on their brand, **no "Powered
 by sparx."**
 
+**Shipped:** the `apps/site` booking widget renders a **"choose your {providerLabel}"** step
+for a `customer_choice` service — an "Any available" option plus one button per eligible
+resource (label from the service's requirement role, e.g. "stylist"). Picking a person
+re-fetches _that person's_ availability and books them; the choice is validated server-side.
+Portfolio/bio cards on the picker are still to come.
+
 ### 13.2 Customer self-service portal (customer-auth)
 
 My upcoming & past bookings; **reschedule / cancel** within policy; pay a balance or deposit;
@@ -621,9 +636,13 @@ completion.
 ### 13.3 Dashboard (`apps/dashboard/.../scheduling/`)
 
 - **Calendar** — day / week / month, multi-resource lanes (staff/room/table columns),
-  drag-to-reschedule, drag-to-create, color by service/status.
+  drag-to-reschedule, drag-to-create, color by service/status. _(Shipped: the week grid
+  fills the viewport, everyone's bookings tenant-wide, with **resource + service filters**
+  that narrow to one person's/one service's schedule — filter preserved across week nav.
+  Multi-resource swimlane columns remain to come.)_
 - **Bookings** — list/detail with the full lifecycle (confirm, reschedule, check-in,
-  complete, no-show, refund), customer panel, parts/work-order, payment status.
+  complete, no-show, refund), customer panel, parts/work-order, payment status. _(Shipped:
+  status chips + **resource + service filters** that compose.)_
 - **Queue board** — walk-in/waitlist management with SMS paging (restaurant/barber).
 - **Class roster** — enrollment, check-in, attendance, waitlist promote.
 - **Services & resources** — setup, skills, portfolios, locations, pricing, policies.

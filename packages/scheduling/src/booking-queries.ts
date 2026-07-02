@@ -135,7 +135,13 @@ export interface CalendarEvent {
  *  cancelled/no-show so the calendar shows only live commitments. */
 export async function getCalendar(
   tenantId: string,
-  range: { from: string; to: string; resourceId?: string; includeReleased?: boolean }
+  range: {
+    from: string;
+    to: string;
+    resourceId?: string;
+    serviceId?: string;
+    includeReleased?: boolean;
+  }
 ): Promise<CalendarEvent[]> {
   const from = new Date(range.from);
   const to = new Date(range.to);
@@ -147,6 +153,7 @@ export async function getCalendar(
         endAt: { gt: from },
         ...(range.includeReleased ? {} : { status: { notIn: ['cancelled', 'no_show'] } }),
         ...(range.resourceId ? { resources: { some: { resourceId: range.resourceId } } } : {}),
+        ...(range.serviceId ? { serviceId: range.serviceId } : {}),
       },
       include: {
         service: { select: { name: true, color: true } },

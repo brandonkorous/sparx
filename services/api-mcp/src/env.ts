@@ -13,6 +13,14 @@ const EnvSchema = z.object({
   // tokens for the MCP transport so the auth model is symmetric. External
   // API keys land later via the AI Integrations dashboard.
   SPARX_INTERNAL_JWT_SECRET: z.string().min(32),
+  // OAuth 2.1 resource-server wiring (docs/07 §5). MCP_RESOURCE_URL is this
+  // server's canonical resource identifier (the audience tokens are for);
+  // MCP_AUTH_SERVER_URL is the authorization server (the dashboard/Better Auth
+  // origin) advertised in the protected-resource metadata. OAuth token
+  // verification reads the shared auth DB via @sparx/auth (sparx_owner), so
+  // AUTH_DATABASE_URL must also be present in the environment.
+  MCP_RESOURCE_URL: z.string().default('http://localhost:3000/v1'),
+  MCP_AUTH_SERVER_URL: z.string().default('http://localhost:3001'),
   // Enables the real Pub/Sub bridge for CRM customer writes made via MCP
   // tools. Unset (dev) → the bridge is a no-op and writes stay on the stub.
   GCP_PROJECT_ID: z.string().optional(),

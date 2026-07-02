@@ -13,7 +13,9 @@ import type { PublicService } from '../../lib/scheduling';
 import {
   createPublicBooking,
   joinWaitlist,
+  loadServiceResources,
   loadSlots,
+  type BookableResource,
   type BookingConfirmation,
   type PublicSlot,
 } from '../../lib/scheduling-client';
@@ -49,8 +51,12 @@ export function BookingWidget({
   service: PublicService;
 }) {
   const isReservation = service.bookingType === 'reservation';
+  const isCustomerChoice = service.assignmentStrategy === 'customer_choice';
   const [date, setDate] = useState(todayISODate());
   const [partySize, setPartySize] = useState(2);
+  // The customer-chosen provider for a customer_choice service; null = "Any available".
+  const [providers, setProviders] = useState<BookableResource[] | null>(null);
+  const [chosenResourceId, setChosenResourceId] = useState<string | null>(null);
   const [slots, setSlots] = useState<PublicSlot[] | null>(null);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
@@ -79,7 +85,8 @@ export function BookingWidget({
         service.id,
         from.toISOString(),
         to.toISOString(),
-        isReservation ? partySize : undefined
+        isReservation ? partySize : undefined,
+        chosenResourceId ?? undefined
       );
       setSlots(result);
     } catch (err) {
@@ -88,11 +95,27 @@ export function BookingWidget({
     } finally {
       setLoadingSlots(false);
     }
-  }, [tenantSlug, service.id, date, partySize, isReservation]);
+  }, [tenantSlug, service.id, date, partySize, isReservation, chosenResourceId]);
 
   useEffect(() => {
     void fetchSlots();
   }, [fetchSlots]);
+
+  // Load the pickable providers once, for a customer_choice service.
+  useEffect(() => {
+    if (!isCustomerChoice) return;
+    let active = true;
+    void loadServiceResources(tenantSlug, service.id)
+      .then((r) => {
+        if (active) setProviders(r);
+      })
+      .catch(() => {
+        if (active) setProviders([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, [isCustomerChoice, tenantSlug, service.id]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -107,6 +130,7 @@ export function BookingWidget({
         serviceId: service.id,
         startAt: selected,
         ...(isReservation ? { partySize } : {}),
+        ...(chosenResourceId ? { resourceId: chosenResourceId } : {}),
         customer: {
           name: name.trim(),
           email: email.trim(),
@@ -201,6 +225,33 @@ export function BookingWidget({
 
   return (
     <form className="st-booking" onSubmit={submit}>
+      {isCustomerChoice && providers && providers.length > 0 ? (
+        <div className="st-booking__slots">
+          <SparxLabel>Choose your {service.providerLabel}</SparxLabel>
+          <div className="st-booking__slot-grid">
+            <button
+              type="button"
+              className={cx('st-booking__slot', chosenResourceId === null && 'is-selected')}
+              aria-pressed={chosenResourceId === null}
+              onClick={() => setChosenResourceId(null)}
+            >
+              Any available
+            </button>
+            {providers.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                className={cx('st-booking__slot', chosenResourceId === p.id && 'is-selected')}
+                aria-pressed={chosenResourceId === p.id}
+                onClick={() => setChosenResourceId(p.id)}
+              >
+                {p.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
       <div className="st-booking__row">
         <div>
           <SparxLabel htmlFor="book-date">Date</SparxLabel>

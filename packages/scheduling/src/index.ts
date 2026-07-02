@@ -54,10 +54,12 @@ export {
   getCustomerBookingStats,
 } from './booking-history';
 export {
+  type BookableResource,
   createResource,
   updateResource,
   getResource,
   listResources,
+  listBookableResourcesForService,
   deleteResource,
 } from './resources';
 export { createService, updateService, getService, listServices, deleteService } from './services';

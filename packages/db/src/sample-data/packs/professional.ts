@@ -542,6 +542,10 @@ export const professionalPack: SampleDataPack = {
         ],
       },
     ],
+    // Two-tier assignment: the free Discovery Call `round_robin`s across the whole
+    // bench (any consultant can take an intro, and load stays balanced), while the
+    // paid sessions are `customer_choice` — a client books the specific senior expert
+    // they came for (the strategist, the designer, the analyst) by name.
     services: [
       {
         key: 'discovery-call',
@@ -553,7 +557,8 @@ export const professionalPack: SampleDataPack = {
         bookingType: 'appointment',
         slotIntervalMin: 30,
         requiresApproval: true,
-        resourceRoles: [{ role: 'consultant', kind: 'staff', skill: 'strategy' }],
+        assignmentStrategy: 'round_robin',
+        resourceRoles: [{ role: 'consultant', kind: 'staff', skill: 'general' }],
       },
       {
         key: 'strategy-session',
@@ -565,6 +570,7 @@ export const professionalPack: SampleDataPack = {
         bookingType: 'appointment',
         bufferAfterMin: 15,
         slotIntervalMin: 30,
+        assignmentStrategy: 'customer_choice',
         resourceRoles: [{ role: 'consultant', kind: 'staff', skill: 'strategy' }],
       },
       {
@@ -577,6 +583,7 @@ export const professionalPack: SampleDataPack = {
         bookingType: 'appointment',
         bufferAfterMin: 15,
         slotIntervalMin: 30,
+        assignmentStrategy: 'customer_choice',
         resourceRoles: [{ role: 'consultant', kind: 'staff', skill: 'design' }],
       },
       {
@@ -589,6 +596,7 @@ export const professionalPack: SampleDataPack = {
         bookingType: 'appointment',
         bufferAfterMin: 30,
         slotIntervalMin: 60,
+        assignmentStrategy: 'customer_choice',
         resourceRoles: [{ role: 'consultant', kind: 'staff', skill: 'analytics' }],
       },
     ],

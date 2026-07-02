@@ -75,9 +75,14 @@ const STATUS_VAR: Record<string, string> = {
 export function WeekCalendar({
   weekStartYmd,
   events,
+  resource = '',
+  service = '',
 }: {
   weekStartYmd: string;
   events: CalendarEvent[];
+  /** Active resource/service filters — preserved across week navigation. */
+  resource?: string;
+  service?: string;
 }) {
   const router = useRouter();
   const weekStart = parseYmd(weekStartYmd);
@@ -109,14 +114,20 @@ export function WeekCalendar({
   // Position as a percentage of the visible window so the grid fills any height.
   const pct = (min: number): number => ((min - startHour * 60) / windowMin) * 100;
 
+  const navUrl = (fromYmd: string): string => {
+    const params = new URLSearchParams({ from: fromYmd });
+    if (resource) params.set('resource', resource);
+    if (service) params.set('service', service);
+    return `/scheduling/calendar?${params.toString()}`;
+  };
   const go = (deltaWeeks: number): void => {
     const next = new Date(weekStart.getTime() + deltaWeeks * 7 * DAY_MS);
-    router.push(`/scheduling/calendar?from=${ymd(next)}`);
+    router.push(navUrl(ymd(next)));
   };
   const goToday = (): void => {
     const t = new Date();
     t.setDate(t.getDate() - t.getDay());
-    router.push(`/scheduling/calendar?from=${ymd(t)}`);
+    router.push(navUrl(ymd(t)));
   };
 
   const fmt = (d: Date, opts: Intl.DateTimeFormatOptions): string =>
