@@ -22,7 +22,8 @@ import {
   useConfirm,
 } from '@sparx/ui';
 import { UserX } from 'lucide-react';
-import { ASSIGNABLE_ORG_ROLES, type AssignableOrgRole, type OrgMember } from '@sparx/auth';
+import { ASSIGNABLE_ORG_ROLES, type AssignableOrgRole } from '@sparx/auth/org-roles';
+import type { OrgMember } from '@sparx/auth';
 import { changeMemberRole, removeMember } from '../actions';
 import { ROLE_LABELS, roleLabel, memberTypeLabel } from '../_lib/roles';
 

@@ -17,7 +17,7 @@ import {
   toast,
 } from '@sparx/ui';
 import { UserPlus } from 'lucide-react';
-import { ASSIGNABLE_ORG_ROLES, type OrgRole } from '@sparx/auth';
+import { ASSIGNABLE_ORG_ROLES, type OrgRole } from '@sparx/auth/org-roles';
 import { inviteMember } from '../actions';
 import { ROLE_DESCRIPTIONS, ROLE_LABELS } from '../_lib/roles';
 

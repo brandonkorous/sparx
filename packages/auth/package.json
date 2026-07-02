@@ -16,6 +16,10 @@
     "./client": {
       "types": "./src/client.ts",
       "default": "./src/client.ts"
+    },
+    "./org-roles": {
+      "types": "./src/org-roles.ts",
+      "default": "./src/org-roles.ts"
     }
   },
   "files": [
