@@ -1,9 +1,33 @@
 'use server';
 
-import { ATTR_COOKIES, deserializeSnapshot } from '@sparx/attribution';
+import { ATTR_COOKIES, deserializeSnapshot, REF_COOKIE } from '@sparx/attribution';
 import { signUpMerchant, SignUpError } from '@sparx/auth';
 import { auth } from '@sparx/auth/server';
 import { cookies, headers } from 'next/headers';
+
+// Partner referral attribution (docs/114 §B.3). Best-effort server-to-server call
+// to the api-rest internal hook, which resolves the partner by code and records
+// the referral under the PARTNER's org (RLS-safe cross-org write). Fire-and-forget:
+// a hiccup here must never fail an otherwise-good signup. Requires the shared
+// secret + REST url; absent either (dev), it's a silent no-op.
+async function recordPartnerReferral(
+  referredTenantId: string,
+  referralCode: string
+): Promise<void> {
+  const base = process.env.SPARX_API_REST_URL;
+  const token = process.env.SPARX_INTERNAL_PARTNERS_TOKEN;
+  if (!base || !token) return;
+  try {
+    await fetch(`${base}/internal/partners/referrals`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-sparx-internal-partners-token': token },
+      body: JSON.stringify({ referralCode, referredTenantId }),
+      cache: 'no-store',
+    });
+  } catch {
+    /* best-effort; the partner just isn't credited if the hook is unreachable */
+  }
+}
 
 export interface SignUpFormState {
   ok: boolean;
@@ -73,6 +97,11 @@ export async function signUpAction(formData: FormData): Promise<SignUpFormState>
       acquisition,
     });
     userId = result.userId;
+
+    // Credit the referring partner (docs/114 §B.3), if a `?ref=` code rode along
+    // the `.sparx.works` cookie boundary. Best-effort — never blocks the signup.
+    const refCode = cookieStore.get(REF_COOKIE)?.value;
+    if (refCode) await recordPartnerReferral(result.tenantId, refCode);
   } catch (err) {
     if (err instanceof SignUpError) {
       return { ok: false, error: err.message };

@@ -1,0 +1,72 @@
+import * as React from 'react';
+import { Section } from '@react-email/components';
+import { EmailLayout } from './_layout';
+import {
+  EmailButton,
+  EmailCallout,
+  EmailHeading,
+  EmailLink,
+  EmailMuted,
+  EmailParagraph,
+} from '../components';
+
+// Team invitation — "{Inviter} invited you to join {Org} on sparx" (docs/114 §A.4).
+// Published as an `email.send` event by the Better Auth organization plugin's
+// `sendInvitationEmail` callback (packages/auth/src/server.ts) when an admin/owner
+// invites a member. The button carries the invitation id to /accept-invite, where
+// the recipient (signed in as the invited address) accepts and the `members` row
+// is created.
+
+export interface TeamInvitationEmailProps {
+  /** The address the invite was sent to — shown so the recipient knows which
+   *  account must accept it. */
+  inviteeEmail: string;
+  /** Human name of the tenant/organization they're being invited into. */
+  orgName: string;
+  /** Who sent the invite (name, falling back to their email). */
+  inviterName: string;
+  /** The role they'll hold once they accept (e.g. "editor", "admin"). */
+  role: string;
+  /** Fully-qualified /accept-invite URL carrying the invitation id. */
+  acceptUrl: string;
+  /** How long the invite is valid, in days (for the expiry note). */
+  expiresInDays: number;
+}
+
+export function TeamInvitationEmail({
+  inviteeEmail,
+  orgName,
+  inviterName,
+  role,
+  acceptUrl,
+  expiresInDays,
+}: TeamInvitationEmailProps) {
+  return (
+    <EmailLayout preview={`${inviterName} invited you to join ${orgName} on sparx`}>
+      <Section>
+        <EmailHeading>You&apos;re invited to join {orgName}</EmailHeading>
+        <EmailParagraph>Hi there,</EmailParagraph>
+        <EmailParagraph>
+          {inviterName} invited you to join <strong>{orgName}</strong> on sparx as a{' '}
+          <strong>{role}</strong>. Accept the invitation to get access to the workspace.
+        </EmailParagraph>
+        <EmailCallout tone="info">
+          This invitation was sent to {inviteeEmail}. Sign in with that address (or create an
+          account for it) to accept.
+        </EmailCallout>
+        <EmailButton href={acceptUrl}>Accept invitation</EmailButton>
+        <EmailParagraph flush>
+          Or paste this link into your browser: <EmailLink href={acceptUrl}>{acceptUrl}</EmailLink>
+        </EmailParagraph>
+        <EmailMuted>
+          This invitation expires in {expiresInDays} days. If you weren&apos;t expecting it, you can
+          safely ignore this email.
+        </EmailMuted>
+      </Section>
+    </EmailLayout>
+  );
+}
+
+export function teamInvitationSubject(orgName: string): string {
+  return `You're invited to join ${orgName} on sparx`;
+}

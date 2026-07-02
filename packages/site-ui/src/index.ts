@@ -56,6 +56,8 @@ export {
   type NavOrientation,
 } from './components/nav-menu';
 export { CollapsibleNav, type CollapsibleNavProps } from './components/collapsible-nav';
+export { NavShell, type NavShellProps, type NavShellOrientation } from './components/nav-shell';
+export { AccountMenu, type AccountMenuProps, type AccountStatus } from './components/account-menu';
 export { SocialLinks, type SocialLinksProps, type SocialItem } from './components/social-links';
 export { EditorialSection, type EditorialSectionProps } from './components/editorial-section';
 export { FAQ, type FaqProps, type FaqEntry } from './components/faq';

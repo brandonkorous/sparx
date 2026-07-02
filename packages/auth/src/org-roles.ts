@@ -1,0 +1,62 @@
+import { createAccessControl } from 'better-auth/plugins/access';
+
+// Access-control vocabulary for the organization plugin (docs/114 §A.2, docs/78 §3).
+//
+// This governs ONLY the org plugin's own team-management endpoints (invite /
+// add-member / update-role / remove-member): who is *allowed* to manage the team.
+// The real, fine-grained module authorization is enforced in api-rest via
+// `requireRole(request, …)` on the JWT `role` claim — this is not a parallel authz
+// system, just the gate on the membership endpoints.
+//
+// We keep Better Auth's default resource set (organization / member / invitation)
+// so owner + admin behave like the plugin's built-in owner/admin. The five
+// operational roles carry NO membership-management permissions — they run the
+// business, not the team — so the plugin correctly denies them the invite/member
+// endpoints (and api-rest denies them too).
+
+const statement = {
+  organization: ['update', 'delete'],
+  member: ['create', 'update', 'delete'],
+  invitation: ['create', 'cancel'],
+} as const;
+
+export const ac = createAccessControl(statement);
+
+const none = { organization: [], member: [], invitation: [] } as const;
+
+export const roles = {
+  owner: ac.newRole({
+    organization: ['update', 'delete'],
+    member: ['create', 'update', 'delete'],
+    invitation: ['create', 'cancel'],
+  }),
+  admin: ac.newRole({
+    organization: ['update'],
+    member: ['create', 'update', 'delete'],
+    invitation: ['create', 'cancel'],
+  }),
+  editor: ac.newRole({ ...none }),
+  builder: ac.newRole({ ...none }),
+  marketing: ac.newRole({ ...none }),
+  support: ac.newRole({ ...none }),
+  viewer: ac.newRole({ ...none }),
+};
+
+// The role vocabulary as a plain list — reused by api-rest validation + the Team UI.
+export const ORG_ROLES = [
+  'owner',
+  'admin',
+  'editor',
+  'builder',
+  'marketing',
+  'support',
+  'viewer',
+] as const;
+export type OrgRole = (typeof ORG_ROLES)[number];
+
+// Roles that may be ASSIGNED to a member (owner is never assignable — only the
+// tenant creator holds it; docs/78 §3). The predicate narrows the element type,
+// so `AssignableOrgRole` is `OrgRole` minus `owner` — the type the Better Auth
+// invite/update-role endpoints expect.
+export const ASSIGNABLE_ORG_ROLES = ORG_ROLES.filter((r) => r !== 'owner');
+export type AssignableOrgRole = Exclude<OrgRole, 'owner'>;

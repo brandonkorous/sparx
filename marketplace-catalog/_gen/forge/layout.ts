@@ -37,9 +37,18 @@ function header(): BuilderNode {
         box: { padding: 'md', backgroundWidth: 'full', contentWidth: 'contained' },
         layout: { direction: 'row', justify: 'between', alignItems: 'center', collapse: false },
         children: [
-          // Left: brand + primary nav.
+          // Left: brand + primary nav. NavMenu is a CONTAINER of NavItem children
+          // (docs/57 rebuild) — the container-native form the starter + platform emit.
           el('div', 'flex items-center gap-4 @3xl:gap-9', {
-            children: [wordmark(), atom('NavMenu', 'text-sm', { orientation: 'row', links: NAV })],
+            children: [
+              wordmark(),
+              atom(
+                'NavMenu',
+                'text-sm',
+                { orientation: 'row' },
+                NAV.map((l) => atom('NavItem', '', { label: l.label, href: l.href }))
+              ),
+            ],
           }),
           // Right: the cream "Let's talk" pill CTA.
           el('div', 'flex items-center gap-2', {

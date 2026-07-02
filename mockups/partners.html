@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>sparx — Build your practice on sparx (Partner Program)</title>
+    <!--
+      Partner Program landing — "Build your practice on Sparx."
+      Spine: the opportunity as a confident, left-aligned earnings ledger, carried
+      by platform indigo. Devices vary down the page:
+        HERO        indigo-tinted, type-driven, no image + mono earnings strip
+        PROOF       social-proof stat strip, hairline dividers (empty-safe)
+        OPPORTUNITY 3-row argument ledger — claim left, proof token right
+        STEPS       numbered horizontal rail 01–04, connector arrows, no boxes
+        TIERS       left-anchored comparison matrix (attribute spine × 3 tiers)
+        DIRECTORY   split band CTA → the public directory
+        APPLY       two-column split: pitch + native-form card
+        FAQ / CTA   dark final beat
+      No eyebrows, no gradients. The indigo period is the one spark per headline.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --indigo: #6366f1;
+        --indigo-hover: #4f46e5;
+        --indigo-text: #4338ca;
+        --indigo-tint: #eef2ff;
+        --ink: #0a0a0a;
+        --muted: #52525b;
+        --soft: #3f3f46;
+        --faint: #a1a1aa;
+        --border: #e5e5e5;
+        --page: #fafafa;
+        --surface: #ffffff;
+        --commerce: #f97316;
+        --cms: #14b8a6;
+        --crm: #06b6d4;
+        --email: #0ea5e9;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body {
+        font-family: 'Geist', system-ui, -apple-system, sans-serif;
+        color: var(--ink);
+        background: var(--page);
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap { max-width: 1200px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 80px); }
+      section { padding: clamp(72px, 11vw, 128px) 0; }
+      h1, h2, h3, p { margin: 0; }
+      a { color: inherit; }
+      .mono { font-family: 'Geist Mono', monospace; }
+
+      /* NAV */
+      .nav {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 20px clamp(20px, 5vw, 80px); border-bottom: 1px solid var(--border);
+        background: var(--page); position: sticky; top: 0; z-index: 50;
+      }
+      .wordmark { font-family: 'Inter', sans-serif; font-weight: 700; letter-spacing: -0.03em; font-size: 22px; }
+      .wordmark .x { color: var(--indigo); }
+      .navlinks { display: flex; gap: 32px; font-size: 14px; color: var(--muted); }
+      .btn {
+        display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px;
+        border-radius: 8px; font-size: 15px; font-weight: 500; text-decoration: none;
+        cursor: pointer; border: 1px solid transparent;
+      }
+      .btn-dark { background: var(--ink); color: #fff; }
+      .btn-indigo { background: var(--indigo); color: #fff; }
+      .btn-outline { background: transparent; border-color: var(--border); color: var(--ink); }
+      .spark { color: var(--indigo); }
+
+      /* HERO */
+      .hero { background: var(--indigo-tint); padding: clamp(64px, 9vw, 112px) 0 clamp(72px, 10vw, 120px); }
+      .hero h1 {
+        font-weight: 500; letter-spacing: -0.035em; line-height: 0.98;
+        font-size: clamp(44px, 8.2vw, 96px); max-width: 14ch;
+      }
+      .hero-sub {
+        font-size: clamp(17px, 1.7vw, 20px); line-height: 1.55; color: var(--soft);
+        max-width: 620px; margin-top: 28px;
+      }
+      .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
+      .earnstrip {
+        display: flex; flex-wrap: wrap; gap: 10px 26px; margin-top: 40px;
+        font-family: 'Geist Mono', monospace; font-size: 12.5px; letter-spacing: 0.02em;
+        color: var(--indigo-text);
+      }
+      .earnstrip span { display: inline-flex; align-items: center; gap: 8px; }
+      .dot { width: 7px; height: 7px; border-radius: 999px; background: var(--indigo); flex-shrink: 0; }
+
+      /* SOCIAL PROOF STRIP */
+      .proof { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--surface); }
+      .proof-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+      .proof-cell { padding: 40px 28px; border-left: 1px solid var(--border); }
+      .proof-cell:first-child { border-left: none; }
+      .proof-num { font-size: 44px; font-weight: 500; letter-spacing: -0.03em; }
+      .proof-lab { font-size: 14px; color: var(--muted); margin-top: 8px; }
+
+      /* SECTION HEADER */
+      .shead { max-width: 720px; }
+      .shead h2 { font-weight: 500; letter-spacing: -0.028em; font-size: clamp(30px, 4.4vw, 52px); line-height: 1.04; }
+      .shead p { font-size: 18px; line-height: 1.66; color: var(--muted); margin-top: 22px; max-width: 620px; }
+
+      /* OPPORTUNITY LEDGER */
+      .ledger { margin-top: 56px; }
+      .ledger-row {
+        display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: center;
+        padding: 34px 0; border-top: 1px solid var(--border);
+      }
+      .ledger-row:last-child { border-bottom: 1px solid var(--border); }
+      .ledger-claim { font-size: clamp(19px, 2.2vw, 25px); font-weight: 500; letter-spacing: -0.02em; line-height: 1.35; max-width: 720px; }
+      .ledger-claim .thin { color: var(--muted); font-weight: 400; }
+      .ledger-token {
+        font-family: 'Geist Mono', monospace; font-size: clamp(20px, 2.4vw, 30px); font-weight: 500;
+        letter-spacing: -0.02em; color: var(--indigo-text); white-space: nowrap;
+      }
+
+      /* STEPS RAIL */
+      .surface { background: var(--surface); border-top: 1px solid var(--border); }
+      .steprail { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 56px; }
+      .step { position: relative; padding: 0 26px 0 0; }
+      .step:not(:last-child)::after {
+        content: '→'; position: absolute; right: 14px; top: 2px; color: var(--faint); font-size: 20px;
+      }
+      .step-n { font-family: 'Geist Mono', monospace; font-size: 13px; color: var(--indigo); border-top: 2px solid var(--indigo); padding-top: 14px; display: inline-block; width: 40px; }
+      .step h3 { font-size: 20px; font-weight: 500; letter-spacing: -0.02em; margin-top: 14px; }
+      .step p { font-size: 14.5px; line-height: 1.55; color: var(--muted); margin-top: 10px; }
+
+      /* TIERS MATRIX */
+      .tiers { margin-top: 56px; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; background: var(--surface); }
+      .tier-head { display: grid; grid-template-columns: 1.15fr 1fr 1fr 1fr; }
+      .tier-hcell { padding: 30px 26px; border-left: 1px solid var(--border); }
+      .tier-hcell.spine { border-left: none; display: flex; align-items: flex-end; }
+      .tier-hcell.certified { background: var(--indigo-tint); }
+      .tier-name { font-size: 20px; font-weight: 500; letter-spacing: -0.02em; display: flex; align-items: center; gap: 9px; }
+      .tier-comm { margin-top: 14px; font-size: 34px; font-weight: 500; letter-spacing: -0.03em; }
+      .tier-comm small { font-size: 15px; color: var(--muted); font-weight: 400; }
+      .tier-comm .plus { color: var(--indigo-text); }
+      .tier-note { font-size: 13px; color: var(--muted); margin-top: 6px; }
+      .tier-row { display: grid; grid-template-columns: 1.15fr 1fr 1fr 1fr; border-top: 1px solid var(--border); }
+      .tier-cell { padding: 18px 26px; border-left: 1px solid var(--border); font-size: 14px; color: var(--soft); display: flex; align-items: center; }
+      .tier-cell.spine { border-left: none; color: var(--muted); font-weight: 500; }
+      .tier-cell.certified { background: color-mix(in oklab, var(--indigo) 5%, var(--surface)); }
+      .check { color: var(--indigo); font-weight: 500; }
+      .dash { color: var(--faint); }
+      .badge {
+        display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px;
+        font-size: 11px; font-weight: 500; letter-spacing: 0.02em;
+      }
+      .badge-informal { background: #f4f4f5; color: #52525b; }
+      .badge-registered { background: #ecfeff; color: #0e7490; }
+      .badge-certified { background: var(--indigo-tint); color: var(--indigo-text); }
+      .tiers-mobile { display: none; }
+
+      /* DIRECTORY CTA */
+      .dirband {
+        margin-top: 0; background: var(--surface); border-top: 1px solid var(--border);
+      }
+      .dircta {
+        display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: center;
+        border: 1px solid var(--border); border-radius: 18px; padding: clamp(28px, 4vw, 48px);
+        background: var(--page);
+      }
+      .dircta h3 { font-size: clamp(24px, 3vw, 34px); font-weight: 500; letter-spacing: -0.025em; line-height: 1.1; }
+      .dircta p { font-size: 16px; line-height: 1.6; color: var(--muted); margin-top: 16px; max-width: 460px; }
+      .dir-preview { display: flex; flex-direction: column; gap: 10px; }
+      .dir-chip {
+        display: flex; align-items: center; justify-content: space-between; gap: 14px;
+        padding: 14px 18px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface);
+      }
+      .dir-chip .name { font-size: 15px; font-weight: 500; }
+      .dir-chip .loc { font-size: 13px; color: var(--faint); }
+
+      /* APPLY */
+      .apply { background: var(--page); border-top: 1px solid var(--border); }
+      .apply-grid { display: grid; grid-template-columns: 1fr 460px; gap: clamp(40px, 6vw, 80px); align-items: start; }
+      .apply-what { display: flex; flex-direction: column; gap: 18px; margin-top: 32px; }
+      .apply-what .item { display: flex; gap: 14px; align-items: flex-start; }
+      .apply-what .mk { width: 26px; height: 26px; border-radius: 8px; background: var(--indigo-tint); color: var(--indigo-text); font-family: 'Geist Mono', monospace; font-size: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+      .apply-what .t { font-size: 15px; font-weight: 500; }
+      .apply-what .d { font-size: 14px; color: var(--muted); line-height: 1.5; margin-top: 3px; }
+      .formcard {
+        background: var(--surface); border: 1px solid var(--border); border-radius: 18px;
+        padding: clamp(24px, 3vw, 34px); box-shadow: 0 14px 40px rgba(15,15,20,.06);
+        display: flex; flex-direction: column; gap: 16px;
+      }
+      .field { display: flex; flex-direction: column; gap: 7px; }
+      .field label { font-size: 13px; font-weight: 500; }
+      .field label .opt { color: var(--faint); font-weight: 400; }
+      .field input, .field select, .field textarea {
+        font-family: inherit; font-size: 14px; padding: 9px 12px; border: 1px solid var(--border);
+        border-radius: 8px; background: var(--surface); color: var(--ink); width: 100%;
+      }
+      .tierpick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .tierpick .opt2 { border: 1px solid var(--border); border-radius: 8px; padding: 10px 8px; text-align: center; font-size: 13px; cursor: pointer; }
+      .tierpick .opt2.on { border-color: var(--indigo); background: var(--indigo-tint); color: var(--indigo-text); font-weight: 500; }
+      .submit { background: var(--indigo); color: #fff; border: none; border-radius: 10px; padding: 13px; font-size: 15px; font-weight: 500; cursor: pointer; font-family: inherit; }
+
+      /* FAQ (simplified for mockup) */
+      .faq-item { border-top: 1px solid var(--border); padding: 22px 0; }
+      .faq-item:last-child { border-bottom: 1px solid var(--border); }
+      .faq-q { display: flex; justify-content: space-between; gap: 20px; font-size: 17px; font-weight: 500; }
+      .faq-a { font-size: 15px; line-height: 1.6; color: var(--muted); margin-top: 12px; max-width: 780px; }
+
+      /* FINAL CTA */
+      .final { background: #0a0a0a; }
+      .final h2 { color: #fff; font-weight: 500; letter-spacing: -0.03em; font-size: clamp(38px, 6vw, 78px); line-height: 0.98; max-width: 16ch; }
+      .final p { color: #a1a1aa; font-size: 18px; line-height: 1.6; margin-top: 26px; max-width: 560px; }
+      .final .hero-cta { margin-top: 36px; }
+
+      @media (max-width: 1024px) {
+        .steprail { grid-template-columns: repeat(2, 1fr); gap: 40px 0; }
+        .step:nth-child(2n)::after { display: none; }
+        .tier-head, .tier-row { grid-template-columns: 1fr; }
+        .tiers { display: none; }
+        .tiers-mobile { display: flex; flex-direction: column; gap: 16px; margin-top: 48px; }
+        .tcard { border: 1px solid var(--border); border-radius: 16px; background: var(--surface); overflow: hidden; }
+        .tcard.certified { border-color: var(--indigo); }
+        .tcard-top { padding: 24px; border-bottom: 1px solid var(--border); }
+        .tcard.certified .tcard-top { background: var(--indigo-tint); }
+        .tcard ul { list-style: none; margin: 0; padding: 20px 24px; display: flex; flex-direction: column; gap: 12px; }
+        .tcard li { display: flex; gap: 10px; font-size: 14px; color: var(--soft); }
+        .apply-grid { grid-template-columns: 1fr; }
+        .dircta { grid-template-columns: 1fr; gap: 28px; }
+        .proof-grid { grid-template-columns: 1fr; }
+        .proof-cell { border-left: none; border-top: 1px solid var(--border); }
+        .proof-cell:first-child { border-top: none; }
+      }
+      @media (max-width: 640px) {
+        .steprail { grid-template-columns: 1fr; gap: 32px; }
+        .step::after { display: none !important; }
+        .ledger-row { grid-template-columns: 1fr; gap: 14px; }
+        .navlinks { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <span class="wordmark">spar<span class="x">x</span></span>
+      <span class="navlinks"><a>Platform</a><a>Modules</a><a>Partners</a><a>Pricing</a></span>
+      <a class="btn btn-dark">Start free</a>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap">
+        <h1>Build your practice on sparx<span class="spark">.</span></h1>
+        <p class="hero-sub">
+          Help businesses replace their storefront, CRM, and email stack with one platform —
+          and get paid every time one goes live. No reseller contract. No minimums.
+        </p>
+        <div class="hero-cta">
+          <a class="btn btn-indigo">Apply to become a partner →</a>
+          <a class="btn btn-outline">Browse the partner directory</a>
+        </div>
+        <div class="earnstrip">
+          <span><i class="dot"></i>20–30% first-payment commission</span>
+          <span><i class="dot"></i>5% ongoing on managed accounts</span>
+          <span><i class="dot"></i>earn on every client that publishes</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOCIAL PROOF STRIP -->
+    <section class="proof" style="padding: 0;">
+      <div class="wrap" style="padding-left: 0; padding-right: 0;">
+        <div class="proof-grid">
+          <div class="proof-cell" style="padding-left: clamp(20px,5vw,80px);">
+            <div class="proof-num">Be first<span class="spark">.</span></div>
+            <div class="proof-lab">The program is opening now — founding partners set the pace.</div>
+          </div>
+          <div class="proof-cell">
+            <div class="proof-num">8</div>
+            <div class="proof-lab">Modules your clients can turn on — storefront to AI, one bill.</div>
+          </div>
+          <div class="proof-cell" style="padding-right: clamp(20px,5vw,80px);">
+            <div class="proof-num">$0</div>
+            <div class="proof-lab">to build a client's whole site — they pay only when it's live.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OPPORTUNITY -->
+    <section>
+      <div class="wrap">
+        <div class="shead">
+          <h2>An easier sale, and a better one<span class="spark">.</span></h2>
+          <p>sparx pays you to do what you already do — set businesses up right. Three reasons the math works in your favor.</p>
+        </div>
+        <div class="ledger">
+          <div class="ledger-row">
+            <div class="ledger-claim">sparx replaces five tools at once. <span class="thin">Every client you bring on sees immediate, visible ROI against what they were already paying for a store, a CRM, and an email tool.</span></div>
+            <div class="ledger-token">5&nbsp;tools&nbsp;→&nbsp;1</div>
+          </div>
+          <div class="ledger-row">
+            <div class="ledger-claim">Free to build means an easier close. <span class="thin">You can build a client's entire site before they pay a cent — so the sale is a demo of the finished thing, and churn stays low.</span></div>
+            <div class="ledger-token">$0&nbsp;to&nbsp;build</div>
+          </div>
+          <div class="ledger-row">
+            <div class="ledger-claim">You earn on every subscription — and keep earning. <span class="thin">Commission on the first payment, plus ongoing revenue on managed accounts for as long as the client stays.</span></div>
+            <div class="ledger-token">once&nbsp;+&nbsp;ongoing</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEPS -->
+    <section class="surface">
+      <div class="wrap">
+        <div class="shead">
+          <h2>How it works<span class="spark">.</span></h2>
+          <p>From application to your first payout, four steps — no gatekeeping, no long onboarding.</p>
+        </div>
+        <div class="steprail">
+          <div class="step">
+            <span class="step-n">01</span>
+            <h3>Apply</h3>
+            <p>Submit your application. Informal partners are approved instantly; registered and certified go to a quick review.</p>
+          </div>
+          <div class="step">
+            <span class="step-n">02</span>
+            <h3>Build</h3>
+            <p>Get your partner dashboard. Manage client accounts, track referrals, and grab the pitch deck and proposal templates.</p>
+          </div>
+          <div class="step">
+            <span class="step-n">03</span>
+            <h3>Refer</h3>
+            <p>Bring clients onto sparx with your referral link. When they publish and pay, you earn — automatically attributed.</p>
+          </div>
+          <div class="step">
+            <span class="step-n">04</span>
+            <h3>Grow</h3>
+            <p>Hit activity thresholds to advance tiers. Higher tiers unlock higher commission and exclusive resources.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TIERS -->
+    <section>
+      <div class="wrap">
+        <div class="shead">
+          <h2>Three tiers. You choose the pace<span class="spark">.</span></h2>
+          <p>Start informal in a click, or apply for more. Every tier lists in the directory and earns on referrals — the higher tiers just earn more and unlock more.</p>
+        </div>
+
+        <!-- desktop matrix -->
+        <div class="tiers">
+          <div class="tier-head">
+            <div class="tier-hcell spine"><span class="tier-note" style="margin:0;">What each tier unlocks</span></div>
+            <div class="tier-hcell">
+              <div class="tier-name"><span class="badge badge-informal">Informal</span></div>
+              <div class="tier-comm">20%<small> first payment</small></div>
+              <div class="tier-note">No application — sign up and refer.</div>
+            </div>
+            <div class="tier-hcell">
+              <div class="tier-name"><span class="badge badge-registered">Registered</span></div>
+              <div class="tier-comm">30%<small> first payment</small></div>
+              <div class="tier-note">Application + brief review.</div>
+            </div>
+            <div class="tier-hcell certified">
+              <div class="tier-name"><span class="badge badge-certified">Certified</span></div>
+              <div class="tier-comm">30%<span class="plus"> + 5%</span><small> ongoing</small></div>
+              <div class="tier-note">Application + certification.</div>
+            </div>
+          </div>
+          <div class="tier-row">
+            <div class="tier-cell spine">Referral commission</div>
+            <div class="tier-cell">20% first payment</div>
+            <div class="tier-cell">30% first payment</div>
+            <div class="tier-cell certified">30% + 5% ongoing</div>
+          </div>
+          <div class="tier-row">
+            <div class="tier-cell spine">Partner resources & docs</div>
+            <div class="tier-cell"><span class="check">Included</span></div>
+            <div class="tier-cell"><span class="check">Included</span></div>
+            <div class="tier-cell certified"><span class="check">Included</span></div>
+          </div>
+          <div class="tier-row">
+            <div class="tier-cell spine">Directory listing</div>
+            <div class="tier-cell">Unverified badge</div>
+            <div class="tier-cell">Registered badge</div>
+            <div class="tier-cell certified">Certified — top of directory</div>
+          </div>
+          <div class="tier-row">
+            <div class="tier-cell spine">Priority support</div>
+            <div class="tier-cell dash">—</div>
+            <div class="tier-cell"><span class="check">Priority channel</span></div>
+            <div class="tier-cell certified"><span class="check">Dedicated manager</span></div>
+          </div>
+          <div class="tier-row">
+            <div class="tier-cell spine">Host bootcamps</div>
+            <div class="tier-cell dash">—</div>
+            <div class="tier-cell">Unpublished only</div>
+            <div class="tier-cell certified"><span class="check">Publish publicly</span></div>
+          </div>
+          <div class="tier-row">
+            <div class="tier-cell spine">Co-marketing & early access</div>
+            <div class="tier-cell dash">—</div>
+            <div class="tier-cell dash">—</div>
+            <div class="tier-cell certified"><span class="check">Featured + early modules</span></div>
+          </div>
+        </div>
+
+        <!-- mobile stacked -->
+        <div class="tiers-mobile">
+          <div class="tcard">
+            <div class="tcard-top">
+              <div class="tier-name"><span class="badge badge-informal">Informal</span></div>
+              <div class="tier-comm">20%<small> first payment</small></div>
+              <div class="tier-note">No application — sign up and refer.</div>
+            </div>
+            <ul>
+              <li><span class="check">✓</span> Partner resources & docs</li>
+              <li><span class="check">✓</span> Directory listing (unverified badge)</li>
+            </ul>
+          </div>
+          <div class="tcard">
+            <div class="tcard-top">
+              <div class="tier-name"><span class="badge badge-registered">Registered</span></div>
+              <div class="tier-comm">30%<small> first payment</small></div>
+              <div class="tier-note">Application + brief review.</div>
+            </div>
+            <ul>
+              <li><span class="check">✓</span> Everything in Informal</li>
+              <li><span class="check">✓</span> Priority support channel</li>
+              <li><span class="check">✓</span> Registered directory badge</li>
+              <li><span class="check">✓</span> Host bootcamps (unpublished)</li>
+            </ul>
+          </div>
+          <div class="tcard certified">
+            <div class="tcard-top">
+              <div class="tier-name"><span class="badge badge-certified">Certified</span></div>
+              <div class="tier-comm">30%<span class="plus"> + 5%</span><small> ongoing</small></div>
+              <div class="tier-note">Application + certification.</div>
+            </div>
+            <ul>
+              <li><span class="check">✓</span> Everything in Registered</li>
+              <li><span class="check">✓</span> 5% ongoing on managed accounts</li>
+              <li><span class="check">✓</span> Dedicated partner manager</li>
+              <li><span class="check">✓</span> Top of directory + publish bootcamps</li>
+              <li><span class="check">✓</span> Co-marketing + early access</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIRECTORY CTA -->
+    <section class="dirband">
+      <div class="wrap">
+        <div class="dircta">
+          <div>
+            <h3>Looking for a partner, not a program?</h3>
+            <p>If you're a business that wants help getting set up on sparx, browse certified partners by location and specialty and reach out directly.</p>
+            <a class="btn btn-dark" style="margin-top: 24px;">Find a partner →</a>
+          </div>
+          <div class="dir-preview">
+            <div class="dir-chip"><span><span class="badge badge-certified">Certified</span></span><span class="loc">Austin, TX</span></div>
+            <div class="dir-chip"><span class="name">Northlight Studio</span><span class="loc">Remote</span></div>
+            <div class="dir-chip"><span><span class="badge badge-registered">Registered</span></span><span class="loc">Portland, OR</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- APPLY -->
+    <section class="apply" id="apply">
+      <div class="wrap">
+        <div class="apply-grid">
+          <div>
+            <div class="shead">
+              <h2>Apply in two minutes<span class="spark">.</span></h2>
+              <p>This isn't a job application. Tell us who you are and how you'll use sparx with clients.</p>
+            </div>
+            <div class="apply-what">
+              <div class="item"><span class="mk">01</span><div><div class="t">Informal auto-approves</div><div class="d">Pick Informal and you're in immediately — start referring today.</div></div></div>
+              <div class="item"><span class="mk">02</span><div><div class="t">Registered & Certified are reviewed</div><div class="d">A quick look at your work. We'll be in touch within 3 business days.</div></div></div>
+              <div class="item"><span class="mk">03</span><div><div class="t">No account needed to apply</div><div class="d">Already run a sparx site? We link it. New? We'll set you up on approval.</div></div></div>
+            </div>
+          </div>
+          <form class="formcard" onsubmit="return false;">
+            <div class="field"><label>Name</label><input placeholder="Ada Lovelace" /></div>
+            <div class="field"><label>Email</label><input placeholder="you@studio.com" /></div>
+            <div class="field"><label>Website or LinkedIn <span class="opt">(optional)</span></label><input placeholder="studio.com" /></div>
+            <div class="field"><label>What best describes you?</label>
+              <select><option>Freelance consultant</option><option>Agency</option><option>Developer</option><option>Other</option></select>
+            </div>
+            <div class="field"><label>How will you use sparx with clients?</label><textarea rows="3" placeholder="Two or three sentences…"></textarea></div>
+            <div class="field"><label>Tier you're applying for</label>
+              <div class="tierpick"><span class="opt2 on">Informal</span><span class="opt2">Registered</span><span class="opt2">Certified</span></div>
+            </div>
+            <button class="submit">Submit application →</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="surface">
+      <div class="wrap">
+        <div class="shead"><h2>Partner questions<span class="spark">.</span></h2></div>
+        <div style="margin-top: 40px;">
+          <div class="faq-item"><div class="faq-q">How does commission actually get paid?<span class="faint">+</span></div><div class="faq-a">Commissions are calculated on net revenue after fees and paid out monthly via Stripe Connect once you clear the $50 minimum. Informal and Registered earn on the first payment; Certified adds 5% ongoing on managed accounts.</div></div>
+          <div class="faq-item"><div class="faq-q">How are my referrals tracked?<span class="faint">+</span></div><div class="faq-a">Your referral link carries a code that's captured in a first-party cookie for 30 days. When someone signs up in that window, they're credited to you — and the commission rate is snapshotted at that moment, so rate changes never rewrite your history.</div></div>
+          <div class="faq-item"><div class="faq-q">Do I need my own sparx account to apply?<span class="faint">+</span></div><div class="faq-a">No. You can apply first. Informal partners are approved instantly and prompted to create an account to activate; if you already run a sparx site, we link the partner record to it.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="final">
+      <div class="wrap">
+        <h2>Start earning on sparx<span class="spark" style="color:var(--indigo);">.</span></h2>
+        <p>Apply in two minutes. Refer your first client this week. Get paid when they go live.</p>
+        <div class="hero-cta">
+          <a class="btn btn-indigo">Apply to become a partner →</a>
+          <a class="btn btn-outline" style="border-color:#2a2a2a;color:#fff;">Browse the directory</a>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

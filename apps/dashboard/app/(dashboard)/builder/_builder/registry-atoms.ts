@@ -559,7 +559,7 @@ const NAV_DEFS: ComponentDef[] = [
     accepts: ['scalar'],
     props: [
       { key: 'text', label: 'Text', control: 'text', placeholder: 'Learn more' },
-      { key: 'href', label: 'Goes to', control: 'text', placeholder: '/about or https://…' },
+      { key: 'href', label: 'Goes to', control: 'linktarget', placeholder: '/about or https://…' },
       {
         key: 'underline',
         label: 'Underline',
@@ -864,7 +864,7 @@ const OVERLAY_DEFS: ComponentDef[] = [
       {
         key: 'href',
         label: 'Links to (optional)',
-        control: 'text',
+        control: 'linktarget',
         placeholder: '/new or https://…',
       },
       {

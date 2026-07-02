@@ -419,6 +419,7 @@ export function BuilderWorkspace({
                   onBind={editor.onBind}
                   onProp={editor.onProp}
                   onRetype={editor.onRetype}
+                  onReplaceNode={editor.replaceNode}
                   selectionCount={editor.selectedIds.length}
                   onDuplicate={editor.duplicateSelection}
                   onDelete={editor.deleteSelection}

@@ -53,7 +53,12 @@ export function layoutTree(): BuilderNode {
             layout: { direction: 'row', justify: 'between', alignItems: 'center', collapse: false },
             children: [
               node('Wordmark', { bind: 'site.identity' }),
-              node('NavMenu', { props: { orientation: 'row', links: NAV } }),
+              // NavMenu is a CONTAINER of NavItem children (docs/57 rebuild) — the
+              // container-native form the starter + platform emit.
+              node('NavMenu', {
+                props: { orientation: 'row' },
+                children: NAV.map((l) => node('NavItem', { props: { label: l.label, href: l.href } })),
+              }),
               node('Button', { props: { label: 'Order Online', style: 'accent', href: '/menu' } }),
             ],
           }),

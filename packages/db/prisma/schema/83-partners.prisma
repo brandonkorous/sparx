@@ -1,0 +1,213 @@
+// Partner Program (docs/114 Part B). A partner is an ORGANIZATION (tenant) that
+// opted into the program — the MarketMerchantProfile "capability row per tenant"
+// shape (80-market.prisma), NOT a Better Auth user and NOT a module. Business
+// tables here use `tenant_id` (== the org id; org == tenant 1:1) so the standard
+// `tenant_isolation` / `current_tenant_id()` RLS applies uniformly with every
+// other business table. The public `/partners` directory reads `partners` +
+// `bootcamps` (84) through a published-row visibility policy under withSystem.
+
+// ── The partner capability row (one per tenant) ─────────────────────────────────
+
+model Partner {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // informal | registered | certified (docs/114 §B.1; commission tiers §B.4).
+  tier   String @default("informal") @db.VarChar(20)
+  // pending | active | suspended. Only `active` partners are publicly listed.
+  status String @default("pending") @db.VarChar(20)
+
+  // Public directory identity (the partner's practice, not the legal tenant name).
+  displayName String  @map("display_name") @db.VarChar(255)
+  bio         String? @db.VarChar(2000)
+  websiteUrl  String? @map("website_url") @db.VarChar(500)
+  // What best describes the partner (application field): freelance | agency | developer | other.
+  kind        String  @default("freelance") @db.VarChar(20)
+
+  locationCity    String? @map("location_city") @db.VarChar(160)
+  locationState   String? @map("location_state") @db.VarChar(120)
+  locationCountry String? @map("location_country") @db.VarChar(2)
+  isRemote        Boolean @default(false) @map("is_remote")
+  // Filterable specialty tags (ecommerce | b2b | crm | email | design | seo | …).
+  // A real Postgres text[] (not JSON) so the directory facet can filter with `&&`.
+  specialties     String[] @default([])
+  photoUrl        String?  @map("photo_url") @db.VarChar(1024)
+  // Opt-out of the public directory (still an active partner, still earns).
+  directoryVisible Boolean @default(true) @map("directory_visible")
+
+  // Attribution — the URL-safe code appended to referral links (`?ref=CODE`),
+  // minted on activation. Globally unique.
+  referralCode String @map("referral_code") @db.VarChar(32)
+
+  // Stripe Connect EXPRESS payout account (docs/114 §B.4) — the destination of
+  // monthly commission transfers. Distinct from the tenant's Sparx Pay
+  // `stripeAccountId` (that ACCEPTS payments; this RECEIVES payouts).
+  stripePayoutAccountId String? @map("stripe_payout_account_id") @db.VarChar(255)
+  // Minimum accrued (approved) commission before a payout run disburses. $50 default.
+  payoutMinCents        Int     @default(5000) @map("payout_min_cents")
+
+  appliedAt   DateTime? @map("applied_at") @db.Timestamptz
+  approvedAt  DateTime? @map("approved_at") @db.Timestamptz
+  certifiedAt DateTime? @map("certified_at") @db.Timestamptz
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+
+  tenant      Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  referrals   PartnerReferral[]
+  commissions PartnerCommission[]
+  payoutRuns  PartnerPayoutRun[]
+
+  @@unique([tenantId], map: "partners_tenant_unique")
+  @@unique([referralCode], map: "partners_referral_code_unique")
+  @@index([status, tier])
+  @@index([directoryVisible, status])
+  @@map("partners")
+}
+
+// ── The application / review queue ──────────────────────────────────────────────
+// Tenant-scoped to the PLATFORM tenant (wizeworks), exactly like job_applications
+// (careers) + the /early-access lead capture — WizeWorks' queue of partner
+// applications. `applicant_tenant_id` links to the applicant's own org once known
+// (nullable: a logged-out applicant applies before they have an account).
+
+model PartnerApplication {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // The applicant's own Sparx org, set when they apply while authed or after they
+  // sign up and the informal tier auto-provisions their partner row.
+  applicantTenantId String? @map("applicant_tenant_id") @db.Uuid
+
+  name       String  @db.VarChar(255)
+  email      String  @db.VarChar(255)
+  websiteUrl String? @map("website_url") @db.VarChar(500)
+  // freelance | agency | developer | other
+  kind       String  @default("freelance") @db.VarChar(20)
+  note       String? @db.Text
+  // informal | registered | certified — informal auto-approves; the rest queue.
+  requestedTier String @default("informal") @map("requested_tier") @db.VarChar(20)
+  // pending | approved | rejected
+  status     String  @default("pending") @db.VarChar(20)
+
+  reviewedAt DateTime? @map("reviewed_at") @db.Timestamptz
+  reviewedBy String?   @map("reviewed_by") @db.Uuid
+
+  ipAddress String? @map("ip_address") @db.VarChar(64)
+  userAgent String? @map("user_agent") @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, status, createdAt(sort: Desc)])
+  @@index([tenantId, email])
+  @@map("partner_applications")
+}
+
+// ── Referral attribution (docs/114 §B.3) ────────────────────────────────────────
+// Tenant-scoped to the PARTNER's org. Created at the referred org's signup via the
+// internal hook (withTenant to the partner's org — RLS-safe cross-org write).
+
+model PartnerReferral {
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String @map("tenant_id") @db.Uuid
+  partnerId String @map("partner_id") @db.Uuid
+
+  // The org that signed up under this code. Bare uuid (cross-module → CRM/tenants).
+  referredTenantId String @map("referred_tenant_id") @db.Uuid
+  referralCode     String @map("referral_code") @db.VarChar(32)
+
+  signupAt       DateTime  @default(now()) @map("signup_at") @db.Timestamptz
+  firstPaymentAt DateTime? @map("first_payment_at") @db.Timestamptz
+
+  // Snapshot of the tier rate at referral time (0.2000 / 0.3000) — rate changes
+  // never rewrite history.
+  commissionRate Decimal @default(0) @map("commission_rate") @db.Decimal(5, 4)
+  // one_time | ongoing (ongoing = certified 5% on managed accounts).
+  commissionType String  @default("one_time") @map("commission_type") @db.VarChar(20)
+  // pending | active | churned | forfeited
+  status         String  @default("pending") @db.VarChar(20)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  partner Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  commissions PartnerCommission[]
+
+  @@unique([referredTenantId], map: "partner_referrals_referred_tenant_unique")
+  @@index([tenantId, status])
+  @@index([partnerId])
+  @@index([referralCode])
+  @@map("partner_referrals")
+}
+
+// ── Commission accrual ledger (docs/114 §B.4) ───────────────────────────────────
+
+model PartnerCommission {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  partnerId  String  @map("partner_id") @db.Uuid
+  referralId String? @map("referral_id") @db.Uuid
+
+  amountCents Int    @map("amount_cents")
+  currency    String @default("USD") @db.VarChar(3)
+  // Accounting period for ongoing commissions, e.g. `2026-07`; null for one-time.
+  period      String? @db.VarChar(7)
+  // one_time | ongoing
+  kind        String  @default("one_time") @db.VarChar(20)
+  // pending | approved | paid | forfeited
+  status      String  @default("pending") @db.VarChar(20)
+
+  payoutRunId     String?   @map("payout_run_id") @db.Uuid
+  stripeTransferId String?  @map("stripe_transfer_id") @db.VarChar(255)
+  paidAt          DateTime? @map("paid_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  partner  Partner          @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  referral PartnerReferral? @relation(fields: [referralId], references: [id], onDelete: SetNull)
+  payoutRun PartnerPayoutRun? @relation(fields: [payoutRunId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, status])
+  @@index([partnerId])
+  @@index([payoutRunId])
+  @@map("partner_commissions")
+}
+
+// ── Payout runs (docs/114 §B.4) — one Stripe Connect transfer per run ────────────
+
+model PartnerPayoutRun {
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String @map("tenant_id") @db.Uuid
+  partnerId String @map("partner_id") @db.Uuid
+
+  periodStart DateTime @map("period_start") @db.Timestamptz
+  periodEnd   DateTime @map("period_end") @db.Timestamptz
+
+  amountCents     Int    @map("amount_cents")
+  currency        String @default("USD") @db.VarChar(3)
+  commissionCount Int    @default(0) @map("commission_count")
+  // pending | processing | paid | failed
+  status          String @default("pending") @db.VarChar(20)
+
+  stripeTransferId String?   @map("stripe_transfer_id") @db.VarChar(255)
+  failureReason    String?   @map("failure_reason") @db.Text
+  paidAt           DateTime? @map("paid_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant      Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  partner     Partner             @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  commissions PartnerCommission[]
+
+  @@index([tenantId, status])
+  @@map("partner_payout_runs")
+}

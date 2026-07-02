@@ -74,6 +74,8 @@
 @import './styles/menu.css' layer(components);
 @import './styles/native-select.css' layer(components);
 @import './styles/nav-menu.css' layer(components);
+@import './styles/nav-shell.css' layer(components);
+@import './styles/account-menu.css' layer(components);
 @import './styles/navbar.css' layer(components);
 @import './styles/pagination.css' layer(components);
 @import './styles/phone.css' layer(components);

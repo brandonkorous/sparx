@@ -42,13 +42,23 @@ import {
   safeElementAttrs,
   type BuilderNode,
 } from '@sparx/builder-schemas';
+import { NavShell } from '@sparx/site-ui';
 
-import { leafWearsClass, renderLeaf } from './render-leaf';
+import { leafWearsClass, renderLeaf, renderLegacyNavLinks } from './render-leaf';
 
-// The 34 curated container types (mirrors the site renderer's CONTAINERS set).
+// The curated container types (mirrors the site renderer's CONTAINERS set).
 // `Outlet` is intentionally excluded — a layout's content slot has no authored
-// HTML of its own; we render it as an empty marker comment instead.
-const CONTAINERS = new Set(['Section', 'Grid', 'Stack', 'Card', 'Carousel', 'ProductForm']);
+// HTML of its own; we render it as an empty marker comment instead. NavMenu is a
+// container too (docs/57 rebuild) but has its own branch below (NavShell).
+const CONTAINERS = new Set([
+  'Section',
+  'Grid',
+  'Stack',
+  'Card',
+  'Carousel',
+  'ProductForm',
+  'NavMenu',
+]);
 
 /** Join class fragments, dropping falsy ones; undefined when empty. */
 function cls(...parts: (string | false | null | undefined)[]): string | undefined {
@@ -72,6 +82,20 @@ function SerializeNode({ node }: { node: BuilderNode }): React.ReactNode {
   if (node.type === 'Outlet') return null;
 
   const kids = (node.children ?? []).map((child) => <SerializeNode key={child.id} node={child} />);
+
+  // NavMenu is a container of NavItem children serialized into a responsive
+  // NavShell (docs/57 rebuild) — mirroring the live renderer's dedicated branch.
+  // Back-compat: a not-yet-migrated NavMenu with legacy props.links[] and no
+  // children serializes those as NavItem-equivalent links.
+  if (node.type === 'NavMenu') {
+    const orientation = node.props.orientation === 'stack' ? 'stack' : 'row';
+    const items = (node.children ?? []).length > 0 ? kids : renderLegacyNavLinks(node.props.links);
+    return (
+      <div className={cls(node.class)}>
+        <NavShell orientation={orientation}>{items}</NavShell>
+      </div>
+    );
+  }
 
   if (isContainer) {
     const body = kids.length > 0 ? kids : null;

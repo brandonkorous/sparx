@@ -34,6 +34,7 @@ COPY packages/email/package.json packages/email/
 COPY packages/events/package.json packages/events/
 COPY packages/crm/package.json packages/crm/
 COPY packages/crm-schemas/package.json packages/crm-schemas/
+COPY packages/partner-schemas/package.json packages/partner-schemas/
 COPY packages/channels/package.json packages/channels/
 COPY packages/commerce/package.json packages/commerce/
 COPY packages/inventory/package.json packages/inventory/
@@ -93,6 +94,7 @@ COPY packages/email packages/email
 COPY packages/events packages/events
 COPY packages/crm packages/crm
 COPY packages/crm-schemas packages/crm-schemas
+COPY packages/partner-schemas packages/partner-schemas
 # @sparx/commerce's market services import @sparx/channels/crypto (docs/106 §4.7);
 # channels is dep-free (node builtins only).
 COPY packages/channels packages/channels

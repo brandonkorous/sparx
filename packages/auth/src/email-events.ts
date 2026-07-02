@@ -24,7 +24,7 @@ export interface PublishAuthEmailInput {
   tenantId: string;
   actorId: string | null;
   /** Restricted to the templates auth flows actually trigger today. */
-  template: 'password-reset' | 'welcome-merchant' | 'email-verification';
+  template: 'password-reset' | 'welcome-merchant' | 'email-verification' | 'team-invitation';
   to: string;
   /** Template-specific props — shape enforced at render time by @sparx/email. */
   props: Record<string, unknown>;

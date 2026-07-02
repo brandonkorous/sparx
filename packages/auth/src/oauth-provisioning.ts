@@ -60,6 +60,23 @@ export async function finalizeOAuthSignup(input: {
 }): Promise<void> {
   const ctx = { tenantId: input.tenantId, userId: input.userId };
 
+  // The owner membership (docs/114 §A.2) — org == tenant. members is NO-FORCE RLS
+  // so authPrisma (sparx_owner) inserts without a tenant GUC. Logged, not fatal:
+  // session resolution still falls back to User.tenantId if this ever fails.
+  try {
+    await authPrisma.member.create({
+      data: {
+        organizationId: input.tenantId,
+        userId: input.userId,
+        role: 'owner',
+        memberType: 'owner',
+        status: 'active',
+      },
+    });
+  } catch (err) {
+    logErr('oauth owner membership failed', err, ctx);
+  }
+
   try {
     await authPrisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.tenant_id', ${input.tenantId}::text, true)`;

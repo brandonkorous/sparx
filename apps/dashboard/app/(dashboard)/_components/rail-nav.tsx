@@ -6,6 +6,7 @@ import { ModuleProvider, useRailExpanded, Wordmark } from '@sparx/ui';
 import {
   Clock,
   Gauge,
+  Handshake,
   Home,
   Landmark,
   Plus,
@@ -89,9 +90,13 @@ interface RailNavProps {
   enabledModules: readonly string[];
   favorites: FavoriteRow[];
   recents: RecentRow[];
+  /** Whether the tenant has a `partners` row (docs/114 §B.7). The Partner tile is
+   *  always shown — a non-partner lands on the join screen — but this tunes the
+   *  tooltip so the pointer reads as "join" vs "your portal". */
+  isPartner: boolean;
 }
 
-export function RailNav({ pathname, enabledModules, favorites, recents }: RailNavProps) {
+export function RailNav({ pathname, enabledModules, favorites, recents, isPartner }: RailNavProps) {
   const visible = moduleManifests.filter((m) => enabledModules.includes(m.id));
   const expanded = useRailExpanded();
 
@@ -290,6 +295,27 @@ export function RailNav({ pathname, enabledModules, favorites, recents }: RailNa
             <Landmark className="h-4 w-4" />
           </span>
           {expanded && <span className="flex-1 truncate text-left">Finance</span>}
+        </Link>
+      </ModuleProvider>
+
+      {/* Partner Portal — a first-class platform area (docs/114 §B.7), not a
+          module, so it pins to the bottom cluster beside Finance. It owns a brand
+          hue (violet), so like Finance it rides under its own ModuleProvider and
+          the glyph always carries the partner color. The tile is ALWAYS shown: a
+          non-partner lands on the "Become a partner" join screen — the tooltip
+          distinguishes joining from returning to your portal. */}
+      <ModuleProvider module="partner">
+        <Link
+          href="/partner"
+          title={isPartner ? 'Partner' : 'Become a partner'}
+          aria-label={isPartner ? 'Partner' : 'Become a partner'}
+          aria-current={isActivePath(pathname, '/partner') ? 'page' : undefined}
+          className={tileClass(isActivePath(pathname, '/partner'), expanded)}
+        >
+          <span className={MODULE_TILE_ICON}>
+            <Handshake className="h-4 w-4" />
+          </span>
+          {expanded && <span className="flex-1 truncate text-left">Partner</span>}
         </Link>
       </ModuleProvider>
 

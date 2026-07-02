@@ -47,7 +47,7 @@ export const SETTINGS_NAV: readonly SettingsNavItem[] = [
     description: 'Invite staff, assign roles, audit access.',
     icon: Users,
     href: '/settings/team',
-    ready: false,
+    ready: true,
   },
   {
     id: 'modules',

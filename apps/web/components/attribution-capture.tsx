@@ -6,6 +6,9 @@ import {
   attrCookieString,
   captureTouch,
   deserializeSnapshot,
+  readRefCode,
+  REF_COOKIE,
+  REF_WINDOW_DAYS,
   resolveFirstTouch,
   resolveLastTouch,
   serializeSnapshot,
@@ -62,6 +65,18 @@ export function AttributionCapture(): null {
 
         writeAttrCookie(ATTR_COOKIES.first, serializeSnapshot(first));
         writeAttrCookie(ATTR_COOKIES.last, serializeSnapshot(last));
+
+        // Partner referral (docs/114 §B.3) — a `?ref=CODE` is set-once with a
+        // 30-day window so the FIRST partner to send the visitor keeps the credit;
+        // the cookie crosses to app.sparx.works and is recorded at signup.
+        const ref = readRefCode(window.location.href);
+        if (ref && !readCookie(REF_COOKIE)) {
+          document.cookie = attrCookieString(REF_COOKIE, ref, {
+            domain: cookieDomain(),
+            secure: window.location.protocol === 'https:',
+            maxAgeDays: REF_WINDOW_DAYS,
+          });
+        }
       },
     });
   }, []);

@@ -126,6 +126,19 @@ module "pubsub" {
     "crm.customer.deleted" = []
     "crm.customer.merged"  = []
 
+    # Partner Program (docs/114 Part B) — topic-only fan-out (no idle pull
+    # subscription yet); future consumers = staff notification + analytics +
+    # the automation fan-in. api-rest publishes on partner activation, referral
+    # credit, commission accrual, payout, and bootcamp lifecycle / RSVP.
+    "partner.application.submitted" = []
+    "partner.activated"             = []
+    "partner.referral.created"      = []
+    "partner.commission.accrued"    = []
+    "partner.payout.paid"           = []
+    "bootcamp.published"            = []
+    "bootcamp.cancelled"            = []
+    "bootcamp.registration.created" = []
+
     # Invoicing — authored billing documents (docs/87 §13). Published on the CRM
     # bus and teed to the automation fan-in + webhook fan-out via the standard
     # bridge. Topic-only (empty list = no idle pull subscription); a stage

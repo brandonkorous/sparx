@@ -108,6 +108,20 @@ export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUp
         },
       });
 
+      // The owner membership (docs/114 §A.2). Makes the user a member of their own
+      // org (org == tenant) so the client-accounts list, the Team view, and
+      // active-org resolution all see it. Every future team member / consultant is
+      // added as another `members` row.
+      await tx.member.create({
+        data: {
+          organizationId: provisioned.tenantId,
+          userId: user.id,
+          role: 'owner',
+          memberType: 'owner',
+          status: 'active',
+        },
+      });
+
       // Record acceptance of sparx's platform legal docs (docs/42 §6) atomically
       // with account creation — the sign-up form gates on the agreement
       // checkbox, so reaching here means the owner accepted. DPA is EU-only and

@@ -18,6 +18,8 @@
 
 import {
   Building2,
+  CircleUser,
+  Columns3,
   DollarSign,
   Fingerprint,
   GalleryHorizontal,
@@ -133,7 +135,8 @@ export interface PropSpec {
     | 'switch'
     | 'icon'
     | 'richtext'
-    | 'navlinks';
+    | 'navlinks'
+    | 'linktarget';
   /** A `buttongroup` option may carry an icon (e.g. the H1/H2/H3 heading-level
    *  glyphs) — the Segmented control shows it alongside the label. */
   options?: { value: string; label: string; icon?: LucideIcon }[];
@@ -415,7 +418,7 @@ const DEFS: ComponentDef[] = [
       {
         key: 'href',
         label: 'Goes to',
-        control: 'text',
+        control: 'linktarget',
         placeholder: '/products/model-3 or https://…',
       },
     ],
@@ -809,14 +812,18 @@ const DEFS: ComponentDef[] = [
   {
     type: 'NavMenu',
     label: 'Navigation',
-    kind: 'leaf',
+    kind: 'container',
     group: 'data',
     icon: Menu,
     module: 'site',
-    // Node-owned (docs/57): the links live in `props.links`, authored via the
-    // navlinks control — not bound to a CMS menu. Existing CMS-bound nodes were
-    // migrated to node-owned links (20260706_nav_into_builder), so there's no
-    // storefront fallback anymore.
+    // A CONTAINER of NavItem children (docs/57 rebuild): each link is its own
+    // NavItem node — individually selectable + retargetable via the link picker,
+    // and nestable into a dropdown. This replaces the old node-owned `props.links[]`
+    // leaf model (edited by the near-invisible navlinks control); existing
+    // `props.links[]` are migrated to NavItem children (20260703_navmenu_container)
+    // and kept rendering through the transition by the host's back-compat branch.
+    // `orientation` picks the shell: `row` = responsive header bar (hamburger on
+    // narrow), `stack` = a static footer/secondary column.
     bindable: false,
     accepts: [],
     surfaces: ['site'],
@@ -830,13 +837,108 @@ const DEFS: ComponentDef[] = [
           { value: 'stack', label: 'Stack' },
         ],
       },
-      {
-        key: 'links',
-        label: 'Links',
-        control: 'navlinks',
-      },
     ],
     defaults: { props: { orientation: 'row' } },
+  },
+  {
+    type: 'NavItem',
+    label: 'Nav item',
+    kind: 'leaf',
+    group: 'data',
+    icon: Link,
+    module: 'site',
+    // A single nav link — set its target with the shared link-target picker. Drop
+    // child NavItems into it and it becomes a dropdown (docs/57 rebuild), the same
+    // way a Button nests an Icon. Not bound: nav links are authored, not data.
+    bindable: false,
+    accepts: [],
+    surfaces: ['site'],
+    // Nesting child NavItems turns this into a dropdown trigger + panel.
+    acceptsChildren: true,
+    props: [
+      { key: 'label', label: 'Label', control: 'text', placeholder: 'Menu item' },
+      {
+        key: 'href',
+        label: 'Goes to',
+        control: 'linktarget',
+        placeholder: '/page or https://…',
+      },
+      { key: 'openInNewTab', label: 'Open in new tab', control: 'switch' },
+      { key: 'icon', label: 'Icon (optional)', control: 'icon' },
+    ],
+    defaults: { props: { label: 'Menu item', href: '/' } },
+  },
+  {
+    type: 'NavMegamenu',
+    label: 'Mega-menu',
+    kind: 'leaf',
+    group: 'data',
+    icon: Columns3,
+    module: 'site',
+    // A labelled trigger that opens a WIDE, multi-column panel (docs/57 rebuild) —
+    // like a NavItem dropdown, but its authored children lay out as columns. Drop a
+    // column (e.g. a Stack of a heading + NavItems) per grid cell; `columns` picks
+    // 2/3/4. A leaf-with-children, same as NavItem.
+    bindable: false,
+    accepts: [],
+    surfaces: ['site'],
+    acceptsChildren: true,
+    props: [
+      { key: 'label', label: 'Label', control: 'text', placeholder: 'Menu' },
+      {
+        key: 'columns',
+        label: 'Columns',
+        control: 'buttongroup',
+        options: [
+          { value: '2', label: '2' },
+          { value: '3', label: '3' },
+          { value: '4', label: '4' },
+        ],
+      },
+      { key: 'icon', label: 'Icon (optional)', control: 'icon' },
+    ],
+    defaults: { props: { label: 'Menu', columns: '3' } },
+  },
+  {
+    type: 'AccountMenu',
+    label: 'Account menu',
+    kind: 'leaf',
+    group: 'data',
+    icon: CircleUser,
+    module: 'commerce',
+    // The storefront auth affordance (docs/27): signed-out shows Sign in / Sign up;
+    // signed-in shows an avatar + a dropdown (Account / Orders / Wishlist / Sign
+    // out). Session-aware — the render island reads the live customer session; the
+    // canvas previews the signed-in menu. Gated on commerce (customer accounts live
+    // under the commerce module today — the account API is /commerce/account/*).
+    bindable: false,
+    accepts: [],
+    surfaces: ['site'],
+    props: [
+      { key: 'signInLabel', label: 'Sign in label', control: 'text', placeholder: 'Sign in' },
+      { key: 'signUpLabel', label: 'Sign up label', control: 'text', placeholder: 'Sign up' },
+      { key: 'signInHref', label: 'Sign in link', control: 'linktarget', placeholder: '/account' },
+      {
+        key: 'signUpHref',
+        label: 'Sign up link',
+        control: 'linktarget',
+        placeholder: '/account?mode=register',
+      },
+      { key: 'accountHref', label: 'Account link', control: 'linktarget', placeholder: '/account' },
+      {
+        key: 'ordersHref',
+        label: 'Orders link (optional)',
+        control: 'linktarget',
+        placeholder: '/account/orders',
+      },
+      {
+        key: 'wishlistHref',
+        label: 'Wishlist link (optional)',
+        control: 'linktarget',
+        placeholder: '/account/wishlist',
+      },
+    ],
+    defaults: { props: {} },
   },
   {
     type: 'Logo',

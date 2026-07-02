@@ -23,6 +23,18 @@
 
 import * as React from 'react';
 
+/** The live customer session the AccountMenu island reads (docs/27). Supplied only
+ *  by the live storefront (bridged from apps/site's CustomerProvider); left
+ *  undefined on the editor canvas, where the island falls back to a signed-out
+ *  preview. */
+export interface BuilderAccount {
+  status: 'loading' | 'authenticated' | 'anonymous';
+  /** Display name (first + last, or the email) — null when signed out. */
+  name: string | null;
+  /** Sign the customer out (clears the session, then refreshes the UI). */
+  signOut: () => Promise<void>;
+}
+
 /** The terminal side effects the interactive islands perform. Live wires these to
  *  the storefront cart/capture APIs; the canvas leaves them as no-ops. */
 export interface BuilderRuntime {
@@ -33,6 +45,9 @@ export interface BuilderRuntime {
   buyNow: (variantId: string, quantity: number) => Promise<void>;
   /** Subscribe an email address to the tenant's list via the public capture endpoint. */
   subscribeEmail: (email: string) => Promise<void>;
+  /** The customer session, for the AccountMenu island. Optional: only the live
+   *  storefront supplies it; the canvas leaves it undefined. */
+  account?: BuilderAccount;
 }
 
 // The canvas default: every effect is an inert resolved promise, so an island that

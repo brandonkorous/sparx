@@ -26,11 +26,21 @@ import {
   Text,
   type SparxModule,
 } from '@sparx/ui';
-import { Check, ChevronDown, Globe, LogOut, Settings as SettingsIcon } from 'lucide-react';
+import {
+  Building2,
+  Check,
+  ChevronDown,
+  Globe,
+  LogOut,
+  Settings as SettingsIcon,
+  Users,
+} from 'lucide-react';
+import type { OrgMembership } from '@sparx/auth';
 import { findSectionByPath, getManifestForPath, moduleManifests } from '../_shell/registry';
 import type { Property } from '@/lib/sites';
 import { resolveActiveProperty } from '@/lib/site-scope';
 import { setActiveSite } from '../settings/sites/actions';
+import { switchOrganization } from '@/lib/org-actions';
 
 // Workspace > Site > Module > Section > Page
 //
@@ -73,6 +83,10 @@ export interface BreadcrumbTrailProps {
    *  Site segment; the switcher hides itself when the tenant has ≤1 site. */
   sites?: Property[];
   activePropertyId?: string | null;
+  /** The user's org memberships + active org id (docs/114 §A.4). Turns the
+   *  Workspace crumb into a switcher when the user belongs to >1 org. */
+  organizations?: OrgMembership[];
+  activeOrgId?: string | null;
 }
 
 export function BreadcrumbTrail({
@@ -80,6 +94,8 @@ export function BreadcrumbTrail({
   enabledModules,
   sites = [],
   activePropertyId = null,
+  organizations = [],
+  activeOrgId = null,
 }: BreadcrumbTrailProps) {
   const pathname = usePathname() ?? '/';
   const manifest = getManifestForPath(pathname);
@@ -127,6 +143,8 @@ export function BreadcrumbTrail({
           switchableModules={switchableModules}
           sites={sites}
           activeSiteId={activeSite?.id ?? null}
+          organizations={organizations}
+          activeOrgId={activeOrgId}
         />
       </div>
       <div className="min-w-0 md:hidden">
@@ -137,6 +155,8 @@ export function BreadcrumbTrail({
           switchableModules={switchableModules}
           sites={sites}
           activeSiteId={activeSite?.id ?? null}
+          organizations={organizations}
+          activeOrgId={activeOrgId}
         />
       </div>
     </>
@@ -151,12 +171,16 @@ function DesktopTrail({
   switchableModules,
   sites,
   activeSiteId,
+  organizations,
+  activeOrgId,
 }: {
   segments: TrailSegment[];
   manifest: Manifest | undefined;
   switchableModules: Manifest[];
   sites: Property[];
   activeSiteId: string | null;
+  organizations: OrgMembership[];
+  activeOrgId: string | null;
 }) {
   const collapseState = useResponsiveCollapse(segments.length);
 
@@ -210,6 +234,8 @@ function DesktopTrail({
                   switchableModules={switchableModules}
                   sites={sites}
                   activeSiteId={activeSiteId}
+                  organizations={organizations}
+                  activeOrgId={activeOrgId}
                 />
               </BreadcrumbItem>
               {!isVisuallyLast && <BreadcrumbSeparator />}
@@ -228,6 +254,8 @@ function SegmentContent({
   switchableModules,
   sites,
   activeSiteId,
+  organizations,
+  activeOrgId,
 }: {
   seg: TrailSegment;
   isLast: boolean;
@@ -235,9 +263,17 @@ function SegmentContent({
   switchableModules: Manifest[];
   sites: Property[];
   activeSiteId: string | null;
+  organizations: OrgMembership[];
+  activeOrgId: string | null;
 }) {
   if (seg.kind === 'tenant') {
-    return <WorkspaceSegment tenantName={seg.label} />;
+    return (
+      <WorkspaceSegment
+        tenantName={seg.label}
+        organizations={organizations}
+        activeOrgId={activeOrgId}
+      />
+    );
   }
   if (seg.kind === 'site') {
     return <SiteSegment sites={sites} activeSiteId={activeSiteId} />;
@@ -257,20 +293,71 @@ function SegmentContent({
   );
 }
 
-// Workspace control. Phase 1: settings + sign out. Switch/create workspace
-// land in Phase 2 with the Better Auth org plugin (docs/32).
-function WorkspaceSegment({ tenantName }: { tenantName: string }) {
+// Workspace control (docs/114 §A.4). Always carries Team, settings + sign out.
+// When the user belongs to more than one org it also becomes a switcher: pick
+// another workspace (sets the active org → re-mints the JWT tid/role) or jump to
+// the full accounts picker.
+function WorkspaceSegment({
+  tenantName,
+  organizations,
+  activeOrgId,
+}: {
+  tenantName: string;
+  organizations: OrgMembership[];
+  activeOrgId: string | null;
+}) {
+  const router = useRouter();
+  const [pending, startTransition] = React.useTransition();
+  const multi = organizations.length > 1;
+
+  const switchTo = (organizationId: string) => {
+    if (organizationId === activeOrgId) return;
+    startTransition(async () => {
+      await switchOrganization(organizationId);
+      router.refresh();
+    });
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="min-w-0">
+        <Button variant="ghost" size="sm" className="min-w-0" disabled={pending}>
           <span className="min-w-0 truncate">{tenantName}</span>
           <ChevronDown className="h-3.5 w-3.5 shrink-0" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-64">
-        <DropdownMenuLabel>{tenantName}</DropdownMenuLabel>
-        <DropdownMenuSeparator />
+        {multi ? (
+          <>
+            <DropdownMenuLabel>Switch workspace</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {organizations.map((o) => (
+              <DropdownMenuItem key={o.organizationId} onSelect={() => switchTo(o.organizationId)}>
+                <Building2 className="h-4 w-4 shrink-0 opacity-70" />
+                <span className="min-w-0 flex-1 truncate">{o.name}</span>
+                {o.organizationId === activeOrgId ? <Check className="h-4 w-4 shrink-0" /> : null}
+              </DropdownMenuItem>
+            ))}
+            <DropdownMenuItem asChild>
+              <Link href="/accounts">
+                <Building2 className="h-4 w-4" />
+                All accounts
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        ) : (
+          <>
+            <DropdownMenuLabel>{tenantName}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+          </>
+        )}
+        <DropdownMenuItem asChild>
+          <Link href="/settings/team">
+            <Users className="h-4 w-4" />
+            Team
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/settings">
             <SettingsIcon className="h-4 w-4" />
@@ -422,6 +509,8 @@ function MobileSwitcher({
   switchableModules,
   sites,
   activeSiteId,
+  organizations,
+  activeOrgId,
 }: {
   tenantName: string;
   manifest: Manifest | undefined;
@@ -429,6 +518,8 @@ function MobileSwitcher({
   switchableModules: Manifest[];
   sites: Property[];
   activeSiteId: string | null;
+  organizations: OrgMembership[];
+  activeOrgId: string | null;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -446,6 +537,16 @@ function MobileSwitcher({
     if (id === activeSite?.id) return;
     startTransition(async () => {
       await setActiveSite(id);
+      router.refresh();
+    });
+  };
+
+  const multiOrg = organizations.length > 1;
+  const switchOrg = (id: string) => {
+    setOpen(false);
+    if (id === activeOrgId) return;
+    startTransition(async () => {
+      await switchOrganization(id);
       router.refresh();
     });
   };
@@ -482,7 +583,28 @@ function MobileSwitcher({
           <div className="overflow-y-auto pb-2">
             <Stack gap={1}>
               <SheetGroupLabel>Workspace</SheetGroupLabel>
-              <SheetRow active>{tenantName}</SheetRow>
+              {multiOrg ? (
+                organizations.map((o) => (
+                  <SheetRow
+                    key={o.organizationId}
+                    onClick={() => switchOrg(o.organizationId)}
+                    active={o.organizationId === activeOrgId}
+                    icon={<Building2 className="h-4 w-4" />}
+                  >
+                    {o.name}
+                  </SheetRow>
+                ))
+              ) : (
+                <SheetRow active>{tenantName}</SheetRow>
+              )}
+              {multiOrg ? (
+                <SheetRow href="/accounts" icon={<Building2 className="h-4 w-4" />}>
+                  All accounts
+                </SheetRow>
+              ) : null}
+              <SheetRow href="/settings/team" icon={<Users className="h-4 w-4" />}>
+                Team
+              </SheetRow>
               <SheetRow href="/settings" icon={<SettingsIcon className="h-4 w-4" />}>
                 Workspace settings
               </SheetRow>

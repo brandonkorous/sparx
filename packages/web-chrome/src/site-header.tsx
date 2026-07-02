@@ -31,6 +31,7 @@ const LINKS = [
   { label: 'Platform', href: '/platform' },
   { label: 'Features', href: '/features' },
   { label: 'Pricing', href: '/pricing' },
+  { label: 'Partners', href: '/partners' },
   { label: 'Tools', href: '/tools' },
   { label: 'Docs', href: '/docs' },
   { label: 'Customers', href: '/customers' },

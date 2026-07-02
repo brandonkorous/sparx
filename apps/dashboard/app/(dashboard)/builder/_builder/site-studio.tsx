@@ -1255,6 +1255,7 @@ export function SiteStudio({
                     onBind={studio.onBind}
                     onProp={studio.onProp}
                     onRetype={studio.onRetype}
+                    onReplaceNode={studio.replaceNode}
                     selectionCount={studio.selection.ids.length}
                     onDuplicate={studio.duplicateSelection}
                     onDelete={studio.deleteSelection}

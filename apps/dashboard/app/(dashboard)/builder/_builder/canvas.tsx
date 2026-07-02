@@ -62,9 +62,11 @@ import {
   ProductFormProvider,
   leafWearsClass,
   renderLeaf,
+  renderLegacyNavLinks,
   resolveBuilderProduct,
   sxAttrs,
 } from '@sparx/builder-render';
+import { NavShell } from '@sparx/site-ui';
 
 // ── Class-only rendering (docs/61) ────────────────────────────────────────────
 //
@@ -542,6 +544,37 @@ function CanvasNode({
           dots={node.props.dots !== false}
         />
       );
+  } else if (def.kind === 'container' && node.type === 'NavMenu') {
+    // NavMenu is a container of NavItem children rendered ONCE into a responsive
+    // NavShell (docs/57 rebuild) — mirroring the live storefront branch so the
+    // preview IS what ships. Single subtree, so the dnd-kit sortable ids never
+    // collide. Back-compat: a not-yet-migrated NavMenu with legacy props.links[]
+    // and no children previews those as (non-selectable) NavItem-equivalent links
+    // until the tree migration converts them.
+    const orientation = node.props.orientation === 'stack' ? 'stack' : 'row';
+    const kids = node.children ?? [];
+    const legacy = kids.length === 0 ? renderLegacyNavLinks(node.props.links) : [];
+    if (kids.length === 0 && legacy.length === 0 && !locked) {
+      body = <div className="bx-empty">Empty — drop a Nav item or add nav links</div>;
+    } else {
+      const items =
+        kids.length > 0
+          ? kids.map((child) => (
+              <CanvasNode
+                key={child.id}
+                node={child}
+                scope={scope}
+                catalog={catalog}
+                components={components}
+                selectedId={selectedId}
+                onSelect={onSelect}
+                locked={locked}
+                outletSlot={outletSlot}
+              />
+            ))
+          : legacy;
+      body = <NavShell orientation={orientation}>{items}</NavShell>;
+    }
   } else if (def.kind === 'container') {
     const kids = node.children ?? [];
     let scopes: { s: Scope; key: string }[];

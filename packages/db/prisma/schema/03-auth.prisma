@@ -34,6 +34,10 @@ model User {
   tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   sessions          Session[]
   accounts          Account[]
+  // Organizations & Teams (docs/114 Part A) — this user's memberships across
+  // orgs (the "client accounts" list) + the invitations they sent as an admin.
+  memberships       Member[]
+  sentInvitations   Invitation[]
   // Web Push subscriptions registered from this user's browsers (docs/69 A-6).
   pushSubscriptions PushSubscription[]
 
@@ -83,6 +87,10 @@ model Session {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId    String   @map("user_id") @db.Uuid
   token     String   @unique @db.VarChar(255) // SHA-256 of refresh token
+  // Which org the session is currently acting in (docs/114 Part A). NULL → the
+  // user's default membership (their own tenant). The JWT `tid` is minted from
+  // this (falling back to users.tenant_id during expand); switching org re-mints.
+  activeOrganizationId String? @map("active_organization_id") @db.Uuid
   expiresAt DateTime @map("expires_at") @db.Timestamptz
   ipAddress String?  @map("ip_address") @db.Inet
   userAgent String?  @map("user_agent") @db.Text

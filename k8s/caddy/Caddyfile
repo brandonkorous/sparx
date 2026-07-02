@@ -227,16 +227,26 @@ sparx.zone, www.sparx.zone {
 # OWN origin so the browser keeps its sparx_customer_session cookie through the
 # authorize → consent flow: `/v1/public/auth*` (Better Auth handler + consent) and
 # the AS discovery docs are carved out to api-rest with the Host preserved (tenant
-# resolves from it). Only the oauth-authorization-server / openid-configuration
-# well-knowns route to api-rest — every other `/.well-known/*` (incl.
-# `/mcp/.well-known/oauth-protected-resource`, served by mcp-site via the
-# /mcp carve-out) still reaches the site app. Everything else falls through.
+# resolves from it). The oauth-authorization-server / openid-configuration well-knowns
+# route to api-rest (the AS); the oauth-protected-resource well-known — in EVERY RFC
+# 9728 shape (bare root, path-inserted, and the /mcp-suffixed one that already rides
+# /mcp*) — routes to mcp-site (the resource server). Every other `/.well-known/*`
+# still reaches the site app. Everything else falls through.
 :443 {
   tls {
     on_demand
   }
   import security_headers
   handle /mcp* {
+    reverse_proxy mcp-site.sparx-prod.svc.cluster.local:3200
+  }
+  # RFC 9728 Protected Resource Metadata for the shopper MCP, served by mcp-site (the
+  # resource server) in every discovery shape a client may construct — bare root and
+  # path-inserted (/.well-known/oauth-protected-resource[/<resource-path>]). The
+  # /mcp-suffixed variant already rides the /mcp* carve-out above. WITHOUT this these
+  # fall through to the site app and 404, so a client whose unauthenticated
+  # `initialize` succeeds (no WWW-Authenticate to read) can't discover the AS.
+  handle /.well-known/oauth-protected-resource* {
     reverse_proxy mcp-site.sparx-prod.svc.cluster.local:3200
   }
   handle /v1/public/auth* {

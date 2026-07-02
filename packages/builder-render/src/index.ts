@@ -9,6 +9,7 @@
 // The unified leaf render + the host-shared predicates/helpers.
 export {
   renderLeaf,
+  renderLegacyNavLinks,
   leafWearsClass,
   resolveBuilderProduct,
   youtubeEmbed,
@@ -27,7 +28,11 @@ export {
   EditModeProvider,
   useEditMode,
   type BuilderRuntime,
+  type BuilderAccount,
 } from './runtime-context';
+
+// The customer-account navbar island (docs/27) — reads the runtime session.
+export { BuilderAccountMenu, type BuilderAccountMenuProps } from './account-menu';
 
 // Interactive islands — rendered identically on both surfaces.
 export { BuilderCarousel, type BuilderCarouselProps } from './carousel';

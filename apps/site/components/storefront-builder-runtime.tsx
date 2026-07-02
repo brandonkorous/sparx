@@ -22,11 +22,19 @@ import {
 
 import { useCart } from './cart-provider';
 import { useCustomer } from './customer-provider';
+import type { Customer } from '@/lib/customer-client';
 import { subscribeEmail } from '@/lib/signup-client';
+
+/** Display name for the account menu: full name, else the email, else null. */
+function accountName(c: Customer | null): string | null {
+  if (!c) return null;
+  const full = [c.firstName, c.lastName].filter(Boolean).join(' ').trim();
+  return full !== '' ? full : (c.email ?? null);
+}
 
 export function StorefrontBuilderRuntime({ children }: { children: React.ReactNode }) {
   const { addItem } = useCart();
-  const { tenantSlug, propertySlug } = useCustomer();
+  const { tenantSlug, propertySlug, customer, status, logout } = useCustomer();
   const router = useRouter();
   const runtime = React.useMemo<BuilderRuntime>(
     () => ({
@@ -38,8 +46,18 @@ export function StorefrontBuilderRuntime({ children }: { children: React.ReactNo
         router.push('/checkout');
       },
       subscribeEmail: (email) => subscribeEmail(tenantSlug, email, propertySlug),
+      // The customer session for the AccountMenu island (docs/27) — signed-in name,
+      // status, and a sign-out that clears the session then re-renders.
+      account: {
+        status,
+        name: accountName(customer),
+        signOut: async () => {
+          await logout();
+          router.refresh();
+        },
+      },
     }),
-    [addItem, router, tenantSlug, propertySlug]
+    [addItem, router, tenantSlug, propertySlug, customer, status, logout]
   );
   // Hydrate the sanctioned behavior runtime (docs/98 Pillar 5) over the live tree —
   // full behavior here (autoplay, scroll listeners, marquee cloning), unlike the

@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>sparx — Business OS Bootcamp</title>
+    <!--
+      Business OS Bootcamp landing — "Build your business. Launch on Sparx."
+      Energetic accent = commerce ORANGE (launch/ignite), distinct from the
+      partner program's indigo. Devices:
+        HERO      orange-tinted, type-driven + mono "one platform" strip
+        ARC       the free-to-build arc — a horizontal build track with
+                  module-colored waypoints (storefront/CRM/email/automation)
+                  terminating in a bright PUBLISH ignition. Vertical on mobile.
+        WHOFOR    3-up profile ledger (top-hairline accent, no icon cards)
+        FORMATS   hairline-divided label strip (no cards)
+        DIRECTORY faceted list (chips) + cards + empty state
+        HOSTCTA   dark "host a bootcamp" beat
+      No eyebrows, no gradients. Spark = orange period, once per headline.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --indigo: #6366f1; --indigo-text: #4338ca; --indigo-tint: #eef2ff;
+        --orange: #f97316; --orange-text: #c2410c; --orange-tint: #fff7ed;
+        --crm: #06b6d4; --crm-tint: #ecfeff;
+        --email: #0ea5e9; --email-tint: #f0f9ff;
+        --fuchsia: #d946ef; --fuchsia-tint: #fdf4ff;
+        --ink: #0a0a0a; --muted: #52525b; --soft: #3f3f46; --faint: #a1a1aa;
+        --border: #e5e5e5; --page: #fafafa; --surface: #ffffff;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body { font-family: 'Geist', system-ui, sans-serif; color: var(--ink); background: var(--page); -webkit-font-smoothing: antialiased; }
+      .wrap { max-width: 1200px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 80px); }
+      section { padding: clamp(72px, 11vw, 128px) 0; }
+      h1, h2, h3, p { margin: 0; }
+      a { color: inherit; }
+      .nav { display: flex; align-items: center; justify-content: space-between; padding: 20px clamp(20px,5vw,80px); border-bottom: 1px solid var(--border); background: var(--page); position: sticky; top: 0; z-index: 50; }
+      .wordmark { font-family: 'Inter', sans-serif; font-weight: 700; letter-spacing: -0.03em; font-size: 22px; }
+      .wordmark .x { color: var(--indigo); }
+      .navlinks { display: flex; gap: 32px; font-size: 14px; color: var(--muted); }
+      .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 8px; font-size: 15px; font-weight: 500; text-decoration: none; cursor: pointer; border: 1px solid transparent; }
+      .btn-dark { background: var(--ink); color: #fff; }
+      .btn-orange { background: var(--orange); color: #fff; }
+      .btn-outline { background: transparent; border-color: var(--border); color: var(--ink); }
+      .sparkO { color: var(--orange); }
+
+      /* HERO */
+      .hero { background: var(--orange-tint); padding: clamp(64px,9vw,112px) 0 clamp(72px,10vw,120px); }
+      .hero h1 { font-weight: 500; letter-spacing: -0.035em; line-height: 0.98; font-size: clamp(44px, 8vw, 92px); max-width: 15ch; }
+      .hero-sub { font-size: clamp(17px,1.7vw,20px); line-height: 1.55; color: var(--soft); max-width: 600px; margin-top: 28px; }
+      .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
+      .platstrip { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 40px; font-family: 'Geist Mono', monospace; font-size: 12.5px; color: var(--orange-text); }
+      .platstrip span { display: inline-flex; align-items: center; gap: 8px; }
+      .dotO { width: 7px; height: 7px; border-radius: 999px; background: var(--orange); }
+
+      .shead { max-width: 720px; }
+      .shead h2 { font-weight: 500; letter-spacing: -0.028em; font-size: clamp(30px,4.4vw,52px); line-height: 1.04; }
+      .shead p { font-size: 18px; line-height: 1.66; color: var(--muted); margin-top: 22px; max-width: 620px; }
+
+      /* FREE-TO-BUILD ARC */
+      .surface { background: var(--surface); border-top: 1px solid var(--border); }
+      .arc { margin-top: 64px; }
+      .arc-track { position: relative; display: grid; grid-template-columns: repeat(4, 1fr) 150px; align-items: start; }
+      .arc-line { position: absolute; left: 0; right: 0; top: 11px; height: 2px; background: var(--border); z-index: 0; }
+      .arc-fill { position: absolute; left: 0; top: 11px; height: 2px; width: calc(100% - 150px); background: linear-stub; z-index: 0; }
+      .wp { position: relative; z-index: 1; padding-right: 20px; }
+      .wp-dot { width: 24px; height: 24px; border-radius: 999px; border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--border); display: block; }
+      .wp h4 { font-size: 16px; font-weight: 500; letter-spacing: -0.01em; margin: 16px 0 0; }
+      .wp p { font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-top: 7px; }
+      .wp .tag { font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--faint); }
+      .wp.pub .wp-dot { width: 28px; height: 28px; background: var(--orange); box-shadow: 0 0 0 6px var(--orange-tint); border-color: var(--surface); }
+      .wp.pub h4 { color: var(--orange-text); }
+      .arc-free { margin-top: 44px; display: inline-flex; align-items: center; gap: 12px; padding: 12px 20px; background: var(--orange-tint); border-radius: 999px; font-size: 15px; color: var(--orange-text); font-weight: 500; }
+
+      /* WHO FOR */
+      .whofor { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 56px; }
+      .who { padding: 0 32px 0 0; }
+      .who .bar { height: 3px; width: 44px; border-radius: 2px; background: var(--orange); }
+      .who h3 { font-size: 20px; font-weight: 500; letter-spacing: -0.02em; margin-top: 20px; }
+      .who p { font-size: 15px; line-height: 1.6; color: var(--muted); margin-top: 12px; }
+
+      /* FORMATS */
+      .formats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-top: 56px; }
+      .fmt { padding: 28px 24px; border-left: 1px solid var(--border); }
+      .fmt:first-child { border-left: none; }
+      .fmt .nm { font-size: 17px; font-weight: 500; letter-spacing: -0.01em; }
+      .fmt .ds { font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-top: 8px; }
+
+      /* DIRECTORY */
+      .page { background: var(--page); border-top: 1px solid var(--border); }
+      .facets { display: flex; flex-direction: column; gap: 16px; margin-top: 40px; }
+      .facet-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+      .facet-lab { font-size: 12px; font-weight: 500; color: var(--faint); width: 90px; }
+      .chip { padding: 5px 12px; border: 1px solid var(--border); border-radius: 999px; font-size: 13px; color: var(--soft); background: var(--surface); cursor: pointer; }
+      .chip.on { border-color: var(--orange); background: var(--orange-tint); color: var(--orange-text); font-weight: 500; }
+      .bcgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 36px; }
+      .bccard { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+      .bccard .top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+      .fmtpill { font-family: 'Geist Mono', monospace; font-size: 11px; padding: 4px 10px; border-radius: 999px; background: var(--orange-tint); color: var(--orange-text); }
+      .seats { font-size: 12px; color: var(--faint); }
+      .bccard h3 { font-size: 19px; font-weight: 500; letter-spacing: -0.015em; line-height: 1.25; }
+      .bcmeta { display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; color: var(--muted); }
+      .bchost { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--soft); padding-top: 14px; border-top: 1px solid var(--border); margin-top: auto; }
+      .badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 500; }
+      .badge-certified { background: var(--indigo-tint); color: var(--indigo-text); }
+      .bccard .cta { font-size: 14px; font-weight: 500; color: var(--orange-text); }
+
+      /* HOST CTA */
+      .host { background: #0a0a0a; }
+      .host h2 { color: #fff; font-weight: 500; letter-spacing: -0.03em; font-size: clamp(34px,5vw,60px); line-height: 1.0; max-width: 16ch; }
+      .host p { color: #a1a1aa; font-size: 18px; line-height: 1.6; margin-top: 24px; max-width: 560px; }
+      .host .powered { margin-top: 40px; font-family: 'Geist Mono', monospace; font-size: 12px; color: #52525b; }
+      .host .powered b { color: #a1a1aa; font-weight: 500; }
+
+      @media (max-width: 1024px) {
+        .arc-track { grid-template-columns: 1fr; gap: 28px; }
+        .arc-line, .arc-fill { display: none; }
+        .wp { padding-right: 0; padding-left: 40px; }
+        .wp-dot { position: absolute; left: 0; top: 2px; }
+        .whofor { grid-template-columns: 1fr; gap: 36px; }
+        .who { padding-right: 0; }
+        .formats { grid-template-columns: 1fr 1fr; }
+        .fmt:nth-child(odd) { border-left: none; }
+        .fmt:nth-child(n+3) { border-top: 1px solid var(--border); }
+        .bcgrid { grid-template-columns: 1fr 1fr; }
+      }
+      @media (max-width: 640px) {
+        .formats { grid-template-columns: 1fr; }
+        .fmt { border-left: none; border-top: 1px solid var(--border); }
+        .fmt:first-child { border-top: none; }
+        .bcgrid { grid-template-columns: 1fr; }
+        .navlinks { display: none; }
+        .facet-lab { width: 100%; }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <span class="wordmark">spar<span class="x">x</span></span>
+      <span class="navlinks"><a>Platform</a><a>Modules</a><a>Bootcamp</a><a>Pricing</a></span>
+      <a class="btn btn-dark">Start free</a>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap">
+        <h1>Build your business. Launch on sparx<span class="sparkO">.</span></h1>
+        <p class="hero-sub">In-person and virtual sessions, led by certified sparx partners. Build a real business — storefront, customers, email, automation — and graduate the day you hit publish.</p>
+        <div class="hero-cta">
+          <a class="btn btn-orange">Find a bootcamp →</a>
+          <a class="btn btn-outline">Are you a partner? Host one</a>
+        </div>
+        <div class="platstrip">
+          <span><i class="dotO"></i>storefront</span><span><i class="dotO"></i>CRM</span><span><i class="dotO"></i>email</span><span><i class="dotO"></i>automation</span><span><i class="dotO"></i>one platform</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- FREE-TO-BUILD ARC -->
+    <section class="surface">
+      <div class="wrap">
+        <div class="shead">
+          <h2>Build the whole time, free. Graduate when you publish<span class="sparkO">.</span></h2>
+          <p>The bootcamp is a build. You stand up a real business on sparx — piece by piece — and it costs nothing while you do. The graduation moment is the one that matters: hitting publish and going live.</p>
+        </div>
+        <div class="arc">
+          <div class="arc-track">
+            <div class="arc-line"></div>
+            <div class="arc-fill" style="background: var(--orange); opacity: .35;"></div>
+            <div class="wp"><span class="wp-dot" style="background: var(--indigo);"></span><span class="tag">week 1</span><h4>Storefront</h4><p>Stand up your site and catalog with the builder — products, pages, theme.</p></div>
+            <div class="wp"><span class="wp-dot" style="background: var(--crm);"></span><span class="tag">week 2</span><h4>Customers</h4><p>Set up the CRM — contacts, segments, the pipeline that tracks every lead.</p></div>
+            <div class="wp"><span class="wp-dot" style="background: var(--email);"></span><span class="tag">week 3</span><h4>Email</h4><p>Design your welcome flow and first broadcast on a warm sending domain.</p></div>
+            <div class="wp"><span class="wp-dot" style="background: var(--fuchsia);"></span><span class="tag">week 4</span><h4>Automation</h4><p>Wire the flows that run the business while you sleep — the automation layer.</p></div>
+            <div class="wp pub"><span class="wp-dot"></span><span class="tag">graduation</span><h4>Publish<span class="sparkO">.</span></h4><p>Hit publish. Your business is live — and everything you built is yours.</p></div>
+          </div>
+          <div class="arc-free"><i class="dotO"></i>$0 to build · you pay only when you go live</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHO FOR -->
+    <section>
+      <div class="wrap">
+        <div class="shead">
+          <h2>Who it's for<span class="sparkO">.</span></h2>
+          <p>You don't need a business degree or a developer. You need an afternoon and something you want to build.</p>
+        </div>
+        <div class="whofor">
+          <div class="who"><span class="bar"></span><h3>You have an idea</h3><p>A product, a service, a shop in your head — and you need the structure to turn it into something real and live.</p></div>
+          <div class="who"><span class="bar"></span><h3>You're early-stage</h3><p>A young startup that wants to move fast without gluing together five subscriptions to get off the ground.</p></div>
+          <div class="who"><span class="bar"></span><h3>You're consolidating</h3><p>A running business tired of paying for a store, a CRM, and an email tool that don't talk to each other. One platform, one bill.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FORMATS -->
+    <section class="surface">
+      <div class="wrap">
+        <div class="shead"><h2>Every format<span class="sparkO">.</span></h2><p>Hosted the way that fits your week. Filter the directory below by the one you want.</p></div>
+        <div class="formats">
+          <div class="fmt"><div class="nm">In-person cohort</div><div class="ds">A room, a whiteboard, and a group building together over a few days.</div></div>
+          <div class="fmt"><div class="nm">Virtual · live</div><div class="ds">Live online sessions you join from anywhere, screen-to-screen.</div></div>
+          <div class="fmt"><div class="nm">Hybrid</div><div class="ds">Kick off in person, finish the build on your own with live check-ins.</div></div>
+          <div class="fmt"><div class="nm">Async · self-paced</div><div class="ds">A cohort on your schedule — work through it week by week.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIRECTORY -->
+    <section class="page">
+      <div class="wrap">
+        <div class="shead"><h2>Upcoming bootcamps<span class="sparkO">.</span></h2></div>
+        <div class="facets">
+          <div class="facet-row"><span class="facet-lab">Format</span><span class="chip on">All</span><span class="chip">In-person</span><span class="chip">Virtual</span><span class="chip">Hybrid</span><span class="chip">Async</span></div>
+          <div class="facet-row"><span class="facet-lab">When</span><span class="chip on">Anytime</span><span class="chip">This month</span><span class="chip">Next 3 months</span></div>
+          <div class="facet-row"><span class="facet-lab">Where</span><span class="chip">Online</span><span class="chip">Austin, TX</span><span class="chip">Denver, CO</span><span class="chip">Remote</span></div>
+        </div>
+        <div class="bcgrid">
+          <div class="bccard">
+            <div class="top"><span class="fmtpill">In-person</span><span class="seats">6 seats left</span></div>
+            <h3>Business OS Bootcamp — Austin</h3>
+            <div class="bcmeta"><span>Mar 14–16, 2026</span><span>Austin, TX</span></div>
+            <div class="bchost"><span class="badge badge-certified">Certified</span> Northlight Studio</div>
+          </div>
+          <div class="bccard">
+            <div class="top"><span class="fmtpill">Virtual</span><span class="seats">Open</span></div>
+            <h3>Launch Weekend — build & publish</h3>
+            <div class="bcmeta"><span>Apr 5–6, 2026</span><span>Online</span></div>
+            <div class="bchost"><span class="badge badge-certified">Certified</span> Mesa Collective</div>
+          </div>
+          <div class="bccard">
+            <div class="top"><span class="fmtpill">Async</span><span class="seats">Rolling</span></div>
+            <h3>Solo Founder Track</h3>
+            <div class="bcmeta"><span>Starts anytime</span><span>Self-paced</span></div>
+            <div class="bchost"><span class="badge badge-certified">Certified</span> Field & Frame</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOST CTA -->
+    <section class="host">
+      <div class="wrap">
+        <h2>Want to host a bootcamp<span class="sparkO">?</span></h2>
+        <p>Certified sparx partners run bootcamps, bring new businesses onto the platform, and earn on every one that publishes. Get certified and start hosting.</p>
+        <div class="hero-cta" style="margin-top:34px;">
+          <a class="btn btn-orange">Get certified →</a>
+          <a class="btn btn-outline" style="border-color:#2a2a2a;color:#fff;">See the partner program</a>
+        </div>
+        <div class="powered">Powered by <b>sparx</b> · sparx.works</div>
+      </div>
+    </section>
+  </body>
+</html>

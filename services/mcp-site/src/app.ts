@@ -189,4 +189,23 @@ function registerMcpRoutes(app: FastifyInstance): void {
   app.get(`/s/:tenant/:property/mcp${WELL_KNOWN}`, (request, reply) =>
     handleResourceMetadata(request, reply, request.params as SubPath)
   );
+
+  // RFC 9728 §3.1 canonical discovery URLs — the path-inserted form the MCP SDK
+  // constructs (`origin + /.well-known/oauth-protected-resource + <resource-path>`)
+  // plus the bare-root fallback, IN ADDITION to the path-suffixed variants above.
+  // A client whose unauthenticated `initialize` succeeds never sees our
+  // WWW-Authenticate challenge, so it builds these itself; without them discovery
+  // 404s (the site app answers) and OAuth never starts. Mirrors api-mcp
+  // (services/api-mcp/src/oauth-metadata.ts). Bare root resolves the site from the
+  // Host (the per-site `/mcp` endpoint); the `/s/...` shapes carry it in the path.
+  app.get(WELL_KNOWN, (request, reply) => handleResourceMetadata(request, reply, undefined));
+  app.get(`${WELL_KNOWN}/mcp`, (request, reply) =>
+    handleResourceMetadata(request, reply, undefined)
+  );
+  app.get(`${WELL_KNOWN}/s/:tenant/mcp`, (request, reply) =>
+    handleResourceMetadata(request, reply, request.params as SubPath)
+  );
+  app.get(`${WELL_KNOWN}/s/:tenant/:property/mcp`, (request, reply) =>
+    handleResourceMetadata(request, reply, request.params as SubPath)
+  );
 }

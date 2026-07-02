@@ -152,6 +152,8 @@ import {
 } from './registry';
 import { IconPicker } from './icon-picker';
 import { ProseControl } from './prose-control';
+import { LinkTargetControl } from './link-target-control';
+import { NavMenuLinksField } from './nav-menu-editor';
 import {
   ACCENT_COLOR_CONTROL,
   ALIGN_CONTENT_CONTROL,
@@ -3864,6 +3866,20 @@ function PropsFields({
             </Field>
           );
         }
+        if (spec.control === 'linktarget') {
+          // The shared target picker (docs/57 §10): type an href, or Browse a
+          // searchable, module-gated list of real destinations / pages / products
+          // / content, each resolved to its live storefront url.
+          return (
+            <Field key={spec.key} label={spec.label}>
+              <LinkTargetControl
+                value={value}
+                placeholder={spec.placeholder}
+                onChange={(next) => onProp(spec.key, next)}
+              />
+            </Field>
+          );
+        }
         return (
           <Field key={spec.key} label={spec.label}>
             {tokens ? (
@@ -4638,6 +4654,10 @@ export interface InspectorProps {
   onBind: (target: string | Binding | null) => void;
   onProp: (key: string, value: unknown) => void;
   onRetype: (targetType: string) => void;
+  /** Replace a node wholesale (id preserved) — powers the NavMenu quick-editor,
+   *  which rewrites the container's NavItem child list in one commit. Omitted ⇒ the
+   *  quick-editor entry is hidden (e.g. surfaces with no tree-mutation handler). */
+  onReplaceNode?: (id: string, next: BuilderNode) => void;
   // ── Multi-select + clipboard (docs/builder/05 §2.2 / §2.5) ──────────────────
   /** How many nodes are selected. >1 switches the inspector to the bulk panel:
    *  only the universal style controls (which fan out to the whole selection) plus
@@ -5011,6 +5031,7 @@ export function Inspector({
   onBind,
   onProp,
   onRetype,
+  onReplaceNode,
   selectionCount = 1,
   onDuplicate,
   onDelete,
@@ -5107,6 +5128,11 @@ export function Inspector({
               tokens={tokens}
               omitKey={contentKey}
             />
+            {/* NavMenu is a container of NavItem children (docs/57) — offer the
+                fast "manage links" modal alongside its orientation prop. */}
+            {onReplaceNode && node.type === 'NavMenu' ? (
+              <NavMenuLinksField node={node} onReplace={(next) => onReplaceNode(node.id, next)} />
+            ) : null}
             {showsSource ? (
               <DataSource
                 node={node}

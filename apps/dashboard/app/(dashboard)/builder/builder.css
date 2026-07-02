@@ -1556,6 +1556,191 @@
   width: 12px;
   height: 12px;
 }
+
+/* NavMenu quick-editor modal (docs/57 rebuild) — the fast path to author a
+   NavMenu's NavItem children (add/reorder/nest links + dropdowns) without the
+   layer tree. Rows reuse the .bx-navlinks* row chrome above. */
+.bx-navedit {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 2px;
+}
+.bx-navedit__empty {
+  margin: 0;
+  padding: 16px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  border: 1px dashed var(--color-border-default);
+  border-radius: 8px;
+}
+.bx-navedit__addrow {
+  display: flex;
+  gap: 16px;
+  padding-top: 2px;
+}
+.bx-navedit__foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border-default);
+}
+.bx-navedit__tag {
+  align-self: flex-start;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  color: var(--module-active);
+  background: color-mix(in srgb, var(--module-active) 12%, transparent);
+}
+.bx-navedit__children {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 2px;
+  padding-left: 12px;
+  border-left: 2px solid color-mix(in srgb, var(--module-active) 30%, var(--color-border-default));
+}
+.bx-navedit__child {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--color-text-muted) 4%, transparent);
+}
+
+/* Shared link-target control (docs/57 §10) — the `linktarget` prop control + the
+   NavItem target editor: an href field + a discoverable "Browse…" opener, plus the
+   browse modal's source tabs / search / results. */
+.bx-linktarget {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.bx-linktarget__browse {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 7px;
+  background: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--module-active);
+}
+.bx-linktarget__browse:hover {
+  background: color-mix(in srgb, var(--module-active) 10%, transparent);
+}
+.bx-linktarget__browse svg {
+  width: 14px;
+  height: 14px;
+}
+.bx-linktarget__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-border-default);
+}
+.bx-linktarget__tab {
+  padding: 5px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 550;
+  color: var(--color-text-muted);
+}
+.bx-linktarget__tab:hover {
+  color: var(--color-text-primary);
+}
+.bx-linktarget__tab[aria-selected='true'] {
+  background: color-mix(in srgb, var(--module-active) 12%, transparent);
+  color: var(--module-active);
+}
+.bx-linktarget__search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 0 10px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 8px;
+}
+.bx-linktarget__search svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+.bx-linktarget__searchinput {
+  flex: 1;
+  padding: 9px 0;
+  border: 0;
+  background: none;
+  outline: none;
+  font-size: 14px;
+  color: var(--color-text-primary);
+}
+.bx-linktarget__results {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 46vh;
+  overflow-y: auto;
+}
+.bx-linktarget__hit {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+}
+.bx-linktarget__hit:hover {
+  background: var(--color-bg-subtle);
+}
+.bx-linktarget__hit.is-current {
+  background: color-mix(in srgb, var(--module-active) 12%, transparent);
+}
+.bx-linktarget__hit-label {
+  font-size: 14px;
+  font-weight: 550;
+  color: var(--color-text-primary);
+}
+.bx-linktarget__hit-sub {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+.bx-linktarget__empty {
+  padding: 18px 10px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+.bx-linktarget__custom {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 /* "Update to vN" callout for an out-of-date placement (docs/53 P-E). */
 .bx-upgrade {
   display: flex;

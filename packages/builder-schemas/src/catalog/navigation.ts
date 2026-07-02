@@ -33,6 +33,19 @@ const sheetLink = (label: string, href: string) =>
     attrs: { href },
   });
 
+// A mega-menu column: a small heading over a stack of NavItem links. Each link is
+// an individually-editable NavItem (retarget with the link picker); the heading is
+// a plain styled <p>.
+const megaCol = (title: string, links: [string, string][]) =>
+  el('div', 'flex flex-col gap-1', {
+    children: [
+      el('p', 'mb-1 text-xs font-semibold uppercase tracking-wide text-base-content/50', {
+        text: title,
+      }),
+      ...links.map(([label, href]) => atom('NavItem', '', { label, href })),
+    ],
+  });
+
 export const NAVIGATION_CATALOG: PlatformCatalogEntry[] = [
   // ── Navbar — JUST the bar: navbar-start / -center / -end zones, all empty ─────
   // The structural primitive. The three zones come from the `navbar`/`navbar-start`/
@@ -128,6 +141,99 @@ export const NAVIGATION_CATALOG: PlatformCatalogEntry[] = [
           ],
         }),
       ],
+    }),
+  }),
+
+  // ── Nav link — a single NavItem (docs/57 rebuild) ────────────────────────────
+  // The composed nav atom: one link whose target is set with the link-target
+  // picker. Drop several into a navbar zone, or nest links inside one to make a
+  // dropdown (the `nav_dropdown` entry below is exactly that, pre-filled).
+  entry({
+    key: 'nav_link',
+    name: 'Nav link',
+    category: 'navigation',
+    kind: 'common',
+    icon: 'link',
+    description:
+      'A single navigation link. Choose where it goes with the link picker (a page, product, collection, or custom URL). Nest links inside it to make a dropdown.',
+    surfaces: ['page', 'site'],
+    tags: ['nav', 'link', 'menu item', 'navitem', 'navigation', 'a'],
+    tree: atom('NavItem', '', { label: 'Menu item', href: '/' }),
+  }),
+
+  // ── Nav dropdown — a NavItem with nested NavItem children ─────────────────────
+  // A labelled trigger revealing a panel of links (a CSS-only <details> disclosure).
+  // Each child is a normal nav link; add/remove them freely.
+  entry({
+    key: 'nav_dropdown',
+    name: 'Nav dropdown',
+    category: 'navigation',
+    kind: 'common',
+    icon: 'chevron-down',
+    description:
+      'A navigation dropdown — a labelled trigger that reveals a panel of links. Each item inside is a normal nav link you can retarget, add, or remove.',
+    surfaces: ['page', 'site'],
+    tags: ['nav', 'dropdown', 'submenu', 'menu', 'navitem', 'navigation'],
+    tree: atom('NavItem', '', { label: 'Menu', href: '#' }, [
+      atom('NavItem', '', { label: 'First link', href: '/' }),
+      atom('NavItem', '', { label: 'Second link', href: '/' }),
+      atom('NavItem', '', { label: 'Third link', href: '/' }),
+    ]),
+  }),
+
+  // ── Mega-menu — a NavMegamenu trigger over columns of NavItems ────────────────
+  // A labelled trigger that opens a WIDE, multi-column panel (a CSS-only <details>
+  // disclosure). Each column is a heading + a stack of nav links; add/remove
+  // columns and retarget any link freely. `columns` picks the grid width (2/3/4).
+  entry({
+    key: 'nav_megamenu',
+    name: 'Mega-menu',
+    category: 'navigation',
+    kind: 'comprehensive',
+    icon: 'columns-3',
+    description:
+      'A navigation mega-menu — a labelled trigger that opens a wide, multi-column panel of grouped links. Every column heading and link is individually editable.',
+    surfaces: ['page', 'site'],
+    tags: ['nav', 'megamenu', 'mega menu', 'dropdown', 'columns', 'menu', 'navigation'],
+    tree: atom('NavMegamenu', '', { label: 'Products', columns: '3' }, [
+      megaCol('Featured', [
+        ['New arrivals', '/products'],
+        ['Best sellers', '/products'],
+        ['On sale', '/products'],
+      ]),
+      megaCol('Shop', [
+        ['All products', '/products'],
+        ['Collections', '/collections'],
+        ['Gift cards', '/products'],
+      ]),
+      megaCol('Learn', [
+        ['Our story', '/about'],
+        ['Journal', '/blog'],
+        ['Contact', '/contact'],
+      ]),
+    ]),
+  }),
+
+  // ── Account menu — the storefront auth affordance (docs/27) ───────────────────
+  // Signed-out shows Sign in / Sign up; signed-in shows an avatar + a dropdown
+  // (Account / Orders / Wishlist / Sign out). Session-aware at render — the island
+  // reads the live customer session. Drop it in a navbar-end zone.
+  entry({
+    key: 'account_menu',
+    name: 'Account menu',
+    category: 'navigation',
+    kind: 'comprehensive',
+    icon: 'circle-user',
+    description:
+      'The storefront sign-in / account affordance — Sign in / Sign up when signed out, an avatar dropdown (Account, Orders, Wishlist, Sign out) when signed in. Reads the live customer session.',
+    surfaces: ['site'],
+    tags: ['account', 'auth', 'sign in', 'sign up', 'login', 'user', 'customer', 'navigation'],
+    tree: atom('AccountMenu', '', {
+      signInLabel: 'Sign in',
+      signUpLabel: 'Sign up',
+      accountHref: '/account',
+      ordersHref: '/account/orders',
+      wishlistHref: '/account/wishlist',
     }),
   }),
 

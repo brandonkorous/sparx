@@ -30,6 +30,11 @@ export type SparxModule =
   // so its surfaces pop AND a finance signal embedded in another module (e.g. the
   // Payouts card on the Commerce overview) reads as finance, not that module.
   | 'finance'
+  // Partner Portal (docs/114 §B.7) — a first-class platform area (the Finance
+  // pattern), NOT a module: no manifest, no billing. It owns a violet hue so the
+  // whole portal + any partner signal (a referral badge, a commission tile) reads
+  // as "partner" wherever it surfaces.
+  | 'partner'
   | 'platform';
 
 interface ModuleColors {
@@ -71,6 +76,9 @@ const MODULE_COLORS: Record<SparxModule, ModuleColors> = {
   // Finance "money green" — green-600, a deeper shade than the emerald success
   // token (#10B981) so finance chrome stays distinct from positive-state badges.
   finance: { color: '#16A34A', tint: '#F0FDF4', text: '#15803D', content: WHITE },
+  // Partner violet — violet-600, one notch deeper than Chat's violet-500 (#8B5CF6)
+  // so the partner chrome reads as its own program hue, distinct from the module.
+  partner: { color: '#7C3AED', tint: '#F5F3FF', text: '#6D28D9', content: WHITE },
   platform: { color: '#6366F1', tint: '#EEF2FF', text: '#4338CA', content: WHITE },
 };
 

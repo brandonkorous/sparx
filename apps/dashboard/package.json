@@ -34,6 +34,7 @@
     "@sparx/crm": "workspace:*",
     "@sparx/crm-schemas": "workspace:*",
     "@sparx/db": "workspace:*",
+    "@sparx/partner-schemas": "workspace:*",
     "@sparx/email": "workspace:*",
     "@sparx/email-platform": "workspace:*",
     "@sparx/integration-framework": "workspace:*",

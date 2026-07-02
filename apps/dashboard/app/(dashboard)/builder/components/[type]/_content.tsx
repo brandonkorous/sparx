@@ -63,6 +63,7 @@ const CONTROL_LABELS: Record<PropSpec['control'], string> = {
   switch: 'Toggle',
   icon: 'Icon picker',
   navlinks: 'Navigation links',
+  linktarget: 'Link target',
 };
 
 const PROP_KIND_LABELS: Record<PropKind, string> = {

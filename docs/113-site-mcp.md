@@ -1,6 +1,6 @@
 # Site MCP — the shopper-facing agent surface
 
-**Version:** 1.2
+**Version:** 1.3
 **Author:** Brandon Korous
 **Last Updated:** 2026-07-02
 
@@ -92,7 +92,13 @@ pipeline and **no module bundling**.
   - `POST|GET|DELETE /s/:tenant/:property?/mcp` — canonical (site from subpath, for
     `mcp.sparx.zone`).
   - `GET /health`.
-  - `GET /.well-known/oauth-protected-resource` — Phase 2 (returning-customer OAuth).
+  - `GET /.well-known/oauth-protected-resource` — Phase 2 (returning-customer OAuth). Served
+    in every RFC 9728 §3.1 discovery shape: bare root, path-inserted
+    (`/.well-known/oauth-protected-resource/mcp`, `/…/s/<tenant>[/<property>]/mcp`), AND the
+    path-suffixed `<mcp>/.well-known/oauth-protected-resource` the `WWW-Authenticate` points
+    at. An MCP client whose unauthenticated `initialize` succeeds never reads that challenge,
+    so it CONSTRUCTS the path-inserted/root URL itself — serving only the suffixed form 404s
+    discovery and the client never finds the AS (mirrors `api-mcp`).
 - **Site resolution:** subpath if present; else `GET ${SPARX_API_REST_URL}/v1/public/
 site-by-host?host=<x-forwarded-host>`. A 404 → MCP error result "unknown site".
 - **Env:** `SPARX_API_REST_URL`, `PORT` (new port, e.g. `3200`), `HOST`, `LOG_LEVEL`,

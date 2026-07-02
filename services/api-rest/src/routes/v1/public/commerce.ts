@@ -8,6 +8,8 @@
 //   GET /v1/public/commerce/products                     ?tenant=<slug>[&page=&perPage=&q=]
 //   GET /v1/public/commerce/products/:handle             ?tenant=<slug>
 //   GET /v1/public/commerce/categories                   ?tenant=<slug>
+//   GET /v1/public/commerce/categories/:handle           ?tenant=<slug>
+//   GET /v1/public/commerce/categories/:handle/products  ?tenant=<slug>[&page=&perPage=]
 //   GET /v1/public/commerce/fitment/domains              ?tenant=<slug>
 //   GET /v1/public/commerce/fitment/domains/:domainId/nodes ?tenant=<slug>[&parentId=<uuid>]
 //
@@ -597,6 +599,86 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
       })
     );
     return ok(orderByIds(ids, rows));
+  });
+
+  // A category's OWN record (name, description, hero, seo/og) — the storefront
+  // browse-node detail page (/category/:handle). Static `/categories/full` above
+  // is registered first, so this param route never shadows it.
+  app.get('/v1/public/commerce/categories/:handle', async (request) => {
+    const { handle } = HandleParams.parse(request.params);
+    const q = TenantQuery.parse(request.query);
+    const tenantId = await resolveTenantBySlug(q.tenant);
+    const row = await withTenant({ tenantId }, (tx) =>
+      tx.productCategory.findFirst({
+        where: { handle, deletedAt: null },
+        select: {
+          id: true,
+          name: true,
+          handle: true,
+          description: true,
+          parentId: true,
+          path: true,
+          position: true,
+          featured: true,
+          iconMediaId: true,
+          heroMediaId: true,
+          seoTitle: true,
+          seoDescription: true,
+          ogImageId: true,
+        },
+      })
+    );
+    if (!row) throw notFound('Category', handle);
+    return ok(row);
+  });
+
+  // Products in a category — BROWSE-NODE ROLLUP. Unlike a collection (a flat
+  // membership), a category is a tree node, so its page shows everything under it:
+  // products linked to the category itself OR any descendant. Descendants resolve
+  // off the materialized dot-path (`path` = self, `<path>.%` = the subtree), and
+  // Model B site-visibility still scopes the result to the active site.
+  app.get('/v1/public/commerce/categories/:handle/products', async (request) => {
+    const { handle } = HandleParams.parse(request.params);
+    const q = PagingQuery.parse(request.query);
+    const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    const result = await withTenant({ tenantId }, async (tx) => {
+      const category = await tx.productCategory.findFirst({
+        where: { handle, deletedAt: null },
+        select: { id: true, path: true },
+      });
+      if (!category) return null;
+      const descendants = await tx.productCategory.findMany({
+        where: { path: { startsWith: `${category.path}.` }, deletedAt: null },
+        select: { id: true },
+      });
+      const categoryIds = [category.id, ...descendants.map((d) => d.id)];
+      // `some` matches a product once even if it links to several of these
+      // categories, so no de-dup is needed.
+      const where = {
+        categoryLinks: { some: { categoryId: { in: categoryIds } } },
+        status: 'active' as const,
+        deletedAt: null,
+        ...productSiteVisibilityWhere(propertyId),
+      };
+      const [rows, total] = await Promise.all([
+        tx.product.findMany({
+          where,
+          orderBy: { updatedAt: 'desc' },
+          take: q.perPage,
+          skip: (q.page - 1) * q.perPage,
+          select: productSelect(),
+        }),
+        tx.product.count({ where }),
+      ]);
+      return { rows, total };
+    });
+    if (!result) throw notFound('Category', handle);
+    return paged(result.rows.map(publicProduct), {
+      page: q.page,
+      per_page: q.perPage,
+      total: result.total,
+    });
   });
 
   // ─── Fitment ───────────────────────────────────────────────────────

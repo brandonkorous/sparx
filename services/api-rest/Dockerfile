@@ -49,6 +49,7 @@ COPY packages/inventory ./packages/inventory
 COPY packages/channels ./packages/channels
 COPY packages/scheduling-schemas ./packages/scheduling-schemas
 COPY packages/scheduling ./packages/scheduling
+COPY packages/partner-schemas ./packages/partner-schemas
 COPY packages/sms ./packages/sms
 COPY packages/provider-shippo ./packages/provider-shippo
 COPY packages/customer-auth ./packages/customer-auth

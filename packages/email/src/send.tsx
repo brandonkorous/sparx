@@ -49,6 +49,11 @@ import {
   jobApplicationConfirmationSubject,
   type JobApplicationConfirmationEmailProps,
 } from './templates/job-application-confirmation';
+import {
+  TeamInvitationEmail,
+  teamInvitationSubject,
+  type TeamInvitationEmailProps,
+} from './templates/team-invitation';
 
 // Template registry + dispatcher. Two surfaces:
 //
@@ -80,7 +85,8 @@ export type TemplateId =
   | 'market-settlement-report'
   | 'feedback-response'
   | 'job-application-received'
-  | 'job-application-confirmation';
+  | 'job-application-confirmation'
+  | 'team-invitation';
 
 export type TemplateSend =
   | {
@@ -143,6 +149,13 @@ export type TemplateSend =
       template: 'job-application-confirmation';
       to: string;
       props: JobApplicationConfirmationEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'team-invitation';
+      to: string;
+      props: TeamInvitationEmailProps;
       from?: string;
       replyTo?: string;
     };
@@ -314,6 +327,22 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'job-application-confirmation',
+      };
+    }
+    case 'team-invitation': {
+      const element = wrap(<TeamInvitationEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: teamInvitationSubject(input.props.orgName),
+        html,
+        text,
+        templateId: 'team-invitation',
       };
     }
   }

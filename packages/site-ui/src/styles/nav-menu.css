@@ -20,3 +20,108 @@
   font-weight: 500;
   font-size: 0.95rem;
 }
+
+/* NavItem dropdown (docs/57 rebuild) — a NavItem WITH child NavItems renders as a
+ * CSS-only <details> disclosure: a trigger (summary) + a floating panel of child
+ * links. No JS, so it works in SSR and the editor canvas alike. A childless
+ * NavItem is just an `.st-nav__item` link. */
+.st-navitem-drop {
+  position: relative;
+  display: inline-block;
+}
+.st-navitem-drop__summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  list-style: none;
+  color: inherit;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+.st-navitem-drop__summary::-webkit-details-marker {
+  display: none;
+}
+.st-navitem-drop__caret {
+  font-size: 0.7em;
+  line-height: 1;
+  transition: transform 0.15s ease;
+}
+.st-navitem-drop[open] .st-navitem-drop__caret {
+  transform: rotate(180deg);
+}
+.st-navitem-drop__panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 40;
+  display: flex;
+  min-width: 12rem;
+  flex-direction: column;
+  gap: 0.125rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid var(--st-border, color-mix(in srgb, currentColor 12%, transparent));
+  border-radius: var(--st-radius-lg, 0.75rem);
+  background: var(--st-base-100, #fff);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 12%);
+}
+/* Child links inside a dropdown panel are full-width rows with their own padding. */
+.st-navitem-drop__panel .st-nav__item {
+  display: block;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--st-radius-sm, 0.375rem);
+}
+.st-navitem-drop__panel .st-nav__item:hover {
+  background: var(--st-bg-subtle, color-mix(in srgb, currentColor 8%, transparent));
+}
+.st-navitem__icon {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+/* NavMegamenu (docs/57 rebuild) — a labelled trigger opening a WIDE, multi-column
+ * panel. Reuses the NavItem dropdown trigger (.st-navitem-drop__summary/caret);
+ * the panel is a floating grid whose column count comes from the `columns` prop
+ * (--c2/--c3/--c4). Like the dropdown it's a CSS-only <details> disclosure. */
+.st-navmega {
+  position: relative;
+  display: inline-block;
+}
+.st-navmega[open] .st-navitem-drop__caret {
+  transform: rotate(180deg);
+}
+.st-navmega__panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 40;
+  display: grid;
+  gap: 1.25rem 2rem;
+  min-width: 32rem;
+  max-width: min(48rem, calc(100vw - 2rem));
+  margin-top: 0.5rem;
+  padding: 1.25rem;
+  border: 1px solid var(--st-border, color-mix(in srgb, currentColor 12%, transparent));
+  border-radius: var(--st-radius-lg, 0.75rem);
+  background: var(--st-base-100, #fff);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 12%);
+}
+.st-navmega__panel--c2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.st-navmega__panel--c3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.st-navmega__panel--c4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+/* Links inside a mega-menu column stack as full-width rows. */
+.st-navmega__panel .st-nav__item {
+  display: block;
+  padding: 0.3rem 0;
+}
+.st-navmega__panel .st-nav__item:hover {
+  color: var(--st-primary, currentColor);
+}

@@ -278,6 +278,14 @@ const STARTER_NAV_LINKS = [
   { label: 'About', href: '/about' },
 ];
 
+// The starter nav as composed NavItem child nodes. NavMenu is a CONTAINER now
+// (docs/57 rebuild): each link is its own individually-editable NavItem node, not
+// an entry in a leaf's `props.links[]` array. Called per NavMenu so each gets its
+// own uniquely-id'd NavItems.
+function starterNavItems(): BuilderNode[] {
+  return STARTER_NAV_LINKS.map((l) => node('NavItem', { props: { label: l.label, href: l.href } }));
+}
+
 // The starter SITE LAYOUT (docs/45, docs/98 §3.7). A layout is a FREE CANVAS whose
 // only structural invariant is the `Outlet` (the content box where each routed
 // page renders — `pinned` in the registry, so it can't be deleted or dragged).
@@ -299,7 +307,7 @@ function siteLayoutTree(): BuilderNode {
       // the top of the layout. Fully editable + deletable; the SAME navbar every
       // blueprint uses (site-chrome.ts).
       navbar(node, {
-        start: [node('NavMenu', { props: { orientation: 'row', links: STARTER_NAV_LINKS } })],
+        start: [node('NavMenu', { props: { orientation: 'row' }, children: starterNavItems() })],
         center: [node('Wordmark', { bind: 'site.identity' })],
         end: [node('Button', { props: { label: 'Get started', style: 'primary' } })],
       }),
@@ -316,7 +324,7 @@ function siteLayoutTree(): BuilderNode {
         },
         layout: { direction: 'stack', gap: 'md', alignItems: 'start' },
         children: [
-          node('NavMenu', { props: { orientation: 'row', links: STARTER_NAV_LINKS } }),
+          node('NavMenu', { props: { orientation: 'stack' }, children: starterNavItems() }),
           node('SocialLinks', { bind: 'site.social' }),
           node('Text', { props: { variant: 'meta', text: '© Your brand' } }),
         ],

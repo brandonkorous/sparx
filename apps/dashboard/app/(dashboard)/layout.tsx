@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { listEnabledModules, requireSession } from '@sparx/auth';
+import { listEnabledModules, listMyMemberships, requireSession } from '@sparx/auth';
 import { api } from '@/lib/api-rest-client';
 import { onboardingEntryHref } from '@/lib/onboarding-entry';
 import { listProperties, getActivePropertyId, type Property } from '@/lib/sites';
@@ -49,18 +49,35 @@ export default async function DashboardLayout({
 
   const ctx = { userId: user.id, tenantId: user.tenantId };
 
-  const [tenant, favorites, recents, preferences, enabledModules, sites, activePropertyId] =
-    await Promise.all([
-      api.get<{ name: string }>('/v1/tenant').catch(() => ({ name: 'Workspace' })),
-      listFavorites(ctx).catch(() => []),
-      listRecents(ctx).catch(() => []),
-      getUserPreferences(user.id).catch(() => DEFAULT_PREFERENCES),
-      listEnabledModules(user.tenantId).catch(() => []),
-      // Multi-site switcher data (docs/49 §6). Defensive: a failed read just
-      // hides the Site segment (single-site behavior).
-      listProperties().catch(() => [] as Property[]),
-      getActivePropertyId().catch(() => null),
-    ]);
+  const [
+    tenant,
+    favorites,
+    recents,
+    preferences,
+    enabledModules,
+    sites,
+    activePropertyId,
+    partner,
+    memberships,
+  ] = await Promise.all([
+    api.get<{ name: string }>('/v1/tenant').catch(() => ({ name: 'Workspace' })),
+    listFavorites(ctx).catch(() => []),
+    listRecents(ctx).catch(() => []),
+    getUserPreferences(user.id).catch(() => DEFAULT_PREFERENCES),
+    listEnabledModules(user.tenantId).catch(() => []),
+    // Multi-site switcher data (docs/49 §6). Defensive: a failed read just
+    // hides the Site segment (single-site behavior).
+    listProperties().catch(() => [] as Property[]),
+    getActivePropertyId().catch(() => null),
+    // Partner Portal gate (docs/114 §B.7). The `partners` row (or null) decides
+    // whether the rail's Partner tile reads as "your portal" vs a join CTA and
+    // whether the member-only sections show. A failed read fails closed to
+    // "not a partner" — the tile still shows the join screen.
+    api.get<{ id: string } | null>('/v1/partner/profile').catch(() => null),
+    // Org memberships (docs/114 §A.4) — feeds the breadcrumb workspace switcher.
+    // A single-membership user just sees their one workspace (no switcher).
+    listMyMemberships(user.id).catch(() => []),
+  ]);
 
   const navModules: string[] = [...enabledModules];
 
@@ -71,9 +88,12 @@ export default async function DashboardLayout({
       enabledModules={navModules}
       sites={sites}
       activePropertyId={activePropertyId}
+      organizations={memberships}
+      activeOrgId={user.tenantId}
       favorites={favorites}
       recents={recents}
       preferences={preferences}
+      isPartner={partner !== null}
       detail={detail}
     >
       {!user.emailVerified && <EmailVerificationBanner email={user.email} />}

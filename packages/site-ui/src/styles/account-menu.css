@@ -1,0 +1,50 @@
+/* AccountMenu (docs/27, docs/57 rebuild) — the navbar auth affordance. Signed out
+ * is two Buttons (their own recipe); this file styles the signed-in trigger, the
+ * loading placeholder, and the name. The dropdown surface + items reuse
+ * `.st-dropdown*` (dropdown-menu.css). */
+
+.st-account {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.st-account__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+  border: none;
+  border-radius: var(--st-radius-lg, 0.75rem);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.st-account__trigger:hover {
+  background: var(--st-bg-subtle, color-mix(in srgb, currentColor 8%, transparent));
+}
+
+.st-account__name {
+  max-width: 10rem;
+  overflow: hidden;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-account__skeleton {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  background: var(--st-bg-subtle, color-mix(in srgb, currentColor 10%, transparent));
+}
+
+/* On a narrow frame, drop the name beside the avatar (avatar-only trigger). */
+@container st-frame (max-width: 480px) {
+  .st-account__name {
+    display: none;
+  }
+}

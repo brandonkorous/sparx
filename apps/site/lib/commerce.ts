@@ -186,6 +186,16 @@ export interface PublicCategoryNode {
   path: string;
   position: number;
   featured: boolean;
+  iconMediaId: string | null;
+  heroMediaId: string | null;
+}
+
+/** A category's OWN detail record (browse-node page). Extends the tree node with
+ *  the SEO/OG fields the detail route's metadata reads. */
+export interface PublicCategory extends PublicCategoryNode {
+  seoTitle: string | null;
+  seoDescription: string | null;
+  ogImageId: string | null;
 }
 
 export interface PublicFitmentDomain {
@@ -524,6 +534,60 @@ export async function getCollectionRecordsFull(
   } catch {
     return [];
   }
+}
+
+// ─── Categories (browse-node tree + detail) ─────────────────────────────
+
+/** The tenant's full category tree (flat, path-ordered). Drives the /category
+ *  index, a detail page's subcategory strip, and its breadcrumb ancestors — the
+ *  tree is small enough that one read serves all three. */
+export async function listCategories(tenantSlug: string): Promise<PublicCategoryNode[]> {
+  const { data } = await publicGet<PublicCategoryNode[]>(
+    '/v1/public/commerce/categories',
+    { tenant: tenantSlug },
+    [`commerce:${tenantSlug}:categories`]
+  );
+  return data;
+}
+
+/** One category's own record by handle, or null when it doesn't exist. */
+export async function getCategory(
+  tenantSlug: string,
+  handle: string
+): Promise<PublicCategory | null> {
+  try {
+    const { data } = await publicGet<PublicCategory>(
+      `/v1/public/commerce/categories/${encodeURIComponent(handle)}`,
+      { tenant: tenantSlug },
+      [`commerce:${tenantSlug}:category:${handle}`]
+    );
+    return data;
+  } catch (err) {
+    if ((err as { code?: string }).code === 'NOT_FOUND') return null;
+    throw err;
+  }
+}
+
+/** Paginated products in a category AND its descendants (browse-node rollup).
+ *  Mirrors listCollectionProducts, but the API rolls the subtree up so a parent
+ *  category page isn't empty when products live on its leaves. */
+export async function listCategoryProducts(
+  tenantSlug: string,
+  handle: string,
+  page = 1,
+  perPage = 24
+): Promise<{ items: PublicProductListItem[]; total: number; page: number; perPage: number }> {
+  const { data, meta } = await publicGet<PublicProductListItem[]>(
+    `/v1/public/commerce/categories/${encodeURIComponent(handle)}/products`,
+    { tenant: tenantSlug, page, perPage },
+    [`commerce:${tenantSlug}:category:${handle}:products`]
+  );
+  return {
+    items: data,
+    total: meta?.total ?? data.length,
+    page: meta?.page ?? page,
+    perPage: meta?.per_page ?? perPage,
+  };
 }
 
 /** Hydrate category OWN-records by id (record-display pins), order preserved. */

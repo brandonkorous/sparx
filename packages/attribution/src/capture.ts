@@ -19,6 +19,31 @@ export const ATTR_COOKIES = {
   visitor: 'sparx_attr_vid',
 } as const;
 
+/** Partner referral code cookie (docs/114 §B.3). Set-once, 30-day attribution
+ *  window: the FIRST partner to send a visitor gets the credit; carried across
+ *  the `.sparx.works` boundary and recorded against the new org at signup. */
+export const REF_COOKIE = 'sparx_ref';
+
+/** Days the referral cookie lives (the docs/114 §B.3 attribution window). */
+export const REF_WINDOW_DAYS = 30;
+
+/** Extract + sanitize a `?ref=` partner code from a landing URL. Codes are the
+ *  minted 10-char A–Z2–9 form; we uppercase, strip anything else, and require a
+ *  minimum length so a stray `?ref=` never writes a junk cookie. Null on none. */
+export function readRefCode(url: string): string | null {
+  try {
+    const raw = new URL(url).searchParams.get('ref');
+    if (!raw) return null;
+    const code = raw
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '')
+      .slice(0, 32);
+    return code.length >= 4 ? code : null;
+  } catch {
+    return null;
+  }
+}
+
 const CLICK_ID_KEYS: readonly (keyof ClickIds)[] = [
   'gclid',
   'gbraid',

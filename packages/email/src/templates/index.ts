@@ -41,3 +41,9 @@ export {
   jobApplicationConfirmationSubject,
   type JobApplicationConfirmationEmailProps,
 } from './job-application-confirmation';
+
+export {
+  TeamInvitationEmail,
+  teamInvitationSubject,
+  type TeamInvitationEmailProps,
+} from './team-invitation';

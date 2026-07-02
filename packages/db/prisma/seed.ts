@@ -692,9 +692,9 @@ const SPARX_COMPONENTS: {
     group: 'Site',
     kind: 'Widget',
     surfaces: ['site'],
-    tagline: 'A navigation menu bound to a site menu or hand-typed links.',
+    tagline: 'A navigation menu — a container of nav links you can retarget and nest.',
     description:
-      'Your site navigation — bound to a managed site menu or hand-typed links. Lives in the site layout so it renders on every page.',
+      'Your site navigation — a container of individually-editable nav links (each retargeted with the link picker; nest links to make a dropdown). Lives in the site layout so it renders on every page.',
     sortWeight: 38,
   },
   {

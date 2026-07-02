@@ -2,12 +2,13 @@
 
 import * as React from 'react';
 import { ModuleProvider, SidebarNav, Text, usePanelCollapsed } from '@sparx/ui';
-import { Landmark, Settings as SettingsIcon } from 'lucide-react';
+import { Handshake, Landmark, Settings as SettingsIcon } from 'lucide-react';
 import type { ModuleManifest } from '@sparx/ui/shell';
 import { getManifestForPath } from '../_shell/registry';
 import { ModuleSectionItems } from './module-section-nav';
 import { SettingsSectionItems } from './settings-section-nav';
 import { FinanceSectionItems } from './finance-section-nav';
+import { PartnerSectionItems } from './partner-section-nav';
 
 // The contextual panel — the second column of the shell nav (docs/24 §5). It is
 // purely about the current context:
@@ -24,12 +25,15 @@ interface ContextualPanelProps {
   pathname: string | null;
   enabledModules: readonly string[];
   tenantName: string;
+  /** Whether the tenant has a `partners` row — gates the member-only sections. */
+  isPartner: boolean;
 }
 
 export type PanelContext =
   | { kind: 'module'; manifest: ModuleManifest }
   | { kind: 'settings' }
   | { kind: 'finance' }
+  | { kind: 'partner' }
   | { kind: 'none' };
 
 function isSettingsPath(pathname: string | null): boolean {
@@ -38,6 +42,10 @@ function isSettingsPath(pathname: string | null): boolean {
 
 function isFinancePath(pathname: string | null): boolean {
   return pathname === '/finance' || (pathname?.startsWith('/finance/') ?? false);
+}
+
+function isPartnerPath(pathname: string | null): boolean {
+  return pathname === '/partner' || (pathname?.startsWith('/partner/') ?? false);
 }
 
 // What the contextual panel should render for a given route. Shared with the
@@ -54,6 +62,9 @@ export function resolvePanelContext(
   }
   if (isFinancePath(pathname)) {
     return { kind: 'finance' };
+  }
+  if (isPartnerPath(pathname)) {
+    return { kind: 'partner' };
   }
   if (isSettingsPath(pathname)) {
     return { kind: 'settings' };
@@ -95,7 +106,12 @@ function PanelHeadIcon({
   );
 }
 
-export function ContextualPanel({ pathname, enabledModules, tenantName }: ContextualPanelProps) {
+export function ContextualPanel({
+  pathname,
+  enabledModules,
+  tenantName,
+  isPartner,
+}: ContextualPanelProps) {
   const ctx = resolvePanelContext(pathname, enabledModules);
   const collapsed = usePanelCollapsed();
 
@@ -137,6 +153,30 @@ export function ContextualPanel({ pathname, enabledModules, tenantName }: Contex
             className={collapsed ? 'items-center gap-0.5 px-1.5 pb-3' : 'gap-0.5 px-2 pb-3'}
           >
             <FinanceSectionItems pathname={pathname} />
+          </SidebarNav>
+        </div>
+      </ModuleProvider>
+    );
+  }
+
+  if (ctx.kind === 'partner') {
+    // The Partner Portal is a first-class platform area that owns a brand hue
+    // (violet, docs/114 §B.7) — wrap in its own "partner" provider so the panel
+    // glyph/dot and the active section row resolve to violet, exactly like a
+    // module's sections. Member-only sections stay hidden until the tenant joins.
+    return (
+      <ModuleProvider module="partner" className="flex h-full flex-col">
+        {collapsed ? (
+          <PanelHeadIcon icon={Handshake} label="Partner" />
+        ) : (
+          <PanelHead eyebrow="Partner" title={tenantName} dot />
+        )}
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <SidebarNav
+            label="Partner"
+            className={collapsed ? 'items-center gap-0.5 px-1.5 pb-3' : 'gap-0.5 px-2 pb-3'}
+          >
+            <PartnerSectionItems pathname={pathname} isPartner={isPartner} />
           </SidebarNav>
         </div>
       </ModuleProvider>

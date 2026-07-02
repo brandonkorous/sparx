@@ -1,0 +1,156 @@
+/* NavShell — the responsive primary-nav container (docs/57 rebuild). A NavMenu
+ * renders its NavItem children ONCE inside this shell: an inline row on wide
+ * frames, a hamburger <details> reveal once the frame is narrow. Single subtree
+ * (no duplicated links), so it's safe under dnd-kit in the editor canvas — node
+ * ids never collide. CSS-only (no JS): the disclosure is a native <details>,
+ * matching the house mobile-menu pattern (the navbar_brand catalog entry).
+ *
+ * The swap is driven by the nearest `st-frame` container query — the Builder
+ * render frame (`.bx-render` live / `.bx-canvas` in the editor) — so it collapses
+ * at the SIMULATED device width in the canvas preview, not only at the real
+ * viewport (docs/61 §7). Mobile-first: collapsed (hamburger) by default,
+ * expanding to the inline row once the frame is wide enough. */
+
+.st-navshell {
+  display: flex;
+  align-items: center;
+}
+.st-navshell__disc {
+  position: relative;
+}
+
+/* The hamburger (a <summary>) — shown by default (narrow), hidden once wide. */
+.st-navshell__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: none;
+  border-radius: var(--st-radius-sm, 0.375rem);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  list-style: none;
+}
+.st-navshell__toggle::-webkit-details-marker {
+  display: none;
+}
+.st-navshell__toggle:hover {
+  background: var(--st-bg-subtle, color-mix(in srgb, currentColor 8%, transparent));
+}
+
+/* The items — a floating dropdown panel when the hamburger is open (narrow). */
+.st-navshell__items {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 40;
+  min-width: 12rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid var(--st-border, color-mix(in srgb, currentColor 12%, transparent));
+  border-radius: var(--st-radius-lg, 0.75rem);
+  background: var(--st-base-100, #fff);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 12%);
+}
+/* Closed hamburger → panel hidden (explicit over the UA default). */
+.st-navshell__disc:not([open]) .st-navshell__items {
+  display: none;
+}
+/* Larger tap targets for the stacked links inside the panel. */
+.st-navshell__items > .st-nav__item {
+  display: block;
+  padding: 0.6rem 0.65rem;
+  border-radius: var(--st-radius-sm, 0.375rem);
+}
+.st-navshell__items > .st-nav__item:hover {
+  background: var(--st-bg-subtle, color-mix(in srgb, currentColor 8%, transparent));
+}
+/* A nested NavItem dropdown inside the mobile panel expands in flow (accordion),
+ * not as a second floating layer that could overflow a narrow viewport. */
+.st-navshell__items .st-navitem-drop {
+  display: block;
+}
+.st-navshell__items .st-navitem-drop__panel {
+  position: static;
+  margin-top: 0.125rem;
+  padding: 0 0 0 0.75rem;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+/* A mega-menu inside the mobile panel collapses to a single-column accordion. */
+.st-navshell__items .st-navmega {
+  display: block;
+}
+.st-navshell__items .st-navmega__panel {
+  position: static;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+  max-width: none;
+  margin-top: 0.125rem;
+  padding: 0 0 0 0.75rem;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+/* Wide frame: reveal the inline row, hide the hamburger. The items become a
+ * static in-bar row regardless of the <details> open state (panel chrome
+ * dropped). The `!important` beats the `:not([open])` display:none above with a
+ * single, readable rule — the alternative is a longer specificity chain. */
+@container st-frame (min-width: 768px) {
+  .st-navshell__disc > .st-navshell__toggle {
+    display: none;
+  }
+  .st-navshell .st-navshell__items {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    position: static;
+    min-width: 0;
+    margin-top: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .st-navshell__items > .st-nav__item {
+    display: inline-flex;
+    padding: 0;
+    border-radius: 0;
+  }
+  .st-navshell__items > .st-nav__item:hover {
+    background: transparent;
+  }
+  /* Nested dropdowns float again on the desktop row. */
+  .st-navshell__items .st-navitem-drop__panel {
+    position: absolute;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid var(--st-border, color-mix(in srgb, currentColor 12%, transparent));
+    background: var(--st-base-100, #fff);
+    box-shadow: 0 10px 30px rgb(0 0 0 / 12%);
+  }
+  /* Mega-menus float as a multi-column grid again (the `--c{n}` modifier sets the
+   * column count; this rule only restores the floating grid chrome). */
+  .st-navshell__items .st-navmega__panel {
+    position: absolute;
+    display: grid;
+    min-width: 32rem;
+    max-width: min(48rem, calc(100vw - 2rem));
+    margin-top: 0.5rem;
+    padding: 1.25rem;
+    border: 1px solid var(--st-border, color-mix(in srgb, currentColor 12%, transparent));
+    background: var(--st-base-100, #fff);
+    box-shadow: 0 10px 30px rgb(0 0 0 / 12%);
+  }
+}

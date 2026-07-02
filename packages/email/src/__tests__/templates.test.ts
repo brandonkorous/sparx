@@ -48,6 +48,29 @@ describe('templates', () => {
     expect(rendered.text).toContain('https://app.sparx.works/welcome');
     expect(rendered.templateId).toBe('welcome-merchant');
   });
+
+  it('renders the team-invitation template with org, role, invitee + accept link', async () => {
+    const acceptUrl = 'https://app.sparx.works/accept-invite?invitation=inv_123';
+    const rendered = await _renderTemplateForTest({
+      template: 'team-invitation',
+      to: 'invitee@example.test',
+      props: {
+        inviteeEmail: 'invitee@example.test',
+        orgName: 'Northwind Traders',
+        inviterName: 'Brandon',
+        role: 'editor',
+        acceptUrl,
+        expiresInDays: 7,
+      },
+    });
+    expect(rendered.subject).toMatch(/join Northwind Traders on sparx/i);
+    expect(rendered.html).toContain('Northwind Traders');
+    expect(rendered.html).toContain(acceptUrl);
+    expect(rendered.text).toContain(acceptUrl);
+    expect(rendered.text).toContain('invitee@example.test');
+    expect(rendered.text).toMatch(/7 days/);
+    expect(rendered.templateId).toBe('team-invitation');
+  });
 });
 
 describe('sendTemplate', () => {

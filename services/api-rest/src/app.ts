@@ -74,6 +74,7 @@ import inventoryCronRoutes from './routes/internal/inventory-cron.js';
 import channelsCronRoutes from './routes/internal/channels-cron.js';
 import marketCronRoutes from './routes/internal/market-cron.js';
 import acquisitionReportRoutes from './routes/internal/acquisition-report.js';
+import internalPartnerRoutes from './routes/internal/partners.js';
 import contentTypeRoutes from './routes/v1/content/types.js';
 import entryRoutes from './routes/v1/content/entries.js';
 import publishRoutes from './routes/v1/content/publish.js';
@@ -112,6 +113,10 @@ import publicSiteAnalyticsRoutes from './routes/v1/public/site-analytics.js';
 import publicNewsletterRoutes from './routes/v1/public/newsletter.js';
 import publicCareersRoutes from './routes/v1/public/careers.js';
 import publicMarketplaceRoutes from './routes/v1/public/marketplace.js';
+import publicPartnerRoutes from './routes/v1/public/partners.js';
+import publicBootcampRoutes from './routes/v1/public/bootcamps.js';
+import partnerRoutes from './routes/v1/partner/index.js';
+import partnerBootcampRoutes from './routes/v1/partner/bootcamps.js';
 import publicRedirectRoutes from './routes/v1/public/redirects.js';
 import publicB2bPortalRoutes from './routes/v1/public/b2b-portal.js';
 import publicB2bSchedulingRoutes from './routes/v1/public/b2b-scheduling.js';
@@ -761,6 +766,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(channelsCronRoutes);
   await app.register(marketCronRoutes);
   await app.register(acquisitionReportRoutes);
+  await app.register(internalPartnerRoutes);
 
   // v1 surface. Each route file owns its own URL prefix so this central
   // map is easy to skim. Adding a new route group is a one-line registration.
@@ -809,6 +815,10 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(publicCareersRoutes);
   await app.register(publicSiteAnalyticsRoutes);
   await app.register(publicMarketplaceRoutes);
+  await app.register(publicPartnerRoutes);
+  await app.register(publicBootcampRoutes);
+  await app.register(partnerRoutes);
+  await app.register(partnerBootcampRoutes);
   await app.register(publicChatRoutes);
   await app.register(publicRedirectRoutes);
   await app.register(emailWebhookRoutes);

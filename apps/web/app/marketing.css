@@ -1646,3 +1646,267 @@ a.mkt-module-tile:hover {
     transform: none;
   }
 }
+
+/* ── PARTNERS / BOOTCAMP: structural devices (docs/114 §B.6) ──────
+   Layout-only classes for the two partner-program marketing pages. All
+   surface/colour comes from inline CSS-var styles in the section components;
+   these only change structure across breakpoints. */
+
+/* Social-proof stat strip — 3 hairline-divided cells → stack on mobile. */
+.mkt-proof-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.mkt-proof-3 > * {
+  border-left: 1px solid var(--color-border-default);
+}
+.mkt-proof-3 > *:first-child {
+  border-left: none;
+}
+@media (max-width: 768px) {
+  .mkt-proof-3 {
+    grid-template-columns: 1fr;
+  }
+  .mkt-proof-3 > * {
+    border-left: none;
+    border-top: 1px solid var(--color-border-default);
+  }
+  .mkt-proof-3 > *:first-child {
+    border-top: none;
+  }
+}
+
+/* Opportunity "argument ledger" row — claim left, proof token right; stacks the
+   token under the claim on mobile. */
+.mkt-opp-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: center;
+  padding: 32px 0;
+  border-top: 1px solid var(--color-border-default);
+}
+.mkt-opp-row:last-child {
+  border-bottom: 1px solid var(--color-border-default);
+}
+@media (max-width: 640px) {
+  .mkt-opp-row {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+/* Numbered step rail — four steps flow horizontally with a "→" connector,
+   collapse 4→2→1. Plain numbers, no boxes. The connector hides at the end of
+   each visible row. */
+.mkt-steprail {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+.mkt-steprail > .mkt-step {
+  position: relative;
+  padding-right: 34px;
+}
+.mkt-steprail > .mkt-step .mkt-step-arrow {
+  position: absolute;
+  right: 12px;
+  top: 0;
+}
+.mkt-steprail > .mkt-step:last-child .mkt-step-arrow {
+  display: none;
+}
+@media (max-width: 1024px) {
+  .mkt-steprail {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px 0;
+  }
+  .mkt-steprail > .mkt-step:nth-child(2n) .mkt-step-arrow {
+    display: none;
+  }
+}
+@media (max-width: 640px) {
+  .mkt-steprail {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .mkt-steprail > .mkt-step {
+    padding-right: 0;
+  }
+  .mkt-steprail > .mkt-step .mkt-step-arrow {
+    display: none;
+  }
+}
+
+/* Tier comparison matrix — attribute spine + 3 tier columns. Header row and each
+   body row share the same 4-column grid. Hidden ≤1024 (the stacked tier cards
+   take over via .mkt-tablet-down-only-flex). */
+.mkt-tier-cols {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 1fr 1fr;
+}
+
+/* Free-to-build arc — a horizontal build track (4 waypoints + a publish
+   terminus) on desktop; a vertical timeline (dot rail on the left) on tablet
+   down. The connector line/fill live behind the waypoints. */
+.mkt-arc-track {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) minmax(150px, 1fr);
+  align-items: start;
+}
+.mkt-arc-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 11px;
+  height: 2px;
+  z-index: 0;
+}
+.mkt-arc-wp {
+  position: relative;
+  z-index: 1;
+  padding-right: 22px;
+}
+@media (max-width: 1024px) {
+  .mkt-arc-track {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .mkt-arc-line {
+    display: none;
+  }
+  .mkt-arc-wp {
+    padding-right: 0;
+    padding-left: 42px;
+  }
+  .mkt-arc-wp .mkt-arc-dot {
+    position: absolute;
+    left: 0;
+    top: 2px;
+  }
+}
+
+/* Format-label strip — 4 hairline-divided labels (no cards) → 2 → 1. */
+.mkt-formats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--color-border-default);
+  border-bottom: 1px solid var(--color-border-default);
+}
+.mkt-formats > * {
+  border-left: 1px solid var(--color-border-default);
+}
+.mkt-formats > *:first-child {
+  border-left: none;
+}
+@media (max-width: 1024px) {
+  .mkt-formats {
+    grid-template-columns: 1fr 1fr;
+  }
+  .mkt-formats > *:nth-child(odd) {
+    border-left: none;
+  }
+  .mkt-formats > *:nth-child(n + 3) {
+    border-top: 1px solid var(--color-border-default);
+  }
+}
+@media (max-width: 640px) {
+  .mkt-formats {
+    grid-template-columns: 1fr;
+  }
+  .mkt-formats > * {
+    border-left: none;
+    border-top: 1px solid var(--color-border-default);
+  }
+  .mkt-formats > *:first-child {
+    border-top: none;
+  }
+}
+
+/* Apply split — pitch column + fixed-width form card → stacks on tablet down. */
+.mkt-apply-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 460px;
+  gap: clamp(40px, 6vw, 80px);
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .mkt-apply-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+/* Directory CTA split — pitch + a small preview stack → stacks on tablet down. */
+.mkt-dircta {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+@media (max-width: 1024px) {
+  .mkt-dircta {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
+
+/* Bootcamp detail — description column + sticky registration sidebar → stacks. */
+.mkt-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: clamp(40px, 5vw, 72px);
+  align-items: start;
+}
+.mkt-detail-aside {
+  position: sticky;
+  top: 96px;
+}
+@media (max-width: 1024px) {
+  .mkt-detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .mkt-detail-aside {
+    position: static;
+  }
+}
+
+/* Rich TipTap description — spacing for the raw HTML we render on the detail
+   page (headings, paragraphs, lists). Scoped so it never leaks into chrome. */
+.mkt-prose {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+}
+.mkt-prose > * {
+  margin: 0 0 18px;
+}
+.mkt-prose > *:last-child {
+  margin-bottom: 0;
+}
+.mkt-prose h2,
+.mkt-prose h3 {
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  margin-top: 32px;
+}
+.mkt-prose h2 {
+  font-size: 24px;
+}
+.mkt-prose h3 {
+  font-size: 19px;
+}
+.mkt-prose ul,
+.mkt-prose ol {
+  padding-left: 22px;
+}
+.mkt-prose li {
+  margin-bottom: 8px;
+}
+.mkt-prose a {
+  color: var(--sparx-primary);
+  text-underline-offset: 2px;
+}

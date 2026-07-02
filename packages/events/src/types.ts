@@ -203,7 +203,26 @@ export type EventType =
   // status change). Published by the admin app; consumed by email-worker
   // (the feedback-response email) + analytics. Defined here so the future
   // admin publisher shares the canonical name.
-  | 'feedback.responded';
+  | 'feedback.responded'
+  // ─── Partner Program (docs/114 Part B) ──────────────────────────────
+  // A public partner application arrived (informal auto-approved, or queued for
+  // staff review). Topic-only for now — future consumer: staff notification.
+  | 'partner.application.submitted'
+  // A partner row went active (self-serve informal join or staff approval).
+  | 'partner.activated'
+  // A referral was credited at a referred org's signup (attribution hook).
+  | 'partner.referral.created'
+  // A commission accrued (a referred org's first payment cleared, or an ongoing
+  // monthly period for a certified partner's managed account).
+  | 'partner.commission.accrued'
+  // A monthly payout run disbursed a partner via Stripe Connect.
+  | 'partner.payout.paid'
+  // ─── Bootcamps (docs/114 §B.5) ──────────────────────────────────────
+  // A partner published / cancelled a bootcamp; future automation triggers.
+  | 'bootcamp.published'
+  | 'bootcamp.cancelled'
+  // An attendee RSVP'd on-platform → a lead in the host partner's CRM.
+  | 'bootcamp.registration.created';
 
 /** Payload for `domain.purchased`. Consumed by the domain-worker to poll DNS
  *  propagation and mark the domain active once resolved (docs/24 §4 step 5). */
@@ -278,7 +297,8 @@ export interface EmailSendPayload {
     | 'market-settlement-report'
     | 'feedback-response'
     | 'job-application-received'
-    | 'job-application-confirmation';
+    | 'job-application-confirmation'
+    | 'team-invitation';
   /** Shape is enforced by @sparx/email's TemplateSend.props on render. */
   props: Record<string, unknown>;
   /** Optional From override; defaults to SPARX_EMAIL_FROM env in worker. */

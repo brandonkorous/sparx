@@ -12,6 +12,7 @@ import {
   parseFaqItems,
   parseFeatureItems,
   renderLeaf,
+  renderLegacyNavLinks,
   resolveBuilderProduct,
   youtubeEmbed,
   mapEmbed,
@@ -148,9 +149,78 @@ describe('renderLeaf — edit placeholders keep empty nodes selectable; live ren
     expect(html).toContain('Your question here?');
   });
 
-  it('an empty NavMenu renders nothing on the live site', () => {
-    const html = leaf({ type: 'NavMenu', props: { orientation: 'row' } }, { mode: 'live' });
-    expect(html).toBe('');
+  // NavMenu is no longer a leaf — it's a host-walked container of NavItem children
+  // (docs/57 rebuild). Its only render concern still in this module is the
+  // back-compat helper that renders a not-yet-migrated NavMenu's legacy
+  // `props.links[]` as NavItem-equivalent anchors.
+  it('renderLegacyNavLinks maps legacy props.links to st-nav__item anchors', () => {
+    const html = renderToStaticMarkup(
+      <>{renderLegacyNavLinks([{ label: 'Shop', href: '/products', openInNewTab: true }])}</>
+    );
+    expect(html).toContain('class="st-nav__item"');
+    expect(html).toContain('href="/products"');
+    expect(html).toContain('>Shop</a>');
+    expect(html).toContain('target="_blank"');
+  });
+
+  it('renderLegacyNavLinks returns an empty list when there are no links', () => {
+    expect(renderLegacyNavLinks(undefined)).toHaveLength(0);
+    expect(renderLegacyNavLinks([])).toHaveLength(0);
+  });
+});
+
+describe('renderLeaf — nav composites (docs/57 rebuild)', () => {
+  it('a childless NavItem renders an anchor; with children it becomes a dropdown', () => {
+    const link = leaf({ type: 'NavItem', props: { label: 'Home', href: '/' } });
+    expect(link).toContain('class="st-nav__item"');
+    expect(link).toContain('href="/"');
+    expect(link).toContain('>Home</a>');
+
+    const drop = leaf(
+      { type: 'NavItem', props: { label: 'More' } },
+      {
+        children: (
+          <a className="st-nav__item" href="/a">
+            A
+          </a>
+        ),
+      }
+    );
+    expect(drop).toContain('st-navitem-drop');
+    expect(drop).toContain('st-navitem-drop__panel');
+  });
+
+  it('NavMegamenu renders a details trigger + a column-count panel of its children', () => {
+    const html = leaf(
+      { type: 'NavMegamenu', props: { label: 'Products', columns: '4' } },
+      {
+        children: (
+          <a className="st-nav__item" href="/products">
+            Shop
+          </a>
+        ),
+      }
+    );
+    expect(html).toContain('st-navmega');
+    expect(html).toContain('st-navmega__panel--c4');
+    expect(html).toContain('>Products<');
+    expect(html).toContain('href="/products"');
+  });
+
+  it('NavMegamenu defaults an out-of-range columns value to 3', () => {
+    const html = leaf({ type: 'NavMegamenu', props: { label: 'Menu', columns: '9' } });
+    expect(html).toContain('st-navmega__panel--c3');
+  });
+
+  it('AccountMenu renders the signed-out affordance on a live page with no session', () => {
+    // No BuilderRuntimeProvider → the NOOP runtime has no account → signed out.
+    const html = leaf(
+      { type: 'AccountMenu', props: { signInLabel: 'Sign in', signUpLabel: 'Join' } },
+      { mode: 'live' }
+    );
+    expect(html).toContain('st-account');
+    expect(html).toContain('Sign in');
+    expect(html).toContain('Join');
   });
 });
 

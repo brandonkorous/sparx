@@ -30,6 +30,12 @@ model Tenant {
   // touches it. The public tenant payload carries it so the storefront chrome
   // resolves real links. Moved here from TenantBrand.socials (docs/45 §3).
   socials              Json      @default("[]")
+  // Better Auth organization plugin (docs/114 Part A) maps its `organization`
+  // model onto this row (org == tenant). `orgLogo` + `orgMetadata` are the two
+  // plugin-owned org fields (the adapter reads them on list/getFull/setActive);
+  // everything else the plugin needs (name, slug, createdAt) already exists here.
+  orgLogo              String?   @map("org_logo") @db.Text
+  orgMetadata          String?   @map("org_metadata") @db.Text
   // Platform billing (docs/67) — the WizeWorks subscription that charges this
   // tenant per active module. `stripeCustomerId` + `trialEndsAt` already existed;
   // the rest complete the picture. Reconciled from Stripe webhooks (the source of
@@ -81,6 +87,10 @@ model Tenant {
 
   // Auth + audit
   users             User[]
+  // Organizations & Teams (docs/114 Part A) — the tenant IS the Better Auth
+  // organization; its team memberships + pending invitations.
+  members           Member[]
+  invitations       Invitation[]
   auditLogs         AuditLog[]
   // Bulk-operation revert ledger (docs/69 B-3) — before-state for undoable
   // bulk mutations (price adjustment, …) retained for a 30-minute window.
@@ -438,6 +448,17 @@ model Tenant {
   externalBusyBlocks     ExternalBusyBlock[]
   bookingNotifications   BookingNotification[]
   businessLocations      BusinessLocation[]
+
+  // Partner Program (docs/114 Part B) — the partner capability row (1:1),
+  // WizeWorks' application queue (platform tenant), referral/commission/payout
+  // ledger (partner's own org), and hosted bootcamps + their registrations.
+  partner              Partner?
+  partnerApplications  PartnerApplication[]
+  partnerReferrals     PartnerReferral[]
+  partnerCommissions   PartnerCommission[]
+  partnerPayoutRuns    PartnerPayoutRun[]
+  bootcamps            Bootcamp[]
+  bootcampRegistrations BootcampRegistration[]
 
   @@map("tenants")
 }

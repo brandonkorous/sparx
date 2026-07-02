@@ -13,12 +13,23 @@ import {
   Text,
   Wordmark,
 } from '@sparx/ui';
-import { Gauge, Home, Landmark, Plus, Search, Settings, Store, Workflow } from 'lucide-react';
+import {
+  Gauge,
+  Handshake,
+  Home,
+  Landmark,
+  Plus,
+  Search,
+  Settings,
+  Store,
+  Workflow,
+} from 'lucide-react';
 import { getManifestForPath, moduleManifests } from '../_shell/registry';
 import type { FavoriteRow, RecentRow } from '../_shell/service';
 import { FavoritesSection } from './favorites-section';
 import { FinanceSectionItems } from './finance-section-nav';
 import { ModuleSectionItems } from './module-section-nav';
+import { PartnerSectionItems } from './partner-section-nav';
 import { RecentsSection } from './recents-section';
 import { SettingsSectionItems } from './settings-section-nav';
 
@@ -36,14 +47,23 @@ interface MobileNavProps {
   enabledModules: readonly string[];
   favorites: FavoriteRow[];
   recents: RecentRow[];
+  /** Whether the tenant has a `partners` row (docs/114 §B.7). */
+  isPartner: boolean;
 }
 
-export function MobileNav({ pathname, enabledModules, favorites, recents }: MobileNavProps) {
+export function MobileNav({
+  pathname,
+  enabledModules,
+  favorites,
+  recents,
+  isPartner,
+}: MobileNavProps) {
   const visible = moduleManifests.filter((m) => enabledModules.includes(m.id));
   const manifest = pathname ? getManifestForPath(pathname) : undefined;
   const activeModule = manifest && enabledModules.includes(manifest.id) ? manifest : undefined;
   const inSettings = pathname === '/settings' || (pathname?.startsWith('/settings/') ?? false);
   const inFinance = pathname === '/finance' || (pathname?.startsWith('/finance/') ?? false);
+  const inPartner = pathname === '/partner' || (pathname?.startsWith('/partner/') ?? false);
 
   // One ambient "Add a module" pointer (Option A), shown only when a billable
   // module is inactive. `storefront` is the `builder` alias, not a separate
@@ -170,6 +190,28 @@ export function MobileNav({ pathname, enabledModules, favorites, recents }: Mobi
             <ModuleProvider module="finance">
               <SidebarItem moduleIcon asChild icon={<Landmark className="h-4 w-4" />}>
                 <Link href="/finance">Finance</Link>
+              </SidebarItem>
+            </ModuleProvider>
+          </SidebarSection>
+        )}
+
+        {/* Partner Portal — a first-class platform area (docs/114 §B.7) that owns a
+            brand hue (violet). Mirrors the desktop rail/panel: the switcher glyph
+            always carries the partner color (moduleIcon, like Finance), and inside
+            the portal the active section row goes violet via the same provider.
+            The switcher is always present — a non-partner reaches the join screen. */}
+        {inPartner ? (
+          <ModuleProvider module="partner">
+            <SidebarSection>
+              <SidebarSectionLabel>Partner</SidebarSectionLabel>
+              <PartnerSectionItems pathname={pathname} isPartner={isPartner} />
+            </SidebarSection>
+          </ModuleProvider>
+        ) : (
+          <SidebarSection>
+            <ModuleProvider module="partner">
+              <SidebarItem moduleIcon asChild icon={<Handshake className="h-4 w-4" />}>
+                <Link href="/partner">Partner</Link>
               </SidebarItem>
             </ModuleProvider>
           </SidebarSection>

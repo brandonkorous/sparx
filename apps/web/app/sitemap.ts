@@ -3,6 +3,7 @@ import { LEGAL_DOC_VERSIONS } from '@/lib/legal-versions';
 import { MODULE_ORDER, MODULES } from '@/lib/modules';
 import { DOC_PAGES } from '@/lib/docs';
 import { TOOL_SLUGS } from '@/components/marketing/tools/registry';
+import { fetchPublishedBootcampSlugs } from '@/lib/bootcamp';
 import { ROLES, OPEN_APPLICATION } from './careers/roles';
 
 const BASE = 'https://sparx.works';
@@ -11,8 +12,18 @@ const BASE = 'https://sparx.works';
 // the same source the pages render from, so the sitemap can never drift from
 // what actually ships. (Module pages were briefly CMS-backed; that `module`
 // content type was reclassified into builder components — docs/51 §7.)
-export default function sitemap(): MetadataRoute.Sitemap {
+// Async so it can await the published-bootcamp slugs from the public API — those
+// are dynamic listings, guarded to [] so a down endpoint never breaks coverage.
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+
+  const bootcampSlugs = await fetchPublishedBootcampSlugs();
+  const bootcampPages: MetadataRoute.Sitemap = bootcampSlugs.map((slug) => ({
+    url: `${BASE}/bootcamp/${slug}`,
+    lastModified: now,
+    changeFrequency: 'daily' as const,
+    priority: 0.6,
+  }));
 
   return [
     {
@@ -63,6 +74,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly' as const,
       priority: 0.5,
     })),
+    ...bootcampPages,
     ...staticPages(now),
   ];
 }
@@ -92,6 +104,24 @@ function staticPages(now: Date): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: 'monthly' as const,
       priority: 0.9,
+    },
+    {
+      url: `${BASE}/partners`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    },
+    {
+      url: `${BASE}/partners/directory`,
+      lastModified: now,
+      changeFrequency: 'daily' as const,
+      priority: 0.6,
+    },
+    {
+      url: `${BASE}/bootcamp`,
+      lastModified: now,
+      changeFrequency: 'daily' as const,
+      priority: 0.7,
     },
     {
       url: `${BASE}/customers`,

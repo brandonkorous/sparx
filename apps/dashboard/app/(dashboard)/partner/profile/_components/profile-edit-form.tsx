@@ -1,0 +1,405 @@
+'use client';
+
+import * as React from 'react';
+import { useRouter } from 'next/navigation';
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  Input,
+  Label,
+  ModuleProvider,
+  NativeSelect,
+  Stack,
+  SurfaceFrame,
+  SurfaceStep,
+  SurfaceSummary,
+  SurfaceSummaryDivider,
+  SurfaceSummaryRow,
+  Switch,
+  Text,
+  Textarea,
+  statusLabel,
+  statusTone,
+  type SurfaceStepDef,
+} from '@sparx/ui';
+import { KNOWN_SPECIALTIES } from '@sparx/partner-schemas';
+
+import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { PARTNER_KINDS } from '../../_lib/kinds';
+import { fmtDate } from '../../_lib/format';
+import { TIERS } from '../../_lib/tiers';
+import type { PartnerProfile } from '../../_lib/types';
+import { updatePartnerProfileAction } from '../actions';
+
+// The public directory profile editor (docs/114 §B.7) — a single-module working
+// surface, so it's the standard `embedded` SurfaceFrame edit pattern with neutral
+// cards; identity rides the chrome + the violet Save button. The live summary
+// aside shows the read-only facts (tier, referral code, directory URL) the partner
+// can't edit here. Explicit-save, last-write-wins, with the unsaved-changes guard.
+
+const STEPS: SurfaceStepDef[] = [{ key: 'profile', label: 'Profile' }];
+
+function sameSet(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) return false;
+  const bs = new Set(b);
+  return a.every((x) => bs.has(x));
+}
+
+export function PartnerProfileEditForm({ profile }: { profile: PartnerProfile }) {
+  const router = useRouter();
+  const [pending, startTransition] = React.useTransition();
+  const [error, setError] = React.useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
+  const [savedAt, setSavedAt] = React.useState<string | null>(null);
+
+  const [displayName, setDisplayName] = React.useState(profile.displayName);
+  const [bio, setBio] = React.useState(profile.bio ?? '');
+  const [websiteUrl, setWebsiteUrl] = React.useState(profile.websiteUrl ?? '');
+  const [kind, setKind] = React.useState(profile.kind);
+  const [city, setCity] = React.useState(profile.locationCity ?? '');
+  const [state, setState] = React.useState(profile.locationState ?? '');
+  const [country, setCountry] = React.useState(profile.locationCountry ?? '');
+  const [isRemote, setIsRemote] = React.useState(profile.isRemote);
+  const [specialties, setSpecialties] = React.useState<string[]>(profile.specialties);
+  const [photoUrl, setPhotoUrl] = React.useState(profile.photoUrl ?? '');
+  const [directoryVisible, setDirectoryVisible] = React.useState(profile.directoryVisible);
+
+  const dirty =
+    displayName !== profile.displayName ||
+    bio !== (profile.bio ?? '') ||
+    websiteUrl !== (profile.websiteUrl ?? '') ||
+    kind !== profile.kind ||
+    city !== (profile.locationCity ?? '') ||
+    state !== (profile.locationState ?? '') ||
+    country !== (profile.locationCountry ?? '') ||
+    isRemote !== profile.isRemote ||
+    photoUrl !== (profile.photoUrl ?? '') ||
+    directoryVisible !== profile.directoryVisible ||
+    !sameSet(specialties, profile.specialties);
+
+  React.useEffect(() => {
+    if (dirty) setSavedAt(null);
+  }, [dirty]);
+
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'edit', noun: 'profile' });
+  const cancel = React.useCallback(async () => {
+    if (!(await guardLeave())) return;
+    router.push('/partner');
+  }, [guardLeave, router]);
+
+  function toggleSpecialty(tag: string) {
+    setSpecialties((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
+  }
+
+  function submit() {
+    setError(null);
+    setFieldErrors({});
+    if (!displayName.trim()) {
+      setFieldErrors({ displayName: 'A practice name is required.' });
+      return;
+    }
+    const payload = {
+      displayName: displayName.trim(),
+      bio: bio.trim() || null,
+      websiteUrl: websiteUrl.trim() || null,
+      kind,
+      locationCity: city.trim() || null,
+      locationState: state.trim() || null,
+      locationCountry: country.trim() ? country.trim().toUpperCase() : null,
+      isRemote,
+      specialties,
+      photoUrl: photoUrl.trim() || null,
+      directoryVisible,
+    };
+    startTransition(async () => {
+      const result = await updatePartnerProfileAction(payload);
+      if (!result.ok) {
+        if (result.fieldErrors?.length) {
+          const fe: Record<string, string> = {};
+          for (const f of result.fieldErrors) fe[f.field] = f.message;
+          setFieldErrors(fe);
+        }
+        setError(result.error ?? 'Could not save your profile.');
+        return;
+      }
+      setSavedAt(new Date().toLocaleTimeString());
+      router.refresh();
+    });
+  }
+
+  return (
+    <ModuleProvider module="partner" className="h-full">
+      <SurfaceFrame
+        variant="embedded"
+        title="Directory profile"
+        steps={STEPS}
+        current={0}
+        onCancel={cancel}
+        summary={<ProfileSummary profile={profile} directoryVisible={directoryVisible} />}
+      >
+        <SurfaceStep
+          header={{
+            title: 'Your public listing',
+            supporting:
+              'This is how you appear in the sparx.works partner directory. Turn visibility off to keep earning while staying unlisted.',
+          }}
+          actions={{
+            nextForm: 'partner-profile-form',
+            nextLabel: 'Save changes',
+            nextLoading: pending,
+            nextDisabled: pending || !dirty,
+            extra:
+              savedAt && !error ? (
+                <Text size="xs" variant="success">
+                  Saved {savedAt}
+                </Text>
+              ) : undefined,
+          }}
+        >
+          <form
+            id="partner-profile-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (pending || !dirty) return;
+              submit();
+            }}
+          >
+            <Card variant="default">
+              <CardContent className="py-6">
+                <Stack gap={5}>
+                  <Field label="Practice name" htmlFor="p-name" error={fieldErrors.displayName}>
+                    <Input
+                      id="p-name"
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      variant={fieldErrors.displayName ? 'error' : 'default'}
+                      maxLength={255}
+                    />
+                  </Field>
+
+                  <Field label="Bio" htmlFor="p-bio" error={fieldErrors.bio}>
+                    <Textarea
+                      id="p-bio"
+                      value={bio}
+                      onChange={(e) => setBio(e.target.value)}
+                      rows={4}
+                      maxLength={2000}
+                      placeholder="What you do, who you help, and what makes your practice a good fit."
+                    />
+                  </Field>
+
+                  <Stack direction="row" gap={3} wrap>
+                    <Field
+                      label="Website"
+                      htmlFor="p-website"
+                      error={fieldErrors.websiteUrl}
+                      className="min-w-[14rem] flex-1"
+                    >
+                      <Input
+                        id="p-website"
+                        value={websiteUrl}
+                        onChange={(e) => setWebsiteUrl(e.target.value)}
+                        placeholder="https://example.com"
+                        variant={fieldErrors.websiteUrl ? 'error' : 'default'}
+                      />
+                    </Field>
+                    <Field
+                      label="What describes you"
+                      htmlFor="p-kind"
+                      className="min-w-[14rem] flex-1"
+                    >
+                      <NativeSelect
+                        id="p-kind"
+                        value={kind}
+                        onChange={(e) => setKind(e.target.value as PartnerProfile['kind'])}
+                      >
+                        {PARTNER_KINDS.map((k) => (
+                          <option key={k.value} value={k.value}>
+                            {k.label}
+                          </option>
+                        ))}
+                      </NativeSelect>
+                    </Field>
+                  </Stack>
+
+                  <Field label="Logo / photo URL" htmlFor="p-photo" error={fieldErrors.photoUrl}>
+                    <Input
+                      id="p-photo"
+                      value={photoUrl}
+                      onChange={(e) => setPhotoUrl(e.target.value)}
+                      placeholder="https://…/logo.png"
+                      variant={fieldErrors.photoUrl ? 'error' : 'default'}
+                    />
+                  </Field>
+
+                  <Stack direction="row" gap={3} wrap>
+                    <Field label="City" htmlFor="p-city" className="min-w-[10rem] flex-1">
+                      <Input id="p-city" value={city} onChange={(e) => setCity(e.target.value)} />
+                    </Field>
+                    <Field
+                      label="State / region"
+                      htmlFor="p-state"
+                      className="min-w-[10rem] flex-1"
+                    >
+                      <Input
+                        id="p-state"
+                        value={state}
+                        onChange={(e) => setState(e.target.value)}
+                      />
+                    </Field>
+                    <Field label="Country" htmlFor="p-country" className="w-28">
+                      <Input
+                        id="p-country"
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value.toUpperCase())}
+                        placeholder="US"
+                        maxLength={2}
+                        className="uppercase"
+                      />
+                    </Field>
+                  </Stack>
+
+                  <Toggle
+                    id="p-remote"
+                    label="Work remotely"
+                    hint="Show that you take on clients anywhere, not just your city."
+                    checked={isRemote}
+                    onCheckedChange={setIsRemote}
+                  />
+
+                  <Stack gap={2}>
+                    <Label>Specialties</Label>
+                    <Text size="xs" variant="muted">
+                      The areas you focus on — these drive the directory’s specialty filter.
+                    </Text>
+                    <Stack direction="row" gap={2} wrap>
+                      {KNOWN_SPECIALTIES.map((tag) => {
+                        const on = specialties.includes(tag);
+                        return (
+                          <Button
+                            key={tag}
+                            type="button"
+                            size="sm"
+                            color="module"
+                            variant={on ? 'soft' : 'outline'}
+                            onClick={() => toggleSpecialty(tag)}
+                            aria-pressed={on}
+                          >
+                            {tag}
+                          </Button>
+                        );
+                      })}
+                    </Stack>
+                  </Stack>
+
+                  <SurfaceSummaryDivider />
+
+                  <Toggle
+                    id="p-visible"
+                    label="List me in the public directory"
+                    hint="When off, you stay an active partner and keep earning — you just won’t appear in the directory."
+                    checked={directoryVisible}
+                    onCheckedChange={setDirectoryVisible}
+                  />
+                </Stack>
+              </CardContent>
+            </Card>
+          </form>
+          {error && (
+            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+              {error}
+            </Text>
+          )}
+        </SurfaceStep>
+      </SurfaceFrame>
+    </ModuleProvider>
+  );
+}
+
+function Field({
+  label,
+  htmlFor,
+  error,
+  className,
+  children,
+}: {
+  label: string;
+  htmlFor: string;
+  error?: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Stack gap={2} className={className}>
+      <Label htmlFor={htmlFor}>{label}</Label>
+      {children}
+      {error && (
+        <Text size="xs" variant="danger">
+          {error}
+        </Text>
+      )}
+    </Stack>
+  );
+}
+
+function Toggle({
+  id,
+  label,
+  hint,
+  checked,
+  onCheckedChange,
+}: {
+  id: string;
+  label: string;
+  hint: string;
+  checked: boolean;
+  onCheckedChange: (v: boolean) => void;
+}) {
+  return (
+    <Stack direction="row" align="start" justify="between" gap={3}>
+      <Stack gap={1} className="min-w-0">
+        <Label htmlFor={id}>{label}</Label>
+        <Text size="xs" variant="muted">
+          {hint}
+        </Text>
+      </Stack>
+      <Switch id={id} color="module" checked={checked} onCheckedChange={onCheckedChange} />
+    </Stack>
+  );
+}
+
+function ProfileSummary({
+  profile,
+  directoryVisible,
+}: {
+  profile: PartnerProfile;
+  directoryVisible: boolean;
+}) {
+  const tier = TIERS[profile.tier];
+  return (
+    <SurfaceSummary
+      title="Partner"
+      footer={
+        <Badge color={directoryVisible ? statusTone('active') : 'neutral'} variant="soft">
+          {directoryVisible ? 'Listed publicly' : 'Unlisted'}
+        </Badge>
+      }
+    >
+      <SurfaceSummaryRow label="Tier" value={tier.label} />
+      <SurfaceSummaryRow
+        label="Status"
+        value={
+          <Badge color={statusTone(profile.status)} variant="soft" size="sm">
+            {statusLabel(profile.status)}
+          </Badge>
+        }
+      />
+      <SurfaceSummaryRow label="Referral code" value={profile.referralCode} />
+      <SurfaceSummaryDivider />
+      <SurfaceSummaryRow label="Member since" value={fmtDate(profile.createdAt) ?? '—'} />
+      <SurfaceSummaryRow label="Commission" value={tier.commission} />
+    </SurfaceSummary>
+  );
+}

@@ -53,6 +53,15 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
     ],
   },
   {
+    title: 'Partners',
+    links: [
+      { label: 'Partner program', href: '/partners' },
+      { label: 'Partner directory', href: '/partners/directory' },
+      { label: 'Business OS Bootcamp', href: '/bootcamp' },
+      { label: 'Become a partner', href: '/partners#apply' },
+    ],
+  },
+  {
     title: 'Company',
     links: [
       { label: 'About WizeWorks', href: '/about' },

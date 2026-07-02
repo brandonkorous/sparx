@@ -1,12 +1,13 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { nextCookies } from 'better-auth/next-js';
-import { mcp } from 'better-auth/plugins';
+import { mcp, organization } from 'better-auth/plugins';
 import { createAuthMiddleware, getSessionFromCtx } from 'better-auth/api';
 import { authPrisma } from './prisma';
 import { publishAuthEmail } from './email-events';
 import { finalizeOAuthSignup, provisionTenantForOAuth } from './oauth-provisioning';
 import { MCP_ALL_OAUTH_SCOPES, verifyConsentGrant } from './mcp-scopes';
+import { ac, roles } from './org-roles';
 
 // sparx Better Auth server instance. One per process — same caching strategy
 // as @sparx/db's prisma client so dev HMR does not leak adapters.
@@ -15,9 +16,11 @@ import { MCP_ALL_OAUTH_SCOPES, verifyConsentGrant } from './mcp-scopes';
 //   - User has sparx extensions `tenantId` + `role` exposed via additionalFields
 //   - Session / Account / Verification shapes match Better Auth's expectations
 //
-// The organization plugin (docs/16 §2) is intentionally NOT enabled yet — it
-// would need an Organization/Member/Invitation table set the data layer has not
-// landed. Tenant context is carried on User.tenantId until then.
+// The organization plugin (docs/16 §2, docs/114 Part A) is enabled below — the
+// tenant IS the org, with `members`/`invitations` tables + `session.activeOrganizationId`
+// (migration 20261002000000_organizations_and_teams). A user can belong to many
+// orgs (team members + consultants); the active org drives the JWT `tid`/`role`,
+// resolved in session.ts. `User.tenantId` remains the default (home) membership.
 
 declare global {
   var __sparxAuth: ReturnType<typeof createAuth> | undefined;
@@ -262,6 +265,55 @@ function createAuth() {
             scopes_supported: [...MCP_ALL_OAUTH_SCOPES],
           },
         },
+      }),
+      // Organizations & Teams (docs/114 Part A). The tenant IS the organization,
+      // so the plugin's `organization` model maps onto the `tenant` Prisma model
+      // (its `logo`/`metadata` fields → tenants.org_logo/org_metadata); `member`,
+      // `invitation`, and `session.activeOrganizationId` already match the plugin's
+      // default field names (members/invitations tables + the sessions column).
+      //
+      // We own the tenant lifecycle (signUpMerchant / OAuth provisioning) and mint
+      // the owner `member` there, so the plugin NEVER creates or deletes an org —
+      // it manages memberships, invitations, and the active-org on the session
+      // (setActiveOrganization, which correctly refreshes the 5-min cookie cache).
+      organization({
+        schema: {
+          organization: {
+            modelName: 'tenant',
+            fields: { logo: 'orgLogo', metadata: 'orgMetadata' },
+          },
+        },
+        allowUserToCreateOrganization: false,
+        disableOrganizationDeletion: true,
+        creatorRole: 'owner',
+        membershipLimit: 1000,
+        invitationExpiresIn: 60 * 60 * 24 * 7, // 7 days
+        // Team invitations ride the email bus (docs/114 §A.4): publish an
+        // `email.send` event with the `team-invitation` template — email-worker
+        // renders + relays it, so invite latency never couples to Postal. Better
+        // Auth does not generate the accept URL; we point it at our own
+        // /accept-invite page carrying the invitation id.
+        async sendInvitationEmail(data) {
+          const appUrl = process.env.BETTER_AUTH_URL ?? 'http://localhost:3001';
+          const acceptUrl = `${appUrl}/accept-invite?invitation=${encodeURIComponent(data.id)}`;
+          const inviterName = data.inviter.user.name?.trim() || data.inviter.user.email;
+          await publishAuthEmail({
+            tenantId: data.organization.id,
+            actorId: data.inviter.user.id,
+            template: 'team-invitation',
+            to: data.email,
+            props: {
+              inviteeEmail: data.email,
+              orgName: data.organization.name,
+              inviterName,
+              role: data.role,
+              acceptUrl,
+              expiresInDays: 7,
+            },
+          });
+        },
+        ac,
+        roles,
       }),
       // nextCookies() must stay LAST so it can flush Set-Cookie for the
       // plugins registered before it.

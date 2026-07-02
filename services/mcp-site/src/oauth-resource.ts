@@ -72,14 +72,38 @@ export function wwwAuthenticate(request: FastifyRequest): string {
   return `Bearer resource_metadata="${resourceMetadataUrl(request)}"`;
 }
 
+/** The well-known path segment RFC 9728 reserves for Protected Resource Metadata. */
+const WELL_KNOWN_PRM = '/.well-known/oauth-protected-resource';
+
+/** The MCP endpoint path a metadata request describes, recovered from the request
+ *  URL so ONE handler serves every RFC 9728 §3.1 discovery shape correctly:
+ *
+ *    • path-suffixed   `<mcp>/.well-known/oauth-protected-resource`  → `<mcp>`
+ *    • path-inserted   `/.well-known/oauth-protected-resource/<mcp>` → `/<mcp>`
+ *    • bare root       `/.well-known/oauth-protected-resource`       → `/mcp`
+ *
+ *  The path-inserted + bare-root shapes are what an MCP client CONSTRUCTS when it
+ *  never saw our WWW-Authenticate challenge (an unauthenticated `initialize`
+ *  succeeds, so there's no 401 carrying the metadata URL) — without them discovery
+ *  404s and the client can't reach the authorization server. Bare root maps to the
+ *  per-site `/mcp` endpoint (Host-resolved); canonical `/s/<tenant>[/<property>]/mcp`
+ *  clients use the path-inserted shape, which carries the resource path verbatim. */
+export function mcpResourcePath(request: FastifyRequest): string {
+  const path = pathOnly(request.url);
+  if (path === WELL_KNOWN_PRM) return '/mcp';
+  if (path.startsWith(`${WELL_KNOWN_PRM}/`)) return path.slice(WELL_KNOWN_PRM.length);
+  if (path.endsWith(WELL_KNOWN_PRM)) return path.slice(0, -WELL_KNOWN_PRM.length);
+  return path;
+}
+
 /** RFC 9728 Protected Resource Metadata: this resource + the site's AS. `resource`
- *  is the MCP endpoint (strip the well-known suffix from the metadata request URL);
- *  `authServer` is the site's canonical origin (from site-info). */
+ *  is the MCP endpoint the request describes (see `mcpResourcePath`); `authServer`
+ *  is the site's canonical origin (from site-info). */
 export function protectedResourceMetadata(
   request: FastifyRequest,
   authServer: string | null
 ): Record<string, unknown> {
-  const resource = resourceUrl(request).replace(/\/\.well-known\/oauth-protected-resource$/, '');
+  const resource = `${requestOrigin(request)}${mcpResourcePath(request)}`;
   return {
     resource,
     ...(authServer ? { authorization_servers: [authServer] } : {}),

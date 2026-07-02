@@ -29,12 +29,13 @@ import {
   type DataSources,
   type Scope,
 } from '@sparx/builder-schemas';
-import { ThemeToggle } from '@sparx/site-ui';
+import { NavShell, ThemeToggle } from '@sparx/site-ui';
 import {
   BuilderCarousel,
   ProductFormProvider,
   leafWearsClass,
   renderLeaf,
+  renderLegacyNavLinks,
   resolveBuilderProduct,
   sxAttrs,
 } from '@sparx/builder-render';
@@ -76,7 +77,15 @@ const BG_POSITION_CSS: Record<string, string> = {
   'bottom-right': 'right bottom',
 };
 
-const CONTAINERS = new Set(['Section', 'Grid', 'Stack', 'Card', 'Carousel', 'ProductForm']);
+const CONTAINERS = new Set([
+  'Section',
+  'Grid',
+  'Stack',
+  'Card',
+  'Carousel',
+  'ProductForm',
+  'NavMenu',
+]);
 
 /** The first image of a bound image/images value, or null. */
 function firstImage(value: unknown): { url?: string; alt?: string } | null {
@@ -191,6 +200,23 @@ function RenderNode({
         dots={node.props.dots !== false}
       />
     );
+  } else if (node.type === 'NavMenu') {
+    // NavMenu is a CONTAINER of NavItem children (docs/57 rebuild), rendered ONCE
+    // into a responsive NavShell — an inline row on wide frames, a hamburger reveal
+    // once narrow. Back-compat: a not-yet-migrated NavMenu with legacy
+    // `props.links[]` and no children renders those as NavItem-equivalent links, so
+    // existing sites keep working until the tree migration converts them.
+    const orientation = node.props.orientation === 'stack' ? 'stack' : 'row';
+    const kids = node.children ?? [];
+    const items =
+      kids.length > 0
+        ? kids.map((child) => (
+            <RenderNode key={child.id} node={child} scope={scope} outlet={outlet} />
+          ))
+        : renderLegacyNavLinks(node.props.links);
+    // An empty nav renders nothing on the live site (parity with the old leaf).
+    if (items.length === 0) return null;
+    body = <NavShell orientation={orientation}>{items}</NavShell>;
   } else if (isContainer) {
     const kids = node.children ?? [];
     if (bound && card === 'array') {

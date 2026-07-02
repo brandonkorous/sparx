@@ -34,6 +34,12 @@ const EnvSchema = z
     // different blast radius than triggering a scheduler — so it rotates
     // independently. Optional in dev; unset → the endpoint returns 401.
     SPARX_INTERNAL_ACQUISITION_TOKEN: z.string().min(16).optional(),
+    // Shared secret for the internal Partner Program endpoints (docs/114 §B.8):
+    // the signup referral-attribution hook (POST /internal/partners/referrals),
+    // the first-payment commission-accrual hook, and staff approve/tier/suspend.
+    // A SEPARATE secret (writes cross-org referral/commission rows) — its own
+    // blast radius, rotates independently. Optional in dev; unset → endpoints 401.
+    SPARX_INTERNAL_PARTNERS_TOKEN: z.string().min(16).optional(),
     // The platform's OWN tenant (docs/80 §2 dogfooding) — sparx/WizeWorks running
     // as a tenant-of-record. Its tenant ID is the ONE allowed to claim a reserved
     // BRAND slug (e.g. `wizeworks`) via PATCH /v1/tenant/slug — the reservation

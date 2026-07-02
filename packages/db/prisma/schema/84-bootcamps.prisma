@@ -1,0 +1,84 @@
+// Business OS Bootcamps (docs/114 §B.5). Partner-hosted training cohorts. Each
+// bootcamp is tenant-scoped to its HOST partner's org (tenant_id) + carries a
+// bare partner_id for the public directory join (host name + tier badge). The
+// public `/bootcamp` directory + `/bootcamp/[slug]` detail read PUBLISHED rows
+// through a visibility policy under withSystem. Registration is on-platform
+// (a lead into the host partner's CRM) with an external-URL escape hatch.
+
+model Bootcamp {
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String @map("tenant_id") @db.Uuid
+  // The hosting Partner (bare uuid — the directory service joins partner tier +
+  // display name; no Prisma relation keeps the modules loosely coupled).
+  partnerId String @map("partner_id") @db.Uuid
+
+  title       String @db.VarChar(255)
+  // Globally unique URL slug → sparx.works/bootcamp/{slug}.
+  slug        String @db.VarChar(160)
+  // Rich HTML (the TipTap description editor), shown on the detail page.
+  description String @default("") @db.Text
+
+  // in_person | virtual | hybrid | async
+  format          String  @default("virtual") @db.VarChar(20)
+  locationCity    String? @map("location_city") @db.VarChar(160)
+  locationState   String? @map("location_state") @db.VarChar(120)
+  locationCountry String  @default("US") @map("location_country") @db.VarChar(2)
+
+  startsAt DateTime @map("starts_at") @db.Timestamptz
+  endsAt   DateTime @map("ends_at") @db.Timestamptz
+
+  // null = unlimited seats.
+  seatsTotal  Int? @map("seats_total")
+  seatsFilled Int  @default(0) @map("seats_filled")
+
+  priceCents Int    @default(0) @map("price_cents")
+  currency   String @default("USD") @db.VarChar(3)
+
+  // internal (on-platform RSVP → host CRM) | external (registrationUrl).
+  registrationMode String  @default("internal") @map("registration_mode") @db.VarChar(20)
+  registrationUrl  String? @map("registration_url") @db.VarChar(500)
+
+  // draft | published | cancelled | completed
+  status      String    @default("draft") @db.VarChar(20)
+  publishedAt DateTime?  @map("published_at") @db.Timestamptz
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+
+  tenant        Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  registrations BootcampRegistration[]
+
+  @@unique([slug], map: "bootcamps_slug_unique")
+  @@index([tenantId, status])
+  @@index([status, startsAt])
+  @@index([partnerId])
+  @@map("bootcamps")
+}
+
+model BootcampRegistration {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  bootcampId String @map("bootcamp_id") @db.Uuid
+
+  name  String @db.VarChar(255)
+  email String @db.VarChar(255)
+  seats Int    @default(1)
+
+  // registered | waitlisted | cancelled | attended
+  status String @default("registered") @db.VarChar(20)
+
+  // The lead this RSVP created in the host partner's CRM (bare uuid → CRM).
+  crmCustomerId String? @map("crm_customer_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  bootcamp Bootcamp @relation(fields: [bootcampId], references: [id], onDelete: Cascade)
+
+  @@unique([bootcampId, email], map: "bootcamp_registrations_bootcamp_email_unique")
+  @@index([tenantId])
+  @@index([bootcampId, status])
+  @@map("bootcamp_registrations")
+}

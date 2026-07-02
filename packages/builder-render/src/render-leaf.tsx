@@ -43,10 +43,8 @@ import {
   sampleEmailText,
   type BuilderNode,
   type Cardinality,
-  type NavLink,
 } from '@sparx/builder-schemas';
 import {
-  CollapsibleNav,
   Divider,
   EditorialSection,
   EmbedFrame,
@@ -55,7 +53,6 @@ import {
   Heading,
   Image,
   Logo,
-  NavMenu,
   PriceTag,
   SocialLinks,
   Stat,
@@ -81,6 +78,7 @@ import { BuilderLightbox } from './lightbox';
 import { BuilderIcon } from './icon';
 import { renderSiteUiAtom } from './site-atoms';
 import { SignupForm } from './signup';
+import { BuilderAccountMenu } from './account-menu';
 import { SAMPLE_BUILDER_PRODUCT } from './sample-product';
 import { sxAttrs } from './behaviors/attrs';
 import {
@@ -141,7 +139,9 @@ const CLASS_ON_LEAF: ReadonlySet<string> = new Set([
   'Video',
   'Map',
   'Logo',
-  'NavMenu',
+  'NavItem',
+  'NavMegamenu',
+  'AccountMenu',
   'SocialLinks',
   // Site-UI atoms (docs/102 Track A) — each renders a real @sparx/site-ui component
   // that wears the recipe + utilities on its own root, so the host suppresses its
@@ -322,11 +322,6 @@ const SAMPLE_FEATURES = [
   { number: '02', title: 'Feature two', body: 'What it does.' },
   { number: '03', title: 'Feature three', body: 'What it does.' },
 ];
-const SAMPLE_NAV: NavLink[] = [
-  { label: 'Home', href: '/' },
-  { label: 'Shop', href: '/products' },
-  { label: 'About', href: '/about' },
-];
 const SAMPLE_SOCIAL = [
   { platform: 'Twitter', url: '#' },
   { platform: 'Instagram', url: '#' },
@@ -347,6 +342,29 @@ function Placeholder({ label, ratio }: { label?: string; ratio?: string }) {
       {label ? <span className="bx-ph__label">{label}</span> : null}
     </div>
   );
+}
+
+// ── NavMenu back-compat (docs/57 rebuild) ─────────────────────────────────────
+//
+// NavMenu is now a CONTAINER of NavItem child nodes. A not-yet-migrated NavMenu
+// still carries its links in the old `props.links[]` bag (the leaf model); until
+// the `20260703_navmenu_container` tree migration converts those into NavItem
+// children, the host container branch falls back to these. The markup is the
+// SAME `<a class="st-nav__item">` a childless NavItem renders, so the two paths
+// are pixel-identical during the transition and existing sites never render an
+// empty nav. Shared by the live renderer, the canvas, and the View-HTML
+// serializer so all three agree.
+export function renderLegacyNavLinks(links: unknown): React.ReactNode[] {
+  return coerceNavLinks(links, undefined).map((l, i) => (
+    <a
+      key={`legacy-${i}-${l.label}`}
+      className="st-nav__item"
+      href={l.href || '#'}
+      {...(l.openInNewTab ? { target: '_blank', rel: 'noreferrer noopener' } : {})}
+    >
+      {l.label}
+    </a>
+  ));
 }
 
 // ── The unified leaf render ───────────────────────────────────────────────────
@@ -689,22 +707,86 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
         />
       );
     }
-    case 'NavMenu': {
-      const orientation = (str('orientation') || 'row') as 'row' | 'stack';
-      // Node-owned links (docs/57); a legacy CMS binding is the defensive fallback.
-      const links = coerceNavLinks(node.props.links, value);
-      if (links.length === 0 && !edit) return null;
-      const source = links.length > 0 ? links : SAMPLE_NAV;
-      const items = source.map((l) => ({
-        label: l.label,
-        url: l.href,
-        ...(l.openInNewTab ? { openInNewTab: true } : {}),
-      }));
-      // A row (primary/header) nav collapses to a hamburger + drawer on phones via
-      // the responsive CollapsibleNav; stacked (footer/secondary) stays static.
-      if (orientation === 'row') return <CollapsibleNav items={items} className={leafClass} />;
-      return <NavMenu items={items} orientation="stack" className={leafClass} />;
+    case 'NavItem': {
+      // A composed nav link (docs/57 rebuild). Alone it renders an <a>; WITH child
+      // NavItems it becomes a CSS-only <details> dropdown (trigger + panel of the
+      // rendered children), the same way a Button nests an Icon. Wears node.class
+      // (leafClass) on its own tag; the structural `st-*` class is always present.
+      const label = str('label') || (edit ? 'Menu item' : '');
+      const iconName = str('icon');
+      const glyph = iconName ? <BuilderIcon name={iconName} className="st-navitem__icon" /> : null;
+      const newTab = p.openInNewTab === true;
+      if (children) {
+        return (
+          <details className={leafClass ? `st-navitem-drop ${leafClass}` : 'st-navitem-drop'}>
+            <summary className="st-navitem-drop__summary">
+              {glyph}
+              <span>{label || (edit ? 'Menu' : '')}</span>
+              <span className="st-navitem-drop__caret" aria-hidden>
+                ▾
+              </span>
+            </summary>
+            <div className="st-navitem-drop__panel">{children}</div>
+          </details>
+        );
+      }
+      const href = str('href') || '#';
+      return (
+        <a
+          className={leafClass ? `st-nav__item ${leafClass}` : 'st-nav__item'}
+          href={href}
+          {...(newTab ? { target: '_blank', rel: 'noreferrer noopener' } : {})}
+        >
+          {glyph}
+          {label}
+        </a>
+      );
     }
+    case 'NavMegamenu': {
+      // A mega-menu (docs/57 rebuild): a labelled trigger that opens a WIDE,
+      // multi-column panel. Like NavItem's dropdown it's a CSS-only <details>
+      // disclosure, but its panel lays its authored children out as columns (the
+      // `columns` prop picks 2/3/4). A leaf-with-children, so the host walkers pass
+      // the rendered children straight through and each column stays selectable.
+      const label = str('label') || (edit ? 'Menu' : '');
+      const iconName = str('icon');
+      const glyph = iconName ? <BuilderIcon name={iconName} className="st-navitem__icon" /> : null;
+      const cols = str('columns') === '2' || str('columns') === '4' ? str('columns') : '3';
+      return (
+        <details className={leafClass ? `st-navmega ${leafClass}` : 'st-navmega'}>
+          <summary className="st-navitem-drop__summary">
+            {glyph}
+            <span>{label}</span>
+            <span className="st-navitem-drop__caret" aria-hidden>
+              ▾
+            </span>
+          </summary>
+          <div className={`st-navmega__panel st-navmega__panel--c${cols}`}>{children}</div>
+        </details>
+      );
+    }
+    case 'AccountMenu': {
+      // The customer-account navbar affordance (docs/27). A client island reading the
+      // live session from the Builder runtime; the canvas previews the signed-in
+      // menu. Wears node.class (leafClass) on the AccountMenu root.
+      const href = (k: string) => str(k) || undefined;
+      return (
+        <BuilderAccountMenu
+          className={leafClass}
+          signInHref={href('signInHref')}
+          signUpHref={href('signUpHref')}
+          accountHref={href('accountHref')}
+          ordersHref={href('ordersHref')}
+          wishlistHref={href('wishlistHref')}
+          signInLabel={href('signInLabel')}
+          signUpLabel={href('signUpLabel')}
+        />
+      );
+    }
+    // NavMenu is no longer a leaf — it's a CONTAINER of NavItem children rendered
+    // by the host walkers into a responsive <NavShell> (docs/57 rebuild). Its
+    // back-compat for a not-yet-migrated `props.links[]` is `renderLegacyNavLinks`
+    // below, which the host branch calls.
     case 'SocialLinks': {
       const raw =
         cardinality === 'array' && Array.isArray(value) ? (value as Record<string, unknown>[]) : [];

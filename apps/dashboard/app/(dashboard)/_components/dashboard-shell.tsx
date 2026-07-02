@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { SidebarAppShell } from '@sparx/ui';
+import type { OrgMembership } from '@sparx/auth';
 import type { Property } from '@/lib/sites';
 import type { FavoriteRow, RecentRow } from '../_shell/service';
 import type { UserPreferences } from '../_shell/preferences-types';
@@ -28,9 +29,16 @@ export interface DashboardShellProps {
    *  breadcrumb Site switcher. Empty / single-site → no Site segment. */
   sites?: Property[];
   activePropertyId?: string | null;
+  /** The user's org memberships + the active org id (docs/114 §A.4) — feeds the
+   *  breadcrumb workspace switcher. ≤1 membership → no switcher. */
+  organizations?: OrgMembership[];
+  activeOrgId?: string | null;
   favorites: FavoriteRow[];
   recents: RecentRow[];
   preferences: UserPreferences;
+  /** Whether the tenant has a `partners` row (docs/114 §B.7) — drives the Partner
+   *  tile tooltip + gates the portal's member-only sections. */
+  isPartner: boolean;
   children: React.ReactNode;
   /** Server-rendered detail body from the `@detail` slot (null when closed). */
   detail?: React.ReactNode;
@@ -42,9 +50,12 @@ export function DashboardShell({
   enabledModules,
   sites = [],
   activePropertyId = null,
+  organizations = [],
+  activeOrgId = null,
   favorites,
   recents,
   preferences,
+  isPartner,
   children,
   detail,
 }: DashboardShellProps) {
@@ -94,6 +105,7 @@ export function DashboardShell({
               enabledModules={enabledModules}
               favorites={favorites}
               recents={recents}
+              isPartner={isPartner}
             />
           }
           panel={
@@ -102,6 +114,7 @@ export function DashboardShell({
                 pathname={pathname}
                 enabledModules={enabledModules}
                 tenantName={tenantName}
+                isPartner={isPartner}
               />
             ) : null
           }
@@ -111,6 +124,7 @@ export function DashboardShell({
               enabledModules={enabledModules}
               favorites={favorites}
               recents={recents}
+              isPartner={isPartner}
             />
           }
           headerStart={
@@ -119,6 +133,8 @@ export function DashboardShell({
               enabledModules={enabledModules}
               sites={sites}
               activePropertyId={activePropertyId}
+              organizations={organizations}
+              activeOrgId={activeOrgId}
             />
           }
           headerActions={
