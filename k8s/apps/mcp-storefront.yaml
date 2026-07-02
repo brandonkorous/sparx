@@ -1,0 +1,108 @@
+# services/mcp-storefront — production manifest (docs/113). The shopper-facing
+# MCP plane. Mirrors api-mcp.yaml; the differences:
+#   - Image tag `mcp-storefront`, port 3200
+#   - Fronted by the Caddy `/mcp*` carve-out on every storefront host AND the
+#     canonical `mcp.sparx.zone` block (k8s/caddy/Caddyfile)
+#   - No DB / no module bundling: it is a thin MCP adapter over the public REST
+#     API. It reads only SPARX_API_REST_URL (from sparx-app-env) — the rest of
+#     the shared env is inert here.
+#
+# Single replica, no HPA/PDB (same rationale as api-mcp): early-stage volume is
+# low and the pod is stateless. Scale out later by raising replicas + adding an
+# HPA (minReplicas 1 / maxReplicas 2, CPU 70%) + PDB (minAvailable 1).
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-storefront
+  namespace: sparx-prod
+  labels:
+    app: mcp-storefront
+    tier: api
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: mcp-storefront
+  template:
+    metadata:
+      labels:
+        app: mcp-storefront
+        tier: api
+    spec:
+      serviceAccountName: sparx-app
+      containers:
+        - name: mcp-storefront
+          image: us-central1-docker.pkg.dev/sparxworks/sparx/mcp-storefront:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3200
+          envFrom:
+            - configMapRef:
+                name: sparx-app-env
+            - secretRef:
+                name: sparx-app-secrets
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: SERVICE_NAME
+              value: mcp-storefront
+            - name: PORT
+              value: '3200'
+            - name: LOG_LEVEL
+              value: info
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ['ALL']
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            requests:
+              cpu: '50m'
+              memory: '256Mi'
+            limits:
+              cpu: '500m'
+              memory: '256Mi'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3200
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3200
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            failureThreshold: 2
+          lifecycle:
+            preStop:
+              exec:
+                command: ['/bin/sh', '-c', 'sleep 10']
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-storefront
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 3200
+      targetPort: 3200
+  selector:
+    app: mcp-storefront

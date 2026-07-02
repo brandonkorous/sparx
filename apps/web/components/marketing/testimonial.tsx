@@ -1,13 +1,13 @@
 import { Container } from './primitives';
 import { Reveal } from './reveal';
 
-const METRICS = [
-  { label: 'Annual savings', value: '$26,400' },
-  { label: 'Migration time', value: '14 days' },
-  { label: 'Fleet accounts', value: '214 units' },
-  { label: 'Modules active', value: 'All 8' },
-] as const;
-
+// Honest replacement for a fabricated customer testimonial. sparx is pre-launch,
+// so an invented quote + hard metrics attributed to a named person is exactly the
+// fake proof the brand rules forbid. This is a founder's note instead: it carries
+// the thesis in a real voice, and states the one true relationship we have — the
+// design partnership with Gillett Diesel Service (the first enterprise client
+// shaping the B2B/fleet feature set, per the product brief) — with no numbers put
+// in anyone's mouth. Keeps the #customers anchor so existing nav/footer links hold.
 export function Testimonial() {
   return (
     <section
@@ -24,154 +24,140 @@ export function Testimonial() {
     >
       <Container style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
         <Reveal style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '13px',
-                color: 'var(--color-text-tertiary)',
-              }}
-            >
-              Customer · Enterprise
-            </span>
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '12px',
-                color: 'var(--color-text-tertiary)',
-              }}
-            >
-              Case study →
-            </span>
-          </div>
+          <span
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '13px',
+              color: 'var(--color-text-tertiary)',
+            }}
+          >
+            From the founder
+          </span>
 
           <div
             className="mkt-stack-on-tablet"
-            style={{
-              gap: '48px',
-              alignItems: 'flex-start',
-              padding: '24px 0',
-            }}
+            style={{ gap: '48px', alignItems: 'flex-start', padding: '8px 0' }}
           >
-            <blockquote
+            <p
               style={{
                 fontFamily: 'var(--font-sans)',
                 fontWeight: 500,
-                fontSize: 'clamp(26px, 3.4vw, 46px)',
+                fontSize: 'clamp(24px, 3vw, 40px)',
                 letterSpacing: '-0.025em',
-                lineHeight: 1.3,
+                lineHeight: 1.32,
                 color: 'var(--color-text-primary)',
                 margin: 0,
                 flex: 1,
               }}
             >
-              &ldquo;We were paying{' '}
-              <span style={{ color: 'var(--color-text-tertiary)' }}>$35,400 a year</span>
-              {
-                ' for Shopify + HubSpot and still couldn’t ask a simple question across both. We moved to sparx in '
-              }
-              <span style={{ color: 'var(--sparx-primary)' }}>two weeks</span>
-              {'. The fleet module alone paid for the migration.”'}
-            </blockquote>
+              AI can spin up a website in an afternoon. It&apos;s the second year that&apos;s hard —
+              the orders, the customer data, the wholesale accounts,{' '}
+              <span style={{ color: 'var(--color-text-tertiary)' }}>
+                the site still being yours when the trend moves on.
+              </span>{' '}
+              sparx is the home an AI-built site grows into:{' '}
+              <span style={{ color: 'var(--sparx-primary)' }}>
+                own it, run it, and change it yourself
+              </span>{' '}
+              — for years, no rebuild and no developer on retainer.
+            </p>
 
-            <aside
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '32px',
-                width: '340px',
-                maxWidth: '100%',
-                flexShrink: 0,
-                paddingTop: '8px',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <span
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: 48,
-                    height: 48,
-                    backgroundColor: '#0A0A0A',
-                    borderRadius: '9999px',
-                    fontFamily: 'var(--font-sans)',
-                    fontWeight: 500,
-                    fontSize: '18px',
-                    letterSpacing: '-0.02em',
-                    color: '#FFFFFF',
-                  }}
-                >
-                  M
-                </span>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-sans)',
-                      fontWeight: 500,
-                      fontSize: '15px',
-                      color: 'var(--color-text-primary)',
-                    }}
-                  >
-                    Michael Gillett
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-sans)',
-                      fontSize: '13px',
-                      color: 'var(--color-text-secondary)',
-                    }}
-                  >
-                    Owner, Gillett Diesel Service
-                  </span>
-                </div>
-              </div>
-
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  paddingTop: '12px',
-                  borderTop: '1px solid var(--color-border-default)',
-                }}
-              >
-                {METRICS.map((m, i) => (
-                  <div
-                    key={m.label}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '14px 0',
-                      borderBottom: i === METRICS.length - 1 ? undefined : '1px solid #F4F4F5',
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-sans)',
-                        fontSize: '13px',
-                        color: 'var(--color-text-secondary)',
-                      }}
-                    >
-                      {m.label}
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-sans)',
-                        fontWeight: 500,
-                        fontSize: '15px',
-                        color: 'var(--color-text-primary)',
-                      }}
-                    >
-                      {m.value}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </aside>
+            <FounderCard />
           </div>
         </Reveal>
       </Container>
     </section>
+  );
+}
+
+// The signature block + the one true relationship we can name (the Gillett design
+// partnership). Split out so the section's main body stays a single readable unit.
+function FounderCard() {
+  return (
+    <aside
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '28px',
+        width: '340px',
+        maxWidth: '100%',
+        flexShrink: 0,
+        paddingTop: '8px',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 48,
+            height: 48,
+            backgroundColor: '#0A0A0A',
+            borderRadius: '9999px',
+            fontFamily: 'var(--font-sans)',
+            fontWeight: 500,
+            fontSize: '15px',
+            letterSpacing: '0.02em',
+            color: '#FFFFFF',
+          }}
+        >
+          BK
+        </span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <span
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontWeight: 500,
+              fontSize: '15px',
+              color: 'var(--color-text-primary)',
+            }}
+          >
+            Brandon Korous
+          </span>
+          <span
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '13px',
+              color: 'var(--color-text-secondary)',
+            }}
+          >
+            Founder, sparx
+          </span>
+        </div>
+      </div>
+
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '6px',
+          paddingTop: '20px',
+          borderTop: '1px solid var(--color-border-default)',
+        }}
+      >
+        <span
+          style={{
+            fontFamily: 'var(--font-sans)',
+            fontWeight: 500,
+            fontSize: '13px',
+            color: 'var(--color-text-primary)',
+          }}
+        >
+          Design partner
+        </span>
+        <span
+          style={{
+            fontFamily: 'var(--font-sans)',
+            fontSize: '14px',
+            lineHeight: '21px',
+            color: 'var(--color-text-secondary)',
+          }}
+        >
+          Gillett Diesel Service is shaping our B2B, fleet, and net-terms features from real-world
+          use.
+        </span>
+      </div>
+    </aside>
   );
 }

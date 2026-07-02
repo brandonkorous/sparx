@@ -1,16 +1,14 @@
 import { Button } from '@sparx/ui';
 import { Container, Display, Spark } from './primitives';
 import { Reveal } from './reveal';
-import { MODULES } from './modules-catalog';
+import { EARLY_HREF, SALES_HREF, signupHref } from './cta';
 
-const METRICS = [
-  { value: '5 minutes', subtitle: 'average time-to-live' },
-  { value: `${MODULES.length} modules`, accent: '#6366F1', subtitle: 'activate any combination' },
-  { value: '$26K /yr saved', accent: '#6366F1', subtitle: 'average vs Shopify + HubSpot stack' },
-  { value: '99.95% uptime', accent: '#6366F1', subtitle: '99.99% on Enterprise' },
-  { value: 'MCP', spark: '#EC4899', subtitle: 'first content & commerce platform' },
-] as const;
-
+// The closing beat. A near-black band that ends the page on the offer, not on a
+// metric row — the earlier Permanence band carries the proof numbers, so
+// repeating a four-stat row here just reads as the same slide a third time.
+// Primary action is self-serve signup; "book a call" routes to the enterprise
+// page; a quiet third line keeps the early-access waitlist reachable for anyone
+// not ready to open an account yet.
 export function FinalCta() {
   return (
     <section
@@ -23,129 +21,65 @@ export function FinalCta() {
         backgroundColor: '#0A0A0A',
       }}
     >
-      <Container style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
-        <Reveal style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
-          <div
-            className="mkt-stack-on-tablet mkt-align-end-on-desktop"
-            style={{
-              justifyContent: 'space-between',
-              gap: '40px',
-            }}
-          >
-            <div
-              style={{ display: 'flex', flexDirection: 'column', gap: '40px', maxWidth: '920px' }}
-            >
-              <Display size={104} lineHeight={96} color="#FFFFFF">
-                Light the spark
-                <Spark color="#818CF8" />
-              </Display>
-              <p
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '20px',
-                  lineHeight: '32px',
-                  color: '#A1A1AA',
-                  maxWidth: '640px',
-                  margin: 0,
-                }}
-              >
-                Sign up free. Pick the modules you need. Be live before the kettle boils. No card,
-                no contract, no upgrade lock-in.
-              </p>
-            </div>
-
-            <div
-              className="mkt-align-end-on-desktop"
+      <Container>
+        <Reveal
+          className="mkt-stack-on-tablet mkt-align-end-on-desktop"
+          style={{ justifyContent: 'space-between', gap: '48px' }}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', maxWidth: '920px' }}>
+            <Display size={96} lineHeight={92} color="#FFFFFF">
+              Light the spark
+              <Spark color="#818CF8" />
+            </Display>
+            <p
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '14px',
-                alignItems: 'flex-start',
+                fontFamily: 'var(--font-sans)',
+                fontSize: '20px',
+                lineHeight: '32px',
+                color: '#A1A1AA',
+                maxWidth: '620px',
+                margin: 0,
               }}
             >
-              <Button size="xl" variant="solid">
-                Start your site →
-              </Button>
-              <Button
-                size="xl"
-                variant="outline"
-                style={{
-                  backgroundColor: 'transparent',
-                  borderColor: '#2A2A2A',
-                  color: '#FFFFFF',
-                }}
-              >
-                Book a 20-min call
-              </Button>
-              <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '12px',
-                  color: '#52525B',
-                  paddingTop: '8px',
-                }}
-              >
-                $0 to start · Cancel any time
-              </span>
-            </div>
+              Sign up free. Switch on the modules you need. Be live before the kettle boils — then
+              keep the site, the data, and the control for years. No card, no contract, no upgrade
+              lock-in.
+            </p>
           </div>
 
           <div
-            className="mkt-cluster"
+            className="mkt-align-end-on-desktop"
             style={{
-              justifyContent: 'space-between',
-              paddingTop: '40px',
-              borderTop: '1px solid #1A1A1A',
-              gap: '40px',
-              rowGap: '24px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '14px',
+              alignItems: 'flex-start',
             }}
           >
-            {METRICS.map((m) => (
-              <div
-                key={m.subtitle}
-                style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}
-              >
-                <span
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontWeight: 500,
-                    fontSize: '22px',
-                    letterSpacing: '-0.015em',
-                    color: '#FFFFFF',
-                  }}
-                >
-                  {(() => {
-                    if ('accent' in m && m.accent) {
-                      const parts = m.value.split(' ');
-                      return (
-                        <>
-                          {parts[0]}
-                          <span style={{ color: m.accent }}> {parts.slice(1).join(' ')}</span>
-                        </>
-                      );
-                    }
-                    if ('spark' in m && m.spark) {
-                      return (
-                        <>
-                          {m.value}
-                          <Spark color={m.spark} />
-                        </>
-                      );
-                    }
-                    return m.value;
-                  })()}
-                </span>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: '12px',
-                    color: '#52525B',
-                  }}
-                >
-                  {m.subtitle}
-                </span>
-              </div>
-            ))}
+            <Button asChild size="xl" variant="solid">
+              <a href={signupHref('final')}>Start your site →</a>
+            </Button>
+            <Button
+              asChild
+              size="xl"
+              variant="outline"
+              style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
+            >
+              <a href={SALES_HREF}>Book a 20-min call</a>
+            </Button>
+            <span
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '12px',
+                color: '#71717A',
+                paddingTop: '8px',
+              }}
+            >
+              $0 to start · cancel any time ·{' '}
+              <a href={EARLY_HREF} style={{ color: '#818CF8', textDecoration: 'none' }}>
+                not ready? join early access →
+              </a>
+            </span>
           </div>
         </Reveal>
       </Container>

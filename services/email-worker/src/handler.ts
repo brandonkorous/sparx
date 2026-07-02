@@ -143,6 +143,31 @@ const TemplateSendSchema = z.discriminatedUnion('template', [
       threadUrl: z.string().url(),
     }),
   }),
+  z.object({
+    template: z.literal('job-application-received'),
+    ...TemplateMeta,
+    props: z.object({
+      roleTitle: z.string().min(1),
+      applicantName: z.string().min(1),
+      applicantEmail: z.string().email(),
+      phone: z.string().optional(),
+      location: z.string().optional(),
+      linkedinUrl: z.string().optional(),
+      portfolioUrl: z.string().optional(),
+      roleInterest: z.string().optional(),
+      coverLetter: z.string().optional(),
+      resumeUrl: z.string().optional(),
+      resumeFilename: z.string().optional(),
+    }),
+  }),
+  z.object({
+    template: z.literal('job-application-confirmation'),
+    ...TemplateMeta,
+    props: z.object({
+      applicantName: z.string().optional(),
+      roleTitle: z.string().min(1),
+    }),
+  }),
 ]);
 
 // Pre-rendered "raw" send — used by broadcasts (render once, send to many) and

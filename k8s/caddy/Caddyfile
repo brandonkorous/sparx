@@ -79,6 +79,18 @@ mcp.sparx.works {
   reverse_proxy api-mcp.sparx-prod.svc.cluster.local:3000
 }
 
+# Canonical shopper-facing storefront MCP host (docs/113). A reserved slug, so
+# no tenant owns it; authorized as a static platform host in
+# /internal/domain-check. The store is named in the path
+# (/s/<tenant>[/<property>]/mcp) since a fixed host can't encode it.
+mcp.sparx.zone {
+  tls {
+    on_demand
+  }
+  import security_headers
+  reverse_proxy mcp-storefront.sparx-prod.svc.cluster.local:3200
+}
+
 app.sparx.works {
   tls {
     on_demand
@@ -205,10 +217,21 @@ sparx.zone, www.sparx.zone {
 # Matches slug.sparx.zone (wildcard DNS) and any custom domain pointing
 # to customers.sparx.zone. The /internal/domain-check API decides if a
 # cert is issued.
+#
+# `/mcp*` on ANY storefront host is carved out to the shopper-facing MCP
+# (docs/113) — so `<store-domain>/mcp` and `<slug>.sparx.zone/mcp` reach
+# mcp-storefront, which resolves the site from the Host header. `handle` (not
+# `handle_path`) preserves the /mcp path the service routes on. Everything else
+# falls through to the storefront app.
 :443 {
   tls {
     on_demand
   }
   import security_headers
-  reverse_proxy site.sparx-prod.svc.cluster.local:3000
+  handle /mcp* {
+    reverse_proxy mcp-storefront.sparx-prod.svc.cluster.local:3200
+  }
+  handle {
+    reverse_proxy site.sparx-prod.svc.cluster.local:3000
+  }
 }

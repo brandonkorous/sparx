@@ -1,6 +1,7 @@
 import { Section, SectionHeader, Dot, getModuleColor } from './primitives';
 import { Reveal } from './reveal';
 import { MODULES, MODULES_PRICE_FLOOR, type ModuleEntry } from './modules-catalog';
+import { capabilityCounts } from '@/lib/capabilities';
 
 // The module menu — every billable module on one scannable grid (docs/learnings
 // §1 clarity, §2 "a list with a job"). The job here is BREADTH + the modular
@@ -14,6 +15,7 @@ import { MODULES, MODULES_PRICE_FLOOR, type ModuleEntry } from './modules-catalo
 // to "one tinted card per page": here the tint is a color legend, not noise.
 
 export function ModulesGrid() {
+  const counts = capabilityCounts();
   return (
     <Section id="modules" surface="surface" padding="lg" className="mkt-stage">
       <Reveal style={{ display: 'flex', flexDirection: 'column', gap: '56px' }}>
@@ -41,6 +43,40 @@ export function ModulesGrid() {
               <ModuleTile module={m} />
             </Reveal>
           ))}
+        </div>
+
+        {/* Depth signal: the tiles are the labels — this is how much ships under
+            them. Count derives from lib/capabilities so it can't overstate. */}
+        <div
+          className="mkt-cluster"
+          style={{ justifyContent: 'space-between', gap: '16px', rowGap: '10px' }}
+        >
+          <span
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '15px',
+              color: 'var(--color-text-secondary)',
+            }}
+          >
+            <b style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>
+              {counts.live} capabilities
+            </b>{' '}
+            live across these modules — {counts.building} more in build. Each is a deep product, not
+            a checkbox.
+          </span>
+          <a
+            href="/features"
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontWeight: 500,
+              fontSize: '15px',
+              color: 'var(--sparx-primary)',
+              textDecoration: 'none',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            See everything →
+          </a>
         </div>
       </Reveal>
     </Section>

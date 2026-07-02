@@ -1529,3 +1529,120 @@ a.mkt-module-tile:hover {
     transition: none;
   }
 }
+
+/* ── CAREERS ─────────────────────────────────────────────────────
+   Role listing = a stack of full-width cards (not an icon grid). The whole
+   card is the link; a "View role →" text affordance nudges on hover. The
+   inner row is title/summary on the left and the meta + arrow on the right,
+   collapsing to a single column on mobile. */
+.mkt-role-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: var(--radius-lg);
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.mkt-role-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.mkt-role-card:hover .mkt-role-arrow {
+  color: var(--sparx-primary);
+}
+.mkt-role-card:hover .mkt-role-arrow span {
+  transform: translateX(3px);
+}
+.mkt-role-card:focus-visible {
+  outline: 2px solid var(--sparx-primary);
+  outline-offset: 3px;
+}
+.mkt-role-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: color 0.15s ease;
+  white-space: nowrap;
+}
+.mkt-role-arrow span {
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+.mkt-role-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+}
+@media (max-width: 640px) {
+  .mkt-role-row {
+    flex-direction: column;
+    gap: 18px;
+  }
+}
+/* Native résumé file input — chrome, not a re-skinned control. Styles the field
+   frame + the OS-drawn "Choose file" button so it sits next to the @sparx/ui
+   Inputs without looking foreign. */
+.mkt-file-input {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-surface);
+  padding: 8px 10px;
+  width: 100%;
+  cursor: pointer;
+}
+.mkt-file-input:focus-visible {
+  outline: none;
+  border-color: var(--sparx-primary);
+  box-shadow: var(--shadow-focus);
+}
+.mkt-file-input::file-selector-button {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-subtle);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  margin-right: 12px;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+.mkt-file-input::file-selector-button:hover {
+  background-color: var(--color-border-default);
+}
+
+/* Numbered "how we hire" ledger: index + text, hairline dividers. */
+.mkt-step-row {
+  display: flex;
+  gap: 20px;
+  align-items: baseline;
+  padding: 22px 0;
+  border-top: 1px solid var(--color-border-default);
+}
+.mkt-step-row:last-child {
+  border-bottom: 1px solid var(--color-border-default);
+}
+@media (prefers-reduced-motion: reduce) {
+  .mkt-role-card,
+  .mkt-role-arrow,
+  .mkt-role-arrow span {
+    transition: none;
+  }
+  .mkt-role-card:hover {
+    transform: none;
+  }
+  .mkt-role-card:hover .mkt-role-arrow span {
+    transform: none;
+  }
+}

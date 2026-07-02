@@ -33,7 +33,12 @@
 
 import { isModuleEnabled, type ModuleSlug } from '@sparx/auth';
 import { commerceSiteService, shippingService, taxService } from '@sparx/commerce';
-import { getPlatformBus, type PlatformEvent } from '@sparx/crm';
+import {
+  documentLineTypeService,
+  documentWorkflowService,
+  getPlatformBus,
+  type PlatformEvent,
+} from '@sparx/crm';
 import { prisma } from '@sparx/db';
 import { inventoryService } from '@sparx/inventory';
 import { bootstrapSchedulingDefaults } from '@sparx/scheduling';
@@ -64,6 +69,21 @@ async function provisionSavedViewPresets(tenantId: string): Promise<void> {
       await bootstrapSavedViewPresets(ctx, module);
     }
   }
+}
+
+/** Seed the invoicing document workflows + line-type registry for a tenant that has
+ *  the `invoicing` module active. Bundle-aware via `isModuleEnabled` — invoicing
+ *  rides free with Commerce/B2B, so those tenants never write the `invoicing` flag
+ *  yet must still get a workflow to hang a BillingDocument on (docs/87 §3). Without
+ *  this the CRM activation consumer only seeds it on EXPLICIT invoicing activation,
+ *  leaving every bundled Commerce/B2B tenant with an empty, unusable invoicing
+ *  surface. Both bootstraps are slug/key-keyed find-or-create, so re-running on
+ *  every relevant activation (and in reconcile) is a safe, self-healing no-op. */
+async function provisionInvoicingDefaults(tenantId: string): Promise<void> {
+  if (!(await isModuleEnabled(tenantId, 'invoicing'))) return;
+  const ctx = { tenantId, userId: undefined };
+  await documentWorkflowService.bootstrapDefaultWorkflows(ctx);
+  await documentLineTypeService.bootstrapDefaultLineTypes(ctx);
 }
 
 /** Run a single module's default seeders for one tenant. Shared by the forward
@@ -122,6 +142,10 @@ export function registerModuleProvisioningConsumer(): () => void {
     // bundle-aware, so activating Commerce/B2B also seeds the invoicing presets.
     if (PRESET_MODULE_SET.has(slug)) {
       await provisionSavedViewPresets(event.tenantId);
+      // Invoicing config (workflows + line types) rides the same bundle-aware
+      // trigger — a Commerce/B2B activation must seed it even though the tenant
+      // never writes the `invoicing` flag.
+      await provisionInvoicingDefaults(event.tenantId);
     }
   });
 }
@@ -192,8 +216,9 @@ export async function reconcileModuleProvisioning(
     for (const tenantId of presetTenants) {
       try {
         await provisionSavedViewPresets(tenantId);
+        await provisionInvoicingDefaults(tenantId);
       } catch (err) {
-        logger.error({ err, tenantId }, 'module-provisioning-reconcile: saved-view presets failed');
+        logger.error({ err, tenantId }, 'module-provisioning-reconcile: preset/invoicing failed');
       }
     }
 

@@ -1,8 +1,8 @@
 # sparx Platform — Authentication, Multi-Tenancy & Security
 
-**Version:** 2.2
+**Version:** 2.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-10
+**Last Updated:** 2026-07-02
 
 ---
 
@@ -41,13 +41,13 @@ Rolling auth primitives from scratch — password hashing, token rotation, MFA, 
 
 sparx authenticates **five distinct kinds of principal**, each with its own identity store, isolation boundary, and session mechanism. Conflating any two of them is a security bug — a tenant customer is not a tenant staff member, and neither is a WizeWorks operator. The tiers:
 
-| #   | Tier                       | Who                                           | Identity store                    | Isolation                         | Session / credential                          | Status          |
-| --- | -------------------------- | --------------------------------------------- | --------------------------------- | --------------------------------- | --------------------------------------------- | --------------- |
-| 1   | **Tenant Staff**           | People running a sparx tenant account         | Better Auth (organization member) | One tenant (`tid` in every token) | JWT 15 min + rotating refresh (HTTP-only)     | ✅ Built        |
-| 2   | **Tenant Customer**        | Shoppers/members of a tenant's site           | `@sparx/customer-auth` (docs/27)  | One tenant, RLS-isolated          | `sparx_customer_session` cookie, separate JWT | ✅ Built        |
-| 3   | **Programmatic (API key)** | Headless frontends, MCP, integrations         | `api_keys` table (SHA-256 hash)   | One tenant, scope-limited         | `sparx_live_…` bearer key                     | ✅ Built        |
-| 4   | **Platform Operator**      | WizeWorks staff operating the platform itself | _none yet_ — see §2.4             | **Cross-tenant** (all tenants)    | Interim: internal shared-secret header        | ⚠️ **Deferred** |
-| 5   | **System / Internal**      | Machine-to-machine service calls (cron, push) | Shared secret in Secret Manager   | Cross-tenant, ClusterIP-only      | `X-sparx-Internal-*-Token` header             | ✅ Built (§2.5) |
+| #   | Tier                       | Who                                           | Identity store                                               | Isolation                                           | Session / credential                      | Status                                |
+| --- | -------------------------- | --------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------------- | ----------------------------------------- | ------------------------------------- |
+| 1   | **Tenant Staff**           | People running a sparx tenant account         | Better Auth (organization member)                            | One tenant (`tid` in every token)                   | JWT 15 min + rotating refresh (HTTP-only) | ✅ Built                              |
+| 2   | **Tenant Customer**        | Shoppers/members of a tenant's site           | **Better Auth** — customer instance, tenant-scoped (docs/27) | One tenant, RLS-isolated (`(tenant_id, email)` key) | `sparx_customer_session` cookie           | 🔄 Moving to Better Auth (docs/27 v2) |
+| 3   | **Programmatic (API key)** | Headless frontends, MCP, integrations         | `api_keys` table (SHA-256 hash)                              | One tenant, scope-limited                           | `sparx_live_…` bearer key                 | ✅ Built                              |
+| 4   | **Platform Operator**      | WizeWorks staff operating the platform itself | _none yet_ — see §2.4                                        | **Cross-tenant** (all tenants)                      | Interim: internal shared-secret header    | ⚠️ **Deferred**                       |
+| 5   | **System / Internal**      | Machine-to-machine service calls (cron, push) | Shared secret in Secret Manager                              | Cross-tenant, ClusterIP-only                        | `X-sparx-Internal-*-Token` header         | ✅ Built (§2.5)                       |
 
 The rule that ties them together: **a session is scoped to the narrowest tier that satisfies the request.** A site shopper never receives a staff token; a staff member never receives a cross-tenant operator capability; an internal service call never rides on a human's session. Crossing a tier boundary is always an explicit, audited hop (e.g. a staff member impersonating a customer for support, once §2.4 ships), never an implicit widening of an existing token.
 
@@ -76,14 +76,16 @@ Example: Tenant Owner (e.g., Brandon's contact at Gillett Diesel Service) create
 End customers logging into a tenant's site, B2B portal, or account page.
 
 ```
-Customer of "Gillett Diesel"
-├── Registers on gillettdiesel.com site
-├── Auth scoped to GDS tenant (cannot log into other sites)
-├── Email/password OR magic link (no Google OAuth — keeps it clean)
-└── Session: separate JWT pool, tenant-scoped
+Customer of a tenant's site
+├── Registers on the tenant's storefront (host = the tenant, known before auth)
+├── Auth scoped to that tenant (cannot log into other tenants' sites)
+├── Email/password (social/passkey/MFA available per-tenant, ship dark by default)
+└── Session: sparx_customer_session cookie, tenant-scoped; can mint shopper MCP OAuth tokens
 ```
 
-Critical: a customer account at Tenant A has zero relationship to Tenant B. The same email address can register as a customer at multiple tenants — they are completely separate records with separate credentials.
+Critical: a customer account at Tenant A has zero relationship to Tenant B. The same email address can register as a customer at multiple tenants — completely separate records with separate credentials.
+
+**Engine (docs/27 v2):** Layer 2 runs on a **dedicated Better Auth instance**, separate from the staff instance in every dimension (secret, cookie, tables, resource). Better Auth normally keys sign-in on a **globally unique** email; sparx needs `(tenant_id, email)`, so the customer instance uses **application-level multi-tenancy** — the tenant is resolved from the storefront host into a request-scoped `AsyncLocalStorage`, and a **tenant-scoping adapter** runs every Better Auth operation inside a `SET LOCAL app.tenant_id` transaction. Correctness is DB-enforced (ENABLE + FORCE RLS + `@@unique([tenant_id, email])`), with the adapter guaranteeing the GUC is set (fail-closed). Moving Layer 2 onto Better Auth is what lets shoppers authenticate an MCP client via the **same hardened `mcp()` OAuth flow the staff plane uses** (docs/07 §5, docs/113) instead of a hand-rolled authorization server. The CRM `customers` spine (per-site membership, orders, consent, docs/58) is unchanged and links to the Better Auth user via `customers.auth_user_id`.
 
 ### Layer 3 — API Keys (Programmatic Access)
 

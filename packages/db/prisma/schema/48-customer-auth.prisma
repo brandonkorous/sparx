@@ -1,97 +1,209 @@
-// Customer auth — Layer 2 (site shoppers). See docs/27-customer-accounts-site-auth.md.
+// Customer auth — Layer 2 (site shoppers), on Better Auth. See docs/27 v2.
 //
-// Distinct from Layer 1 (staff Better Auth: users/sessions/accounts). These
-// tables hang off the CRM `customers` spine — the CRM owns the customer record;
-// auth only adds credentials + sessions + reset tokens.
+// A DEDICATED Better Auth instance (separate from the staff instance in
+// 03-auth*.prisma) with APPLICATION-LEVEL MULTI-TENANCY: the same email is a
+// separate account per tenant. Better Auth normally keys sign-in on a GLOBALLY
+// unique email; here the tenant is known before auth (the storefront host), so a
+// request-scoped AsyncLocalStorage (@sparx/db tenantStore) carries it and the
+// customer-auth tenant-scoping adapter runs every Better Auth op inside a
+// `SET LOCAL app.tenant_id` transaction. Correctness is DB-enforced: every table
+// is ENABLE + FORCE RLS with a tenant_isolation policy, `tenant_id` DEFAULTs to
+// current_tenant_id() (BA never sets it — it is tenant-oblivious), and the user
+// table is `@@unique([tenant_id, email])`.
 //
-// Why not Better Auth: Better Auth keys credential sign-in on a GLOBALLY unique
-// email; shoppers must register the same email at different tenants as
-// separate accounts (unique per (tenantId, email)). For a shopper the tenant is
-// known BEFORE auth (it's the storefront hostname), so every operation runs in
-// withTenant() and RLS isolates by tenant — no global-email requirement.
+// FIELD NAMES ARE LOAD-BEARING. Better Auth's prisma adapter reads/writes the
+// camelCase FIELD names below verbatim (email, emailVerified, providerId,
+// accessToken, …); these mirror the staff models in 03-auth*.prisma exactly.
+// The customer instance remaps the CORE models to these Prisma model keys via
+// `modelName` options (customerUser/customerSession/customerAccount/
+// customerVerification); the mcp() plugin's fixed keys (oauthApplication /
+// oauthAccessToken / oauthConsent) are remapped to the CustomerOauth* models by
+// the tenant-scoping adapter Proxy (plugin model names are not config-overridable
+// — verified in the installed better-auth). Renaming a field silently breaks the
+// adapter at runtime.
 //
-// Passwords are stored ONLY as Argon2id hashes. Session/reset tokens are stored
-// ONLY as SHA-256 hashes; the plaintext lives in the cookie / reset link.
+// The CRM `customers` spine (per-site membership, orders, consent — docs/58) is
+// unchanged and links to the Better Auth user via `customers.auth_user_id`.
 
-// Tenant-wide shopper IDENTITY (docs/58 D2) — one per (tenant, email). This is
-// the LOGIN: it owns the credential + password resets. A person who shops more
-// than one of the tenant's sites is ONE identity (one password) linked to a
-// per-site `customers` MEMBERSHIP each (which owns that site's consent, orders,
-// and LTV). Lets us recognize "you already have an account on a sister site"
-// without merging consent (docs/58 D6). Tenant-scoped + FORCE RLS on tenant_id.
-model CustomerIdentity {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId  String   @map("tenant_id") @db.Uuid
-  email     String   @db.VarChar(255)
+// Tenant-wide shopper IDENTITY (the login) — the Better Auth `user`. One per
+// (tenant, email). A person who shops more than one of the tenant's sites is ONE
+// CustomerUser linked to a per-site `customers` MEMBERSHIP each (docs/58 D2).
+model CustomerUser {
+  id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String  @default(dbgenerated("current_tenant_id()")) @map("tenant_id") @db.Uuid
+  // Per-tenant unique (NOT global) — see @@unique below. Same email at another
+  // tenant is a different CustomerUser.
+  email         String  @db.VarChar(255)
+  emailVerified Boolean @default(false) @map("email_verified")
+  // Required (NOT nullable): Better Auth marks name required, and the mcp() token
+  // endpoint reads user.name unconditionally. The register wrapper always supplies
+  // one (falls back to the email local-part); the backfill does the same.
+  name          String  @db.VarChar(255)
+  image         String? @db.Text
+
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant         Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  credential     CustomerCredential?
-  passwordResets CustomerPasswordReset[]
-  memberships    Customer[]
+  tenant            Tenant                     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sessions          CustomerSession[]
+  accounts          CustomerAccount[]
+  oauthApplications CustomerOauthApplication[]
+  oauthAccessTokens CustomerOauthAccessToken[]
+  oauthConsents     CustomerOauthConsent[]
+  // The per-site memberships (CRM spine) behind this login (docs/58 D2).
+  memberships       Customer[]
 
-  @@unique([tenantId, email], map: "customer_identities_tenant_email_unique")
-  @@map("customer_identities")
+  @@unique([tenantId, email], map: "customer_users_tenant_email_unique")
+  @@index([tenantId])
+  @@map("customer_users")
 }
 
-// One credential per IDENTITY (the login). A `customers` membership can exist
-// without one (guest checkout, CRM-imported prospect); the credential hangs off
-// the identity, not the membership, so a single login spans the person's sites.
-model CustomerCredential {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId      String    @map("tenant_id") @db.Uuid
-  identityId    String    @unique @map("identity_id") @db.Uuid
-  passwordHash  String    @map("password_hash") @db.Text // Argon2id — NEVER plaintext
-  emailVerified Boolean   @default(false) @map("email_verified")
-  lastLoginAt   DateTime? @map("last_login_at") @db.Timestamptz
-  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+// Better Auth `session`. Opaque `token` in the sparx_customer_session cookie.
+// Looked up by token alone under RLS — a token from tenant A presented on tenant
+// B's host resolves to zero rows (correct isolation).
+model CustomerSession {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String   @default(dbgenerated("current_tenant_id()")) @map("tenant_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  token     String   @unique @db.VarChar(255)
+  expiresAt DateTime @map("expires_at") @db.Timestamptz
+  ipAddress String?  @map("ip_address") @db.Inet
+  userAgent String?  @map("user_agent") @db.Text
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant   Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  identity CustomerIdentity  @relation(fields: [identityId], references: [id], onDelete: Cascade)
-  sessions CustomerSession[]
+  tenant Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   CustomerUser @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
-  @@map("customer_credentials")
-}
-
-// Opaque rotating session. `tokenHash` = SHA-256 hex of the random token in the
-// httpOnly cookie. Expiry enforced in-app and indexed for cheap cleanup.
-model CustomerSession {
-  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId     String   @map("tenant_id") @db.Uuid
-  customerId   String   @map("customer_id") @db.Uuid
-  credentialId String   @map("credential_id") @db.Uuid
-  tokenHash    String   @unique @map("token_hash") @db.VarChar(64)
-  expiresAt    DateTime @map("expires_at") @db.Timestamptz
-  ipAddress    String?  @map("ip_address") @db.Inet
-  userAgent    String?  @map("user_agent") @db.Text
-  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
-
-  tenant     Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  customer   Customer           @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  credential CustomerCredential @relation(fields: [credentialId], references: [id], onDelete: Cascade)
-
-  @@index([tenantId, customerId])
+  @@index([userId])
   @@index([expiresAt])
   @@map("customer_sessions")
 }
 
-// Single-use password-reset tokens. `tokenHash` = SHA-256 hex of the token
-// mailed to the customer. Short-lived; consumed (usedAt set) on use.
-model CustomerPasswordReset {
-  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId   String    @map("tenant_id") @db.Uuid
-  identityId String    @map("identity_id") @db.Uuid
-  tokenHash  String    @unique @map("token_hash") @db.VarChar(64)
-  expiresAt  DateTime  @map("expires_at") @db.Timestamptz
-  usedAt     DateTime? @map("used_at") @db.Timestamptz
-  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+// Better Auth `account`. providerId 'credential' → `password` holds the Argon2
+// hash; social providers ('google', …) carry the OAuth tokens. Same email at
+// another tenant is a different account (composite unique on tenant).
+model CustomerAccount {
+  id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId              String    @default(dbgenerated("current_tenant_id()")) @map("tenant_id") @db.Uuid
+  userId                String    @map("user_id") @db.Uuid
+  providerId            String    @map("provider_id") @db.VarChar(50)
+  accountId             String    @map("account_id") @db.VarChar(255)
+  password              String?   @db.Text
+  accessToken           String?   @map("access_token") @db.Text
+  refreshToken          String?   @map("refresh_token") @db.Text
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at") @db.Timestamptz
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at") @db.Timestamptz
+  scope                 String?   @db.Text
+  idToken               String?   @map("id_token") @db.Text
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant   Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  identity CustomerIdentity @relation(fields: [identityId], references: [id], onDelete: Cascade)
+  tenant Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   CustomerUser @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([tenantId, identityId])
-  @@map("customer_password_resets")
+  @@unique([tenantId, providerId, accountId], map: "customer_accounts_tenant_provider_account_unique")
+  @@index([tenantId])
+  @@index([userId])
+  @@map("customer_accounts")
+}
+
+// Better Auth `verification`. Short-lived single-use tokens (email verify /
+// password reset). `value` is TEXT for the same reason as staff (03-auth.prisma):
+// the mcp()/oidc provider stashes the full authorization-code JSON here.
+model CustomerVerification {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String   @default(dbgenerated("current_tenant_id()")) @map("tenant_id") @db.Uuid
+  identifier String   @db.VarChar(255)
+  value      String   @db.Text
+  expiresAt  DateTime @map("expires_at") @db.Timestamptz
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, identifier])
+  @@index([expiresAt])
+  @@map("customer_verifications")
+}
+
+// ─── Customer MCP OAuth authorization server (docs/07 §5 · docs/113) ─────────
+// Mirrors the staff oauth_* tables (03-auth-oauth.prisma) but tenant-scoped: a
+// shopper's DCR client + tokens belong to a tenant. The mcp() plugin addresses
+// these by the fixed keys oauthApplication/oauthAccessToken/oauthConsent; the
+// tenant-scoping adapter Proxy remaps those to the models below.
+
+model CustomerOauthApplication {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String   @default(dbgenerated("current_tenant_id()")) @map("tenant_id") @db.Uuid
+  name         String?  @db.VarChar(255)
+  icon         String?  @db.Text
+  metadata     String?  @db.Text
+  // Global unique so the FK from CustomerOauthAccessToken.clientId can reference
+  // it; the DCR client id is a random 32-char string. RLS still scopes reads.
+  clientId     String   @unique @map("client_id") @db.VarChar(255)
+  clientSecret String?  @map("client_secret") @db.Text
+  redirectUrls String   @map("redirect_urls") @db.Text
+  type         String   @db.VarChar(32)
+  disabled     Boolean  @default(false)
+  userId       String?  @map("user_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant       Tenant                     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user         CustomerUser?              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessTokens CustomerOauthAccessToken[]
+  consents     CustomerOauthConsent[]
+
+  @@index([tenantId])
+  @@index([userId])
+  @@map("customer_oauth_applications")
+}
+
+model CustomerOauthAccessToken {
+  id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId              String   @default(dbgenerated("current_tenant_id()")) @map("tenant_id") @db.Uuid
+  accessToken           String   @unique @map("access_token") @db.Text
+  refreshToken          String   @unique @map("refresh_token") @db.Text
+  accessTokenExpiresAt  DateTime @map("access_token_expires_at") @db.Timestamptz
+  refreshTokenExpiresAt DateTime @map("refresh_token_expires_at") @db.Timestamptz
+  clientId              String   @map("client_id") @db.VarChar(255)
+  userId                String?  @map("user_id") @db.Uuid
+  scopes                String   @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  client CustomerOauthApplication @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  user   CustomerUser?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([clientId])
+  @@index([userId])
+  @@index([accessTokenExpiresAt])
+  @@map("customer_oauth_access_tokens")
+}
+
+model CustomerOauthConsent {
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String  @default(dbgenerated("current_tenant_id()")) @map("tenant_id") @db.Uuid
+  clientId     String  @map("client_id") @db.VarChar(255)
+  userId       String  @map("user_id") @db.Uuid
+  scopes       String  @db.Text
+  consentGiven Boolean @map("consent_given")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  client CustomerOauthApplication @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  user   CustomerUser             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([clientId])
+  @@index([userId])
+  @@map("customer_oauth_consents")
 }

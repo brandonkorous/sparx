@@ -16,14 +16,11 @@ import { z } from 'zod';
 import { Prisma } from '@prisma/client';
 import { withTenant } from '@sparx/db';
 import { ok, paged } from '@sparx/api-core/envelope';
-import { unauthorized, forbidden, notFound, badRequest } from '@sparx/api-core/errors';
+import { forbidden, notFound, badRequest } from '@sparx/api-core/errors';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
-import {
-  verifyCustomerSession,
-  SESSION_COOKIE_NAME,
-  type CustomerAuthContext,
-} from '@sparx/customer-auth';
+import { type CustomerAuthContext } from '@sparx/customer-auth';
 import { resolveTenantId } from '../../../lib/public-commerce-context.js';
+import { requireCustomerId } from '../../../lib/customer-session.js';
 
 const pubLogger: PublisherLogger = {
   info: (obj, msg) => console.info(msg ?? '', obj),
@@ -62,12 +59,8 @@ const BookBody = z.object({
 
 const CancelBody = z.object({ reason: z.string().max(1000).optional() });
 
-async function requirePortalCustomer(request: FastifyRequest, ctx: CustomerAuthContext) {
-  const token = request.cookies[SESSION_COOKIE_NAME];
-  if (!token) throw unauthorized('Not signed in.');
-  const session = await verifyCustomerSession(ctx, token);
-  if (!session) throw unauthorized('Session expired. Please sign in again.');
-  return session.customerId;
+function requirePortalCustomer(request: FastifyRequest, ctx: CustomerAuthContext): Promise<string> {
+  return requireCustomerId(request, ctx);
 }
 
 async function requireContactRole(ctx: CustomerAuthContext, customerId: string, accountId: string) {
@@ -81,12 +74,32 @@ async function requireContactRole(ctx: CustomerAuthContext, customerId: string, 
   return contact.role;
 }
 
+/** Gate a tenant-wide (not account-scoped) portal read: the caller must be a
+ *  signed-in shopper who is an active contact on at least one of the tenant's B2B
+ *  accounts. Closes anonymous enumeration of the B2B service catalog. */
+async function requireAnyPortalContact(
+  request: FastifyRequest,
+  ctx: CustomerAuthContext
+): Promise<string> {
+  const customerId = await requirePortalCustomer(request, ctx);
+  const isContact = await withTenant(ctx, (tx) =>
+    tx.b2bAccountContact.findFirst({
+      where: { customerId, isActive: true },
+      select: { customerId: true },
+    })
+  );
+  if (!isContact) throw forbidden('This area is limited to B2B account contacts.');
+  return customerId;
+}
+
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const b2bPortalSchedulingRoutes: FastifyPluginAsync = async (app) => {
   // ── List available service types ──────────────────────────────────────────
   app.get('/v1/public/b2b/service-types', async (request) => {
     const tenantId = await resolveTenantId(request);
     const ctx: CustomerAuthContext = { tenantId };
+    // Portal endpoint — require a signed-in B2B contact (was fully anonymous).
+    await requireAnyPortalContact(request, ctx);
 
     const types = await withTenant(ctx, (tx) =>
       tx.serviceType.findMany({

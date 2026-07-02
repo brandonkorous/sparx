@@ -1,5 +1,8 @@
 // Public customer-account surface for the storefront (Layer 2 — shoppers).
-// See docs/27-customer-accounts-site-auth.md.
+// See docs/27 v2 — Layer 2 runs on a dedicated tenant-scoped Better Auth instance
+// (@sparx/customer-auth). This route layer keeps its external contract unchanged
+// (paths, envelopes, the sparx_customer_session cookie, enumeration-safety, rate
+// limits, the docs/58 `recognized` signal, cart-claim) so apps/site is untouched.
 //
 //   POST   /v1/public/commerce/account/register ?tenant=  { email, password, firstName?, lastName? }
 //   POST   /v1/public/commerce/account/login    ?tenant=  { email, password }
@@ -11,33 +14,24 @@
 //   GET    /v1/public/commerce/account/orders    ?tenant=  (paged, customer-scoped)
 //   GET    /v1/public/commerce/account/orders/:orderId   (ownership-checked)
 //   GET/POST/PATCH/DELETE /v1/public/commerce/account/addresses[/:addressId]
-//
-// Auth is a first-party httpOnly cookie (sparx_customer_session) set here and
-// relayed to the browser by the storefront's /api/sparx proxy. The tenant is
-// resolved from ?tenant=<slug> (the storefront hostname upstream), so every
-// call runs inside a tenant context and RLS isolates the customer's data.
-// Login/register/forgot are enumeration-safe and per-IP rate-limited; the reset
-// email reuses the existing 'password-reset' template via the email.send event.
+//   GET/POST/DELETE       /v1/public/commerce/account/wishlist[/:variantId]
 
-import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 
 import { isModuleEnabled } from '@sparx/auth';
 import { orderService } from '@sparx/crm';
-import { prisma, withTenant } from '@sparx/db';
-import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
+import { withTenant } from '@sparx/db';
 import {
-  authenticateCustomer,
   CustomerAuthError,
-  registerCustomer,
-  requestPasswordReset,
-  resetPassword,
-  revokeCustomerSession,
-  verifyCustomerSession,
-  RESET_TTL_SECONDS,
-  SESSION_COOKIE_NAME,
-  SESSION_TTL_SECONDS,
+  ensureMembership,
+  sendCustomerPasswordReset,
+  resetCustomerPassword,
+  signInCustomer,
+  signOutCustomer,
+  signUpCustomer,
   type CustomerAuthContext,
+  type SessionMeta,
 } from '@sparx/customer-auth';
 import { ok, paged } from '@sparx/api-core/envelope';
 import {
@@ -48,9 +42,9 @@ import {
   validationError,
 } from '@sparx/api-core/errors';
 
-import { env } from '../../../env.js';
 import { resolvePublicPropertyId } from '../../../lib/property.js';
 import { resolveTenantId } from '../../../lib/public-commerce-context.js';
+import { requireCustomerId, relaySetCookies } from '../../../lib/customer-session.js';
 
 const RegisterBody = z.object({
   email: z.string().min(3).max(255),
@@ -106,41 +100,11 @@ const WishlistParam = z.object({ variantId: z.string().uuid() });
 // blunt credential-stuffing / reset-spam. Per-IP via @fastify/rate-limit.
 const AUTH_RATE_LIMIT = { config: { rateLimit: { max: 10, timeWindow: '1 minute' } } };
 
-// Pub/Sub publisher for the password-reset email (reuses the existing
-// 'password-reset' template). Stdout stub in dev (no GCP_PROJECT_ID).
-const pubLogger: PublisherLogger = {
-  info: (obj, msg) => console.log(JSON.stringify({ level: 'info', ...obj, msg })),
-  warn: (obj, msg) => console.warn(JSON.stringify({ level: 'warn', ...obj, msg })),
-  error: (obj, msg) => console.error(JSON.stringify({ level: 'error', ...obj, msg })),
-};
-const emailPublisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLogger });
-
-/** The storefront base URL for a tenant — its custom primary domain if set,
- *  else the <slug>.sparx.zone subdomain. Used to build the reset link so the
- *  email points at the shopper's actual storefront (never a client-supplied
- *  origin, which would be a token-phishing vector). */
-async function siteBaseUrl(tenantId: string, slug: string): Promise<string> {
-  const tenant = await prisma.tenant.findUnique({
-    where: { id: tenantId },
-    select: { settings: true },
-  });
-  const settings = tenant?.settings as { primaryDomain?: unknown } | null;
-  const domain =
-    settings && typeof settings.primaryDomain === 'string' && settings.primaryDomain
-      ? settings.primaryDomain
-      : `${slug}.sparx.zone`;
-  return `https://${domain}`;
-}
-
 /** CRM money columns are Decimal(12,2) dollars; the storefront speaks integer
  *  cents. Convert at the boundary. */
 function toCents(value: unknown): number {
   return Math.round(Number(value) * 100);
 }
-
-// Cookies must not carry Secure over plaintext localhost in dev, or the browser
-// drops them. Prod storefronts are always https.
-const SECURE_COOKIE = process.env.NODE_ENV === 'production';
 
 interface CustomerProfile {
   id: string;
@@ -157,22 +121,17 @@ async function accountContext(request: FastifyRequest): Promise<CustomerAuthCont
   return { tenantId };
 }
 
-function sessionMeta(request: FastifyRequest): {
-  ipAddress: string | null;
-  userAgent: string | null;
-} {
+function sessionMeta(request: FastifyRequest): SessionMeta {
   const ua = request.headers['user-agent'];
   return { ipAddress: request.ip || null, userAgent: typeof ua === 'string' ? ua : null };
 }
 
-function setSessionCookie(reply: FastifyReply, token: string): void {
-  reply.setCookie(SESSION_COOKIE_NAME, token, {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: SECURE_COOKIE,
-    path: '/',
-    maxAge: SESSION_TTL_SECONDS,
-  });
+/** The active site for register/login (`?property=` or the tenant's primary). */
+function activeProperty(request: FastifyRequest, tenantId: string): Promise<string | null> {
+  return resolvePublicPropertyId(
+    tenantId,
+    (request.query as { property?: string }).property ?? null
+  );
 }
 
 async function loadProfile(
@@ -189,10 +148,8 @@ async function loadProfile(
 
 /**
  * Claim the active guest cart for a freshly-authenticated customer: stamp the
- * customer id onto the cart that the guest token owns. The guest token is left
- * in place so the client's existing x-cart-token keeps authorizing cart calls
- * for this session — the cart simply gains an owner (so the resulting order is
- * attributed to the account). Best-effort: never fail auth over the cart.
+ * customer id onto the cart that the guest token owns. Best-effort — never fail
+ * auth over the cart.
  */
 async function claimGuestCart(
   ctx: CustomerAuthContext,
@@ -213,28 +170,14 @@ async function claimGuestCart(
   }
 }
 
-/** Read + verify the session cookie, returning the customer id or throwing 401. */
-async function requireCustomer(request: FastifyRequest, ctx: CustomerAuthContext): Promise<string> {
-  const token = request.cookies[SESSION_COOKIE_NAME];
-  if (!token) throw unauthorized('Not signed in.');
-  const session = await verifyCustomerSession(ctx, token);
-  if (!session) throw unauthorized('Session expired. Please sign in again.');
-  return session.customerId;
-}
-
 const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/public/commerce/account/register', AUTH_RATE_LIMIT, async (request, reply) => {
     const body = RegisterBody.parse(request.body);
     const ctx = await accountContext(request);
-    // Origin site (docs/58 D2): create the membership on the active site
-    // (defaults to the tenant's primary when the storefront sends no `?property=`).
-    const propertyId = await resolvePublicPropertyId(
-      ctx.tenantId,
-      (request.query as { property?: string }).property ?? null
-    );
-    let session;
+    const propertyId = await activeProperty(request, ctx.tenantId);
+    let outcome;
     try {
-      session = await registerCustomer(ctx, propertyId, body, sessionMeta(request));
+      outcome = await signUpCustomer(ctx, body, sessionMeta(request));
     } catch (err) {
       if (err instanceof CustomerAuthError) {
         if (err.code === 'EMAIL_TAKEN') throw conflict(err.message);
@@ -242,50 +185,55 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
       }
       throw err;
     }
-    setSessionCookie(reply, session.sessionToken);
-    await claimGuestCart(ctx, request, session.customerId);
-    // `recognized` (docs/58 D6): true when this created a membership for the
-    // active site because the email already had a login on a SISTER site — the
-    // storefront surfaces a "separate account on this site" notice.
+    // Per-site membership (docs/58 D2). `recognized` (D6): true when a fresh
+    // membership was created for a user who already had a login (on this or a
+    // sister site) — the storefront surfaces a "separate account on this site" notice.
+    const { customerId, created } = await ensureMembership(
+      ctx,
+      propertyId,
+      outcome.userId,
+      outcome.email,
+      { firstName: body.firstName, lastName: body.lastName }
+    );
+    relaySetCookies(reply, outcome.setCookies);
+    await claimGuestCart(ctx, request, customerId);
     return ok({
-      customer: await loadProfile(ctx, session.customerId),
-      recognized: session.recognized ?? false,
+      customer: await loadProfile(ctx, customerId),
+      recognized: outcome.userPreexisted && created,
     });
   });
 
   app.post('/v1/public/commerce/account/login', AUTH_RATE_LIMIT, async (request, reply) => {
     const body = LoginBody.parse(request.body);
     const ctx = await accountContext(request);
-    // Recognition (docs/58 D6): sign in resolves the tenant-wide identity, then
-    // ensures a membership on the active site (created with fresh consent on a
-    // first cross-site visit). Defaults to primary when no `?property=` is sent.
-    const propertyId = await resolvePublicPropertyId(
-      ctx.tenantId,
-      (request.query as { property?: string }).property ?? null
+    const propertyId = await activeProperty(request, ctx.tenantId);
+    const outcome = await signInCustomer(ctx, body, sessionMeta(request));
+    if (!outcome) throw unauthorized('Invalid email or password.');
+    // Recognition (docs/58 D6): a first sign-in on this site creates a fresh
+    // membership (created) because the account lived on a sister site until now.
+    const { customerId, created } = await ensureMembership(
+      ctx,
+      propertyId,
+      outcome.userId,
+      outcome.email,
+      {}
     );
-    const session = await authenticateCustomer(ctx, propertyId, body, sessionMeta(request));
-    if (!session) throw unauthorized('Invalid email or password.');
-    setSessionCookie(reply, session.sessionToken);
-    await claimGuestCart(ctx, request, session.customerId);
-    // `recognized` (docs/58 D6): true when signing in here created a fresh
-    // membership because the account lived on a SISTER site until now.
-    return ok({
-      customer: await loadProfile(ctx, session.customerId),
-      recognized: session.recognized ?? false,
-    });
+    relaySetCookies(reply, outcome.setCookies);
+    await claimGuestCart(ctx, request, customerId);
+    return ok({ customer: await loadProfile(ctx, customerId), recognized: created });
   });
 
   app.post('/v1/public/commerce/account/logout', async (request, reply) => {
     const ctx = await accountContext(request);
-    const token = request.cookies[SESSION_COOKIE_NAME];
-    if (token) await revokeCustomerSession(ctx, token);
-    reply.clearCookie(SESSION_COOKIE_NAME, { path: '/' });
+    // Better Auth emits the correctly-named clear-cookie (incl. any `__Secure-`
+    // prefix in prod); relay it rather than clearing a fixed name ourselves.
+    relaySetCookies(reply, await signOutCustomer(ctx, request.headers.cookie));
     return ok({ ok: true });
   });
 
   app.get('/v1/public/commerce/account/me', async (request) => {
     const ctx = await accountContext(request);
-    const customerId = await requireCustomer(request, ctx);
+    const customerId = await requireCustomerId(request, ctx);
     const customer = await loadProfile(ctx, customerId);
     if (!customer) throw notFound('Customer', customerId);
     return ok({ customer });
@@ -294,7 +242,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.patch('/v1/public/commerce/account/me', async (request) => {
     const body = ProfileBody.parse(request.body);
     const ctx = await accountContext(request);
-    const customerId = await requireCustomer(request, ctx);
+    const customerId = await requireCustomerId(request, ctx);
     await withTenant(ctx, (tx) =>
       tx.customer.updateMany({
         where: { id: customerId, deletedAt: null },
@@ -309,39 +257,19 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   });
 
   // ── Password reset ──────────────────────────────────────────────────────
-  // Both endpoints are enumeration-safe: forgot always returns 200 regardless
-  // of whether the email exists, and only sends mail when it does.
+  // Enumeration-safe: forgot always returns 200; Better Auth only sends mail
+  // (sendResetPassword → email.send) when the account exists.
   app.post('/v1/public/commerce/account/password/forgot', AUTH_RATE_LIMIT, async (request) => {
     const body = ForgotBody.parse(request.body);
-    const tenantId = await resolveTenantId(request);
-    if (!(await isModuleEnabled(tenantId, 'builder'))) throw moduleDisabled('builder');
-    const slug = (request.query as { tenant: string }).tenant;
-
-    const reset = await requestPasswordReset({ tenantId }, body);
-    if (reset) {
-      const base = await siteBaseUrl(tenantId, slug);
-      const resetUrl = `${base}/account/reset?token=${encodeURIComponent(reset.resetToken)}`;
-      await publishEvent(
-        emailPublisher,
-        'email.send',
-        tenantId,
-        reset.identityId,
-        {
-          to: reset.email,
-          template: 'password-reset' as const,
-          props: { resetUrl, expiresInMinutes: Math.round(RESET_TTL_SECONDS / 60) },
-        },
-        pubLogger
-      );
-    }
+    const ctx = await accountContext(request);
+    await sendCustomerPasswordReset(ctx, body);
     return ok({ ok: true });
   });
 
   app.post('/v1/public/commerce/account/password/reset', AUTH_RATE_LIMIT, async (request) => {
     const body = ResetBody.parse(request.body);
-    const tenantId = await resolveTenantId(request);
-    if (!(await isModuleEnabled(tenantId, 'builder'))) throw moduleDisabled('builder');
-    const okReset = await resetPassword({ tenantId }, body);
+    const ctx = await accountContext(request);
+    const okReset = await resetCustomerPassword(ctx, body);
     if (!okReset) throw validationError('This reset link is invalid or has expired.');
     return ok({ ok: true });
   });
@@ -350,7 +278,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/public/commerce/account/orders', async (request) => {
     const { page, pageSize } = OrdersQuery.parse(request.query);
     const ctx = await accountContext(request);
-    const customerId = await requireCustomer(request, ctx);
+    const customerId = await requireCustomerId(request, ctx);
     const { items, total } = await orderService.list(ctx, {
       customerId,
       take: pageSize,
@@ -373,7 +301,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/public/commerce/account/orders/:orderId', async (request) => {
     const { orderId } = OrderParam.parse(request.params);
     const ctx = await accountContext(request);
-    const customerId = await requireCustomer(request, ctx);
+    const customerId = await requireCustomerId(request, ctx);
     const order = await orderService.get(ctx, orderId);
     // get() scopes to tenant, not customer — enforce ownership without leaking
     // existence of other customers' orders.
@@ -405,7 +333,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   // ── Addresses ─────────────────────────────────────────────────────────
   app.get('/v1/public/commerce/account/addresses', async (request) => {
     const ctx = await accountContext(request);
-    const customerId = await requireCustomer(request, ctx);
+    const customerId = await requireCustomerId(request, ctx);
     const addresses = await withTenant(ctx, (tx) =>
       tx.customerAddress.findMany({
         where: { customerId },
@@ -418,7 +346,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/public/commerce/account/addresses', async (request) => {
     const body = AddressBody.parse(request.body);
     const ctx = await accountContext(request);
-    const customerId = await requireCustomer(request, ctx);
+    const customerId = await requireCustomerId(request, ctx);
     const address = await withTenant(ctx, async (tx) => {
       if (body.isDefault) {
         await tx.customerAddress.updateMany({ where: { customerId }, data: { isDefault: false } });
@@ -434,7 +362,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
     const { addressId } = AddressParam.parse(request.params);
     const body = AddressBody.partial().parse(request.body);
     const ctx = await accountContext(request);
-    const customerId = await requireCustomer(request, ctx);
+    const customerId = await requireCustomerId(request, ctx);
     const updated = await withTenant(ctx, async (tx) => {
       const owned = await tx.customerAddress.findFirst({
         where: { id: addressId, customerId },
@@ -456,7 +384,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.delete('/v1/public/commerce/account/addresses/:addressId', async (request) => {
     const { addressId } = AddressParam.parse(request.params);
     const ctx = await accountContext(request);
-    const customerId = await requireCustomer(request, ctx);
+    const customerId = await requireCustomerId(request, ctx);
     await withTenant(ctx, (tx) =>
       tx.customerAddress.deleteMany({ where: { id: addressId, customerId } })
     );
@@ -466,7 +394,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   // ── Wishlist (variant-keyed; responses carry the parent product) ────────
   app.get('/v1/public/commerce/account/wishlist', async (request) => {
     const ctx = await accountContext(request);
-    const customerId = await requireCustomer(request, ctx);
+    const customerId = await requireCustomerId(request, ctx);
     const items = await withTenant(ctx, async (tx) => {
       const wishlist = await tx.wishlist.findFirst({
         where: { customerId },
@@ -516,7 +444,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/public/commerce/account/wishlist', async (request) => {
     const body = WishlistAddBody.parse(request.body);
     const ctx = await accountContext(request);
-    const customerId = await requireCustomer(request, ctx);
+    const customerId = await requireCustomerId(request, ctx);
     await withTenant(ctx, async (tx) => {
       let wishlist = await tx.wishlist.findFirst({
         where: { customerId },
@@ -544,7 +472,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.delete('/v1/public/commerce/account/wishlist/:variantId', async (request) => {
     const { variantId } = WishlistParam.parse(request.params);
     const ctx = await accountContext(request);
-    const customerId = await requireCustomer(request, ctx);
+    const customerId = await requireCustomerId(request, ctx);
     await withTenant(ctx, (tx) =>
       tx.wishlistItem.deleteMany({ where: { variantId, wishlist: { customerId } } })
     );

@@ -238,6 +238,10 @@ module "secrets" {
     "database-url-cloudrun",
     "redis-url",
     "better-auth-secret",
+    # Better Auth (Layer 2 shopper) — the customer instance runs inside api-rest
+    # (docs/27 v2), isolated from the staff secret. Distinct value; add out-of-band
+    # via `gcloud secrets versions add customer-auth-secret --data-file=-`.
+    "customer-auth-secret",
     "stripe-secret-key",
     "stripe-webhook-secret",
     "godaddy-api-key-ote",
@@ -400,6 +404,6 @@ module "monitoring" {
   project_id               = var.project_id
   ops_email                = var.ops_email
   public_domains_active    = var.cloudflare_enabled
-  uptime_check_hosts       = ["api.sparx.works", "app.sparx.works", "mcp.sparx.works"]
+  uptime_check_hosts       = ["api.sparx.works", "app.sparx.works", "mcp.sparx.works", "mcp.sparx.zone"]
   dead_letter_subscription = "dead-letter-inspect"
 }

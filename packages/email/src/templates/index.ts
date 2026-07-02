@@ -29,3 +29,15 @@ export {
   feedbackResponseSubject,
   type FeedbackResponseEmailProps,
 } from './feedback-response';
+
+export {
+  JobApplicationReceivedEmail,
+  jobApplicationReceivedSubject,
+  type JobApplicationReceivedEmailProps,
+} from './job-application-received';
+
+export {
+  JobApplicationConfirmationEmail,
+  jobApplicationConfirmationSubject,
+  type JobApplicationConfirmationEmailProps,
+} from './job-application-confirmation';

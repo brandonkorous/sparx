@@ -4,6 +4,7 @@ import { RotatingWord } from './rotating-word';
 import { SparkMascot } from './spark-mascot';
 import { MODULES } from './modules-catalog';
 import { ModuleStrip } from './module-strip';
+import { PLATFORM_HREF, signupHref } from './cta';
 
 // The hero tagline rotates its leading noun through every offering, so the
 // one-liner speaks for the whole platform — not just commerce. "ignited."
@@ -107,15 +108,16 @@ export function Hero() {
               }}
             >
               <div className="mkt-cluster" style={{ gap: '12px', justifyContent: 'center' }}>
-                <Button size="lg" style={{ backgroundColor: ON, color: ON_CTA_TEXT }}>
-                  Launch your site
+                <Button asChild size="lg" style={{ backgroundColor: ON, color: ON_CTA_TEXT }}>
+                  <a href={signupHref('hero')}>Launch your site</a>
                 </Button>
                 <Button
+                  asChild
                   size="lg"
                   variant="outline"
                   style={{ backgroundColor: 'transparent', color: ON, borderColor: ON_RING }}
                 >
-                  See the platform
+                  <a href={PLATFORM_HREF}>See the platform</a>
                 </Button>
               </div>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: ON_MUTED }}>

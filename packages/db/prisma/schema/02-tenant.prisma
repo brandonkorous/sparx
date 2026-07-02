@@ -283,11 +283,16 @@ model Tenant {
   commerceSiteSettings CommerceSiteSettings[]
   commerceSiteThemes   CommerceSiteTheme[]
 
-  // Customer-auth (Layer 2) — storefront shopper credentials/sessions (docs/27)
-  customerIdentities     CustomerIdentity[]
-  customerCredentials    CustomerCredential[]
-  customerAuthSessions   CustomerSession[]
-  customerPasswordResets CustomerPasswordReset[]
+  // Customer-auth (Layer 2, docs/27 v2) — the dedicated Better Auth customer
+  // instance's tenant-scoped tables (shopper identity/session/credential + the
+  // shopper MCP OAuth authorization server).
+  customerUsers             CustomerUser[]
+  customerSessions          CustomerSession[]
+  customerAccounts          CustomerAccount[]
+  customerVerifications     CustomerVerification[]
+  customerOauthApplications CustomerOauthApplication[]
+  customerOauthAccessTokens CustomerOauthAccessToken[]
+  customerOauthConsents     CustomerOauthConsent[]
 
   // Sitebuilder module — theme/layout/page composition + publish history (docs/29).
   // The applied-theme trio (config/versions/schedules) is per web PROPERTY
@@ -346,6 +351,11 @@ model Tenant {
   // Onboarding (docs/65 Ph2) — per-tip progress rows shown for 7 days post-signup
   onboardingChecklist OnboardingChecklist[]
 
+  // Careers (first-party) — job applications submitted on sparx.works /careers.
+  // Only ever populated on the platform tenant (`wizeworks`); a normal product
+  // tenant has none.
+  jobApplications JobApplication[]
+
   // Import jobs (docs/68 §8) — background CSV import processing
   importJobs ImportJob[]
 
@@ -359,11 +369,11 @@ model Tenant {
   aiPromptTemplates AiPromptTemplate[]
   aiToolPolicies    AiToolPolicy[]
 
-  // B2B pricing (docs/10, docs/64) — pricing tiers, per-product overrides, invoices, portal contacts, approval rules
+  // B2B pricing (docs/10, docs/64) — pricing tiers, per-product overrides, portal contacts, approval rules
+  // (net-terms AR converged onto BillingDocument in Phase 8 — docs/87 §15)
   b2bPricingTiers            B2bPricingTier[]
   b2bTierProductOverrides    B2bTierProductOverride[]
   b2bAccountProductOverrides B2bAccountProductOverride[]
-  b2bInvoices                B2bInvoice[]
   b2bAccountContacts         B2bAccountContact[]
   purchaseApprovalRules      PurchaseApprovalRule[]
 

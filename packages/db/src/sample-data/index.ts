@@ -17,6 +17,7 @@ import { applyReviews } from './engine/reviews';
 import { applyContent } from './engine/content';
 import { applyScheduling } from './engine/scheduling';
 import { applyQuotes, applyDeals } from './engine/sales';
+import { applyInvoicing } from './engine/invoicing';
 import { applyBundlesAndConfigurator } from './engine/bundles';
 import { applyAi } from './engine/ai';
 import { hasPhysicalGoods, withFallbacks } from './engine/fallbacks';
@@ -78,6 +79,9 @@ export function packModules(pack: SampleDataPack): string[] {
   // module on gets a baseline dataset regardless of what the vertical authored.
   mods.add('scheduling');
   mods.add('b2b');
+  // Invoicing rides free with commerce/b2b and seeds BillingDocuments off the
+  // catalog + customers — surfaced whenever there's a commerce catalog to bill.
+  if (pack.products.length) mods.add('invoicing');
   return [...mods];
 }
 
@@ -126,6 +130,7 @@ async function applyPack(ctx: ApplyCtx, pack: SampleDataPack): Promise<void> {
   await applyScheduling(ctx, eff);
   await applyQuotes(ctx, eff);
   await applyDeals(ctx, eff);
+  await applyInvoicing(ctx, eff);
   await applyBundlesAndConfigurator(ctx, eff);
   await applyAi(ctx, eff);
 }

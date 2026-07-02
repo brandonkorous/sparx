@@ -1,6 +1,7 @@
 import { Button } from '@sparx/ui';
 import { Container, Display, Spark } from './primitives';
 import { Reveal } from './reveal';
+import { PLATFORM_HREF, signupHref } from './cta';
 
 // The permanence beat — the "second promise" from docs/01 §7 and the brand
 // guide §7.2. It sits late on the page (after the B2B spotlight, ahead of the
@@ -74,15 +75,16 @@ export function Permanence() {
                 alignItems: 'flex-start',
               }}
             >
-              <Button size="xl" variant="solid">
-                Launch your site →
+              <Button asChild size="xl" variant="solid">
+                <a href={signupHref('permanence')}>Launch your site →</a>
               </Button>
               <Button
+                asChild
                 size="xl"
                 variant="outline"
                 style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
               >
-                See how it lasts
+                <a href={PLATFORM_HREF}>See how it lasts</a>
               </Button>
               <span
                 style={{
@@ -125,7 +127,7 @@ export function Permanence() {
                   style={{
                     fontFamily: 'var(--font-sans)',
                     fontSize: '12px',
-                    color: '#52525B',
+                    color: '#71717A',
                   }}
                 >
                   {p.subtitle}

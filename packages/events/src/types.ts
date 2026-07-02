@@ -274,8 +274,11 @@ export interface EmailSendPayload {
     | 'welcome-merchant'
     | 'email-verification'
     | 'domain-renewal-reminder'
+    | 'chat-notification'
     | 'market-settlement-report'
-    | 'feedback-response';
+    | 'feedback-response'
+    | 'job-application-received'
+    | 'job-application-confirmation';
   /** Shape is enforced by @sparx/email's TemplateSend.props on render. */
   props: Record<string, unknown>;
   /** Optional From override; defaults to SPARX_EMAIL_FROM env in worker. */

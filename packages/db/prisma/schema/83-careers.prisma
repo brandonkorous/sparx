@@ -1,0 +1,71 @@
+// Careers — first-party job applications for WizeWorks/sparx itself (docs/…).
+//
+// This is NOT a tenant-facing product module. sparx-the-company posts a small
+// set of founding roles on the marketing site (apps/web /careers), and visitors
+// apply. Following the /early-access convention (docs/80 §2), first-party
+// marketing/hiring data lands in the PLATFORM tenant (`wizeworks`) so it lives
+// under the standard multi-tenant RLS spine rather than a bespoke global table —
+// and the future admin app inherits it for free.
+//
+// The role definitions themselves are data-as-code in apps/web (roles.ts): there
+// is no editor yet, so a JobPosting table would be an unused CRUD surface. The
+// application stores a denormalized `roleSlug` + `roleTitle` snapshot so each row
+// is self-describing even if a role's copy later changes, plus a nullable
+// `postingId` reserved for when postings graduate to DB-backed records.
+
+model JobApplication {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // Which role this is for. `roleSlug` matches a data-as-code role in apps/web
+  // (or 'open-application' for the general "introduce yourself" submission);
+  // `roleTitle` is the human snapshot at apply time. `postingId` is reserved for
+  // a future DB-backed JobPosting and stays null today.
+  roleSlug  String  @map("role_slug") @db.VarChar(120)
+  roleTitle String  @map("role_title") @db.VarChar(255)
+  postingId String? @map("posting_id") @db.Uuid
+
+  // Applicant identity (anonymous submission — no auth on the marketing site yet).
+  fullName String  @map("full_name") @db.VarChar(255)
+  email    String  @db.VarChar(255)
+  phone    String? @db.VarChar(50)
+  location String? @db.VarChar(255)
+
+  // Optional links + free text.
+  linkedinUrl  String? @map("linkedin_url") @db.VarChar(500)
+  portfolioUrl String? @map("portfolio_url") @db.VarChar(500)
+  coverLetter  String? @map("cover_letter") @db.Text
+  // For the open application: the area/thing they'd want to own.
+  roleInterest String? @map("role_interest") @db.VarChar(255)
+
+  // Résumé (PDF) — stored in the PRIVATE media bucket under a careers/ prefix,
+  // never world-readable. Staff retrieve it via a short-lived signed URL.
+  resumeKey      String? @map("resume_key") @db.VarChar(1024)
+  resumeFilename String? @map("resume_filename") @db.VarChar(255)
+  resumeMime     String? @map("resume_mime") @db.VarChar(120)
+  resumeSize     Int?    @map("resume_size")
+
+  // Hiring pipeline (ATS-lite; the admin app manages this later).
+  // new | reviewing | interview | offer | hired | rejected | archived
+  status String @default("new") @db.VarChar(20)
+
+  // Auth prep — when the marketing site / admin gains auth, an application can be
+  // linked to a Better Auth user. Nullable; matched on `email` until then.
+  linkedUserId String? @map("linked_user_id") @db.Uuid
+
+  // Provenance.
+  source    String  @default("careers-site") @db.VarChar(50)
+  ipAddress String? @map("ip_address") @db.VarChar(64)
+  userAgent String? @map("user_agent") @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, status, createdAt(sort: Desc)])
+  @@index([tenantId, createdAt(sort: Desc)])
+  @@index([tenantId, roleSlug])
+  @@index([tenantId, email])
+  @@map("job_applications")
+}

@@ -130,7 +130,7 @@ const reportRoutes: FastifyPluginAsync = (app) => {
         accountsActive,
         accountsCreditHold,
         openQuotes,
-        unpaidInvoices,
+        openArDocs,
         approvalQueue,
         credit,
         tierGroups,
@@ -139,9 +139,16 @@ const reportRoutes: FastifyPluginAsync = (app) => {
         tx.b2BAccount.count({ where: { deletedAt: null, status: 'active' } }),
         tx.b2BAccount.count({ where: { deletedAt: null, status: 'credit_hold' } }),
         tx.quote.count({ where: { status: { in: [...OPEN_QUOTE_STATUSES] } } }),
-        tx.b2bInvoice.findMany({
-          where: { status: 'unpaid' },
-          select: { amountCents: true, dueAt: true },
+        // Open B2B accounts-receivable — billing_documents scoped to a B2BAccount
+        // (docs/87 §15; the legacy b2b_invoices table was retired). `balance` nets
+        // out partial payments, so the aging below reflects true outstanding AR.
+        tx.billingDocument.findMany({
+          where: {
+            b2bAccountId: { not: null },
+            deletedAt: null,
+            status: { in: ['unpaid', 'partial', 'overdue'] },
+          },
+          select: { balance: true, dueAt: true },
         }),
         tx.order.count({ where: { status: 'pending_approval' } }),
         tx.b2BAccount.aggregate({
@@ -155,25 +162,27 @@ const reportRoutes: FastifyPluginAsync = (app) => {
         }),
       ]);
 
-      // A/R aging from unpaid invoices' dueAt vs now (cents). The unpaid set is
-      // small, so bucketing in JS is cheaper than four GROUP BY range queries.
+      // A/R aging from open documents' balance + dueAt vs now (cents). The open set
+      // is small, so bucketing in JS is cheaper than four GROUP BY range queries. A
+      // document with no due date counts as current (not yet overdue).
       const aging = { current: 0, d1_30: 0, d31_60: 0, d60plus: 0 };
       let outstandingCents = 0;
       let overdueCount = 0;
       let overdueCents = 0;
       let oldestOverdueDays = 0;
-      for (const inv of unpaidInvoices) {
-        outstandingCents += inv.amountCents;
-        const days = Math.floor((now.getTime() - inv.dueAt.getTime()) / 86_400_000);
+      for (const doc of openArDocs) {
+        const c = decimalToCents(doc.balance);
+        outstandingCents += c;
+        const days = doc.dueAt ? Math.floor((now.getTime() - doc.dueAt.getTime()) / 86_400_000) : 0;
         if (days <= 0) {
-          aging.current += inv.amountCents;
+          aging.current += c;
         } else {
           overdueCount += 1;
-          overdueCents += inv.amountCents;
+          overdueCents += c;
           oldestOverdueDays = Math.max(oldestOverdueDays, days);
-          if (days <= 30) aging.d1_30 += inv.amountCents;
-          else if (days <= 60) aging.d31_60 += inv.amountCents;
-          else aging.d60plus += inv.amountCents;
+          if (days <= 30) aging.d1_30 += c;
+          else if (days <= 60) aging.d31_60 += c;
+          else aging.d60plus += c;
         }
       }
 
@@ -189,7 +198,7 @@ const reportRoutes: FastifyPluginAsync = (app) => {
         },
         openQuotes,
         invoices: {
-          outstandingCount: unpaidInvoices.length,
+          outstandingCount: openArDocs.length,
           outstandingCents,
           overdueCount,
           overdueCents,
@@ -310,40 +319,42 @@ const reportRoutes: FastifyPluginAsync = (app) => {
     });
   });
 
-  // ── Top accounts by total invoiced amount (a stable spend proxy that rides
-  //    the invoice account_id, unlike orders whose B2B link is on the checkout
-  //    session). Newest tier/terms joined for the roster row. ──
+  // ── Top accounts by total invoiced amount (a stable spend proxy that rides the
+  //    billing document's b2b_account_id, unlike orders whose B2B link is on the
+  //    checkout session). Newest tier/terms joined for the roster row. ──
   app.get('/v1/b2b/reports/top-accounts', async (request) => {
     await requireB2bModule(request);
     requireRole(request, 'viewer');
     const ctx = toB2bContext(request);
 
     return withTenant(ctx, async (tx) => {
-      const groups = await tx.b2bInvoice.groupBy({
-        by: ['accountId'],
-        _sum: { amountCents: true },
+      const groups = await tx.billingDocument.groupBy({
+        by: ['b2bAccountId'],
+        where: { b2bAccountId: { not: null }, deletedAt: null },
+        _sum: { total: true },
         _count: { _all: true },
-        orderBy: { _sum: { amountCents: 'desc' } },
+        orderBy: { _sum: { total: 'desc' } },
         take: 5,
       });
       if (groups.length === 0) return ok([]);
 
+      const ids = groups.map((g) => g.b2bAccountId).filter((id): id is string => id !== null);
       const accounts = await tx.b2BAccount.findMany({
-        where: { id: { in: groups.map((g) => g.accountId) } },
+        where: { id: { in: ids } },
         select: { id: true, companyName: true, pricingTier: true, paymentTerms: true },
       });
       const byId = new Map(accounts.map((a) => [a.id, a]));
 
       return ok(
         groups.map((g) => {
-          const a = byId.get(g.accountId);
+          const a = byId.get(g.b2bAccountId!);
           return {
-            accountId: g.accountId,
+            accountId: g.b2bAccountId!,
             name: a?.companyName ?? '—',
             tier: a?.pricingTier ?? null,
             paymentTerms: a?.paymentTerms ?? null,
             invoiceCount: g._count._all,
-            invoicedCents: g._sum.amountCents ?? 0,
+            invoicedCents: decimalToCents(g._sum.total),
           };
         })
       );

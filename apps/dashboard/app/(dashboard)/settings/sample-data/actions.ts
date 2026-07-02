@@ -21,6 +21,7 @@ export interface SampleDataCounts {
   bookings: number;
   quotes: number;
   deals: number;
+  billingDocuments: number;
   bundles: number;
   movements: number;
   images: number;

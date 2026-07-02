@@ -1149,10 +1149,25 @@ export function DashboardShowcase() {
           lede={
             <>
               sparx is one URL, one login, one sidebar. Each active module gets a colored nav item
-              and a 3px stripe on its cards — you always know where you are.
+              and a module-tinted card — you always know where you are.
             </>
           }
         />
+
+        {/* The board is a wide, faithful recreation of the real app; on phones it
+            scrolls horizontally rather than cramming. A quiet hint tells touch
+            users to swipe (desktop never sees it). */}
+        <span
+          className="mkt-tablet-down-only"
+          style={{
+            marginTop: '-40px',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '12px',
+            color: 'var(--color-text-tertiary)',
+          }}
+        >
+          Swipe to explore the dashboard →
+        </span>
 
         <div
           style={{

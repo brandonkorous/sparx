@@ -18,12 +18,14 @@ model Customer {
   id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId      String  @map("tenant_id") @db.Uuid
   type          String  @default("prospect") @db.VarChar(20) // prospect | retail | b2b
+  // The Better Auth customer user (Layer 2 login, docs/27 v2) behind this
+  // membership. null = a guest / CRM-imported contact with no storefront login.
   authUserId    String? @map("auth_user_id") @db.Uuid
-  // Membership scoping (docs/58 D2): the SITE this customer belongs to + the
-  // tenant-wide identity (login) behind it. property_id null = a tenant-level CRM
-  // contact not tied to a site; identity_id null = no storefront login yet.
+  // Membership scoping (docs/58 D2): the SITE this customer belongs to. A
+  // person who shops more than one of the tenant's sites is one CustomerUser
+  // (auth_user_id) linked to a per-site membership each. property_id null = a
+  // tenant-level CRM contact not tied to a site.
   propertyId    String? @map("property_id") @db.Uuid
-  identityId    String? @map("identity_id") @db.Uuid
   b2bAccountId  String? @map("b2b_account_id") @db.Uuid
   assignedRepId String? @map("assigned_rep_id") @db.Uuid
 
@@ -50,10 +52,10 @@ model Customer {
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz
 
-  tenant      Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  property    Property?         @relation(fields: [propertyId], references: [id], onDelete: SetNull)
-  identity    CustomerIdentity? @relation(fields: [identityId], references: [id], onDelete: SetNull)
-  b2bAccount  B2BAccount?       @relation(fields: [b2bAccountId], references: [id], onDelete: SetNull)
+  tenant      Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property    Property?     @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  authUser    CustomerUser? @relation(fields: [authUserId], references: [id], onDelete: SetNull)
+  b2bAccount  B2BAccount?   @relation(fields: [b2bAccountId], references: [id], onDelete: SetNull)
   assignedRep User?             @relation("CustomerAssignedRep", fields: [assignedRepId], references: [id], onDelete: SetNull)
   mergedInto  Customer?         @relation("CustomerMerge", fields: [mergedIntoCustomerId], references: [id], onDelete: SetNull)
   mergedFrom  Customer[]        @relation("CustomerMerge")
@@ -77,10 +79,10 @@ model Customer {
   wishlists        Wishlist[]
   taxExemptions    TaxExemption[]
 
-  // Customer-auth (Layer 2) — sessions stay per-MEMBERSHIP (a login to this
-  // site's customer); the credential + resets now hang off the tenant-wide
-  // CustomerIdentity (docs/58 D2), reached via `identity`.
-  customerSessions CustomerSession[]
+  // Customer-auth (Layer 2, docs/27 v2) — the login is the Better Auth
+  // CustomerUser reached via `authUser`; sessions live on CustomerUser, not the
+  // per-site membership. Membership + docs/58 recognition are resolved from
+  // (authUserId, propertyId) on each authenticated request.
 
   // Cookie consent — records this shopper authored while signed in (docs/42 §4)
   consentRecords ConsentRecord[]
@@ -96,7 +98,6 @@ model Customer {
 
   @@unique([tenantId, propertyId, email], map: "customers_tenant_property_email_unique")
   @@index([tenantId, propertyId])
-  @@index([identityId])
   @@index([tenantId, type])
   @@index([tenantId, assignedRepId])
   @@index([tenantId, b2bAccountId])

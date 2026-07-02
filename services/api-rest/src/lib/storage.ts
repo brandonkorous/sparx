@@ -69,9 +69,18 @@ export interface MediaStorage {
   // Get the canonical public URL for a variant key. Constant-time in both
   // backends; no signing required because variants are world-readable.
   publicUrl(key: string): string;
+  // Mint a short-lived signed READ url for a PRIVATE object (e.g. a résumé
+  // original in the private bucket). Unlike publicUrl — which only works for
+  // world-readable variant keys — this signs access to a private key so a
+  // recipient (e.g. the careers notification email) can open it without a
+  // logged-in session. GCS caps signed-URL lifetime at 7 days.
+  presignGet(key: string, ttlSeconds?: number): Promise<string>;
 }
 
 const PUT_URL_TTL_SEC = 15 * 60;
+// Default signed-read lifetime — 7 days, the GCS V4 maximum. Long enough that a
+// careers notification email's résumé link stays live for the review window.
+const GET_URL_TTL_SEC = 7 * 24 * 60 * 60;
 
 // ────────────────────────────────────────────────────────────────────────
 // GCS backend
@@ -200,6 +209,16 @@ class GcsStorage implements MediaStorage {
     // worker only emits `[a-z]+-\d+\.[a-z0-9]+` filenames).
     return `${this.publicBase}/v1/public/media/variants/${key}`;
   }
+
+  async presignGet(key: string, ttlSeconds = GET_URL_TTL_SEC): Promise<string> {
+    const expires = Date.now() + ttlSeconds * 1000;
+    const [url] = await this.file(key).getSignedUrl({
+      version: 'v4',
+      action: 'read',
+      expires,
+    });
+    return url;
+  }
 }
 
 // ────────────────────────────────────────────────────────────────────────
@@ -305,6 +324,14 @@ class LocalStorage implements MediaStorage {
     // JSON, which the browser then ORB-blocks when used as an <img>).
     return `${base}/v1/public/media/file/${key}`;
   }
+
+  presignGet(key: string, _ttlSeconds?: number): Promise<string> {
+    assertSafeKey(key);
+    // Local mode serves every object (including private originals) through the
+    // dev-only file route, so no signing is needed on a developer's machine —
+    // the same URL publicUrl() builds is directly fetchable.
+    return Promise.resolve(this.publicUrl(key));
+  }
 }
 
 // ────────────────────────────────────────────────────────────────────────
@@ -385,6 +412,18 @@ export function marketplaceMediaKey(category: string, slug: string, filename: st
 export function marketplaceMediaUrl(category: string, slug: string, filename: string): string {
   const base = env.MEDIA_PUBLIC_URL || '';
   return `${base}/v1/public/marketplace/media/${category}/${slug}/${filename}`;
+}
+
+// Careers résumé key (docs/…) — the applicant's uploaded PDF. No `/variants/`
+// segment, so it lands on the PRIVATE bucket (never world-readable) and is read
+// back via a short-lived presignGet() signed URL, never publicUrl(). Scoped
+// under the (platform) tenant like every other object, then by application id.
+export function careersResumeKey(
+  tenantId: string,
+  applicationId: string,
+  filename: string
+): string {
+  return `${tenantId}/careers/resumes/${applicationId}/${safeFilename(filename)}`;
 }
 
 function safeFilename(name: string): string {

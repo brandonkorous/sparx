@@ -3,6 +3,7 @@ import { LEGAL_DOC_VERSIONS } from '@/lib/legal-versions';
 import { MODULE_ORDER, MODULES } from '@/lib/modules';
 import { DOC_PAGES } from '@/lib/docs';
 import { TOOL_SLUGS } from '@/components/marketing/tools/registry';
+import { ROLES, OPEN_APPLICATION } from './careers/roles';
 
 const BASE = 'https://sparx.works';
 
@@ -48,15 +49,30 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     })),
+    // Careers index + each founding role (and the open application) — now real,
+    // indexable pages rather than a ComingSoon stub, so they belong in coverage.
+    {
+      url: `${BASE}/careers`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.6,
+    },
+    ...[...ROLES, OPEN_APPLICATION].map((role) => ({
+      url: `${BASE}/careers/${role.slug}`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.5,
+    })),
     ...staticPages(now),
   ];
 }
 
 // Substantial, indexable static routes that aren't module pages. `ComingSoon`
-// stubs (/about, /careers, /press, …) are deliberately excluded — listing thin
+// stubs (/about, /press, …) are deliberately excluded — listing thin
 // placeholders in the sitemap invites soft-404 penalties (docs/50 §6: coverage
-// bounds must be explicit, not silent). Legal `lastModified` tracks the actual
-// document revision from the single source of truth in @sparx/legal.
+// bounds must be explicit, not silent). (/careers is now a real page and is
+// listed above.) Legal `lastModified` tracks the actual document revision from
+// the single source of truth in @sparx/legal.
 function staticPages(now: Date): MetadataRoute.Sitemap {
   const legal = (['privacy', 'terms', 'dpa', 'aup'] as const).map((doc) => ({
     url: `${BASE}/legal/${doc}`,

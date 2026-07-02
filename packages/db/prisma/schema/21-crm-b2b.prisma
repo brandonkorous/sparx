@@ -49,9 +49,8 @@ model B2BAccount {
   checkoutSessions CheckoutSession[]
   taxExemptions    TaxExemption[]
 
-  // B2B module inverse relations
+  // B2B module inverse relations (net-terms AR is a BillingDocument — docs/87 §15)
   productOverrides B2bAccountProductOverride[]
-  invoices         B2bInvoice[]
   billingDocuments BillingDocument[]
   contacts         B2bAccountContact[]
   approvalRules    PurchaseApprovalRule[]

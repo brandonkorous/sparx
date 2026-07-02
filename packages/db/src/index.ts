@@ -1,6 +1,8 @@
 export { prisma } from './client';
 export { withTenant, withSystem } from './tenant-context';
 export type { TenantContext, TxClient } from './tenant-context';
+export { tenantStore } from './tenant-store';
+export type { TenantScope } from './tenant-store';
 
 // Sample data (docs/104, Wave 5) — load/clear/status + the per-industry packs,
 // shared by the dev/e2e seed and the api-rest production seam.
@@ -43,6 +45,14 @@ export type {
   WebhookDelivery,
   MediaAsset,
   MediaVariant,
+  // Customer auth (Layer 2 — Better Auth customer instance, docs/27 v2)
+  CustomerUser,
+  CustomerSession,
+  CustomerAccount,
+  CustomerVerification,
+  CustomerOauthApplication,
+  CustomerOauthAccessToken,
+  CustomerOauthConsent,
   // CRM
   Customer,
   CustomerAddress,

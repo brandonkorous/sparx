@@ -207,6 +207,7 @@ jobs:
             auth-database-url
             redis-url
             better-auth-secret
+            customer-auth-secret
             google-client-id
             google-client-secret
             sparx-internal-jwt-secret

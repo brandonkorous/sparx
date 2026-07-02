@@ -25,15 +25,12 @@ import {
   rescheduleBooking,
   type BookingWithRelations,
 } from '@sparx/scheduling';
-import {
-  SESSION_COOKIE_NAME,
-  verifyCustomerSession,
-  type CustomerAuthContext,
-} from '@sparx/customer-auth';
+import { type CustomerAuthContext } from '@sparx/customer-auth';
 import { ok, paged } from '@sparx/api-core/envelope';
-import { moduleDisabled, notFound, unauthorized } from '@sparx/api-core/errors';
+import { moduleDisabled, notFound } from '@sparx/api-core/errors';
 
 import { resolveTenantId } from '../../../lib/public-commerce-context.js';
+import { requireCustomerId } from '../../../lib/customer-session.js';
 import { publishBookingEvent } from '../../../lib/scheduling-events.js';
 import { settleBookingPayment } from '../../../lib/scheduling-payments.js';
 import { bookingCalendarLinks } from '../../../lib/scheduling-ical.js';
@@ -56,13 +53,10 @@ async function bookingContext(request: FastifyRequest): Promise<CustomerAuthCont
   return { tenantId };
 }
 
-/** Read + verify the session cookie → the signed-in customer id, or 401. */
-async function requireCustomer(request: FastifyRequest, ctx: CustomerAuthContext): Promise<string> {
-  const token = request.cookies[SESSION_COOKIE_NAME];
-  if (!token) throw unauthorized('Not signed in.');
-  const session = await verifyCustomerSession(ctx, token);
-  if (!session) throw unauthorized('Session expired. Please sign in again.');
-  return session.customerId;
+/** The signed-in customer id for the active site, or 401 (docs/27 v2 — session →
+ *  Better Auth user → per-site membership, resolved in lib/customer-session). */
+function requireCustomer(request: FastifyRequest, ctx: CustomerAuthContext): Promise<string> {
+  return requireCustomerId(request, ctx);
 }
 
 const MODIFIABLE = ['requested', 'confirmed'];

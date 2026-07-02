@@ -1,0 +1,13 @@
+-- Phase 8 contract step (docs/87 §15): drop the retired `b2b_invoices` table.
+--
+-- Migration 20260807000000 migrated every legacy net-terms invoice into
+-- `billing_documents` (the one AR engine), rewrote `sync_b2b_credit_used()` to sum
+-- open billing-document balances, and left `b2b_invoices` read-only for one
+-- release. Nothing writes it anymore, and the last reader (the b2b/reports.ts A/R
+-- summary) now reads `billing_documents`. This drops the now-empty table together
+-- with its RLS policies, indexes, and foreign keys (all removed with the table).
+--
+-- DROP TABLE is an owner-level DDL operation, so the per-tenant
+-- `set_config('app.tenant_id', …)` loop that FORCE-RLS *row* backfills require does
+-- NOT apply here.
+DROP TABLE IF EXISTS b2b_invoices;

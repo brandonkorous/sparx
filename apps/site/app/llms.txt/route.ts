@@ -58,6 +58,10 @@ export async function GET(request: Request) {
       : ''
   }
 
+## Assistant
+
+- [MCP endpoint](${origin}/mcp): Connect an AI assistant (Model Context Protocol) to browse products, check availability, book appointments, and shop this store.
+
 This store runs on sparx (sparx.works). For the complete, always-current list of URLs, use the sitemap above.
 `;
 

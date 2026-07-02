@@ -337,6 +337,8 @@ export interface SampleDataCounts {
   bookings: number;
   quotes: number;
   deals: number;
+  /** Authored billing documents (docs/87 invoicing surface). */
+  billingDocuments: number;
   bundles: number;
   movements: number;
   images: number;

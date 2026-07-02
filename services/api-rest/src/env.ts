@@ -42,6 +42,11 @@ const EnvSchema = z
     // valid across the very rename it authorizes. Ops-controlled, never
     // user-settable. Unset → no carve-out (reserved slugs blocked for everyone).
     SPARX_PLATFORM_TENANT_ID: z.string().optional(),
+    // Recipient for internal sparx-team notifications about first-party careers
+    // applications (POST /v1/public/careers/apply). Optional with a safe literal
+    // fallback (careers@sparx.works) so a fresh env still delivers — mirrors the
+    // DASHBOARD_URL-style "optional env, sane default" idiom used elsewhere.
+    CAREERS_NOTIFY_EMAIL: z.string().email().optional(),
     // Optional: when set, the Pub/Sub publisher uses Google Cloud Pub/Sub;
     // otherwise it logs to stdout and is a no-op (dev default). The publisher
     // resolves a topic per `EventType` (topic name == event type) — there is

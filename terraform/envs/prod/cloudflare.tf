@@ -181,6 +181,21 @@ resource "cloudflare_record" "sparx_zone_customers" {
   comment         = "Tenant custom-domain CNAME target — see docs/04-domain-ssl-automation.md"
 }
 
+# Canonical shopper-facing storefront MCP host (docs/113). The `*` wildcard above
+# already resolves it, but an explicit node documents it as first-class. DNS-only
+# for the same reason as the wildcard — Caddy on-demand TLS terminates it.
+resource "cloudflare_record" "sparx_zone_mcp" {
+  count           = var.cloudflare_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.sparx_zone[0].id
+  name            = "mcp"
+  type            = "A"
+  content         = google_compute_address.ingress.address
+  ttl             = 1
+  proxied         = false
+  allow_overwrite = true
+  comment         = "Shopper-facing storefront MCP (mcp-storefront) — see docs/113-storefront-mcp.md"
+}
+
 # =========================================================================
 # sparx.email — Postal sending infrastructure + merchant-facing emails
 # =========================================================================

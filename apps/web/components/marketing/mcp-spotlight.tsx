@@ -24,10 +24,12 @@ const FEATURES = [
   },
 ] as const;
 
+// A deliberately mixed set — a studio, a boutique, a cafe supplier, a publisher —
+// so the AI demo reads content-and/or-commerce, not a single vertical.
 const RESULTS = [
   {
     n: '01',
-    name: 'Ranchero Trucking Co.',
+    name: 'Meadowlark Studio',
     revenue: '$48,200',
     status: 'active' as const,
     days: undefined,
@@ -39,10 +41,10 @@ const RESULTS = [
     status: 'active' as const,
     days: undefined,
   },
-  { n: '03', name: 'Northwind Supply', revenue: '$36,400', status: 'cold' as const, days: '51d' },
+  { n: '03', name: 'Verano Coffee Co.', revenue: '$36,400', status: 'cold' as const, days: '51d' },
   {
     n: '04',
-    name: 'Pacific Forge Logistics',
+    name: 'Northgate Press',
     revenue: '$29,150',
     status: 'cold' as const,
     days: '48d',
@@ -77,9 +79,9 @@ export function McpSpotlight() {
             }
             lede={
               <>
-                sparx is the first content and commerce platform built around the Model Context
-                Protocol. Connect Claude, ChatGPT, or Copilot once, then read live business data
-                with plain English. No exports. No CSVs. No Zapier.
+                sparx is built around the Model Context Protocol — a first-class MCP server, not a
+                plugin. Connect Claude, ChatGPT, or Copilot once, then read and act on live business
+                data in plain English. No exports. No CSVs. No Zapier.
               </>
             }
           />
@@ -232,8 +234,8 @@ function ChatCard() {
               maxWidth: '90%',
             }}
           >
-            Who were our top 10 fleet customers last quarter, and which ones haven&apos;t reordered
-            in 45 days?
+            Who were our top 10 customers last quarter, and which ones haven&apos;t ordered in 45
+            days?
           </div>
         </Message>
 
@@ -318,8 +320,7 @@ function ToolCallBlock() {
           borderRadius: '8px',
         }}
       >
-        <span style={{ color: '#818CF8' }}>filter</span>: {'{ segment: '}
-        <span style={{ color: '#10B981' }}>&quot;fleet&quot;</span>, sort:{' '}
+        <span style={{ color: '#818CF8' }}>query</span>: {'{ sort: '}
         <span style={{ color: '#10B981' }}>&quot;revenue_desc&quot;</span>, period:{' '}
         <span style={{ color: '#10B981' }}>&quot;q1_2026&quot;</span>, limit:{' '}
         <span style={{ color: '#F97316' }}>10</span> {'}'}

@@ -27,13 +27,10 @@ import { z } from 'zod';
 import { withTenant } from '@sparx/db';
 import { inventoryService } from '@sparx/inventory';
 import { ok, paged } from '@sparx/api-core/envelope';
-import { unauthorized, forbidden, notFound } from '@sparx/api-core/errors';
-import {
-  verifyCustomerSession,
-  SESSION_COOKIE_NAME,
-  type CustomerAuthContext,
-} from '@sparx/customer-auth';
+import { forbidden, notFound } from '@sparx/api-core/errors';
+import { type CustomerAuthContext } from '@sparx/customer-auth';
 import { resolveTenantId } from '../../../lib/public-commerce-context.js';
+import { requireCustomerId } from '../../../lib/customer-session.js';
 
 const PathAccountId = z.object({ accountId: z.string().uuid() });
 const PagedQuery = z.object({
@@ -50,16 +47,10 @@ const HoldsQuery = z.object({
   skip: z.coerce.number().int().min(0).default(0),
 });
 
-/** Resolve the customer session cookie → customerId, or throw 401. */
-async function requirePortalCustomer(
-  request: FastifyRequest,
-  ctx: CustomerAuthContext
-): Promise<string> {
-  const token = request.cookies[SESSION_COOKIE_NAME];
-  if (!token) throw unauthorized('Not signed in.');
-  const session = await verifyCustomerSession(ctx, token);
-  if (!session) throw unauthorized('Session expired. Please sign in again.');
-  return session.customerId;
+/** The signed-in customer id for the active site, or 401 (docs/27 v2 — resolved
+ *  in lib/customer-session: session → Better Auth user → per-site membership). */
+function requirePortalCustomer(request: FastifyRequest, ctx: CustomerAuthContext): Promise<string> {
+  return requireCustomerId(request, ctx);
 }
 
 /** Verify the customer has an active contact role on `accountId` and return the

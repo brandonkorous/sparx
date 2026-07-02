@@ -39,6 +39,16 @@ import {
   feedbackResponseSubject,
   type FeedbackResponseEmailProps,
 } from './templates/feedback-response';
+import {
+  JobApplicationReceivedEmail,
+  jobApplicationReceivedSubject,
+  type JobApplicationReceivedEmailProps,
+} from './templates/job-application-received';
+import {
+  JobApplicationConfirmationEmail,
+  jobApplicationConfirmationSubject,
+  type JobApplicationConfirmationEmailProps,
+} from './templates/job-application-confirmation';
 
 // Template registry + dispatcher. Two surfaces:
 //
@@ -68,7 +78,9 @@ export type TemplateId =
   | 'domain-renewal-reminder'
   | 'chat-notification'
   | 'market-settlement-report'
-  | 'feedback-response';
+  | 'feedback-response'
+  | 'job-application-received'
+  | 'job-application-confirmation';
 
 export type TemplateSend =
   | {
@@ -117,6 +129,20 @@ export type TemplateSend =
       template: 'feedback-response';
       to: string;
       props: FeedbackResponseEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'job-application-received';
+      to: string;
+      props: JobApplicationReceivedEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'job-application-confirmation';
+      to: string;
+      props: JobApplicationConfirmationEmailProps;
       from?: string;
       replyTo?: string;
     };
@@ -256,6 +282,38 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'feedback-response',
+      };
+    }
+    case 'job-application-received': {
+      const element = wrap(<JobApplicationReceivedEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: jobApplicationReceivedSubject(input.props.roleTitle),
+        html,
+        text,
+        templateId: 'job-application-received',
+      };
+    }
+    case 'job-application-confirmation': {
+      const element = wrap(<JobApplicationConfirmationEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: jobApplicationConfirmationSubject(input.props.roleTitle),
+        html,
+        text,
+        templateId: 'job-application-confirmation',
       };
     }
   }

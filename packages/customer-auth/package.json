@@ -2,7 +2,7 @@
   "name": "@sparx/customer-auth",
   "version": "0.0.0",
   "private": true,
-  "description": "Layer-2 site shopper authentication — tenant-scoped credentials, Argon2id hashing, opaque sessions. Distinct from @sparx/auth (staff Better Auth). See docs/27-customer-accounts-site-auth.md.",
+  "description": "Layer-2 site shopper authentication on a dedicated tenant-scoped Better Auth instance (application-level multi-tenancy: (tenantId, email) identity). Distinct from @sparx/auth (staff). See docs/27-customer-accounts-site-auth.md.",
   "type": "module",
   "exports": {
     ".": {
@@ -22,6 +22,8 @@
   "dependencies": {
     "@node-rs/argon2": "^2.0.2",
     "@sparx/db": "workspace:*",
+    "@sparx/events": "workspace:*",
+    "better-auth": "^1.6.11",
     "zod": "^4.4.3"
   },
   "devDependencies": {

@@ -40,6 +40,7 @@ jobs:
           - api-rest
           - api-graphql
           - api-mcp
+          - mcp-storefront # @sparx/mcp-storefront — shopper-facing MCP (docs/113)
           - dashboard
           - site
           - market # @sparx/market — the first-party sparx.market storefront (docs/106 §4.7)

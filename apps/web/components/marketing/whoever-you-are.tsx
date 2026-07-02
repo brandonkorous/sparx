@@ -2,6 +2,7 @@ import { Button } from '@sparx/ui';
 import { Container, SectionHeader, Spark } from './primitives';
 import { Reveal } from './reveal';
 import { VideoMontage } from './video-montage';
+import { signupHref } from './cta';
 
 /**
  * "Whoever you are" — the multi-vertical beat, staged as a full-bleed video.
@@ -46,10 +47,11 @@ export function WhoeverYouAre() {
           />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div className="mkt-cluster" style={{ gap: '12px' }}>
-              <Button size="lg" variant="solid">
-                Start free →
+              <Button asChild size="lg" variant="solid">
+                <a href={signupHref('whoever')}>Start free →</a>
               </Button>
               <Button
+                asChild
                 size="lg"
                 variant="outline"
                 style={{
@@ -58,7 +60,7 @@ export function WhoeverYouAre() {
                   borderColor: 'rgba(255, 255, 255, 0.4)',
                 }}
               >
-                Explore the modules
+                <a href="#modules">Explore the modules</a>
               </Button>
             </div>
             <span

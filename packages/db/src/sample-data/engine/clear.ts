@@ -46,6 +46,15 @@ export async function clearSampleDataOnTx(
   await tx.quote.deleteMany({ where: { tenantId, metadata: sampleMeta } });
   await tx.deal.deleteMany({ where: { tenantId, metadata: sampleMeta } });
 
+  // Billing documents (cascade lines/payments/snapshots). The workflow/stages/
+  // line-types are durable config (seeded on activation) — left intact, like
+  // pipelines and warehouses.
+  await tx.billingDocument.deleteMany({ where: { tenantId, metadata: sampleMeta } });
+
+  // The demo B2B account behind the net-terms AR documents above (tagged `sample`);
+  // its documents are already gone, so this removes only the account row.
+  await tx.b2BAccount.deleteMany({ where: { tenantId, tags: { has: 'sample' } } });
+
   // Scheduling — bookings (via sample services) then the services/resources.
   const sampleServices = await tx.schedulingService.findMany({
     where: { tenantId, settings: sampleMeta },

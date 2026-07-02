@@ -42,13 +42,16 @@ function spec(
 }
 
 export const DEMO_TENANTS: SeedTenantSpec[] = [
-  // Retail apparel boutique — the classic storefront.
+  // Retail apparel boutique that ALSO books tailoring + styling appointments — the
+  // service side many apparel shops run but never think of as "scheduling." Its
+  // pack authors no bookable services, so this exercises the scheduling fallback:
+  // the engine seeds the apparel-flavored calendar (Personal styling / Alterations).
   spec(
     'demo-apparel',
     'Threadline',
     'Maya Chen',
     'apparel',
-    ['builder', 'commerce', 'cms', 'crm', 'email'],
+    ['builder', 'commerce', 'scheduling', 'cms', 'crm', 'email'],
     'forge'
   ),
   // Specialty food shop — catalog + recipes content + a newsletter.

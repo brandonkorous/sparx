@@ -24,6 +24,17 @@ data:
   # as sparx_owner, lives in sparx-app-secrets alongside the other DB URLs.)
   MCP_RESOURCE_URL: https://mcp.sparx.works/v1
   MCP_AUTH_SERVER_URL: https://app.sparx.works
+  # Storefront MCP (docs/113) — the shopper-facing MCP plane (mcp-storefront).
+  # Its canonical public origin, used only to build discovery URLs. The service
+  # otherwise reads SPARX_API_REST_URL (below) to reach the public REST API.
+  STOREFRONT_MCP_PUBLIC_ORIGIN: https://mcp.sparx.zone
+  # Customer (Layer 2 shopper) Better Auth instance — runs INSIDE api-rest
+  # (docs/27 v2). CUSTOMER_AUTH_URL is api-rest's PUBLIC https origin: Better Auth
+  # builds absolute URLs from it and (crucially) derives the cookie Secure prefix
+  # from its protocol, so it MUST be https in prod. The matching CUSTOMER_AUTH_SECRET
+  # (distinct from BETTER_AUTH_SECRET) lives in sparx-app-secrets. NOT a secret.
+  CUSTOMER_AUTH_URL: https://api.sparx.works
+  CUSTOMER_MCP_LOGIN_PAGE: /account/login
   NEXT_PUBLIC_APP_URL: https://app.sparx.works
   NEXT_PUBLIC_API_URL: https://api.sparx.works
   NEXT_PUBLIC_MARKETING_URL: https://sparx.works

@@ -44,6 +44,11 @@ const PLATFORM_HOSTNAMES = new Set<string>([
   // `domains` table in Phase 2)
   'sparx.zone',
   'www.sparx.zone',
+  // mcp.sparx.zone — the canonical shopper-facing storefront-MCP host (docs/113).
+  // A reserved slug, so no tenant owns it; resolveSiteByHost can't authorize it,
+  // so it must be a static platform host or on-demand TLS would 403 it. Caddy
+  // routes it to the mcp-storefront service (site named via the /s/<tenant> path).
+  'mcp.sparx.zone',
   // sparx.email — apex + Postal infra hostnames. `postal.sparx.email`
   // is the admin UI (Caddy → postal-web ClusterIP). `mail.sparx.email`
   // is the SMTP banner hostname Postal advertises; Caddy doesn't

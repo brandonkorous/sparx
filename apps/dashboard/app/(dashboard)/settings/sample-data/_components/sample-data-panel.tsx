@@ -37,6 +37,7 @@ const COUNT_LABELS: [keyof SampleDataCounts, string, string][] = [
   ['bookings', 'booking', 'bookings'],
   ['quotes', 'quote', 'quotes'],
   ['deals', 'deal', 'deals'],
+  ['billingDocuments', 'invoice', 'invoices'],
   ['bundles', 'bundle', 'bundles'],
   ['articles', 'article', 'articles'],
   ['images', 'image', 'images'],

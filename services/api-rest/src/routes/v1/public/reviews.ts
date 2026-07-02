@@ -13,12 +13,12 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 
 import { reviewService } from '@sparx/commerce';
-import { verifyCustomerSession, SESSION_COOKIE_NAME } from '@sparx/customer-auth';
 import { withTenant } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
 import { badRequest, notFound } from '@sparx/api-core/errors';
 
 import { publicCommerceContext } from '../../../lib/public-commerce-context.js';
+import { optionalCustomer } from '../../../lib/customer-session.js';
 
 const HandleParam = z.object({ handle: z.string().min(1).max(255) });
 
@@ -170,14 +170,9 @@ const publicReviewRoutes: FastifyPluginAsync = async (app) => {
     );
     if (!product) throw notFound('Product', handle);
 
-    // Attribute to the signed-in customer when a valid session cookie is
-    // present; otherwise it's a guest question (optional display name).
-    let customerId: string | undefined;
-    const token = request.cookies[SESSION_COOKIE_NAME];
-    if (token) {
-      const session = await verifyCustomerSession({ tenantId }, token);
-      if (session) customerId = session.customerId;
-    }
+    // Attribute to the signed-in customer when a valid session is present;
+    // otherwise it's a guest question (optional display name). docs/27 v2.
+    const customerId = (await optionalCustomer(request, ctx))?.customerId;
 
     try {
       const result = await reviewService.submitQuestion(ctx, {

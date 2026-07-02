@@ -62,9 +62,10 @@ export async function summarizeSampleDataOnTx(
       where: { tenantId, originalFilename: { startsWith: SAMPLE_MEDIA_FILENAME_PREFIX } },
     }),
   ]);
-  const [aiPrompts, toolCalls] = await Promise.all([
+  const [aiPrompts, toolCalls, billingDocuments] = await Promise.all([
     tx.aiPromptTemplate.count({ where: { tenantId, metadata: sampleMeta } }),
     tx.auditLog.count({ where: { tenantId, entityType: 'McpToolCall', diff: sampleMeta } }),
+    tx.billingDocument.count({ where: { tenantId, metadata: sampleMeta } }),
   ]);
   const orders = orderIds.length;
 
@@ -81,6 +82,7 @@ export async function summarizeSampleDataOnTx(
     bookings,
     quotes,
     deals,
+    billingDocuments,
     bundles,
     movements,
     images,
@@ -104,6 +106,7 @@ export function countsTotal(c: SampleDataCounts): number {
     c.bookings +
     c.quotes +
     c.deals +
+    c.billingDocuments +
     c.bundles +
     c.movements +
     c.images +
