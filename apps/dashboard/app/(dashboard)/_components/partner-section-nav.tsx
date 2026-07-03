@@ -14,9 +14,14 @@ import { PARTNER_NAV } from '../partner/nav';
 // §B.7), so the caller wraps in ModuleProvider "partner" — the active row glyph +
 // tint go violet, exactly like a module's sections.
 //
-// `isPartner` gates the member-only sections (referrals, commissions, profile,
-// bootcamps): a prospective partner sees only Overview, Tier, and Resources — the
-// entries that make sense before joining — and unlocks the rest on join.
+// Two independent gates (docs/114 §B.7):
+//   • `isPartner` (tenant-level) gates the member-only sections — a prospective
+//     partner sees only Overview, Tier, and Resources (the pre-join entries) and
+//     unlocks the rest once the org joins.
+//   • `canOperatePartner` (user-level: owner/admin/partner) gates who may operate
+//     the practice at all. A member of a partner org who lacks the role sees ONLY
+//     the Overview entry (which renders the "ask an owner/admin" locked state) —
+//     never referrals/commissions/etc. they can't act on.
 
 function isWithin(pathname: string | null, href: string): boolean {
   if (!pathname) return false;
@@ -26,13 +31,21 @@ function isWithin(pathname: string | null, href: string): boolean {
 export function PartnerSectionItems({
   pathname,
   isPartner,
+  canOperatePartner,
 }: {
   pathname: string | null;
   isPartner: boolean;
+  canOperatePartner: boolean;
 }) {
   // Inside a collapsed contextual panel the rows render icon-only (tooltipped).
   const collapsed = usePanelCollapsed();
-  const items = PARTNER_NAV.filter((item) => isPartner || !item.memberOnly);
+  const items = PARTNER_NAV.filter((item) => {
+    // A member of a partner org who can't operate it gets Overview only.
+    if (isPartner && !canOperatePartner) return false;
+    // Practice sections need the tenant to have joined; Tier/Resources are the
+    // always-available funnel entries.
+    return item.memberOnly ? isPartner : true;
+  });
   return (
     <>
       <SidebarItem

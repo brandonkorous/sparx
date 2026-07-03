@@ -19,6 +19,7 @@ import {
 import { api } from '@/lib/api-rest-client';
 
 import { OverviewCard } from '../../_components/overview-bits';
+import { getPartnerAccess } from '../_lib/access';
 import type { PartnerProfile } from '../_lib/types';
 import { TIER_ORDER, TIERS, nextTier } from '../_lib/tiers';
 import { TierApply } from './_components/tier-apply';
@@ -30,7 +31,10 @@ import { TierApply } from './_components/tier-apply';
 export const dynamic = 'force-dynamic';
 
 export default async function PartnerTierPage() {
-  const profile = await api.get<PartnerProfile | null>('/v1/partner/profile').catch(() => null);
+  const [{ canOperate }, profile] = await Promise.all([
+    getPartnerAccess(),
+    api.get<PartnerProfile | null>('/v1/partner/profile').catch(() => null),
+  ]);
   const currentTier = profile?.tier ?? null;
   const upcoming = currentTier ? nextTier(currentTier) : null;
 
@@ -105,7 +109,13 @@ export default async function PartnerTierPage() {
                   <Text size="sm" variant="muted">
                     {TIERS[upcoming].howToReach}
                   </Text>
-                  <TierApply requestedTier={upcoming} />
+                  {canOperate ? (
+                    <TierApply requestedTier={upcoming} />
+                  ) : (
+                    <Text size="sm" variant="muted">
+                      Ask an owner or admin to apply for the next tier.
+                    </Text>
+                  )}
                 </Stack>
               </OverviewCard>
             ) : (

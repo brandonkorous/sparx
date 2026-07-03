@@ -1,7 +1,7 @@
 // Internal-trust JWT + `sk_live_*` API-key verification.
 //
 // Token shape (JWT, issued by the dashboard for a logged-in user):
-//   { sub: <user_id>, tid: <tenant_id>, role: 'owner'|'admin'|'editor'|'viewer',
+//   { sub: <user_id>, tid: <tenant_id>, role: <one of the org roles, StaffRole>,
 //     ev: <email-verified bool>, iat, exp }
 //   `ev` carries the Better Auth `emailVerified` flag so request handlers can
 //   gate on it WITHOUT a DB read — the `users` table's RLS hides the row from
@@ -38,7 +38,23 @@ import { unauthorized, forbidden } from './errors.js';
 const API_KEY_PUBLIC_PREFIX = 'sk_live_';
 const API_KEY_PREFIX_LEN = API_KEY_PUBLIC_PREFIX.length + 8;
 
-export type StaffRole = 'owner' | 'admin' | 'editor' | 'viewer';
+// The org-role vocabulary, hand-mirrored from @sparx/auth `ORG_ROLES` (kept in
+// sync by hand — api-core stays fastify-only and must not import the Next/React
+// graph @sparx/auth pulls in, same reason the api-key logic is inlined below).
+// `owner|admin|editor|viewer` are the RANKED tier the coarse `requireRole`
+// hierarchy understands; `builder|marketing|support|partner` are LATERAL
+// capability roles — they floor to read-only in that hierarchy and earn their
+// real powers from explicit `requireAnyRole` allow-lists on the routes that own
+// them (e.g. `partner` → `/v1/partner/*`, docs/114 §B.7).
+export type StaffRole =
+  | 'owner'
+  | 'admin'
+  | 'editor'
+  | 'builder'
+  | 'marketing'
+  | 'support'
+  | 'partner'
+  | 'viewer';
 export type ActorType = 'user' | 'api';
 
 export interface AuthContext {
@@ -176,7 +192,14 @@ export function requireAuth(request: FastifyRequest): AuthContext {
   return request.auth;
 }
 
-const ROLE_ORDER: Record<StaffRole, number> = {
+// The ranked hierarchy the coarse `requireRole(min)` gate understands. LATERAL
+// roles (builder/marketing/support/partner) are intentionally absent: they map to
+// the read-only floor (rank 0) via the `?? 0` below, so a lateral role can never
+// satisfy an editor/admin/owner gate by accident. (Historically an unranked role
+// hit `undefined < n` === false and passed EVERY gate — a silent privilege
+// escalation this floor closes.) Lateral roles get their real powers from the
+// explicit `requireAnyRole` allow-lists on the routes that own them.
+const ROLE_ORDER: Record<string, number> = {
   viewer: 0,
   editor: 1,
   admin: 2,
@@ -185,8 +208,26 @@ const ROLE_ORDER: Record<StaffRole, number> = {
 
 export function requireRole(request: FastifyRequest, min: StaffRole): AuthContext {
   const auth = requireAuth(request);
-  if (ROLE_ORDER[auth.role] < ROLE_ORDER[min]) {
+  if ((ROLE_ORDER[auth.role] ?? 0) < (ROLE_ORDER[min] ?? 0)) {
     throw forbidden(`Requires ${min} role or higher.`);
+  }
+  return auth;
+}
+
+/**
+ * Explicit capability gate: the actor's role must be one of `allowed`. Unlike
+ * `requireRole` (a ranked minimum), this is set-membership — the right tool for
+ * LATERAL roles that don't fit the owner > admin > editor > viewer ladder. The
+ * Partner Portal uses it to admit exactly {owner, admin, partner} to practice
+ * operations (docs/114 §B.7) while denying editor/viewer/builder/marketing/support.
+ */
+export function requireAnyRole(
+  request: FastifyRequest,
+  allowed: readonly StaffRole[]
+): AuthContext {
+  const auth = requireAuth(request);
+  if (!allowed.includes(auth.role)) {
+    throw forbidden(`Requires one of these roles: ${allowed.join(', ')}.`);
   }
   return auth;
 }

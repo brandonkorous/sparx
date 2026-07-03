@@ -45,6 +45,22 @@ function firstPaymentRate(tier: string): number {
   return tier === 'informal' ? 0.2 : 0.3;
 }
 
+// Resolve display names for a set of referred/managed org (tenant) ids. The
+// referral + membership rows live in the PARTNER's scope, but the referred orgs'
+// names live in THOSE orgs' rows — invisible to the partner under normal RLS. A
+// partner is legitimately authorized to know who its own clients are (docs/114
+// §B.7), so this reads the names via `withSystem` (RLS-escaped, platform scope),
+// resolving live rather than snapshotting so a client rename is always reflected.
+// Returns id → org name; ids with no tenant row are omitted (caller falls back).
+async function resolveOrgNames(tenantIds: string[]): Promise<Map<string, string>> {
+  const unique = [...new Set(tenantIds)];
+  if (unique.length === 0) return new Map();
+  const rows = await withSystem((tx) =>
+    tx.tenant.findMany({ where: { id: { in: unique } }, select: { id: true, name: true } })
+  );
+  return new Map(rows.map((r) => [r.id, r.name]));
+}
+
 // A URL-safe referral code — short, unambiguous (no 0/O/1/l), minted on activation.
 function mintReferralCode(): string {
   const alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
@@ -144,13 +160,17 @@ export const partnerService = {
     return { ok: true, status: 'pending' as const };
   },
 
-  listReferrals(ctx: PartnerContext) {
-    return run(ctx, (tx) =>
+  /** The referral ledger, each row enriched with the referred org's live name so
+   *  the partner sees WHO signed up, not an opaque uuid (docs/114 §B.7). */
+  async listReferrals(ctx: PartnerContext) {
+    const rows = await run(ctx, (tx) =>
       tx.partnerReferral.findMany({
         where: { tenantId: ctx.tenantId },
         orderBy: { createdAt: 'desc' },
       })
     );
+    const names = await resolveOrgNames(rows.map((r) => r.referredTenantId));
+    return rows.map((r) => ({ ...r, referredOrgName: names.get(r.referredTenantId) ?? null }));
   },
 
   listCommissions(ctx: PartnerContext) {

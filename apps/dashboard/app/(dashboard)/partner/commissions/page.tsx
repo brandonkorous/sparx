@@ -15,6 +15,8 @@ import { api } from '@/lib/api-rest-client';
 
 import { OverviewCard, fmtMoneyCents } from '../../_components/overview-bits';
 import { PartnerLocked } from '../_components/partner-locked';
+import { PartnerAccessLocked } from '../_components/partner-access-locked';
+import { getPartnerAccess } from '../_lib/access';
 import type { PartnerCommission, PartnerPayoutRun, PartnerProfile } from '../_lib/types';
 import { CommissionsList } from './_components/commissions-list';
 import { PayoutSetup } from './_components/payout-setup';
@@ -34,6 +36,8 @@ function sumBy(rows: PartnerCommission[], statuses: string[]): number {
 export default async function PartnerCommissionsPage() {
   const profile = await api.get<PartnerProfile | null>('/v1/partner/profile').catch(() => null);
   if (!profile) return <PartnerLocked section="Commissions" />;
+  const { canOperate } = await getPartnerAccess();
+  if (!canOperate) return <PartnerAccessLocked section="Commissions" />;
 
   const [commissions, payouts] = await Promise.all([
     api.get<PartnerCommission[]>('/v1/partner/commissions').catch(() => [] as PartnerCommission[]),

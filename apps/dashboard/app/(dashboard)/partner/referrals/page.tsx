@@ -6,6 +6,8 @@ import { api } from '@/lib/api-rest-client';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { getUserPreferences } from '../../_shell/preferences';
 import { PartnerLocked } from '../_components/partner-locked';
+import { PartnerAccessLocked } from '../_components/partner-access-locked';
+import { getPartnerAccess } from '../_lib/access';
 import type { PartnerProfile, ReferralsResponse } from '../_lib/types';
 import { ReferralLinkCard } from './_components/referral-link';
 import { ReferralsList } from './_components/referrals-list';
@@ -23,6 +25,8 @@ interface PageProps {
 export default async function PartnerReferralsPage({ searchParams }: PageProps) {
   const profile = await api.get<PartnerProfile | null>('/v1/partner/profile').catch(() => null);
   if (!profile) return <PartnerLocked section="Referrals" />;
+  const { canOperate } = await getPartnerAccess();
+  if (!canOperate) return <PartnerAccessLocked section="Referrals" />;
 
   const params = await searchParams;
   const [prefs, data] = await Promise.all([

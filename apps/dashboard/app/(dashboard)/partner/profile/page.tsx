@@ -2,6 +2,8 @@ import { api } from '@/lib/api-rest-client';
 
 import { UnsavedGuardProvider } from '../../_components/unsaved-guard';
 import { PartnerLocked } from '../_components/partner-locked';
+import { PartnerAccessLocked } from '../_components/partner-access-locked';
+import { getPartnerAccess } from '../_lib/access';
 import type { PartnerProfile } from '../_lib/types';
 import { PartnerProfileEditForm } from './_components/profile-edit-form';
 
@@ -15,6 +17,8 @@ export const dynamic = 'force-dynamic';
 export default async function PartnerProfilePage() {
   const profile = await api.get<PartnerProfile | null>('/v1/partner/profile').catch(() => null);
   if (!profile) return <PartnerLocked section="Profile" />;
+  const { canOperate } = await getPartnerAccess();
+  if (!canOperate) return <PartnerAccessLocked section="Profile" />;
 
   return (
     <UnsavedGuardProvider>

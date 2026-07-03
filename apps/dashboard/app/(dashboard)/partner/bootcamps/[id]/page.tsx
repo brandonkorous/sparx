@@ -4,6 +4,8 @@ import { api, type ApiRestError } from '@/lib/api-rest-client';
 
 import { UnsavedGuardProvider } from '../../../_components/unsaved-guard';
 import { PartnerLocked } from '../../_components/partner-locked';
+import { PartnerAccessLocked } from '../../_components/partner-access-locked';
+import { getPartnerAccess } from '../../_lib/access';
 import type { Bootcamp, PartnerProfile } from '../../_lib/types';
 import { BootcampForm } from '../_components/bootcamp-form';
 
@@ -21,6 +23,8 @@ export default async function BootcampDetailPage({ params }: PageProps) {
   const { id } = await params;
   const profile = await api.get<PartnerProfile | null>('/v1/partner/profile').catch(() => null);
   if (!profile) return <PartnerLocked section="Bootcamps" />;
+  const { canOperate } = await getPartnerAccess();
+  if (!canOperate) return <PartnerAccessLocked section="Bootcamps" />;
 
   let bootcamp: Bootcamp;
   try {

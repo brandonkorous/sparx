@@ -59,6 +59,9 @@ export interface PartnerOverview {
 export interface PartnerReferral {
   id: string;
   referredTenantId: string;
+  /** The referred org's live display name, resolved server-side (docs/114 §B.7).
+   *  Null only when the org row can't be resolved — the UI falls back to a short id. */
+  referredOrgName: string | null;
   referralCode: string;
   signupAt: string;
   firstPaymentAt: string | null;
@@ -72,6 +75,27 @@ export interface PartnerReferral {
 export interface ReferralsResponse {
   referralCode: string;
   referrals: PartnerReferral[];
+}
+
+/** A partner's client — the union of referral attribution and consultant access
+ *  (docs/114 §B.7). At least one of `referred` / `managed` is always true. Built
+ *  in the dashboard by joining the referral ledger (partner-scoped) with the
+ *  operator's own consultant memberships (auth-layer, per-user). */
+export interface PartnerClient {
+  orgId: string;
+  name: string;
+  /** This org signed up under the partner's referral link. */
+  referred: boolean;
+  /** The current operator holds consultant access to this org (can enter it). */
+  managed: boolean;
+  /** Present when referred — the referral's lifecycle. */
+  referralStatus: ReferralStatus | null;
+  /** Present when referred — when the referred org first paid (drives commission). */
+  firstPaymentAt: string | null;
+  /** Present when referred — one_time | ongoing (ongoing = managed 5%). */
+  commissionType: CommissionType | null;
+  /** Present when managed — the org slug, for the "Enter" workspace switch. */
+  slug: string | null;
 }
 
 /** One accrued commission (`GET /v1/partner/commissions`). */

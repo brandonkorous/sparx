@@ -42,16 +42,26 @@ function paramsFromForm(fd: FormData): AuthorizeParams {
   });
 }
 
-/** 303 See Other back to a path on this origin (turns the POST into a GET). */
-function seeOther(request: NextRequest, path: string): NextResponse {
-  return NextResponse.redirect(new URL(path, request.nextUrl.origin), 303);
+/** Canonical public origin of the dashboard. MUST come from the configured
+ *  BETTER_AUTH_URL (the same value Better Auth uses as its baseURL), NEVER from
+ *  the request: behind the GKE/Caddy proxy `request.nextUrl.origin` resolves to
+ *  the internal bind address (`0.0.0.0:3000`), so a request-derived redirect
+ *  strands the browser on an unreachable host mid-authorization. A configured
+ *  origin is also immune to the host-header injection that deriving it from an
+ *  `x-forwarded-host` would invite. */
+function appOrigin(): string {
+  return (process.env.BETTER_AUTH_URL ?? 'http://localhost:3001').replace(/\/$/, '');
+}
+
+/** 303 See Other to a path on this origin (turns the POST into a GET). */
+function seeOther(path: string): NextResponse {
+  return NextResponse.redirect(new URL(path, appOrigin()), 303);
 }
 
 /** Approved: cap the selected scopes to the user's role, mint a signed,
  *  session-bound consent grant, and hand off to Better Auth's /mcp/authorize
  *  (its `before` guard only mints a code WITH this grant). */
 function approve(
-  request: NextRequest,
   fd: FormData,
   params: AuthorizeParams,
   userId: string,
@@ -80,7 +90,7 @@ function approve(
   q.set('code_challenge_method', 'S256');
   if (params.nonce) q.set('nonce', params.nonce);
   q.set('sparx_grant', grant);
-  return seeOther(request, `/api/auth/mcp/authorize?${q.toString()}`);
+  return seeOther(`/api/auth/mcp/authorize?${q.toString()}`);
 }
 
 /** Denied: return to the (already-validated) client redirect URI with the
@@ -100,22 +110,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const session = await getSession();
   if (!session) {
     // Preserve the full authorize request across sign-in.
-    return seeOther(
-      request,
-      `/sign-in?callbackURL=${encodeURIComponent(consentReturnPath(params))}`
-    );
+    return seeOther(`/sign-in?callbackURL=${encodeURIComponent(consentReturnPath(params))}`);
   }
 
   const validation = await validateAuthorizeRequest(params);
   if (!validation.ok) {
     // Never redirect to an unvalidated redirect_uri — bounce back to consent.
-    return seeOther(
-      request,
-      `${consentReturnPath(params)}&error=${encodeURIComponent(validation.error)}`
-    );
+    return seeOther(`${consentReturnPath(params)}&error=${encodeURIComponent(validation.error)}`);
   }
 
   return str(fd.get('decision')) === 'deny'
     ? deny(params)
-    : approve(request, fd, params, session.user.id, session.user.role as StaffRole);
+    : approve(fd, params, session.user.id, session.user.role as StaffRole);
 }

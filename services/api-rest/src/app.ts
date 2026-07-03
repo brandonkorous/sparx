@@ -117,6 +117,7 @@ import publicPartnerRoutes from './routes/v1/public/partners.js';
 import publicBootcampRoutes from './routes/v1/public/bootcamps.js';
 import partnerRoutes from './routes/v1/partner/index.js';
 import partnerBootcampRoutes from './routes/v1/partner/bootcamps.js';
+import tenantPartnerRoutes from './routes/v1/tenant-partner.js';
 import publicRedirectRoutes from './routes/v1/public/redirects.js';
 import publicB2bPortalRoutes from './routes/v1/public/b2b-portal.js';
 import publicB2bSchedulingRoutes from './routes/v1/public/b2b-scheduling.js';
@@ -819,6 +820,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(publicBootcampRoutes);
   await app.register(partnerRoutes);
   await app.register(partnerBootcampRoutes);
+  await app.register(tenantPartnerRoutes);
   await app.register(publicChatRoutes);
   await app.register(publicRedirectRoutes);
   await app.register(emailWebhookRoutes);

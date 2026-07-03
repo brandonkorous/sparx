@@ -27,6 +27,9 @@ interface ContextualPanelProps {
   tenantName: string;
   /** Whether the tenant has a `partners` row — gates the member-only sections. */
   isPartner: boolean;
+  /** Whether the current user may operate the partner practice (owner/admin/
+   *  partner). A non-operator sees only the Overview (locked) entry. */
+  canOperatePartner: boolean;
 }
 
 export type PanelContext =
@@ -111,6 +114,7 @@ export function ContextualPanel({
   enabledModules,
   tenantName,
   isPartner,
+  canOperatePartner,
 }: ContextualPanelProps) {
   const ctx = resolvePanelContext(pathname, enabledModules);
   const collapsed = usePanelCollapsed();
@@ -176,7 +180,11 @@ export function ContextualPanel({
             label="Partner"
             className={collapsed ? 'items-center gap-0.5 px-1.5 pb-3' : 'gap-0.5 px-2 pb-3'}
           >
-            <PartnerSectionItems pathname={pathname} isPartner={isPartner} />
+            <PartnerSectionItems
+              pathname={pathname}
+              isPartner={isPartner}
+              canOperatePartner={canOperatePartner}
+            />
           </SidebarNav>
         </div>
       </ModuleProvider>

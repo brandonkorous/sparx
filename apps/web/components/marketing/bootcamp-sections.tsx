@@ -33,7 +33,7 @@ export function BootcampHero() {
       }}
     >
       <Container style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-        <div style={{ maxWidth: '24ch' }}>
+        <div style={{ maxWidth: '760px' }}>
           <Display as="h1" size={88} lineHeight={86}>
             Build your business.
             <br />

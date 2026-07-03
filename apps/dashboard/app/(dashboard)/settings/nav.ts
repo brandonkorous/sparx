@@ -5,6 +5,7 @@ import {
   FlaskConical,
   Globe,
   GlobeLock,
+  Handshake,
   KeyRound,
   Layers,
   Plug,
@@ -47,6 +48,14 @@ export const SETTINGS_NAV: readonly SettingsNavItem[] = [
     description: 'Invite staff, assign roles, audit access.',
     icon: Users,
     href: '/settings/team',
+    ready: true,
+  },
+  {
+    id: 'partner',
+    label: 'Partner access',
+    description: 'The Sparx partner that referred this account, and who can manage it for you.',
+    icon: Handshake,
+    href: '/settings/partner',
     ready: true,
   },
   {

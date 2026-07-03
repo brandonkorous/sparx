@@ -49,6 +49,9 @@ interface MobileNavProps {
   recents: RecentRow[];
   /** Whether the tenant has a `partners` row (docs/114 §B.7). */
   isPartner: boolean;
+  /** Whether the current user may operate the partner practice (owner/admin/
+   *  partner) — hides the practice sections from members who can't act on them. */
+  canOperatePartner: boolean;
 }
 
 export function MobileNav({
@@ -57,6 +60,7 @@ export function MobileNav({
   favorites,
   recents,
   isPartner,
+  canOperatePartner,
 }: MobileNavProps) {
   const visible = moduleManifests.filter((m) => enabledModules.includes(m.id));
   const manifest = pathname ? getManifestForPath(pathname) : undefined;
@@ -204,7 +208,11 @@ export function MobileNav({
           <ModuleProvider module="partner">
             <SidebarSection>
               <SidebarSectionLabel>Partner</SidebarSectionLabel>
-              <PartnerSectionItems pathname={pathname} isPartner={isPartner} />
+              <PartnerSectionItems
+                pathname={pathname}
+                isPartner={isPartner}
+                canOperatePartner={canOperatePartner}
+              />
             </SidebarSection>
           </ModuleProvider>
         ) : (

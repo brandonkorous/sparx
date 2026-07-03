@@ -32,9 +32,11 @@ export function PartnersHero() {
       }}
     >
       <Container style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-        <div style={{ maxWidth: '15ch' }}>
+        <div style={{ maxWidth: '820px' }}>
           <Display as="h1" size={96} lineHeight={94}>
-            Build your practice on sparx
+            Build your practice
+            <br />
+            on sparx
             <Spark />
           </Display>
         </div>

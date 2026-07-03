@@ -39,6 +39,10 @@ export interface DashboardShellProps {
   /** Whether the tenant has a `partners` row (docs/114 §B.7) — drives the Partner
    *  tile tooltip + gates the portal's member-only sections. */
   isPartner: boolean;
+  /** Whether the current user's role (owner/admin/partner) may operate the partner
+   *  practice (docs/114 §B.7). The rail tile stays visible to everyone; this hides
+   *  the practice sections from members who can't act on them. */
+  canOperatePartner: boolean;
   children: React.ReactNode;
   /** Server-rendered detail body from the `@detail` slot (null when closed). */
   detail?: React.ReactNode;
@@ -56,6 +60,7 @@ export function DashboardShell({
   recents,
   preferences,
   isPartner,
+  canOperatePartner,
   children,
   detail,
 }: DashboardShellProps) {
@@ -115,6 +120,7 @@ export function DashboardShell({
                 enabledModules={enabledModules}
                 tenantName={tenantName}
                 isPartner={isPartner}
+                canOperatePartner={canOperatePartner}
               />
             ) : null
           }
@@ -125,6 +131,7 @@ export function DashboardShell({
               favorites={favorites}
               recents={recents}
               isPartner={isPartner}
+              canOperatePartner={canOperatePartner}
             />
           }
           headerStart={

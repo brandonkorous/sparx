@@ -11,6 +11,7 @@ export const ROLE_LABELS: Record<OrgRole, string> = {
   builder: 'Builder',
   marketing: 'Marketing',
   support: 'Support',
+  partner: 'Partner',
   viewer: 'Viewer',
 };
 
@@ -21,6 +22,8 @@ export const ROLE_DESCRIPTIONS: Record<OrgRole, string> = {
   builder: 'Site builder only.',
   marketing: 'Email, CMS, and analytics. No orders or customer PII.',
   support: 'Orders and customers, read-mostly.',
+  partner:
+    'Runs the Partner Program — referrals, commissions, payouts, and bootcamps. Read-only elsewhere; no team or billing access.',
   viewer: 'Read-only across active sections.',
 };
 

@@ -9,10 +9,15 @@ import { createAccessControl } from 'better-auth/plugins/access';
 // system, just the gate on the membership endpoints.
 //
 // We keep Better Auth's default resource set (organization / member / invitation)
-// so owner + admin behave like the plugin's built-in owner/admin. The five
+// so owner + admin behave like the plugin's built-in owner/admin. The six
 // operational roles carry NO membership-management permissions — they run the
-// business, not the team — so the plugin correctly denies them the invite/member
-// endpoints (and api-rest denies them too).
+// business (or, for `partner`, the Partner Program practice), not the team — so
+// the plugin correctly denies them the invite/member endpoints (and api-rest
+// denies them too). `partner` is the delegation role (docs/114 §B.7): a teammate
+// who operates referrals / commissions / payouts / bootcamps without being a full
+// admin. Its partner-practice powers are enforced by api-core's `requireAnyRole`
+// capability check on the `/v1/partner/*` routes, NOT by the coarse role hierarchy
+// (a lateral role, like builder/marketing/support, floors to read-only elsewhere).
 
 const statement = {
   organization: ['update', 'delete'],
@@ -39,6 +44,7 @@ export const roles = {
   builder: ac.newRole({ ...none }),
   marketing: ac.newRole({ ...none }),
   support: ac.newRole({ ...none }),
+  partner: ac.newRole({ ...none }),
   viewer: ac.newRole({ ...none }),
 };
 
@@ -50,6 +56,7 @@ export const ORG_ROLES = [
   'builder',
   'marketing',
   'support',
+  'partner',
   'viewer',
 ] as const;
 export type OrgRole = (typeof ORG_ROLES)[number];

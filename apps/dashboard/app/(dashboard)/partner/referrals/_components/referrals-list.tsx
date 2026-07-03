@@ -15,9 +15,15 @@ import { fmtDate, fmtRate, shortTenantRef } from '../../_lib/format';
 import type { PartnerReferral } from '../../_lib/types';
 
 // The referral ledger list (docs/114 §B.7). Read-only (`selectable={false}`), no
-// EntityRowLink (partner isn't a module) — a referred account is a bare uuid we
-// can't navigate to, so its label is plain text. Status resolves through the
-// shared statusTone so "active"/"pending"/"churned"/"forfeited" read at a glance.
+// EntityRowLink (partner isn't a module) — a referred account isn't a navigable
+// module entity, so its label is plain text. The account now shows the referred
+// org's real name (resolved server-side), falling back to a short id only when it
+// can't be resolved. Status resolves through the shared statusTone so
+// "active"/"pending"/"churned"/"forfeited" read at a glance.
+
+function accountLabel(r: PartnerReferral): string {
+  return r.referredOrgName ?? shortTenantRef(r.referredTenantId);
+}
 
 function statusBadge(r: PartnerReferral) {
   return (
@@ -40,7 +46,7 @@ export function ReferralsList({ rows, view }: { rows: PartnerReferral[]; view: '
   const columns: SelectionColumn<PartnerReferral>[] = [
     {
       header: 'Account',
-      cell: (r) => <span className="font-medium">{shortTenantRef(r.referredTenantId)}</span>,
+      cell: (r) => <span className="font-medium">{accountLabel(r)}</span>,
     },
     { header: 'Signed up', cell: (r) => fmtDate(r.signupAt) ?? '—' },
     {
@@ -61,7 +67,7 @@ export function ReferralsList({ rows, view }: { rows: PartnerReferral[]; view: '
   const card: SelectionCard<PartnerReferral> = {
     title: (r) => (
       <Text size="sm" className="font-medium">
-        {shortTenantRef(r.referredTenantId)}
+        {accountLabel(r)}
       </Text>
     ),
     subtitle: (r) => (
@@ -89,7 +95,7 @@ export function ReferralsList({ rows, view }: { rows: PartnerReferral[]; view: '
       getId={(r) => r.id}
       selectable={false}
       entityLabelPlural="referrals"
-      getRowLabel={(r) => shortTenantRef(r.referredTenantId)}
+      getRowLabel={(r) => accountLabel(r)}
       columns={columns}
       card={card}
     />

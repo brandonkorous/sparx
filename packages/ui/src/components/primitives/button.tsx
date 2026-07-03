@@ -23,6 +23,12 @@ const buttonVariants = cva(
   [
     'inline-flex items-center justify-center',
     'rounded-md font-medium',
+    // Tailwind v4's Preflight no longer sets `cursor: pointer` on <button>, so a
+    // bare <button> (unlike an asChild <a>, which the browser gives a pointer)
+    // would render the default arrow — reading as "dead" and inconsistent with
+    // link-buttons. Restore it here so every Button feels clickable; the
+    // `disabled:pointer-events-none` below already suppresses it when disabled.
+    'cursor-pointer',
     'transition-[color,background-color,border-color,filter] duration-150',
     'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:ring-offset-2 focus-visible:outline-none',
     'disabled:pointer-events-none disabled:opacity-40',

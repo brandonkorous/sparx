@@ -162,7 +162,7 @@ export default async function BootcampDetailPage({
           >
             {FORMAT_LABEL[b.format]}
           </span>
-          <div style={{ maxWidth: '20ch' }}>
+          <div style={{ maxWidth: '760px' }}>
             <Display as="h1" size={64} lineHeight={64}>
               {b.title}
               <Spark color={PRIMARY} />

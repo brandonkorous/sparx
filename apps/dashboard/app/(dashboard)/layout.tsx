@@ -8,6 +8,7 @@ import { EmailVerificationBanner } from './_components/email-verification-banner
 import { getUserPreferences } from './_shell/preferences';
 import { DEFAULT_PREFERENCES } from './_shell/preferences-types';
 import { listFavorites, listRecents } from './_shell/service';
+import { canOperatePartner } from './partner/_lib/access';
 
 // Server-side session gate. requireSession() redirects to /sign-in when there
 // is no session, so by the time we hit the shell we have a known user +
@@ -94,6 +95,7 @@ export default async function DashboardLayout({
       recents={recents}
       preferences={preferences}
       isPartner={partner !== null}
+      canOperatePartner={canOperatePartner(user.role)}
       detail={detail}
     >
       {!user.emailVerified && <EmailVerificationBanner email={user.email} />}

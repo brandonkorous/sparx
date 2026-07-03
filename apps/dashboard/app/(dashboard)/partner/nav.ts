@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Award, BookOpen, Coins, GraduationCap, Share2, UserRound } from 'lucide-react';
+import { Award, BookOpen, Building2, Coins, GraduationCap, Share2, UserRound } from 'lucide-react';
 
 // The Partner Portal surface, in one place (docs/114 §B.7). The Partner Portal is
 // a first-class platform AREA — a peer of Finance/Settings, NOT a module (no
@@ -31,6 +31,14 @@ export const PARTNER_NAV: readonly PartnerNavItem[] = [
     description: 'Your referral link and the accounts that signed up under it.',
     icon: Share2,
     href: '/partner/referrals',
+    memberOnly: true,
+  },
+  {
+    id: 'clients',
+    label: 'Clients',
+    description: 'Accounts you referred or actively manage as a consultant.',
+    icon: Building2,
+    href: '/partner/clients',
     memberOnly: true,
   },
   {
