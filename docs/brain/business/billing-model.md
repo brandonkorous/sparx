@@ -18,4 +18,4 @@ A tenant **pays only for what they use.** Modules activate independently; there 
 
 **How to apply:** feature gating = "is this module active?", resolved from the module-flag system — see the mechanism in [[architecture]].
 
-Related: [[what-sparx-is]], [[architecture]], [[modules]]
+Related: [[what-sparx-is]], [[pricing]], [[architecture]], [[modules]]

@@ -14,12 +14,14 @@ Design is the **language**, not the library. It is the layer that got skipped on
 - **→ elements** — raw layout, type, spacing, chrome built from utilities. See [[typography]], [[flat-by-default]], [[tokens-are-truth]].
 - **→ content** — voice, microcopy, and which *composition idioms* are allowed. See [[console-is-not-marketing]], [[voice]].
 
-**Before any of it:** [[two-design-systems]]. Dashboard and storefront are two separate systems that share a token *shape*. Conflating them is the #1 latent error.
+**Before any of it:** [[two-design-systems]]. Dashboard and site are two separate systems that share a token *shape*. Conflating them is the #1 latent error.
+
+**Need an exact value** (a hue, a size, a radius)? → [[dashboard-tokens]] — the full palette, type scale, spacing, radii, and module hues, **materialized** from `tokens.css` so you don't have to open the code to build on-system.
 
 ## Sources of truth
 
 - Dashboard values → `packages/ui/src/tokens.css`. Dashboard language → `apps/dashboard/DESIGN.md`.
-- Storefront tokens → `docs/33-token-model-v2.md`. Storefront compile → `packages/surface-compile/src/theme.ts`.
+- Site tokens → `docs/33-token-model-v2.md`. Site compile → `packages/surface-compile/src/theme.ts`.
 - Component contract → `docs/23-frontend-component-architecture.md`. Variant API → `docs/35-ui-variant-system.md`.
 - Brand + voice → `docs/sparx-brand-guide.md`.
 

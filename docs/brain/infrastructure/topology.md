@@ -18,6 +18,6 @@ sources:
 - **Postal** (`k8s/postal/`): full manifests but **decommissioned** (email is Mailgun — [[mailgun]]).
 - **~14 CronJobs** (`k8s/cronjobs/`): reservation-reaper, revenue/valuation rollups, segment recompute, partition rollover, settlement, search-console sync, …
 - **Cloud SQL** Postgres 18 (`db-g1-small`, ZONAL, **private-IP only**, deletion-protected). **Pub/Sub** ~60 topics. **GCS** private-media + public-variants buckets.
-- **DNS is Cloudflare** ([[integrations]]) — `sparx.works` proxied (CDN/WAF), `sparx.zone` DNS-only (tenant storefronts). Not GoDaddy, not Mailgun.
+- **DNS is Cloudflare** ([[integrations]]) — `sparx.works` proxied (CDN/WAF), `sparx.zone` DNS-only (tenant sites). Not GoDaddy, not Mailgun.
 
 Related: [[deploy-workflows]], [[phased-infra]], [[terraform]]

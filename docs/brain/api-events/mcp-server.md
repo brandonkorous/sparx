@@ -13,7 +13,7 @@ sources:
 - **Stateless per request:** each HTTP request authenticates, builds a fresh `McpServer` closing over `{ tenantId, userId }`, registers every enabled tool (skipping per-tenant-disabled via `tool-policy.ts`), dispatches once. Dispatch enforces **scope** → **module gate** (`MODULE_BY_SCOPE`) → Zod parse → run → audit.
 - `confirmation: true` tools emit `destructiveHint`; write scopes drive rate limiting.
 - **Auth:** Better Auth `mcp` OAuth (see [[better-auth]]) OR the custom `sk_live_*` API keys.
-- `services/mcp-site` is the separate **storefront-facing** MCP.
+- `services/mcp-site` is the separate **site-facing** MCP.
 
 **How to apply:** add a tool in `packages/<mod>/src/mcp/{read,write}-tools.ts` with a Zod schema + scope; it aggregates into the registry automatically.
 

@@ -14,6 +14,7 @@ Postmortems. Each note is *what drifted, why, and the rule it produced* — the 
 - [[spec-drifted-from-token]] — `DESIGN.md` said 15px, the token said 16px. Produced the "index, don't duplicate" directive.
 - [[three-registries-silent-break]] — a create flow that typechecks green but ships a broken "New" button. Produced "verify behavior, not just types."
 - [[claude-md-drifted]] — the always-loaded root `CLAUDE.md` drifted from the code (repo-status, email provider, event names, auth primitives). Grounding the brain caught it.
+- [[terminology-drift]] — "storefront" keeps resurfacing for the site system despite the 2026-06-13 rename; pinned a glossary + banner to suppress it.
 
 ## How to add a lesson
 

@@ -12,7 +12,7 @@ status: active
 
 Almost every UI mistake starts by conflating them. Every design/component note declares which one it governs (`applies-to`).
 
-| | Dashboard / admin | Storefront / tenant site |
+| | Dashboard / admin | Site (tenant sites) |
 |---|---|---|
 | Tokens | `--color-*` / `--module-*` / `--sparx-*` | `--st-*` |
 | Role classes | `.sx-c-*` | `.st-c-*` |
@@ -20,7 +20,9 @@ Almost every UI mistake starts by conflating them. Every design/component note d
 | Compiled by | imported once per app | `packages/surface-compile` per tenant |
 | Themeable | no (house system) | yes (per-tenant brand) |
 
-**Sources of truth:** dashboard → `packages/ui/src/tokens.css` + `apps/dashboard/DESIGN.md`. Storefront → `docs/33-token-model-v2.md` + `packages/surface-compile/src/theme.ts`.
+**Sources of truth:** dashboard → `packages/ui/src/tokens.css` + `apps/dashboard/DESIGN.md`. Site → `docs/33-token-model-v2.md` + `packages/surface-compile/src/theme.ts`.
+
+> The tenant-facing system is a **site** — never a "storefront" (retired 2026-06-13, kept only as a commerce sales-channel). Glossary: [[terminology]].
 
 ## Nodes
 
@@ -55,13 +57,14 @@ Don't build from memory. Enter these nodes first.
 | Build/redesign a **dashboard** page or overlay | [[design]] → [[components]] → the module in [[modules]] (match its existing surfaces) |
 | Build a **create/edit form** | [[components]] (`SurfaceFrame`/`form-surface`) → [[design]] |
 | Add a feature to a **module** | [[modules]] (its PRD + existing UI) → [[architecture]] → [[data]] → [[api-events]] |
-| Touch **storefront / site-builder** UI | [[design]] (storefront branch) → [[components]] (builder catalog) |
+| Touch **site / site-builder** UI | [[design]] (site branch) → [[components]] (builder catalog) |
 | Change **schema / migrations** | [[data]] → [[infrastructure]] (pipeline) |
 | Add an **API endpoint or MCP tool** | [[api-events]] → [[architecture]] |
 | Wire up an **external service** | [[integrations]] → [[infrastructure]] |
 | Deploy / infra / cost change | [[infrastructure]] → [[conventions]] (cost discipline) |
 | Add a **program/feature** that isn't a module (like partner) | [[features]] (classify it) → [[design]] → [[components]] |
 | Understand the **why** / business context | [[business]] |
+| Need an exact **color / hue / size / radius** | [[dashboard-tokens]] — the materialized dashboard values |
 
 ## Quarantine — looks authoritative, is stale (do NOT trust)
 

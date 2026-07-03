@@ -15,13 +15,14 @@ If [[design]] is the *language*, this node is the *library and the layouts*. App
 
 ## Surfaces — forms, details, pages
 
-- [[surface-frame]] — the ONE layout language for every create/edit/detail surface.
+- [[surface-frame]] — the ONE layout language for every create/edit/detail surface (the user picks drawer/modal/full-page).
+- [[list-substrate]] — the ONE list substrate: `SelectionList` table ⇄ cards (the user picks `defaultListView`); its twin.
 - [[three-registries-footgun]] — the wiring that silently breaks "New" with a green typecheck.
 - [[page-archetypes]] — the six working-area archetypes + three content widths.
 - [[stat-is-the-metric]] — every prominent number is a `<Stat>`, never hand-typeset.
 - [[in-console-document]] — the *missing* pattern the partner pages needed (presentational content inside the console).
 
-## Storefront
+## Site
 
 - [[builder-catalog]] — the data-driven site-builder catalog (a separate design system — [[two-design-systems]]).
 

@@ -11,14 +11,24 @@ An interlinked knowledge graph (Obsidian-style) living in-repo at `docs/brain/`.
 - **Notes** are atomic: **one idea per file**. A note explains a single rule, pattern, decision, or entry, then links out.
 - **`README.md`** is the Home map — the front door and task-router. Every non-trivial task starts there.
 
-## The prime directive — index, don't duplicate
+## The prime directive — the brain IS the memory
 
-The existing docs already drifted (`docs/23`'s token table claims to "mirror `tokens.css` exactly" and no longer does). **Do not repeat that mistake here.**
+The brain is the **durable, primary store** of project knowledge — consulted first and most. It is **not** a thin index over the docs; it *contains* the knowledge.
 
-- Every note names its **source of truth** (a file, a doc section, or the code) and **links to it**.
-- Summaries are **thin** — just enough to know the rule and where to act. If you're tempted to paste a token table or a full spec, link it instead.
-- When the source changes, update the **link and one-line summary**, never fork a second authoritative copy into the brain.
-- If a note *is* the only home for a fact (a decision, an ADR, a "why we rejected X"), say so explicitly: `Source of truth: this note.`
+- **Docs are temporary.** A `docs/NN-*.md` exists to work an idea out at length. Once its durable knowledge is distilled into the brain, **the doc is absorbed and then deleted** — the brain replaces it, it does not point at it as a living source. Write every note **self-contained** (assume its origin doc will be gone), and repoint whatever referenced that doc — `CLAUDE.md`, skills, other notes — to the brain.
+- **Code is the one thing that stays.** `tokens.css`, the Prisma schema, k8s / Terraform *run*, so they persist and remain the runtime source of truth for *live values*. The brain **materializes** what you build with (values, mechanisms, gotchas) because code is referenced last — as a **mirror** (below).
+- **Substance over thinness.** A note is as full as its knowledge requires. `docs/23`'s stale token table drifted because it was an unmaintained *copy with no owner and no re-sync rule* — not because "duplication" is inherently wrong. The cure is a single **living home** per fact: the brain (for absorbed docs) or code + its mirror (for live values).
+- **`sources:`** records where a note's knowledge came from. A code source persists (and is re-synced); a doc source is temporary — its link dies when the doc is deleted, which is fine, because by then the knowledge lives here.
+
+### Mirrors of code
+
+Knowledge drawn from code that *stays* (tokens, schema, manifests) lives in the brain as a **mirror** — the values you build with every time (palette, type scale, spacing, radii, module hues, elevation) written out in full ([[dashboard-tokens]] + the [[site-tokens]] companion), because a pointer to `tokens.css` is useless if it's never opened. A mirror carries a *contract*:
+
+- The sheet is marked a **mirror** and names its source file.
+- It **must be re-synced in the same change that edits the source** (boy-scout: touch the tokens → update the mirror).
+- If the mirror and the source disagree, **the source wins** — and the mismatch is a bug to fix now. That exact drift rotted `docs/23 §4` ([[spec-drifted-from-token]]).
+
+`type: reference` sheets are also exempt from the one-idea-per-file rule — a constants table is one cohesive artifact.
 
 ## Note anatomy
 
@@ -30,7 +40,7 @@ title: <human title>
 node: <parent node slug, e.g. design>   # omit for node hubs themselves
 type: rule | pattern | decision | entry | reference | map
 status: active | draft | superseded
-applies-to: [dashboard] | [storefront] | [both] | [n/a]   # design/component notes MUST set this
+applies-to: [dashboard] | [site] | [both] | [n/a]   # design/component notes MUST set this
 sources:
   - <path or docs/NN §X — the source of truth>
 ---
@@ -43,7 +53,7 @@ sources:
 Related: [[other-note]], [[another-node]]
 ```
 
-- **`applies-to` is mandatory on anything design- or component-related.** The #1 latent error is conflating the two design systems: dashboard (`--color-*` / `@sparx/ui` / `ModuleProvider`) vs storefront (`--st-*` / `@sparx/site-ui` / `surface-compile`). A note that doesn't declare which one it governs is a trap.
+- **`applies-to` is mandatory on anything design- or component-related.** The #1 latent error is conflating the two design systems: dashboard (`--color-*` / `@sparx/ui` / `ModuleProvider`) vs site (`--st-*` / `@sparx/site-ui` / `surface-compile`). A note that doesn't declare which one it governs is a trap.
 - Link **liberally** with `[[slug]]`. A link to a note that doesn't exist yet is fine — it marks a note worth writing, not an error.
 
 ## File naming

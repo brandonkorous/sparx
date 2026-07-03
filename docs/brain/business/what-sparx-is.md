@@ -8,7 +8,7 @@ sources:
   - CLAUDE.md
 ---
 
-sparx is WizeWorks' **modular content and commerce OS** — one platform combining storefront, commerce, CRM, CMS, email, B2B/wholesale, dropship, and MCP/AI integration.
+sparx is WizeWorks' **modular content and commerce OS** — one platform combining site building, commerce, CRM, CMS, email, B2B/wholesale, dropship, and MCP/AI integration.
 
 - It serves **content, commerce, or both.** A CMS-only publisher, a CRM-only team, and a B2B distributor are each **equally first-class**. **Selling is one capability, never the assumption.**
 - Use **"tenant"** for the customer of the platform; reserve **"merchant"** for a tenant that actually sells.

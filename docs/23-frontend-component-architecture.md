@@ -1,8 +1,8 @@
 # sparx Platform — Frontend Component Architecture
 
-**Version:** 1.6.1
+**Version:** 1.6.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-29
+**Last Updated:** 2026-07-03
 
 ---
 
@@ -150,10 +150,10 @@ This file is the single source of truth. Imported once in each app's root layout
   --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
   --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
 
-  --text-xs: 0.6875rem; /* 11px */
-  --text-sm: 0.8125rem; /* 13px */
-  --text-base: 0.9375rem; /* 15px */
-  --text-lg: 1.0625rem; /* 17px */
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.875rem; /* 14px — secondary / captions */
+  --text-base: 1rem; /* 16px — body floor (never below; mirrors packages/ui/src/tokens.css) */
+  --text-lg: 1.125rem; /* 18px — long-form / reading */
   --text-xl: 1.25rem; /* 20px */
   --text-2xl: 1.5rem; /* 24px */
   --text-3xl: 1.875rem; /* 30px */

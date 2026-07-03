@@ -69,6 +69,7 @@ describe('builderMcpTools', () => {
         'get_builder_page',
         'create_builder_page',
         'update_builder_page',
+        'set_page_seo',
         'publish_builder_page',
         'delete_builder_page',
       ])
@@ -81,6 +82,8 @@ describe('builderMcpTools', () => {
     expect(byName.get('delete_builder_page')?.confirmation).toBe(true);
     expect(byName.get('create_builder_page')?.confirmation).toBe(false);
     expect(byName.get('update_builder_page')?.confirmation).toBe(false);
+    // The SEO shortcut is a non-destructive draft patch — un-gated.
+    expect(byName.get('set_page_seo')?.confirmation).toBe(false);
   });
 
   it('scopes reads to read:builder and writes to write:builder', () => {

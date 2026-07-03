@@ -57,7 +57,7 @@ typography:
     letterSpacing: 'normal'
   body:
     fontFamily: 'Geist, Inter, system-ui, sans-serif'
-    fontSize: '0.9375rem'
+    fontSize: '1rem'
     fontWeight: 400
     lineHeight: 1.5
     letterSpacing: 'normal'
@@ -258,7 +258,7 @@ disciplined two-weight range, not from contrast of families.
 - **Display** (500, 2.25rem/36px, 1.2, -0.025em): Rare — the largest page title or an empty-state headline.
 - **Headline** (500, 1.875rem/30px, 1.2, -0.025em): Page headers.
 - **Title** (500, 1.25rem/20px, 1.2): Section and card titles (`CardTitle` runs lighter at 15px/500).
-- **Body** (400, 0.9375rem/15px, 1.5): Default text and form values. Prose caps at 65–75ch; dense tables may run wider.
+- **Body** (400, 1rem/16px, 1.5): Default text and form values. Prose caps at 65–75ch; dense tables may run wider.
 - **Label** (500, 0.6875rem/11px, 0.05em): Field labels, badges, table column heads. Uppercase only when it earns it — never as a decorative eyebrow.
 
 ### Named Rules
@@ -317,7 +317,7 @@ that shifts toward `--c-hover`, a prominent focus ring, immediate 175ms state.
 
 ### Inputs / Fields
 
-- **Style:** `surface` bg, `1px default border`, `rounded-md`, 15px text, tertiary-gray placeholder (held to AA, not a light wash).
+- **Style:** `surface` bg, `1px default border`, `rounded-md`, 16px text, tertiary-gray placeholder (held to AA, not a light wash).
 - **Focus:** 2px `--color-border-focus` ring, no outline. **Hover** strengthens the border to `--color-border-strong`.
 - **Variants / States:** `default` · `error` (danger border + ring) · `success` (success border + ring); disabled at 50% opacity. Sizes `sm` (32px) / `md` (36px) / `lg` (40px).
 
@@ -349,7 +349,7 @@ that shifts toward `--c-hover`, a prominent focus ring, immediate 175ms state.
 - **Do** put a detail surface's status badge + lifecycle actions (Publish/Archive, Preview/Revisions/…) in the **frame header** via the `DetailHeaderSlot` teleport (docs/86 §5.1), never a bespoke in-body "Status" card. The status badge + primary action keep text; secondary actions go **icon-only with a tooltip** so the header fits one row.
 - **Do** build every control from `@sparx/ui` on the `color × variant × size` axes; let `<ModuleProvider>` drive color.
 - **Do** stay flat by default — separate resting elements with a border or the next tonal layer, not a shadow.
-- **Do** hold to Geist at two weights (400 / 500) and the fixed 15px-body rem scale.
+- **Do** hold to Geist at two weights (400 / 500) and the fixed 16px-body rem scale.
 - **Do** hit WCAG 2.1 AA: body ≥4.5:1, placeholders at 4.5:1 (no light-gray wash), a visible focus ring on every interactive element, and a `prefers-reduced-motion` fallback for every animation.
 - **Do** use dark ink (`#422006`) on amber / SEO-yellow / warning fills.
 - **Do** keep module identity legible without relying on hue alone — pair color with the label/icon for color-blind operators.

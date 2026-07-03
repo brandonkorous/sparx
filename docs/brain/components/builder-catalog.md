@@ -3,7 +3,7 @@ title: The builder catalog is data-driven
 node: components
 type: rule
 status: active
-applies-to: [storefront]
+applies-to: [site]
 sources:
   - packages/builder-schemas/src/catalog/
   - docs/98-builder-customization-rebuild.md
@@ -16,7 +16,7 @@ The site-builder's component list **is a data-driven catalog**, not hardcoded ty
 - A site layout is a **free canvas**; its only pinned (undeletable, undraggable) node is the `Outlet`.
 - Node ids must be **globally unique** (`makeId` carries a random base) — they're persisted AND used as React keys + dnd-kit sortable ids.
 
-**This is the storefront system** ([[two-design-systems]]) — `--st-*` tokens, `@sparx/site-ui`, per-tenant themeable. Do not apply dashboard (`@sparx/ui`) assumptions here.
+**This is the site system** ([[two-design-systems]]) — `--st-*` tokens, `@sparx/site-ui`, per-tenant themeable. Do not apply dashboard (`@sparx/ui`) assumptions here.
 
 **Why:** hardcoding component types would make every new component a code change; data-as-code lets the catalog grow as content.
 
