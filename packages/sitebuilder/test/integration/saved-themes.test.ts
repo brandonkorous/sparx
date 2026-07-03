@@ -12,7 +12,14 @@ import {
   themeService,
 } from '../../src/services/index.js';
 import { SitebuilderNotFoundError } from '../../src/errors.js';
-import { disposeTestContext, makeTestContext, type TestContext } from '../helpers.js';
+import {
+  addSecondaryProperty,
+  disposeTestContext,
+  makeTestContext,
+  readPropertyBrandOverride,
+  readTenantBrand,
+  type TestContext,
+} from '../helpers.js';
 
 const MISSING_ID = '00000000-0000-0000-0000-000000000000';
 
@@ -66,14 +73,24 @@ describe('sitebuilder saved themes', () => {
     expect(updated.brand?.colorPrimary).toBe('#2f7d32');
   });
 
-  it('apply — loads the saved theme into the working draft (theme + presentation), no publish', async () => {
+  it('apply — loads the saved theme into the working draft (theme + presentation + brand), no publish', async () => {
     const result = await savedThemeService.apply(test.ctx, summerId);
     expect(result).toEqual({ ok: true, themeKey: 'apex' });
 
     const config = await themeService.getConfig(test.ctx);
     expect(config.themeKey).toBe('apex');
-    const draft = config.draftSettings as { presentation?: { containerWidth?: string } };
+    const draft = config.draftSettings as {
+      presentation?: { containerWidth?: string };
+      activeSavedThemeId?: string;
+    };
     expect(draft.presentation?.containerWidth).toBe('1280px');
+    // The applied theme is pinned so the dashboard rail restores the selection.
+    expect(draft.activeSavedThemeId).toBe(summerId);
+    // Apply also lands the captured brand look — on the PRIMARY site that's the
+    // tenant BASE brand (the fix: a headless apply must colour the site, not just
+    // stage its surfaces, or the theme "doesn't apply" in the brand designer).
+    const brand = await readTenantBrand(test.tenant.tenantId);
+    expect(brand?.colorPrimary).toBe('#2f7d32');
     // Not published — apply only stages the draft.
     expect(config.publishedVersionId).toBeNull();
   });
@@ -122,5 +139,45 @@ describe('sitebuilder saved themes', () => {
     await expect(savedThemeService.remove(test.ctx, MISSING_ID)).rejects.toBeInstanceOf(
       SitebuilderNotFoundError
     );
+  });
+});
+
+describe('sitebuilder saved theme apply — brand scope (docs/49)', () => {
+  let test: TestContext;
+
+  beforeAll(async () => {
+    test = await makeTestContext('owner');
+  });
+
+  afterAll(async () => {
+    await disposeTestContext(test);
+  });
+
+  it('non-primary site — the theme brand lands on the site override, not the tenant base', async () => {
+    // A distinctive brand so the assertions can't pass by coincidence.
+    const theme = await savedThemeService.create(test.ctx, {
+      name: 'Sitewear',
+      basePresetKey: 'drift',
+      presentation: { containerWidth: '1100px' },
+      brand: { colorPrimary: '#123456', fontBody: 'Georgia' },
+    });
+    // The fresh tenant hasn't applied anything to its primary site, so its base
+    // brand is empty — the negative assertion below proves the non-primary apply
+    // left it that way.
+    const baseBefore = await readTenantBrand(test.tenant.tenantId);
+
+    const secondary = await addSecondaryProperty(test);
+    const result = await savedThemeService.apply(secondary.ctx, theme.id);
+    expect(result).toEqual({ ok: true, themeKey: 'drift' });
+
+    // The site's OWN override carries the theme brand (recolours only this site)…
+    const row = await readPropertyBrandOverride(test.tenant.tenantId, secondary.propertyId);
+    const override = row?.brandOverride as { colorPrimary?: string; fontBody?: string } | null;
+    expect(override?.colorPrimary).toBe('#123456');
+    expect(override?.fontBody).toBe('Georgia');
+
+    // …and the tenant BASE brand is untouched, so sibling sites don't recolour.
+    const baseAfter = await readTenantBrand(test.tenant.tenantId);
+    expect(baseAfter?.colorPrimary ?? null).toBe(baseBefore?.colorPrimary ?? null);
   });
 });

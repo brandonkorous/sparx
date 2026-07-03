@@ -148,6 +148,50 @@ export async function applyThemeBrandWithinTx(
   });
 }
 
+// The non-primary-site counterpart to applyThemeBrandWithinTx: a non-primary site
+// carries its brand as the Property's `brand_override` JSON (the compile-relevant
+// colour/type/shape subset publish-service.readPropertyBrandOverride reads), NOT
+// the tenant base brand — so applying a theme there recolours ONLY that site, never
+// the tenant base (docs/49). Merge the theme's look fields OVER any existing
+// override: a carried field wins, an untouched override field survives, and the
+// shape doc is replaced only when the theme brings one. A theme with no snapshot is
+// a no-op.
+export async function applyThemeBrandToSiteOverrideWithinTx(
+  tx: TxClient,
+  propertyId: string,
+  brand: SavedThemeBrand | null | undefined
+): Promise<void> {
+  if (!brand) return;
+  const row = await tx.property.findUnique({
+    where: { id: propertyId },
+    select: { brandOverride: true },
+  });
+  const prev =
+    row?.brandOverride && typeof row.brandOverride === 'object' && !Array.isArray(row.brandOverride)
+      ? (row.brandOverride as Record<string, unknown>)
+      : {};
+  const next: Record<string, unknown> = { ...prev };
+  // Present (incl. explicit null = "inherit base") wins; undefined leaves the prior
+  // override field untouched — the same undefined-vs-null contract as the tenant
+  // brand upsert above.
+  const carry = (k: keyof SavedThemeBrand): void => {
+    if (brand[k] !== undefined) next[k] = brand[k];
+  };
+  carry('colorPrimary');
+  carry('colorPrimaryForeground');
+  carry('colorAccent');
+  carry('colorAccentForeground');
+  carry('colorSecondary');
+  carry('colorSecondaryForeground');
+  carry('fontHeading');
+  carry('fontBody');
+  if (brand.tokens != null) next.tokens = brand.tokens;
+  await tx.property.update({
+    where: { id: propertyId },
+    data: { brandOverride: next as Prisma.InputJsonValue },
+  });
+}
+
 export async function remove(ctx: ServiceContext, id: string): Promise<{ id: string }> {
   return withTenant(ctx, async (tx) => {
     const existing = await tx.siteTheme.findUnique({ where: { id } });
@@ -167,10 +211,17 @@ export async function remove(ctx: ServiceContext, id: string): Promise<{ id: str
   });
 }
 
-// Load a saved theme into the working draft: set theme_key = basePresetKey and
-// merge its presentation into draftSettings (preserving tokens/customCss). Does
-// NOT publish — the tenant publishes or schedules afterward. The published
-// snapshot picks it up because publish reads the draft.
+// Load a saved theme into the working draft: set theme_key = basePresetKey, merge
+// its presentation into draftSettings (preserving tokens/customCss), point
+// activeSavedThemeId at it, AND apply its captured brand "look" to the right scope
+// (the tenant base brand for the primary site, this site's brand_override
+// otherwise). Applying the brand is what makes a HEADLESS apply (MCP
+// apply_saved_theme, the REST apply route, the blueprint installer) fully land the
+// theme the way the interactive dashboard does — the dashboard applies the brand
+// via its own client, so before this every headless caller left the colours/fonts
+// unapplied and the theme "didn't apply" in the brand designer. Does NOT publish —
+// the tenant publishes or schedules afterward; the published snapshot picks it up
+// because publish reads the draft + the live brand.
 export async function apply(
   ctx: PropertyContext,
   id: string
@@ -191,6 +242,19 @@ export async function apply(
         draftSettings: { ...draft, presentation: theme.presentation, activeSavedThemeId: id },
       },
     });
+    // Apply the captured brand look to the right scope — primary → tenant base
+    // brand, non-primary → this site's brand_override — so the colours/fonts land
+    // for headless callers (the dashboard's client does this itself). A legacy
+    // theme with no snapshot (brand == null) leaves the brand untouched.
+    const brand = (theme.brand ?? null) as SavedThemeBrand | null;
+    if (brand) {
+      const property = await tx.property.findUnique({
+        where: { id: ctx.propertyId },
+        select: { isPrimary: true },
+      });
+      if (property?.isPrimary) await applyThemeBrandWithinTx(tx, ctx.tenantId, brand);
+      else await applyThemeBrandToSiteOverrideWithinTx(tx, ctx.propertyId, brand);
+    }
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,

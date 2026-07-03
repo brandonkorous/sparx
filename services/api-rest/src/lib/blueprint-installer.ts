@@ -554,11 +554,10 @@ export async function installBlueprint(
     });
     result.theme = { id: theme.id, name: theme.name };
     if (blueprint.theme.apply) {
-      // apply writes the target site's draft config (docs/49 Phase 6) → propCtx.
+      // apply writes the target site's draft config AND applies the theme's captured
+      // brand to the right scope (primary → tenant base brand, non-primary → the
+      // site's override), so no separate brand write is needed here (docs/49 Phase 6).
       await savedThemeService.apply(propCtx, theme.id);
-      await withTenant(ctx, (tx) =>
-        savedThemeService.applyThemeBrandWithinTx(tx, tenantId, theme.brand)
-      );
     }
 
     // 5. Content entries (draft) — CMS module only; a non-CMS tenant gets none.

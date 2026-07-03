@@ -89,3 +89,42 @@ export function readCommerceSiteTheme(tenantId: string, propertyId: string) {
     });
   });
 }
+
+/** Reads the tenant BASE brand row (colours/fonts/shape) — what applying a theme to
+ *  the primary site writes. Tenant-scoped for FORCE RLS. */
+export function readTenantBrand(tenantId: string) {
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+    return tx.tenantBrand.findUnique({ where: { tenantId } });
+  });
+}
+
+/** Reads a property's `brand_override` JSON — what applying a theme to a NON-primary
+ *  site writes (docs/49). Tenant-scoped for FORCE RLS. */
+export function readPropertyBrandOverride(tenantId: string, propertyId: string) {
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+    return tx.property.findUnique({ where: { id: propertyId }, select: { brandOverride: true } });
+  });
+}
+
+/** Seeds an additional NON-primary property (a second site) and returns a service
+ *  context scoped to it — for exercising the per-site brand-override path. */
+export async function addSecondaryProperty(
+  test: TestContext,
+  slug = 'secondary'
+): Promise<{ propertyId: string; ctx: TestContext['ctx'] }> {
+  const propertyId = await prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${test.tenant.tenantId}'`);
+    const property = await tx.property.create({
+      data: {
+        tenantId: test.tenant.tenantId,
+        slug,
+        name: `Secondary ${slug}`,
+        isPrimary: false,
+      },
+    });
+    return property.id;
+  });
+  return { propertyId, ctx: { ...test.ctx, propertyId } };
+}
