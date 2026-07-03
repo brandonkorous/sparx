@@ -13,7 +13,7 @@ import { registerForBootcamp, type RsvpState } from './actions';
 
 const INITIAL: RsvpState = { status: 'idle' };
 const SANS = 'var(--font-sans)';
-const ORANGE = 'var(--module-commerce)';
+const PRIMARY = 'var(--sparx-primary)';
 
 const labelStyle: React.CSSProperties = { fontFamily: SANS, fontSize: '13px', fontWeight: 500 };
 const fieldStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: '7px' };
@@ -118,7 +118,7 @@ export function RsvpForm({ slug, full }: { slug: string; full: boolean }) {
 function SubmitButton({ full }: { full: boolean }) {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" color="commerce" size="lg" disabled={pending} style={{ width: '100%' }}>
+    <Button type="submit" color="primary" size="lg" disabled={pending} style={{ width: '100%' }}>
       {pending ? 'Reserving…' : full ? 'Join the waitlist →' : 'Reserve your seat →'}
     </Button>
   );
@@ -139,8 +139,8 @@ function Confirmation({ waitlisted }: { waitlisted: boolean }) {
           width: 44,
           height: 44,
           borderRadius: 9999,
-          backgroundColor: '#FFF7ED',
-          color: ORANGE,
+          backgroundColor: 'var(--sparx-primary-tint)',
+          color: PRIMARY,
           fontSize: 22,
         }}
       >
@@ -150,7 +150,7 @@ function Confirmation({ waitlisted }: { waitlisted: boolean }) {
         style={{ fontFamily: SANS, fontWeight: 500, fontSize: '22px', letterSpacing: '-0.02em' }}
       >
         {waitlisted ? 'You’re on the waitlist' : 'Your seat is reserved'}
-        <span style={{ color: ORANGE }}>.</span>
+        <span style={{ color: PRIMARY }}>.</span>
       </span>
       <p
         style={{

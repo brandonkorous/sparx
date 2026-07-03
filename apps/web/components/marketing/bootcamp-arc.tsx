@@ -1,26 +1,29 @@
 import { Section, SectionHeader, Spark } from './primitives';
 
 /**
- * The free-to-build arc — the /bootcamp standout device. A horizontal build
- * track whose four waypoints each wear their real module hue (storefront indigo ·
- * customers cyan · email sky · automation fuchsia), terminating in a bright orange
- * "Publish" ignition — the graduation moment. On tablet/mobile the track becomes a
- * vertical timeline (dot rail on the left). The argument is layout: you build the
- * whole time, and going live is the one thing that costs.
+ * The build arc — the /bootcamp standout device. A horizontal build track whose
+ * four waypoints each wear their real module hue (site indigo · customers cyan ·
+ * email sky · automation fuchsia), terminating in a "Publish" ignition — the
+ * graduation moment, carried in the sparx primary brand color. On tablet/mobile
+ * the track becomes a vertical timeline (dot rail on the left). The argument is
+ * layout: you build a real business one module at a time, and launching is the
+ * finish line.
  */
 
 const SANS = 'var(--font-sans)';
 const MONO = 'var(--font-mono)';
-const ORANGE = 'var(--module-commerce)';
-const ORANGE_TINT = '#FFF7ED';
-const ORANGE_TEXT = '#C2410C';
+// The page's brand accent = sparx primary (not a module hue — the bootcamp is a
+// platform program). The four build waypoints below keep their own module hues.
+const PRIMARY = 'var(--sparx-primary)';
+const PRIMARY_TINT = 'var(--sparx-primary-tint)';
+const PRIMARY_TEXT = 'var(--sparx-primary-hover)';
 
 const WAYPOINTS: { color: string; tag: string; title: React.ReactNode; body: string }[] = [
   {
     color: 'var(--module-builder)',
     tag: 'week 1',
-    title: 'Storefront',
-    body: 'Stand up your site and catalog with the builder — products, pages, theme.',
+    title: 'Site',
+    body: 'Stand up your site with the builder — pages, content, and catalog.',
   },
   {
     color: 'var(--module-crm)',
@@ -46,9 +49,9 @@ export function BootcampArc() {
   return (
     <Section surface="surface" padding="lg">
       <SectionHeader
-        accent={ORANGE}
-        headline={<>Build the whole time, free. Graduate when you publish</>}
-        lede="The bootcamp is a build. You stand up a real business on sparx — piece by piece — and it costs nothing while you do. The graduation moment is the one that matters: hitting publish and going live."
+        accent={PRIMARY}
+        headline={<>Build it piece by piece. Graduate the day you launch</>}
+        lede="The bootcamp is a build. Week by week, you stand up a real business on sparx — site, customers, email, automation — and the graduation moment is the one that matters: hitting publish and going live."
       />
 
       <div style={{ marginTop: '60px' }}>
@@ -104,9 +107,9 @@ export function BootcampArc() {
                 width: 28,
                 height: 28,
                 borderRadius: 9999,
-                backgroundColor: ORANGE,
+                backgroundColor: PRIMARY,
                 border: '3px solid var(--color-bg-surface)',
-                boxShadow: `0 0 0 6px ${ORANGE_TINT}`,
+                boxShadow: `0 0 0 6px ${PRIMARY_TINT}`,
               }}
             />
             <span
@@ -126,11 +129,11 @@ export function BootcampArc() {
                 fontWeight: 500,
                 fontSize: '16px',
                 letterSpacing: '-0.01em',
-                color: ORANGE_TEXT,
+                color: PRIMARY_TEXT,
               }}
             >
               Publish
-              <Spark color={ORANGE} />
+              <Spark color={PRIMARY} />
             </h3>
             <p
               style={{
@@ -153,16 +156,16 @@ export function BootcampArc() {
             alignItems: 'center',
             gap: '12px',
             padding: '12px 20px',
-            backgroundColor: ORANGE_TINT,
+            backgroundColor: PRIMARY_TINT,
             borderRadius: '9999px',
             fontFamily: SANS,
             fontSize: '15px',
             fontWeight: 500,
-            color: ORANGE_TEXT,
+            color: PRIMARY_TEXT,
           }}
         >
-          <span style={{ width: 8, height: 8, borderRadius: 9999, backgroundColor: ORANGE }} />
-          $0 to build · you pay only when you go live
+          <span style={{ width: 8, height: 8, borderRadius: 9999, backgroundColor: PRIMARY }} />
+          New to sparx? Start with a 14-day free trial
         </div>
       </div>
     </Section>

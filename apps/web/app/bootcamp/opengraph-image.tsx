@@ -8,7 +8,7 @@ export const alt = 'Business OS Bootcamp — build your business, launch on spar
 export default function Image() {
   return renderSimpleOg({
     tag: 'Bootcamp',
-    accent: '#F97316',
+    accent: '#6366F1',
     title: 'Build your business',
     subtitle: 'Bootcamps led by certified sparx partners. Graduate when you publish.',
     footerRight: 'sparx.works/bootcamp',

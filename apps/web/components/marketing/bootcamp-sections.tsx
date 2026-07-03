@@ -4,26 +4,28 @@ import type { FaqItem } from './faq';
 
 /**
  * The /bootcamp static marketing sections (hero, who it's for, format labels, the
- * dark host CTA) + the bootcamp FAQ data. The free-to-build arc lives in
- * bootcamp-arc.tsx and the faceted directory in app/bootcamp/_components; the
- * route assembles all of them. Energetic accent = commerce orange (launch/ignite
- * energy), distinct from the partner program's indigo. The four modules you build
- * carry their own hues in the arc — orange stays the page's brand spark.
+ * dark host CTA) + the bootcamp FAQ data. The build arc lives in bootcamp-arc.tsx
+ * and the faceted directory in app/bootcamp/_components; the route assembles all
+ * of them. Accent = the sparx primary brand color: the bootcamp is a platform
+ * program, not the commerce module, so it carries brand indigo (like /partners) —
+ * NOT a module hue. The four modules you build wear their own hues inside the arc.
  */
 
 const SANS = 'var(--font-sans)';
 const MONO = 'var(--font-mono)';
-const ORANGE = 'var(--module-commerce)';
-const ORANGE_TINT = '#FFF7ED';
-const ORANGE_TEXT = '#C2410C';
+// The bootcamp is a PLATFORM program, not the commerce module — so it wears the
+// sparx primary brand color, not a module hue (the /partners page does the same).
+const PRIMARY = 'var(--sparx-primary)';
+const PRIMARY_TINT = 'var(--sparx-primary-tint)';
+const PRIMARY_TEXT = 'var(--sparx-primary-hover)';
 
 // ── HERO ────────────────────────────────────────────────────────────────────
 export function BootcampHero() {
-  const chips = ['storefront', 'CRM', 'email', 'automation', 'one platform'];
+  const chips = ['site', 'CRM', 'email', 'automation', 'one platform'];
   return (
     <section
       style={{
-        backgroundColor: ORANGE_TINT,
+        backgroundColor: PRIMARY_TINT,
         paddingTop: 'clamp(56px, 8vw, 104px)',
         paddingBottom: 'clamp(72px, 10vw, 120px)',
         paddingLeft: 'var(--gutter-page)',
@@ -31,10 +33,12 @@ export function BootcampHero() {
       }}
     >
       <Container style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-        <div style={{ maxWidth: '16ch' }}>
-          <Display as="h1" size={92} lineHeight={90}>
-            Build your business. Launch on sparx
-            <Spark color={ORANGE} />
+        <div style={{ maxWidth: '24ch' }}>
+          <Display as="h1" size={88} lineHeight={86}>
+            Build your business.
+            <br />
+            Launch on sparx
+            <Spark />
           </Display>
         </div>
         <p
@@ -48,12 +52,11 @@ export function BootcampHero() {
           }}
         >
           In-person and virtual sessions, led by certified sparx partners. Build a real business
-          &mdash; storefront, customers, email, automation &mdash; and graduate the day you hit
-          publish.
+          &mdash; site, customers, email, automation &mdash; and graduate the day you hit publish.
         </p>
         <div className="mkt-cluster" style={{ gap: '12px' }}>
           <a href="#directory">
-            <Button size="lg" color="commerce">
+            <Button size="lg" color="primary">
               Find a bootcamp →
             </Button>
           </a>
@@ -79,12 +82,12 @@ export function BootcampHero() {
             marginTop: '12px',
             fontFamily: MONO,
             fontSize: '12.5px',
-            color: ORANGE_TEXT,
+            color: PRIMARY_TEXT,
           }}
         >
           {chips.map((c) => (
             <span key={c} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ width: 7, height: 7, borderRadius: 9999, backgroundColor: ORANGE }} />
+              <span style={{ width: 7, height: 7, borderRadius: 9999, backgroundColor: PRIMARY }} />
               {c}
             </span>
           ))}
@@ -113,7 +116,7 @@ export function BootcampWhoFor() {
   return (
     <Section padding="lg">
       <SectionHeader
-        accent={ORANGE}
+        accent={PRIMARY}
         headline={<>Who it&rsquo;s for</>}
         lede="You don't need a business degree or a developer. You need an afternoon and something you want to build."
       />
@@ -126,7 +129,7 @@ export function BootcampWhoFor() {
                 height: 3,
                 width: 44,
                 borderRadius: 2,
-                backgroundColor: ORANGE,
+                backgroundColor: PRIMARY,
               }}
             />
             <h3
@@ -172,7 +175,7 @@ export function BootcampFormats() {
   return (
     <Section surface="surface" padding="lg">
       <SectionHeader
-        accent={ORANGE}
+        accent={PRIMARY}
         headline={<>Every format</>}
         lede="Hosted the way that fits your week. Filter the directory below by the one you want."
       />
@@ -224,7 +227,7 @@ export function BootcampHostCta() {
       >
         <Display size={60} lineHeight={60} color="#FFFFFF">
           Want to host a bootcamp
-          <span style={{ color: ORANGE }}>?</span>
+          <span style={{ color: PRIMARY }}>?</span>
         </Display>
         <p
           style={{
@@ -241,7 +244,7 @@ export function BootcampHostCta() {
         </p>
         <div className="mkt-cluster" style={{ gap: '12px', marginTop: '10px' }}>
           <a href="/partners">
-            <Button size="xl" color="commerce">
+            <Button size="xl" color="primary">
               Get certified →
             </Button>
           </a>
@@ -263,21 +266,21 @@ export function BootcampHostCta() {
   );
 }
 
-// Bootcamp-specific FAQ (docs/114 §B.5 + bootcamp-spec). Grounded: free-to-build,
-// certified-partner-hosted, on-platform RSVP → host CRM (with an external escape
-// hatch), format options. Emitted as FAQPage JSON-LD by <Faq>.
+// Bootcamp-specific FAQ (docs/114 §B.5 + bootcamp-spec). Grounded: 14-day free
+// trial, certified-partner-hosted, on-platform RSVP → host CRM (with an external
+// escape hatch), format options. Emitted as FAQPage JSON-LD by <Faq>.
 export const BOOTCAMP_FAQ: FaqItem[] = [
   {
     id: 'b-what',
     question: 'What is the Business OS Bootcamp?',
     answer:
-      'It’s a hands-on program, led by certified sparx partners, where you build a real business on one platform — storefront, CRM, email, and an automation layer — over a cohort. You build the whole time for free; the graduation moment is hitting publish and going live.',
+      'It’s a hands-on program, led by certified sparx partners, where you build a real business on one platform — site, CRM, email, and an automation layer — over a cohort. You build it piece by piece, and the graduation moment is hitting publish and going live.',
   },
   {
     id: 'b-cost',
     question: 'Do I have to pay for sparx during the bootcamp?',
     answer:
-      'No. Building on sparx is free — you can stand up your entire site, CRM, and email flows without paying. A sparx subscription starts only when you publish and go live. The bootcamp session itself is priced by the hosting partner; some are free, some are paid, and each listing shows its price.',
+      'sparx starts with a 14-day free trial, so you can dive straight into building during the bootcamp at no cost. After the trial, sparx is a paid subscription — and you only pay for the modules you actually switch on. The bootcamp session itself is priced separately by the hosting partner; some are free, some are paid, and each listing shows its price.',
   },
   {
     id: 'b-who',

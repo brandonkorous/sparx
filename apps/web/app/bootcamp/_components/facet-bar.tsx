@@ -12,7 +12,7 @@ export type BootcampParams = Record<string, string>;
 
 const BASE = '/bootcamp';
 const SANS = 'var(--font-sans)';
-const ORANGE = 'var(--module-commerce)';
+const PRIMARY = 'var(--sparx-primary)';
 
 export interface DatePreset {
   key: string;
@@ -51,14 +51,14 @@ function Chip({
         padding: '5px 12px',
         borderRadius: '9999px',
         border: '1px solid',
-        borderColor: on ? ORANGE : 'var(--color-border-default)',
+        borderColor: on ? PRIMARY : 'var(--color-border-default)',
         backgroundColor: on
-          ? 'color-mix(in srgb, var(--module-commerce) 12%, transparent)'
+          ? 'color-mix(in srgb, var(--sparx-primary) 12%, transparent)'
           : 'var(--color-bg-surface)',
         fontFamily: SANS,
         fontSize: '13px',
         fontWeight: on ? 500 : 400,
-        color: on ? '#C2410C' : 'var(--color-text-secondary)',
+        color: on ? 'var(--sparx-primary-hover)' : 'var(--color-text-secondary)',
         textDecoration: 'none',
       }}
     >

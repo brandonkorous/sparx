@@ -29,7 +29,7 @@ export const revalidate = 300;
 
 const SANS = 'var(--font-sans)';
 const MONO = 'var(--font-mono)';
-const ORANGE = 'var(--module-commerce)';
+const PRIMARY = 'var(--sparx-primary)';
 const BASE_URL = 'https://sparx.works';
 
 export async function generateMetadata({
@@ -122,7 +122,7 @@ export default async function BootcampDetailPage({
       {/* Header band — orange-tinted, mirroring the bootcamp hero identity. */}
       <section
         style={{
-          backgroundColor: '#FFF7ED',
+          backgroundColor: 'var(--sparx-primary-tint)',
           paddingTop: 'clamp(40px, 6vw, 72px)',
           paddingBottom: 'clamp(40px, 6vw, 72px)',
           paddingLeft: 'var(--gutter-page)',
@@ -157,7 +157,7 @@ export default async function BootcampDetailPage({
               padding: '5px 12px',
               borderRadius: '9999px',
               backgroundColor: 'var(--color-bg-surface)',
-              color: '#C2410C',
+              color: 'var(--sparx-primary-hover)',
             }}
           >
             {FORMAT_LABEL[b.format]}
@@ -165,7 +165,7 @@ export default async function BootcampDetailPage({
           <div style={{ maxWidth: '20ch' }}>
             <Display as="h1" size={64} lineHeight={64}>
               {b.title}
-              <Spark color={ORANGE} />
+              <Spark color={PRIMARY} />
             </Display>
           </div>
           <div
@@ -273,7 +273,7 @@ function RegistrationCard({ b }: { b: BootcampDetail }) {
       {externalUrl ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <a href={externalUrl} target="_blank" rel="noopener noreferrer">
-            <Button color="commerce" size="lg" style={{ width: '100%' }}>
+            <Button color="primary" size="lg" style={{ width: '100%' }}>
               Register ↗
             </Button>
           </a>

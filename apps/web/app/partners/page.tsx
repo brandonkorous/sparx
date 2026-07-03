@@ -9,7 +9,7 @@ export const revalidate = 300;
 export const metadata: Metadata = {
   title: 'Partner Program — build your practice on sparx',
   description:
-    'Join the sparx Partner Program. Help businesses replace their storefront, CRM, and email stack with one platform — earn 20–30% on the first payment and 5% ongoing on managed accounts. Apply in two minutes.',
+    'Join the sparx Partner Program. Help businesses replace their site, CRM, and email stack with one platform — earn 20–30% on the first payment and 5% ongoing on managed accounts. Apply in two minutes.',
   alternates: { canonical: '/partners' },
   openGraph: {
     title: 'Build your practice on sparx',

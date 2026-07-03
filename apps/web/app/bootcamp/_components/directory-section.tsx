@@ -39,7 +39,7 @@ export function BootcampDirectory({
       <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', width: '100%' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '36px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <SectionHeader accent="var(--module-commerce)" headline={<>Upcoming bootcamps</>} />
+            <SectionHeader accent="var(--sparx-primary)" headline={<>Upcoming bootcamps</>} />
             <form method="get" action="/bootcamp" className="mkt-cluster" style={{ gap: '8px' }}>
               {current.format ? <input type="hidden" name="format" value={current.format} /> : null}
               {current.location ? (
@@ -131,7 +131,7 @@ function EmptyState({ filtered }: { filtered: boolean }) {
           </a>
         ) : (
           <a href="/partners">
-            <Button size="lg" color="commerce">
+            <Button size="lg" color="primary">
               Host a bootcamp →
             </Button>
           </a>

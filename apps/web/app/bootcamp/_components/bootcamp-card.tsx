@@ -2,7 +2,7 @@
 // state (usable from the SSR directory AND the client load-more island — imports
 // only TYPES/helpers). The whole card links to the detail page. Shows the format
 // pill, seats-remaining when capped, title, dates + location, and the host
-// partner with their tier badge. Accent = commerce orange.
+// partner with their tier badge. Accent = the sparx primary brand color.
 
 import { Badge } from '@sparx/ui';
 import { TIER_META } from '@/lib/partners';
@@ -53,8 +53,8 @@ export function BootcampDirectoryCard({ bootcamp }: { bootcamp: Card }) {
             fontSize: '11px',
             padding: '4px 10px',
             borderRadius: '9999px',
-            backgroundColor: '#FFF7ED',
-            color: '#C2410C',
+            backgroundColor: 'var(--sparx-primary-tint)',
+            color: 'var(--sparx-primary-hover)',
           }}
         >
           {FORMAT_LABEL[bootcamp.format]}

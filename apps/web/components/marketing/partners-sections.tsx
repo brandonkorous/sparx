@@ -48,8 +48,8 @@ export function PartnersHero() {
             margin: 0,
           }}
         >
-          Help businesses replace their storefront, CRM, and email stack with one platform &mdash;
-          and get paid every time one goes live. No reseller contract. No minimums.
+          Help businesses replace their site, CRM, and email stack with one platform &mdash; and get
+          paid every time one goes live. No reseller contract. No minimums.
         </p>
         <div className="mkt-cluster" style={{ gap: '12px' }}>
           <a href="#apply">
@@ -92,8 +92,11 @@ export function PartnersProof({ partnerCount }: { partnerCount?: number }) {
     : { num: 'Be first.', lab: 'The program is opening now — founding partners set the pace.' };
   const cells = [
     lead,
-    { num: '8', lab: 'modules your clients can turn on — storefront to AI, one bill.' },
-    { num: '$0', lab: "to build a client's whole site — they pay only when it's live." },
+    { num: '8', lab: 'modules your clients can turn on — site to AI, one bill.' },
+    {
+      num: '14 days',
+      lab: "free on sparx — start building a client's site the day you sign them.",
+    },
   ];
   return (
     <Section surface="surface" padding="md" style={{ paddingTop: 0, paddingBottom: 0 }} bleed>
@@ -148,9 +151,9 @@ export function PartnersOpportunity() {
       token: '5 tools → 1',
     },
     {
-      claim: 'Free to build means an easier close.',
-      thin: "You can build a client's entire site before they pay a cent — so the sale is a demo of the finished thing, and churn stays low.",
-      token: '$0 to build',
+      claim: 'A free trial makes an easier close.',
+      thin: "Spin up a client's site on a 14-day free trial — so your pitch is a demo of the real thing, not a slide deck, and churn stays low.",
+      token: '14-day trial',
     },
     {
       claim: 'You earn on every subscription — and keep earning.',

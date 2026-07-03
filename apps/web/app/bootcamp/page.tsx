@@ -1,8 +1,8 @@
 // The /bootcamp page (docs/114 §B.6) — the public Business OS Bootcamp discovery
-// surface. Bespoke marketing sections (hero, the free-to-build arc, who it's for,
-// format labels) wrap a URL-driven faceted directory, then a dark host-CTA and a
-// bootcamp-specific FAQ. Energetic accent = commerce orange, distinct from the
-// partner program's indigo.
+// surface. Bespoke marketing sections (hero, the build arc, who it's for, format
+// labels) wrap a URL-driven faceted directory, then a dark host-CTA and a
+// bootcamp-specific FAQ. Accent = the sparx primary brand color — the bootcamp is
+// a platform program, not the commerce module.
 
 import type { Metadata } from 'next';
 import { Nav } from '@/components/marketing/nav';
@@ -28,12 +28,12 @@ type SearchParams = Record<string, string | string[] | undefined>;
 export const metadata: Metadata = {
   title: 'Business OS Bootcamp — build your business, launch on sparx',
   description:
-    'Find a Business OS Bootcamp near you or online. Certified sparx partners guide you through building a real business — storefront, CRM, email, and automation — and graduating the day you publish.',
+    'Find a Business OS Bootcamp near you or online. Certified sparx partners guide you through building a real business — site, CRM, email, and automation — and graduating the day you publish.',
   alternates: { canonical: '/bootcamp' },
   openGraph: {
     title: 'Business OS Bootcamp — build your business. Launch on sparx.',
     description:
-      'In-person and virtual bootcamps led by certified sparx partners. Build the whole time free; graduate when you publish.',
+      'In-person and virtual bootcamps led by certified sparx partners. Start with a 14-day free trial and graduate the day you launch.',
     url: '/bootcamp',
     type: 'website',
   },
@@ -93,11 +93,11 @@ export default async function BootcampPage({
       <Faq
         id="faq"
         items={BOOTCAMP_FAQ}
-        accent="var(--module-commerce)"
+        accent="var(--sparx-primary)"
         heading={
           <>
             Bootcamp questions
-            <Spark color="var(--module-commerce)" />
+            <Spark color="var(--sparx-primary)" />
           </>
         }
         lede="What you'll build, what it costs, and how registration works — before you sign up."
