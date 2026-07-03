@@ -34,7 +34,9 @@ spec:
       containers:
         - name: site
           image: us-central1-docker.pkg.dev/sparxworks/sparx/site:latest
-          imagePullPolicy: IfNotPresent
+          # Always — `:latest` is mutable; IfNotPresent risks a stale node-cached
+          # image after a bare restart. Full rationale in api-mcp.yaml.
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 3000

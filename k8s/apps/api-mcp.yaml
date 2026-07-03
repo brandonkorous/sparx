@@ -51,7 +51,17 @@ spec:
       containers:
         - name: api-mcp
           image: us-central1-docker.pkg.dev/sparxworks/sparx/api-mcp:latest
-          imagePullPolicy: IfNotPresent
+          # `:latest` is a MUTABLE tag. With IfNotPresent a node reuses whatever
+          # it cached for `:latest`, which can be stale — a bare `rollout restart`
+          # (e.g. from `bootstrap app-env`) that reschedules onto a node holding an
+          # older `:latest` silently resurrects pre-release code. That bit api-mcp
+          # on 2026-07-03 (served pre-`/mcp`-rename code after a configmap roll).
+          # `Always` re-resolves the tag to the registry's current digest on every
+          # pod start; the immutable `:vX.Y.Z` tags deploy-prod pins re-check
+          # cheaply (no layer re-pull when the digest is unchanged). Deterministic
+          # releases still come from deploy-prod's version pin — this only makes the
+          # `:latest` bootstrap fallback safe instead of a footgun.
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 3000
