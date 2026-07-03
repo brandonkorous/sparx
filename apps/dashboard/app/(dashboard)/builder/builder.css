@@ -1479,11 +1479,6 @@
 }
 /* Navigation link list editor (docs/57) — the NavMenu node's `navlinks` control.
    Site navigation is Builder-owned site chrome, authored here per site. */
-.bx-navlinks {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
 .bx-navlinks__row {
   display: flex;
   flex-direction: column;

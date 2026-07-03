@@ -62,7 +62,6 @@ const CONTROL_LABELS: Record<PropSpec['control'], string> = {
   buttongroup: 'Choice',
   switch: 'Toggle',
   icon: 'Icon picker',
-  navlinks: 'Navigation links',
   linktarget: 'Link target',
 };
 

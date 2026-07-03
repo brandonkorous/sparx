@@ -135,7 +135,6 @@ export interface PropSpec {
     | 'switch'
     | 'icon'
     | 'richtext'
-    | 'navlinks'
     | 'linktarget';
   /** A `buttongroup` option may carry an icon (e.g. the H1/H2/H3 heading-level
    *  glyphs) — the Segmented control shows it alongside the label. */
@@ -818,12 +817,13 @@ const DEFS: ComponentDef[] = [
     module: 'site',
     // A CONTAINER of NavItem children (docs/57 rebuild): each link is its own
     // NavItem node — individually selectable + retargetable via the link picker,
-    // and nestable into a dropdown. This replaces the old node-owned `props.links[]`
-    // leaf model (edited by the near-invisible navlinks control); existing
-    // `props.links[]` are migrated to NavItem children (20260703_navmenu_container)
-    // and kept rendering through the transition by the host's back-compat branch.
-    // `orientation` picks the shell: `row` = responsive header bar (hamburger on
-    // narrow), `stack` = a static footer/secondary column.
+    // and nestable into a dropdown. Authored via the layer tree + Add palette or the
+    // "Manage links" quick-editor (nav-menu-editor.tsx). This replaces the old
+    // node-owned `props.links[]` leaf model; existing `props.links[]` are migrated to
+    // NavItem children (20260703_navmenu_container) and kept rendering through the
+    // transition by the host's back-compat branch. `orientation` picks the shell:
+    // `row` = responsive header bar (hamburger on narrow), `stack` = a static
+    // footer/secondary column.
     bindable: false,
     accepts: [],
     surfaces: ['site'],
