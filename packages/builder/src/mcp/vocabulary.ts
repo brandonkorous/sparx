@@ -29,7 +29,8 @@ export const BUILDER_STYLE_GUIDE = {
       'Pass create_builder_page / update_builder_page a "document" — either this envelope or a bare node tree. ' +
       'Missing node ids are auto-filled, so you only need to emit { type, class?, props?, children? }. The envelope also ' +
       'accepts optional SEO — seoTitle, seoDescription, canonical, ogImage, noindex — which set the page metadata the ' +
-      'storefront renders (omit them on an update to leave existing SEO untouched).',
+      'storefront renders (omit them on an update to leave existing SEO untouched). To change ONLY the SEO of an ' +
+      'existing page, use set_page_seo (pageId + the fields) — it patches the metadata without resending the tree.',
     format: 'sparx.builder/v1',
     kinds: {
       singleton:
@@ -463,8 +464,9 @@ export const BUILDER_STYLE_GUIDE = {
   workflow:
     'Typical loop: (1) describe_builder_styling once to load this guide. (2) list_builder_pages to see the catalog; ' +
     'get_builder_page to read an existing tree. (3) create_builder_page or update_builder_page with your document ' +
-    '(saves a DRAFT) — set page SEO inline via the envelope’s seoTitle/seoDescription. (4) publish_builder_page to take ' +
-    'it live (confirmation-gated). The site header/footer is authored SEPARATELY with the layout tools — see ' +
+    '(saves a DRAFT) — set page SEO inline via the envelope’s seoTitle/seoDescription, or set_page_seo to change just ' +
+    'the SEO of an existing page without resending its tree. (4) publish_builder_page to take it live ' +
+    '(confirmation-gated). The site header/footer is authored SEPARATELY with the layout tools — see ' +
     '`siteLayout` (get_builder_layout → update_builder_layout → publish_builder_layout).',
 } as const;
 

@@ -10,7 +10,7 @@
 // at publish; describe_builder_styling teaches the safe vocabulary up front.
 
 import { z } from 'zod';
-import { parsePageImport } from '@sparx/builder-schemas';
+import { PageSeoShape, parsePageImport } from '@sparx/builder-schemas';
 
 import * as pageService from '../services/page-service';
 import { BuilderValidationError } from '../errors';
@@ -118,6 +118,34 @@ export const updateBuilderPage: McpToolDefinition = {
   },
 };
 
+export const setPageSeo: McpToolDefinition = {
+  name: 'set_page_seo',
+  description:
+    'Set a page’s SEO metadata — seoTitle / seoDescription / canonical / ogImage / noindex — WITHOUT resending its ' +
+    'content tree. The shortcut for fixing a title or description: pass pageId plus the fields to change (no need to ' +
+    'round-trip the whole page). Omit a field to leave it unchanged; pass an empty string to CLEAR it (the storefront ' +
+    'then falls back to the page name). Saves to DRAFT — call publish_builder_page to take it live.',
+  scope: 'write:builder',
+  confirmation: false,
+  input: z.object({
+    pageId: z.string().uuid(),
+    ...PageSeoShape,
+    propertyId: propertyIdArg,
+  }),
+  run: async (ctx, input) => {
+    const { pageId, propertyId, ...seo } = input as {
+      pageId: string;
+      propertyId?: string;
+    } & Record<string, unknown>;
+    const pctx = await toPropertyContext(ctx, propertyId);
+    // pageService.update patches ONLY the fields present — a tree-less SEO patch
+    // never touches draftTree (page-service.ts sets draftTree only when tree is
+    // supplied). UpdatePageInput's "at least one field" refine rejects an empty
+    // patch (pageId alone) with a clear message.
+    return withSite(pctx, await pageService.update(pctx, pageId, seo));
+  },
+};
+
 export const publishBuilderPage: McpToolDefinition = {
   name: 'publish_builder_page',
   description:
@@ -150,6 +178,7 @@ export const deleteBuilderPage: McpToolDefinition = {
 export const writeTools = [
   createBuilderPage,
   updateBuilderPage,
+  setPageSeo,
   publishBuilderPage,
   deleteBuilderPage,
 ];
