@@ -2,6 +2,8 @@
 title: Design
 type: map
 status: active
+cssclasses:
+  - purple
 ---
 
 # design

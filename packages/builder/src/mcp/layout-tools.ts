@@ -13,7 +13,7 @@ import { parseLayoutImport } from '@sparx/builder-schemas';
 
 import * as layoutService from '../services/layout-service';
 import { BuilderValidationError } from '../errors';
-import { toPropertyContext } from './context';
+import { toPropertyContext, withSite } from './context';
 import type { McpToolDefinition } from './registry';
 
 const propertyIdArg = z
@@ -99,10 +99,13 @@ export const createBuilderLayout: McpToolDefinition = {
     const parsed = parseLayoutImport(document);
     if (!parsed.ok) throw new BuilderValidationError(parsed.error);
     const pctx = await toPropertyContext(ctx, propertyId);
-    return layoutService.create(pctx, {
-      name: parsed.meta.name ?? name ?? 'Layout',
-      tree: parsed.tree,
-    });
+    return withSite(
+      pctx,
+      await layoutService.create(pctx, {
+        name: parsed.meta.name ?? name ?? 'Layout',
+        tree: parsed.tree,
+      })
+    );
   },
 };
 
@@ -129,7 +132,7 @@ export const updateBuilderLayout: McpToolDefinition = {
     const pctx = await toPropertyContext(ctx, propertyId);
     const patch: Record<string, unknown> = { tree: parsed.tree };
     if (parsed.meta.name !== undefined) patch.name = parsed.meta.name;
-    return layoutService.update(pctx, layoutId, patch);
+    return withSite(pctx, await layoutService.update(pctx, layoutId, patch));
   },
 };
 
@@ -144,7 +147,7 @@ export const publishBuilderLayout: McpToolDefinition = {
   run: async (ctx, input) => {
     const { layoutId, propertyId } = input as { layoutId: string; propertyId?: string };
     const pctx = await toPropertyContext(ctx, propertyId);
-    return layoutService.publish(pctx, layoutId);
+    return withSite(pctx, await layoutService.publish(pctx, layoutId));
   },
 };
 
@@ -159,7 +162,7 @@ export const setActiveLayout: McpToolDefinition = {
   run: async (ctx, input) => {
     const { layoutId, propertyId } = input as { layoutId: string; propertyId?: string };
     const pctx = await toPropertyContext(ctx, propertyId);
-    return layoutService.setActive(pctx, layoutId);
+    return withSite(pctx, await layoutService.setActive(pctx, layoutId));
   },
 };
 
@@ -175,7 +178,7 @@ export const deleteBuilderLayout: McpToolDefinition = {
     const { layoutId, propertyId } = input as { layoutId: string; propertyId?: string };
     const pctx = await toPropertyContext(ctx, propertyId);
     await layoutService.remove(pctx, layoutId);
-    return { deleted: layoutId };
+    return withSite(pctx, { deleted: layoutId });
   },
 };
 

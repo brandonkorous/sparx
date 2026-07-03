@@ -18,7 +18,7 @@ Registry of every external service & tool — *what it's for* and *active / plan
 | **GCP** | GKE, Cloud SQL, Pub/Sub, GCS, Artifact Registry, Secret Manager, Cloud Run | active | [[topology]] |
 | **Redis** | cache + BullMQ broker (pod) | active | [[topology]] |
 | **Typesense** | faceted search projections | active | [[phased-infra]] |
-| **Cloudflare** | platform + tenant DNS / CDN / WAF | active | [[topology]] |
+| **Cloudflare** | platform + tenant DNS / CDN / WAF | active | [[cloudflare]] |
 | **GoDaddy** | domain registrar / reseller | active | [[godaddy]] |
 
 ## Working tools (we operate with)

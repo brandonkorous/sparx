@@ -5,18 +5,54 @@
   "showAttachments": false,
   "hideUnresolved": false,
   "showOrphans": true,
-  "collapse-color-groups": true,
-  "colorGroups": [],
+  "collapse-color-groups": false,
+  "colorGroups": [
+    {
+      "query": "path:README.md",
+      "color": {
+        "a": 1,
+        "rgb": 16096779
+      }
+    },
+    {
+      "query": "path:design.md OR path:components.md",
+      "color": {
+        "a": 1,
+        "rgb": 6514417
+      }
+    },
+    {
+      "query": "path:features.md OR path:modules.md OR path:apps.md OR path:business.md",
+      "color": {
+        "a": 1,
+        "rgb": 16347926
+      }
+    },
+    {
+      "query": "path:architecture.md OR path:data.md OR path:api-events.md OR path:infrastructure.md OR path:integrations.md",
+      "color": {
+        "a": 1,
+        "rgb": 959977
+      }
+    },
+    {
+      "query": "path:conventions.md OR path:lessons-learned.md OR path:tasks.md",
+      "color": {
+        "a": 1,
+        "rgb": 9133302
+      }
+    }
+  ],
   "collapse-display": true,
   "showArrow": false,
   "textFadeMultiplier": 0,
-  "nodeSizeMultiplier": 1,
+  "nodeSizeMultiplier": 1.0953125,
   "lineSizeMultiplier": 1,
   "collapse-forces": true,
   "centerStrength": 0.518713248970312,
   "repelStrength": 10,
   "linkStrength": 1,
   "linkDistance": 250,
-  "scale": 1,
+  "scale": 1.0000000000000004,
   "close": false
 }

@@ -21,6 +21,24 @@ import { ALL_MCP_TOOLS, type AnyMcpTool } from './tool-registry.js';
 
 const SERVER_INFO = { name: 'sparx-mcp', version: '1.0.0' } as const;
 
+// Sent to the MCP client on `initialize` — the standing "how to use this server"
+// instructions. Its #1 job is the MULTISITE guardrail: the builder tools silently
+// default to the tenant's PRIMARY site, so an agent that never targets a site can
+// overwrite the wrong one (this happened). Keep it short and imperative.
+const SERVER_INSTRUCTIONS = [
+  'This server manages one sparx tenant — its content, commerce, CRM, email, and one or more SITES (web properties).',
+  'MULTISITE — READ FIRST: a tenant can own MORE THAN ONE site. Before you create or edit any page, theme, ' +
+    'layout, or site setting, call `list_sites` and pass the intended site’s `id` as the `propertyId` argument. ' +
+    'Omitting `propertyId` silently targets the tenant’s PRIMARY site — which overwrites the wrong site if you ' +
+    'meant a different one.',
+  'Site-editing tools echo the resolved `site` ({id, name, isPrimary}) in their result — always confirm it is the ' +
+    'site you intended before continuing.',
+  'Builder pages author the page BODY (create_builder_page / update_builder_page); the header/footer/nav is a ' +
+    'separate site LAYOUT (get_builder_layout → update_builder_layout → publish_builder_layout). Set page SEO ' +
+    'inline via the page document’s seoTitle/seoDescription. Give a site its own look with a saved theme ' +
+    '(create_saved_theme → apply_saved_theme) rather than editing a shared preset. Changes are DRAFTs until published.',
+].join('\n\n');
+
 // Scopes whose tools also require a specific MODULE to be active (beyond the
 // global `ai` gate). sparx is module-based — a disabled module stores no rows
 // (docs/87 §14) — so a tool that writes a module's data refuses when that module
@@ -40,7 +58,7 @@ const MODULE_BY_SCOPE: Record<string, ModuleSlug> = {
 };
 
 export async function buildServerForRequest(auth: McpAuthContext): Promise<McpServer> {
-  const server = new McpServer(SERVER_INFO);
+  const server = new McpServer(SERVER_INFO, { instructions: SERVER_INSTRUCTIONS });
 
   // Per-tenant tool-policy overlay (docs/07 §9): tools the tenant disabled are not
   // registered at all — so they're absent from tools/list AND the SDK rejects any

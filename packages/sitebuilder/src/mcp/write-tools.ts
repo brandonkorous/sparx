@@ -24,7 +24,7 @@ import {
   definitionService,
 } from '../services/index';
 import type { AnyMcpTool } from './registry';
-import { toPropertyContext } from './context';
+import { toPropertyContext, withSite } from './context';
 
 // Per-property tools (docs/49 Phase 6) accept an optional target site; omit for
 // the tenant's primary site.
@@ -64,7 +64,8 @@ export const writeTools: AnyMcpTool[] = [
       const { propertyId, ...rest } = input as { propertyId?: string } & z.infer<
         typeof SelectThemeInput
       >;
-      return themeService.selectTheme(await toPropertyContext(ctx, propertyId), rest);
+      const pctx = await toPropertyContext(ctx, propertyId);
+      return withSite(pctx, await themeService.selectTheme(pctx, rest));
     },
   },
   {
@@ -78,7 +79,8 @@ export const writeTools: AnyMcpTool[] = [
       const { propertyId, ...rest } = input as { propertyId?: string } & z.infer<
         typeof UpdateSettingsInput
       >;
-      return themeService.updateSettings(await toPropertyContext(ctx, propertyId), rest);
+      const pctx = await toPropertyContext(ctx, propertyId);
+      return withSite(pctx, await themeService.updateSettings(pctx, rest));
     },
   },
   {
@@ -141,7 +143,8 @@ export const writeTools: AnyMcpTool[] = [
       const { propertyId, ...rest } = input as { propertyId?: string } & z.infer<
         typeof PublishInput
       >;
-      return publishService.publishNow(await toPropertyContext(ctx, propertyId), rest);
+      const pctx = await toPropertyContext(ctx, propertyId);
+      return withSite(pctx, await publishService.publishNow(pctx, rest));
     },
   },
   {

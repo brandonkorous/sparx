@@ -14,7 +14,7 @@ import { parsePageImport } from '@sparx/builder-schemas';
 
 import * as pageService from '../services/page-service';
 import { BuilderValidationError } from '../errors';
-import { toPropertyContext } from './context';
+import { toPropertyContext, withSite } from './context';
 import type { McpToolDefinition } from './registry';
 
 const documentArg = z
@@ -63,19 +63,22 @@ export const createBuilderPage: McpToolDefinition = {
     const parsed = parsePageImport(document);
     if (!parsed.ok) throw new BuilderValidationError(parsed.error);
     const pctx = await toPropertyContext(ctx, propertyId);
-    return pageService.create(pctx, {
-      name: parsed.meta.name ?? name,
-      kind: parsed.meta.kind,
-      slug: parsed.meta.slug,
-      recordType: parsed.meta.recordType,
-      tree: parsed.tree,
-      // SEO the envelope carried inline (undefined → stored as null by the service).
-      seoTitle: parsed.meta.seoTitle,
-      seoDescription: parsed.meta.seoDescription,
-      canonical: parsed.meta.canonical,
-      ogImage: parsed.meta.ogImage,
-      noindex: parsed.meta.noindex,
-    });
+    return withSite(
+      pctx,
+      await pageService.create(pctx, {
+        name: parsed.meta.name ?? name,
+        kind: parsed.meta.kind,
+        slug: parsed.meta.slug,
+        recordType: parsed.meta.recordType,
+        tree: parsed.tree,
+        // SEO the envelope carried inline (undefined → stored as null by the service).
+        seoTitle: parsed.meta.seoTitle,
+        seoDescription: parsed.meta.seoDescription,
+        canonical: parsed.meta.canonical,
+        ogImage: parsed.meta.ogImage,
+        noindex: parsed.meta.noindex,
+      })
+    );
   },
 };
 
@@ -111,7 +114,7 @@ export const updateBuilderPage: McpToolDefinition = {
     if (parsed.meta.canonical !== undefined) patch.canonical = parsed.meta.canonical;
     if (parsed.meta.ogImage !== undefined) patch.ogImage = parsed.meta.ogImage;
     if (parsed.meta.noindex !== undefined) patch.noindex = parsed.meta.noindex;
-    return pageService.update(pctx, pageId, patch);
+    return withSite(pctx, await pageService.update(pctx, pageId, patch));
   },
 };
 
@@ -126,7 +129,7 @@ export const publishBuilderPage: McpToolDefinition = {
   run: async (ctx, input) => {
     const { pageId, propertyId } = input as { pageId: string; propertyId?: string };
     const pctx = await toPropertyContext(ctx, propertyId);
-    return pageService.publish(pctx, pageId);
+    return withSite(pctx, await pageService.publish(pctx, pageId));
   },
 };
 
@@ -140,7 +143,7 @@ export const deleteBuilderPage: McpToolDefinition = {
     const { pageId, propertyId } = input as { pageId: string; propertyId?: string };
     const pctx = await toPropertyContext(ctx, propertyId);
     await pageService.remove(pctx, pageId);
-    return { deleted: pageId };
+    return withSite(pctx, { deleted: pageId });
   },
 };
 
