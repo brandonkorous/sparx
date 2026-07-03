@@ -42,7 +42,7 @@ export function parseAuthorizeParams(sp: SP): AuthorizeParams {
 
 /** Canonical resource identifier of the MCP server this authorization targets. */
 export function mcpResourceUrl(): string {
-  return process.env.MCP_RESOURCE_URL ?? 'http://localhost:3000/v1';
+  return process.env.MCP_RESOURCE_URL ?? 'http://localhost:3000/mcp';
 }
 
 /** The authorize params as a plain record (empties dropped) — used to seed the

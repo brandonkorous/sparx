@@ -1,17 +1,27 @@
 // Fastify factory for the MCP server.
 //
-// Surface (host is the dedicated mcp.sparx.works subdomain, so the path
-// carries no redundant `/mcp` segment — the subdomain already says it):
+// Surface (dedicated mcp.sparx.works subdomain):
 //   • GET  /health           — liveness/readiness probe
-//   • POST /v1               — MCP JSON-RPC over Streamable HTTP
-//   • GET  /v1               — SSE channel for server→client messages
-//   • DELETE /v1             — explicit session termination
+//   • POST /mcp              — MCP JSON-RPC over Streamable HTTP
+//   • GET  /mcp              — SSE channel for server→client messages
+//   • DELETE /mcp            — explicit session termination
+//
+// The endpoint is `/mcp` — matching the shopper site MCP (docs/113) and the
+// de-facto MCP convention, so both servers connect the same way. (The earlier
+// `/v1` path made every natural connect attempt 404.) `/v1` stays wired as a
+// deprecated alias so any early connector keeps working; any OTHER path gets a
+// helpful JSON 404 naming the real endpoint instead of a bare "route not found".
 //
 // Auth: bearer JWT (see ./auth.ts). One McpServer + transport pair is built
 // per request — stateless mode — so each call is hermetic and easy to test.
 
 import { randomUUID } from 'node:crypto';
-import Fastify, { type FastifyInstance, type FastifyServerOptions } from 'fastify';
+import Fastify, {
+  type FastifyInstance,
+  type FastifyReply,
+  type FastifyRequest,
+  type FastifyServerOptions,
+} from 'fastify';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { env } from './env.js';
 import authPlugin, { AuthError, authenticate } from './auth.js';
@@ -96,32 +106,49 @@ export async function createApp(): Promise<FastifyInstance> {
 
   // Public OAuth resource-server discovery (docs/07 §5) — no auth.
   registerOAuthMetadataRoutes(app);
-
-  // POST handles initialize + JSON-RPC requests. GET handles the SSE channel
-  // the SDK opens for streaming responses; DELETE terminates a session.
-  app.route({
-    method: ['POST', 'GET', 'DELETE'],
-    url: '/v1',
-    handler: async (request, reply) => {
-      const auth = await authenticate(request);
-      // POST is the only method that carries a JSON-RPC body — GET opens the
-      // SSE channel and DELETE terminates. Only count POST against the
-      // tenant's quota; GET/DELETE are framing, not work.
-      if (request.method === 'POST') {
-        enforceRateLimit({
-          auth,
-          isWriteCall: isWriteToolCall(request.body),
-        });
-      }
-      const server = await buildServerForRequest(auth);
-      // Stateless mode — no session id, every request stands alone.
-      const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
-      await server.connect(transport);
-      await transport.handleRequest(request.raw, reply.raw, request.body);
-      // handleRequest takes over the response — tell Fastify to stop.
-      reply.hijack();
-    },
-  });
+  registerMcpRoutes(app);
 
   return app;
+}
+
+/** The MCP transport endpoint + its wrong-path safety net. `/mcp` is canonical;
+ *  `/v1` is the deprecated alias (kept so early connectors keep working — the
+ *  OAuth token audience is not path-bound, see auth.ts, so both resolve to the
+ *  same tenant + scopes and an alias can't leak or widen access). Any OTHER path
+ *  gets a JSON 404 naming the real endpoint rather than Fastify's bare "route not
+ *  found" — the silent /v1-vs-/mcp 404s cost real debugging time. */
+function registerMcpRoutes(app: FastifyInstance): void {
+  // POST handles initialize + JSON-RPC requests. GET handles the SSE channel
+  // the SDK opens for streaming responses; DELETE terminates a session.
+  const mcpHandler = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
+    const auth = await authenticate(request);
+    // POST is the only method that carries a JSON-RPC body — GET opens the
+    // SSE channel and DELETE terminates. Only count POST against the tenant's
+    // quota; GET/DELETE are framing, not work.
+    if (request.method === 'POST') {
+      enforceRateLimit({ auth, isWriteCall: isWriteToolCall(request.body) });
+    }
+    const server = await buildServerForRequest(auth);
+    // Stateless mode — no session id, every request stands alone.
+    const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
+    await server.connect(transport);
+    await transport.handleRequest(request.raw, reply.raw, request.body);
+    // handleRequest takes over the response — tell Fastify to stop.
+    reply.hijack();
+  };
+
+  const mcpMethods = ['POST', 'GET', 'DELETE'] as const;
+  app.route({ method: [...mcpMethods], url: '/mcp', handler: mcpHandler });
+  app.route({ method: [...mcpMethods], url: '/v1', handler: mcpHandler });
+
+  app.setNotFoundHandler((request, reply) => {
+    reply.code(404).send({
+      success: false,
+      error: {
+        code: 'NOT_FOUND',
+        message: `No route for ${request.method} ${request.url}. The MCP endpoint is /mcp on this host.`,
+        request_id: request.id,
+      },
+    });
+  });
 }

@@ -52,7 +52,7 @@ async function postMcp(
 ): Promise<{ statusCode: number; body: string }> {
   const res = await app.inject({
     method: 'POST',
-    url: '/v1',
+    url: '/mcp',
     headers: {
       authorization: `Bearer ${token}`,
       'content-type': 'application/json',
@@ -93,7 +93,25 @@ describe('mcp-server smoke', () => {
     expect(res.json()).toMatchObject({ status: 'ok' });
   });
 
-  it('POST /v1 without auth returns 401', async () => {
+  it('POST /mcp without auth returns 401', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      url: '/mcp',
+      headers: {
+        'content-type': 'application/json',
+        accept: 'application/json, text/event-stream',
+      },
+      payload: jsonRpc('initialize', {
+        protocolVersion: '2024-11-05',
+        capabilities: {},
+        clientInfo: { name: 'test', version: '1.0' },
+      }),
+    });
+    expect(res.statusCode).toBe(401);
+    expect(res.json().error.code).toBe('UNAUTHORIZED');
+  });
+
+  it('POST /v1 (deprecated alias) still reaches the MCP handler — 401 without auth', async () => {
     const res = await app.inject({
       method: 'POST',
       url: '/v1',
@@ -109,6 +127,14 @@ describe('mcp-server smoke', () => {
     });
     expect(res.statusCode).toBe(401);
     expect(res.json().error.code).toBe('UNAUTHORIZED');
+  });
+
+  it('an unknown path returns a helpful JSON 404 naming /mcp', async () => {
+    const res = await app.inject({ method: 'POST', url: '/wrong-path' });
+    expect(res.statusCode).toBe(404);
+    const body = res.json();
+    expect(body.error.code).toBe('NOT_FOUND');
+    expect(body.error.message).toContain('/mcp');
   });
 
   it('accepts an external API key and rejects after revocation', async () => {

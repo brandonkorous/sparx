@@ -35,9 +35,11 @@ function protectedResourceMetadata() {
   };
 }
 
-/** Register the public discovery routes. Both the bare well-known path and the
- *  resource-path-suffixed variant (RFC 9728 §3.1, for a resource with a path)
- *  return the same document. No auth — discovery must be reachable pre-token. */
+/** Register the public discovery routes. The bare well-known path and the
+ *  resource-path-inserted variants (RFC 9728 §3.1, for a resource with a path)
+ *  all return the same document. `/mcp` is the canonical endpoint; `/v1` is kept
+ *  for the deprecated alias so a client still on that path discovers the AS. No
+ *  auth — discovery must be reachable pre-token. */
 export function registerOAuthMetadataRoutes(app: FastifyInstance): void {
   const handler = (_request: FastifyRequest, reply: FastifyReply) => {
     reply
@@ -47,5 +49,6 @@ export function registerOAuthMetadataRoutes(app: FastifyInstance): void {
       .send(protectedResourceMetadata());
   };
   app.get('/.well-known/oauth-protected-resource', handler);
+  app.get('/.well-known/oauth-protected-resource/mcp', handler);
   app.get('/.well-known/oauth-protected-resource/v1', handler);
 }

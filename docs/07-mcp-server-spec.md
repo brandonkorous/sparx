@@ -153,7 +153,7 @@ In all three the tenant must have the `ai` module active; per-tool scopes then d
 
 Remote MCP connectors (Claude Desktop, ChatGPT) speak **only** OAuth 2.1 — Authorization-Code + PKCE with Dynamic Client Registration (RFC 7591). The **dashboard (`app.sparx.works`, Better Auth `mcp()` plugin) is the authorization server**; **api-mcp (`mcp.sparx.works`) is the resource server**. Discovery + hand-off:
 
-1. Client `POST`s `mcp.sparx.works/v1` → **401** with `WWW-Authenticate: Bearer resource_metadata="…/.well-known/oauth-protected-resource"`.
+1. Client `POST`s `mcp.sparx.works/mcp` → **401** with `WWW-Authenticate: Bearer resource_metadata="…/.well-known/oauth-protected-resource"`. (The endpoint is `/mcp` — matching the shopper site MCP and MCP convention; `/v1` is kept as a deprecated alias, and any other path returns a JSON 404 naming `/mcp`.)
 2. Client fetches that **Protected Resource Metadata** (RFC 9728, served by api-mcp) → `authorization_servers: ["https://app.sparx.works"]` + the MCP scope vocabulary.
 3. Client fetches `app.sparx.works/.well-known/oauth-authorization-server` (served by the dashboard) → authorize / token / register endpoints, `code_challenge_methods_supported: ["S256"]`.
 4. Client **self-registers** at `/api/auth/mcp/register` (rate-limited), then opens `/api/auth/mcp/authorize`.

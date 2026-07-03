@@ -22,7 +22,7 @@ data:
   # server (this dashboard/Better Auth origin) that api-mcp points clients at.
   # NOT secrets. (AUTH_DATABASE_URL, used by api-mcp to introspect OAuth tokens
   # as sparx_owner, lives in sparx-app-secrets alongside the other DB URLs.)
-  MCP_RESOURCE_URL: https://mcp.sparx.works/v1
+  MCP_RESOURCE_URL: https://mcp.sparx.works/mcp
   MCP_AUTH_SERVER_URL: https://app.sparx.works
   # Site MCP (docs/113) — the shopper-facing MCP plane (mcp-site).
   # Its canonical public origin, used only to build discovery URLs. The service
