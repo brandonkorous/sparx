@@ -3,7 +3,6 @@
 import * as React from 'react';
 import { Badge, Button, Checkbox, Stack, Text } from '@sparx/ui';
 import type { McpScopeMeta } from '@sparx/auth';
-import { approveMcpConsent, denyMcpConsent } from '../actions';
 
 export interface ConsentFormProps {
   /** Hidden authorize params to echo back to the server actions. */
@@ -38,7 +37,7 @@ export function ConsentForm({ params, catalog, defaultSelected }: ConsentFormPro
   }
 
   return (
-    <form>
+    <form method="post" action="/oauth/consent/submit">
       {Object.entries(params).map(([k, v]) => (
         <input key={k} type="hidden" name={k} value={v} />
       ))}
@@ -110,10 +109,10 @@ export function ConsentForm({ params, catalog, defaultSelected }: ConsentFormPro
         </Stack>
 
         <Stack direction="row" gap={3} justify="end">
-          <Button type="submit" variant="ghost" formAction={denyMcpConsent}>
+          <Button type="submit" name="decision" value="deny" variant="ghost">
             Deny
           </Button>
-          <Button type="submit" color="primary" formAction={approveMcpConsent}>
+          <Button type="submit" name="decision" value="approve" color="primary">
             Authorize {selected.size > 0 ? `(${selected.size})` : ''}
           </Button>
         </Stack>
