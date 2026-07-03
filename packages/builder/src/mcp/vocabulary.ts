@@ -27,7 +27,9 @@ export const BUILDER_STYLE_GUIDE = {
   documentFormat: {
     description:
       'Pass create_builder_page / update_builder_page a "document" — either this envelope or a bare node tree. ' +
-      'Missing node ids are auto-filled, so you only need to emit { type, class?, props?, children? }.',
+      'Missing node ids are auto-filled, so you only need to emit { type, class?, props?, children? }. The envelope also ' +
+      'accepts optional SEO — seoTitle, seoDescription, canonical, ogImage, noindex — which set the page metadata the ' +
+      'storefront renders (omit them on an update to leave existing SEO untouched).',
     format: 'sparx.builder/v1',
     kinds: {
       singleton:
@@ -41,6 +43,8 @@ export const BUILDER_STYLE_GUIDE = {
       name: 'About',
       kind: 'singleton',
       slug: 'about',
+      seoTitle: 'About — Your Company',
+      seoDescription: 'Who we are and what we make.',
       tree: {
         type: 'Section',
         class: 'w-full bg-base-100',
@@ -250,6 +254,93 @@ export const BUILDER_STYLE_GUIDE = {
       'groups in a Grid (it collapses N→2→1 by container width), never a single fixed row that runs off a phone. Verify both at ~375px.',
   },
 
+  siteLayout: {
+    description:
+      'The site LAYOUT is the chrome shell — header · content · footer — that wraps EVERY page. It is a SEPARATE document ' +
+      'from pages (type:"layout"), with its own draft/publish lifecycle, authored via the layout tools ' +
+      '(list_builder_layouts, get_builder_layout, update_builder_layout, publish_builder_layout, set_active_layout). A ' +
+      'site keeps a catalog of layouts; exactly one is ACTIVE — the live chrome the storefront serves.',
+    outlet:
+      'The layout tree MUST contain exactly one Outlet node — it marks where the routed page renders between your header ' +
+      'and footer. A layout with no Outlet renders chrome with no page body.',
+    identity:
+      'Bind the brand mark to the platform-owned site data: Wordmark/Logo → `site.identity` (name + logo), SocialLinks → ' +
+      '`site.social`. Navigation is Builder-owned — put links directly on the NavMenu node’s props.links, not a binding.',
+    workflow:
+      'To change the header/footer: get_builder_layout (omit layoutId → the ACTIVE layout + its tree), edit the tree, ' +
+      'update_builder_layout, then publish_builder_layout (the active layout publishes straight to live). A brand-new ' +
+      'layout also needs set_active_layout after publishing.',
+    document: {
+      format: 'sparx.builder/v1',
+      type: 'layout',
+      name: 'Site chrome',
+      tree: {
+        type: 'Stack',
+        class: 'flex flex-col min-h-screen',
+        props: {},
+        children: [
+          {
+            type: 'Section',
+            class: 'w-full border-b border-border bg-base-100',
+            props: {},
+            children: [
+              {
+                type: 'Section',
+                class:
+                  'mx-auto w-full max-w-site flex flex-row items-center justify-between gap-4 px-6 py-4',
+                props: {},
+                children: [
+                  {
+                    type: 'Wordmark',
+                    props: { collapse: 'name' },
+                    binding: { path: 'site.identity' },
+                  },
+                  {
+                    type: 'NavMenu',
+                    class: 'flex flex-row',
+                    props: {
+                      links: [
+                        { label: 'About', href: '/about' },
+                        { label: 'Products', href: '/products' },
+                        { label: 'Contact', href: '/contact' },
+                      ],
+                    },
+                  },
+                  {
+                    type: 'Button',
+                    props: { label: 'Get in touch', style: 'primary', href: '/contact' },
+                  },
+                ],
+              },
+            ],
+          },
+          { type: 'Outlet', props: {} },
+          {
+            type: 'Section',
+            class: 'w-full border-t border-border bg-base-200',
+            props: {},
+            children: [
+              {
+                type: 'Section',
+                class: 'mx-auto w-full max-w-site flex flex-col gap-4 px-6 py-10',
+                props: {},
+                children: [
+                  {
+                    type: 'Wordmark',
+                    props: { collapse: 'name' },
+                    binding: { path: 'site.identity' },
+                  },
+                  { type: 'SocialLinks', props: {}, binding: { path: 'site.social' } },
+                  { type: 'Text', props: { variant: 'meta', text: '© Your Company' } },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    },
+  },
+
   binding: {
     description:
       'A node may bind to a path in the current data scope (`binding.path`). Cardinality drives behavior: an OBJECT path sets the ' +
@@ -370,7 +461,11 @@ export const BUILDER_STYLE_GUIDE = {
   ],
 
   workflow:
-    'Typical loop: (1) describe_builder_styling once to load this guide. (2) list_builder_pages to see the catalog; get_builder_page to read an existing tree. (3) create_builder_page or update_builder_page with your document (saves a DRAFT). (4) publish_builder_page to take it live (confirmation-gated).',
+    'Typical loop: (1) describe_builder_styling once to load this guide. (2) list_builder_pages to see the catalog; ' +
+    'get_builder_page to read an existing tree. (3) create_builder_page or update_builder_page with your document ' +
+    '(saves a DRAFT) — set page SEO inline via the envelope’s seoTitle/seoDescription. (4) publish_builder_page to take ' +
+    'it live (confirmation-gated). The site header/footer is authored SEPARATELY with the layout tools — see ' +
+    '`siteLayout` (get_builder_layout → update_builder_layout → publish_builder_layout).',
 } as const;
 
 export type BuilderStyleGuide = typeof BUILDER_STYLE_GUIDE;

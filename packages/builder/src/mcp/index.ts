@@ -8,8 +8,15 @@ export { BUILDER_STYLE_GUIDE, type BuilderStyleGuide } from './vocabulary';
 
 import { readTools } from './read-tools';
 import { writeTools } from './write-tools';
+import { layoutReadTools, layoutWriteTools } from './layout-tools';
 
 export * from './read-tools';
 export * from './write-tools';
+export * from './layout-tools';
 
-export const builderMcpTools = [...readTools, ...writeTools];
+export const builderMcpTools = [
+  ...readTools,
+  ...writeTools,
+  ...layoutReadTools,
+  ...layoutWriteTools,
+];

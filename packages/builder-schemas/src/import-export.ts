@@ -12,7 +12,7 @@
 
 import { z } from 'zod';
 import { BuilderNodeSchema, type BuilderNode } from './node';
-import { BuilderPageKind, PageSlug } from './page';
+import { BuilderPageKind, PageSeoShape, PageSlug } from './page';
 
 /** The document format tag. Bump the version when the envelope shape changes
  *  (the node tree itself is versioned by the schema, not here). */
@@ -27,6 +27,9 @@ export const BuilderPageDocumentSchema = z.object({
   kind: BuilderPageKind.default('singleton'),
   slug: PageSlug.nullish(),
   recordType: z.string().max(63).nullish(),
+  // Optional SEO the envelope carries inline (title/description/canonical/og/
+  // noindex) so an MCP or Import author sets page meta without a second call.
+  ...PageSeoShape,
   tree: BuilderNodeSchema,
 });
 export type BuilderPageDocument = z.infer<typeof BuilderPageDocumentSchema>;
@@ -154,6 +157,13 @@ export interface PageImportMeta {
   kind?: z.infer<typeof BuilderPageKind>;
   slug?: string | null;
   recordType?: string | null;
+  // SEO carried on the envelope. `undefined` means "not present" (a caller MUST
+  // leave the stored value untouched on update); `null`/'' means "clear it".
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  canonical?: string | null;
+  ogImage?: string | null;
+  noindex?: boolean;
 }
 export interface LayoutImportMeta {
   name?: string;
@@ -210,6 +220,14 @@ export function parsePageImport(raw: unknown): ImportParse<PageImportMeta> {
         kind: parsed.data.kind,
         slug: parsed.data.slug ?? null,
         recordType: parsed.data.recordType ?? null,
+        // Pass SEO through AS-IS (do not coalesce to null): a field the envelope
+        // omitted stays `undefined` so an update leaves the stored value alone,
+        // while an explicit null/'' clears it at the service boundary.
+        seoTitle: parsed.data.seoTitle,
+        seoDescription: parsed.data.seoDescription,
+        canonical: parsed.data.canonical,
+        ogImage: parsed.data.ogImage,
+        noindex: parsed.data.noindex,
       },
     };
   }

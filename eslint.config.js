@@ -25,6 +25,9 @@ export default tseslint.config(
       // asset renderer) — regenerated on demand, never committed (docs/85).
       'marketplace-catalog/_*/**',
       '**/_marketplace-assets.mjs',
+      // Brain — the Obsidian knowledge vault (docs/brain). Human-authored notes,
+      // excluded from every push gate (mirrors .prettierignore).
+      'docs/brain/**',
     ],
   },
   js.configs.recommended,

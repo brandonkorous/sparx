@@ -1,0 +1,17 @@
+---
+title: Stripe (payments + billing)
+node: integrations
+type: reference
+status: active
+sources:
+  - packages/payments/
+  - packages/billing/
+---
+
+A real, deep integration (not the dev-tooling `stripe:*` MCP). Two homes, both no-op until keys are set:
+
+- **`packages/payments/`** — vendor-agnostic gateway. `gateways/stripe-direct.ts` (merchant's own Stripe, no platform fee) + `gateways/sparx-pay.ts` (**Stripe Connect** destination charges, flat **0.5% `application_fee`**). Sits alongside non-Stripe gateways (square, authorize-net, first-pay, custom-redirect). Consumed by `packages/commerce/` checkout / subscription / return / market-payout.
+- **`packages/billing/`** — **platform** billing: WizeWorks charges each tenant via one Stripe subscription, one item per active module (`price-catalog.ts`, `scripts/provision-stripe.ts`). Ties to [[billing-model]].
+- **Webhooks:** Pub/Sub topic `stripe.webhook` → billing consumer. Secrets `stripe-secret-key`, `stripe-webhook-secret`. Docs 92 / 94 / 111.
+
+Related: [[billing-model]], [[modules-are-flags]], [[rejected]]

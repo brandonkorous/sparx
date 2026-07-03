@@ -6,20 +6,30 @@
 // an agent to emit a tree the service will reject.
 
 import { describe, expect, it } from 'vitest';
-import { parsePageImport } from '@sparx/builder-schemas';
+import { parseLayoutImport, parsePageImport } from '@sparx/builder-schemas';
 import { validateClasses } from '@sparx/surface-compile';
 
 import { builderMcpTools } from './index';
 import { BUILDER_STYLE_GUIDE } from './vocabulary';
 
 describe('BUILDER_STYLE_GUIDE', () => {
-  it('teaches a document example that validates as a page', () => {
+  it('teaches a document example that validates as a page (with inline SEO)', () => {
     const parsed = parsePageImport(BUILDER_STYLE_GUIDE.documentFormat.example);
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
       expect(parsed.meta.name).toBe('About');
       expect(parsed.meta.slug).toBe('about');
+      expect(parsed.meta.seoTitle).toBe('About — Your Company');
     }
+  });
+
+  it('teaches a site-layout example that validates (and contains an Outlet)', () => {
+    const parsed = parseLayoutImport(BUILDER_STYLE_GUIDE.siteLayout.document);
+    expect(parsed.ok).toBe(true);
+    const hasOutlet = (node: { type: string; children?: unknown[] }): boolean =>
+      node.type === 'Outlet' ||
+      (node.children ?? []).some((c) => hasOutlet(c as { type: string; children?: unknown[] }));
+    if (parsed.ok) expect(hasOutlet(parsed.tree)).toBe(true);
   });
 
   it('teaches recipe trees that all validate as bare node trees', () => {
@@ -78,6 +88,30 @@ describe('builderMcpTools', () => {
       const expected = /^(describe|list|get)_/.test(t.name) ? 'read:builder' : 'write:builder';
       expect(t.scope, t.name).toBe(expected);
     }
+  });
+
+  it('exposes the site-layout (chrome) authoring surface', () => {
+    const names = builderMcpTools.map((t) => t.name);
+    expect(names).toEqual(
+      expect.arrayContaining([
+        'list_builder_layouts',
+        'get_builder_layout',
+        'create_builder_layout',
+        'update_builder_layout',
+        'publish_builder_layout',
+        'set_active_layout',
+        'delete_builder_layout',
+      ])
+    );
+  });
+
+  it('gates layout go-live + delete behind confirmation, leaves layout authoring un-gated', () => {
+    const byName = new Map(builderMcpTools.map((t) => [t.name, t]));
+    expect(byName.get('publish_builder_layout')?.confirmation).toBe(true);
+    expect(byName.get('set_active_layout')?.confirmation).toBe(true);
+    expect(byName.get('delete_builder_layout')?.confirmation).toBe(true);
+    expect(byName.get('create_builder_layout')?.confirmation).toBe(false);
+    expect(byName.get('update_builder_layout')?.confirmation).toBe(false);
   });
 
   it('describe_builder_styling returns the guide without a service call', async () => {

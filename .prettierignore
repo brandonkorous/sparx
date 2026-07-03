@@ -40,3 +40,8 @@ apps/dashboard/_marketplace-assets.mjs
 
 # Local media storage (LocalStorage MEDIA_LOCAL_DIR — generated artifacts)
 **/.media-tmp/**
+
+# Brain — the Obsidian knowledge vault (docs/brain). Free-form notes + Obsidian's
+# own .obsidian/*.json editor state; excluded from every push gate (Prettier here,
+# ESLint ignores mirror this). Authored for humans, never machine-formatted.
+docs/brain/**

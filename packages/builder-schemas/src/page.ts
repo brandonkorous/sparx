@@ -69,9 +69,11 @@ export interface PublishedPageDto {
 
 // ── Service inputs (parsed at the service boundary, never by the DB) ──────────
 
-/** The editable SEO fields shared by Create/Update. `canonical` accepts a path
- *  or absolute URL; empty strings normalize to null at the service boundary. */
-const PageSeoShape = {
+/** The editable SEO fields shared by Create/Update (and the portable page
+ *  document envelope, so an MCP/Import author can set them inline). `canonical`
+ *  accepts a path or absolute URL; empty strings normalize to null at the service
+ *  boundary. */
+export const PageSeoShape = {
   seoTitle: z.string().max(255).nullish(),
   seoDescription: z.string().max(500).nullish(),
   canonical: z.string().max(2048).nullish(),

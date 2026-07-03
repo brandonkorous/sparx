@@ -1,0 +1,72 @@
+---
+title: sparx brain — home
+type: map
+status: active
+---
+
+# sparx brain
+
+> The front door to how sparx is designed and built. **Start here.** Every node below is a Map of Content that routes you to the real source files — it indexes knowledge, it doesn't replace it. New here? Read [[CONTRACT]].
+
+## ⚠️ Internalize this first: there are TWO design systems
+
+Almost every UI mistake starts by conflating them. Every design/component note declares which one it governs (`applies-to`).
+
+| | Dashboard / admin | Storefront / tenant site |
+|---|---|---|
+| Tokens | `--color-*` / `--module-*` / `--sparx-*` | `--st-*` |
+| Role classes | `.sx-c-*` | `.st-c-*` |
+| Library | `@sparx/ui` + `ModuleProvider` | `@sparx/site-ui` + `@sparx/site-themes` |
+| Compiled by | imported once per app | `packages/surface-compile` per tenant |
+| Themeable | no (house system) | yes (per-tenant brand) |
+
+**Sources of truth:** dashboard → `packages/ui/src/tokens.css` + `apps/dashboard/DESIGN.md`. Storefront → `docs/33-token-model-v2.md` + `packages/surface-compile/src/theme.ts`.
+
+## Nodes
+
+**Design & build**
+- [[design]] ⚠️ — the visual *language*; applies down onto components, elements, and content. **The acute node.**
+- [[components]] — the `@sparx/ui` library, `SurfaceFrame`/`form-surface`, composition patterns, builder catalog.
+
+**Product & business**
+- [[features]] — the master catalog of every capability, each classified **module | program | platform**. Not every feature is a module — *partner* is a program. Owns the module-vs-program taxonomy.
+- [[modules]] — the *module-kind* features: paid, feature-flagged, spectrum-hued domains; each links **PRD ↔ UI ↔ API ↔ data**.
+- [[apps]] — inventory of `apps/*` + `services/*` (what each is, stack, entry points).
+- [[business]] — WizeWorks, the content-and/or-commerce vision, clients, the billing/module model.
+
+**System**
+- [[architecture]] — RLS multi-tenancy, Better Auth, modules-are-flags, event-driven, API-first, MCP-first.
+- [[data]] — Prisma schema, RLS mechanics, the customer/contact spine, the migration pipeline.
+- [[api-events]] — our REST surface, the MCP server, the Pub/Sub event catalog, the email pipeline.
+- [[infrastructure]] — GKE, phased infra, deploy/build/db-migrate/auto-tag workflows, Terraform, Caddy, cost.
+- [[integrations]] — registry of every external service & tool (Stripe, kanNINJA, Mailgun, GCP, …) and the ones we rejected.
+
+**Process & memory**
+- [[conventions]] — ways of working: production-not-MVP, no-deferring, commit/release automation, pre-push, file size.
+- [[lessons-learned]] — postmortems: what drifted, why, and the rule it produced (the partner drift lives here).
+- [[tasks]] — durable roadmap + active-work index; live cards live in kanNINJA (see [[integrations]]).
+
+## Task router — "I'm about to…"
+
+Don't build from memory. Enter these nodes first.
+
+| I'm about to… | Enter |
+|---|---|
+| Build/redesign a **dashboard** page or overlay | [[design]] → [[components]] → the module in [[modules]] (match its existing surfaces) |
+| Build a **create/edit form** | [[components]] (`SurfaceFrame`/`form-surface`) → [[design]] |
+| Add a feature to a **module** | [[modules]] (its PRD + existing UI) → [[architecture]] → [[data]] → [[api-events]] |
+| Touch **storefront / site-builder** UI | [[design]] (storefront branch) → [[components]] (builder catalog) |
+| Change **schema / migrations** | [[data]] → [[infrastructure]] (pipeline) |
+| Add an **API endpoint or MCP tool** | [[api-events]] → [[architecture]] |
+| Wire up an **external service** | [[integrations]] → [[infrastructure]] |
+| Deploy / infra / cost change | [[infrastructure]] → [[conventions]] (cost discipline) |
+| Add a **program/feature** that isn't a module (like partner) | [[features]] (classify it) → [[design]] → [[components]] |
+| Understand the **why** / business context | [[business]] |
+
+## Quarantine — looks authoritative, is stale (do NOT trust)
+
+- `docs/18-frontend-architecture.md` — HSL blue tokens, Inter font, pre-CVA components. Keep only the stack table / perf targets.
+- `docs/sparx-design-tokens.css` — a token file that has diverged from live `tokens.css` (14px base, removed 3px stripe, wrong `--color-info`). The root doc-map points here by mistake.
+- **root `CLAUDE.md` "Repository status" + a few specifics** — the "early scaffold / empty apps / no UI components" framing is false (277 models, ~18 services, ~90 UI components); email is **Mailgun** not Postal; the event examples `order.created`/`customer.updated` don't exist. The *architectural commitments* in CLAUDE.md are authoritative; the status framing + those specifics are not. See [[claude-md-drifted]].
+
+_See [[CONTRACT]] for how notes are structured, named, and kept from drifting._

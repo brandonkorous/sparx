@@ -1,8 +1,17 @@
 name: Build & push images
 
 on:
+  # Builds are driven by TAGS, never by raw pushes to main. auto-tag.yml runs on
+  # every push to main, creates the release tag when there's something
+  # releasable, and dispatches this workflow against that tag (the
+  # workflow_dispatch trigger below). A GITHUB_TOKEN-pushed tag does not fire the
+  # `tags: ['v*']` trigger on its own, which is why auto-tag dispatches
+  # explicitly; the `tags` trigger stays as a safety net for a human manually
+  # pushing a v* tag. There is deliberately NO `branches: [main]` trigger: it
+  # double-built every releasable commit (once on the push, once on the
+  # dispatched tag) and only ever produced SHA-tagged images that nothing
+  # deploys — deploy-prod.yml rolls out tags, not main-branch SHAs.
   push:
-    branches: [main]
     tags: ['v*']
   workflow_dispatch:
     inputs:

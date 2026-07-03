@@ -20,8 +20,10 @@ import type { McpToolDefinition } from './registry';
 const documentArg = z
   .union([z.string(), z.record(z.string(), z.unknown())])
   .describe(
-    'A Builder page document — { format:"sparx.builder/v1", type:"page", name, kind, slug?, recordType?, tree } — ' +
-      'OR a bare node tree. JSON string or inline object. Missing node ids are auto-filled. See describe_builder_styling. ' +
+    'A Builder page document — { format:"sparx.builder/v1", type:"page", name, kind, slug?, recordType?, ' +
+      'seoTitle?, seoDescription?, canonical?, ogImage?, noindex?, tree } — OR a bare node tree. JSON string or inline ' +
+      'object. Missing node ids are auto-filled. Include the optional SEO fields to set the page title/description the ' +
+      'storefront renders (omit them on an update to leave existing SEO untouched). See describe_builder_styling. ' +
       'The tree MUST be responsive (mobile-first; layout adapts to width) — see the guide’s `responsive` section.'
   );
 
@@ -67,6 +69,12 @@ export const createBuilderPage: McpToolDefinition = {
       slug: parsed.meta.slug,
       recordType: parsed.meta.recordType,
       tree: parsed.tree,
+      // SEO the envelope carried inline (undefined → stored as null by the service).
+      seoTitle: parsed.meta.seoTitle,
+      seoDescription: parsed.meta.seoDescription,
+      canonical: parsed.meta.canonical,
+      ogImage: parsed.meta.ogImage,
+      noindex: parsed.meta.noindex,
     });
   },
 };
@@ -96,6 +104,13 @@ export const updateBuilderPage: McpToolDefinition = {
     if (parsed.meta.name !== undefined) patch.name = parsed.meta.name;
     if (parsed.meta.slug !== undefined) patch.slug = parsed.meta.slug;
     if (parsed.meta.recordType !== undefined) patch.recordType = parsed.meta.recordType;
+    // SEO — only patch a field the envelope actually carried, so a tree-only
+    // update never wipes an existing title/description (undefined = leave as-is).
+    if (parsed.meta.seoTitle !== undefined) patch.seoTitle = parsed.meta.seoTitle;
+    if (parsed.meta.seoDescription !== undefined) patch.seoDescription = parsed.meta.seoDescription;
+    if (parsed.meta.canonical !== undefined) patch.canonical = parsed.meta.canonical;
+    if (parsed.meta.ogImage !== undefined) patch.ogImage = parsed.meta.ogImage;
+    if (parsed.meta.noindex !== undefined) patch.noindex = parsed.meta.noindex;
     return pageService.update(pctx, pageId, patch);
   },
 };

@@ -95,18 +95,33 @@ spec:
             limits:
               cpu: '1000m'
               memory: '512Mi'
+          # The startupProbe is the fix — and it's FREE (no resource change). It
+          # gates liveness + readiness until the app is actually listening, so the
+          # heavy cold boot (Node evaluating the full module surface — crm/commerce/
+          # inventory/sitebuilder/builder/email/search/automation/scheduling — +
+          # Prisma) can take its time instead of being SIGKILLed by liveness at
+          # ~105s (exit 137, "connection refused" probes → the 3× crash-loop on
+          # 2026-07-03). The window is deliberately generous (60 × 5s = 300s)
+          # because boot is slow at 100m CPU. Raising CPU/memory would speed the
+          # boot but is an ongoing-cost decision (Autopilot bills per request) —
+          # left to the owner, not baked in.
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            periodSeconds: 5
+            failureThreshold: 60
+            timeoutSeconds: 3
           livenessProbe:
             httpGet:
               path: /health
               port: 3000
-            initialDelaySeconds: 15
             periodSeconds: 30
             failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /health
               port: 3000
-            initialDelaySeconds: 3
             periodSeconds: 10
             failureThreshold: 2
           lifecycle:
