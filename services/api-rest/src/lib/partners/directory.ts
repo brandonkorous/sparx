@@ -151,7 +151,14 @@ export const directoryService = {
       return true;
     });
 
-    const facets = { format: tally(rows.map((b) => b.format)) };
+    const facets = {
+      format: tally(rows.map((b) => b.format)),
+      // Location facet = the cities hosting bootcamps (virtual/async cohorts have
+      // no city and don't contribute). Value is the bare city so it matches the
+      // `location` substring filter above — a "City, ST" value would miss on the
+      // comma against the `"city state"` haystack.
+      location: tally(rows.map((b) => b.locationCity).filter((c): c is string => Boolean(c))),
+    };
     const { page, next_cursor } = paginate(items, q.cursor, q.limit);
     return {
       items: page.map((b) => toBootcampCard(b, hostMap.get(b.partnerId))),

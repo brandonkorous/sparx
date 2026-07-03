@@ -49,6 +49,17 @@ export interface BootcampListResponse {
   next_cursor: string | null;
 }
 
+// The API response is untrusted at the boundary — an older api-rest (or a shape
+// drift) can omit a facet array entirely. We model it loosely here and coerce to
+// the strict BootcampListResponse in fetchBootcamps so the public page can never
+// 500 on a missing key (the bug that took /bootcamp down: `facets.location` was
+// absent and `[...facets.location]` threw).
+interface RawBootcampList {
+  items?: BootcampCard[];
+  facets?: { format?: FacetCount[]; location?: FacetCount[] };
+  next_cursor?: string | null;
+}
+
 const EMPTY_PAGE: BootcampListResponse = {
   items: [],
   facets: { format: [], location: [] },
@@ -77,8 +88,16 @@ export async function fetchBootcamps(
   query: Record<string, string> = {}
 ): Promise<BootcampListResponse> {
   const qs = new URLSearchParams(query).toString();
-  const data = await getPublic<BootcampListResponse>(`/v1/public/bootcamps${qs ? `?${qs}` : ''}`);
-  return data ?? EMPTY_PAGE;
+  const data = await getPublic<RawBootcampList>(`/v1/public/bootcamps${qs ? `?${qs}` : ''}`);
+  if (!data) return EMPTY_PAGE;
+  return {
+    items: data.items ?? [],
+    facets: {
+      format: data.facets?.format ?? [],
+      location: data.facets?.location ?? [],
+    },
+    next_cursor: data.next_cursor ?? null,
+  };
 }
 
 /** One published bootcamp by slug, or null if not published/found. */

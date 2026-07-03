@@ -49,6 +49,16 @@ export interface PartnerListResponse {
   next_cursor: string | null;
 }
 
+// Loose shape for the untrusted API response — a shape drift (or an older
+// api-rest) can omit a facet array, and the facet bar spreads them
+// (`[...facets.specialty]`), which would throw. fetchPartners coerces this to the
+// strict response so the public directory can never 500 on a missing key.
+interface RawPartnerList {
+  items?: PartnerCard[];
+  facets?: { tier?: FacetCount[]; specialty?: FacetCount[] };
+  next_cursor?: string | null;
+}
+
 const EMPTY_PAGE: PartnerListResponse = {
   items: [],
   facets: { tier: [], specialty: [] },
@@ -81,8 +91,16 @@ export async function fetchPartners(
   query: Record<string, string> = {}
 ): Promise<PartnerListResponse> {
   const qs = new URLSearchParams(query).toString();
-  const data = await getPublic<PartnerListResponse>(`/v1/public/partners${qs ? `?${qs}` : ''}`);
-  return data ?? EMPTY_PAGE;
+  const data = await getPublic<RawPartnerList>(`/v1/public/partners${qs ? `?${qs}` : ''}`);
+  if (!data) return EMPTY_PAGE;
+  return {
+    items: data.items ?? [],
+    facets: {
+      tier: data.facets?.tier ?? [],
+      specialty: data.facets?.specialty ?? [],
+    },
+    next_cursor: data.next_cursor ?? null,
+  };
 }
 
 /** One public partner profile by id, or null if not listable. */
