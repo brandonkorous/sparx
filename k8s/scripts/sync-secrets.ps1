@@ -52,7 +52,12 @@ Write-Host "Recreating $SecretName in namespace $Namespace..."
 kubectl delete secret $SecretName -n $Namespace --ignore-not-found
 kubectl create secret generic $SecretName -n $Namespace @literals
 
-Write-Host "Restarting app + worker Deployments to pick up new values..."
+# Restart EVERY tier that mounts sparx-app-secrets via envFrom. `tier=web` (the
+# dashboard) is easy to forget but MUST be included: Better Auth staff login runs
+# in the dashboard and reads GOOGLE_CLIENT_ID/SECRET from this bundle, so omitting
+# it leaves the dashboard serving a stale client_id → Google "invalid_client".
+Write-Host "Restarting web + app + worker Deployments to pick up new values..."
+kubectl rollout restart deployment -n $Namespace -l tier=web
 kubectl rollout restart deployment -n $Namespace -l tier=api
 kubectl rollout restart deployment -n $Namespace -l tier=worker
 

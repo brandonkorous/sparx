@@ -1,9 +1,11 @@
 // Read-only Site Builder MCP tools. No confirmation; scope read:builder.
 
 import { z } from 'zod';
+import { withTenant } from '@sparx/db';
 import { TargetId, LayoutKey } from '@sparx/sitebuilder-schemas';
 import { themeService, sectionService, publishService, definitionService } from '../services/index';
 import type { AnyMcpTool } from './registry';
+import type { ServiceContext } from '../errors';
 import { toPropertyContext } from './context';
 
 const NoArgs = z.object({});
@@ -15,7 +17,11 @@ const propertyIdArg = z
   .string()
   .uuid()
   .optional()
-  .describe('Target site (web property) id; omit for the tenant’s primary site.');
+  .describe(
+    'Target site (web property) id. Omit to target the tenant’s PRIMARY site. A tenant can have ' +
+      'MULTIPLE sites — call list_sites first to get each site’s id, then pass it here to target ' +
+      'that specific site.'
+  );
 const PropertyArg = z.object({ propertyId: propertyIdArg });
 const ListVersionsArgs = z.object({
   propertyId: propertyIdArg,
@@ -23,7 +29,42 @@ const ListVersionsArgs = z.object({
   skip: z.number().int().min(0).optional(),
 });
 
+/** List every site (web property) the tenant owns, with its hostnames. `properties`
+ *  is FORCE-RLS, so the lookup runs through withTenant (a bare query has no tenant
+ *  GUC and would see zero rows). */
+async function listSites(ctx: ServiceContext) {
+  return withTenant({ tenantId: ctx.tenantId }, (tx) =>
+    tx.property.findMany({
+      orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }],
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        isPrimary: true,
+        status: true,
+        domains: {
+          orderBy: [{ isCanonical: 'desc' }, { createdAt: 'asc' }],
+          select: { host: true, type: true, status: true, isCanonical: true },
+        },
+      },
+    })
+  );
+}
+
 export const readTools: AnyMcpTool[] = [
+  {
+    name: 'list_sites',
+    description:
+      'List every SITE (web property) this tenant owns: id, name, slug, whether it is the primary, ' +
+      'status, and its hostnames. CALL THIS FIRST when the tenant may have more than one site — take a ' +
+      'site’s `id` and pass it as the `propertyId` argument to any site or page tool (get_site_config, ' +
+      'list_builder_pages, create_builder_page, publish_site, …) to target that specific site. Omitting ' +
+      'propertyId always falls back to the tenant’s primary site.',
+    scope: 'read:builder',
+    input: NoArgs,
+    confirmation: false,
+    run: (ctx) => listSites(ctx),
+  },
   {
     name: 'list_themes',
     description:

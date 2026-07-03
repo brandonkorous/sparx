@@ -29,7 +29,11 @@ const propertyIdArg = z
   .string()
   .uuid()
   .optional()
-  .describe('Target site (web property) id; omit for the tenant’s primary site.');
+  .describe(
+    'Target site (web property) id. Omit to target the tenant’s PRIMARY site. A tenant can have ' +
+      'MULTIPLE sites — call list_sites first to get each site’s id, then pass it here to target ' +
+      'that specific site.'
+  );
 
 export const createBuilderPage: McpToolDefinition = {
   name: 'create_builder_page',

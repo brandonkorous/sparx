@@ -45,7 +45,13 @@ const getDomainsTool = {
   input: z.object({}),
   confirmation: false,
   async run(ctx: Ctx) {
-    // domains is a non-RLS dispatch table; filter by tenantId in app.
+    // `domains` is a non-RLS dispatch table — safe to read with the base client,
+    // scoped by tenantId in the app. Its `property` relation, HOWEVER, points at
+    // `properties`, which is FORCE-RLS: a nested Prisma join runs with no tenant
+    // GUC set, so RLS returns zero rows, the required relation resolves to null,
+    // and Prisma throws "Field property is required to return data, got null".
+    // Resolve the site names in a separate, tenant-scoped query instead — which is
+    // also null-safe if a domain's property row was ever removed.
     const domains = await prisma.domain.findMany({
       where: { tenantId: ctx.tenantId },
       select: {
@@ -60,11 +66,28 @@ const getDomainsTool = {
         whoisPrivacy: true,
         renewalPriceCents: true,
         createdAt: true,
-        property: { select: { id: true, name: true } },
+        propertyId: true,
       },
       orderBy: [{ isCanonical: 'desc' }, { createdAt: 'asc' }],
     });
-    return { domains };
+
+    const propertyIds = [...new Set(domains.map((d) => d.propertyId))];
+    const properties = propertyIds.length
+      ? await withTenant(ctx, (tx) =>
+          tx.property.findMany({
+            where: { id: { in: propertyIds } },
+            select: { id: true, name: true, slug: true, isPrimary: true },
+          })
+        )
+      : [];
+    const propertyById = new Map(properties.map((p) => [p.id, p]));
+
+    return {
+      domains: domains.map(({ propertyId, ...domain }) => ({
+        ...domain,
+        property: propertyById.get(propertyId) ?? null,
+      })),
+    };
   },
 };
 
@@ -160,11 +183,12 @@ const purchaseDomainTool = {
   input: PurchaseInput,
   confirmation: true,
   async run(ctx: Ctx, input: PurchaseInput) {
-    // Resolve the tenant's primary property to attach the domain to.
-    const primaryProperty = await prisma.property.findFirst({
-      where: { tenantId: ctx.tenantId, isPrimary: true },
-      select: { id: true },
-    });
+    // Resolve the tenant's primary property to attach the domain to. `properties`
+    // is FORCE-RLS, so this MUST run through withTenant — a bare prisma query has
+    // no tenant GUC set and RLS would return null → a false "no primary property".
+    const primaryProperty = await withTenant(ctx, (tx) =>
+      tx.property.findFirst({ where: { isPrimary: true }, select: { id: true } })
+    );
     if (!primaryProperty) {
       throw new Error('No primary property found for this tenant.');
     }
