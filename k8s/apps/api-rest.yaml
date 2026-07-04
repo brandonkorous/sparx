@@ -24,7 +24,9 @@ metadata:
     app: api-rest
     tier: api
 spec:
-  replicas: 1 # TEMP: SSD_TOTAL_GB quota at 235/250GB blocks scale-up; restore to 2 after quota bump
+  replicas: 2 # 2 for HA: a single replica meant a rolling update ran the lone pod at
+  # peak while its replacement started, exhausting the shared PgBouncer pool (P2028,
+  # 2026-07-04). SSD_TOTAL_GB quota is no longer a constraint (limit 40960GB, ~320 used).
   revisionHistoryLimit: 5
   strategy:
     type: RollingUpdate
@@ -144,8 +146,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: api-rest
-  minReplicas: 1 # TEMP: SSD_TOTAL_GB quota at 235/250GB blocks scale-up; restore to 2 after quota bump
-  maxReplicas: 1 # TEMP: clamped to 1 so CPU spikes can't trigger HPA scale-up while quota is constrained
+  minReplicas: 2 # floor of 2 for HA (see Deployment.replicas)
+  maxReplicas: 10 # un-clamped now the SSD quota is ample; PgBouncer caps Postgres conns, so extra pods only add cheap client conns (MAX_CLIENT_CONN=500)
   metrics:
     - type: Resource
       resource:
