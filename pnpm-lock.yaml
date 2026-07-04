@@ -2251,6 +2251,9 @@ importers:
       '@sparx/marketplace-schemas':
         specifier: workspace:*
         version: link:../../packages/marketplace-schemas
+      '@sparx/media':
+        specifier: workspace:*
+        version: link:../../packages/media
       '@sparx/partner-schemas':
         specifier: workspace:*
         version: link:../../packages/partner-schemas
