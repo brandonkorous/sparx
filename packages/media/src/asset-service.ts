@@ -27,6 +27,7 @@ import { withTenant } from '@sparx/db';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
 import { getStorage, originalKey, safeFilename } from './storage.js';
 import { storageEnv } from './env.js';
+import { mintUploadToken } from './upload-token.js';
 
 export class MediaValidationError extends Error {
   readonly code = 'MEDIA_VALIDATION';
@@ -165,6 +166,110 @@ export async function createImageAssetFromBytes(
     assetId: created.id,
     url: resolveMediaUrl(created.id, ctx.tenantSlug),
     status: nextStatus,
+  };
+}
+
+// ── Proxied upload — the two-phase, byte-free-through-the-model path ─────────
+//
+// create_image_upload → { uploadUrl } → caller PUTs bytes out of band → api-rest
+// writes + transcodes. For real photos/screenshots whose base64 an LLM can't
+// re-emit losslessly through a tool call. See upload-token.ts for the why.
+
+// Cap for the PROXIED byte upload. Far larger than MAX_UPLOAD_IMAGE_BYTES
+// because the bytes DON'T ride the MCP JSON-RPC envelope — they're PUT straight
+// to api-rest out of band — but still bounded so the public upload endpoint
+// can't be used to spray huge objects. The transcoder downscales anyway, so a
+// source larger than this is pointless.
+export const MAX_PROXIED_UPLOAD_BYTES = 20 * 1024 * 1024;
+
+// Upload-URL lifetime. Long enough to PUT a 20 MB file on a slow link, short
+// enough that a leaked URL is useless within minutes.
+const UPLOAD_TOKEN_TTL_SEC = 15 * 60;
+
+export interface CreateImageUploadInput {
+  filename: string;
+  mimeType: string;
+  /** Exact byte length of the file — the PUT body must not exceed it. */
+  byteSize: number;
+  alt?: string;
+  width?: number;
+  height?: number;
+}
+
+export interface ImageUpload {
+  assetId: string;
+  /** PUBLIC, token-authed endpoint to PUT the raw bytes to (the side channel). */
+  uploadUrl: string;
+  method: 'PUT';
+  /** Headers the PUT must send (content-type, matched + sniff-validated server-side). */
+  headers: Record<string, string>;
+  expiresAt: string;
+  maxBytes: number;
+  /** The storefront <img src> to use once uploaded (renders during transcode). */
+  imageUrl: string;
+}
+
+export async function createImageUpload(
+  ctx: MediaWriteContext,
+  input: CreateImageUploadInput
+): Promise<ImageUpload> {
+  if (!ALLOWED_IMAGE_MIME.has(input.mimeType)) {
+    throw new MediaValidationError(
+      `Unsupported image type "${input.mimeType}". Allowed: ${[...ALLOWED_IMAGE_MIME].sort().join(', ')}.`
+    );
+  }
+  if (!Number.isInteger(input.byteSize) || input.byteSize <= 0) {
+    throw new MediaValidationError('byteSize must be a positive integer (the file size in bytes).');
+  }
+  if (input.byteSize > MAX_PROXIED_UPLOAD_BYTES) {
+    throw new MediaValidationError(
+      `Image is ${(input.byteSize / (1024 * 1024)).toFixed(1)} MB; the upload cap is ` +
+        `${MAX_PROXIED_UPLOAD_BYTES / (1024 * 1024)} MB.`
+    );
+  }
+
+  // Create the row (status='uploading', no bytes yet), then finalise its key —
+  // same shape as createImageAssetFromBytes, minus the write (the caller PUTs).
+  const created = await withTenant({ tenantId: ctx.tenantId }, async (tx) => {
+    const row = await tx.mediaAsset.create({
+      data: {
+        tenantId: ctx.tenantId,
+        key: '',
+        originalFilename: safeFilename(input.filename),
+        mimeType: input.mimeType,
+        byteSize: BigInt(input.byteSize),
+        status: 'uploading',
+        width: input.width ?? null,
+        height: input.height ?? null,
+        altText: input.alt ?? null,
+      },
+      select: { id: true },
+    });
+    const key = originalKey(ctx.tenantId, row.id, input.filename);
+    await tx.mediaAsset.update({ where: { id: row.id }, data: { key } });
+    return { id: row.id, key };
+  });
+
+  const exp = Math.floor(Date.now() / 1000) + UPLOAD_TOKEN_TTL_SEC;
+  const token = mintUploadToken({
+    aid: created.id,
+    tid: ctx.tenantId,
+    key: created.key,
+    mime: input.mimeType,
+    max: input.byteSize,
+    exp,
+  });
+  const base = storageEnv().MEDIA_PUBLIC_URL || '';
+  const uploadUrl = `${base}/v1/public/media/upload/${created.id}?token=${encodeURIComponent(token)}`;
+
+  return {
+    assetId: created.id,
+    uploadUrl,
+    method: 'PUT',
+    headers: { 'content-type': input.mimeType },
+    expiresAt: new Date(exp * 1000).toISOString(),
+    maxBytes: input.byteSize,
+    imageUrl: resolveMediaUrl(created.id, ctx.tenantSlug),
   };
 }
 

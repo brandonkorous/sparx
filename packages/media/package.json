@@ -12,6 +12,10 @@
     "./mcp": {
       "types": "./src/mcp/index.ts",
       "default": "./src/mcp/index.ts"
+    },
+    "./upload-token": {
+      "types": "./src/upload-token.ts",
+      "default": "./src/upload-token.ts"
     }
   },
   "files": [

@@ -15,9 +15,12 @@ import { z } from 'zod';
 import {
   ALLOWED_IMAGE_MIME,
   MAX_UPLOAD_IMAGE_BYTES,
+  MAX_PROXIED_UPLOAD_BYTES,
   MediaValidationError,
   createImageAssetFromBytes,
   createImageAssetFromUrl,
+  createImageUpload,
+  type CreateImageUploadInput,
 } from '../asset-service.js';
 import { toMediaContext, type McpCtx } from './context.js';
 
@@ -129,4 +132,40 @@ const setImageFromUrl: MediaMcpTool = {
   },
 };
 
-export const mediaMcpTools: MediaMcpTool[] = [uploadImage, setImageFromUrl];
+const maxProxiedMB = MAX_PROXIED_UPLOAD_BYTES / (1024 * 1024);
+
+const createImageUploadTool: MediaMcpTool = {
+  name: 'create_image_upload',
+  description:
+    `Start a real image upload WITHOUT sending the bytes through this tool call — use THIS for actual photos and ` +
+    `screenshots. (upload_image inlines base64, which corrupts anything but a tiny image; set_image_from_url is for an ` +
+    `already-hosted URL.) Returns an \`uploadUrl\` you PUT the raw bytes to out of band, e.g. ` +
+    `\`curl -X PUT --data-binary @shot.jpg -H "content-type: image/jpeg" "<uploadUrl>"\`, plus \`imageUrl\` to use as a ` +
+    `Builder Image \`src\` / Section \`bgImage\` (it renders as soon as the bytes land, before transcoding finishes). ` +
+    `The server sniffs the actual bytes and REJECTS a type/size mismatch; the uploadUrl is single-use and expires in ~15 min. ` +
+    `Allowed types: ${allowedMimeList}. Max ${maxProxiedMB} MB.`,
+  scope: 'write:builder',
+  confirmation: false,
+  input: z.object({
+    filename: z.string().min(1).max(255).describe('A filename for the asset, e.g. "hero.jpg".'),
+    mimeType: z
+      .string()
+      .min(1)
+      .max(127)
+      .describe(`The image content type — one of: ${allowedMimeList}.`),
+    byteSize: z
+      .number()
+      .int()
+      .positive()
+      .describe('Exact size of the image file in bytes (the PUT body must not exceed this).'),
+    alt: z.string().max(500).optional().describe('Alt text (accessibility + SEO).'),
+    width: z.number().int().positive().optional().describe('Intrinsic pixel width, if known.'),
+    height: z.number().int().positive().optional().describe('Intrinsic pixel height, if known.'),
+  }),
+  run: async (ctx, input) => {
+    const mctx = await toMediaContext(ctx);
+    return createImageUpload(mctx, input as CreateImageUploadInput);
+  },
+};
+
+export const mediaMcpTools: MediaMcpTool[] = [uploadImage, createImageUploadTool, setImageFromUrl];

@@ -26,6 +26,7 @@ COPY packages/modules ./packages/modules
 COPY packages/billing ./packages/billing
 COPY packages/email ./packages/email
 COPY packages/events ./packages/events
+COPY packages/media ./packages/media
 COPY packages/automation-schemas ./packages/automation-schemas
 COPY packages/automation ./packages/automation
 COPY packages/api-core ./packages/api-core

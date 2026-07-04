@@ -208,9 +208,13 @@ describe('createImageAssetFromUrl — scheme pin', () => {
 // ── MCP surface ─────────────────────────────────────────────────────────────
 
 describe('mediaMcpTools', () => {
-  it('exposes upload_image + set_image_from_url as write:builder, un-gated creates', () => {
+  it('exposes the three image tools as write:builder, un-gated creates', () => {
     const byName = new Map(mediaMcpTools.map((t) => [t.name, t]));
-    expect([...byName.keys()].sort()).toEqual(['set_image_from_url', 'upload_image']);
+    expect([...byName.keys()].sort()).toEqual([
+      'create_image_upload',
+      'set_image_from_url',
+      'upload_image',
+    ]);
     for (const t of mediaMcpTools) {
       expect(t.scope).toBe('write:builder');
       expect(t.confirmation).toBe(false);

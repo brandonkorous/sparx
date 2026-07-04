@@ -62,7 +62,7 @@ const publicMediaRoutes: FastifyPluginAsync = (app) => {
     const tenant = await prisma.tenant.findUnique({ where: { slug }, select: { id: true } });
     if (!tenant) throw notFound('Tenant', slug);
     const asset = await withTenant({ tenantId: tenant.id }, (tx) =>
-      tx.mediaAsset.findFirst({ where: { id }, select: { key: true } })
+      tx.mediaAsset.findFirst({ where: { id }, select: { key: true, mimeType: true } })
     );
     if (!asset?.key) throw notFound('MediaAsset', id);
     // Inline `data:` asset (a blueprint shipping a self-contained image — e.g. an SVG
@@ -125,11 +125,22 @@ const publicMediaRoutes: FastifyPluginAsync = (app) => {
         .redirect(`${env.MEDIA_PUBLIC_URL}/v1/public/media/variants/${path}`, 302);
     }
     // No variants yet (still transcoding) or a non-raster original the worker
-    // serves as-is (SVG): sign a short-lived read of the ORIGINAL so the image
-    // still displays instead of 403ing. Short cache so it flips to the variant
-    // once transcoding completes.
-    const signed = await storage.presignGet(asset.key);
-    return reply.header('cache-control', 'public, max-age=300').redirect(signed, 302);
+    // serves as-is (SVG). We can't hand the browser a URL for the bytes: the org
+    // forbids allUsers on the bucket, and the app SA can READ the private
+    // original (workload identity) but can't V4-SIGN a URL for it — it has no
+    // serviceAccountTokenCreator on itself, so presignGet() throws. Pipe the
+    // original through api-rest instead, exactly like the variant route below.
+    // Short cache (60s) so the storefront flips to the smaller transcoded
+    // variant the moment it lands. This is the ONLY path for GCS-stored SVG
+    // originals (the worker never rasterises them), and the transition path for
+    // every freshly-uploaded raster image during its transcode window.
+    const original = await storage.readObject(asset.key).catch(() => null);
+    if (!original) throw notFound('MediaAsset', id);
+    reply
+      .header('cache-control', 'public, max-age=60')
+      .header('content-type', original.contentType ?? asset.mimeType ?? 'application/octet-stream');
+    if (original.size !== null) reply.header('content-length', String(original.size));
+    return reply.send(original.body);
   });
 
   app.get<{ Params: z.infer<typeof PathParams> }>(

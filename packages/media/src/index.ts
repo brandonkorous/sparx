@@ -5,14 +5,24 @@
 export {
   ALLOWED_IMAGE_MIME,
   MAX_UPLOAD_IMAGE_BYTES,
+  MAX_PROXIED_UPLOAD_BYTES,
   MediaValidationError,
   createImageAssetFromBytes,
   createImageAssetFromUrl,
+  createImageUpload,
   resolveMediaUrl,
   type MediaWriteContext,
   type CreatedImage,
   type UploadImageBytesInput,
   type ImageFromUrlInput,
+  type CreateImageUploadInput,
+  type ImageUpload,
 } from './asset-service.js';
 export { getStorage, originalKey, safeFilename, type MediaStorage } from './storage.js';
 export { storageEnv, type StorageEnv } from './env.js';
+export {
+  mintUploadToken,
+  verifyUploadToken,
+  type UploadTokenClaims,
+  type UploadTokenResult,
+} from './upload-token.js';
