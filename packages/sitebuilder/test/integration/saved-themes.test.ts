@@ -181,3 +181,48 @@ describe('sitebuilder saved theme apply — brand scope (docs/49)', () => {
     expect(baseAfter?.colorPrimary ?? null).toBe(baseBefore?.colorPrimary ?? null);
   });
 });
+
+describe('sitebuilder update_site_settings — identity media (logo/favicon)', () => {
+  let test: TestContext;
+  const LOGO = '11111111-1111-1111-1111-111111111111';
+  const FAVICON = '22222222-2222-2222-2222-222222222222';
+
+  beforeAll(async () => {
+    test = await makeTestContext('owner');
+  });
+
+  afterAll(async () => {
+    await disposeTestContext(test);
+  });
+
+  it('primary site — logo + favicon ids land on the tenant base brand', async () => {
+    await themeService.updateSettings(test.ctx, {
+      logoLightMediaId: LOGO,
+      faviconMediaId: FAVICON,
+    });
+    const brand = await readTenantBrand(test.tenant.tenantId);
+    expect(brand?.logoLightMediaId).toBe(LOGO);
+    expect(brand?.faviconMediaId).toBe(FAVICON);
+  });
+
+  it('null clears one id; an omitted field is left as-is', async () => {
+    await themeService.updateSettings(test.ctx, { logoLightMediaId: null });
+    const brand = await readTenantBrand(test.tenant.tenantId);
+    expect(brand?.logoLightMediaId ?? null).toBeNull(); // cleared
+    expect(brand?.faviconMediaId).toBe(FAVICON); // untouched (undefined)
+  });
+
+  it('non-primary site — the id lands on the site override, not the tenant base', async () => {
+    const secondary = await addSecondaryProperty(test);
+    await themeService.updateSettings(secondary.ctx, { logoLightMediaId: LOGO });
+
+    const row = await readPropertyBrandOverride(test.tenant.tenantId, secondary.propertyId);
+    const override = row?.brandOverride as { logoLightMediaId?: string } | null;
+    expect(override?.logoLightMediaId).toBe(LOGO);
+
+    // The tenant base logo stays cleared (from the null test) — a sibling-site
+    // logo change must not leak onto the base brand.
+    const base = await readTenantBrand(test.tenant.tenantId);
+    expect(base?.logoLightMediaId ?? null).toBeNull();
+  });
+});

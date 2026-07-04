@@ -71,7 +71,10 @@ export const writeTools: AnyMcpTool[] = [
   {
     name: 'update_site_settings',
     description:
-      'Update the draft theme settings (colors per light/dark, fonts, layout, custom CSS) and/or the appearance policy. Targets the tenant’s primary site unless `propertyId` is given.',
+      'Update the draft theme settings (colors per light/dark, fonts, layout, custom CSS), the appearance policy, ' +
+      'and/or the site identity imagery — logoLightMediaId / logoDarkMediaId / faviconMediaId (a MediaAsset id from ' +
+      'upload_image or set_image_from_url; pass null to clear). The header logo + favicon render from these. Targets ' +
+      'the tenant’s primary site unless `propertyId` is given.',
     scope: 'write:builder',
     input: UpdateSettingsInput.extend({ propertyId: propertyIdArg }),
     confirmation: false,

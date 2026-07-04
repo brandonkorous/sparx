@@ -29,6 +29,13 @@ export type SelectThemeInput = z.infer<typeof SelectThemeInput>;
 export const UpdateSettingsInput = z.object({
   settings: SiteSettings.optional(),
   appearancePolicy: AppearancePolicy.optional(),
+  // Site identity imagery — a MediaAsset id (from upload_image / set_image_from_url),
+  // or null to clear (a non-primary site then inherits the tenant base). Written
+  // scope-aware: the primary site → the tenant brand, a non-primary site → its
+  // brand_override — the same split as colors/fonts. Omit a field to leave it as-is.
+  logoLightMediaId: z.string().uuid().nullable().optional(),
+  logoDarkMediaId: z.string().uuid().nullable().optional(),
+  faviconMediaId: z.string().uuid().nullable().optional(),
 });
 export type UpdateSettingsInput = z.infer<typeof UpdateSettingsInput>;
 
