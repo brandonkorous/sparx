@@ -47,8 +47,18 @@ spec:
               value: scram-sha-256
             - name: MAX_CLIENT_CONN
               value: '500'
+            # Server connections to Cloud SQL per (user, db) pair, PER REPLICA. In
+            # transaction mode a Prisma interactive transaction pins one slot for its
+            # whole BEGIN..COMMIT, so a storefront traffic burst can exhaust the pool
+            # → Prisma P2028 "Unable to start a transaction in the given time" (bumped
+            # 25→40 during the 2026-07-04 incident, alongside caching the host/property
+            # resolvers in api-rest). Ceiling: db-g1-small allows ~100 connections
+            # (monitoring alerts >80). Peak = replicas × (DEFAULT_POOL_SIZE +
+            # RESERVE_POOL_SIZE) = 1 × 45 today. FOOTGUN: before restoring replicas to
+            # 2 (see above), drop this so 2 × (pool + reserve) stays under 80, or the
+            # pair will exceed the instance ceiling.
             - name: DEFAULT_POOL_SIZE
-              value: '25'
+              value: '40'
             - name: RESERVE_POOL_SIZE
               value: '5'
             - name: SERVER_TLS_SSLMODE
