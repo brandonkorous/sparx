@@ -158,6 +158,11 @@ const publicMediaUploadRoutes: FastifyPluginAsync = (app) => {
 
     return reply.send(ok({ assetId: claims.aid, status: 'uploading', bytes: body.length }));
   });
+
+  // Non-async plugin (its awaits live in the route handler) that still satisfies
+  // FastifyPluginAsync — mirrors publicMediaRoutes. Avoids the require-await
+  // autofix stripping `async` and breaking the Promise<void> return type.
+  return Promise.resolve();
 };
 
 export default publicMediaUploadRoutes;
