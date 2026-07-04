@@ -245,7 +245,11 @@ export async function connectDomain(formData: FormData): Promise<ActionResult> {
   } catch (err) {
     return fail(err);
   }
-  revalidatePath('/settings/sites');
+  // These operations now run from the per-site DETAIL route (/settings/sites/[id]),
+  // so a client router.refresh() re-renders the detail page — revalidate the whole
+  // layout tree (like the sibling mutations) rather than only the list path, or the
+  // detail re-render serves stale cache and the change never appears.
+  revalidateSiteScopes();
   return { ok: true };
 }
 
@@ -257,7 +261,11 @@ export async function verifyDomain(domainId: string): Promise<ActionResult> {
   } catch (err) {
     return fail(err);
   }
-  revalidatePath('/settings/sites');
+  // These operations now run from the per-site DETAIL route (/settings/sites/[id]),
+  // so a client router.refresh() re-renders the detail page — revalidate the whole
+  // layout tree (like the sibling mutations) rather than only the list path, or the
+  // detail re-render serves stale cache and the change never appears.
+  revalidateSiteScopes();
   return { ok: true };
 }
 
@@ -268,7 +276,11 @@ export async function deleteDomain(domainId: string): Promise<ActionResult> {
   } catch (err) {
     return fail(err);
   }
-  revalidatePath('/settings/sites');
+  // These operations now run from the per-site DETAIL route (/settings/sites/[id]),
+  // so a client router.refresh() re-renders the detail page — revalidate the whole
+  // layout tree (like the sibling mutations) rather than only the list path, or the
+  // detail re-render serves stale cache and the change never appears.
+  revalidateSiteScopes();
   return { ok: true };
 }
 
@@ -343,7 +355,11 @@ export async function updateModuleScope(
   } catch (err) {
     return fail(err);
   }
-  revalidatePath('/settings/sites');
+  // These operations now run from the per-site DETAIL route (/settings/sites/[id]),
+  // so a client router.refresh() re-renders the detail page — revalidate the whole
+  // layout tree (like the sibling mutations) rather than only the list path, or the
+  // detail re-render serves stale cache and the change never appears.
+  revalidateSiteScopes();
   return { ok: true };
 }
 
@@ -354,6 +370,10 @@ export async function setDomainCanonical(domainId: string): Promise<ActionResult
   } catch (err) {
     return fail(err);
   }
-  revalidatePath('/settings/sites');
+  // These operations now run from the per-site DETAIL route (/settings/sites/[id]),
+  // so a client router.refresh() re-renders the detail page — revalidate the whole
+  // layout tree (like the sibling mutations) rather than only the list path, or the
+  // detail re-render serves stale cache and the change never appears.
+  revalidateSiteScopes();
   return { ok: true };
 }

@@ -89,9 +89,11 @@ test.describe('/settings/sites — site creation and deletion', () => {
     await createSecondary(page, name, slug);
 
     // The new row appears, marked as currently being edited, with its handle shown.
+    // Match the handle chip exactly — the row's domain link also contains the slug
+    // (as `<slug>.…sparx.zone`), so a loose text match is ambiguous.
     const row = siteRow(page, name);
     await expect(row.getByText('Editing now')).toBeVisible();
-    await expect(row.getByText(slug)).toBeVisible();
+    await expect(row.getByText(slug, { exact: true })).toBeVisible();
 
     // A primary site still exists (its row bears the Primary badge).
     await expect(
@@ -154,11 +156,12 @@ test.describe('/settings/sites — per-site module visibility', () => {
     const commerce = page.getByRole('switch', { name: 'Commerce on this site' });
     await expect(commerce).toBeChecked();
 
-    // Disable, then re-enable so the DB is clean.
+    // Disable, then re-enable so the DB is clean. The toggle is disabled while its
+    // server action is in flight, so allow generous headroom for a cold call.
     await commerce.click();
-    await expect(commerce).not.toBeChecked({ timeout: 8_000 });
+    await expect(commerce).not.toBeChecked({ timeout: 15_000 });
     await commerce.click();
-    await expect(commerce).toBeChecked({ timeout: 8_000 });
+    await expect(commerce).toBeChecked({ timeout: 15_000 });
 
     await page.goto('/settings/sites?view=table');
     await deleteSecondary(page, name);
@@ -170,8 +173,10 @@ test.describe('/settings/sites — per-site module visibility', () => {
 test.describe('/settings/sites — make primary', () => {
   test('promotes a secondary site to primary and restores afterward', async ({ page }) => {
     const stamp = Date.now();
-    const name = `E2E Primary ${stamp}`;
-    const slug = `e2epri${stamp}`;
+    // Deliberately avoid the word "Primary" in the name — it would collide with
+    // the row's "Primary" status badge under a text locator.
+    const name = `E2E Promote ${stamp}`;
+    const slug = `e2epromo${stamp}`;
 
     await page.goto('/settings/sites?view=table');
     const original = await primaryName(page);
@@ -215,8 +220,9 @@ test.describe('/settings/sites — custom domain connection', () => {
     await page.getByLabel('Connect a domain you own').fill(host);
     await page.getByRole('button', { name: 'Connect' }).click();
 
-    // The domain row appears with its DNS instructions.
-    await expect(page.getByText(host)).toBeVisible({ timeout: 10_000 });
+    // The domain row appears with its DNS instructions (after the connect action
+    // resolves and the tab refreshes).
+    await expect(page.getByText(host)).toBeVisible({ timeout: 15_000 });
     await expect(page.getByText('CNAME')).toBeVisible({ timeout: 5_000 });
 
     // Deleting the site cascades and removes the domain — no separate disconnect.
