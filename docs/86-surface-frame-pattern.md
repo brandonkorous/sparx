@@ -1,8 +1,8 @@
 # sparx Platform — Form Surface Layout Pattern (`SurfaceFrame`)
 
-**Version:** 3.6
+**Version:** 3.7
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-28
+**Last Updated:** 2026-07-03
 
 ---
 
@@ -22,7 +22,7 @@ It ships in **two presentations of the same model**:
 
 This doc owns the **layout**. The **flows** inside it (which steps, which fields, validation) are owned by their feature docs — onboarding by [docs/15](15-merchant-onboarding-prd.md), the create-wizards by [docs/68](68-wizards-import-export-bulk.md). The **wiring** of a form into the drawer/modal/full-page system is the [`form-surface`](../.claude/skills/form-surface/SKILL.md) skill.
 
-> **v3 change:** the in-app presentation moved from a dark left rail (v1) → a horizontal numbered top stepper (v2) → the **F layout** (v3): a compact segmented progress strip, a form column, and an optional live **summary** column that earns the width instead of leaving it empty. Cancel moved into the bottom toolbar; the embedded full page became a contained, centered sheet. The numbered top stepper survives only in the self-owned `modal` variant (e.g. New site). The immersive rail (onboarding) is unchanged.
+> **v3 change:** the in-app presentation moved from a dark left rail (v1) → a horizontal numbered top stepper (v2) → the **F layout** (v3): a compact segmented progress strip, a form column, and an optional live **summary** column that earns the width instead of leaving it empty. Cancel moved into the bottom toolbar; the embedded full page became a contained, centered sheet. The numbered top stepper survives only in the self-owned `modal` variant (any stand-alone dialog wizard not wired to the detail panel). The immersive rail (onboarding) is unchanged.
 
 ---
 
@@ -76,7 +76,7 @@ All three render the identical frame; only the host differs.
 | ---------- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------- |
 | `embedded` | In-flow, fills the dashboard **content area** as a **contained, centered sheet** (capped width, page bg on the sides) | Title strip + presentation switch (no Close/Maximize) | The full-page `/new` and `/{id}` detail routes — the "full page" option |
 | `inline`   | Fills a **drawer / modal detail panel** that supplies the chrome                                                      | Host chrome (title + window controls)                 | The create overlays (the `@detail` slot), picked by `defaultDetailView` |
-| `modal`    | A **self-owned Radix dialog** (numbered top stepper, not the F layout)                                                | Own header                                            | Stand-alone wizards not wired to the detail panel (e.g. New site)       |
+| `modal`    | A **self-owned Radix dialog** (numbered top stepper, not the F layout)                                                | Own header                                            | Stand-alone dialog wizards not wired to the detail panel                |
 
 ### How a form chooses
 
@@ -216,7 +216,7 @@ const summary = (
 - `inline` / `embedded` render the F layout (`embedded` as a contained centered sheet; `inline` filling its host). `modal` renders the numbered top-stepper shell inside a Radix Dialog. `page` renders the immersive rail grid.
 - `SurfaceStep` adapts to the frame: the F variants give it a **scrolling body + a pinned bottom toolbar** (the frame-owned ghost Cancel Button seated left, via `onCancel` in context) and stack the summary as a card when narrow; the `page` rail gives it a flowing centered column.
 - Module color flows from the surrounding `<ModuleProvider>`; the wrapper carries `h-full` so the frame fills its host.
-- **Who mounts what:** onboarding ([docs/15](15-merchant-onboarding-prd.md)) → `page`. The create-wizards (Product, Quote, Order, …) → `embedded` at `/new`, `inline` in the detail panel (with a `summary` for record-building wizards). The New-site wizard → `modal`.
+- **Who mounts what:** onboarding ([docs/15](15-merchant-onboarding-prd.md)) → `page`. The create-wizards (Product, Quote, Order, …) → `embedded` at `/new`, `inline` in the detail panel (with a `summary` for record-building wizards). The New-site wizard → `embedded` at `/settings/sites/new`, `inline` in the detail panel (via `EntityCreateButton` + the `@detail` create registry — it no longer self-owns a modal).
 
 ---
 
@@ -231,4 +231,4 @@ const summary = (
 
 ## 8. Status
 
-**Built.** `SurfaceFrame` (`@sparx/ui`) ships the F layout (`inline`/`embedded`) with the `summary` slot + `SurfaceSummary` primitives, the numbered self-owned `modal`, and the immersive `page` rail. Product and Quote create-wizards pass a live summary; the remaining line-item wizards (Order, PO, Transfer, Billing-document) render the form-only F modal until their summaries are wired. The **detail header-slot** (§5.1) + `DetailPageShell` are built and applied to product, collection, and the CMS page/entry editors — their in-body Status cards / identity headings removed, lifecycle actions teleported to the header.
+**Built.** `SurfaceFrame` (`@sparx/ui`) ships the F layout (`inline`/`embedded`) with the `summary` slot + `SurfaceSummary` primitives, the numbered self-owned `modal`, and the immersive `page` rail. Product and Quote create-wizards pass a live summary; the remaining line-item wizards (Order, PO, Transfer, Billing-document) render the form-only F modal until their summaries are wired. The **detail header-slot** (§5.1) + `DetailPageShell` are built and applied to product, collection, and the CMS page/entry editors — their in-body Status cards / identity headings removed, lifecycle actions teleported to the header. **Settings → Sites** (docs/49) now runs on the list substrate + a per-site tabbed detail (General / Domains / Modules, on the builder manifest), and the **New-site wizard renders through the surface system** — `embedded` at `/settings/sites/new`, `inline` in the drawer/modal via `EntityCreateButton` (no longer a self-owned modal).

@@ -2,27 +2,48 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 
 // Multi-site (web property) management — full lifecycle against the real DB.
 //
-// Each test:
-//   1. Navigates to /settings/sites
-//   2. Creates a secondary site with a timestamp-unique name
-//   3. Exercises the feature under test
-//   4. Deletes the secondary site via the AlertDialog so the DB stays clean
+// The page is on the sitewide list substrate (SelectionList) + the per-site
+// detail (drawer/modal/full-page). Tests force `?view=table` for a deterministic
+// row structure and drive the per-site DETAIL via each row's full-page "Manage"
+// link (a plain link → always full page, regardless of the user's
+// defaultDetailView). All per-site editing (name, domains, modules, delete,
+// switch, make-primary) lives on that detail now — not inline on the list.
 //
-// The site create + delete helpers are reused across every describe block.
+// Each test creates a secondary site with a timestamp-unique name, exercises the
+// feature, and deletes the site so the DB stays clean.
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
-/** The Card element wrapping a specific site. SitesManager annotates each Card
- *  with data-testid="site-card"; we filter by display name. */
-function siteCard(page: Page, name: string): Locator {
-  return page.locator('[data-testid="site-card"]').filter({ hasText: name });
+/** A site's row in the table view, located by its display name. */
+function siteRow(page: Page, name: string): Locator {
+  return page.locator('tbody tr').filter({ hasText: name });
+}
+
+/** The display name of the current primary site (first row bearing "Primary").
+ *  The row's first link is the site-name EntityRowLink (the "Manage" link is
+ *  second), so `.first()` reads the name. Requires table view. */
+async function primaryName(page: Page): Promise<string> {
+  const row = page.locator('tbody tr').filter({ hasText: 'Primary' }).first();
+  return (await row.getByRole('link').first().innerText()).trim();
+}
+
+/** Open a site's management detail full-page via its row "Manage" link, and wait
+ *  for the General tab to render. */
+async function openDetail(page: Page, name: string): Promise<void> {
+  await siteRow(page, name).getByRole('link', { name: 'Manage' }).click();
+  await expect(page.getByRole('heading', { name: 'Site name & address' })).toBeVisible({
+    timeout: 15_000,
+  });
 }
 
 /** Create a secondary site through the New-site wizard (docs/49 Phase 8b), taking
  *  the blank-site path so the helper is deterministic (no blueprint dependency),
- *  and wait for the new card to appear. */
+ *  and wait for its row to appear. */
 async function createSecondary(page: Page, name: string, slug: string): Promise<void> {
-  await page.getByRole('button', { name: 'New site' }).click();
+  // Drive the wizard on its full-page route for a deterministic surface —
+  // "New site" (EntityCreateButton) otherwise opens it as the user's
+  // defaultDetailView (drawer / modal / full page).
+  await page.goto('/settings/sites/new');
   // Step 1 — starting point: a blank site.
   await page.getByRole('button', { name: /Blank site/ }).click();
   await page.getByRole('button', { name: 'Continue' }).click();
@@ -32,24 +53,26 @@ async function createSecondary(page: Page, name: string, slug: string): Promise<
   await page.getByRole('button', { name: 'Continue' }).click();
   // Step 3 — review & create.
   await page.getByRole('button', { name: 'Create site' }).click();
-  // Success panel, then close → the new card appears on the refreshed page.
+  // Success panel, then Done → back to the list; the new row appears.
   await expect(page.getByRole('heading', { name: new RegExp(name) })).toBeVisible({
     timeout: 15_000,
   });
   await page.getByRole('button', { name: 'Done' }).click();
-  await expect(siteCard(page, name)).toBeVisible({ timeout: 15_000 });
+  await page.goto('/settings/sites?view=table');
+  await expect(siteRow(page, name)).toBeVisible({ timeout: 15_000 });
 }
 
-/** Delete a secondary site via the AlertDialog confirm.
- *  Caller is responsible for ensuring the site is not primary before calling. */
+/** Delete a secondary site from its detail's General tab (danger zone → confirm).
+ *  Caller must ensure the site is not primary first (api-rest refuses the primary). */
 async function deleteSecondary(page: Page, name: string): Promise<void> {
-  const card = siteCard(page, name);
-  await card.getByRole('button', { name: 'Delete site' }).click();
+  await openDetail(page, name);
+  await page.getByRole('button', { name: /^Delete/ }).click();
   await page
     .getByRole('alertdialog')
     .getByRole('button', { name: /delete site/i })
     .click();
-  await expect(siteCard(page, name)).not.toBeVisible({ timeout: 15_000 });
+  // Delete navigates back to the list; the row (its name link) is gone.
+  await expect(page.getByRole('link', { name })).not.toBeVisible({ timeout: 15_000 });
 }
 
 // ── create / delete ───────────────────────────────────────────────────────────
@@ -60,28 +83,22 @@ test.describe('/settings/sites — site creation and deletion', () => {
     const name = `E2E Site ${stamp}`;
     const slug = `e2esite${stamp}`;
 
-    await page.goto('/settings/sites');
+    await page.goto('/settings/sites?view=table');
     await expect(page.getByRole('heading', { name: 'Sites', level: 1 })).toBeVisible();
 
     await createSecondary(page, name, slug);
 
-    // New site card appears, marked as currently being edited.
-    const card = siteCard(page, name);
-    await expect(card).toBeVisible();
-    await expect(card.getByText('Editing now')).toBeVisible();
+    // The new row appears, marked as currently being edited, with its handle shown.
+    const row = siteRow(page, name);
+    await expect(row.getByText('Editing now')).toBeVisible();
+    await expect(row.getByText(slug)).toBeVisible();
 
-    // The URL handle is displayed in the card.
-    await expect(card.getByText(slug)).toBeVisible();
-
-    // Primary site card must still show the Primary badge.
-    const primaryCard = page
-      .locator('[data-testid="site-card"]')
-      .filter({ hasText: 'Primary' })
-      .filter({ hasNotText: name });
-    await expect(primaryCard.getByText('Primary')).toBeVisible();
+    // A primary site still exists (its row bears the Primary badge).
+    await expect(
+      page.locator('tbody tr').filter({ hasText: 'Primary' }).filter({ hasNotText: name })
+    ).toBeVisible();
 
     await deleteSecondary(page, name);
-    await expect(page.getByText(name)).not.toBeVisible();
   });
 });
 
@@ -93,62 +110,29 @@ test.describe('/settings/sites — site switching', () => {
     const name = `E2E Switch ${stamp}`;
     const slug = `e2eswitch${stamp}`;
 
-    await page.goto('/settings/sites');
+    await page.goto('/settings/sites?view=table');
+    const original = await primaryName(page);
     await createSecondary(page, name, slug);
 
-    const secondary = siteCard(page, name);
-    await expect(secondary.getByText('Editing now')).toBeVisible();
+    // The new site is now the one being edited.
+    await expect(siteRow(page, name).getByText('Editing now')).toBeVisible();
 
-    // Find the primary card (has "Primary" badge and is not our test site).
-    const primaryCard = page
-      .locator('[data-testid="site-card"]')
-      .filter({ hasText: 'Primary' })
-      .filter({ hasNotText: name });
-
-    // Switch to the primary site.
-    await primaryCard.getByRole('button', { name: 'Switch to this site' }).click();
+    // Switch to the original primary from its detail header.
+    await openDetail(page, original);
+    await page.getByRole('button', { name: 'Switch to editing' }).click();
     await expect(page.getByText(/Now editing/)).toBeVisible({ timeout: 10_000 });
-    await expect(primaryCard.getByText('Editing now')).toBeVisible({ timeout: 8_000 });
-    await expect(secondary.getByText('Editing now')).not.toBeVisible();
 
-    // Switch back to the secondary site.
-    await secondary.getByRole('button', { name: 'Switch to this site' }).click();
-    await expect(secondary.getByText('Editing now')).toBeVisible({ timeout: 10_000 });
+    // Back on the list, the secondary is no longer "Editing now".
+    await page.goto('/settings/sites?view=table');
+    await expect(siteRow(page, name).getByText('Editing now')).not.toBeVisible({ timeout: 8_000 });
 
-    // Restore: switch to primary before cleanup so deleteSecondary's card has
-    // the "Delete site" button (secondary must not be the active "Editing now"
-    // site when deleted, which is fine — the button is always visible on secondaries).
-    await deleteSecondary(page, name);
-  });
-});
+    // Switch back to the secondary (also readies it for cleanup).
+    await openDetail(page, name);
+    await expect(page.getByRole('button', { name: 'Switch to editing' })).toBeVisible();
+    await page.getByRole('button', { name: 'Switch to editing' }).click();
+    await expect(page.getByText(/Now editing/)).toBeVisible({ timeout: 10_000 });
 
-// ── brand override ────────────────────────────────────────────────────────────
-
-test.describe('/settings/sites — per-site brand override', () => {
-  test('sets and saves a brand override on a secondary site', async ({ page }) => {
-    const stamp = Date.now();
-    const name = `E2E Brand ${stamp}`;
-    const slug = `e2ebrand${stamp}`;
-
-    await page.goto('/settings/sites');
-    await createSecondary(page, name, slug);
-
-    const card = siteCard(page, name);
-
-    // Open the "Site presentation" details section.
-    await card.getByText('Site presentation', { exact: true }).click();
-    await card.getByLabel('Display name').fill('Wholesale Division');
-    await card.getByLabel('Primary colour').fill('#1a2b3c');
-    await card.getByRole('button', { name: 'Save site presentation' }).click();
-
-    // The summary updates to "· on" once an override is set.
-    await expect(card.getByText(/Site presentation · on/)).toBeVisible({ timeout: 10_000 });
-
-    // Re-open and confirm the values round-tripped from the DB.
-    await card.getByText(/Site presentation/).click();
-    await expect(card.getByLabel('Display name')).toHaveValue('Wholesale Division');
-    await expect(card.getByLabel('Primary colour')).toHaveValue('#1a2b3c');
-
+    await page.goto('/settings/sites?view=table');
     await deleteSecondary(page, name);
   });
 });
@@ -161,31 +145,22 @@ test.describe('/settings/sites — per-site module visibility', () => {
     const name = `E2E Modules ${stamp}`;
     const slug = `e2emods${stamp}`;
 
-    await page.goto('/settings/sites');
+    await page.goto('/settings/sites?view=table');
     await createSecondary(page, name, slug);
 
-    const card = siteCard(page, name);
+    await openDetail(page, name);
+    await page.getByRole('tab', { name: /Modules/ }).click();
 
-    // Open the "Module visibility" section.
-    await card.getByText('Module visibility', { exact: true }).click();
+    const commerce = page.getByRole('switch', { name: 'Commerce on this site' });
+    await expect(commerce).toBeChecked();
 
-    // Each module row: <Text>{slug}</Text> <Button>Enabled | Disabled</Button>
-    // Scope to the commerce row by targeting the sibling button of the "commerce" label.
-    const commerceLabel = card.getByText('commerce', { exact: true });
-    const commerceToggle = commerceLabel.locator('..').getByRole('button');
-    await expect(commerceToggle).toHaveText('Enabled');
+    // Disable, then re-enable so the DB is clean.
+    await commerce.click();
+    await expect(commerce).not.toBeChecked({ timeout: 8_000 });
+    await commerce.click();
+    await expect(commerce).toBeChecked({ timeout: 8_000 });
 
-    // Disable.
-    await commerceToggle.click();
-    await expect(commerceToggle).toHaveText('Disabled', { timeout: 8_000 });
-    await expect(card.getByText(/Module visibility · 1 disabled/)).toBeVisible({
-      timeout: 5_000,
-    });
-
-    // Re-enable so the DB is clean.
-    await commerceToggle.click();
-    await expect(commerceToggle).toHaveText('Enabled', { timeout: 8_000 });
-
+    await page.goto('/settings/sites?view=table');
     await deleteSecondary(page, name);
   });
 });
@@ -198,31 +173,25 @@ test.describe('/settings/sites — make primary', () => {
     const name = `E2E Primary ${stamp}`;
     const slug = `e2epri${stamp}`;
 
-    await page.goto('/settings/sites');
+    await page.goto('/settings/sites?view=table');
+    const original = await primaryName(page);
     await createSecondary(page, name, slug);
 
-    const secondary = siteCard(page, name);
-
-    // Promote the secondary to primary.
-    await secondary.getByRole('button', { name: 'Make primary' }).click();
+    // Promote the secondary from its detail header (icon action, tooltip label).
+    await openDetail(page, name);
+    await page.getByRole('button', { name: 'Make primary site' }).click();
     await expect(page.getByText(/is now primary/i)).toBeVisible({ timeout: 10_000 });
-    await expect(secondary.getByText('Primary')).toBeVisible({ timeout: 8_000 });
 
-    // The former primary lost its badge and now exposes "Make primary".
-    // It's the only site-card that has a "Make primary" button but NOT our name.
-    const formerPrimary = page
-      .locator('[data-testid="site-card"]')
-      .filter({ hasNotText: name })
-      .filter({ has: page.getByRole('button', { name: 'Make primary' }) })
-      .first();
-    await expect(formerPrimary.getByText('Primary')).not.toBeVisible();
+    // Back on the list, our site now wears the Primary badge.
+    await page.goto('/settings/sites?view=table');
+    await expect(siteRow(page, name).getByText('Primary')).toBeVisible({ timeout: 8_000 });
 
-    // Restore: make the original site primary again.
-    await formerPrimary.getByRole('button', { name: 'Make primary' }).click();
+    // Restore the original primary so seed state (and deletability) is recovered.
+    await openDetail(page, original);
+    await page.getByRole('button', { name: 'Make primary site' }).click();
     await expect(page.getByText(/is now primary/i)).toBeVisible({ timeout: 10_000 });
-    await expect(formerPrimary.getByText('Primary')).toBeVisible({ timeout: 8_000 });
 
-    // Our test site is now secondary again → can be deleted.
+    await page.goto('/settings/sites?view=table');
     await deleteSecondary(page, name);
   });
 });
@@ -234,24 +203,24 @@ test.describe('/settings/sites — custom domain connection', () => {
     const stamp = Date.now();
     const name = `E2E Domain ${stamp}`;
     const slug = `e2edom${stamp}`;
-    // Use a realistic-looking host; the API validates format but not actual DNS.
+    // Realistic-looking host; the API validates format but not actual DNS.
     const host = `shop${stamp}.example.com`;
 
-    await page.goto('/settings/sites');
+    await page.goto('/settings/sites?view=table');
     await createSecondary(page, name, slug);
 
-    const card = siteCard(page, name);
+    await openDetail(page, name);
+    await page.getByRole('tab', { name: /Domains/ }).click();
 
-    // Connect a custom domain.
-    await card.getByLabel('Connect a domain you own').fill(host);
-    await card.getByRole('button', { name: 'Connect' }).click();
+    await page.getByLabel('Connect a domain you own').fill(host);
+    await page.getByRole('button', { name: 'Connect' }).click();
 
-    // After connecting the domain row appears with DNS instructions.
-    await expect(card.getByText(host)).toBeVisible({ timeout: 10_000 });
-    await expect(card.getByText('CNAME')).toBeVisible({ timeout: 5_000 });
+    // The domain row appears with its DNS instructions.
+    await expect(page.getByText(host)).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText('CNAME')).toBeVisible({ timeout: 5_000 });
 
-    // Deleting the site cascades and removes the domain row — no separate
-    // disconnect step needed.
+    // Deleting the site cascades and removes the domain — no separate disconnect.
+    await page.goto('/settings/sites?view=table');
     await deleteSecondary(page, name);
   });
 });

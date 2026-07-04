@@ -61,5 +61,15 @@ export const builderManifest: ModuleManifest = {
       routePrefix: '/builder/components',
       hasDetailView: true,
     },
+    // A tenant SITE (web property), managed at /settings/sites. Hosted on the
+    // builder manifest because "settings" is not a module — findEntityType only
+    // iterates module manifests — while the routePrefix still points at the
+    // settings route. Detail = General / Domains / Modules tabs (docs/49).
+    {
+      id: 'site',
+      label: 'Site',
+      routePrefix: '/settings/sites',
+      hasDetailView: true,
+    },
   ],
 };

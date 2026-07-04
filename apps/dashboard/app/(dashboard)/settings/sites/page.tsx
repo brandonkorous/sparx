@@ -1,84 +1,89 @@
-import { Container, PageHeader, Stack } from '@sparx/ui';
-import { api } from '@/lib/api-rest-client';
+import { Globe, Plus } from 'lucide-react';
+import { Badge, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 import {
-  listProperties,
-  listDomains,
   getActivePropertyId,
-  type Property,
+  listDomains,
+  listProperties,
   type Domain,
+  type Property,
 } from '@/lib/sites';
-import { SitesManager } from './sites-manager';
-import type { SiteBlueprintOption } from './new-site-wizard';
+import { getUserPreferences } from '../../_shell/preferences';
+import { ListToolbar } from '../../_components/list-toolbar';
+import { EntityCreateButton } from '../../_components/entity-create-button';
+import { SitesList } from './_components/sites-list';
 
-// Settings → Sites: the multi-site (web PROPERTY) management hub (docs/49). One
-// tenant, many sites over a shared back office. Here you create sites (via the
-// New-site wizard, Phase 8b), switch which one the Builder authors, set the
-// primary, and connect custom domains. Reads go through api-rest (the dashboard
-// never touches the DB); all mutations are server actions in ./actions.ts.
+// Settings → Sites: the multi-site (web PROPERTY) management hub (docs/49), on the
+// sitewide list substrate ([[list-substrate]]) — `SelectionList` table/cards +
+// `ListToolbar` view toggle honoring the user's `defaultListView`, each row an
+// `EntityRowLink` into the per-site detail (drawer/modal/full-page per
+// `defaultDetailView`). "New site" opens the New-site wizard through the SAME
+// surface system via `EntityCreateButton` (blueprint data loads in ./new). Reads
+// go through api-rest; all mutations are the server actions in ./actions.ts.
 
+export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Sites · Settings' };
 
-// The catalog GET shape we consume (subset). `contents` is a loose record on the
-// data-first marketplace row, so coerce defensively into the wizard's option.
-interface CatalogBlueprint {
-  key: string;
-  name: string;
-  summary?: string;
-  vertical?: string;
-  preview?: string;
-  contents?: Record<string, unknown>;
+function str(v: string | string[] | undefined): string {
+  if (Array.isArray(v)) return v[0] ?? '';
+  return typeof v === 'string' ? v : '';
 }
 
-function toOption(bp: CatalogBlueprint): SiteBlueprintOption {
-  const c = bp.contents ?? {};
-  const num = (v: unknown): number => (typeof v === 'number' ? v : 0);
-  return {
-    key: bp.key,
-    name: bp.name,
-    summary: bp.summary ?? '',
-    vertical: bp.vertical ?? '',
-    ...(bp.preview ? { preview: bp.preview } : {}),
-    contents: {
-      products: num(c.products),
-      content: num(c.content),
-      pages: num(c.pages),
-      emails: num(c.emails),
-      components: num(c.components),
-      theme: typeof c.theme === 'string' ? c.theme : 'Default',
-    },
-  };
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default async function SitesSettingsPage() {
+export default async function SitesSettingsPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+
   // Defensive: a failed read yields empties so the page still renders the create
   // affordance rather than 500-ing.
-  const [properties, domains, activeId, catalog, tenant] = await Promise.all([
+  const [prefs, properties, domains, activeId] = await Promise.all([
+    getUserPreferences(),
     listProperties().catch(() => [] as Property[]),
     listDomains().catch(() => [] as Domain[]),
     getActivePropertyId(),
-    api
-      // Paginated catalog (data = array, meta carries total); the new-site picker
-      // needs the whole catalog, so request the max page.
-      .getPaged<CatalogBlueprint[]>('/v1/blueprints?take=250')
-      .then((r) => r.data)
-      .catch(() => [] as CatalogBlueprint[]),
-    api.get<{ slug: string }>('/v1/tenant').catch(() => ({ slug: 'your-store' })),
   ]);
 
+  const view = (str(params.view) || prefs.defaultListView) === 'card' ? 'card' : 'table';
+
+  const newSiteButton = (
+    <EntityCreateButton
+      entityType="site"
+      newHref="/settings/sites/new"
+      color="module"
+      leftIcon={<Plus className="h-4 w-4" />}
+    >
+      New site
+    </EntityCreateButton>
+  );
+
   return (
-    <Container size="lg">
+    <Container size="full">
       <Stack gap={6} className="py-10">
         <PageHeader
+          icon={<Globe className="h-5 w-5" />}
           title="Sites"
-          description="Each site is a distinct web property — its own pages, layout, and domains — over your shared back office."
+          badge={
+            <Badge color="module">
+              {properties.length} site{properties.length === 1 ? '' : 's'}
+            </Badge>
+          }
+          description="Each site is a distinct web property — its own pages, domains, and settings — over your shared back office. Its look & feel is set on the Brand page."
+          actions={newSiteButton}
         />
-        <SitesManager
-          properties={properties}
-          domains={domains}
-          activePropertyId={activeId}
-          blueprints={catalog.map(toOption)}
-          zoneSuffix={`${tenant.slug}.sparx.zone`}
-        />
+
+        <ListToolbar enableViewToggle searchable={false} />
+
+        {properties.length === 0 ? (
+          <EmptyState
+            icon={<Globe className="h-5 w-5" />}
+            title="No sites yet"
+            description="Spin up your first site — blank or from a blueprint — over your shared back office."
+            action={newSiteButton}
+          />
+        ) : (
+          <SitesList sites={properties} domains={domains} activePropertyId={activeId} view={view} />
+        )}
       </Stack>
     </Container>
   );

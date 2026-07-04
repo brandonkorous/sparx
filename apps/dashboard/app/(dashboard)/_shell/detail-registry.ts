@@ -108,6 +108,9 @@ const CREATE_VIEW_TYPES = new Set<string>([
   // Inventory count create-only overlay (the count detail — quantity entry/review/
   // post — stays full-page); a created count navigates to its detail.
   'count',
+  // A tenant SITE (web property) — the multi-step New-site wizard opts into the
+  // overlay so "New site" honors defaultDetailView. Full page: /settings/sites/new.
+  'site',
 ]);
 
 export function hasCreateView(typeId: string): boolean {
@@ -169,6 +172,8 @@ const FULL_BLEED_CREATE_TYPES = new Set<string>([
   'lot',
   'count',
   'workflow',
+  // Multi-step New-site wizard fills the drawer/modal/page body edge-to-edge.
+  'site',
 ]);
 
 export function isFullBleedCreate(typeId: string): boolean {

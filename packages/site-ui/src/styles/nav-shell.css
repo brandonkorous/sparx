@@ -107,6 +107,17 @@
  * dropped). The `!important` beats the `:not([open])` display:none above with a
  * single, readable rule — the alternative is a longer specificity chain. */
 @container st-frame (min-width: 768px) {
+  /* Modern Chromium/WebKit wrap a <details>'s non-summary content in a
+   * `::details-content` pseudo and hide it while CLOSED via the UA rule
+   * `details:not([open])::details-content { content-visibility: hidden }`. That
+   * SIZE-contains the content to zero, which the `display: flex !important` below
+   * can't defeat — so the inline desktop row would collapse to 0 width and the
+   * whole header nav renders invisible on desktop. Force the content slot visible
+   * whenever we're showing the inline row. Engines without `::details-content`
+   * simply ignore this (and don't hide the closed content in the first place). */
+  .st-navshell__disc::details-content {
+    content-visibility: visible;
+  }
   .st-navshell__disc > .st-navshell__toggle {
     display: none;
   }

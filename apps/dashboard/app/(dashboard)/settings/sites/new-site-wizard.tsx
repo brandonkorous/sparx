@@ -1,42 +1,45 @@
 'use client';
 
-// New-site create wizard (docs/49 Phase 8b). The single guided flow for spinning
-// up an additional site over the shared back office — it replaces the inline
-// create form on the Sites page. Three journey steps in the platform's modal
-// SurfaceFrame (docs/86):
+// New-site create wizard (docs/49 Phase 8b, docs/86 SurfaceFrame). The guided flow
+// for spinning up an additional site over the shared back office. It now renders
+// through the platform's drawer / modal / full-page surface system — the user's
+// `defaultDetailView` picks which — instead of a self-owned Radix modal:
 //
-//   1. Starting point — a blank site, or a blueprint (a whole themed site:
-//      pages, products, content, emails, theme — installed INTO the new site).
-//   2. Name & address — the site name + URL handle, with a live preview of the
-//      instant `<handle>.<tenant>.sparx.zone` address.
-//   3. Review        — confirm, choose whether to publish a blueprint right away,
-//      and create. A success panel then links into the Builder / live site.
+//   • `presentation="page"`    → the `embedded` full page at /settings/sites/new.
+//   • `presentation="overlay"` → the `inline` drawer/modal detail chrome (opened
+//                                by `EntityCreateButton` via the `@detail` slot).
+//
+// Three journey steps + terminal panels, all `SurfaceStep`s in the F layout:
+//   1. Starting point — a blank site, or a blueprint (a whole themed site).
+//   2. Name & address — the site name + URL handle, live `<handle>.<suffix>` preview.
+//   3. Review        — confirm, choose whether to publish a blueprint now, create.
+// A success panel then links into the Builder / live site; a Builder-module upsell
+// replaces the review when a 2nd+ site needs the module.
 //
 // All work is one server action (createSiteWithBlueprint): create the Property →
-// install the blueprint into it (the 8a route's explicit `property_id` target) →
-// go live → switch the dashboard to it. The rail is Builder Indigo (multi-site is
-// a Builder capability) via the wrapping ModuleProvider.
+// install the blueprint into it → go live → switch the dashboard to it. Builder
+// Indigo throughout (multi-site is a Builder capability).
 
 import * as React from 'react';
 import Link from 'next/link';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Badge,
   Button,
   Input,
   Label,
   ModuleProvider,
-  Spinner,
   Switch,
   Text,
   SurfaceFrame,
   SurfaceStep,
   cn,
-  useConfirm,
   type SurfaceStepDef,
 } from '@sparx/ui';
 import { ArrowRight, Check, ExternalLink, Globe, PencilRuler } from 'lucide-react';
 
-import { createSiteWithBlueprint, type NewSiteResult } from './actions';
+import { createSiteWithBlueprint } from './actions';
+import { useUnsavedGuard } from '../../_components/unsaved-guard';
 
 export interface SiteBlueprintOption {
   key: string;
@@ -55,13 +58,13 @@ export interface SiteBlueprintOption {
 }
 
 interface NewSiteWizardProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  /** `'page'` = the full-page `/settings/sites/new` route (embedded, inside the
+   *  dashboard chrome); `'overlay'` = the drawer/modal detail chrome (the
+   *  `defaultDetailView` preference picks which). */
+  presentation?: 'page' | 'overlay';
   blueprints: SiteBlueprintOption[];
   /** `<tenant-slug>.sparx.zone` — the new site's address is `<handle>.<suffix>`. */
   zoneSuffix: string;
-  /** Called after the modal closes following a successful create (parent refresh). */
-  onCreated: () => void;
 }
 
 const STEPS: SurfaceStepDef[] = [
@@ -90,14 +93,21 @@ function contentsLine(c: SiteBlueprintOption['contents']): string {
 
 const BLANK = '__blank__';
 
-export function NewSiteWizard({
-  open,
-  onOpenChange,
-  blueprints,
-  zoneSuffix,
-  onCreated,
-}: NewSiteWizardProps) {
-  const confirm = useConfirm();
+export function NewSiteWizard(props: NewSiteWizardProps) {
+  // Both presentations are full-height frames, so the wrapping ModuleProvider
+  // carries the height through (h-full) and sets the Builder accent.
+  return (
+    <ModuleProvider module="builder" className="h-full">
+      <NewSiteWizardInner {...props} />
+    </ModuleProvider>
+  );
+}
+
+function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: NewSiteWizardProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [step, setStep] = React.useState(0);
   // undefined = nothing chosen yet (Continue stays disabled); BLANK = empty site;
   // else a blueprint key.
@@ -110,78 +120,41 @@ export function NewSiteWizard({
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [upsell, setUpsell] = React.useState<{ module: string } | null>(null);
-  const [result, setResult] = React.useState<NewSiteResult | null>(null);
-
-  const reset = React.useCallback(() => {
-    setStep(0);
-    setChoice(undefined);
-    setName('');
-    setSlug('');
-    setSlugTouched(false);
-    setPublish(true);
-    setSubmitting(false);
-    setError(null);
-    setUpsell(null);
-    setResult(null);
-  }, []);
-
-  // Reset to a clean slate whenever the modal is (re)opened.
-  React.useEffect(() => {
-    if (open) reset();
-  }, [open, reset]);
+  const [result, setResult] = React.useState<Awaited<
+    ReturnType<typeof createSiteWithBlueprint>
+  > | null>(null);
 
   const selectedBlueprint =
     choice && choice !== BLANK ? blueprints.find((b) => b.key === choice) : undefined;
   const effectiveSlug = (slugTouched ? slug : slugify(slug || name)) || 'your-site';
   const predictedHost = `${effectiveSlug}.${zoneSuffix}`;
-  const done = result?.ok === true;
 
-  function close() {
-    onOpenChange(false);
-    // If a site was created, let the parent refresh the list after the modal goes.
-    if (done) onCreated();
-  }
+  // A create form starts blank, so "dirty" is "the user entered anything". A
+  // created site is no longer in progress — leaving the success panel just
+  // dismisses it, so a done wizard is never dirty (nor is a payment-gated upsell).
+  const dirty =
+    !result && !upsell && (choice !== undefined || name.trim() !== '' || slug.trim() !== '');
+  const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'site' });
 
-  // Has the user entered anything worth protecting from an accidental dismiss?
-  // A created site is no longer "in progress" — closing it just dismisses the
-  // success panel, so a done wizard is never dirty.
-  const isDirty = !done && (choice !== undefined || name.trim() !== '' || slug.trim() !== '');
-
-  // Ask before throwing away unsaved progress (docs/86; destructive-actions-confirm).
-  function confirmDiscard(): Promise<boolean> {
-    return confirm({
-      title: 'Discard this site?',
-      description:
-        'You haven’t created this site yet — your starting point and details will be lost.',
-      confirmLabel: 'Discard',
-      cancelLabel: 'Keep editing',
-      tone: 'danger',
-    });
-  }
-
-  // Radix backdrop-click / Esc guard (sync). Never drop a create mid-flight, and
-  // block-then-ask when there's entered detail to lose — closing only on confirm.
-  function requestClose(): boolean {
-    if (submitting) return false;
-    if (!isDirty) return true;
-    void confirmDiscard().then((ok) => {
-      if (ok) close();
-    });
-    return false;
-  }
-
-  // Footer Cancel / Close — same guard, for the explicit button (it bypasses the
-  // Radix dismiss path, so it has to consult the guard itself).
-  function onCancelClick() {
-    if (submitting) return;
-    if (!isDirty) {
-      close();
-      return;
+  // Where "leave the form" goes. In the overlay it clears the detail token so the
+  // drawer/modal closes in place; the page route returns to the list.
+  const close = React.useCallback(() => {
+    if (presentation === 'overlay') {
+      const next = new URLSearchParams(searchParams?.toString() ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname}?${qs}` : (pathname ?? '/'));
+    } else {
+      router.push('/settings/sites');
     }
-    void confirmDiscard().then((ok) => {
-      if (ok) close();
-    });
-  }
+  }, [presentation, pathname, searchParams, router]);
+
+  // Guarded leave for the frame-owned Cancel (confirm a discard before dropping
+  // entered work). The success/upsell close paths run unguarded (dirty is false).
+  const cancel = React.useCallback(async () => {
+    if (await guardLeave()) close();
+  }, [guardLeave, close]);
 
   function onNameChange(value: string) {
     setName(value);
@@ -348,7 +321,7 @@ export function NewSiteWizard({
             <span>
               Live instantly at{' '}
               <span className="font-medium text-[var(--color-text-primary)]">{predictedHost}</span>.
-              Connect your own domain anytime from this Sites page.
+              Connect your own domain anytime from the Sites page.
             </span>
           </div>
         </div>
@@ -436,7 +409,7 @@ export function NewSiteWizard({
     </SurfaceStep>
   );
 
-  // Success (or site-created-but-install-failed). No action row — bespoke CTAs.
+  // Success (or site-created-but-install-failed). Done is the toolbar primary.
   const successPanel = result && (
     <SurfaceStep
       header={{
@@ -449,6 +422,7 @@ export function NewSiteWizard({
               : 'Your blank site is ready. Open it in the Builder to start designing.'
           : (error ?? 'The site was created, but the blueprint didn’t finish installing.'),
       }}
+      actions={{ onNext: () => close(), nextLabel: 'Done' }}
     >
       <div className="flex flex-col gap-5">
         {result.host && (
@@ -486,9 +460,6 @@ export function NewSiteWizard({
               <Link href={`/marketplace/installs/${result.installId}`}>Review &amp; go live</Link>
             </Button>
           )}
-          <Button variant="ghost" onClick={close}>
-            Done
-          </Button>
         </div>
       </div>
     </SurfaceStep>
@@ -502,32 +473,14 @@ export function NewSiteWizard({
   else body = reviewStep;
 
   return (
-    <ModuleProvider module="builder">
-      <SurfaceFrame
-        variant="modal"
-        title="New site"
-        steps={STEPS}
-        current={result || upsell ? 2 : step}
-        open={open}
-        onOpenChange={(next) => {
-          if (!next) close();
-          else onOpenChange(true);
-        }}
-        onRequestClose={requestClose}
-        footer={
-          submitting ? (
-            <span className="flex items-center gap-2 text-[var(--color-text-muted)]">
-              <Spinner className="h-3.5 w-3.5" /> Creating…
-            </span>
-          ) : (
-            <Button variant="ghost" color="neutral" size="sm" onClick={onCancelClick}>
-              {done ? 'Close' : 'Cancel'}
-            </Button>
-          )
-        }
-      >
-        {body}
-      </SurfaceFrame>
-    </ModuleProvider>
+    <SurfaceFrame
+      variant={presentation === 'overlay' ? 'inline' : 'embedded'}
+      title="New site"
+      steps={STEPS}
+      current={result || upsell ? 2 : step}
+      onCancel={result ? undefined : cancel}
+    >
+      {body}
+    </SurfaceFrame>
   );
 }

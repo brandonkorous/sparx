@@ -1,12 +1,32 @@
-import { Container, PageHeader, Stack } from '@sparx/ui';
-import { listProperties, listDomains, type Property, type Domain } from '@/lib/sites';
-import { DomainsManager } from './domains-manager';
+import { Globe } from 'lucide-react';
+import { Badge, Container, EmptyState, Heading, PageHeader, Stack } from '@sparx/ui';
+import { listProperties, listDomains, type Domain, type Property } from '@/lib/sites';
+import { getUserPreferences } from '../../_shell/preferences';
+import { ListToolbar } from '../../_components/list-toolbar';
+import { DomainsInventory } from './_components/domains-inventory';
+import { DomainSearch } from './_components/domain-search';
+
+// Settings → Domains: the tenant's domain inventory + search/buy. The inventory
+// is on the sitewide list substrate ([[list-substrate]]) — `SelectionList`
+// table/cards honoring `defaultListView`, per-domain registrar actions in a row
+// menu. Connected custom domains are also managed per-site under Settings → Sites.
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Domains · Settings' };
 
-export default async function DomainsSettingsPage() {
-  const [properties, domains] = await Promise.all([
+function str(v: string | string[] | undefined): string {
+  if (Array.isArray(v)) return v[0] ?? '';
+  return typeof v === 'string' ? v : '';
+}
+
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default async function DomainsSettingsPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const [prefs, properties, domains] = await Promise.all([
+    getUserPreferences(),
     listProperties().catch(() => [] as Property[]),
     listDomains().catch(() => [] as Domain[]),
   ]);
@@ -15,19 +35,37 @@ export default async function DomainsSettingsPage() {
   // boundary). Off → buying a new domain shows "checkout opens soon"; searching,
   // connecting an owned domain, and managing existing domains stay fully live.
   const purchaseEnabled = process.env.DOMAIN_PURCHASE_ENABLED === 'true';
+  const view = (str(params.view) || prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="lg">
       <Stack gap={6} className="py-10">
         <PageHeader
+          icon={<Globe className="h-5 w-5" />}
           title="Domains"
-          description="Purchase new domains, track renewals, and manage WHOIS privacy and DNS settings."
+          badge={
+            <Badge color="neutral">
+              {domains.length} domain{domains.length === 1 ? '' : 's'}
+            </Badge>
+          }
+          description="Purchase new domains, track renewals, and manage WHOIS privacy and DNS settings. Connected domains are also managed per-site under Sites."
         />
-        <DomainsManager
-          properties={properties}
-          domains={domains}
-          purchaseEnabled={purchaseEnabled}
-        />
+
+        <Stack gap={3}>
+          <Heading level={2}>Your domains</Heading>
+          <ListToolbar enableViewToggle searchable={false} />
+          {domains.length === 0 ? (
+            <EmptyState
+              icon={<Globe className="h-5 w-5" />}
+              title="No domains yet"
+              description="Purchase a new domain below, or connect one you already own from Settings → Sites."
+            />
+          ) : (
+            <DomainsInventory domains={domains} properties={properties} view={view} />
+          )}
+        </Stack>
+
+        <DomainSearch properties={properties} purchaseEnabled={purchaseEnabled} />
       </Stack>
     </Container>
   );

@@ -100,6 +100,9 @@ import { TaxZoneDetailContent } from '../commerce/tax/zones/[id]/_content';
 import { WarehouseDetailContent } from '../inventory/warehouses/[id]/_content';
 import { ComponentDetailContent } from '../builder/components/[type]/_content';
 import { BookingDetailContent } from '../scheduling/bookings/[id]/_content';
+import { SiteDetailContent } from '../settings/sites/[id]/_content';
+import { NewSiteWizard } from '../settings/sites/new-site-wizard';
+import { loadNewSiteData } from '../settings/sites/new/wizard-data';
 
 // Server-only registry mapping a manifest entity type id → its detail content
 // component. These are React Server Components that fetch their own data
@@ -147,6 +150,8 @@ const detailComponents: Record<string, DetailComponent> = {
   'tax-zone': TaxZoneDetailContent,
   // Builder
   'builder-component': ComponentDetailContent,
+  // Settings — hosted on the builder/ai manifests (settings is not a module).
+  site: SiteDetailContent,
   // Scheduling
   booking: BookingDetailContent,
 };
@@ -234,6 +239,8 @@ const detailModules: Record<string, SparxModule> = {
   'dropship-supplier': 'dropship',
   // Builder
   'builder-component': 'builder',
+  // Settings — sites (+ domains) are Builder-owned; api keys are AI-owned.
+  site: 'builder',
 };
 
 // Create-form registry, parallel to `detailComponents`. Keyed by the same
@@ -505,8 +512,18 @@ async function CountCreateOverlay() {
   return <CountCreateForm surface="overlay" warehouses={warehouses} />;
 }
 
+// New-site wizard as a create overlay — multi-step SurfaceFrame (full-bleed). It
+// needs the blueprint catalog + tenant zone suffix, so a thin server wrapper loads
+// them. Full page lives at /settings/sites/new; a created site returns to the list.
+async function SiteCreateOverlay() {
+  const data = await loadNewSiteData();
+  return <NewSiteWizard presentation="overlay" {...data} />;
+}
+
 const createComponents: Record<string, React.ComponentType> = {
   category: CategoryCreateOverlay,
+  // Settings — the New-site wizard (hosted on the builder manifest).
+  site: SiteCreateOverlay,
   // Commerce single-column create overlays (no detail view — stay open with an
   // inline result on success).
   'gift-card': () => <IssueGiftCardForm surface="overlay" />,
