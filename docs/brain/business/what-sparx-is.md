@@ -17,4 +17,4 @@ sparx is WizeWorks' **modular content and commerce OS** — one platform combini
 
 **How to apply:** when writing copy, naming things, or modeling data, ask "does this assume the tenant sells?" If yes and it shouldn't, generalize it.
 
-Related: [[industry-agnostic]], [[billing-model]], [[modules]]
+Related: [[audience]], [[industry-agnostic]], [[billing-model]], [[modules]]

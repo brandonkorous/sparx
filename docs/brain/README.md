@@ -34,7 +34,7 @@ Almost every UI mistake starts by conflating them. Every design/component note d
 - [[features]] — the master catalog of every capability, each classified **module | program | platform**. Not every feature is a module — *partner* is a program. Owns the module-vs-program taxonomy.
 - [[modules]] — the *module-kind* features: paid, feature-flagged, spectrum-hued domains; each links **PRD ↔ UI ↔ API ↔ data**.
 - [[apps]] — inventory of `apps/*` + `services/*` (what each is, stack, entry points).
-- [[business]] — WizeWorks, the content-and/or-commerce vision, clients, the billing/module model.
+- [[business]] — WizeWorks, the content-and/or-commerce vision, **who we serve — non-technical business owners ([[audience]])**, clients, the billing/module model.
 
 **System**
 - [[architecture]] — RLS multi-tenancy, Better Auth, modules-are-flags, event-driven, API-first, MCP-first.
@@ -54,6 +54,7 @@ Don't build from memory. Enter these nodes first.
 
 | I'm about to… | Enter |
 |---|---|
+| Write ANY user-facing copy, label, description, error, or empty state | [[audience]] — non-technical business owners; informative + jargon-free → the `copywriter` agent |
 | Build/redesign a **dashboard** page or overlay | [[design]] → [[components]] → the module in [[modules]] (match its existing surfaces) |
 | Build a **create/edit form** | [[components]] (`SurfaceFrame`/`form-surface`) → [[design]] |
 | Add a feature to a **module** | [[modules]] (its PRD + existing UI) → [[architecture]] → [[data]] → [[api-events]] |

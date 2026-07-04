@@ -6,11 +6,12 @@ status: active
 
 # business
 
-The **why** and the **who**. Product decisions that skip this node drift into wrong defaults — commerce-first, industry-specific, "merchant" — that quietly exclude half the market.
+The **why** and the **who**. Product decisions that skip this node drift into wrong defaults — commerce-first, industry-specific, "merchant", or too technical for the **non-technical business owner** we build for — that quietly exclude half the market.
 
 ## Notes
 
 - [[what-sparx-is]] — a content and/or commerce OS; selling is one capability, never the assumption.
+- [[audience]] — **who we serve: non-technical business owners.** All user-facing copy is informative, detailed, and jargon-free for them.
 - [[industry-agnostic]] — no vertical baseline; Gillett is one client, not the frame.
 - [[billing-model]] — pay for what you use; gate by module, not plan.
 - [[pricing]] — the module-based price list ($10–$99/mo each), 14-day trial, switchboard.

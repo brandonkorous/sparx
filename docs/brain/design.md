@@ -12,7 +12,7 @@ Design is the **language**, not the library. It is the layer that got skipped on
 
 - **→ components** — how the [[components]] look: variant, color, tint, elevation. See [[color-follows-functionality]], [[status-is-its-own-axis]].
 - **→ elements** — raw layout, type, spacing, chrome built from utilities. See [[typography]], [[flat-by-default]], [[tokens-are-truth]].
-- **→ content** — voice, microcopy, and which *composition idioms* are allowed. See [[console-is-not-marketing]], [[voice]].
+- **→ content** — voice, microcopy, and which *composition idioms* are allowed, all pitched to our [[audience]] (non-technical business owners — informative + jargon-free). See [[console-is-not-marketing]], [[voice]].
 
 **Before any of it:** [[two-design-systems]]. Dashboard and site are two separate systems that share a token *shape*. Conflating them is the #1 latent error.
 
