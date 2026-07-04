@@ -592,7 +592,17 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
       const ratio = (str('ratio') || 'wide') as 'wide' | 'square' | 'portrait';
       // Email previews the slot as a placeholder (the send resolves the real <Img>).
       if (email) return <Placeholder ratio={ratio} label={str('alt')} />;
-      const img = bound ? firstImage(value) : null;
+      // A BOUND Image resolves its src from the record; an UNBOUND Image renders
+      // the author's static `src` (a media URL — e.g. from upload_image /
+      // set_image_from_url, or pasted directly). Previously the static src was
+      // read only on the email surface, so an unbound page Image rendered an empty
+      // <img> and a standalone image (logo, screenshot, headshot) had no working
+      // node — a Section bgImage was the only static-image path. Now both work.
+      const img: { url?: string; alt?: string } | null = bound
+        ? firstImage(value)
+        : str('src')
+          ? { url: str('src') }
+          : null;
       // Keep an empty image node visible + selectable in the editor.
       if (edit && !img?.url) return <Placeholder ratio={ratio} label={str('alt')} />;
       return (

@@ -1,0 +1,37 @@
+{
+  "name": "@sparx/media",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Media asset service + a focused storage backend for HEADLESS callers (the MCP image tools). Mirrors the api-rest media route's create/validate/publish contract so an agent can upload or reference an image without a browser presigned-PUT. Server-only (@google-cloud/storage) — never import from a client bundle.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./mcp": {
+      "types": "./src/mcp/index.ts",
+      "default": "./src/mcp/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^7.16.0",
+    "@sparx/db": "workspace:*",
+    "@sparx/events": "workspace:*",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

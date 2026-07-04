@@ -75,6 +75,10 @@ COPY packages/godaddy ./packages/godaddy
 # @sparx/scheduling-schemas (the write tools' input schemas).
 COPY packages/scheduling-schemas ./packages/scheduling-schemas
 COPY packages/scheduling ./packages/scheduling
+# @sparx/media (the image upload / set MCP tools). Server-side original writes +
+# a media.uploaded publish. Workspace deps @sparx/db + @sparx/events are already
+# above; @google-cloud/storage is an npm dep resolved by pnpm install below.
+COPY packages/media ./packages/media
 COPY services/api-mcp ./services/api-mcp
 
 RUN pnpm install --filter @sparx/api-mcp... --frozen-lockfile --prod=false

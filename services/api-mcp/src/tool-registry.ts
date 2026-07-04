@@ -8,6 +8,7 @@ import { commerceMcpTools } from '@sparx/commerce';
 import { inventoryMcpTools } from '@sparx/inventory/mcp';
 import { sitebuilderMcpTools } from '@sparx/sitebuilder';
 import { builderMcpTools } from '@sparx/builder/mcp';
+import { mediaMcpTools } from '@sparx/media/mcp';
 import { emailMcpTools } from '@sparx/email-platform';
 import { searchMcpTools } from '@sparx/search';
 import { automationMcpTools } from '@sparx/automation';
@@ -35,6 +36,10 @@ export const ALL_MCP_TOOLS: AnyMcpTool[] = [
   ...(inventoryMcpTools as unknown as AnyMcpTool[]),
   ...(sitebuilderMcpTools as unknown as AnyMcpTool[]),
   ...(builderMcpTools as unknown as AnyMcpTool[]),
+  // Media (image upload / reference) — write:builder scope (media is a builder/
+  // site input; not module-gated). Server-side upload lands originals in the
+  // media bucket + fans out media.uploaded → media-worker transcodes.
+  ...(mediaMcpTools as unknown as AnyMcpTool[]),
   ...(emailMcpTools as unknown as AnyMcpTool[]),
   ...(searchMcpTools as unknown as AnyMcpTool[]),
   // Automations are a PLATFORM capability (no module slug); the tools are

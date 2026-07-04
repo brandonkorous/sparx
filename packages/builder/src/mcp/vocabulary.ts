@@ -100,7 +100,11 @@ export const BUILDER_STYLE_GUIDE = {
       { type: 'Heading', props: 'level (h1..h6), text' },
       { type: 'Text', props: 'text, variant (eyebrow | body | meta)' },
       { type: 'Prose', props: 'rich-text document (authored body copy)' },
-      { type: 'Image', props: 'src, alt, ratio (square | wide | …)' },
+      {
+        type: 'Image',
+        props:
+          'src (a media URL from upload_image / set_image_from_url), alt, ratio (square | wide | …)',
+      },
       { type: 'Button', props: 'label, href, style (primary | soft | outline | ghost | link)' },
       { type: 'Badge', props: 'label, color' },
       { type: 'Icon', props: 'name' },
@@ -367,7 +371,11 @@ export const BUILDER_STYLE_GUIDE = {
       'any url(…) — external load / exfiltration. Set images via props (Image src / a Section background image prop), never a bg-[url(…)] class.',
     ],
     images:
-      'Put image URLs in props (e.g. an Image node `src`, or a Section background-image prop), not in a class — url() in a class is blocked.',
+      'Put image URLs in props, never in a class (url() in a class is blocked). Get a URL by adding the ' +
+      'image to the media library first: upload_image (raw image bytes) or set_image_from_url (an already-hosted ' +
+      'https image) each return a ready-to-use `url`. Use it as a standalone Image node `src` (logo, screenshot, ' +
+      'headshot) OR as a Section `bgImage` for a full-bleed background. Section background props: bgImage (url), ' +
+      'bgOverlay, bgFit (cover | contain), bgPosition.',
   },
 
   recipes: [
