@@ -269,6 +269,19 @@ export async function verifyDomain(domainId: string): Promise<ActionResult> {
   return { ok: true };
 }
 
+/** Mint a fresh verification record for an apex custom domain whose one-time token
+ *  was already spent (on verify) or lost — so the owner can re-prove ownership
+ *  without disconnecting. Status is untouched, so a live domain keeps serving. */
+export async function reissueVerification(domainId: string): Promise<ActionResult> {
+  try {
+    await api.post<Domain>(`/v1/domains/${domainId}/reissue-verification`);
+  } catch (err) {
+    return fail(err);
+  }
+  revalidateSiteScopes();
+  return { ok: true };
+}
+
 /** Disconnect a custom domain. */
 export async function deleteDomain(domainId: string): Promise<ActionResult> {
   try {

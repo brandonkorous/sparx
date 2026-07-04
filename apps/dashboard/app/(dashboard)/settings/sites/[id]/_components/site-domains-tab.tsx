@@ -10,7 +10,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  Code,
   Heading,
   Input,
   Label,
@@ -24,11 +23,13 @@ import type { Domain } from '@/lib/sites';
 import {
   connectDomain,
   deleteDomain,
+  reissueVerification,
   setDomainCanonical,
   verifyDomain,
   type ActionResult,
 } from '../../actions';
 import { domainStatusBadge } from '../../_lib';
+import { DomainDnsInstructions } from './domain-dns-instructions';
 
 // Domains tab of the site detail — the addresses that reach THIS site. Connect a
 // custom domain (returns DNS records to add, then verify), pick the primary
@@ -98,7 +99,9 @@ export function SiteDomainsTab({ propertyId, domains }: { propertyId: string; do
               const isActive = d.status === 'active' || d.status === 'verified';
               const isCustom = d.type === 'custom';
               const isSubdomain = d.type === 'subdomain';
-              const canVerify = isCustom && !isActive;
+              // Verify is available while unverified — and again after a fresh
+              // verification token is issued for an already-connected domain.
+              const canVerify = isCustom && (!isActive || Boolean(d.instructions?.txt));
               const canSetPrimary = isActive && !d.isCanonical;
               const canDisconnect = !isSubdomain;
               // Second row exists only when there's a badge or an action to show,
@@ -172,27 +175,16 @@ export function SiteDomainsTab({ propertyId, domains }: { propertyId: string; do
                     </div>
                   )}
 
-                  {d.instructions && (
-                    <div className="mt-1 grid gap-1 text-sm">
-                      <Text size="sm" variant="muted">
-                        Add these DNS records at your registrar, then click Verify:
-                      </Text>
-                      <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
-                        <span className="text-[var(--color-text-secondary)]">CNAME</span>
-                        <Code>
-                          {d.instructions.cname.name} → {d.instructions.cname.value}
-                        </Code>
-                        {d.instructions.txt && (
-                          <>
-                            <span className="text-[var(--color-text-secondary)]">TXT</span>
-                            <Code>
-                              {d.instructions.txt.name} = {d.instructions.txt.value}
-                            </Code>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  )}
+                  <DomainDnsInstructions
+                    domain={d}
+                    onReverify={() =>
+                      run(
+                        () => reissueVerification(d.id),
+                        'New verification record ready — add it below, then press Verify.'
+                      )
+                    }
+                    verifying={pending}
+                  />
                 </div>
               );
             })}

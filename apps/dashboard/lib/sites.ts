@@ -70,6 +70,9 @@ export interface Domain {
   renewalPriceCents: number | null;
   createdAt: string;
   instructions: DomainInstructions | null;
+  // Apex custom domain (verifies by TXT) → a fresh verification token can be
+  // re-issued once the original is spent. False for subdomain/purchased hosts.
+  verifiesByTxt: boolean;
 }
 
 /** The tenant's web properties, primary first. */

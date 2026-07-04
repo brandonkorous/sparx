@@ -123,9 +123,14 @@ interface DomainView {
   whoisPrivacy: boolean;
   renewalPriceCents: number | null;
   createdAt: string;
-  // DNS records the tenant must add — present only while a custom domain is
-  // unverified (pending/verifying/failed). Null once active or for subdomains.
+  // DNS records for a custom domain: the routing CNAME is ALWAYS present (so an
+  // owner can re-check or re-enter it even after connecting); the one-time TXT
+  // rides along only while a verification token is live. Null for subdomain/
+  // purchased hosts (managed automatically).
   instructions: ReturnType<typeof connectInstructions> | null;
+  // Apex custom domain → proves ownership by TXT, so a fresh verification token
+  // can be re-issued. False for subdomain customs (CNAME proof) + zone/purchased.
+  verifiesByTxt: boolean;
 }
 
 interface DomainPurchaseView {
@@ -159,7 +164,7 @@ function toView(row: {
   renewalPriceCents: number | null;
   createdAt: Date;
 }): DomainView {
-  const needsDns = row.type === 'custom' && row.status !== 'active' && row.status !== 'verified';
+  const isCustom = row.type === 'custom';
   return {
     id: row.id,
     propertyId: row.propertyId,
@@ -176,10 +181,9 @@ function toView(row: {
     whoisPrivacy: row.whoisPrivacy,
     renewalPriceCents: row.renewalPriceCents,
     createdAt: row.createdAt.toISOString(),
-    instructions:
-      needsDns && row.verificationToken
-        ? connectInstructions(row.host, row.verificationToken)
-        : null,
+    verifiesByTxt: isCustom && !isSubdomainHost(row.host),
+    // CNAME always (re-checkable after connecting); TXT only while a token is live.
+    instructions: isCustom ? connectInstructions(row.host, row.verificationToken) : null,
   };
 }
 
@@ -640,6 +644,30 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
         : `We couldn't find the TXT record at _sparx-verify.${row.host} yet. DNS propagation can take a few minutes — add both the CNAME/ALIAS and the TXT record, then try again.`;
       throw validationError(hint, [{ field: 'host', message: 'Verification failed.' }]);
     }
+    return ok(toView(updated));
+  });
+
+  // Re-issue a fresh verification token for an apex custom domain. Verifying a
+  // domain spends its one-time TXT token (it's nulled), so an owner who later
+  // needs to re-prove ownership — or who simply lost the record — has nothing to
+  // re-enter. This mints a NEW token WITHOUT changing status, so a live domain
+  // keeps serving; the owner adds the returned TXT record and calls verify again.
+  app.post('/v1/domains/:id/reissue-verification', async (request) => {
+    const auth = requireRole(request, 'editor');
+    const { id } = IdParam.parse(request.params);
+    const row = await prisma.domain.findFirst({ where: { id, tenantId: auth.tenantId } });
+    if (!row) throw notFound('Domain', id);
+    // Only apex custom domains prove ownership by TXT. Subdomain customs verify by
+    // CNAME (no token), and zone/purchased hosts are managed for the tenant.
+    if (row.type !== 'custom' || isSubdomainHost(row.host)) {
+      throw validationError('This domain does not use a verification record.', [
+        { field: 'id', message: 'No TXT verification applies to this host.' },
+      ]);
+    }
+    const updated = await prisma.domain.update({
+      where: { id },
+      data: { verificationToken: newVerificationToken() },
+    });
     return ok(toView(updated));
   });
 
