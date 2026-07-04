@@ -88,7 +88,7 @@ function bytesMatchImageMime(b: Buffer, mime: string): boolean {
   }
 }
 
-const publicMediaUploadRoutes: FastifyPluginAsync = async (app) => {
+const publicMediaUploadRoutes: FastifyPluginAsync = (app) => {
   // Accept a raw binary body of ANY content-type (encapsulated to this plugin),
   // buffered with the hard ceiling. We validate the true type by sniffing bytes,
   // so we don't trust — or require a specific — request content-type here.
