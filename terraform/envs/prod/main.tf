@@ -411,6 +411,22 @@ resource "google_service_account_iam_binding" "app_workload_identity" {
   ]
 }
 
+# V4 signed-URL signing under Workload Identity. The app pods run with NO service
+# account key file (Workload Identity mints tokens via the metadata server), so
+# signing a GCS V4 URL routes through the IAM signBlob API — which requires the SA
+# to hold serviceAccountTokenCreator on ITSELF. Without this, getSignedUrl() throws
+# in prod, so the dashboard browser upload (POST /v1/media/uploads → presignPut) and
+# the careers résumé signed-download link (presignGet) 500. (The public media
+# resolver already sidesteps signing by piping bytes through api-rest, and the MCP
+# proxied upload never signs — so those are unaffected either way.) Marginal blast
+# radius: the SA already holds objectAdmin on both media buckets, so this only lets
+# it mint time-boxed URLs to objects it can already read/write directly.
+resource "google_service_account_iam_member" "app_self_sign" {
+  service_account_id = google_service_account.app.name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "serviceAccount:${google_service_account.app.email}"
+}
+
 module "monitoring" {
   source = "../../modules/monitoring"
 
