@@ -146,8 +146,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: api-rest
-  minReplicas: 2 # floor of 2 for HA (see Deployment.replicas)
-  maxReplicas: 10 # un-clamped now the SSD quota is ample; PgBouncer caps Postgres conns, so extra pods only add cheap client conns (MAX_CLIENT_CONN=500)
+  minReplicas: 2 # pinned at 2 (min == max): steady 2-replica HA, no HPA scale-up
+  maxReplicas: 2 # held at 2 per request; SSD quota is no longer the constraint if burst headroom is wanted later
   metrics:
     - type: Resource
       resource:
