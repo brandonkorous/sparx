@@ -13,47 +13,62 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const TEST_EMAIL = 'e2e-staff@sparx.test';
 const TEST_PASSWORD = 'e2e-test-password';
 const TEST_NAME = 'E2E Tester';
-const TEST_SITE = 'E2E Site';
 
 export const STORAGE_STATE_PATH = path.resolve(__dirname, '../playwright/.auth/user.json');
 
 setup('authenticate', async ({ page }) => {
   // Strategy: try to sign up. If the email is already taken (re-runs against
-  // the same dev database), peel off and sign in via the form instead. We
-  // drive the UI either way so we exercise the same code paths a real user
-  // would — and so the form's router.push('/') lands us on the dashboard
-  // before storageState() snapshots cookies.
+  // the same dev database — the common local case), peel off and sign in via
+  // the form instead. We drive the UI either way so we exercise the same code
+  // paths a real user would — and so we land past the auth screens with a live
+  // session before storageState() snapshots cookies.
+  //
+  // The sign-up form is: name, email, password, confirm password, and the
+  // legal-acceptance checkbox (required server-side — an unchecked box short-
+  // circuits to a "please accept" error before the email-taken check, so we
+  // MUST tick it for the already-exists fallback to fire). A fresh sign-up
+  // lands in onboarding (/story); an already-registered email keeps us on
+  // /sign-up with an "already exists" error.
 
   await page.goto('/sign-up');
   await page.getByLabel('Your name').fill(TEST_NAME);
-  await page.getByLabel('Site name').fill(TEST_SITE);
   await page.getByLabel('Work email').fill(TEST_EMAIL);
-  await page.getByLabel('Password').fill(TEST_PASSWORD);
+  // "Password" is a substring of "Confirm password"; pin the exact label so the
+  // locator isn't ambiguous under strict mode.
+  await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
+  await page.getByLabel('Confirm password').fill(TEST_PASSWORD);
+  await page.getByRole('checkbox', { name: /I agree/i }).check();
   await page.getByRole('button', { name: 'Create account' }).click();
 
-  // After a successful sign-up we land on /welcome; after sign-in we land on
-  // /. If the email already exists, sign-up surfaces an "already taken"
-  // alert and we fall back to the sign-in form. (Next.js renders a global
-  // role="alert" announcer; target the specific text instead to avoid
-  // strict-mode locator collisions.)
+  // Success navigates off /sign-up (into onboarding); a taken email keeps us on
+  // /sign-up with an inline "already exists" error. Race the two so the setup
+  // works against both a fresh and a reused database. (Next.js renders a global
+  // role="alert" announcer; target the specific text instead to avoid strict-
+  // mode locator collisions.)
   await Promise.race([
-    page.waitForURL(/\/(welcome)?$/, { timeout: 15_000 }),
+    page.waitForURL((url) => !url.pathname.startsWith('/sign-up'), { timeout: 15_000 }),
     page.getByText(/already taken|already exists/).waitFor({ state: 'visible', timeout: 15_000 }),
   ]);
 
-  const onAuthedPage = /\/(welcome)?$/.test(new URL(page.url()).pathname);
-  if (!onAuthedPage) {
+  if (new URL(page.url()).pathname.startsWith('/sign-up')) {
     // Email already exists — sign in instead.
     await page.goto('/sign-in');
     await page.getByLabel('Email').fill(TEST_EMAIL);
-    await page.getByLabel('Password').fill(TEST_PASSWORD);
+    // Exact label: the PasswordInput's "Show password" toggle also carries
+    // "password" in its accessible name, so a loose match is ambiguous.
+    await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
     await page.getByRole('button', { name: 'Sign in' }).click();
     await page.waitForURL('/');
   }
 
-  // Always land on / before snapshotting so subsequent tests start there.
+  // Always land on / before snapshotting so subsequent tests start there. The
+  // dashboard greets with a time-of-day heading ("Good morning/afternoon/
+  // evening"), so match the family rather than a single literal that only holds
+  // before noon.
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Good morning' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: /Good (morning|afternoon|evening)/ })
+  ).toBeVisible();
 
   await page.context().storageState({ path: STORAGE_STATE_PATH });
 });
