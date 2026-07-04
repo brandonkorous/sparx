@@ -12,7 +12,7 @@
 // level (operator can re-enqueue manually) rather than thrashing GCS on
 // transient encode failures.
 
-import { prisma, withTenant } from '@sparx/db';
+import { withTenant } from '@sparx/db';
 import { downloadObject, uploadVariant, variantKey } from './storage.js';
 import { transcode } from './transcode.js';
 
@@ -24,13 +24,21 @@ export interface ProcessResult {
 
 export async function processAsset(
   assetId: string,
+  tenantId: string,
   logger: {
     info: (obj: object, msg?: string) => void;
     warn: (obj: object, msg?: string) => void;
     error: (obj: object, msg?: string) => void;
   }
 ): Promise<ProcessResult> {
-  const asset = await prisma.mediaAsset.findUnique({ where: { id: assetId } });
+  // media_assets is FORCE-RLS, so the load MUST run inside the tenant context
+  // (from the event's tenantId) — a bare prisma query has no `current_tenant_id()`
+  // and returns null in prod, which would log "asset missing" and skip every
+  // upload's transcode. (Passes locally only because the dev DB user is a
+  // superuser that bypasses RLS.) The write tx below already sets the context.
+  const asset = await withTenant({ tenantId }, (tx) =>
+    tx.mediaAsset.findUnique({ where: { id: assetId } })
+  );
   if (!asset || asset.deletedAt) {
     logger.warn({ assetId }, 'asset missing or soft-deleted; skipping');
     return { status: 'skipped', variantCount: 0 };

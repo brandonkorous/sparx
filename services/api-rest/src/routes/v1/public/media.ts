@@ -18,9 +18,9 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { prisma, withTenant } from '@sparx/db';
-import { mediaPublicUrl } from '@sparx/commerce';
 import { getStorage, variantKey } from '../../../lib/storage.js';
 import { notFound } from '@sparx/api-core/errors';
+import { env } from '../../../env.js';
 
 // Filename pattern matches what variantKey() emits in storage.ts:
 //   `${format}-${width}.${ext}` → e.g. webp-800.webp, avif-1200.avif, jpeg-400.jpg
@@ -86,19 +86,50 @@ const publicMediaRoutes: FastifyPluginAsync = (app) => {
     // Resolve the redirect target for the asset's stored key:
     //   · external hot-linked URL (blueprint installs) → pass through verbatim.
     //   · local-dev (no GCS) → the original bytes are served by api-rest's own
-    //     /v1/public/media/file/* route. mediaPublicUrl() would hand back the raw
-    //     relative key here (no CDN/bucket env), which 404s in an <img>/iframe —
-    //     so route through storage.publicUrl(), the same URL the brand board uses.
-    //   · GCS mode → mediaPublicUrl() mints the CDN/public-bucket URL.
+    //     /v1/public/media/file/* route via LocalStorage.publicUrl().
+    //   · GCS mode → a transcoded PUBLIC variant, served by the variant route
+    //     below (api-rest pipes the bytes; the org forbids allUsers on the
+    //     bucket, so a direct storage.googleapis.com URL 403s).
     const storage = getStorage();
-    const target = /^https?:\/\//i.test(asset.key)
-      ? asset.key
-      : storage.mode === 'local'
-        ? storage.publicUrl(asset.key)
-        : mediaPublicUrl(asset.key);
-    // The redirect is stable per asset id (a re-upload mints a new id), so let
-    // the edge cache it.
-    return reply.header('cache-control', 'public, max-age=86400').redirect(target, 302);
+
+    if (/^https?:\/\//i.test(asset.key)) {
+      return reply.header('cache-control', 'public, max-age=86400').redirect(asset.key, 302);
+    }
+    if (storage.mode === 'local') {
+      return reply
+        .header('cache-control', 'public, max-age=86400')
+        .redirect(storage.publicUrl(asset.key), 302);
+    }
+
+    // GCS: redirect to the best transcoded variant. Never mediaPublicUrl(originalsKey)
+    // — that mints a direct storage.googleapis.com URL that is (a) allUsers-blocked
+    // and (b) an /originals/ path in the PUBLIC bucket (originals live in the PRIVATE
+    // bucket), so it 403s. The variant route (below) serves the bytes instead.
+    const variants = await withTenant({ tenantId: tenant.id }, (tx) =>
+      tx.mediaVariant.findMany({
+        where: { assetId: id },
+        select: { format: true, width: true, key: true },
+      })
+    );
+    if (variants.length > 0) {
+      // Prefer webp (universal support + strong compression); widest available.
+      const webp = variants.filter((v) => v.format === 'webp');
+      const pool = webp.length > 0 ? webp : variants;
+      const best = pool.reduce((a, b) => (b.width > a.width ? b : a));
+      // Stored key is `<tenantId>/variants/<assetId>/<filename>`; the route is
+      // /v1/public/media/variants/:tenantId/:assetId/:filename — drop the middle
+      // `/variants/` segment so the 3-param route matches.
+      const path = best.key.replace('/variants/', '/');
+      return reply
+        .header('cache-control', 'public, max-age=86400')
+        .redirect(`${env.MEDIA_PUBLIC_URL}/v1/public/media/variants/${path}`, 302);
+    }
+    // No variants yet (still transcoding) or a non-raster original the worker
+    // serves as-is (SVG): sign a short-lived read of the ORIGINAL so the image
+    // still displays instead of 403ing. Short cache so it flips to the variant
+    // once transcoding completes.
+    const signed = await storage.presignGet(asset.key);
+    return reply.header('cache-control', 'public, max-age=300').redirect(signed, 302);
   });
 
   app.get<{ Params: z.infer<typeof PathParams> }>(

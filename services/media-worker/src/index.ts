@@ -73,6 +73,8 @@ function parseEvent(raw: unknown): MediaUploadedEvent | null {
   const event = raw as Partial<MediaUploadedEvent> | undefined;
   if (event?.type !== 'media.uploaded') return null;
   if (!event.data?.assetId) return null;
+  // tenantId is required — the transcode load runs inside its RLS context.
+  if (!event.tenantId) return null;
   return event as MediaUploadedEvent;
 }
 
@@ -130,7 +132,7 @@ async function handlePush(req: IncomingMessage, res: ServerResponse): Promise<vo
   }
 
   try {
-    const result = await processAsset(event.data.assetId, logger);
+    const result = await processAsset(event.data.assetId, event.tenantId, logger);
     logger.info({ messageId, assetId: event.data.assetId, ...result }, 'message processed');
     // processAsset records 'failed' to the MediaAsset row internally; ack
     // regardless so the message doesn't recycle forever. Manual re-enqueue
