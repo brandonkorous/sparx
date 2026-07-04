@@ -341,6 +341,41 @@ function filenameFromRef(url: string, mimeType: string): string {
   return safeFilename(last || `image.${mimeType.split('/')[1] ?? 'bin'}`);
 }
 
+// ── Delete ──────────────────────────────────────────────────────────────────
+
+export interface DeletedImage {
+  assetId: string;
+  status: 'deleted';
+}
+
+// Soft-delete a media asset (operator-recoverable), mirroring the api-rest
+// DELETE /v1/media/assets/:id contract: refuse while it is still referenced
+// (usageCount > 0) so a live <img> can't 404, then flag deletedAt and fan out
+// media.deleted for downstream object GC.
+export async function deleteMediaAsset(
+  ctx: MediaWriteContext,
+  assetId: string
+): Promise<DeletedImage> {
+  await withTenant({ tenantId: ctx.tenantId }, async (tx) => {
+    const existing = await tx.mediaAsset.findFirst({
+      where: { id: assetId, deletedAt: null },
+      select: { usageCount: true },
+    });
+    if (!existing) {
+      throw new MediaValidationError(`Media asset ${assetId} not found (or already deleted).`);
+    }
+    if (existing.usageCount > 0) {
+      const n = existing.usageCount;
+      throw new MediaValidationError(
+        `Asset is still referenced by ${n} ${n === 1 ? 'entry' : 'entries'} — detach it first.`
+      );
+    }
+    await tx.mediaAsset.update({ where: { id: assetId }, data: { deletedAt: new Date() } });
+  });
+  await publishMediaDeleted(ctx, assetId);
+  return { assetId, status: 'deleted' };
+}
+
 // ── Event publish (self-contained; no Fastify logger) ───────────────────────
 
 const publishLogger: PublisherLogger = {
@@ -366,6 +401,21 @@ async function publishMediaUploaded(
     ctx.tenantId,
     ctx.actorId,
     { assetId, key, mimeType, byteSize: String(byteSize) },
+    publishLogger
+  );
+}
+
+async function publishMediaDeleted(ctx: MediaWriteContext, assetId: string): Promise<void> {
+  const publisher = createPublisher({
+    projectId: process.env.GCP_PROJECT_ID,
+    logger: publishLogger,
+  });
+  await publishEvent(
+    publisher,
+    'media.deleted',
+    ctx.tenantId,
+    ctx.actorId,
+    { assetId },
     publishLogger
   );
 }

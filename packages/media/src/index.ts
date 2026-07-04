@@ -10,6 +10,7 @@ export {
   createImageAssetFromBytes,
   createImageAssetFromUrl,
   createImageUpload,
+  deleteMediaAsset,
   resolveMediaUrl,
   type MediaWriteContext,
   type CreatedImage,
@@ -17,6 +18,7 @@ export {
   type ImageFromUrlInput,
   type CreateImageUploadInput,
   type ImageUpload,
+  type DeletedImage,
 } from './asset-service.js';
 export { getStorage, originalKey, safeFilename, type MediaStorage } from './storage.js';
 export { storageEnv, type StorageEnv } from './env.js';

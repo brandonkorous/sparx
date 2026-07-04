@@ -208,16 +208,19 @@ describe('createImageAssetFromUrl — scheme pin', () => {
 // ── MCP surface ─────────────────────────────────────────────────────────────
 
 describe('mediaMcpTools', () => {
-  it('exposes the three image tools as write:builder, un-gated creates', () => {
+  it('exposes the media tools as write:builder; creates un-gated, delete confirmation-gated', () => {
     const byName = new Map(mediaMcpTools.map((t) => [t.name, t]));
     expect([...byName.keys()].sort()).toEqual([
       'create_image_upload',
+      'delete_image',
       'set_image_from_url',
       'upload_image',
     ]);
-    for (const t of mediaMcpTools) {
-      expect(t.scope).toBe('write:builder');
-      expect(t.confirmation).toBe(false);
+    for (const t of mediaMcpTools) expect(t.scope).toBe('write:builder');
+    // Destructive delete is confirmation-gated; the create/reference tools are not.
+    expect(byName.get('delete_image')!.confirmation).toBe(true);
+    for (const name of ['upload_image', 'create_image_upload', 'set_image_from_url']) {
+      expect(byName.get(name)!.confirmation).toBe(false);
     }
   });
 

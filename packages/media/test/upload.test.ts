@@ -7,8 +7,11 @@
 import { createHmac } from 'node:crypto';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { created } = vi.hoisted(() => ({
+const { created, findFirstResult, updateCalls, publishEventMock } = vi.hoisted(() => ({
   created: { rows: [] as { id: string; data: Record<string, unknown> }[] },
+  findFirstResult: { value: null as Record<string, unknown> | null },
+  updateCalls: { calls: [] as { where: unknown; data: Record<string, unknown> }[] },
+  publishEventMock: vi.fn(),
 }));
 
 vi.mock('@sparx/db', () => {
@@ -20,20 +23,31 @@ vi.mock('@sparx/db', () => {
         return { id, ...data };
       }),
       update: vi.fn(({ where, data }: { where: { id: string }; data: Record<string, unknown> }) => {
+        updateCalls.calls.push({ where, data });
         const row = created.rows.find((r) => r.id === where.id);
         if (row) Object.assign(row.data, data);
         return { id: where.id, ...(row?.data ?? {}) };
       }),
+      findFirst: vi.fn(() => findFirstResult.value),
     },
   };
   return { withTenant: (_c: unknown, fn: (t: typeof tx) => unknown) => fn(tx) };
 });
+
+vi.mock('@sparx/events', () => ({
+  createPublisher: () => ({ publish: vi.fn() }),
+  publishEvent: (...args: unknown[]) => {
+    publishEventMock(...args);
+    return Promise.resolve();
+  },
+}));
 
 import { mintUploadToken, verifyUploadToken, type UploadTokenClaims } from '../src/upload-token';
 import {
   MAX_PROXIED_UPLOAD_BYTES,
   MediaValidationError,
   createImageUpload,
+  deleteMediaAsset,
 } from '../src/asset-service';
 import { _resetStorageEnvForTest } from '../src/env';
 
@@ -51,6 +65,9 @@ const CLAIMS: UploadTokenClaims = {
 
 beforeEach(() => {
   created.rows = [];
+  findFirstResult.value = null;
+  updateCalls.calls = [];
+  publishEventMock.mockClear();
   process.env.SPARX_INTERNAL_JWT_SECRET = SECRET;
   process.env.MEDIA_PUBLIC_URL = 'https://media.test';
   _resetStorageEnvForTest();
@@ -160,5 +177,37 @@ describe('createImageUpload', () => {
       });
       expect(verified.claims.exp).toBeGreaterThan(Math.floor(Date.now() / 1000));
     }
+  });
+});
+
+describe('deleteMediaAsset', () => {
+  it('refuses a missing (or already-deleted) asset — no update, no event', async () => {
+    findFirstResult.value = null;
+    await expect(
+      deleteMediaAsset(CTX, '00000000-0000-4000-8000-000000000000')
+    ).rejects.toBeInstanceOf(MediaValidationError);
+    expect(updateCalls.calls).toHaveLength(0);
+    expect(publishEventMock).not.toHaveBeenCalled();
+  });
+
+  it('refuses an in-use asset (usageCount > 0) — no update, no event', async () => {
+    findFirstResult.value = { usageCount: 3 };
+    await expect(deleteMediaAsset(CTX, 'asset-1')).rejects.toBeInstanceOf(MediaValidationError);
+    expect(updateCalls.calls).toHaveLength(0);
+    expect(publishEventMock).not.toHaveBeenCalled();
+  });
+
+  it('soft-deletes (sets deletedAt) and fans out media.deleted', async () => {
+    findFirstResult.value = { usageCount: 0 };
+    const res = await deleteMediaAsset(CTX, 'asset-1');
+    expect(res).toEqual({ assetId: 'asset-1', status: 'deleted' });
+
+    expect(updateCalls.calls).toHaveLength(1);
+    expect(updateCalls.calls[0]!.data.deletedAt).toBeInstanceOf(Date);
+
+    expect(publishEventMock).toHaveBeenCalledTimes(1);
+    const args = publishEventMock.mock.calls[0]!;
+    expect(args[1]).toBe('media.deleted');
+    expect(args[4]).toEqual({ assetId: 'asset-1' });
   });
 });

@@ -20,6 +20,7 @@ import {
   createImageAssetFromBytes,
   createImageAssetFromUrl,
   createImageUpload,
+  deleteMediaAsset,
   type CreateImageUploadInput,
 } from '../asset-service.js';
 import { toMediaContext, type McpCtx } from './context.js';
@@ -168,4 +169,26 @@ const createImageUploadTool: MediaMcpTool = {
   },
 };
 
-export const mediaMcpTools: MediaMcpTool[] = [uploadImage, createImageUploadTool, setImageFromUrl];
+const deleteImageTool: MediaMcpTool = {
+  name: 'delete_image',
+  description:
+    `Delete an image from the tenant's media library by its asset id. Soft-delete — an operator can recover it. ` +
+    `REFUSES if the image is still referenced by any page/product/entry (detach it there first, then retry). ` +
+    `The assetId is the one returned by upload_image / create_image_upload / set_image_from_url.`,
+  scope: 'write:builder',
+  confirmation: true, // destructive — gate it
+  input: z.object({
+    assetId: z.string().uuid().describe('The media asset id to delete.'),
+  }),
+  run: async (ctx, input) => {
+    const mctx = await toMediaContext(ctx);
+    return deleteMediaAsset(mctx, (input as { assetId: string }).assetId);
+  },
+};
+
+export const mediaMcpTools: MediaMcpTool[] = [
+  uploadImage,
+  createImageUploadTool,
+  setImageFromUrl,
+  deleteImageTool,
+];
