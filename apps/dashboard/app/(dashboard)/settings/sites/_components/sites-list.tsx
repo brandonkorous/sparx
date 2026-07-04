@@ -88,27 +88,21 @@ export function SitesList({ sites, domains, activePropertyId, view }: SitesListP
     </>
   );
 
-  const domainCell = (p: Property) => {
-    const primary = primaryDomainOf(siteDomains(p));
-    if (!primary) {
-      return (
-        <Text size="sm" variant="muted">
-          No domain yet
-        </Text>
-      );
-    }
-    return (
-      <a
-        href={`https://${primary.host}`}
-        target="_blank"
-        rel="noreferrer"
-        className="inline-flex items-center gap-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--module-active)]"
-      >
-        {primary.host}
-        <ExternalLink className="h-3 w-3 opacity-60" />
-      </a>
-    );
-  };
+  // The primary URL as a link — truncates so a long domain never widens its
+  // container (still clickable, still opens in a new tab). `sizeClass` sets the
+  // text size for the surface it sits on (xs in the dense table, sm on a card).
+  const domainLink = (host: string, sizeClass: string) => (
+    <a
+      href={`https://${host}`}
+      target="_blank"
+      rel="noreferrer"
+      className={`inline-flex min-w-0 items-center gap-1 ${sizeClass} text-[var(--color-text-secondary)] hover:text-[var(--module-active)]`}
+      title={host}
+    >
+      <span className="truncate">{host}</span>
+      <ExternalLink className="h-3 w-3 shrink-0 opacity-60" />
+    </a>
+  );
 
   const statusCell = (p: Property) => {
     const s = siteStatusBadge(p);
@@ -119,25 +113,35 @@ export function SitesList({ sites, domains, activePropertyId, view }: SitesListP
     );
   };
 
-  const columns: SelectionColumn<Property>[] = [
-    {
-      header: 'Site',
-      cell: (p) => (
-        <Stack direction="row" align="center" gap={3} className="min-w-0">
-          <SiteChip site={p} />
-          <Stack gap={1} className="min-w-0">
-            <Stack direction="row" align="center" gap={2} wrap>
-              {nameLink(p, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline')}
-              {badges(p)}
-            </Stack>
-            <Text size="xs" variant="muted">
-              Handle <Code>{p.slug}</Code>
-            </Text>
+  // Identity: name + handle + lifecycle badges on the top line, the primary URL on
+  // its own line below. Folding the URL in here (instead of a separate wide column)
+  // keeps the table narrow — the old standalone domain column forced a horizontal
+  // scrollbar once a long domain or the open detail drawer squeezed the list.
+  const identityCell = (p: Property) => {
+    const primary = primaryDomainOf(siteDomains(p));
+    return (
+      <Stack direction="row" align="start" gap={3} className="min-w-0">
+        <SiteChip site={p} />
+        <Stack gap={1} className="min-w-0">
+          <Stack direction="row" align="center" gap={2} wrap>
+            {nameLink(p, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline')}
+            <Code>{p.slug}</Code>
+            {badges(p)}
           </Stack>
+          {primary ? (
+            domainLink(primary.host, 'text-xs')
+          ) : (
+            <Text size="xs" variant="muted">
+              No domain yet
+            </Text>
+          )}
         </Stack>
-      ),
-    },
-    { header: 'Primary domain', cell: domainCell },
+      </Stack>
+    );
+  };
+
+  const columns: SelectionColumn<Property>[] = [
+    { header: 'Site', cell: identityCell },
     { header: 'Status', cell: statusCell },
     {
       header: 'Domains',
@@ -176,11 +180,9 @@ export function SitesList({ sites, domains, activePropertyId, view }: SitesListP
                     p,
                     'text-base font-medium hover:text-[var(--module-active)] hover:underline'
                   )}
+                  <Code>{p.slug}</Code>
                   {badges(p)}
                 </Stack>
-                <Text size="xs" variant="muted">
-                  Handle <Code>{p.slug}</Code>
-                </Text>
               </Stack>
               <Badge color={s.color} variant="soft">
                 {s.label}
@@ -188,15 +190,7 @@ export function SitesList({ sites, domains, activePropertyId, view }: SitesListP
             </Stack>
             <Stack direction="row" align="center" justify="between" gap={2}>
               {primary ? (
-                <a
-                  href={`https://${primary.host}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--module-active)]"
-                >
-                  {primary.host}
-                  <ExternalLink className="h-3 w-3 opacity-60" />
-                </a>
+                domainLink(primary.host, 'text-sm')
               ) : (
                 <Text size="sm" variant="muted">
                   {siteDomains(p).length} domains

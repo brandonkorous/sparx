@@ -98,65 +98,79 @@ export function SiteDomainsTab({ propertyId, domains }: { propertyId: string; do
               const isActive = d.status === 'active' || d.status === 'verified';
               const isCustom = d.type === 'custom';
               const isSubdomain = d.type === 'subdomain';
+              const canVerify = isCustom && !isActive;
+              const canSetPrimary = isActive && !d.isCanonical;
+              const canDisconnect = !isSubdomain;
+              // Second row exists only when there's a badge or an action to show,
+              // so a bare-subdomain row doesn't leave an empty gap.
+              const hasMetaRow = d.isCanonical || canVerify || canSetPrimary || canDisconnect;
               return (
                 <div
                   key={d.id}
                   className="flex flex-col gap-2 rounded-lg border border-[var(--color-border-default)] p-3"
                 >
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Globe className="size-4 text-[var(--color-text-secondary)]" />
-                    <span className="font-medium">{d.host}</span>
-                    <Badge color={status.color} variant="soft" size="sm">
+                  {/* Host owns its own line (+ status), so a long domain never has to
+                      share a row with the actions and wrap awkwardly. */}
+                  <div className="flex items-center gap-2">
+                    <Globe className="size-4 shrink-0 text-[var(--color-text-secondary)]" />
+                    <span className="min-w-0 font-medium break-all">{d.host}</span>
+                    <Badge color={status.color} variant="soft" size="sm" className="shrink-0">
                       {status.label}
                     </Badge>
-                    {d.isCanonical && (
-                      <Badge color="module" variant="soft" size="sm">
-                        <Star className="size-3" /> Primary domain
-                      </Badge>
-                    )}
-                    <div className="ml-auto flex gap-1">
-                      {isCustom && !isActive && (
-                        <Button
-                          size="sm"
-                          variant="soft"
-                          color="module"
-                          disabled={pending}
-                          onClick={() => run(() => verifyDomain(d.id), `${d.host} verified.`)}
-                          leftIcon={<RefreshCw className="size-3.5" />}
-                        >
-                          Verify
-                        </Button>
-                      )}
-                      {isActive && !d.isCanonical && (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          disabled={pending}
-                          onClick={() =>
-                            run(
-                              () => setDomainCanonical(d.id),
-                              `${d.host} is now the primary domain.`
-                            )
-                          }
-                          leftIcon={<CheckCircle2 className="size-3.5" />}
-                        >
-                          Set as primary
-                        </Button>
-                      )}
-                      {!isSubdomain && (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          color="danger"
-                          disabled={pending}
-                          aria-label={`Disconnect ${d.host}`}
-                          onClick={() => void onDisconnect(d)}
-                        >
-                          <Trash2 className="size-3.5" />
-                        </Button>
-                      )}
-                    </div>
                   </div>
+
+                  {/* Primary-domain badge + actions on their own row. */}
+                  {hasMetaRow && (
+                    <div className="flex flex-wrap items-center gap-2">
+                      {d.isCanonical && (
+                        <Badge color="module" variant="soft" size="sm">
+                          <Star className="size-3" /> Primary domain
+                        </Badge>
+                      )}
+                      <div className="ml-auto flex gap-1">
+                        {canVerify && (
+                          <Button
+                            size="sm"
+                            variant="soft"
+                            color="module"
+                            disabled={pending}
+                            onClick={() => run(() => verifyDomain(d.id), `${d.host} verified.`)}
+                            leftIcon={<RefreshCw className="size-3.5" />}
+                          >
+                            Verify
+                          </Button>
+                        )}
+                        {canSetPrimary && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            disabled={pending}
+                            onClick={() =>
+                              run(
+                                () => setDomainCanonical(d.id),
+                                `${d.host} is now the primary domain.`
+                              )
+                            }
+                            leftIcon={<CheckCircle2 className="size-3.5" />}
+                          >
+                            Set as primary
+                          </Button>
+                        )}
+                        {canDisconnect && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            color="danger"
+                            disabled={pending}
+                            aria-label={`Disconnect ${d.host}`}
+                            onClick={() => void onDisconnect(d)}
+                          >
+                            <Trash2 className="size-3.5" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {d.instructions && (
                     <div className="mt-1 grid gap-1 text-sm">
