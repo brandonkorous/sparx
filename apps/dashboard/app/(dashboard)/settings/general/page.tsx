@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { Container, PageHeader, Stack } from '@sparx/ui';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { GeneralForm } from './general-form';
+import { BecomePartnerCard } from './_components/become-partner-card';
 
 interface TenantCard {
   id: string;
@@ -38,6 +39,7 @@ export default async function GeneralSettingsPage() {
             plan: tenant.plan,
           }}
         />
+        <BecomePartnerCard />
       </Stack>
     </Container>
   );

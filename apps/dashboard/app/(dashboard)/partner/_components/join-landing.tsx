@@ -6,12 +6,12 @@ import { TIER_ORDER, TIERS } from '../_lib/tiers';
 import { EarningsCalculator } from './earnings-calculator';
 import { JoinForm } from './join-form';
 
-// The "Become a Sparx Partner" landing (docs/114 §B.2/§B.7) — what a tenant that
-// hasn't joined sees at /partner, rebuilt as a real upsell: a value-prop hero (the
-// one violet-tinted card, per the one-tint-per-hue rule), a live earnings
-// calculator, the four-step how-it-works, the three-tier ladder, then the
-// self-serve join form (owner/admin only — `canJoin`). The chrome + join button
-// carry the program's violet; the body cards stay neutral.
+// The "Become a Sparx Partner" landing (docs/114 §B.2/§B.7) — what a non-partner
+// tenant sees at /partner: a value-prop hero (the one violet-tinted card, per the
+// one-tint-per-hue rule), a live earnings calculator, the four-step how-it-works,
+// the three-tier ladder, then the APPLICATION form (owner/admin only — `canApply`).
+// Every tier is an application for staff review — there is no instant signup. The
+// chrome + button carry the program's violet; the body cards stay neutral.
 
 const HERO_STATS = [
   { value: '20–30%', label: 'commission on each referral’s first payment' },
@@ -42,7 +42,7 @@ const STEPS = [
   },
 ];
 
-export function PartnerJoinLanding({ canJoin }: { canJoin: boolean }) {
+export function PartnerJoinLanding({ canApply }: { canApply: boolean }) {
   return (
     <ModuleProvider module="partner">
       <Container size="xl">
@@ -59,15 +59,14 @@ export function PartnerJoinLanding({ canJoin }: { canJoin: boolean }) {
           <TierLadder />
 
           <Stack gap={4}>
-            <Heading level={2}>Join the program</Heading>
-            {canJoin ? (
+            <Heading level={2}>Apply to the program</Heading>
+            {canApply ? (
               <JoinForm />
             ) : (
               <Card variant="default" padding="lg">
                 <Text size="sm" variant="muted">
-                  Joining the Partner Program is an owner or admin action. Ask an owner or admin of
-                  this workspace to enable it — once they do, they can grant you the Partner role in
-                  Settings → Team.
+                  Applying to the Partner Program is an owner or admin action. Ask an owner or admin
+                  of this workspace to apply — every application is reviewed before approval.
                 </Text>
               </Card>
             )}

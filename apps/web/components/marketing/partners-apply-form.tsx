@@ -3,13 +3,13 @@
 // The /partners application form — name + email + website/LinkedIn + "what
 // describes you" + how you'll use sparx + the tier you're applying for. Posts to
 // the applyToPartnerProgram server action (React 19 form action). On success the
-// form swaps for an inline confirmation whose copy depends on the decision:
-// informal → activate now; registered/certified → reviewed within 3 business days.
+// form swaps for an inline confirmation: EVERY application is reviewed by the Sparx
+// team within 3 business days — no tier activates automatically.
 
 import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Button, Input, Label, NativeSelect, Textarea } from '@sparx/ui';
-import { partnerSignupHref, type PartnerTier } from '@/lib/partners';
+import { type PartnerTier } from '@/lib/partners';
 import { applyToPartnerProgram, type ApplyState } from '@/app/partners/actions';
 import { Spark } from './primitives';
 
@@ -32,8 +32,8 @@ export function PartnersApplyForm() {
   const [state, action] = useActionState(applyToPartnerProgram, INITIAL);
   const [tier, setTier] = useState<PartnerTier>('informal');
 
-  if (state.status === 'approved' || state.status === 'pending') {
-    return <Confirmation state={state} />;
+  if (state.status === 'pending') {
+    return <Confirmation />;
   }
 
   return (
@@ -194,8 +194,7 @@ function SubmitButton() {
   );
 }
 
-function Confirmation({ state }: { state: ApplyState }) {
-  const approved = state.status === 'approved';
+function Confirmation() {
   return (
     <div
       role="status"
@@ -220,17 +219,8 @@ function Confirmation({ state }: { state: ApplyState }) {
       <span
         style={{ fontFamily: SANS, fontWeight: 500, fontSize: '24px', letterSpacing: '-0.02em' }}
       >
-        {approved ? (
-          <>
-            You&rsquo;re in
-            <Spark />
-          </>
-        ) : (
-          <>
-            Application received
-            <Spark />
-          </>
-        )}
+        Application received
+        <Spark />
       </span>
       <p
         style={{
@@ -242,15 +232,8 @@ function Confirmation({ state }: { state: ApplyState }) {
           maxWidth: '380px',
         }}
       >
-        {approved
-          ? 'Create your account to activate your partner profile and get your referral link.'
-          : 'We’ll review your application and be in touch within 3 business days.'}
+        Every application is reviewed by the Sparx team — we’ll be in touch within 3 business days.
       </p>
-      {approved ? (
-        <Button asChild size="lg">
-          <a href={partnerSignupHref(state.tier ?? 'informal')}>Create your account →</a>
-        </Button>
-      ) : null}
     </div>
   );
 }

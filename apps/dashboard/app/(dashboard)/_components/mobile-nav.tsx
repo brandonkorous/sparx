@@ -200,10 +200,11 @@ export function MobileNav({
         )}
 
         {/* Partner Portal — a first-class platform area (docs/114 §B.7) that owns a
-            brand hue (violet). Mirrors the desktop rail/panel: the switcher glyph
-            always carries the partner color (moduleIcon, like Finance), and inside
-            the portal the active section row goes violet via the same provider.
-            The switcher is always present — a non-partner reaches the join screen. */}
+            brand hue (violet). Mirrors the desktop rail/panel. PARTNERS-ONLY: the
+            switcher tile shows only to authorized users of a partner tenant; a
+            non-partner joins through the public sparx.works/partners application
+            form, not a permanent tile. (The in-portal section still renders when
+            already on /partner so a deep link isn't stranded.) */}
         {inPartner ? (
           <ModuleProvider module="partner">
             <SidebarSection>
@@ -215,7 +216,7 @@ export function MobileNav({
               />
             </SidebarSection>
           </ModuleProvider>
-        ) : (
+        ) : isPartner && canOperatePartner ? (
           <SidebarSection>
             <ModuleProvider module="partner">
               <SidebarItem moduleIcon asChild icon={<Handshake className="h-4 w-4" />}>
@@ -223,7 +224,7 @@ export function MobileNav({
               </SidebarItem>
             </ModuleProvider>
           </SidebarSection>
-        )}
+        ) : null}
 
         {inSettings ? (
           <ModuleProvider module="platform">

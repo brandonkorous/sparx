@@ -7,11 +7,12 @@
 // `PARTNER_OPS` capability set {owner, admin, partner} via `requireAnyRole` (NOT
 // the coarse role hierarchy — `partner` is a lateral role). `profile` GET stays
 // `viewer` because the dashboard shell reads it to learn whether the ORG is a
-// partner (feeds the rail tile) for every member regardless of role. `join` is
-// owner/admin only — there is no `partner` role to hold until the org has joined.
+// partner (feeds the rail tile) for every member regardless of role. `apply` is
+// owner/admin only and submits an APPLICATION for review — there is no automatic
+// signup and no `partner` role to hold until staff approve and the org is a partner.
 //
-//   GET  /v1/partner/overview      GET/PUT /v1/partner/profile   POST /v1/partner/join
-//   POST /v1/partner/tier/apply    GET /v1/partner/referrals
+//   GET  /v1/partner/overview      GET/PUT /v1/partner/profile   POST /v1/partner/apply
+//   GET  /v1/partner/application   POST /v1/partner/tier/apply   GET /v1/partner/referrals
 //   GET  /v1/partner/commissions   GET /v1/partner/payouts
 
 import type { FastifyPluginAsync } from 'fastify';
@@ -53,12 +54,21 @@ const partnerRoutes: FastifyPluginAsync = (app) => {
     return ok(partner);
   });
 
-  // Becoming a partner is an owner/admin decision — there is no `partner` role to
-  // hold until the org has actually joined the program.
-  app.post('/v1/partner/join', async (request) => {
+  // Apply to the program (owner/admin) — submits an application for staff review.
+  // There is NO automatic signup at any tier; staff approval (admin app) is what
+  // provisions the partner row.
+  app.post('/v1/partner/apply', async (request) => {
     requireRole(request, 'admin');
-    const partner = await partnerService.join(toPartnerContext(request), request.body);
-    return ok(partner);
+    const result = await partnerService.apply(toPartnerContext(request), request.body);
+    return ok(result);
+  });
+
+  // The tenant's own latest application status (owner/admin) — drives the apply vs
+  // "under review" state on the join surface + the general-settings card.
+  app.get('/v1/partner/application', async (request) => {
+    const auth = requireRole(request, 'admin');
+    const application = await partnerService.getMyApplication(auth.tenantId);
+    return ok({ application });
   });
 
   app.post('/v1/partner/tier/apply', async (request) => {

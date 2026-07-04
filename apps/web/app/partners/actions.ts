@@ -1,10 +1,11 @@
 'use server';
 
-// Server action for the /partners self-serve application (docs/114 §B.2). Runs on
-// apps/web's server and calls the platform's own public API server-to-server
-// (POST /v1/public/partners/apply) — so the browser never touches api-rest
-// directly. Informal applications auto-approve; registered/certified land in the
-// review queue. Honeypot-guarded; the public API does the authoritative Zod pass.
+// Server action for the /partners application (docs/114 §B.2). Runs on apps/web's
+// server and calls the platform's own public API server-to-server (POST
+// /v1/public/partners/apply) — so the browser never touches api-rest directly.
+// EVERY application lands in the review queue — no tier auto-approves (no unvetted
+// account represents the brand). Honeypot-guarded; the public API does the
+// authoritative Zod pass.
 
 import type { PartnerKind, PartnerTier } from '@/lib/partners';
 
@@ -19,9 +20,9 @@ function field(value: FormDataEntryValue | null, maxLength: number): string {
 }
 
 export interface ApplyState {
-  /** idle → not submitted; approved → informal, activate now; pending →
-   *  reviewed tier, we'll be in touch; error → validation/transport failure. */
-  status: 'idle' | 'approved' | 'pending' | 'error';
+  /** idle → not submitted; pending → application received, awaiting review;
+   *  error → validation/transport failure. No tier auto-activates. */
+  status: 'idle' | 'pending' | 'error';
   /** The tier applied for — echoed so the confirmation can tailor its copy. */
   tier?: PartnerTier;
   message?: string;
@@ -69,11 +70,8 @@ export async function applyToPartnerProgram(
     if (!res.ok) {
       return { status: 'error', message: 'Something went wrong on our end. Please try again.' };
     }
-    const body = (await res.json()) as { status?: 'approved' | 'pending' };
-    // Trust the API's decision, but fall back to the tier rule if it's silent
-    // (informal auto-approves; everything else is reviewed).
-    const decided = body.status ?? (requestedTier === 'informal' ? 'approved' : 'pending');
-    return { status: decided, tier: requestedTier };
+    // Every application is queued for review — the response is always pending.
+    return { status: 'pending', tier: requestedTier };
   } catch {
     return { status: 'error', message: 'Something went wrong on our end. Please try again.' };
   }

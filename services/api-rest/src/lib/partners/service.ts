@@ -91,44 +91,52 @@ export const partnerService = {
     return run(ctx, (tx) => tx.partner.findUnique({ where: { tenantId: ctx.tenantId } }));
   },
 
-  /** Self-serve join for an authed tenant (docs/114 §B.2). Informal activates
-   *  immediately (mints a referral code); registered/certified create the partner
-   *  row `pending` + queue a review application. */
-  async join(ctx: PartnerContext, raw: unknown) {
+  /** Apply to the Partner Program from an authed tenant (docs/114 §B.2). ALWAYS an
+   *  application for review — there is NO automatic signup at any tier (no unvetted
+   *  account represents the Sparx brand). Every application queues a
+   *  `partner_applications` row and waits for staff approval, which is what
+   *  provisions the `partners` row (see approveApplication → provisionForTenant).
+   *  Rejects an already-active partner and a duplicate in-review application. */
+  async apply(ctx: PartnerContext, raw: unknown): Promise<{ status: 'pending' }> {
     const input = JoinPartnerInput.parse(raw);
-    const now = new Date();
-    const partner = await run(ctx, async (tx) => {
-      const existing = await tx.partner.findUnique({ where: { tenantId: ctx.tenantId } });
-      if (existing) throw conflict('This account is already a partner.');
-      const isInformal = input.requestedTier === 'informal';
-      return tx.partner.create({
-        data: {
-          tenantId: ctx.tenantId,
-          tier: isInformal ? 'informal' : 'informal', // starts informal; upgrade on approval
-          status: isInformal ? 'active' : 'pending',
-          displayName: input.displayName,
-          kind: input.kind,
-          referralCode: await uniqueReferralCode(tx),
-          appliedAt: now,
-          approvedAt: isInformal ? now : null,
-        },
-      });
-    });
-    if (partner.status === 'active') {
-      await publishPartnerEvent('partner.activated', ctx.tenantId, ctx.userId, {
-        partnerId: partner.id,
-        tier: partner.tier,
-      });
-    } else {
-      await this.createApplication({
-        name: input.displayName,
-        email: '',
-        kind: input.kind,
-        requestedTier: input.requestedTier,
-        applicantTenantId: ctx.tenantId,
-      });
+
+    const existing = await run(ctx, (tx) =>
+      tx.partner.findUnique({ where: { tenantId: ctx.tenantId }, select: { id: true } })
+    );
+    if (existing) throw conflict('This account is already a partner.');
+
+    const current = await this.getMyApplication(ctx.tenantId);
+    if (current?.status === 'pending') {
+      throw conflict('Your partner application is already in review.');
     }
-    return partner;
+
+    await this.createApplication({
+      name: input.displayName,
+      email: '',
+      kind: input.kind,
+      requestedTier: input.requestedTier,
+      applicantTenantId: ctx.tenantId,
+      status: 'pending',
+    });
+    return { status: 'pending' };
+  },
+
+  /** The tenant's own latest partner application (or null) — drives the apply vs
+   *  "under review" state on the join surface + the general-settings card. Reads
+   *  the platform-tenant review queue filtered to this applicant org. */
+  async getMyApplication(
+    applicantTenantId: string
+  ): Promise<{ status: string; requestedTier: string; createdAt: Date } | null> {
+    const platformTenantId = env.SPARX_PLATFORM_TENANT_ID;
+    if (!platformTenantId) return null;
+    const row = await withTenant({ tenantId: platformTenantId }, (tx) =>
+      tx.partnerApplication.findFirst({
+        where: { applicantTenantId },
+        orderBy: { createdAt: 'desc' },
+        select: { status: true, requestedTier: true, createdAt: true },
+      })
+    );
+    return row ?? null;
   },
 
   async updateProfile(ctx: PartnerContext, raw: unknown) {
@@ -259,8 +267,10 @@ export const partnerService = {
     return row;
   },
 
-  /** Public application (docs/114 §B.2). Authed + informal → provision the partner
-   *  row immediately (approved). Otherwise queue for review. */
+  /** Public application (docs/114 §B.2). ALWAYS queues a pending application for
+   *  staff review — no tier auto-activates, ever (no unvetted account represents
+   *  the Sparx brand). Staff approval (admin app → approveApplication) is the only
+   *  path that provisions the partner row. */
   async submitApplication(
     raw: unknown,
     meta: {
@@ -269,39 +279,18 @@ export const partnerService = {
       ipAddress?: string | null;
       userAgent?: string | null;
     }
-  ): Promise<{ status: 'approved' | 'pending' }> {
+  ): Promise<{ status: 'pending' }> {
     const input = ApplyPartnerInput.parse(raw);
     if (input.company_website) return { status: 'pending' }; // honeypot: silently drop
 
-    const informalInstant = input.requestedTier === 'informal' && !!meta.authedTenantId;
-    if (informalInstant && meta.authedTenantId) {
-      await partnerService.provisionForTenant(meta.authedTenantId, {
-        displayName: input.name,
-        kind: input.kind,
-        tier: 'informal',
-        websiteUrl: input.websiteUrl ?? null,
-      });
-      await partnerService.createApplication({
-        ...input,
-        applicantTenantId: meta.authedTenantId,
-        status: 'approved',
-        ipAddress: meta.ipAddress,
-        userAgent: meta.userAgent,
-      });
-      return { status: 'approved' };
-    }
-
-    // Anonymous informal → approved application (activate on account creation);
-    // registered/certified → pending review.
-    const status = input.requestedTier === 'informal' ? 'approved' : 'pending';
     await partnerService.createApplication({
       ...input,
       applicantTenantId: meta.authedTenantId ?? null,
-      status,
+      status: 'pending',
       ipAddress: meta.ipAddress,
       userAgent: meta.userAgent,
     });
-    return { status: status === 'approved' ? 'approved' : 'pending' };
+    return { status: 'pending' };
   },
 
   /** Provision (or reactivate) an active partner row for a tenant + mint a code.

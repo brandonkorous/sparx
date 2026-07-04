@@ -111,6 +111,7 @@ export function DashboardShell({
               favorites={favorites}
               recents={recents}
               isPartner={isPartner}
+              canOperatePartner={canOperatePartner}
             />
           }
           panel={

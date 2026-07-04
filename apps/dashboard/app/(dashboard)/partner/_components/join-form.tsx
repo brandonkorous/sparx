@@ -16,14 +16,14 @@ import {
 } from '@sparx/ui';
 import { PARTNER_KINDS } from '../_lib/kinds';
 import { TIER_ORDER, TIERS } from '../_lib/tiers';
-import { joinPartnerAction } from '../actions';
+import { applyForPartnerAction } from '../actions';
 
-// The self-serve join form (docs/114 §B.2). A neutral working-surface card (the
-// module tint rides the chrome + the violet Join button, per the color-follows-
-// functionality rule) inside the "Become a partner" landing. Informal activates
-// instantly; registered/certified submit a review application and land the tenant
-// on a pending portal. On success we refresh so the layout re-fetches the partner
-// row and the whole portal lights up in place.
+// The partner application form (docs/114 §B.2). A neutral working-surface card (the
+// module tint rides the chrome + the violet button, per color-follows-
+// functionality) inside the "Become a partner" landing. EVERY tier is an
+// application for staff review — there is NO instant signup. On success we refresh
+// so the join surface flips to its "in review" state (the page re-reads the
+// application status).
 
 export function JoinForm() {
   const router = useRouter();
@@ -33,8 +33,6 @@ export function JoinForm() {
   const [kind, setKind] = React.useState('freelance');
   const [error, setError] = React.useState<string | null>(null);
 
-  const selectedTier = TIERS[requestedTier as keyof typeof TIERS] ?? TIERS.informal;
-
   function submit() {
     setError(null);
     const trimmed = displayName.trim();
@@ -43,12 +41,12 @@ export function JoinForm() {
       return;
     }
     startTransition(async () => {
-      const result = await joinPartnerAction({ displayName: trimmed, requestedTier, kind });
+      const result = await applyForPartnerAction({ displayName: trimmed, requestedTier, kind });
       if (!result.ok) {
-        setError(result.error ?? 'Could not join the program.');
+        setError(result.error ?? 'Could not submit your application.');
         return;
       }
-      // The portal now exists (or is pending) — refresh to reveal it.
+      // Application submitted — refresh so the surface flips to "in review".
       router.refresh();
     });
   }
@@ -94,7 +92,7 @@ export function JoinForm() {
             </Stack>
 
             <Stack gap={2}>
-              <Label>Starting tier</Label>
+              <Label>Tier you’re applying for</Label>
               <RadioGroup value={requestedTier} onValueChange={setRequestedTier}>
                 {TIER_ORDER.map((t) => {
                   const meta = TIERS[t];
@@ -109,9 +107,7 @@ export function JoinForm() {
                           {meta.label} · {meta.commission}
                         </Label>
                         <Text size="xs" variant="muted">
-                          {meta.reviewed
-                            ? 'Apply for review — we confirm within 3 business days.'
-                            : 'Instant — you’re in the moment you join.'}
+                          Reviewed before approval — we confirm within 3 business days.
                         </Text>
                       </Stack>
                     </div>
@@ -121,9 +117,8 @@ export function JoinForm() {
             </Stack>
 
             <Text size="xs" variant="muted">
-              {selectedTier.reviewed
-                ? 'We’ll create your partner profile now and review your application for the higher tier. You start earning at the informal rate until it’s approved.'
-                : 'You’ll get your referral link and start earning right away.'}
+              We review every application to keep the partner directory high-quality. You’ll hear
+              back within 3 business days — nothing activates until we approve it.
             </Text>
 
             {error && (
@@ -134,7 +129,7 @@ export function JoinForm() {
 
             <div>
               <Button type="submit" color="module" loading={pending} disabled={pending}>
-                {selectedTier.reviewed ? 'Join & apply' : 'Join the program'}
+                Submit application
               </Button>
             </div>
           </Stack>
