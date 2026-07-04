@@ -30,19 +30,34 @@ export interface IndexEntityInput {
   op?: SearchEntityChangedPayload['op'];
 }
 
-export async function indexEntity(input: IndexEntityInput): Promise<void> {
+// Returns Promise<void> (so existing `await indexEntity(...)` call sites stay
+// valid + lint-clean) but the publish is DETACHED, not awaited: a search reindex
+// must never block — or fail — the request that triggered it. Awaiting the
+// publish couples request latency to Pub/Sub availability, so a slow/unreachable
+// broker (e.g. local dev without the emulator) stalls the caller's response for
+// the client's full retry window (and can back the whole service up). publishEvent
+// already swallows transport errors; we detach so the handler returns immediately
+// and the event still flushes on the event loop. This is the event-driven
+// convention: publish-and-forget the side effect, never inline-await it.
+export function indexEntity(input: IndexEntityInput): Promise<void> {
   const publisher = createPublisher({ projectId: process.env.GCP_PROJECT_ID, logger });
   const payload: SearchEntityChangedPayload = {
     entityType: input.entityType,
     recordId: input.recordId,
     op: input.op ?? 'upsert',
   };
-  await publishEvent(
+  void publishEvent(
     publisher,
     'search.entity.changed',
     input.tenantId,
     input.actorId ?? null,
     payload,
     logger
-  );
+  ).catch((err: unknown) => {
+    logger.error(
+      { err: err instanceof Error ? err.message : String(err), entityType: input.entityType },
+      'search index publish failed'
+    );
+  });
+  return Promise.resolve();
 }
