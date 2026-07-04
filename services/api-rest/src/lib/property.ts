@@ -11,6 +11,16 @@
 import { withTenant } from '@sparx/db';
 import type { Prisma } from '@prisma/client';
 import { notFound } from '@sparx/api-core/errors';
+import { createTtlCache } from './ttl-cache.js';
+
+// Property-id resolution runs on EVERY public storefront read (host→propertyId) and
+// each miss opens a withTenant interactive transaction — a scarce PgBouncer server
+// slot — for a single-row lookup. The (tenant, slug|id)→propertyId mapping is stable,
+// so a short per-pod TTL collapses that per-request transaction to ~one per key per
+// window (the same P2028 relief as lib/domain.ts's host cache). Keys embed tenantId,
+// so this is never a cross-tenant path — a stale id only ever names one of the SAME
+// tenant's properties, and RLS still scopes the underlying reads regardless.
+const propertyIdCache = createTtlCache<string>({ hitTtlMs: 60_000 });
 
 // ── Model B per-site scoping (docs/49 §3) ──────────────────────────────────
 // A product / content entry is visible on a site if it has NO scope rows
@@ -38,11 +48,13 @@ export function contentSiteVisibilityWhere(propertyId: string): Prisma.ContentEn
 /** The tenant's PRIMARY property id. Every tenant has exactly one (guaranteed by
  *  migration 20260626000000_properties + the partial-unique index). */
 export async function resolvePrimaryPropertyId(tenantId: string): Promise<string> {
-  const row = await withTenant({ tenantId }, (tx) =>
-    tx.property.findFirst({ where: { isPrimary: true }, select: { id: true } })
-  );
-  if (!row) throw notFound('Property', `primary for tenant ${tenantId}`);
-  return row.id;
+  return propertyIdCache.get(`primary:${tenantId}`, async () => {
+    const row = await withTenant({ tenantId }, (tx) =>
+      tx.property.findFirst({ where: { isPrimary: true }, select: { id: true } })
+    );
+    if (!row) throw notFound('Property', `primary for tenant ${tenantId}`);
+    return row.id;
+  });
 }
 
 /** Resolve the property a request is scoped to. `requested` (e.g. the
@@ -55,10 +67,12 @@ export async function resolvePropertyId(
   requested?: string | null
 ): Promise<string> {
   if (requested) {
-    const row = await withTenant({ tenantId }, (tx) =>
-      tx.property.findUnique({ where: { id: requested }, select: { id: true } })
-    );
-    if (row) return row.id;
+    return propertyIdCache.get(`id:${tenantId}:${requested}`, async () => {
+      const row = await withTenant({ tenantId }, (tx) =>
+        tx.property.findUnique({ where: { id: requested }, select: { id: true } })
+      );
+      return row ? row.id : resolvePrimaryPropertyId(tenantId);
+    });
   }
   return resolvePrimaryPropertyId(tenantId);
 }
@@ -86,10 +100,12 @@ export async function resolvePublicPropertyId(
   slug?: string | null
 ): Promise<string> {
   if (slug) {
-    const row = await withTenant({ tenantId }, (tx) =>
-      tx.property.findFirst({ where: { slug }, select: { id: true } })
-    );
-    if (row) return row.id;
+    return propertyIdCache.get(`slug:${tenantId}:${slug}`, async () => {
+      const row = await withTenant({ tenantId }, (tx) =>
+        tx.property.findFirst({ where: { slug }, select: { id: true } })
+      );
+      return row ? row.id : resolvePrimaryPropertyId(tenantId);
+    });
   }
   return resolvePrimaryPropertyId(tenantId);
 }

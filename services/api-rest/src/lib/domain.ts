@@ -12,6 +12,7 @@
 import { promises as dns } from 'node:dns';
 import { randomBytes } from 'node:crypto';
 import { prisma, withTenant } from '@sparx/db';
+import { createTtlCache } from './ttl-cache.js';
 
 // The zone we own — `<label>.sparx.zone` subdomains issue instantly (no DNS
 // verification needed, we control the zone). Kept in sync with the Caddy ask
@@ -141,19 +142,43 @@ export interface SiteRoute {
   propertySlug: string;
 }
 
-/** Map an incoming Host header to a tenant + property (docs/49 §5).
+/** Cached host→route resolution — the public entrypoint. Normalizes the host, then
+ *  serves from a short per-pod TTL cache (see the cache note below), falling back to
+ *  the uncached DB resolver on a miss. Returns null for junk or an unknown host. */
+export async function resolveSiteByHost(rawHost: string): Promise<SiteRoute | null> {
+  const host = normalizeHost(rawHost);
+  if (!host) return null;
+  return resolveThroughCache(host);
+}
+
+// Host→route is the single highest-QPS DB path in the platform: every public request
+// AND every Caddy on-demand-TLS ask resolves here, and each miss opens an interactive
+// transaction — one of PgBouncer's transaction-mode server slots (DEFAULT_POOL_SIZE) —
+// for a single-row read. Uncached, this path both saturates that shared pool and
+// starves under it; the prod P2028 "Unable to start a transaction in the given time"
+// bursts trace straight back here. A host maps to the same tenant+site for its
+// lifetime, so a short per-pod TTL collapses the volume to ~one resolve per host per
+// window. A freshly-connected domain starts routing within the miss TTL, and the
+// domain-worker advances status over minutes regardless.
+const hostCache = createTtlCache<SiteRoute | null>({ hitTtlMs: 60_000, missTtlMs: 15_000 });
+
+function resolveThroughCache(host: string): Promise<SiteRoute | null> {
+  return hostCache.get(host, () => resolveSiteByHostUncached(host));
+}
+
+/** Map an already-normalized, non-empty Host to a tenant + property (docs/49 §5).
+ *  Callers go through `resolveSiteByHost` (which normalizes + caches); this is the
+ *  uncached DB resolution.
  *
  *  1. Exact match in `domains` (any custom/purchased/subdomain row that's live).
  *  2. Bare `<tenant>.sparx.zone` → tenant by slug + its PRIMARY property (the
  *     backward-compatible path; works even before a subdomain row is backfilled).
+ *  3. Hierarchical `<property>.<tenant>.sparx.zone` → that tenant's named property.
  *
  *  Reads the non-RLS `domains`/`tenants` tables directly; the property lookup is
  *  scoped by the resolved tenant_id in the query. Returns null for an unknown
  *  host (the caller 404s / denies). */
-export async function resolveSiteByHost(rawHost: string): Promise<SiteRoute | null> {
-  const host = normalizeHost(rawHost);
-  if (!host) return null;
-
+async function resolveSiteByHostUncached(host: string): Promise<SiteRoute | null> {
   // 1. Exact host row — the general path (custom domains + additional-site
   //    subdomains). `domains` is non-RLS, so the bare client reads it directly.
   //    A connected (BYO) domain routes only once 'verified'/'active' (a pending
