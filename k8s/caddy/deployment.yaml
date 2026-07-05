@@ -36,6 +36,12 @@ spec:
               mountPath: /data
             - name: caddy-config-dir
               mountPath: /config
+            # Cloudflare Origin CA cert for admin.wize.works (behind Access, so
+            # ACME can't run — see k8s/caddy/Caddyfile admin block + origin-ca.tf).
+            # Synced from Secret Manager by bootstrap.yml (components=caddy).
+            - name: admin-origin-cert
+              mountPath: /certs/admin
+              readOnly: true
           resources:
             requests:
               cpu: '100m'
@@ -65,3 +71,11 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: caddy-data
+        # optional:true so a missing secret doesn't wedge scheduling — but the
+        # Caddyfile's `tls` directive still needs the files present, so the
+        # bootstrap caddy step hard-fails BEFORE rolling if the secret can't be
+        # synced (a cert-less roll would take the whole shared ingress down).
+        - name: admin-origin-cert
+          secret:
+            secretName: caddy-admin-origin
+            optional: true

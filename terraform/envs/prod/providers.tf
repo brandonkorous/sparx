@@ -22,6 +22,10 @@ terraform {
       source  = "hashicorp/time"
       version = "~> 0.12"
     }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.0"
+    }
   }
 }
 
@@ -36,5 +40,10 @@ provider "google-beta" {
 }
 
 provider "cloudflare" {
+  # Single token for everything, including Origin CA (origin-ca.tf). Since Aug 2022
+  # the provider signs Origin CA cert requests with the API token — the legacy,
+  # now-DEPRECATED "Origin CA Key" (api_user_service_key) is no longer needed. The
+  # token must carry Zone → SSL and Certificates → Edit in addition to its DNS/
+  # Access scopes.
   api_token = var.cloudflare_api_token
 }

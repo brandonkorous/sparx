@@ -333,6 +333,11 @@ module "secrets" {
     "operator-auth-secret",
     "operator-bootstrap-password",
     "sparx-internal-operator-token",
+    # NOT listed here (their VALUES are TF-generated, not added out-of-band):
+    #   admin-origin-cert / admin-origin-key — the admin.wize.works Cloudflare
+    #   Origin CA cert + key. Container + version both live in origin-ca.tf;
+    #   bootstrap.yml (components=caddy) syncs them into the caddy-admin-origin
+    #   k8s TLS secret.
   ]
 }
 

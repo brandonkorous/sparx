@@ -21,6 +21,18 @@ variable "cloudflare_enabled" {
   description = "Flip to true once sparx.works has been transferred to Cloudflare and var.cloudflare_api_token is set."
 }
 
+# Opt-in for the admin.wize.works Cloudflare Origin CA cert (origin-ca.tf). Kept
+# separate from cloudflare_enabled because creating the cert requires the
+# cloudflare_api_token to ALSO carry Zone → SSL and Certificates → Edit — a
+# permission you add to the token first. Leave false until that's done, then flip
+# to true and `terraform apply`; a stale/under-scoped token would otherwise fail
+# the apply with a Cloudflare auth error (10000). No deprecated Origin CA Key.
+variable "cloudflare_origin_ca_enabled" {
+  type        = bool
+  default     = false
+  description = "Create the admin.wize.works Origin CA cert. Requires cloudflare_api_token to have Zone:SSL and Certificates:Edit."
+}
+
 variable "ops_email" {
   type        = string
   description = "Notification target for Cloud Monitoring alerts. Use a group/distribution address."

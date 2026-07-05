@@ -103,6 +103,22 @@ jobs:
         if: ${{ inputs.components == 'all-platform' || inputs.components == 'caddy' }}
         run: |
           set -euo pipefail
+          # Cloudflare Origin CA cert for admin.wize.works. The Caddyfile's admin
+          # block references /certs/admin/tls.{crt,key} (admin sits behind Access,
+          # so ACME can't run — see origin-ca.tf). This secret feeds the SHARED
+          # ingress pod, so sync it FIRST and hard-fail before rolling if the cert
+          # isn't provisioned — a cert-less roll would crash Caddy for every host.
+          if CERT=$(gcloud secrets versions access latest --secret=admin-origin-cert --project="$PROJECT_ID" 2>/dev/null) \
+             && KEY=$(gcloud secrets versions access latest --secret=admin-origin-key --project="$PROJECT_ID" 2>/dev/null); then
+            kubectl create secret tls caddy-admin-origin -n "$NAMESPACE" \
+              --cert=<(printf '%s' "$CERT") --key=<(printf '%s' "$KEY") \
+              --dry-run=client -o yaml | kubectl apply -f -
+            echo "  + caddy-admin-origin TLS secret synced"
+          else
+            echo "::error::admin-origin-cert/key not in Secret Manager — the Caddyfile references them and rolling Caddy without them crashes the shared ingress."
+            echo "::error::Run 'terraform apply' with cloudflare_origin_ca_key set first (see terraform/envs/prod/origin-ca.tf), then re-run this."
+            exit 1
+          fi
           kubectl apply -k k8s/caddy/
           # Bind the LoadBalancer to the reserved static IP from Terraform.
           # idempotent: if already bound, this is a no-op patch.

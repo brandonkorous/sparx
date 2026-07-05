@@ -141,14 +141,25 @@ mcp.kanninja.com {
 
 # ----- WizeWorks operator console (admin.wize.works, wize-admin namespace) -----
 # The Layer-4 operator console (docs/16 §2.4, docs/apps/admin/build-plan.md).
-# Like kanninja.com, wize.works is NOT a sparx tenant, so on_demand_tls (which
-# asks the sparx /internal/domain-check) would REJECT it — omit it so Caddy gets
-# a normal managed Let's Encrypt cert. Access control is enforced IN FRONT by
-# Cloudflare Access (D8/D9), the load-bearing gate until operator MFA ships;
-# Caddy just proxies cross-namespace to the admin Service. Keep admin.wize.works
-# DNS-only (no Cloudflare proxy) until the cert issues, then front with Access.
+# Access control is enforced IN FRONT by Cloudflare Access (D8/D9), the
+# load-bearing gate until operator MFA ships; Caddy just proxies cross-namespace
+# to the admin Service.
+#
+# TLS is a Cloudflare ORIGIN CA cert, NOT Let's Encrypt. This host sits behind
+# Cloudflare Access, which intercepts the ACME challenge path (/.well-known/
+# acme-challenge/*) and returns its login page — so Caddy can NEVER obtain an LE
+# cert while proxied (both tls-alpn-01 and http-01 fail). The Origin CA cert is
+# signed by Cloudflare (trusted by its edge in Full(strict)), valid 15 years, and
+# never renews. Generated + stored by terraform (origin-ca.tf); synced into the
+# caddy-admin-origin secret + mounted at /certs/admin by bootstrap.yml
+# (components=caddy). The record stays proxied=true — no Terraform drift.
+#
+# NOTE: this `tls` directive makes the whole shared ingress depend on the cert
+# files existing. The bootstrap caddy step syncs the secret and FAILS before
+# rolling if it can't — do not remove that guard.
 admin.wize.works {
   import security_headers
+  tls /certs/admin/tls.crt /certs/admin/tls.key
   reverse_proxy admin.wize-admin.svc.cluster.local:3000
 }
 

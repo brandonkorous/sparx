@@ -40,6 +40,15 @@ output "cloud_sql_app_password" {
   sensitive = true
 }
 
+# wize_operator role password — assemble OPERATOR_DATABASE_URL out-of-band from
+# this + cloud_sql_private_ip for the `operator-database-url` secret (see the
+# secret comment in main.tf). Read with:
+#   terraform output -raw cloud_sql_operator_password
+output "cloud_sql_operator_password" {
+  value     = module.cloud_sql.operator_password
+  sensitive = true
+}
+
 output "artifact_registry_path" {
   value = "${var.region}-docker.pkg.dev/${var.project_id}/sparx"
 }

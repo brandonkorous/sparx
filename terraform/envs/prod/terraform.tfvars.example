@@ -6,3 +6,8 @@ ops_email  = "ops@sparx.works"
 # Token goes in terraform.tfvars (gitignored), NOT this .example file.
 cloudflare_enabled    = false
 cloudflare_api_token  = ""
+
+# admin.wize.works Origin CA cert (origin-ca.tf). Flip to true AFTER adding
+# Zone:SSL and Certificates:Edit to the cloudflare_api_token above — the cert is
+# signed with that token (no separate/deprecated Origin CA Key).
+cloudflare_origin_ca_enabled = false
