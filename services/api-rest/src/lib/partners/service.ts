@@ -475,4 +475,65 @@ export const partnerService = {
       tx.partner.update({ where: { tenantId: partnerTenantId }, data: { status } })
     );
   },
+
+  /** Staff: reject a pending application (docs/114 §B.2). Written under the
+   *  platform tenant's context, mirroring listApplications/approveApplication. */
+  async rejectApplication(applicationId: string, note?: string) {
+    const platformTenantId = env.SPARX_PLATFORM_TENANT_ID;
+    if (!platformTenantId) throw badRequest('Platform tenant not configured.');
+    return withTenant({ tenantId: platformTenantId }, (tx) =>
+      tx.partnerApplication.update({
+        where: { id: applicationId },
+        data: { status: 'rejected', reviewedAt: new Date(), ...(note ? { note } : {}) },
+      })
+    );
+  },
+
+  /** Staff (operator console): the cross-partner roster. `withSystem` +
+   *  `partners_visibility` expose only ACTIVE partners — a suspended partner drops
+   *  out of this list (reach it by its tenant id via `adminDetail`, whose own
+   *  tenant context still sees the row, to reinstate). */
+  listAllPartners() {
+    return withSystem((tx) =>
+      tx.partner.findMany({
+        where: { status: 'active', deletedAt: null },
+        orderBy: { displayName: 'asc' },
+      })
+    );
+  },
+
+  /** Staff (operator console): one partner's full picture in a single tenant tx —
+   *  profile, the referral ledger (+ referred org names), commissions, and payout
+   *  runs. Read under the partner's OWN tenant context, so a suspended partner is
+   *  still fully visible here (its own row is exempt from the active-only policy). */
+  async adminDetail(partnerTenantId: string) {
+    const data = await withTenant({ tenantId: partnerTenantId }, async (tx) => {
+      const partner = await tx.partner.findUnique({ where: { tenantId: partnerTenantId } });
+      if (!partner) return null;
+      const [referrals, commissions, payouts] = await Promise.all([
+        tx.partnerReferral.findMany({
+          where: { tenantId: partnerTenantId },
+          orderBy: { createdAt: 'desc' },
+        }),
+        tx.partnerCommission.findMany({
+          where: { tenantId: partnerTenantId },
+          orderBy: { createdAt: 'desc' },
+        }),
+        tx.partnerPayoutRun.findMany({
+          where: { tenantId: partnerTenantId },
+          orderBy: { createdAt: 'desc' },
+        }),
+      ]);
+      return { partner, referrals, commissions, payouts };
+    });
+    if (!data) return null;
+    const names = await resolveOrgNames(data.referrals.map((r) => r.referredTenantId));
+    return {
+      ...data,
+      referrals: data.referrals.map((r) => ({
+        ...r,
+        referredOrgName: names.get(r.referredTenantId) ?? null,
+      })),
+    };
+  },
 };

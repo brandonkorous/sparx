@@ -1,8 +1,8 @@
 # sparx Platform — Admin App Build Plan
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-04
+**Last Updated:** 2026-07-05
 
 > The build plan for `apps/admin` — the **WizeWorks operator console** at `admin.wize.works`. It is the
 > concrete _how_ for the two specs that already exist:
@@ -272,6 +272,23 @@ checklist is unblocked once Slice 1's audit + read seam exist. Gated `feedback:r
 Suspend/unsuspend, manual module activate/deactivate (publish `module.activated` — never inline a flag flip),
 storage-limit override. Each behind a capability + confirmation; api-rest writes the tenant's `audit_logs` as
 `actor_type='operator'` (owner-visible) **and** the `platform_operator_audit_logs` row.
+
+### Slice 9 — Partner Program administration
+
+The WizeWorks-side of the Partner Program (docs/114 §B), folded behind the operator seam. All custom
+partner administration cross-tenant: the **application review queue** (approve → provision / reject),
+the **partner roster** (tier, suspend/reinstate), per-partner **referrals / commissions / payout runs**,
+the two platform-wide money actions (**approve pending commissions**, **run the monthly Stripe Connect
+payout batch**), and a read-only cross-partner **bootcamps** overview. Gated `partner:read` / `partner:act`
+(new capabilities). Reaches the existing `partnerService` / payout runners / directory reads through new
+`/internal/operator/partners/*` endpoints (operator token — the admin app never holds the separate
+partners token, per D6). Partner RLS shapes it: applications live on the platform tenant; the roster is
+active-only (`partners_visibility` under `withSystem`); referrals/commissions/payouts are per-partner
+reads (no cross-partner ledger). Bootcamps are host-partner-owned → read-only here.
+
+> **Navigation.** With this many sections the console moved from top-tabs to the shared
+> `SidebarAppShell` (the tenant dashboard's chassis): a collapsible, grouped, capability-gated rail
+> (Overview · Accounts · Growth · Money · Support · Infrastructure) + a mobile drawer.
 
 ### Later — cross-product + alerts
 

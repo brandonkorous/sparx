@@ -81,6 +81,7 @@ import operatorDomainsRoutes from './routes/internal/operator-domains.js';
 import operatorSupportRoutes from './routes/internal/operator-support.js';
 import operatorFeedbackRoutes from './routes/internal/operator-feedback.js';
 import operatorTenantRoutes from './routes/internal/operator-tenant.js';
+import operatorPartnerRoutes from './routes/internal/operator-partners.js';
 import contentTypeRoutes from './routes/v1/content/types.js';
 import entryRoutes from './routes/v1/content/entries.js';
 import publishRoutes from './routes/v1/content/publish.js';
@@ -784,6 +785,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(operatorSupportRoutes);
   await app.register(operatorFeedbackRoutes);
   await app.register(operatorTenantRoutes);
+  await app.register(operatorPartnerRoutes);
 
   // v1 surface. Each route file owns its own URL prefix so this central
   // map is easy to skim. Adding a new route group is a one-line registration.

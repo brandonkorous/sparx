@@ -32,6 +32,11 @@ export const OPERATOR_CAPABILITIES = [
   // Custom-domain + SSL operations across tenants (force re-verify, view
   // GoDaddy history).
   'domain:manage',
+  // Partner Program (docs/114 §B) — read the application queue / partner roster /
+  // commissions / bootcamps; act = approve/reject applications, set tier,
+  // suspend/reinstate a partner, trigger a payout run (moves money via Connect).
+  'partner:read',
+  'partner:act',
   // In-product feedback triage (docs/apps/admin/feedback.md): respond to a
   // submission; administer (delete / configure).
   'feedback:respond',
@@ -60,6 +65,8 @@ export const OPERATOR_CAPABILITY_LABELS: Record<OperatorCapability, string> = {
   'tenant:suspend': 'Tenants — suspend / unsuspend',
   'module:toggle': 'Tenants — activate / deactivate modules',
   'domain:manage': 'Domains — manage custom domains & SSL',
+  'partner:read': 'Partners — read applications, roster & commissions',
+  'partner:act': 'Partners — approve, tier, suspend & pay out',
   'feedback:respond': 'Feedback — respond to submissions',
   'feedback:admin': 'Feedback — administer (delete / configure)',
   'operator:admin': 'Operators — manage the operator roster',

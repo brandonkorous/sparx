@@ -1,8 +1,6 @@
-import Link from 'next/link';
-import { ConfirmProvider, ModuleProvider, Stack, Text, Toaster, Wordmark } from '@sparx/ui';
+import { ConfirmProvider, ModuleProvider, Toaster } from '@sparx/ui';
 import { requireOperator } from '@sparx/operator-auth/next';
-import { SignOutButton } from './_components/sign-out-button';
-import { ConsoleNav } from './_components/console-nav';
+import { ConsoleShell } from './_components/console-shell';
 
 // The entire authenticated console renders per-request, never at build time:
 // requireOperator() reads the session cookie and constructs the operator Better
@@ -22,28 +20,9 @@ export default async function ConsoleLayout({ children }: { children: React.Reac
   return (
     <ModuleProvider module="platform">
       <ConfirmProvider>
-        <div className="min-h-dvh">
-          <header className="border-border border-b px-6">
-            <div className="flex items-center justify-between py-3">
-              <Stack direction="row" align="center" gap={3}>
-                <Link href="/">
-                  <Wordmark size={22} />
-                </Link>
-                <Text size="sm" variant="muted">
-                  Operator Console
-                </Text>
-              </Stack>
-              <Stack direction="row" align="center" gap={3}>
-                <Text size="sm" variant="muted">
-                  {operator.email}
-                </Text>
-                <SignOutButton />
-              </Stack>
-            </div>
-            <ConsoleNav capabilities={operator.capabilities} />
-          </header>
-          <main className="mx-auto max-w-6xl p-6">{children}</main>
-        </div>
+        <ConsoleShell email={operator.email} capabilities={operator.capabilities}>
+          {children}
+        </ConsoleShell>
         <Toaster />
       </ConfirmProvider>
     </ModuleProvider>

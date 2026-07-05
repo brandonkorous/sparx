@@ -48,6 +48,7 @@ export default async function ConsoleHome() {
       {hasCapability(operator, 'support:read') ||
       hasCapability(operator, 'billing:read') ||
       hasCapability(operator, 'domain:manage') ||
+      hasCapability(operator, 'partner:read') ||
       hasCapability(operator, 'feedback:respond') ? (
         <div className="grid gap-4 md:grid-cols-2">
           {hasCapability(operator, 'support:read') ? (
@@ -95,6 +96,22 @@ export default async function ConsoleHome() {
               cta="Open feedback →"
               body="The cross-tenant inbox of ideas, problems, questions, and praise. Triage, assign, tag, and reply — the response closes the loop back to the submitter."
             />
+          ) : null}
+          {hasCapability(operator, 'partner:read') ? (
+            <>
+              <ConsoleEntry
+                title="Partners"
+                href="/sparx/partners"
+                cta="Open partners →"
+                body="The Sparx Partner Program — review applications, manage the partner roster and tiers, approve commissions, and run the monthly Stripe Connect payout batch."
+              />
+              <ConsoleEntry
+                title="Bootcamps"
+                href="/sparx/bootcamps"
+                cta="View bootcamps →"
+                body="The live public catalog of partner-hosted bootcamps across the platform — host, tier, format, seats, and dates. Read-only."
+              />
+            </>
           ) : null}
         </div>
       ) : null}

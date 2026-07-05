@@ -53,6 +53,16 @@ import type {
   OperatorTenantStatusResult,
   OperatorStorageLimitInput,
   OperatorStorageLimitResult,
+  OperatorPartnerApplication,
+  OperatorPartnerListItem,
+  OperatorPartnerDetail,
+  OperatorPartnerApproveInput,
+  OperatorPartnerRejectInput,
+  OperatorPartnerTierInput,
+  OperatorPartnerStatusInput,
+  OperatorPayoutRunResult,
+  OperatorCommissionApproveResult,
+  OperatorBootcampListResult,
 } from './types';
 
 /** Shared-secret header — mirrors the existing `X-sparx-Internal-*-Token`
@@ -265,6 +275,58 @@ export interface OperatorApiClient {
     operatorId: string,
     signal?: AbortSignal
   ): Promise<OperatorStorageLimitResult>;
+  // ── Partner Program (Slice 9) ──
+  /** WizeWorks' partner-application review queue (optionally filtered by status). */
+  listPartnerApplications(
+    operatorId: string,
+    status?: string,
+    signal?: AbortSignal
+  ): Promise<OperatorPartnerApplication[]>;
+  /** Approve an application → provision/activate the applicant's partner row. */
+  approvePartnerApplication(
+    applicationId: string,
+    input: OperatorPartnerApproveInput,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorPartnerListItem>;
+  /** Reject a pending application. */
+  rejectPartnerApplication(
+    applicationId: string,
+    input: OperatorPartnerRejectInput,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorPartnerApplication>;
+  /** The active partner roster (suspended partners drop out — reach via detail). */
+  listPartners(operatorId: string, signal?: AbortSignal): Promise<OperatorPartnerListItem[]>;
+  /** One partner's full detail (profile + referrals + commissions + payouts + KPIs). */
+  getPartner(
+    tenantId: string,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorPartnerDetail>;
+  /** Set a partner's tier. */
+  setPartnerTier(
+    tenantId: string,
+    input: OperatorPartnerTierInput,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorPartnerListItem>;
+  /** Suspend / reinstate a partner. */
+  setPartnerStatus(
+    tenantId: string,
+    input: OperatorPartnerStatusInput,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorPartnerListItem>;
+  /** Promote eligible pending commissions to `approved` (clawback window passed). */
+  approvePartnerCommissions(
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorCommissionApproveResult>;
+  /** Run the monthly Stripe Connect payout batch. */
+  runPartnerPayouts(operatorId: string, signal?: AbortSignal): Promise<OperatorPayoutRunResult>;
+  /** The cross-partner published-bootcamp overview (read-only). */
+  listBootcamps(operatorId: string, signal?: AbortSignal): Promise<OperatorBootcampListResult>;
 }
 
 export function createOperatorApiClient(config: OperatorApiClientConfig): OperatorApiClient {
@@ -484,6 +546,52 @@ export function createOperatorApiClient(config: OperatorApiClientConfig): Operat
         `/internal/operator/tenants/${encodeURIComponent(tenantId)}/storage-limit`,
         { method: 'PATCH', body: input, operatorId, signal }
       ),
+    listPartnerApplications: (operatorId, status, signal) =>
+      request<OperatorPartnerApplication[]>(
+        `/internal/operator/partners/applications${status ? `?status=${encodeURIComponent(status)}` : ''}`,
+        { operatorId, signal }
+      ),
+    approvePartnerApplication: (applicationId, input, operatorId, signal) =>
+      request<OperatorPartnerListItem>(
+        `/internal/operator/partners/applications/${encodeURIComponent(applicationId)}/approve`,
+        { method: 'POST', body: input, operatorId, signal }
+      ),
+    rejectPartnerApplication: (applicationId, input, operatorId, signal) =>
+      request<OperatorPartnerApplication>(
+        `/internal/operator/partners/applications/${encodeURIComponent(applicationId)}/reject`,
+        { method: 'POST', body: input, operatorId, signal }
+      ),
+    listPartners: (operatorId, signal) =>
+      request<OperatorPartnerListItem[]>('/internal/operator/partners', { operatorId, signal }),
+    getPartner: (tenantId, operatorId, signal) =>
+      request<OperatorPartnerDetail>(
+        `/internal/operator/partners/${encodeURIComponent(tenantId)}`,
+        { operatorId, signal }
+      ),
+    setPartnerTier: (tenantId, input, operatorId, signal) =>
+      request<OperatorPartnerListItem>(
+        `/internal/operator/partners/${encodeURIComponent(tenantId)}/tier`,
+        { method: 'PATCH', body: input, operatorId, signal }
+      ),
+    setPartnerStatus: (tenantId, input, operatorId, signal) =>
+      request<OperatorPartnerListItem>(
+        `/internal/operator/partners/${encodeURIComponent(tenantId)}/status`,
+        { method: 'PATCH', body: input, operatorId, signal }
+      ),
+    approvePartnerCommissions: (operatorId, signal) =>
+      request<OperatorCommissionApproveResult>('/internal/operator/partners/commissions/approve', {
+        method: 'POST',
+        operatorId,
+        signal,
+      }),
+    runPartnerPayouts: (operatorId, signal) =>
+      request<OperatorPayoutRunResult>('/internal/operator/partners/payouts/run', {
+        method: 'POST',
+        operatorId,
+        signal,
+      }),
+    listBootcamps: (operatorId, signal) =>
+      request<OperatorBootcampListResult>('/internal/operator/bootcamps', { operatorId, signal }),
   };
 }
 

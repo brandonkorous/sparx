@@ -828,3 +828,152 @@ export interface OperatorStorageLimitInput {
 export interface OperatorStorageLimitResult {
   limitBytes: number | null;
 }
+
+// ─── Partner Program (docs/114 §B; build-plan Slice 9) ───────────────────────
+// The WizeWorks-side partner administration surface. Applications live on the
+// platform tenant (a single scoped read); the active roster comes from
+// `withSystem` (partners_visibility exposes active rows); per-partner detail
+// (referrals/commissions/payouts) is read under the partner's own tenant context.
+
+export type OperatorPartnerTier = 'informal' | 'registered' | 'certified';
+
+/** A partner application in WizeWorks' review queue. */
+export interface OperatorPartnerApplication {
+  id: string;
+  /** The applicant's Sparx org (tenant) id, or null if they applied before signing up. */
+  applicantTenantId: string | null;
+  name: string;
+  email: string;
+  websiteUrl: string | null;
+  /** freelance | agency | … */
+  kind: string;
+  note: string | null;
+  requestedTier: string;
+  /** pending | approved | rejected */
+  status: string;
+  createdAt: string;
+  reviewedAt: string | null;
+}
+
+/** A row in the active partner roster. */
+export interface OperatorPartnerListItem {
+  /** The partner's org (tenant) id — the handle for tier/status actions + detail. */
+  tenantId: string;
+  id: string;
+  displayName: string;
+  kind: string;
+  tier: OperatorPartnerTier;
+  status: string;
+  referralCode: string;
+  websiteUrl: string | null;
+  directoryVisible: boolean;
+  /** Whether a Stripe Connect payout account is connected (a boolean signal). */
+  hasPayoutAccount: boolean;
+  approvedAt: string | null;
+  createdAt: string;
+}
+
+export interface OperatorPartnerReferral {
+  id: string;
+  referredTenantId: string;
+  /** The referred org's live name, or null if it can't be resolved. */
+  referredOrgName: string | null;
+  referralCode: string;
+  /** pending | active | … */
+  status: string;
+  commissionRate: number;
+  firstPaymentAt: string | null;
+  createdAt: string;
+}
+
+export interface OperatorPartnerCommission {
+  id: string;
+  amountCents: number;
+  currency: string;
+  /** one_time | recurring */
+  kind: string;
+  /** pending | approved | paid | forfeited */
+  status: string;
+  payoutRunId: string | null;
+  paidAt: string | null;
+  createdAt: string;
+}
+
+export interface OperatorPartnerPayoutRun {
+  id: string;
+  periodStart: string;
+  periodEnd: string;
+  amountCents: number;
+  currency: string;
+  commissionCount: number;
+  status: string;
+  stripeTransferId: string | null;
+  paidAt: string | null;
+  createdAt: string;
+}
+
+/** KPIs mirroring the partner's own portal overview. */
+export interface OperatorPartnerKpis {
+  referralCount: number;
+  activeReferrals: number;
+  lifetimeCents: number;
+  pendingCents: number;
+}
+
+/** One partner's full picture (profile + ledgers + KPIs). */
+export interface OperatorPartnerDetail {
+  partner: OperatorPartnerListItem;
+  bio: string | null;
+  payoutMinCents: number;
+  kpis: OperatorPartnerKpis;
+  referrals: OperatorPartnerReferral[];
+  commissions: OperatorPartnerCommission[];
+  payouts: OperatorPartnerPayoutRun[];
+}
+
+export interface OperatorPartnerApproveInput {
+  /** Override the requested tier at approval; omit to grant the requested tier. */
+  tier?: OperatorPartnerTier;
+}
+export interface OperatorPartnerRejectInput {
+  note?: string;
+}
+export interface OperatorPartnerTierInput {
+  tier: OperatorPartnerTier;
+}
+export interface OperatorPartnerStatusInput {
+  status: 'active' | 'suspended';
+}
+
+/** Result of the monthly Stripe Connect payout batch. */
+export interface OperatorPayoutRunResult {
+  partnersPaid: number;
+  totalCents: number;
+  skipped: number;
+}
+export interface OperatorCommissionApproveResult {
+  approved: number;
+}
+
+/** A published bootcamp in the cross-partner overview (mirrors the public
+ *  directory card — bootcamps are host-partner-owned, read-only for operators). */
+export interface OperatorBootcampCard {
+  id: string;
+  title: string;
+  slug: string;
+  format: string;
+  locationCity: string | null;
+  locationState: string | null;
+  locationCountry: string;
+  startsAt: string;
+  endsAt: string;
+  seatsTotal: number | null;
+  seatsFilled: number;
+  priceCents: number;
+  currency: string;
+  host: { displayName: string; tier: string };
+}
+export interface OperatorBootcampListResult {
+  items: OperatorBootcampCard[];
+  total: number;
+}
