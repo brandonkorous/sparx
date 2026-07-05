@@ -70,7 +70,17 @@ export const SCROLL_MOTION_CSS =
   // Container stagger: direct children start hidden, then fade-up in sequence on `.st-in`.
   'html.st-anim-ready .st-reveal-stagger > *,html.st-anim-ready .st-reveal-stagger--bold > *{opacity:0}' +
   staggerRules('', 80) +
-  staggerRules('--bold', 140);
+  staggerRules('--bold', 140) +
+  // Print + non-scrolling renderers (Save-as-PDF, headless snapshots, some reader
+  // modes) never scroll, so the IntersectionObserver never flips `.st-in` and every
+  // below-fold reveal would capture at its hidden opacity:0 state — a blank band.
+  // The reduced-motion/JS-off paths are already safe (they never set st-anim-ready);
+  // this covers the JS-ran-but-never-scrolled case by force-revealing under print.
+  '@media print{' +
+  'html.st-anim-ready .st-reveal:not(.st-in),' +
+  'html.st-anim-ready .st-reveal-stagger > *,' +
+  'html.st-anim-ready .st-reveal-stagger--bold > *' +
+  '{opacity:1 !important;transform:none !important;animation:none !important}}';
 
 // Hover-interaction effects (docs/61 §9 — the hover counterpart to scroll entrances).
 //

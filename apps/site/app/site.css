@@ -2386,6 +2386,17 @@
       transition: none;
     }
   }
+  /* Print / non-scrolling renderers never fire the reveal observer, so force every
+     below-fold section visible — otherwise "Save as PDF" (and headless snapshots)
+     capture blank bands where the reveal never triggered. */
+  @media print {
+    html.st-reveal-ready [data-st-reveal],
+    html.st-reveal-ready [data-st-reveal].is-visible {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+  }
 
   /* ─── Universal per-section height ───────────────────────────────────────────
    Any section wrapper can carry data-section-height (¼/½/¾/full of the viewport,
@@ -2968,6 +2979,15 @@
   }
   .bx-carousel__arrow--next {
     right: 16px;
+  }
+  /* On narrow viewports the fixed-position arrows sit on top of the slide content
+     (e.g. a stacked hero CTA). The carousel autoplays, so rotation still happens
+     without them — hide the manual arrows below the fold width rather than let one
+     cover a button. Dots (when enabled) remain the compact on-canvas control. */
+  @media (max-width: 639px) {
+    .bx-carousel__arrow {
+      display: none;
+    }
   }
   .bx-carousel__dots {
     position: absolute;

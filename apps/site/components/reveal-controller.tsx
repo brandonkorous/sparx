@@ -20,6 +20,13 @@ export function RevealController() {
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
     const els = Array.from(document.querySelectorAll<HTMLElement>('[data-st-reveal]'));
     if (els.length === 0) return;
+    // No IntersectionObserver: reveal everything now rather than leave content
+    // stuck hidden at opacity:0 (st-reveal-ready is set before paint, so the
+    // hidden state would otherwise never clear).
+    if (typeof IntersectionObserver === 'undefined') {
+      els.forEach((el) => el.classList.add('is-visible'));
+      return;
+    }
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {

@@ -27,6 +27,13 @@ export function MotionController() {
       )
     ).filter((el) => !el.classList.contains('st-in'));
     if (els.length === 0) return;
+    // No IntersectionObserver (ancient browsers, some non-scrolling renderers):
+    // reveal everything now rather than leave content stuck hidden at opacity:0
+    // (st-anim-ready was already set before paint, so it would never un-hide).
+    if (typeof IntersectionObserver === 'undefined') {
+      els.forEach((el) => el.classList.add('st-in'));
+      return;
+    }
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
