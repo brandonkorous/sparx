@@ -8,3 +8,9 @@
 export * from './content-types.js';
 export * from './entries.js';
 export * from './references.js';
+
+// Service layer (docs/12) — the shared write/read path both the REST routes and
+// the MCP tools drive, so entry + content-type mutation logic lives once.
+export * from './service-support.js';
+export * from './entries-service.js';
+export * from './content-types-service.js';

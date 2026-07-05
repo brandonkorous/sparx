@@ -6,34 +6,21 @@
 //   PATCH  /v1/content/entries/:id             → update; creates autosave revision
 //   DELETE /v1/content/entries/:id             → soft delete
 //
-// Publish / preview-token / revisions routes live alongside this file —
-// they share the same lib/entries.ts helpers (recordRevision,
-// syncReferences, serialize*).
+// Create/update delegate to the @sparx/cms service layer (createEntryTx /
+// updateEntryTx) — the same mutation path the MCP tools drive. Route-only
+// concerns (role, header-based site defaulting, If-Match ETag, audit) stay here.
+// Publish / preview-token / revisions routes live alongside this file.
 
 import type { FastifyPluginAsync } from 'fastify';
 import type { Prisma } from '@sparx/db';
-
-// Prisma's `Json` columns want InputJsonValue, which the runtime accepts
-// any plain object for but the TypeScript type doesn't widen from
-// `Record<string, unknown>`. Validated body/seo come out of `validateAnd
-// NormalizeBody` so we know they're JSON-safe; cast at the assign site.
-type Json = Prisma.InputJsonValue;
 import { z } from 'zod';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
-import {
-  parseTypeSchema,
-  resolveType,
-  validateAndNormalizeBody,
-  recordRevision,
-  serializeEntry,
-  syncReferences,
-} from '@sparx/cms';
+import { createEntryTx, updateEntryTx, serializeEntry } from '@sparx/cms';
 import { writeAudit } from '@sparx/api-core/audit';
 import { publish } from '@sparx/api-core/pubsub';
-import { slugify, uniqueSlug } from '@sparx/api-core/slug';
-import { conflict, notFound } from '@sparx/api-core/errors';
+import { notFound } from '@sparx/api-core/errors';
 import { assertIfMatch, computeEntryEtag } from '@sparx/api-core/etag';
 import { contentSiteVisibilityWhere, resolvePropertyId } from '../../../lib/property.js';
 
@@ -197,95 +184,37 @@ const entryRoutes: FastifyPluginAsync = (app) => {
       }
     }
 
-    const created = await withRequestTenant(request, async (tx) => {
-      const type = await resolveType(tx, input.type_key);
-      const schema = parseTypeSchema(type);
-      const body = validateAndNormalizeBody(schema, input.body ?? {});
-      const seo = (input.seo ?? {}) as Record<string, unknown>;
-
-      // Slug: an explicitly-supplied slug is honoured verbatim — collision
-      // is a 409 the caller can show. A derived slug (from body.title) is
-      // auto-uniquified with -2 / -3 / … so the title-only "happy path"
-      // never punches the user in the face.
-      const candidateBase = input.slug
-        ? slugify(input.slug)
-        : slugify((body.title as string) ?? '');
-      let slug: string | null = null;
-      if (type.urlPattern) {
-        if (!candidateBase) {
-          throw conflict('A slug is required for routable content types.');
+    const { entry: created, events } = await withRequestTenant(request, async (tx) => {
+      const result = await createEntryTx(
+        tx,
+        { tenantId: auth.tenantId, actorId: auth.actorId },
+        {
+          typeKey: input.type_key,
+          slug: input.slug,
+          status: input.status,
+          body: input.body,
+          seo: input.seo,
+          authorId: input.author_id,
+          localeCode: input.locale_code,
+          propertyIds: scopePropertyIds,
         }
-        if (input.slug) {
-          const collision = await tx.contentEntry.findFirst({
-            where: { typeKey: type.key, slug: candidateBase, deletedAt: null },
-            select: { id: true },
-          });
-          if (collision) {
-            throw conflict(
-              `A ${type.name.toLowerCase()} with slug "${candidateBase}" already exists.`
-            );
-          }
-          slug = candidateBase;
-        } else {
-          slug = await uniqueSlug(candidateBase, async (s) => {
-            const collision = await tx.contentEntry.findFirst({
-              where: { typeKey: type.key, slug: s, deletedAt: null },
-              select: { id: true },
-            });
-            return collision !== null;
-          });
-        }
-      } else if (input.slug) {
-        slug = slugify(input.slug);
-      }
-
-      const entry = await tx.contentEntry.create({
-        data: {
-          tenantId: auth.tenantId,
-          typeKey: type.key,
-          slug,
-          status: input.status ?? 'draft',
-          body: body as Json,
-          seoJson: seo as Json,
-          authorId: input.author_id ?? null,
-          localeCode: input.locale_code ?? null,
-        },
-      });
-
-      // Model B site scoping: persist the resolved default (or explicit set).
-      if (scopePropertyIds && scopePropertyIds.length > 0) {
-        await tx.contentEntryProperty.createMany({
-          data: scopePropertyIds.map((propertyId) => ({ propertyId, entryId: entry.id })),
-        });
-      }
-
-      await syncReferences(tx, auth.tenantId, entry.id, schema, body);
-      await recordRevision(tx, {
-        tenantId: auth.tenantId,
-        entryId: entry.id,
-        body,
-        seoJson: seo,
-        status: entry.status,
-        kind: 'manual',
-        authorId: auth.actorId,
-        summary: 'Initial revision',
-      });
+      );
       await writeAudit(tx, request, auth, {
         action: 'content.entry.created',
         entityType: 'content_entry',
-        entityId: entry.id,
-        after: { typeKey: entry.typeKey, slug: entry.slug, status: entry.status },
+        entityId: result.entry.id,
+        after: {
+          typeKey: result.entry.typeKey,
+          slug: result.entry.slug,
+          status: result.entry.status,
+        },
       });
-
-      return entry;
+      return result;
     });
 
-    await publish(request.log, 'content.entry.created', auth.tenantId, auth.actorId, {
-      entryId: created.id,
-      typeKey: created.typeKey,
-      slug: created.slug,
-      status: created.status,
-    });
+    for (const ev of events) {
+      await publish(request.log, ev.type, auth.tenantId, auth.actorId, ev.data);
+    }
 
     reply.code(201);
     void reply.header('ETag', computeEntryEtag(created));
@@ -302,90 +231,40 @@ const entryRoutes: FastifyPluginAsync = (app) => {
     const input = UpdateBody.parse(request.body);
     const ifMatch = request.headers['if-match'];
 
-    const updated = await withRequestTenant(request, async (tx) => {
+    const { entry: updated, events } = await withRequestTenant(request, async (tx) => {
+      // Optimistic-concurrency guard stays a route concern (it reads the
+      // request's If-Match header). The dashboard form sends the etag it
+      // received on GET; a mismatch throws 412 so the form can offer "reload".
       const existing = await tx.contentEntry.findFirst({ where: { id, deletedAt: null } });
       if (!existing) throw notFound('Entry', id);
-
-      // Optimistic-concurrency guard. The dashboard form sends the etag it
-      // received on GET; if anyone else PATCHes the entry in between, the
-      // tags won't match and we throw 412 so the form can offer "reload".
       assertIfMatch(typeof ifMatch === 'string' ? ifMatch : undefined, computeEntryEtag(existing));
 
-      const type = await resolveType(tx, existing.typeKey);
-      const schema = parseTypeSchema(type);
-
-      const nextBody =
-        input.body !== undefined
-          ? validateAndNormalizeBody(schema, input.body)
-          : ((existing.body ?? {}) as Record<string, unknown>);
-      const nextSeo =
-        input.seo !== undefined
-          ? ((input.seo ?? {}) as Record<string, unknown>)
-          : ((existing.seoJson ?? {}) as Record<string, unknown>);
-
-      // Slug update — only allowed for types with a urlPattern, and only
-      // if the new slug is free.
-      let nextSlug = existing.slug;
-      if (input.slug !== undefined && type.urlPattern) {
-        const candidate = slugify(input.slug);
-        if (candidate !== existing.slug) {
-          const collision = await tx.contentEntry.findFirst({
-            where: { typeKey: type.key, slug: candidate, NOT: { id }, deletedAt: null },
-            select: { id: true },
-          });
-          if (collision) throw conflict(`Slug "${candidate}" is already in use.`);
-          nextSlug = candidate;
+      const result = await updateEntryTx(
+        tx,
+        { tenantId: auth.tenantId, actorId: auth.actorId },
+        id,
+        {
+          slug: input.slug,
+          body: input.body,
+          seo: input.seo,
+          authorId: input.author_id,
+          localeCode: input.locale_code,
+          propertyIds: input.property_ids,
         }
-      }
-
-      const after = await tx.contentEntry.update({
-        where: { id },
-        data: {
-          slug: nextSlug,
-          body: nextBody as Json,
-          seoJson: nextSeo as Json,
-          authorId: input.author_id === undefined ? existing.authorId : input.author_id,
-          localeCode: input.locale_code === undefined ? existing.localeCode : input.locale_code,
-          updatedAt: new Date(),
-        },
-      });
-
-      // Model B site scoping (docs/49 §3): full-replacement set. Empty → no rows
-      // → published to all sites again. Omitted → unchanged.
-      if (input.property_ids !== undefined) {
-        await tx.contentEntryProperty.deleteMany({ where: { entryId: after.id } });
-        if (input.property_ids.length > 0) {
-          await tx.contentEntryProperty.createMany({
-            data: input.property_ids.map((propertyId) => ({ propertyId, entryId: after.id })),
-          });
-        }
-      }
-
-      await syncReferences(tx, auth.tenantId, after.id, schema, nextBody);
-      await recordRevision(tx, {
-        tenantId: auth.tenantId,
-        entryId: after.id,
-        body: nextBody,
-        seoJson: nextSeo,
-        status: after.status,
-        kind: 'autosave',
-        authorId: auth.actorId,
-      });
+      );
       await writeAudit(tx, request, auth, {
         action: 'content.entry.updated',
         entityType: 'content_entry',
-        entityId: after.id,
+        entityId: result.entry.id,
         before: { slug: existing.slug, status: existing.status },
-        after: { slug: after.slug, status: after.status },
+        after: { slug: result.entry.slug, status: result.entry.status },
       });
-
-      return after;
+      return result;
     });
 
-    await publish(request.log, 'content.entry.updated', auth.tenantId, auth.actorId, {
-      entryId: updated.id,
-      typeKey: updated.typeKey,
-    });
+    for (const ev of events) {
+      await publish(request.log, ev.type, auth.tenantId, auth.actorId, ev.data);
+    }
 
     void reply.header('ETag', computeEntryEtag(updated));
     return ok(serializeEntry(updated));

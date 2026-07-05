@@ -55,6 +55,10 @@ const MODULE_BY_SCOPE: Record<string, ModuleSlug> = {
   // doesn't have Scheduling active (beyond the global `ai` gate).
   'read:scheduling': 'scheduling',
   'write:scheduling': 'scheduling',
+  // CMS (docs/12) — content-type / entry tools refuse when the tenant doesn't
+  // have the `cms` module active.
+  'read:cms': 'cms',
+  'write:cms': 'cms',
 };
 
 export async function buildServerForRequest(auth: McpAuthContext): Promise<McpServer> {

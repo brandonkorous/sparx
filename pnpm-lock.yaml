@@ -846,6 +846,12 @@ importers:
       '@sparx/db':
         specifier: workspace:*
         version: link:../db
+      '@sparx/events':
+        specifier: workspace:*
+        version: link:../events
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
     devDependencies:
       '@types/node':
         specifier: ^25.9.1
@@ -2181,6 +2187,9 @@ importers:
       '@sparx/builder':
         specifier: workspace:*
         version: link:../../packages/builder
+      '@sparx/cms':
+        specifier: workspace:*
+        version: link:../../packages/cms
       '@sparx/commerce':
         specifier: workspace:*
         version: link:../../packages/commerce

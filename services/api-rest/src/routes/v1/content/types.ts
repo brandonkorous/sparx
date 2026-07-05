@@ -18,18 +18,15 @@
 // bindingService.getSchema, and the GET list below).
 
 import type { FastifyPluginAsync } from 'fastify';
-import type { Prisma } from '@sparx/db';
 import { z } from 'zod';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { requireAuth, requireRole } from '@sparx/api-core/auth';
 import { conflict, notFound } from '@sparx/api-core/errors';
 import { ContentTypeSchema } from '@sparx/cms-schemas';
-import { serializeContentType } from '@sparx/cms';
+import { createContentTypeTx, updateContentTypeTx, serializeContentType } from '@sparx/cms';
 import { writeAudit } from '@sparx/api-core/audit';
 import { publish } from '@sparx/api-core/pubsub';
-
-type Json = Prisma.InputJsonValue;
 
 const KeyParams = z.object({ key: z.string().min(1).max(63) });
 
@@ -120,39 +117,32 @@ const contentTypeRoutes: FastifyPluginAsync = (app) => {
     const auth = requireRole(request, 'editor');
     const input = CreateBody.parse(request.body);
 
-    const created = await withRequestTenant(request, async (tx) => {
-      // Collide against any existing row in the tenant scope OR any
-      // built-in with the same key — built-ins are nominally tenantId
-      // NULL but RLS still surfaces them.
-      const collision = await tx.contentType.findFirst({ where: { key: input.key } });
-      if (collision) {
-        throw conflict(`A content type with key "${input.key}" already exists.`);
-      }
-      const row = await tx.contentType.create({
-        data: {
-          tenantId: auth.tenantId,
+    const { contentType: created, events } = await withRequestTenant(request, async (tx) => {
+      const result = await createContentTypeTx(
+        tx,
+        { tenantId: auth.tenantId, actorId: auth.actorId },
+        {
           key: input.key,
           name: input.name,
           pluralName: input.plural_name,
-          description: input.description ?? null,
-          icon: input.icon ?? null,
-          urlPattern: input.url_pattern ?? null,
-          isSingleton: input.is_singleton ?? false,
-          isBuiltIn: false,
-          schemaJson: input.schema,
-        },
-      });
+          description: input.description,
+          icon: input.icon,
+          urlPattern: input.url_pattern,
+          isSingleton: input.is_singleton,
+          schema: input.schema,
+        }
+      );
       await writeAudit(tx, request, auth, {
         action: 'content_type.upserted',
         entityType: 'content_type',
-        entityId: row.id,
-        after: { key: row.key, name: row.name },
+        entityId: result.contentType.id,
+        after: { key: result.contentType.key, name: result.contentType.name },
       });
-      return row;
+      return result;
     });
-    await publish(request.log, 'content_type.upserted', auth.tenantId, auth.actorId, {
-      typeKey: created.key,
-    });
+    for (const ev of events) {
+      await publish(request.log, ev.type, auth.tenantId, auth.actorId, ev.data);
+    }
     reply.code(201);
     return ok(serializeContentType(created));
   });
@@ -162,35 +152,35 @@ const contentTypeRoutes: FastifyPluginAsync = (app) => {
     const { key } = KeyParams.parse(request.params);
     const input = UpdateBody.parse(request.body);
 
-    const updated = await withRequestTenant(request, async (tx) => {
+    const { contentType: updated, events } = await withRequestTenant(request, async (tx) => {
       const existing = await tx.contentType.findFirst({ where: { key, isBuiltIn: false } });
       if (!existing) throw notFound('Custom content type', key);
-
-      const row = await tx.contentType.update({
-        where: { id: existing.id },
-        data: {
-          name: input.name ?? existing.name,
-          pluralName: input.plural_name ?? existing.pluralName,
-          description: input.description === undefined ? existing.description : input.description,
-          icon: input.icon === undefined ? existing.icon : input.icon,
-          urlPattern: input.url_pattern === undefined ? existing.urlPattern : input.url_pattern,
-          isSingleton: input.is_singleton ?? existing.isSingleton,
-          schemaJson:
-            input.schema === undefined ? (existing.schemaJson as Json) : (input.schema as Json),
-        },
-      });
+      const result = await updateContentTypeTx(
+        tx,
+        { tenantId: auth.tenantId, actorId: auth.actorId },
+        key,
+        {
+          name: input.name,
+          pluralName: input.plural_name,
+          description: input.description,
+          icon: input.icon,
+          urlPattern: input.url_pattern,
+          isSingleton: input.is_singleton,
+          schema: input.schema,
+        }
+      );
       await writeAudit(tx, request, auth, {
         action: 'content_type.upserted',
         entityType: 'content_type',
-        entityId: row.id,
+        entityId: result.contentType.id,
         before: { name: existing.name },
-        after: { name: row.name },
+        after: { name: result.contentType.name },
       });
-      return row;
+      return result;
     });
-    await publish(request.log, 'content_type.upserted', auth.tenantId, auth.actorId, {
-      typeKey: updated.key,
-    });
+    for (const ev of events) {
+      await publish(request.log, ev.type, auth.tenantId, auth.actorId, ev.data);
+    }
     return ok(serializeContentType(updated));
   });
 

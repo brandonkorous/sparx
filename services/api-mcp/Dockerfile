@@ -26,6 +26,14 @@ COPY packages/legal ./packages/legal
 COPY packages/legal-seed ./packages/legal-seed
 COPY packages/legal-templates ./packages/legal-templates
 COPY packages/events ./packages/events
+# @sparx/cms (CMS content service + MCP tools, docs/12). Its service layer sits on
+# @sparx/api-core (error envelope / slug / pubsub) + @sparx/cms-schemas (field
+# schemas); db + events are already above. This is the FIRST consumer to pull
+# @sparx/api-core into the MCP image — missing any of these three → boot crashloop
+# with ERR_MODULE_NOT_FOUND.
+COPY packages/cms-schemas ./packages/cms-schemas
+COPY packages/api-core ./packages/api-core
+COPY packages/cms ./packages/cms
 # @sparx/automation MCP tools (the AI authoring path) call only the automation
 # SERVICE layer → closure is just these two (db/events already above; the module
 # executors in @sparx/automation-actions are NOT pulled in — the AI authors

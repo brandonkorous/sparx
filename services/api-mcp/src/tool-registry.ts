@@ -13,6 +13,7 @@ import { emailMcpTools } from '@sparx/email-platform';
 import { searchMcpTools } from '@sparx/search';
 import { automationMcpTools } from '@sparx/automation';
 import { schedulingMcpTools } from '@sparx/scheduling';
+import { cmsMcpTools } from '@sparx/cms/mcp';
 import { domainMcpTools } from './domain-tools.js';
 
 // Structural type spanning every module's tool definition. Each module declares
@@ -52,6 +53,10 @@ export const ALL_MCP_TOOLS: AnyMcpTool[] = [
   // Scheduling (docs/79 §11) — own read:scheduling / write:scheduling scopes;
   // additionally gated on the `scheduling` module flag in server.ts.
   ...(schedulingMcpTools as unknown as AnyMcpTool[]),
+  // CMS (docs/12) — content types + entries; own read:cms / write:cms scopes,
+  // additionally gated on the `cms` module flag in server.ts. Thin wrappers over
+  // the @sparx/cms service layer the REST routes drive (one service, many transports).
+  ...(cmsMcpTools as unknown as AnyMcpTool[]),
 ];
 
 const WRITE_SCOPES: ReadonlySet<string> = new Set([
@@ -67,6 +72,7 @@ const WRITE_SCOPES: ReadonlySet<string> = new Set([
   'write:domains',
   'write:invoicing',
   'write:scheduling',
+  'write:cms',
 ]);
 
 const TOOLS_BY_NAME: ReadonlyMap<string, AnyMcpTool> = new Map(

@@ -12,8 +12,7 @@ import { z } from 'zod';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
-import { conflict, notFound } from '@sparx/api-core/errors';
-import { recordRevision, serializeEntry } from '@sparx/cms';
+import { publishEntryTx, unpublishEntryTx, serializeEntry } from '@sparx/cms';
 import { writeAudit } from '@sparx/api-core/audit';
 import { publish } from '@sparx/api-core/pubsub';
 import { auditAndStore } from '../../../lib/seo-audit.js';
@@ -33,69 +32,38 @@ const publishRoutes: FastifyPluginAsync = (app) => {
     const { id } = PathId.parse(request.params);
     const input = PublishBody.parse(request.body ?? {});
 
-    const updated = await withRequestTenant(request, async (tx) => {
-      const existing = await tx.contentEntry.findFirst({ where: { id, deletedAt: null } });
-      if (!existing) throw notFound('Entry', id);
-      if (existing.status === 'published' && !input.scheduled_at) {
-        throw conflict('Entry is already published.');
-      }
-
-      const scheduled = input.scheduled_at ? new Date(input.scheduled_at) : null;
-      const nextStatus = scheduled && scheduled > new Date() ? 'scheduled' : 'published';
-
-      const after = await tx.contentEntry.update({
-        where: { id },
-        data: {
-          status: nextStatus,
-          scheduledAt: nextStatus === 'scheduled' ? scheduled : null,
-          publishedAt:
-            nextStatus === 'published'
-              ? new Date()
-              : existing.publishedAt /* keep prior publish time when scheduling */,
-          archivedAt: null,
-        },
+    const { entry: updated, events } = await withRequestTenant(request, async (tx) => {
+      const before = await tx.contentEntry.findFirst({
+        where: { id, deletedAt: null },
+        select: { status: true },
       });
-
-      await recordRevision(tx, {
-        tenantId: auth.tenantId,
-        entryId: after.id,
-        body: (after.body ?? {}) as Record<string, unknown>,
-        seoJson: (after.seoJson ?? {}) as Record<string, unknown>,
-        status: after.status,
-        kind: 'manual',
-        authorId: auth.actorId,
-        summary:
-          nextStatus === 'scheduled'
-            ? `Scheduled for ${scheduled?.toISOString() ?? ''}`
-            : 'Published',
-      });
+      const result = await publishEntryTx(
+        tx,
+        { tenantId: auth.tenantId, actorId: auth.actorId },
+        id,
+        { scheduledAt: input.scheduled_at ?? null },
+        new Date()
+      );
       await writeAudit(tx, request, auth, {
-        action: nextStatus === 'scheduled' ? 'content.entry.scheduled' : 'content.entry.published',
+        action:
+          result.entry.status === 'scheduled'
+            ? 'content.entry.scheduled'
+            : 'content.entry.published',
         entityType: 'content_entry',
-        entityId: after.id,
-        before: { status: existing.status },
+        entityId: result.entry.id,
+        before: { status: before?.status ?? null },
         after: {
-          status: after.status,
-          publishedAt: after.publishedAt,
-          scheduledAt: after.scheduledAt,
+          status: result.entry.status,
+          publishedAt: result.entry.publishedAt,
+          scheduledAt: result.entry.scheduledAt,
         },
       });
-
-      return after;
+      return result;
     });
 
-    await publish(
-      request.log,
-      updated.status === 'scheduled' ? 'content.entry.scheduled' : 'content.entry.published',
-      auth.tenantId,
-      auth.actorId,
-      {
-        entryId: updated.id,
-        typeKey: updated.typeKey,
-        slug: updated.slug,
-        scheduledAt: updated.scheduledAt?.toISOString() ?? null,
-      }
-    );
+    for (const ev of events) {
+      await publish(request.log, ev.type, auth.tenantId, auth.actorId, ev.data);
+    }
 
     // Refresh the stored SEO snapshot so the overview reflects the now-published
     // entry (docs/50 §7). Best-effort — never fail the publish on a snapshot write.
@@ -114,39 +82,33 @@ const publishRoutes: FastifyPluginAsync = (app) => {
     const auth = requireRole(request, 'editor');
     const { id } = PathId.parse(request.params);
 
-    const updated = await withRequestTenant(request, async (tx) => {
-      const existing = await tx.contentEntry.findFirst({ where: { id, deletedAt: null } });
-      if (!existing) throw notFound('Entry', id);
-      if (existing.status === 'draft') return existing;
-
-      const after = await tx.contentEntry.update({
-        where: { id },
-        data: { status: 'draft', scheduledAt: null },
+    const { entry: updated, events } = await withRequestTenant(request, async (tx) => {
+      const before = await tx.contentEntry.findFirst({
+        where: { id, deletedAt: null },
+        select: { status: true },
       });
-      await recordRevision(tx, {
-        tenantId: auth.tenantId,
-        entryId: after.id,
-        body: (after.body ?? {}) as Record<string, unknown>,
-        seoJson: (after.seoJson ?? {}) as Record<string, unknown>,
-        status: 'draft',
-        kind: 'manual',
-        authorId: auth.actorId,
-        summary: 'Unpublished',
-      });
-      await writeAudit(tx, request, auth, {
-        action: 'content.entry.unpublished',
-        entityType: 'content_entry',
-        entityId: after.id,
-        before: { status: existing.status },
-        after: { status: 'draft' },
-      });
-      return after;
+      const result = await unpublishEntryTx(
+        tx,
+        { tenantId: auth.tenantId, actorId: auth.actorId },
+        id
+      );
+      // unpublishEntryTx is a no-op when the entry is already a draft — only
+      // audit an actual transition.
+      if (before && before.status !== 'draft') {
+        await writeAudit(tx, request, auth, {
+          action: 'content.entry.unpublished',
+          entityType: 'content_entry',
+          entityId: result.entry.id,
+          before: { status: before.status },
+          after: { status: 'draft' },
+        });
+      }
+      return result;
     });
 
-    await publish(request.log, 'content.entry.unpublished', auth.tenantId, auth.actorId, {
-      entryId: updated.id,
-      typeKey: updated.typeKey,
-    });
+    for (const ev of events) {
+      await publish(request.log, ev.type, auth.tenantId, auth.actorId, ev.data);
+    }
 
     return ok(serializeEntry(updated));
   });

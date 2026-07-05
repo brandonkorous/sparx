@@ -8,6 +8,10 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./mcp": {
+      "types": "./src/mcp/index.ts",
+      "default": "./src/mcp/index.ts"
     }
   },
   "files": [
@@ -23,7 +27,9 @@
   "dependencies": {
     "@sparx/api-core": "workspace:*",
     "@sparx/cms-schemas": "workspace:*",
-    "@sparx/db": "workspace:*"
+    "@sparx/db": "workspace:*",
+    "@sparx/events": "workspace:*",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
