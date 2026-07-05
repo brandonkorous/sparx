@@ -12,6 +12,7 @@ import { withTenant, type BookingAttendee, type TxClient } from '@sparx/db';
 import type { JoinSessionInput, UpdateAttendeeInput } from '@sparx/scheduling-schemas';
 
 import { BookingNotFoundError, InvalidBookingStateError } from './errors';
+import { lockClassSession } from './locks';
 
 /** Attendee statuses that consume a seat (a waitlisted/cancelled/no_show one does not). */
 const SEAT_CONSUMING = ['booked', 'checked_in', 'attended'];
@@ -102,6 +103,9 @@ export async function bookClassSeat(
   input: JoinSessionInput
 ): Promise<BookedSeat> {
   return withTenant({ tenantId }, async (tx) => {
+    // Serialize seat mutations for this session BEFORE reading the roster, so a
+    // concurrent join can't count the same open seat twice and overbook.
+    await lockClassSession(tx, input.bookingId);
     const booking = await tx.booking.findFirst({
       where: { id: input.bookingId, deletedAt: null },
       select: { id: true, bookingType: true, status: true, capacity: true },
@@ -200,6 +204,9 @@ export async function updateAttendee(
       select: { id: true, bookingId: true, status: true },
     });
     if (!existing) throw new BookingNotFoundError(input.id);
+    // Serialize against concurrent joins/promotions on the same session before
+    // changing seat state (a cancel frees a seat and promotes the waitlist below).
+    await lockClassSession(tx, existing.bookingId);
     const attendee = await tx.bookingAttendee.update({
       where: { id: input.id },
       data: {

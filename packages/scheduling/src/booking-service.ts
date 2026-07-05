@@ -25,6 +25,7 @@ import {
   SlotUnavailableError,
 } from './errors';
 import { recordBookingEvent } from './booking-history';
+import { lockPooledResources } from './locks';
 import {
   cancelBookingNotifications,
   dropPendingBookingNotifications,
@@ -121,6 +122,14 @@ async function pickForRole(
     select: { id: true, exclusive: true },
   });
   if (candidates.length === 0) throw new NoEligibleResourceError(req.role);
+
+  // Non-exclusive (pooled) candidates aren't covered by the booking_resources
+  // EXCLUDE constraint, so concurrent bookings could both pass the free check and
+  // double-allocate one. Serialize on those candidates before checking/allocating;
+  // exclusive resources are left unlocked (the DB EXCLUDE guards them), so the 1:1
+  // appointment path — the common case — takes no extra lock.
+  const pooled = candidates.filter((c) => !c.exclusive).map((c) => c.id);
+  if (pooled.length > 0) await lockPooledResources(tx, pooled);
 
   const taken = await busyResourceIds(
     tx,

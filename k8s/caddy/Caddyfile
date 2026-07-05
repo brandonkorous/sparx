@@ -139,6 +139,19 @@ mcp.kanninja.com {
   reverse_proxy mcp.kanninja.svc.cluster.local:80
 }
 
+# ----- WizeWorks operator console (admin.wize.works, wize-admin namespace) -----
+# The Layer-4 operator console (docs/16 §2.4, docs/apps/admin/build-plan.md).
+# Like kanninja.com, wize.works is NOT a sparx tenant, so on_demand_tls (which
+# asks the sparx /internal/domain-check) would REJECT it — omit it so Caddy gets
+# a normal managed Let's Encrypt cert. Access control is enforced IN FRONT by
+# Cloudflare Access (D8/D9), the load-bearing gate until operator MFA ships;
+# Caddy just proxies cross-namespace to the admin Service. Keep admin.wize.works
+# DNS-only (no Cloudflare proxy) until the cert issues, then front with Access.
+admin.wize.works {
+  import security_headers
+  reverse_proxy admin.wize-admin.svc.cluster.local:3000
+}
+
 # ----- Module marketing sites -----
 # Each domain serves its own marketing/landing site (single Next.js app
 # reads the Host header and renders the right module page).

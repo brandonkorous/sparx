@@ -411,3 +411,62 @@ resource "cloudflare_record" "marketing_www" {
   proxied         = true
   allow_overwrite = true
 }
+
+# =========================================================================
+# wize.works — WizeWorks operator console (admin.wize.works)
+# =========================================================================
+# The Layer-4 operator console (docs/16 §2.4, docs/apps/admin/build-plan.md).
+# wize.works is already a zone in this same Cloudflare account, so we look it up
+# by name and add the one `admin` record + a Cloudflare Access policy that is the
+# load-bearing auth gate until operator MFA ships (D8/D9). The console runs in the
+# wize-admin namespace behind Caddy (admin.wize.works host block); Caddy proxies
+# to admin.wize-admin.svc.cluster.local:3000.
+#
+# CERT SEQUENCING (like the kanninja blocks): the admin Caddy site has no
+# on_demand_tls (wize.works isn't a sparx tenant). To let Caddy issue a managed
+# Let's Encrypt cert, either (a) apply this record DNS-only (proxied=false) FIRST,
+# let the cert issue, then flip to proxied=true; or (b) install a Cloudflare Origin
+# CA cert on Caddy for this host. Access REQUIRES the record proxied, so the end
+# state is proxied=true — set below. Adjust for the one-time issuance if needed.
+data "cloudflare_zone" "wize_works" {
+  count = var.cloudflare_enabled ? 1 : 0
+  name  = "wize.works"
+}
+
+resource "cloudflare_record" "wize_works_admin" {
+  count           = var.cloudflare_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.wize_works[0].id
+  name            = "admin"
+  type            = "A"
+  content         = google_compute_address.ingress.address
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+  comment         = "WizeWorks operator console (Caddy → admin.wize-admin, behind Access)"
+}
+
+# Cloudflare Access self-hosted application gating admin.wize.works. This is the
+# network boundary that stands in for MFA until the Better Auth twoFactor plugin
+# lands (D8) — no request reaches the console without passing an Access policy.
+resource "cloudflare_access_application" "admin" {
+  count            = var.cloudflare_enabled ? 1 : 0
+  zone_id          = data.cloudflare_zone.wize_works[0].id
+  name             = "WizeWorks Operator Console"
+  domain           = "admin.wize.works"
+  type             = "self_hosted"
+  session_duration = "8h"
+}
+
+# Allow only the explicitly-listed operator emails. Default-deny: anyone not on
+# the list is refused at the edge, before Caddy or the app see the request.
+resource "cloudflare_access_policy" "admin_operators" {
+  count          = var.cloudflare_enabled ? 1 : 0
+  application_id = cloudflare_access_application.admin[0].id
+  zone_id        = data.cloudflare_zone.wize_works[0].id
+  name           = "WizeWorks operators"
+  precedence     = 1
+  decision       = "allow"
+  include {
+    email = var.operator_access_emails
+  }
+}

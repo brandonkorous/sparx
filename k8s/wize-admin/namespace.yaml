@@ -1,0 +1,11 @@
+# The WizeWorks operator console lives in its OWN namespace (docs/apps/admin/
+# build-plan.md §2 D2) — same cluster as sparx-prod, hard-separated boundary:
+# its own service account, its own secrets, and (via Cloudflare Access) its own
+# network gate. Not a new GCP project — that stays the split trigger.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: wize-admin
+  labels:
+    name: wize-admin
+    env: prod

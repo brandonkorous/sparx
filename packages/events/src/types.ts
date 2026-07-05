@@ -222,7 +222,14 @@ export type EventType =
   | 'bootcamp.published'
   | 'bootcamp.cancelled'
   // An attendee RSVP'd on-platform → a lead in the host partner's CRM.
-  | 'bootcamp.registration.created';
+  | 'bootcamp.registration.created'
+  // ─── Site forms (docs/115) ──────────────────────────────────────────
+  // A visitor submitted a Builder contact/lead form on a tenant site. The row is
+  // stored synchronously by api-rest, which also publishes the owner-notification
+  // and autoresponder as `email.send`; THIS event drives the CRM lead consumer
+  // (upsert a prospect + log the message, gated on `crm`) + analytics + the
+  // automation fan-in. Published by api-rest on POST /v1/public/forms/submit.
+  | 'form.submitted';
 
 /** Payload for `domain.purchased`. Consumed by the domain-worker to poll DNS
  *  propagation and mark the domain active once resolved (docs/24 §4 step 5). */
@@ -298,7 +305,9 @@ export interface EmailSendPayload {
     | 'feedback-response'
     | 'job-application-received'
     | 'job-application-confirmation'
-    | 'team-invitation';
+    | 'team-invitation'
+    | 'form-submission-notification'
+    | 'form-submission-confirmation';
   /** Shape is enforced by @sparx/email's TemplateSend.props on render. */
   props: Record<string, unknown>;
   /** Optional From override; defaults to SPARX_EMAIL_FROM env in worker. */
@@ -306,6 +315,25 @@ export interface EmailSendPayload {
   replyTo?: string;
   /** Optional header bag (X-Tenant-Id, List-Unsubscribe, etc.). */
   headers?: Record<string, string>;
+}
+
+/** Payload for `form.submitted`. Emitted by api-rest after a Builder contact/lead
+ *  form on a tenant site is stored. The submitter fields are a snapshot (the form
+ *  is anonymous — no customer/user id). `addToCrm` is resolved server-side from
+ *  the form's saved config; the CRM consumer still checks the `crm` module gate,
+ *  so a stale `true` on a since-disabled tenant is a safe no-op. Recipient
+ *  addresses are deliberately NOT in this payload — the owner notification +
+ *  autoresponder are published separately as `email.send` by the same handler,
+ *  so routing targets never travel further than they must. */
+export interface FormSubmittedPayload {
+  submissionId: string;
+  propertyId: string | null;
+  formNodeId: string;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  message: string | null;
+  addToCrm: boolean;
 }
 
 /** Payload for `payment.captured`. Emitted by the Stripe webhook handler

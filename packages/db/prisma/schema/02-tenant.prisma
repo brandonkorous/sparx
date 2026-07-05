@@ -126,6 +126,11 @@ model Tenant {
   feedbackMessages    FeedbackMessage[]
   feedbackPulseStates FeedbackPulseState[]
 
+  // Site forms (docs/115) — public contact/lead submissions + the server-side
+  // routing config (recipient addresses kept out of the published tree).
+  formSubmissions FormSubmission[]
+  formDefinitions FormDefinition[]
+
   // CMS module
   pages                Page[]
   contentTypes         ContentType[]

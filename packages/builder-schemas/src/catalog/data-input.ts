@@ -10,6 +10,7 @@
 // dropzone) stay utility compositions.
 
 import { el, atom, entry, type PlatformCatalogEntry } from './_kit';
+import { DEFAULT_CONTACT_FORM_PROPS } from '../forms';
 
 type Node = ReturnType<typeof atom>;
 
@@ -267,7 +268,13 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
     }),
   }),
 
-  // ── Contact form — Field + Input atoms, two-column on wide ───────────────────
+  // ── Contact form — a WIRED lead-capture block (docs/115) ─────────────────────
+  // Unlike the other data-input entries (presentational atoms), this stamps the
+  // interactive `ContactForm` leaf: it renders the same Name / Email / Message
+  // fields but, on the live site, actually POSTs to the public submit endpoint —
+  // storing the lead, emailing the owner, optionally auto-replying and adding the
+  // person to the CRM. Routing is configured in the inspector; recipient addresses
+  // are kept server-side (never shipped in the published tree).
   entry({
     key: 'contact_form',
     name: 'Contact form',
@@ -275,56 +282,13 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'send',
     description:
-      'A complete contact form with name, email, and message that stacks on narrow containers.',
+      'A working contact form — captures the message, emails you, and can add the person to your CRM. Stacks on narrow containers.',
     surfaces: ['page', 'site'],
     tags: ['form', 'contact', 'email', 'message', 'lead', 'inquiry'],
-    tree: el(
-      'form',
+    tree: atom(
+      'ContactForm',
       'flex w-full max-w-2xl flex-col gap-5 rounded-box border border-base-200 bg-base-100 p-6 shadow-sm @container',
-      {
-        children: [
-          el('div', 'flex flex-col gap-1', {
-            children: [
-              atom('Heading', 'text-lg font-semibold text-base-content', {
-                level: 'h3',
-                text: 'Get in touch',
-              }),
-              el('p', 'text-sm text-base-content/60', {
-                text: "Send us a note and we'll reply within one business day.",
-              }),
-            ],
-          }),
-          // Name + email side by side on wide containers, stacked on narrow.
-          el('div', 'grid grid-cols-1 gap-4 @3xl:grid-cols-2', {
-            children: [
-              field('Name', input('text', 'name', 'Jordan Avery'), {
-                required: true,
-                cls: 'w-full',
-              }),
-              field('Email', input('email', 'email', 'you@example.com'), {
-                required: true,
-                cls: 'w-full',
-              }),
-            ],
-          }),
-          field(
-            'Message',
-            atom('Textarea', 'st-c-primary st-fv-outline', {
-              name: 'message',
-              placeholder: 'How can we help?',
-              rows: '4',
-            }),
-            { cls: 'w-full' }
-          ),
-          el('div', 'flex items-center justify-end', {
-            children: [
-              atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md', {
-                label: 'Send message',
-              }),
-            ],
-          }),
-        ],
-      }
+      { ...DEFAULT_CONTACT_FORM_PROPS }
     ),
   }),
 

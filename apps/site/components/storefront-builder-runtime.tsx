@@ -12,7 +12,7 @@
 // sides.
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 import {
   BuilderBehaviors,
@@ -24,6 +24,7 @@ import { useCart } from './cart-provider';
 import { useCustomer } from './customer-provider';
 import type { Customer } from '@/lib/customer-client';
 import { subscribeEmail } from '@/lib/signup-client';
+import { submitContactForm } from '@/lib/contact-client';
 
 /** Display name for the account menu: full name, else the email, else null. */
 function accountName(c: Customer | null): string | null {
@@ -32,10 +33,19 @@ function accountName(c: Customer | null): string | null {
   return full !== '' ? full : (c.email ?? null);
 }
 
+/** The current storefront path → a Builder page slug (home = null). Singleton
+ *  pages (contact, about) map directly; the server resolves a footer form off the
+ *  active layout if the slug doesn't match. */
+function pageSlugFromPath(pathname: string | null): string | null {
+  const seg = (pathname ?? '/').replace(/^\/+|\/+$/g, '');
+  return seg === '' ? null : seg;
+}
+
 export function StorefrontBuilderRuntime({ children }: { children: React.ReactNode }) {
   const { addItem } = useCart();
   const { tenantSlug, propertySlug, customer, status, logout } = useCustomer();
   const router = useRouter();
+  const pathname = usePathname();
   const runtime = React.useMemo<BuilderRuntime>(
     () => ({
       addToCart: (variantId, quantity) => addItem(variantId, quantity),
@@ -46,6 +56,11 @@ export function StorefrontBuilderRuntime({ children }: { children: React.ReactNo
         router.push('/checkout');
       },
       subscribeEmail: (email) => subscribeEmail(tenantSlug, email, propertySlug),
+      // Contact form (docs/115): the island passes node id + values; the bridge
+      // adds the trusted tenant/site slugs + the current page slug so the server
+      // can resolve the form's routing config. The form never composes routing.
+      submitForm: (input) =>
+        submitContactForm(tenantSlug, propertySlug, pageSlugFromPath(pathname), input),
       // The customer session for the AccountMenu island (docs/27) — signed-in name,
       // status, and a sign-out that clears the session then re-renders.
       account: {
@@ -57,7 +72,7 @@ export function StorefrontBuilderRuntime({ children }: { children: React.ReactNo
         },
       },
     }),
-    [addItem, router, tenantSlug, propertySlug, customer, status, logout]
+    [addItem, router, pathname, tenantSlug, propertySlug, customer, status, logout]
   );
   // Hydrate the sanctioned behavior runtime (docs/98 Pillar 5) over the live tree —
   // full behavior here (autoplay, scroll listeners, marquee cloning), unlike the

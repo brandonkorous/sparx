@@ -62,3 +62,13 @@ variable "vapid_public_key" {
   default     = ""
   description = "VAPID application-server PUBLIC key (base64url). Non-secret; consumed by push-worker + the dashboard."
 }
+
+# Cloudflare Access allow-list for admin.wize.works (docs/apps/admin/build-plan.md
+# §2 D9) — the emails permitted to reach the operator console at the edge. This is
+# the load-bearing auth gate until operator MFA ships (D8). Add/remove operators
+# here and `terraform apply`. Seed operator #1 is brandon@wize.works.
+variable "operator_access_emails" {
+  type        = list(string)
+  default     = ["brandon@wize.works"]
+  description = "Emails allowed through the Cloudflare Access policy on admin.wize.works."
+}

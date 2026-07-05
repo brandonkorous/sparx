@@ -47,3 +47,15 @@ export {
   teamInvitationSubject,
   type TeamInvitationEmailProps,
 } from './team-invitation';
+
+export {
+  FormSubmissionNotificationEmail,
+  formSubmissionNotificationSubject,
+  type FormSubmissionNotificationEmailProps,
+} from './form-submission-notification';
+
+export {
+  FormSubmissionConfirmationEmail,
+  formSubmissionConfirmationSubject,
+  type FormSubmissionConfirmationEmailProps,
+} from './form-submission-confirmation';

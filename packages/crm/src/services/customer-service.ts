@@ -622,6 +622,100 @@ function sameTags(a: readonly string[], b: readonly string[]): boolean {
   return sa.every((t, i) => t === sb[i]);
 }
 
+// ─────────────────────────────────────────────────────────────────────────
+// Lead capture (site forms, docs/115)
+// ─────────────────────────────────────────────────────────────────────────
+
+export interface CaptureLeadInput {
+  /** The site the lead came from (docs/58 membership scoping). */
+  propertyId?: string | null;
+  email: string;
+  /** Full name — split best-effort into first/last. */
+  name?: string | null;
+  phone?: string | null;
+  /** Origin tag stored in metadata (e.g. 'form'). */
+  source?: string;
+}
+
+/** Upsert a PROSPECT from an inbound lead (a contact-form submission) WITHOUT
+ *  implying marketing consent — a form submitter asked us to reply, not to be
+ *  marketed to (that's the difference from `subscribe`). Idempotent on
+ *  (tenant, property, email); fills name/phone only when the existing row is
+ *  missing them, and never clobbers CRM data. Handles the concurrent-insert race
+ *  like `subscribe`. */
+export async function captureLead(
+  ctx: ServiceContext,
+  input: CaptureLeadInput
+): Promise<{ customer: Customer; created: boolean }> {
+  const propertyId = input.propertyId ?? null;
+  const { firstName, lastName } = splitName(input.name);
+
+  return withTenant(ctx, async (tx) => {
+    // Fill blanks only; resurrect a soft-deleted row so the lead is reachable.
+    const link = async (existing: Customer) => {
+      const data: Prisma.CustomerUpdateInput = {};
+      if (!existing.firstName && firstName) data.firstName = firstName;
+      if (!existing.lastName && lastName) data.lastName = lastName;
+      if (!existing.phone && input.phone) data.phone = input.phone;
+      if (existing.deletedAt) data.deletedAt = null;
+      if (Object.keys(data).length === 0) return { customer: existing, created: false };
+      const updated = await tx.customer.update({ where: { id: existing.id }, data });
+      return { customer: updated, created: false };
+    };
+
+    const existing = await tx.customer.findFirst({
+      where: { tenantId: ctx.tenantId, propertyId, email: input.email },
+    });
+    if (existing) return link(existing);
+
+    try {
+      const created = await tx.customer.create({
+        data: {
+          tenantId: ctx.tenantId,
+          type: 'prospect',
+          propertyId,
+          email: input.email,
+          firstName,
+          lastName,
+          phone: input.phone ?? null,
+          metadata: { source: input.source ?? 'form' },
+        },
+      });
+      await writeAuditLog({
+        tx,
+        tenantId: ctx.tenantId,
+        actorId: null,
+        actorType: 'system',
+        action: 'crm.customer.captured',
+        entityType: 'Customer',
+        entityId: created.id,
+        diff: { before: null, after: serializeCustomer(created) },
+      });
+      return { customer: created, created: true };
+    } catch (err) {
+      if (!isUniqueViolation(err)) throw err;
+      const raced = await tx.customer.findFirst({
+        where: { tenantId: ctx.tenantId, propertyId, email: input.email },
+      });
+      if (!raced) throw err;
+      return link(raced);
+    }
+  });
+}
+
+/** Split a free-text full name into first/last (first token vs the rest). Both
+ *  null when empty. */
+function splitName(full: string | null | undefined): {
+  firstName: string | null;
+  lastName: string | null;
+} {
+  const trimmed = (full ?? '').trim();
+  if (!trimmed) return { firstName: null, lastName: null };
+  const sp = trimmed.indexOf(' ');
+  if (sp === -1) return { firstName: trimmed, lastName: null };
+  return { firstName: trimmed.slice(0, sp), lastName: trimmed.slice(sp + 1).trim() || null };
+}
+
 // Serializes a Customer for audit-log JSON. Drops volatile fields that
 // would otherwise produce a noisy diff. Decimal columns are stringified
 // because Prisma's Decimal type isn't JSON-safe out of the box.

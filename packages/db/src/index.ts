@@ -56,6 +56,9 @@ export type {
   // CRM
   Customer,
   CustomerAddress,
+  // Site forms (docs/115)
+  FormSubmission,
+  FormDefinition,
   B2BAccount,
   Pipeline,
   PipelineStage,

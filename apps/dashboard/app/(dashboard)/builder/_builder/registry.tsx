@@ -50,6 +50,7 @@ import {
   PlayCircle,
   Quote,
   Rows3,
+  Send,
   Shapes,
   Share2,
   ShoppingBag,
@@ -68,6 +69,8 @@ import {
 } from 'lucide-react';
 
 import {
+  CONTACT_FORM_TYPE,
+  DEFAULT_CONTACT_FORM_PROPS,
   GLOBAL_ATTRS,
   RAW_ELEMENTS,
   isRawElementType,
@@ -711,6 +714,29 @@ const DEFS: ComponentDef[] = [
     surfaces: ['page'],
     props: [{ key: 'cta', label: 'Button', control: 'text', placeholder: 'Subscribe' }],
     defaults: { props: { cta: 'Subscribe' } },
+  },
+  {
+    // ContactForm — the WIRED lead-capture leaf (docs/115), the Signup island's
+    // richer sibling. Its config (copy, field toggles, notify/CRM/autoresponder
+    // routing, and the SENSITIVE recipients[]) is authored via a BESPOKE ContactForm
+    // card in the inspector — not the generic prop list — because recipients (email
+    // chips), the reveal logic, and the "turn on CRM" prompt have no PropSpec control.
+    // So `props: []` (the generic Content card is suppressed) and the inspector
+    // special-cases CONTACT_FORM_TYPE. Registered here so `getDef` resolves (the
+    // Style / Layout / Motion cards + the toolbar work), but EXCLUDED from the Add
+    // palette in `paletteForSurface` below: it's added via the styled `contact_form`
+    // catalog entry (which stamps this node with a card wrapper), the same way
+    // `text_field` wraps the bare `Input` atom — so it isn't offered twice.
+    type: CONTACT_FORM_TYPE,
+    label: 'Contact form',
+    kind: 'leaf',
+    group: 'data',
+    icon: Send,
+    bindable: false,
+    accepts: [],
+    surfaces: ['page', 'site'],
+    props: [],
+    defaults: { props: { ...DEFAULT_CONTACT_FORM_PROPS } },
   },
 
   // ---- Commerce buy-box (Tier 2 — interactive, docs/40 §7) ----
@@ -1434,7 +1460,14 @@ const EMAIL_TYPES: ReadonlySet<string> = new Set([
 export function paletteForSurface(surface: EditorSurface): ComponentDef[] {
   // Email is its own medium (docs/98 §3.6c) — curated allow-list, no raw HTML.
   if (surface === 'email') return DEFS.filter((d) => EMAIL_TYPES.has(d.type));
-  const named = DEFS.filter((d) => !d.surfaces || d.surfaces.includes(surface));
+  // ContactForm (docs/115) is registered so its inspector resolves, but it's added
+  // to a page via the styled `contact_form` catalog entry (a card-wrapped stamp),
+  // never as a bare primitive — so it's kept out of the palette (and, since this
+  // also feeds compatibleRetypeTargets, out of the retype list) to avoid a second,
+  // worse way to add the same block.
+  const named = DEFS.filter(
+    (d) => (!d.surfaces || d.surfaces.includes(surface)) && d.type !== CONTACT_FORM_TYPE
+  );
   // Raw HTML elements (docs/98 Pillar 1) join the page + site palettes.
   return [...named, ...RAW_ELEMENT_DEFS];
 }

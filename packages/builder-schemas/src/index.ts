@@ -20,6 +20,7 @@ export * from './starters';
 export * from './archetypes';
 export * from './default-emails';
 export * from './binding';
+export * from './forms';
 export * from './nav';
 export * from './runtime';
 export * from './import-export';

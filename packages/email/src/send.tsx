@@ -54,6 +54,16 @@ import {
   teamInvitationSubject,
   type TeamInvitationEmailProps,
 } from './templates/team-invitation';
+import {
+  FormSubmissionNotificationEmail,
+  formSubmissionNotificationSubject,
+  type FormSubmissionNotificationEmailProps,
+} from './templates/form-submission-notification';
+import {
+  FormSubmissionConfirmationEmail,
+  formSubmissionConfirmationSubject,
+  type FormSubmissionConfirmationEmailProps,
+} from './templates/form-submission-confirmation';
 
 // Template registry + dispatcher. Two surfaces:
 //
@@ -86,7 +96,9 @@ export type TemplateId =
   | 'feedback-response'
   | 'job-application-received'
   | 'job-application-confirmation'
-  | 'team-invitation';
+  | 'team-invitation'
+  | 'form-submission-notification'
+  | 'form-submission-confirmation';
 
 export type TemplateSend =
   | {
@@ -156,6 +168,20 @@ export type TemplateSend =
       template: 'team-invitation';
       to: string;
       props: TeamInvitationEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'form-submission-notification';
+      to: string;
+      props: FormSubmissionNotificationEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'form-submission-confirmation';
+      to: string;
+      props: FormSubmissionConfirmationEmailProps;
       from?: string;
       replyTo?: string;
     };
@@ -343,6 +369,38 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'team-invitation',
+      };
+    }
+    case 'form-submission-notification': {
+      const element = wrap(<FormSubmissionNotificationEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: formSubmissionNotificationSubject(input.props.formName),
+        html,
+        text,
+        templateId: 'form-submission-notification',
+      };
+    }
+    case 'form-submission-confirmation': {
+      const element = wrap(<FormSubmissionConfirmationEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: formSubmissionConfirmationSubject(input.props.subject),
+        html,
+        text,
+        templateId: 'form-submission-confirmation',
       };
     }
   }

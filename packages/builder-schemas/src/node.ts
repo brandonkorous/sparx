@@ -162,3 +162,35 @@ export const BuilderNodeSchema: z.ZodType<BuilderNode> = z.lazy(() =>
     children: z.array(BuilderNodeSchema).optional(),
   })
 );
+
+// ── Tree walking (server-safe, no React) ──────────────────────────────────────
+//
+// Shared depth-first helpers. The public form-submit endpoint uses `findNodeById`
+// to resolve a form node's config from the PUBLISHED tree by its stable id (the
+// security boundary — config is read from the server-loaded snapshot, never the
+// request); the publish-time form extractor uses `collectNodesByType`.
+
+/** Depth-first (pre-order) search for a node by id. Returns null if absent. */
+export function findNodeById(root: BuilderNode | null | undefined, id: string): BuilderNode | null {
+  if (!root) return null;
+  if (root.id === id) return root;
+  for (const child of root.children ?? []) {
+    const found = findNodeById(child, id);
+    if (found) return found;
+  }
+  return null;
+}
+
+/** Collect every node of a given `type` (depth-first, pre-order). */
+export function collectNodesByType(
+  root: BuilderNode | null | undefined,
+  type: string
+): BuilderNode[] {
+  const out: BuilderNode[] = [];
+  const walk = (n: BuilderNode): void => {
+    if (n.type === type) out.push(n);
+    for (const c of n.children ?? []) walk(c);
+  };
+  if (root) walk(root);
+  return out;
+}

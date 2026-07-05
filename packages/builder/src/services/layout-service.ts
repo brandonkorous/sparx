@@ -25,6 +25,7 @@ import { publishBuilderEvent } from '../events';
 import type { PropertyContext } from '../errors';
 import { BuilderConflictError, BuilderNotFoundError, BuilderValidationError } from '../errors';
 import { expandTreeForPublish } from './component-service';
+import { syncFormDefinitions } from './form-definition-service';
 
 function toDto(row: BuilderLayout): BuilderLayoutDto {
   return {
@@ -189,7 +190,11 @@ export async function publish(ctx: PropertyContext, id: string): Promise<Builder
     if (!existing) throw new BuilderNotFoundError('BuilderLayout', id);
     // Expand tenant components into concrete primitives (docs/53 §3) so the
     // storefront chrome renderer never sees a `custom:*` type.
-    const published = await expandTreeForPublish(tx, existing.draftTree as unknown as BuilderNode);
+    const expanded = await expandTreeForPublish(tx, existing.draftTree as unknown as BuilderNode);
+    // A ContactForm can live in the chrome (a footer form). Materialize its
+    // recipients server-side and strip them from the published tree (docs/115).
+    // pageSlug is null — the endpoint resolves a layout form from the active layout.
+    const published = await syncFormDefinitions(tx, ctx, null, expanded);
     const updated = await tx.builderLayout.update({
       where: { id },
       data: {

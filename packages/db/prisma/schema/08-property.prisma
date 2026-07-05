@@ -123,6 +123,11 @@ model Property {
   // it to those sites. JUNCTION — no fork, ON DELETE CASCADE.
   dropshipSupplierScopes DropshipSupplierProperty[]
 
+  // Site forms (docs/115) — submissions captured on this site + the server-side
+  // routing config for its form nodes.
+  formSubmissions FormSubmission[]
+  formDefinitions FormDefinition[]
+
   @@unique([tenantId, slug])
   @@index([tenantId])
   @@map("properties")

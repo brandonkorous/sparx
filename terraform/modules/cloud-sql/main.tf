@@ -72,3 +72,27 @@ resource "google_sql_user" "app" {
   instance = google_sql_database_instance.primary.name
   password = random_password.app_user.result
 }
+
+# WizeWorks operator role (docs/apps/admin/build-plan.md §2 D3/D6). Used ONLY by
+# the admin console's Better Auth instance + its wize_admin schema helpers, never
+# by tenant app code. NOBYPASSRLS (same posture as sparx_app) so it can never read
+# a tenant table even if one were granted by mistake — enforced at the schema-grant
+# layer in the 20261007000000_wize_admin_operator_schema migration, which also
+# CREATEs the wize_admin schema + tables and GRANTs them to this role.
+#
+# Provisioning order: this user must exist BEFORE that migration runs (the
+# migration's grants target it). `terraform apply` this ahead of the migration
+# pipeline; the migration's guarded CREATE ROLE is only a local-dev fallback.
+resource "random_password" "operator_user" {
+  length      = 32
+  special     = false
+  min_lower   = 4
+  min_upper   = 4
+  min_numeric = 4
+}
+
+resource "google_sql_user" "operator" {
+  name     = "wize_operator"
+  instance = google_sql_database_instance.primary.name
+  password = random_password.operator_user.result
+}

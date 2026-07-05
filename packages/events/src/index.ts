@@ -7,6 +7,7 @@ export type {
   TenantCreatedPayload,
   FeedbackSubmittedPayload,
   FeedbackRespondedPayload,
+  FormSubmittedPayload,
 } from './types';
 export {
   createPublisher,

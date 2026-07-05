@@ -40,6 +40,14 @@ const EnvSchema = z
     // A SEPARATE secret (writes cross-org referral/commission rows) — its own
     // blast radius, rotates independently. Optional in dev; unset → endpoints 401.
     SPARX_INTERNAL_PARTNERS_TOKEN: z.string().min(16).optional(),
+    // Shared secret for the WizeWorks operator console's internal endpoints
+    // (GET/POST /internal/operator/*, docs/apps/admin/build-plan.md §2 D6). The
+    // admin app authenticates the operator (Better Auth + capabilities) then
+    // calls these with this token + an X-sparx-Operator-Id header. A SEPARATE
+    // secret from the cron/acquisition tokens — it exposes cross-tenant reads +
+    // operator writes, its own blast radius, rotates independently. Optional in
+    // dev; unset → the endpoints return 401 (fail-closed).
+    SPARX_INTERNAL_OPERATOR_TOKEN: z.string().min(16).optional(),
     // The platform's OWN tenant (docs/80 §2 dogfooding) — sparx/WizeWorks running
     // as a tenant-of-record. Its tenant ID is the ONE allowed to claim a reserved
     // BRAND slug (e.g. `wizeworks`) via PATCH /v1/tenant/slug — the reservation

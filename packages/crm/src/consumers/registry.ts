@@ -24,6 +24,7 @@ import { registerQuoteEventConsumers } from './quote-events';
 import { registerAuthEventConsumers } from './auth-events';
 import { registerSegmentEvaluatorConsumers } from './segment-evaluator';
 import { registerModuleActivationConsumers } from './module-activation';
+import { registerFormEventConsumers } from './form-events';
 
 export interface RegisterOptions {
   /** Override the active bus — tests pass a fresh in-memory bus. */
@@ -55,6 +56,9 @@ export function registerCrmConsumers(opts: RegisterOptions = {}): ConsumerRegist
   teardowns.push(...registerQuoteEventConsumers(ctx));
   teardowns.push(...registerAuthEventConsumers(ctx));
   teardowns.push(...registerSegmentEvaluatorConsumers(ctx));
+  // Site forms (docs/115): mirror a form.submitted lead into the CRM (upsert a
+  // prospect + log the message), when the form opts in. Gated + deduped.
+  teardowns.push(...registerFormEventConsumers(ctx));
   // Activation runs the per-tenant bootstrap (default pipeline + built-in
   // segments) AND invalidates the module-gate cache. Deactivation only
   // needs to drop the cache so downstream consumers see the change.

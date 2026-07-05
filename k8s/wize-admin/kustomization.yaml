@@ -1,0 +1,12 @@
+# The admin console is a SEPARATE kustomization from k8s/apps/ because it lives
+# in its own namespace (wize-admin). The k8s/apps kustomization force-sets
+# namespace: sparx-prod, which would override the wize-admin manifests — so the
+# console never rides that bundle. Applied by bootstrap.yml (components=wize-admin).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: wize-admin
+resources:
+  - namespace.yaml
+  - service-account.yaml
+  - env-configmap.yaml
+  - admin.yaml

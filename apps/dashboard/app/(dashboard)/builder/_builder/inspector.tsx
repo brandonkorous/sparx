@@ -104,6 +104,7 @@ import {
   cn,
 } from '@sparx/ui';
 import {
+  CONTACT_FORM_TYPE,
   REF_KEY,
   bindSlotKey,
   collectBindingSlots,
@@ -150,6 +151,7 @@ import { IconPicker } from './icon-picker';
 import { ProseControl } from './prose-control';
 import { LinkTargetControl } from './link-target-control';
 import { NavMenuLinksField } from './nav-menu-editor';
+import { ContactFormCard } from './contact-form-inspector';
 import {
   ACCENT_COLOR_CONTROL,
   ALIGN_CONTENT_CONTROL,
@@ -4977,6 +4979,13 @@ export function Inspector({
       />
 
       <div className="bx-ins-stack">
+        {/* ContactForm (docs/115) is a wired lead-capture leaf whose config —
+            copy, field toggles, and the email / CRM / autoresponder routing (incl.
+            the sensitive recipients) — is authored by a BESPOKE card, not the
+            generic prop list (its def carries `props: []`, so the Content card
+            below is suppressed). Same special-case seam as NavMenu's link editor. */}
+        {node.type === CONTACT_FORM_TYPE ? <ContactFormCard node={node} onProp={onProp} /> : null}
+
         {/* Content first — what the block SAYS and where it comes from. The
             structural props (header level, link, …) sit up top; the typed-content
             field moves under the "Type it in" source branch (so it's hidden while

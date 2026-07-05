@@ -85,6 +85,24 @@ jobs:
             fi
           done
 
+      # The admin console lives in the wize-admin namespace (docs/apps/admin/
+      # build-plan.md §2 D2), not sparx-prod, so the loop above (`-n $NAMESPACE`)
+      # doesn't reach it. Roll it separately. Skips silently until the Deployment
+      # exists (first bring-up is via bootstrap.yml components=wize-admin).
+      - name: Rollout admin console (wize-admin namespace)
+        run: |
+          IMAGE_BASE="$REGION-docker.pkg.dev/${{ env.PROJECT_ID }}/$AR_REPO"
+          if kubectl get deployment admin -n wize-admin >/dev/null 2>&1; then
+            echo "::group::Rolling out admin (wize-admin)"
+            kubectl set image deployment/admin \
+              admin=$IMAGE_BASE/admin:${{ steps.tag.outputs.tag }} \
+              -n wize-admin
+            kubectl rollout status deployment/admin -n wize-admin --timeout=5m
+            echo "::endgroup::"
+          else
+            echo "::notice::Skipping admin — Deployment not present in wize-admin yet."
+          fi
+
       # Cloud Run services live outside the cluster — they don't show up in
       # `kubectl get deployment`. Roll their image with `gcloud run services
       # update`. TF's cloud-run-worker module sets lifecycle.ignore_changes

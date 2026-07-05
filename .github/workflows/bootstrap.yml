@@ -32,6 +32,7 @@ on:
           - app-env
           - app-secrets
           - apps
+          - wize-admin
           - workers
           - workers-prune
           - storefront-teardown
@@ -214,6 +215,7 @@ jobs:
             sparx-internal-jwt-secret
             sparx-internal-acquisition-token
             sparx-internal-cron-token
+            sparx-internal-operator-token
             stripe-secret-key
             stripe-webhook-secret
             channels-token-key
@@ -290,6 +292,50 @@ jobs:
         run: |
           set -euo pipefail
           kubectl apply -k k8s/cronjobs/
+
+      # WizeWorks operator console (docs/apps/admin/build-plan.md) — its own
+      # namespace + SA + secrets. NOT in all-platform: a deliberate, human-gated
+      # bring-up (the wize-admin GSA + the operator-* secrets must be provisioned
+      # in Terraform/Secret Manager first, and the admin image pushed). Idempotent
+      # — re-running re-syncs the secret + rolls the Deployment.
+      - name: Apply wize-admin console
+        if: ${{ inputs.components == 'wize-admin' }}
+        env:
+          WIZE_ADMIN_NS: wize-admin
+          WIZE_ADMIN_GSA: wize-admin@sparxworks.iam.gserviceaccount.com
+        run: |
+          set -euo pipefail
+          # Namespace + SA + env ConfigMap + Deployment/Service/HPA/PDB.
+          kubectl apply -k k8s/wize-admin/
+          # Bind the KSA to the wize-admin GSA (Workload Identity → Pub/Sub publish
+          # for the operator set-password email). The annotation stays out of the
+          # YAML so it doesn't pin a project.
+          kubectl annotate serviceaccount wize-admin -n "$WIZE_ADMIN_NS" \
+            iam.gke.io/gcp-service-account="$WIZE_ADMIN_GSA" --overwrite
+          # Sync wize-admin-secrets from Secret Manager. Missing keys warn (phase 1);
+          # a missing OPERATOR_AUTH_SECRET makes the console fail-loud at boot, which
+          # is correct — a cross-tenant console must never run on a default secret.
+          KEYS=(
+            operator-database-url
+            operator-auth-secret
+            sparx-internal-operator-token
+            operator-bootstrap-password
+          )
+          literals=()
+          for key in "${KEYS[@]}"; do
+            if value=$(gcloud secrets versions access latest --secret="$key" --project="$PROJECT_ID" 2>/dev/null); then
+              env_name=$(echo "$key" | tr 'a-z-' 'A-Z_')
+              literals+=("--from-literal=${env_name}=${value}")
+              echo "  + $env_name"
+            else
+              echo "::warning::Skipping $key — not set in Secret Manager yet."
+            fi
+          done
+          kubectl delete secret wize-admin-secrets -n "$WIZE_ADMIN_NS" --ignore-not-found
+          kubectl create secret generic wize-admin-secrets -n "$WIZE_ADMIN_NS" "${literals[@]}"
+          # envFrom won't auto-reload a changed Secret — force a rollout.
+          kubectl rollout restart deployment/admin -n "$WIZE_ADMIN_NS"
+          kubectl rollout status deployment/admin -n "$WIZE_ADMIN_NS" --timeout=5m
 
       # One-shot tear-down for workers that have migrated to Cloud Run.
       # `kubectl apply -k` does not prune resources that were removed from

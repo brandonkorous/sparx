@@ -28,6 +28,7 @@ import type { PropertyContext, ServiceContext } from '../errors';
 import { BuilderNotFoundError, BuilderValidationError } from '../errors';
 import { getSchema } from './binding-service';
 import { expandTreeForPublish } from './component-service';
+import { syncFormDefinitions } from './form-definition-service';
 
 function toDto(row: BuilderPage): BuilderPageDto {
   return {
@@ -340,7 +341,10 @@ export async function publish(ctx: PropertyContext, id: string): Promise<Builder
   const dto = await withTenant(ctx, async (tx) => {
     const existing = await tx.builderPage.findFirst({ where: { id, propertyId: ctx.propertyId } });
     if (!existing) throw new BuilderNotFoundError('BuilderPage', id);
-    const published = await expandTreeForPublish(tx, existing.draftTree as unknown as BuilderNode);
+    const expanded = await expandTreeForPublish(tx, existing.draftTree as unknown as BuilderNode);
+    // Materialize any ContactForm's recipient addresses into server-only
+    // FormDefinition rows and strip them from the tree we publish (docs/115).
+    const published = await syncFormDefinitions(tx, ctx, existing.slug, expanded);
     const updated = await tx.builderPage.update({
       where: { id },
       data: {

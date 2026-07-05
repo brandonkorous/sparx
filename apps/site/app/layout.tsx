@@ -523,13 +523,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                         />
                       </>
                     )}
-                    {/* Platform attribution — always-on shell chrome, injected
-                        AFTER the layout tree so it can't be a deletable BuilderNode
-                        and covers both the Builder-layout and legacy footer paths.
-                        Hidden only when the site opts out (docs/95). */}
-                    {site.showSparxCredit !== false ? <MadeWithSparx /> : null}
                   </div>
                   <MiniCart />
+                  {/* Platform attribution — un-deletable shell chrome (NOT a
+                      BuilderNode), fixed in the bottom corner so it reads as part of
+                      the site chrome, not a section inserted below the footer. Flips
+                      to the bottom-LEFT corner when the chat launcher (fixed
+                      bottom-right) is on, so the two don't overlap. Hidden only when
+                      the site opts out. */}
+                  {site.showSparxCredit !== false ? (
+                    <MadeWithSparx placement={chatEnabled && chatApiUrl ? 'left' : 'right'} />
+                  ) : null}
                   <ConsentManager tenant={site.slug} config={site.consent} />
                   {chatApiUrl ? (
                     <SiteAnalyticsBeacon

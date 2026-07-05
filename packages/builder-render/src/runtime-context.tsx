@@ -35,6 +35,18 @@ export interface BuilderAccount {
   signOut: () => Promise<void>;
 }
 
+/** A contact/lead form submission from a ContactForm island. Carries only what
+ *  the ISLAND knows — the stable form node id, the field values, and the honeypot.
+ *  The live bridge (apps/site) adds the trusted scoping (tenant/site slug + the
+ *  current page locator) so the server can resolve the form's routing config; the
+ *  island never composes routing. */
+export interface BuilderFormSubmit {
+  nodeId: string;
+  values: Record<string, string>;
+  /** Hidden anti-bot field — empty for a human; a value ⇒ silently dropped. */
+  honeypot?: string;
+}
+
 /** The terminal side effects the interactive islands perform. Live wires these to
  *  the storefront cart/capture APIs; the canvas leaves them as no-ops. */
 export interface BuilderRuntime {
@@ -45,6 +57,10 @@ export interface BuilderRuntime {
   buyNow: (variantId: string, quantity: number) => Promise<void>;
   /** Subscribe an email address to the tenant's list via the public capture endpoint. */
   subscribeEmail: (email: string) => Promise<void>;
+  /** Submit a ContactForm to the public forms endpoint. Live posts + resolves the
+   *  form's routing config server-side; the canvas no-ops it so the form validates
+   *  and shows its thank-you in preview without capturing anything. */
+  submitForm: (input: BuilderFormSubmit) => Promise<void>;
   /** The customer session, for the AccountMenu island. Optional: only the live
    *  storefront supplies it; the canvas leaves it undefined. */
   account?: BuilderAccount;
@@ -56,6 +72,7 @@ const NOOP_RUNTIME: BuilderRuntime = {
   addToCart: () => Promise.resolve(),
   buyNow: () => Promise.resolve(),
   subscribeEmail: () => Promise.resolve(),
+  submitForm: () => Promise.resolve(),
 };
 
 const BuilderRuntimeContext = React.createContext<BuilderRuntime>(NOOP_RUNTIME);

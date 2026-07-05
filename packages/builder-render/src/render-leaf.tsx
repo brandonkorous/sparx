@@ -78,6 +78,7 @@ import { BuilderLightbox } from './lightbox';
 import { BuilderIcon } from './icon';
 import { renderSiteUiAtom } from './site-atoms';
 import { SignupForm } from './signup';
+import { ContactForm } from './contact-form';
 import { BuilderAccountMenu } from './account-menu';
 import { SAMPLE_BUILDER_PRODUCT } from './sample-product';
 import { sxAttrs } from './behaviors/attrs';
@@ -156,6 +157,7 @@ const CLASS_ON_LEAF: ReadonlySet<string> = new Set([
   'FileInput',
   'Label',
   'Field',
+  'ContactForm',
   'Validator',
   'Alert',
   'Callout',
@@ -812,6 +814,11 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
     // state via the injected runtime (no-op in the canvas, capture endpoint live).
     case 'Signup':
       return <SignupForm cta={str('cta') || undefined} />;
+    // Wired contact/lead form (docs/115). Renders + validates identically on both
+    // surfaces; only the live runtime's `submitForm` captures. node.class lands on
+    // the <form> (ContactForm is in CLASS_ON_LEAF), props carry the routing config.
+    case 'ContactForm':
+      return <ContactForm nodeId={node.id} props={p} className={leafClass ?? undefined} />;
     // The light/dark switch. Inert here (the canvas always previews it); the live
     // host gates it on the site's appearance policy + scope before calling this.
     case 'ThemeToggle':

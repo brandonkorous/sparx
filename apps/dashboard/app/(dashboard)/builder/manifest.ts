@@ -8,7 +8,7 @@
 // migration completes, at which point the `storefront` id retires.
 
 import type { ModuleManifest } from '@sparx/ui/shell';
-import { Boxes, Component, LayoutTemplate, Mail, Palette, Pencil } from 'lucide-react';
+import { Boxes, Component, Inbox, LayoutTemplate, Mail, Palette, Pencil } from 'lucide-react';
 
 export const builderManifest: ModuleManifest = {
   id: 'builder',
@@ -42,6 +42,10 @@ export const builderManifest: ModuleManifest = {
     // Components — the catalog of building blocks (Tier-1 primitives + Tier-2
     // data-aware components) a template composes from (docs/51 §4.2).
     { id: 'component', label: 'Components', icon: Component, href: '/builder/components' },
+    // Form submissions — the inbox of messages visitors send through Contact form
+    // blocks (docs/115). A Builder-module surface: forms are a site-building
+    // feature, so the section rides here rather than in CRM.
+    { id: 'forms', label: 'Form submissions', icon: Inbox, href: '/builder/forms' },
     // Governance — the brand-designer's guardrails (docs/61 §8 Phase 6b): the
     // tighten-only utility allowlist and the brand-section archetype set. The full
     // implementation lives under `/builder/governance` (page + _governance/*) but

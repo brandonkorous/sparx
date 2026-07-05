@@ -1,49 +1,52 @@
 import * as React from 'react';
 
-import { SparxMark } from './sparx-mark';
-
-// "Made with sparx" — the platform attribution badge that renders in the footer
-// of every tenant public site (apps/site injects it as un-deletable shell chrome,
-// NOT a BuilderNode). A quiet, brand-forward pill: the sparx monogram + wordmark,
-// linking back to the marketing site.
+// "Made with sparx" — the platform attribution credit that floats in the bottom
+// corner of every tenant public site (apps/site mounts it as un-deletable shell
+// chrome, NOT a BuilderNode). Fixed-position and blended (transparent at rest, no
+// box, no band) so it reads as part of the site's own chrome rather than a
+// tacked-on section below the footer.
 //
-// Two deliberate constraints make it safe to drop onto ANY tenant site:
+// Constraints that keep it safe to drop onto ANY tenant site:
 //
 //  1. SELF-CONTAINED COLOR. Tenant sites are scoped to their own `--st-*` theme
 //     and do NOT load @sparx/ui's tokens.css, so `--sparx-primary` won't resolve
-//     there. The indigo "x" is therefore the literal hex, and this badge is
-//     sparx's brand island — the host theme must never recolor it. EVERYTHING
-//     else rides `currentColor` (the footer's own ink), so the pill stays legible
-//     on a white, black, or colored footer without knowing the background.
+//     there. The indigo "x" is therefore the literal hex; everything else rides
+//     `currentColor` (the site's own ink), so it stays legible on a light or dark
+//     theme without knowing the surface behind it.
 //
 //  2. BRANDED ANCHOR. The link's accessible name is the BRAND ("Made with sparx"),
-//     never keyword-stuffed. A branded footer link across many distinct domains is
+//     never keyword-stuffed. A branded credit link across many distinct domains is
 //     a clean attribution/referral signal; a keyword-rich one at that scale reads
 //     as link-spam. Keeping the anchor branded is the one guardrail that matters.
 //
 // Server component (no client JS): the base look is inline styles (which beat any
-// tenant stylesheet), and a colocated <style> adds hover/focus polish.
+// tenant stylesheet), and a colocated <style> adds the rest→hover affordance.
 
 // sparx Indigo, as a literal — see constraint (1) above.
 const SPARX_INDIGO = '#6366F1';
 
 // Attribution destination: the marketing home, UTM-tagged so referral clicks from
-// tenant footers are measurable (referral traffic + brand exposure is the real
-// value of this badge, not link equity).
+// tenant sites are measurable (referral traffic + brand exposure is the real value
+// of this badge, not link equity).
 const DEFAULT_HREF =
   'https://sparx.works/?utm_source=powered_by&utm_medium=site_badge&utm_campaign=made_with_sparx';
 
+// Rest = quiet and blended (no chip); hover/focus = full opacity + a whisper of a
+// currentColor chip as the affordance. Padding is constant so the chip doesn't
+// shift the text on hover.
 const STYLE = `
 .sx-made-with-sparx {
+  opacity: 0.68;
   transition:
-    background-color 0.16s ease,
-    border-color 0.16s ease;
+    opacity 0.16s ease,
+    background-color 0.16s ease;
 }
 .sx-made-with-sparx:hover {
-  background: color-mix(in srgb, currentColor 8%, transparent) !important;
-  border-color: color-mix(in srgb, currentColor 26%, transparent) !important;
+  opacity: 1;
+  background: color-mix(in srgb, currentColor 7%, transparent);
 }
 .sx-made-with-sparx:focus-visible {
+  opacity: 1;
   outline: 2px solid ${SPARX_INDIGO};
   outline-offset: 2px;
 }
@@ -57,18 +60,20 @@ const STYLE = `
 export interface MadeWithSparxProps {
   /** Attribution destination. Defaults to the sparx marketing home (UTM-tagged). */
   href?: string;
-  /** Mark + text size in px. Default 13. */
+  /** Text size in px. Default 13. */
   size?: number;
-  /** Extra class on the outer centering strip (for placement overrides). */
-  className?: string;
+  /** Which bottom corner to anchor to. Default 'right'; the storefront flips this
+   *  to 'left' when the chat launcher (also fixed bottom-right) is enabled. */
+  placement?: 'right' | 'left';
 }
 
-export function MadeWithSparx({ href = DEFAULT_HREF, size = 13, className }: MadeWithSparxProps) {
+export function MadeWithSparx({
+  href = DEFAULT_HREF,
+  size = 13,
+  placement = 'right',
+}: MadeWithSparxProps) {
   return (
-    <div
-      className={className}
-      style={{ display: 'flex', justifyContent: 'center', padding: '1.25rem 1rem' }}
-    >
+    <>
       <style>{STYLE}</style>
       <a
         className="sx-made-with-sparx"
@@ -80,13 +85,15 @@ export function MadeWithSparx({ href = DEFAULT_HREF, size = 13, className }: Mad
         rel="noopener noreferrer"
         aria-label="Made with sparx"
         style={{
+          position: 'fixed',
+          bottom: 12,
+          ...(placement === 'left' ? { left: 14 } : { right: 14 }),
+          zIndex: 40,
           display: 'inline-flex',
           alignItems: 'center',
-          gap: Math.round(size * 0.55),
-          padding: `${Math.round(size * 0.42)}px ${Math.round(size * 0.85)}px`,
+          gap: Math.round(size * 0.32),
+          padding: `${Math.round(size * 0.35)}px ${Math.round(size * 0.6)}px`,
           borderRadius: 999,
-          border: '1px solid color-mix(in srgb, currentColor 15%, transparent)',
-          background: 'color-mix(in srgb, currentColor 4%, transparent)',
           color: 'inherit',
           fontSize: size,
           lineHeight: 1,
@@ -95,20 +102,11 @@ export function MadeWithSparx({ href = DEFAULT_HREF, size = 13, className }: Mad
           whiteSpace: 'nowrap',
         }}
       >
-        {/* Monogram leads in MONOCHROME (currentColor) — the one indigo spark lands
-            on the wordmark's "x" below. Two indigo x's in one quiet credit read
-            logo-heavy; a single spark is both calmer and the actual brand rule, and
-            a mono monogram is contrast-safe on any footer (incl. colored). */}
-        <SparxMark size={Math.round(size * 1.05)} accentColor="currentColor" />
-        <span
-          style={{ fontWeight: 500, color: 'color-mix(in srgb, currentColor 56%, transparent)' }}
-        >
-          Made with
-        </span>
+        <span style={{ fontWeight: 500 }}>Made with</span>
         <span style={{ fontWeight: 700, letterSpacing: '-0.03em' }}>
           spar<span style={{ color: SPARX_INDIGO }}>x</span>
         </span>
       </a>
-    </div>
+    </>
   );
 }

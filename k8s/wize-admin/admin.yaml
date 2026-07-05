@@ -1,0 +1,136 @@
+# apps/admin — the WizeWorks operator console. Next.js standalone on port 3000,
+# in the wize-admin namespace with its own SA + secrets. Fronted by Caddy
+# (admin.wize.works) behind Cloudflare Access. Image substituted at deploy time.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin
+  namespace: wize-admin
+  labels:
+    app: admin
+    tier: wize-admin
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: admin
+  template:
+    metadata:
+      labels:
+        app: admin
+        tier: wize-admin
+    spec:
+      serviceAccountName: wize-admin
+      containers:
+        - name: admin
+          image: us-central1-docker.pkg.dev/sparxworks/sparx/admin:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: wize-admin-env
+            - secretRef:
+                name: wize-admin-secrets
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: SERVICE_NAME
+              value: admin
+            - name: PORT
+              value: '3000'
+            - name: HOSTNAME
+              value: 0.0.0.0
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ['ALL']
+            seccompProfile:
+              type: RuntimeDefault
+          # Low-traffic internal console — modest requests keep the Autopilot
+          # cost minimal (docs/apps/admin/build-plan.md §2 D2).
+          resources:
+            requests:
+              cpu: '50m'
+              memory: '256Mi'
+            limits:
+              cpu: '500m'
+              memory: '512Mi'
+          livenessProbe:
+            httpGet:
+              path: /sign-in
+              port: 3000
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /sign-in
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 2
+          lifecycle:
+            preStop:
+              exec:
+                command: ['/bin/sh', '-c', 'sleep 10']
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin
+  namespace: wize-admin
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: admin
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: admin
+  namespace: wize-admin
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: admin
+  minReplicas: 1
+  # Pinned to a single replica for now — bump maxReplicas when operator load
+  # warrants autoscaling (the HPA is kept in place so that's a one-line change).
+  maxReplicas: 1
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: admin
+  namespace: wize-admin
+spec:
+  # maxUnavailable (not minAvailable) — a single-replica internal console must
+  # still be evictable for node drains without deadlocking.
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: admin

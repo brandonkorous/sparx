@@ -1,0 +1,46 @@
+{
+  "name": "@sparx/operator-auth",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The WizeWorks operator (Layer-4, docs/16 §2.4) Better Auth instance — a SECOND, tenant-less auth boundary on its own `wize_admin` Postgres schema (docs/apps/admin/build-plan.md §2 D3). Uses Better Auth's native Kysely/pg adapter (not Prisma) so it needs no generated client and stays a cleanly-separable module for the future schema split. Consumed only by apps/admin.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./next": {
+      "types": "./src/next.ts",
+      "default": "./src/next.ts"
+    },
+    "./client": {
+      "types": "./src/client.ts",
+      "default": "./src/client.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@sparx/events": "workspace:*",
+    "@sparx/operator": "workspace:*",
+    "better-auth": "^1.6.11",
+    "pg": "^8.13.1"
+  },
+  "peerDependencies": {
+    "next": "^16.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "@types/pg": "^8.11.10",
+    "next": "^16.2.6",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

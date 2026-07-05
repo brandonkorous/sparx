@@ -14,7 +14,17 @@ import { type NextRequest, NextResponse } from 'next/server';
 const API_BASE = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 
 // Request headers we forward upstream (hop-by-hop + host headers are dropped).
-const FORWARD_REQUEST_HEADERS = ['content-type', 'x-cart-token', 'authorization', 'cookie'];
+// x-forwarded-for / x-real-ip carry the real client IP (set by Caddy) through to
+// api-rest, whose `trustProxy` reads it — so per-IP rate limits (e.g. the public
+// forms endpoint, docs/115) bucket by visitor, not by this proxy pod's IP.
+const FORWARD_REQUEST_HEADERS = [
+  'content-type',
+  'x-cart-token',
+  'authorization',
+  'cookie',
+  'x-forwarded-for',
+  'x-real-ip',
+];
 
 async function forward(request: NextRequest, path: string[]): Promise<NextResponse> {
   const search = request.nextUrl.search;

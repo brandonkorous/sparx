@@ -75,6 +75,7 @@ import channelsCronRoutes from './routes/internal/channels-cron.js';
 import marketCronRoutes from './routes/internal/market-cron.js';
 import acquisitionReportRoutes from './routes/internal/acquisition-report.js';
 import internalPartnerRoutes from './routes/internal/partners.js';
+import operatorInternalRoutes from './routes/internal/operator.js';
 import contentTypeRoutes from './routes/v1/content/types.js';
 import entryRoutes from './routes/v1/content/entries.js';
 import publishRoutes from './routes/v1/content/publish.js';
@@ -113,6 +114,7 @@ import publicSignupRoutes from './routes/v1/public/signup.js';
 import publicSiteAnalyticsRoutes from './routes/v1/public/site-analytics.js';
 import publicNewsletterRoutes from './routes/v1/public/newsletter.js';
 import publicCareersRoutes from './routes/v1/public/careers.js';
+import publicFormsRoutes from './routes/v1/public/forms.js';
 import publicMarketplaceRoutes from './routes/v1/public/marketplace.js';
 import publicPartnerRoutes from './routes/v1/public/partners.js';
 import publicBootcampRoutes from './routes/v1/public/bootcamps.js';
@@ -136,6 +138,7 @@ import publicChatRoutes from './routes/v1/public/chat.js';
 import pushRoutes from './routes/v1/push.js';
 import sitebuilderRoutes from './routes/v1/sitebuilder/index.js';
 import builderRoutes from './routes/v1/builder/index.js';
+import formsRoutes from './routes/v1/forms.js';
 import commerceRoutes from './routes/v1/commerce/index.js';
 import presetRoutes from './routes/v1/presets.js';
 import industryStarterRoutes from './routes/v1/industry-starters.js';
@@ -769,6 +772,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(marketCronRoutes);
   await app.register(acquisitionReportRoutes);
   await app.register(internalPartnerRoutes);
+  await app.register(operatorInternalRoutes);
 
   // v1 surface. Each route file owns its own URL prefix so this central
   // map is easy to skim. Adding a new route group is a one-line registration.
@@ -816,6 +820,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(publicSignupRoutes);
   await app.register(publicNewsletterRoutes);
   await app.register(publicCareersRoutes);
+  await app.register(publicFormsRoutes);
   await app.register(publicSiteAnalyticsRoutes);
   await app.register(publicMarketplaceRoutes);
   await app.register(publicPartnerRoutes);
@@ -836,6 +841,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(pushRoutes);
   await app.register(sitebuilderRoutes);
   await app.register(builderRoutes);
+  await app.register(formsRoutes);
   await app.register(commerceRoutes);
   await app.register(presetRoutes);
   await app.register(industryStarterRoutes);

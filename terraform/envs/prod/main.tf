@@ -169,6 +169,14 @@ module "pubsub" {
     "feedback.submitted" = []
     "feedback.responded" = []
 
+    # Site forms (docs/115). api-rest publishes form.submitted when a visitor
+    # submits a Builder contact form. Topic-only (empty list = no idle pull
+    # subscription) — the owner notification + autoresponder go via the email.send
+    # topic above, and the CRM lead consumer runs in-process in api-rest (the event
+    # is dual-published to the in-process bus). Webhooks + automation fan-in ride
+    # the publish() tee.
+    "form.submitted" = []
+
     # Web push (docs/69 A-6) — chat escalation fans out push.send per recipient;
     # push-worker (Cloud Run) delivers to staff browser subscriptions via VAPID.
     "push.send" = ["push-worker"]
@@ -311,6 +319,20 @@ module "secrets" {
     # meta-app-secret, pinterest-app-secret) land here when each partner app is
     # approved — they don't exist until then.
     "channels-token-key",
+    # WizeWorks operator console (docs/apps/admin/build-plan.md). Synced into the
+    # `wize-admin-secrets` k8s Secret by bootstrap.yml (components=wize-admin), NOT
+    # into sparx-app-secrets — EXCEPT `sparx-internal-operator-token`, which BOTH
+    # api-rest (sparx-app-secrets) and the console (wize-admin-secrets) read.
+    #   operator-database-url         — postgresql://wize_operator:<pw>@<privIP>:5432/sparx?schema=wize_admin
+    #                                    Assemble out-of-band from `terraform output -raw
+    #                                    cloud_sql_operator_password` + module.cloud_sql.private_ip.
+    #   operator-auth-secret          — the operator Better Auth secret (DISTINCT from better-auth-secret).
+    #   operator-bootstrap-password   — one-time password to seed operator #1 (rotate on first sign-in).
+    #   sparx-internal-operator-token — Layer-5 shared secret gating /internal/operator/*.
+    "operator-database-url",
+    "operator-auth-secret",
+    "operator-bootstrap-password",
+    "sparx-internal-operator-token",
   ]
 }
 
@@ -425,6 +447,34 @@ resource "google_service_account_iam_member" "app_self_sign" {
   service_account_id = google_service_account.app.name
   role               = "roles/iam.serviceAccountTokenCreator"
   member             = "serviceAccount:${google_service_account.app.email}"
+}
+
+# Workload Identity GSA for the WizeWorks operator console (apps/admin), bound to
+# the `wize-admin` KSA in the `wize-admin` namespace (docs/apps/admin/build-plan.md
+# §2 D2). Deliberately minimal reach: its ONLY project role is Pub/Sub publisher
+# (the operator set-password email.send). NO Cloud SQL IAM — it reaches the
+# wize_admin schema over the VPC private IP with the wize_operator password; NO
+# Secret Manager — envFrom injects its secrets. The smallest blast radius for a
+# cross-tenant console (docs/16 §2.4): a compromised pod can neither read tenant
+# business data directly nor mint tokens for other service accounts.
+resource "google_service_account" "wize_admin" {
+  account_id   = "wize-admin"
+  display_name = "WizeWorks operator console"
+  description  = "Used by apps/admin (wize-admin namespace) via Workload Identity. Pub/Sub publisher only."
+}
+
+resource "google_project_iam_member" "wize_admin_pubsub" {
+  project = var.project_id
+  role    = "roles/pubsub.publisher"
+  member  = "serviceAccount:${google_service_account.wize_admin.email}"
+}
+
+resource "google_service_account_iam_binding" "wize_admin_workload_identity" {
+  service_account_id = google_service_account.wize_admin.name
+  role               = "roles/iam.workloadIdentityUser"
+  members = [
+    "serviceAccount:${var.project_id}.svc.id.goog[wize-admin/wize-admin]",
+  ]
 }
 
 module "monitoring" {

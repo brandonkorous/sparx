@@ -71,6 +71,10 @@ COPY packages/payments ./packages/payments
 # imports @sparx/site-mcp to ground answers via the public API. Depends
 # only on zod, so no extra transitive COPY. Missing → boot crashloop.
 COPY packages/site-mcp ./packages/site-mcp
+# Operator contracts (docs/apps/admin/build-plan.md) — the /internal/operator/*
+# seam imports @sparx/operator for the shared header names + response types.
+# Dependency-free (no transitive COPY needed). Missing → boot crashloop.
+COPY packages/operator ./packages/operator
 COPY services/api-rest ./services/api-rest
 
 # First-party marketplace bundles (docs/85). Read at ingest time by

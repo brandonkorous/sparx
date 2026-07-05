@@ -1,0 +1,24 @@
+# Non-secret runtime env for the admin console. Secrets (OPERATOR_DATABASE_URL,
+# OPERATOR_AUTH_SECRET, SPARX_INTERNAL_OPERATOR_TOKEN, OPERATOR_BOOTSTRAP_PASSWORD)
+# live in `wize-admin-secrets`, synced from Secret Manager by bootstrap.yml.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wize-admin-env
+  namespace: wize-admin
+data:
+  NODE_ENV: production
+  # Pub/Sub project for the operator set-password email.send event.
+  GCP_PROJECT_ID: sparxworks
+  # Better Auth builds absolute URLs + derives the cookie Secure prefix from this,
+  # so it MUST be the canonical https origin.
+  OPERATOR_AUTH_URL: https://admin.wize.works
+  # Cross-namespace, in-cluster api-rest origin for the /internal/operator/* seam.
+  SPARX_API_REST_URL: http://api-rest.sparx-prod.svc.cluster.local:3000
+  # Operator emails have no tenant; attribute them to the platform dogfood tenant
+  # for the render pipeline (matches SPARX_PLATFORM_TENANT_ID in sparx-app-env).
+  OPERATOR_EMAIL_TENANT_ID: 1bfef66a-a489-4e0f-99fd-f041adc7ffaa
+  # Seed operator #1 (docs/apps/admin/build-plan.md D10).
+  OPERATOR_SEED_EMAIL: brandon@wize.works
+  OPERATOR_SEED_NAME: Brandon Korous
+  LOG_LEVEL: info
