@@ -18,11 +18,14 @@ export type ThemeOverlay = z.infer<typeof ThemeOverlay>;
 
 // Token Model v2 presentation overlay (docs/33 §3, §5) — the tenant-owned
 // surfaces / neutral / status / border / container, per mode, laid over a theme
-// preset by the v2 compiler. Brand identity (color/type/shape/rhythm/effect) is
-// NOT here — it lives on the tenant brand. Every field is nullable+optional so a
-// blank inherits the preset default; values are validated loosely (the compiler
-// normalizes/keeps only what it recognizes). Mirrors PresentationOverlayV2 in
-// @sparx/site-themes — keep the two in sync.
+// preset by the v2 compiler. Surface/status identity is presentation-owned; the
+// per-mode brand identity slots (primary/secondary/accent + `-content`) are
+// OPTIONAL overrides that, when set, win over the mode-invariant tenant brand
+// for that mode — the only way a theme can carry e.g. a lighter primary in dark
+// than in light. Blank inherits the brand (which itself falls back to the
+// preset). Every field is nullable+optional; values are validated loosely (the
+// compiler normalizes/keeps only what it recognizes). Mirrors
+// PresentationColorOverlay in @sparx/site-themes — keep the two in sync.
 const PresentationColors = z
   .object({
     base100: z.string().nullish(),
@@ -40,6 +43,13 @@ const PresentationColors = z
     warningContent: z.string().nullish(),
     dangerContent: z.string().nullish(),
     border: z.string().nullish(),
+    // Per-mode brand identity overrides (optional; blank → inherit tenant brand).
+    primary: z.string().nullish(),
+    primaryContent: z.string().nullish(),
+    secondary: z.string().nullish(),
+    secondaryContent: z.string().nullish(),
+    accent: z.string().nullish(),
+    accentContent: z.string().nullish(),
   })
   .partial();
 

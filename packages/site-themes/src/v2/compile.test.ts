@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { compileTokensV2 } from './compile';
+import { deriveContent } from './color';
 import { buildThemeCssV2, colorVars, sharedVars } from './css';
 import type { ColorTokensV2, ThemePresetV2 } from './types';
 
@@ -89,6 +90,40 @@ describe('compileTokensV2', () => {
     expect(c.dark.base100).toBe('#1c1917');
     // Untouched mode keeps the preset default.
     expect(c.dark.danger).toBe('#dc2626');
+  });
+
+  it('lets a per-mode presentation override give light and dark different brand identity', () => {
+    const c = compileTokensV2(PRESET, {
+      // A single mode-invariant brand primary/secondary/accent…
+      brand: { v: 2, color: { primary: '#b08d57', secondary: '#4c9a8e', accent: '#c1652e' } },
+      // …that dark overrides to lighter tones — what the one tenant brand can't do.
+      presentation: {
+        v: 2,
+        dark: { primary: '#c9a06a', secondary: '#5fafa0', accent: '#d97847' },
+      },
+    });
+    // Light inherits the brand identity; dark takes the per-mode override.
+    expect(c.light.primary).toBe('#b08d57');
+    expect(c.light.secondary).toBe('#4c9a8e');
+    expect(c.light.accent).toBe('#c1652e');
+    expect(c.dark.primary).toBe('#c9a06a');
+    expect(c.dark.secondary).toBe('#5fafa0');
+    expect(c.dark.accent).toBe('#d97847');
+    // -content re-derives for the overridden dark primary, independent of light.
+    expect(c.dark.primaryContent).toBe(deriveContent('#c9a06a'));
+  });
+
+  it('per-mode identity override beats even an explicit brand, for that mode only', () => {
+    const c = compileTokensV2(PRESET, {
+      brand: { v: 2, color: { primary: '#b08d57', primaryContent: '#241e17' } },
+      presentation: { v: 2, dark: { primary: '#c9a06a', primaryContent: '#101010' } },
+    });
+    // Light: brand identity + brand -content.
+    expect(c.light.primary).toBe('#b08d57');
+    expect(c.light.primaryContent).toBe('#241e17');
+    // Dark: overlay identity + overlay -content both win.
+    expect(c.dark.primary).toBe('#c9a06a');
+    expect(c.dark.primaryContent).toBe('#101010');
   });
 
   it('falls secondary back to primary when the preset omits it', () => {

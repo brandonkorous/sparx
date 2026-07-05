@@ -131,6 +131,19 @@ export interface PresentationColorOverlay {
   highlight?: string | null;
   highlightContent?: string | null;
   border?: string | null;
+  // Per-mode brand identity overrides. Normally identity (primary/secondary/
+  // accent) is brand-owned and mode-invariant; these OPTIONAL slots let a theme
+  // carry a different identity color in one mode — e.g. a lighter primary on a
+  // near-black dark surface than on white — which the single tenant brand can't
+  // express. Absent/blank → inherit the brand identity (which itself falls back
+  // to the preset). Restores the per-mode brand color the v1 model had before v2
+  // consolidated identity into one brand.
+  primary?: string | null;
+  primaryContent?: string | null;
+  secondary?: string | null;
+  secondaryContent?: string | null;
+  accent?: string | null;
+  accentContent?: string | null;
 }
 
 export interface PresentationOverlayV2 {

@@ -4,9 +4,12 @@
 // defaults to produce a complete { shared, light, dark } token set. Resolution:
 //   • shared   : preset ← brand (brand owns type/shape/rhythm/effect);
 //                containerWidth is presentation-owned, so preset ← presentation.
-//   • per-mode : brand identity (primary/secondary/accent) wins; presentation
-//                (surfaces/neutral/status/border) wins for its slots.
-//   • `-content`: explicit (brand/preset/overlay) wins, else auto-derived.
+//   • per-mode : a per-mode presentation identity override (primary/secondary/
+//                accent) wins → else brand identity → else preset; presentation
+//                (surfaces/neutral/status/border) wins for its slots. The
+//                per-mode identity slots are what let dark carry a different
+//                brand color than light (the single tenant brand can't).
+//   • `-content`: explicit (overlay/brand/preset) wins, else auto-derived.
 //
 // The SAME function feeds both the storefront chrome read path and the Site
 // Builder published snapshot, so the two can never drift. Because a preset
@@ -97,11 +100,13 @@ function resolveColors(
   const baseContent = color(overlay?.baseContent, base.baseContent);
   const border = color(overlay?.border, base.border);
 
-  // Brand identity (brand wins). Secondary falls back to primary if a preset
-  // never defines it (docs/33 §3.1).
-  const primary = color(bc?.primary, base.primary);
-  const secondary = color(bc?.secondary, base.secondary, primary);
-  const accent = color(bc?.accent, base.accent);
+  // Brand identity. A per-mode presentation override wins (so dark can carry a
+  // lighter primary than light), else the mode-invariant tenant brand, else the
+  // preset. Secondary falls back to primary if neither preset nor brand defines
+  // it (docs/33 §3.1).
+  const primary = color(overlay?.primary, bc?.primary, base.primary);
+  const secondary = color(overlay?.secondary, bc?.secondary, base.secondary, primary);
+  const accent = color(overlay?.accent, bc?.accent, base.accent);
 
   // UI + status (presentation-owned).
   const neutral = color(overlay?.neutral, base.neutral);
@@ -119,12 +124,17 @@ function resolveColors(
     base300,
     baseContent,
     primary,
-    primaryContent: optColor(bc?.primaryContent, base.primaryContent) ?? deriveContent(primary),
+    primaryContent:
+      optColor(overlay?.primaryContent, bc?.primaryContent, base.primaryContent) ??
+      deriveContent(primary),
     secondary,
     secondaryContent:
-      optColor(bc?.secondaryContent, base.secondaryContent) ?? deriveContent(secondary),
+      optColor(overlay?.secondaryContent, bc?.secondaryContent, base.secondaryContent) ??
+      deriveContent(secondary),
     accent,
-    accentContent: optColor(bc?.accentContent, base.accentContent) ?? deriveContent(accent),
+    accentContent:
+      optColor(overlay?.accentContent, bc?.accentContent, base.accentContent) ??
+      deriveContent(accent),
     neutral,
     neutralContent:
       optColor(overlay?.neutralContent, base.neutralContent) ?? deriveContent(neutral),
