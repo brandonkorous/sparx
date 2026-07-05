@@ -20,6 +20,7 @@
     "@prisma/client": "^6.19.3",
     "@sparx/api-core": "workspace:*",
     "@sparx/auth": "workspace:*",
+    "@sparx/cms": "workspace:*",
     "@sparx/cms-schemas": "workspace:*",
     "@sparx/crm": "workspace:*",
     "@sparx/crm-schemas": "workspace:*",

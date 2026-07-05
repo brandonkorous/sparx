@@ -21,7 +21,7 @@ import { prisma, withTenant } from '@sparx/db';
 import { commerceSiteService } from '@sparx/commerce';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { notFound, badRequest } from '@sparx/api-core/errors';
-import { serializeEntry } from '@sparx/api-core/entries';
+import { serializeEntry } from '@sparx/cms';
 import { tryVerifyPreviewToken } from '../../../lib/preview.js';
 import { readPublicConsentConfig } from '../../../lib/consent.js';
 import { parseBrandOverride, mergeBrandIdentity } from '../../../lib/property-brand.js';

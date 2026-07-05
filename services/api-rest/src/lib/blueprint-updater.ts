@@ -30,8 +30,9 @@ import {
   parseTypeSchema,
   resolveType,
   validateAndNormalizeBody,
-} from '@sparx/api-core/content-types';
-import { recordRevision, syncReferences } from '@sparx/api-core/entries';
+  recordRevision,
+  syncReferences,
+} from '@sparx/cms';
 import {
   mergeByKey,
   mergeTree,

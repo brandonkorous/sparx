@@ -25,7 +25,7 @@ import { withRequestTenant } from '@sparx/api-core/db';
 import { requireAuth, requireRole } from '@sparx/api-core/auth';
 import { conflict, notFound } from '@sparx/api-core/errors';
 import { ContentTypeSchema } from '@sparx/cms-schemas';
-import { serializeContentType } from '@sparx/api-core/content-types';
+import { serializeContentType } from '@sparx/cms';
 import { writeAudit } from '@sparx/api-core/audit';
 import { publish } from '@sparx/api-core/pubsub';
 

@@ -835,6 +835,28 @@ importers:
         specifier: ^4.1.7
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
 
+  packages/cms:
+    dependencies:
+      '@sparx/api-core':
+        specifier: workspace:*
+        version: link:../api-core
+      '@sparx/cms-schemas':
+        specifier: workspace:*
+        version: link:../cms-schemas
+      '@sparx/db':
+        specifier: workspace:*
+        version: link:../db
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.1
+        version: 25.9.1
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.7
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
+
   packages/cms-editor:
     dependencies:
       '@sparx/ui':
@@ -2089,6 +2111,9 @@ importers:
       '@sparx/auth':
         specifier: workspace:*
         version: link:../../packages/auth
+      '@sparx/cms':
+        specifier: workspace:*
+        version: link:../../packages/cms
       '@sparx/cms-schemas':
         specifier: workspace:*
         version: link:../../packages/cms-schemas
@@ -2292,6 +2317,9 @@ importers:
       '@sparx/channels':
         specifier: workspace:*
         version: link:../../packages/channels
+      '@sparx/cms':
+        specifier: workspace:*
+        version: link:../../packages/cms
       '@sparx/cms-editor':
         specifier: workspace:*
         version: link:../../packages/cms-editor

@@ -2,7 +2,7 @@
   "name": "@sparx/api-core",
   "version": "0.0.0",
   "private": true,
-  "description": "Shared Fastify primitives for sparx API services (api-rest, api-graphql, api-mcp). Owns auth, error envelope, RLS-aware Prisma helpers, audit, pubsub + webhook fan-out, content-type validation, and entry/revision plumbing. Each consuming service composes from its own env.ts.",
+  "description": "Shared Fastify primitives for sparx API services (api-rest, api-graphql, api-mcp). Owns auth, error envelope, RLS-aware Prisma helpers, audit, and pubsub + webhook fan-out. Each consuming service composes from its own env.ts. (CMS content-type/entry/reference plumbing now lives in @sparx/cms.)",
   "type": "module",
   "exports": {
     "./errors": {
@@ -32,18 +32,6 @@
     "./webhook-delivery": {
       "types": "./src/webhook-delivery.ts",
       "default": "./src/webhook-delivery.ts"
-    },
-    "./content-types": {
-      "types": "./src/content-types.ts",
-      "default": "./src/content-types.ts"
-    },
-    "./entries": {
-      "types": "./src/entries.ts",
-      "default": "./src/entries.ts"
-    },
-    "./references": {
-      "types": "./src/references.ts",
-      "default": "./src/references.ts"
     },
     "./slug": {
       "types": "./src/slug.ts",

@@ -17,14 +17,15 @@ import { withRequestTenant } from '@sparx/api-core/db';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { notFound } from '@sparx/api-core/errors';
-import { parseTypeSchema, resolveType } from '@sparx/api-core/content-types';
 import {
+  parseTypeSchema,
+  resolveType,
   recordRevision,
   serializeEntry,
   serializeRevisionFull,
   serializeRevisionMeta,
   syncReferences,
-} from '@sparx/api-core/entries';
+} from '@sparx/cms';
 import { writeAudit } from '@sparx/api-core/audit';
 
 const ListParams = z.object({ id: z.string().uuid() });

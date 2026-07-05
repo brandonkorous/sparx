@@ -1,0 +1,33 @@
+{
+  "name": "@sparx/cms",
+  "version": "0.0.0",
+  "private": true,
+  "description": "sparx CMS service layer (docs/12) — content-type resolution + body validation, the entry serializer, and the shared revision/reference write path. Sibling of @sparx/cms-schemas (the field schemas); consumed by api-rest, api-graphql, and the CMS MCP tools.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@sparx/api-core": "workspace:*",
+    "@sparx/cms-schemas": "workspace:*",
+    "@sparx/db": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

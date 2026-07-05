@@ -19,6 +19,7 @@ COPY tsconfig.base.json ./
 COPY packages/db ./packages/db
 COPY packages/api-core ./packages/api-core
 COPY packages/cms-schemas ./packages/cms-schemas
+COPY packages/cms ./packages/cms
 COPY packages/events ./packages/events
 COPY packages/email ./packages/email
 # @sparx/email's index re-exports the Builder email renderer, which imports

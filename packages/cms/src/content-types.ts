@@ -18,7 +18,7 @@ import {
   bodyValidatorFor,
   type ContentTypeSchema as ContentTypeSchemaT,
 } from '@sparx/cms-schemas';
-import { notFound, validationError } from './errors.js';
+import { notFound, validationError } from '@sparx/api-core/errors';
 
 export interface WireContentType {
   id: string;

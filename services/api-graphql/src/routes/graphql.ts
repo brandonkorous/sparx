@@ -29,8 +29,10 @@ import {
   parseTypeSchema,
   resolveType,
   validateAndNormalizeBody,
-} from '@sparx/api-core/content-types';
-import { recordRevision, serializeEntry, syncReferences } from '@sparx/api-core/entries';
+  recordRevision,
+  serializeEntry,
+  syncReferences,
+} from '@sparx/cms';
 import { writeAudit } from '@sparx/api-core/audit';
 import { publish } from '@sparx/api-core/pubsub';
 import { slugify, uniqueSlug } from '@sparx/api-core/slug';

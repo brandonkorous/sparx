@@ -31,6 +31,7 @@ COPY packages/automation-schemas ./packages/automation-schemas
 COPY packages/automation ./packages/automation
 COPY packages/api-core ./packages/api-core
 COPY packages/cms-schemas ./packages/cms-schemas
+COPY packages/cms ./packages/cms
 COPY packages/crm-schemas ./packages/crm-schemas
 COPY packages/crm ./packages/crm
 COPY packages/commerce-schemas ./packages/commerce-schemas

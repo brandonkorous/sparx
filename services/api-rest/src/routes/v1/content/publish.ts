@@ -13,7 +13,7 @@ import { withRequestTenant } from '@sparx/api-core/db';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { conflict, notFound } from '@sparx/api-core/errors';
-import { recordRevision, serializeEntry } from '@sparx/api-core/entries';
+import { recordRevision, serializeEntry } from '@sparx/cms';
 import { writeAudit } from '@sparx/api-core/audit';
 import { publish } from '@sparx/api-core/pubsub';
 import { auditAndStore } from '../../../lib/seo-audit.js';

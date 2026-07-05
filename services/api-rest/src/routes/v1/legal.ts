@@ -17,7 +17,7 @@ import { prisma, type Prisma } from '@sparx/db';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
-import { recordRevision, serializeEntry } from '@sparx/api-core/entries';
+import { recordRevision, serializeEntry } from '@sparx/cms';
 import { writeAudit } from '@sparx/api-core/audit';
 import { publish } from '@sparx/api-core/pubsub';
 import { conflict, notFound } from '@sparx/api-core/errors';

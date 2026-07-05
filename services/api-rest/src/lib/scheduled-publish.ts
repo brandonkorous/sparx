@@ -20,7 +20,7 @@
 
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma, withTenant } from '@sparx/db';
-import { recordRevision } from '@sparx/api-core/entries';
+import { recordRevision } from '@sparx/cms';
 import { publish } from '@sparx/api-core/pubsub';
 
 const SCHEDULED_PUBLISH_LOCK_KEY = 4242_4242;
