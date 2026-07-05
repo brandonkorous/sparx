@@ -55,6 +55,22 @@ const STYLE = `
     transform: none;
   }
 }
+/* Mobile: shrink + tuck tighter into the corner so the badge stays out of the way
+   on small screens (and clears the corner if a site adds a sticky bottom bar). The
+   inline base styles win over stylesheets, so these overrides carry !important. */
+@media (max-width: 640px) {
+  .sx-made-with-sparx {
+    font-size: 11px !important;
+    padding: 4px 8px !important;
+    bottom: 10px !important;
+  }
+  .sx-made-with-sparx[data-placement='right'] {
+    right: 10px !important;
+  }
+  .sx-made-with-sparx[data-placement='left'] {
+    left: 10px !important;
+  }
+}
 `;
 
 export interface MadeWithSparxProps {
@@ -77,6 +93,7 @@ export function MadeWithSparx({
       <style>{STYLE}</style>
       <a
         className="sx-made-with-sparx"
+        data-placement={placement}
         href={href}
         target="_blank"
         // noreferrer (implies noopener) satisfies react/jsx-no-target-blank;
