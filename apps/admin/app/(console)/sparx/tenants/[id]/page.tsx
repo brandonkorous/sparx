@@ -14,6 +14,9 @@ import {
   StorageCard,
   SubscriptionCard,
 } from '../_components/tenant-detail-sections';
+import { ModuleSwitchboard } from './_components/module-switchboard';
+import { SuspendControl } from './_components/suspend-control';
+import { StorageLimitControl } from './_components/storage-limit-control';
 
 const backLink = (
   <Link href="/sparx/tenants" className="text-sm text-[var(--color-text-muted)] hover:underline">
@@ -60,6 +63,8 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
 
   const interval = tenant.billing.billingInterval === 'annual' ? 'yr' : 'mo';
   const activeCount = tenant.modules.filter((m) => m.enabled).length;
+  const canToggleModules = hasCapability(operator, 'module:toggle');
+  const canSuspend = hasCapability(operator, 'tenant:suspend');
 
   return (
     <Stack gap={6}>
@@ -74,6 +79,11 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
             <Badge color="primary" variant="soft">
               Enterprise
             </Badge>
+          ) : null}
+          {canSuspend ? (
+            <div className="ml-auto">
+              <SuspendControl tenantId={id} tenantName={tenant.name} status={tenant.status} />
+            </div>
           ) : null}
         </Stack>
         <Text variant="muted">
@@ -102,6 +112,14 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
           >
             Support — search index & email log →
           </Link>
+          {hasCapability(operator, 'feedback:respond') ? (
+            <Link
+              href={`/sparx/feedback?tenantId=${id}`}
+              className="text-sm font-medium text-[var(--module-active-text)] hover:underline"
+            >
+              Feedback — this tenant’s submissions →
+            </Link>
+          ) : null}
         </Stack>
       </Stack>
 
@@ -117,10 +135,18 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
 
       <div className="grid gap-4 md:grid-cols-2">
         <SubscriptionCard billing={tenant.billing} />
-        <ModulesCard modules={tenant.modules} />
+        {canToggleModules ? null : <ModulesCard modules={tenant.modules} />}
         <StorageCard storage={tenant.storage} />
         <AcquisitionCard acquisition={tenant.acquisition} />
       </div>
+
+      {canToggleModules ? (
+        <ModuleSwitchboard tenantId={id} tenantName={tenant.name} modules={tenant.modules} />
+      ) : null}
+
+      {canSuspend ? (
+        <StorageLimitControl tenantId={id} currentLimitBytes={tenant.storage.storageLimitBytes} />
+      ) : null}
 
       <DomainsCard domains={tenant.domains} />
       <ActivityCard activity={tenant.recentActivity} />

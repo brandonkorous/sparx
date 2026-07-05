@@ -6,6 +6,7 @@
 export { operatorAuth, type OperatorAuth } from './server';
 export { operatorPool } from './db';
 export { loadOperatorCapabilities, grantCapabilities, revokeCapability } from './capabilities';
+export { listOperators, getOperatorsByIds, type OperatorSummary } from './operators';
 export { logOperatorAction, type OperatorAuditInput } from './audit';
 export { ensureSeedOperator, type SeedOperatorResult } from './bootstrap';
 export { publishOperatorEmail, type PublishOperatorEmailInput } from './email';

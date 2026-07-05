@@ -103,6 +103,9 @@ export interface OperatorTenantModule {
   source: 'explicit' | 'bundled' | 'off';
   /** Provider modules that bundle this one free, when `source === 'bundled'`. */
   includedBy: string[];
+  /** Active modules that REQUIRE this one — non-empty means the toggle is locked
+   *  ON (you must disable the dependent first, e.g. Commerce while B2B is on). */
+  requiredBy: string[];
   /** Monthly list price in cents; 0 for bundled/non-billable. */
   monthlyCents: number;
 }
@@ -139,6 +142,10 @@ export interface OperatorTenantStorage {
   variantBytes: number;
   totalBytes: number;
   assetCount: number;
+  /** Operator-set per-tenant storage cap in bytes, or null when no override is
+   *  set (the platform default applies). Persisted at `settings.limits.storageBytes`.
+   *  NOTE: not yet enforced at the upload path — see docs/apps/admin/slice-8-enforcement-followups.md. */
+  storageLimitBytes: number | null;
 }
 
 /** One tenant audit-log row (the tenant's OWN activity trail, read under tenant
@@ -640,4 +647,184 @@ export interface OperatorResendConfirmationResult {
   reason: string | null;
   orderNumber: string;
   to: string | null;
+}
+
+// ─── Slice 7: feedback triage ────────────────────────────────────────────────
+// The WizeWorks-staff side of in-product feedback (docs/apps/admin/feedback.md):
+// the cross-tenant inbox, submission detail + thread, triage, and the reply loop.
+// `feedback_*` are tenant-scoped FORCE-RLS with no Typesense mirror, so the inbox
+// is a bounded per-tenant scan; detail/triage/reply carry `tenantId` and go direct.
+// `assigneeStaffId` is a bare wize_admin operator uuid (FK-free, D3) — api-rest
+// returns it raw; the admin app resolves it to a name (api-rest can't reach
+// wize_admin). No impersonation (D7): context entities are shown, not deep-linked.
+
+export type OperatorFeedbackStatus =
+  | 'new'
+  | 'triaged'
+  | 'planned'
+  | 'in_progress'
+  | 'shipped'
+  | 'declined'
+  | 'answered';
+
+export type OperatorFeedbackCategory = 'idea' | 'problem' | 'question' | 'praise';
+
+/** One inbox row. Derived from a submission (+ its owning tenant, resolved). */
+export interface OperatorFeedbackItem {
+  id: string;
+  tenantId: string;
+  tenantName: string;
+  tenantSlug: string;
+  category: string;
+  status: string;
+  subject: string | null;
+  /** First line of the body, for a title when `subject` is absent. */
+  excerpt: string;
+  submitterName: string | null;
+  submitterEmail: string | null;
+  /** `context.module` — where in the app it came from. */
+  module: string | null;
+  sentiment: number | null;
+  /** A bare wize_admin operator id (resolve to a name admin-side), or null. */
+  assigneeStaffId: string | null;
+  internalTags: string[];
+  messageCount: number;
+  lastResponseAt: string | null;
+  userUnread: boolean;
+  createdAt: string;
+}
+
+/** Cross-tenant queue/volume counts for the inbox chips + friction view. */
+export interface OperatorFeedbackCounts {
+  total: number;
+  byStatus: Record<string, number>;
+  byCategory: Record<string, number>;
+  /** Volume by `context.module` — which surfaces generate friction (§8). */
+  byModule: Record<string, number>;
+  /** `new`/`triaged` submissions with no assignee. */
+  unassigned: number;
+}
+
+export interface OperatorFeedbackListResult {
+  submissions: OperatorFeedbackItem[];
+  total: number;
+  page: number;
+  perPage: number;
+  counts: OperatorFeedbackCounts;
+  /** True if any tenant hit the per-tenant scan cap — `total`/`counts` are a floor.
+   *  The Phase-1 ceiling of the bounded-loop inbox (a reporting mirror lifts it). */
+  truncated: boolean;
+}
+
+export interface OperatorFeedbackListParams {
+  status?: string;
+  category?: string;
+  tenantId?: string;
+  assigneeStaffId?: string;
+  tag?: string;
+  /** Free-text match on subject/body. */
+  q?: string;
+  page?: number;
+}
+
+export interface OperatorFeedbackMessage {
+  id: string;
+  /** staff | user. */
+  authorKind: string;
+  authorName: string;
+  body: string;
+  createdAt: string;
+}
+
+/** Full submission detail — the whole picture the triage view renders. */
+export interface OperatorFeedbackDetail {
+  id: string;
+  tenantId: string;
+  tenantName: string;
+  tenantSlug: string;
+  userId: string | null;
+  category: string;
+  status: string;
+  source: string;
+  subject: string | null;
+  body: string;
+  sentiment: number | null;
+  /** The captured client context (docs/112 §4), rendered readable by the UI. */
+  context: unknown;
+  attachmentAssetIds: string[];
+  assigneeStaffId: string | null;
+  internalTags: string[];
+  submitterName: string | null;
+  submitterEmail: string | null;
+  lastResponseAt: string | null;
+  userUnread: boolean;
+  createdAt: string;
+  updatedAt: string;
+  messages: OperatorFeedbackMessage[];
+}
+
+export interface OperatorFeedbackTriageInput {
+  status?: OperatorFeedbackStatus;
+  /** null clears the assignee; omit to leave unchanged. */
+  assigneeStaffId?: string | null;
+  internalTags?: string[];
+  /** Notify the submitter of a status-change-alone (shipped/declined/answered
+   *  always notify; planned/in_progress only when this is true; triaged never). */
+  notify?: boolean;
+}
+
+export interface OperatorFeedbackReplyInput {
+  body: string;
+  /** Optionally bundle a status change with the reply. */
+  status?: OperatorFeedbackStatus;
+  /** Staff display-name snapshot for the message (api-rest can't read wize_admin
+   *  for it; the admin app fills it from the session). */
+  authorName?: string;
+}
+
+// ── Tenant write actions (build-plan §5 Slice 8) ─────────────────────────────
+
+/** Body for a manual operator module activate/deactivate. */
+export interface OperatorModuleToggleInput {
+  enabled: boolean;
+}
+
+/** Result of an operator module toggle. Turning a module ON auto-activates (and
+ *  bills) its paid requirements; turning one OFF is REJECTED (409 MODULE_BLOCKED)
+ *  when another active module still requires it — mirroring the tenant's own
+ *  toggle, which throws the same conflict. */
+export interface OperatorModuleToggleResult {
+  slug: string;
+  /** The module's effective enabled state after the toggle. */
+  enabled: boolean;
+  /** Whether a flag actually changed (a redundant toggle is a no-op). */
+  changed: boolean;
+  /** The tenant's full module breakdown after the toggle (same shape as detail). */
+  modules: OperatorTenantModule[];
+}
+
+/** Suspend / unsuspend a tenant. STATUS-ONLY for now: this flips `tenants.status`
+ *  and records the change in the tenant's own activity log (owner-visible), but no
+ *  request path yet BLOCKS a suspended tenant — enforcement is a scoped follow-up
+ *  (docs/apps/admin/slice-8-enforcement-followups.md). */
+export interface OperatorSuspendInput {
+  suspended: boolean;
+  /** Optional operator note on why — recorded in both audit trails. */
+  reason?: string;
+}
+
+export interface OperatorTenantStatusResult {
+  /** The tenant's effective status after the write (`active` | `suspended`). */
+  status: string;
+}
+
+/** Set (or clear, with null) a tenant's per-tenant storage-cap override, in bytes.
+ *  STORED + DISPLAYED for now; not yet enforced at the upload path — see the
+ *  follow-up doc above. */
+export interface OperatorStorageLimitInput {
+  limitBytes: number | null;
+}
+
+export interface OperatorStorageLimitResult {
+  limitBytes: number | null;
 }

@@ -41,14 +41,14 @@ export default async function ConsoleHome() {
         <Heading level={1}>Operator console</Heading>
         <Text variant="muted">
           Signed in as {operator.email}. Tenant management, platform metrics, billing operations,
-          domain management, and support tools are live below; feedback triage arrives in a later
-          slice.
+          domain management, support tools, and feedback triage are all live below.
         </Text>
       </Stack>
 
       {hasCapability(operator, 'support:read') ||
       hasCapability(operator, 'billing:read') ||
-      hasCapability(operator, 'domain:manage') ? (
+      hasCapability(operator, 'domain:manage') ||
+      hasCapability(operator, 'feedback:respond') ? (
         <div className="grid gap-4 md:grid-cols-2">
           {hasCapability(operator, 'support:read') ? (
             <>
@@ -86,6 +86,14 @@ export default async function ConsoleHome() {
               href="/sparx/domains"
               cta="View domains →"
               body="Every custom and sparx-purchased domain across the platform — routing status, SSL readiness, live DNS diagnostics, registration history, and a force re-verify."
+            />
+          ) : null}
+          {hasCapability(operator, 'feedback:respond') ? (
+            <ConsoleEntry
+              title="Feedback"
+              href="/sparx/feedback"
+              cta="Open feedback →"
+              body="The cross-tenant inbox of ideas, problems, questions, and praise. Triage, assign, tag, and reply — the response closes the loop back to the submitter."
             />
           ) : null}
         </div>

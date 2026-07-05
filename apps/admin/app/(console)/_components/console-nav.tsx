@@ -26,6 +26,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/sparx/billing', label: 'Billing', capability: 'billing:read', prefix: true },
   { href: '/sparx/domains', label: 'Domains', capability: 'domain:manage', prefix: true },
   { href: '/sparx/support', label: 'Support', capability: 'support:read', prefix: true },
+  { href: '/sparx/feedback', label: 'Feedback', capability: 'feedback:respond', prefix: true },
 ];
 
 export function ConsoleNav({ capabilities }: { capabilities: OperatorCapability[] }) {

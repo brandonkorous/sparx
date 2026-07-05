@@ -29,7 +29,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { prisma, withTenant, type Prisma } from '@sparx/db';
-import { deriveModuleStates, type ModuleSlug } from '@sparx/modules';
+import { deriveModuleStates, blockingDependents, type ModuleSlug } from '@sparx/modules';
 import { getBillingState, MODULE_MONTHLY_CENTS } from '@sparx/billing';
 import type {
   OperatorWhoAmIResult,
@@ -41,6 +41,7 @@ import type {
 
 import { computeMetrics } from './operator-metrics.js';
 import { authorizeOperator, badRequest, notFound, operatorIdOf } from './operator-internal.js';
+import { readStorageLimitBytes } from '../../lib/tenant-limits.js';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -225,6 +226,7 @@ const operatorInternalRoutes: FastifyPluginAsync = async (app) => {
         enabled: states[key].enabled,
         source: states[key].source,
         includedBy: states[key].includedBy,
+        requiredBy: blockingDependents(key, (m) => states[m].enabled),
         monthlyCents: states[key].source === 'explicit' ? (MODULE_MONTHLY_CENTS[key] ?? 0) : 0,
       }));
 
@@ -309,6 +311,7 @@ const operatorInternalRoutes: FastifyPluginAsync = async (app) => {
           variantBytes,
           totalBytes: assetBytes + variantBytes,
           assetCount: scoped.assets._count,
+          storageLimitBytes: readStorageLimitBytes(tenant.settings),
         },
         recentActivity: scoped.activity.map((a) => ({
           id: a.id,

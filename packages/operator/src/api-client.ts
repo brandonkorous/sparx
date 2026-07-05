@@ -42,6 +42,17 @@ import type {
   OperatorEmailLogParams,
   OperatorEmailLogResult,
   OperatorResendConfirmationResult,
+  OperatorFeedbackListParams,
+  OperatorFeedbackListResult,
+  OperatorFeedbackDetail,
+  OperatorFeedbackTriageInput,
+  OperatorFeedbackReplyInput,
+  OperatorModuleToggleInput,
+  OperatorModuleToggleResult,
+  OperatorSuspendInput,
+  OperatorTenantStatusResult,
+  OperatorStorageLimitInput,
+  OperatorStorageLimitResult,
 } from './types';
 
 /** Shared-secret header — mirrors the existing `X-sparx-Internal-*-Token`
@@ -196,6 +207,64 @@ export interface OperatorApiClient {
     operatorId: string,
     signal?: AbortSignal
   ): Promise<OperatorResendConfirmationResult>;
+  // ── Feedback triage (Slice 7) ──
+  /** Cross-tenant feedback inbox — filtered, paginated, with queue counts. */
+  listFeedback(
+    params: OperatorFeedbackListParams,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorFeedbackListResult>;
+  /** One submission + its full thread + context. */
+  getFeedback(
+    tenantId: string,
+    submissionId: string,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorFeedbackDetail>;
+  /** Triage a submission (status / assignee / tags), optionally notifying. */
+  triageFeedback(
+    tenantId: string,
+    submissionId: string,
+    input: OperatorFeedbackTriageInput,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorFeedbackDetail>;
+  /** Post a staff reply (publishes `feedback.responded`), optionally with a status. */
+  replyFeedback(
+    tenantId: string,
+    submissionId: string,
+    input: OperatorFeedbackReplyInput,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorFeedbackDetail>;
+  // ── Tenant write actions (Slice 8) ──
+  /** Manually activate/deactivate a module for a tenant. Drives the tenant's own
+   *  toggle path (publishes `module.{activated,deactivated}`, seeds defaults,
+   *  syncs Stripe) and stamps the tenant's audit_logs as an operator action.
+   *  Throws `OperatorApiError` 409 when disabling a module another still requires. */
+  toggleTenantModule(
+    tenantId: string,
+    slug: string,
+    input: OperatorModuleToggleInput,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorModuleToggleResult>;
+  /** Suspend / unsuspend a tenant (status-only — no request path blocks a
+   *  suspended tenant yet). Stamps the tenant's audit_logs as an operator action. */
+  setTenantStatus(
+    tenantId: string,
+    input: OperatorSuspendInput,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorTenantStatusResult>;
+  /** Set / clear a tenant's storage-cap override (stored + displayed; not yet
+   *  enforced at the upload path). */
+  setTenantStorageLimit(
+    tenantId: string,
+    input: OperatorStorageLimitInput,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorStorageLimitResult>;
 }
 
 export function createOperatorApiClient(config: OperatorApiClientConfig): OperatorApiClient {
@@ -369,6 +438,51 @@ export function createOperatorApiClient(config: OperatorApiClientConfig): Operat
       request<OperatorResendConfirmationResult>(
         `/internal/operator/tenants/${encodeURIComponent(tenantId)}/orders/${encodeURIComponent(orderId)}/resend-confirmation`,
         { method: 'POST', operatorId, signal }
+      ),
+    listFeedback: (params, operatorId, signal) => {
+      const qs = new URLSearchParams();
+      if (params.status) qs.set('status', params.status);
+      if (params.category) qs.set('category', params.category);
+      if (params.tenantId) qs.set('tenantId', params.tenantId);
+      if (params.assigneeStaffId) qs.set('assigneeStaffId', params.assigneeStaffId);
+      if (params.tag) qs.set('tag', params.tag);
+      if (params.q) qs.set('q', params.q);
+      if (params.page !== undefined) qs.set('page', String(params.page));
+      const query = qs.toString();
+      return request<OperatorFeedbackListResult>(
+        `/internal/operator/feedback${query ? `?${query}` : ''}`,
+        { operatorId, signal }
+      );
+    },
+    getFeedback: (tenantId, submissionId, operatorId, signal) =>
+      request<OperatorFeedbackDetail>(
+        `/internal/operator/feedback/${encodeURIComponent(tenantId)}/${encodeURIComponent(submissionId)}`,
+        { operatorId, signal }
+      ),
+    triageFeedback: (tenantId, submissionId, input, operatorId, signal) =>
+      request<OperatorFeedbackDetail>(
+        `/internal/operator/feedback/${encodeURIComponent(tenantId)}/${encodeURIComponent(submissionId)}`,
+        { method: 'PATCH', body: input, operatorId, signal }
+      ),
+    replyFeedback: (tenantId, submissionId, input, operatorId, signal) =>
+      request<OperatorFeedbackDetail>(
+        `/internal/operator/feedback/${encodeURIComponent(tenantId)}/${encodeURIComponent(submissionId)}/messages`,
+        { method: 'POST', body: input, operatorId, signal }
+      ),
+    toggleTenantModule: (tenantId, slug, input, operatorId, signal) =>
+      request<OperatorModuleToggleResult>(
+        `/internal/operator/tenants/${encodeURIComponent(tenantId)}/modules/${encodeURIComponent(slug)}`,
+        { method: 'PATCH', body: input, operatorId, signal }
+      ),
+    setTenantStatus: (tenantId, input, operatorId, signal) =>
+      request<OperatorTenantStatusResult>(
+        `/internal/operator/tenants/${encodeURIComponent(tenantId)}/status`,
+        { method: 'PATCH', body: input, operatorId, signal }
+      ),
+    setTenantStorageLimit: (tenantId, input, operatorId, signal) =>
+      request<OperatorStorageLimitResult>(
+        `/internal/operator/tenants/${encodeURIComponent(tenantId)}/storage-limit`,
+        { method: 'PATCH', body: input, operatorId, signal }
       ),
   };
 }

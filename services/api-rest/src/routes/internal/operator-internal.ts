@@ -5,6 +5,7 @@
 
 import { timingSafeEqual } from 'node:crypto';
 import type { FastifyRequest } from 'fastify';
+import { prisma } from '@sparx/db';
 import { INTERNAL_OPERATOR_TOKEN_HEADER, OPERATOR_ID_HEADER } from '@sparx/operator';
 
 import { env } from '../../env.js';
@@ -51,4 +52,19 @@ export function authorizeOperator(request: FastifyRequest): void {
 export function operatorIdOf(request: FastifyRequest): string | null {
   const raw = request.headers[OPERATOR_ID_HEADER];
   return typeof raw === 'string' && raw.length > 0 ? raw : null;
+}
+
+/** Resolve a set of tenant ids to their name/slug in one non-RLS read (the
+ *  `tenants` dispatch table). Shared by the cross-tenant operator surfaces
+ *  (support search, feedback inbox) that resolve a hit's `tenant_id` to a name. */
+export async function resolveTenantNames(
+  ids: string[]
+): Promise<Map<string, { name: string; slug: string }>> {
+  const unique = [...new Set(ids)].filter(Boolean);
+  if (unique.length === 0) return new Map();
+  const rows = await prisma.tenant.findMany({
+    where: { id: { in: unique } },
+    select: { id: true, name: true, slug: true },
+  });
+  return new Map(rows.map((r) => [r.id, { name: r.name, slug: r.slug }]));
 }

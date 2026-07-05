@@ -19,7 +19,7 @@
 import crypto from 'node:crypto';
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { prisma, withTenant, type Prisma } from '@sparx/db';
+import { withTenant, type Prisma } from '@sparx/db';
 import {
   collectionStats,
   searchOrdersCrossTenant,
@@ -44,6 +44,7 @@ import {
   badRequest,
   notFound,
   operatorIdOf,
+  resolveTenantNames,
   HttpError,
 } from './operator-internal.js';
 
@@ -64,18 +65,6 @@ function epochToIso(seconds: number | null | undefined): string | null {
   return typeof seconds === 'number' && Number.isFinite(seconds)
     ? new Date(seconds * 1000).toISOString()
     : null;
-}
-
-/** Resolve a set of tenant ids to their names in one non-RLS read (the `tenants`
- *  dispatch table). Missing ids fall back to a placeholder. */
-async function resolveTenants(ids: string[]): Promise<Map<string, { name: string; slug: string }>> {
-  const unique = [...new Set(ids)];
-  if (unique.length === 0) return new Map();
-  const rows = await prisma.tenant.findMany({
-    where: { id: { in: unique } },
-    select: { id: true, name: true, slug: true },
-  });
-  return new Map(rows.map((r) => [r.id, { name: r.name, slug: r.slug }]));
 }
 
 function clampLimit(raw: string | undefined, fallback: number, max: number): number {
@@ -110,7 +99,7 @@ const operatorSupportRoutes: FastifyPluginAsync = async (app) => {
       } catch {
         throw searchUnavailable();
       }
-      const tenants = await resolveTenants(result.hits.map((h) => h.tenant_id));
+      const tenants = await resolveTenantNames(result.hits.map((h) => h.tenant_id));
       const orders: OperatorOrderHit[] = result.hits.map((d) => {
         const t = tenants.get(d.tenant_id);
         return {
@@ -161,7 +150,7 @@ const operatorSupportRoutes: FastifyPluginAsync = async (app) => {
       } catch {
         throw searchUnavailable();
       }
-      const tenants = await resolveTenants(result.hits.map((h) => h.tenant_id));
+      const tenants = await resolveTenantNames(result.hits.map((h) => h.tenant_id));
       const customers: OperatorCustomerHit[] = result.hits.map((d) => {
         const t = tenants.get(d.tenant_id);
         return {

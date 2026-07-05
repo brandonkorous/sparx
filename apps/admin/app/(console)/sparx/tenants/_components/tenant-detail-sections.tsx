@@ -131,6 +131,12 @@ export function StorageCard({ storage }: { storage: OperatorTenantStorage }) {
           {formatBytes(storage.assetBytes)} originals · {formatBytes(storage.variantBytes)}{' '}
           generated variants
         </Text>
+        <Text size="sm" variant="muted">
+          Limit:{' '}
+          {storage.storageLimitBytes != null
+            ? `${formatBytes(storage.storageLimitBytes)} (operator override)`
+            : 'No limit set'}
+        </Text>
       </Stack>
     </Card>
   );

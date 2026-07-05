@@ -20,25 +20,28 @@
 // repro that originally bit CRM activation. RMW always produces a valid
 // nested structure regardless of starting shape.
 
-import type { FastifyBaseLogger, FastifyPluginAsync } from 'fastify';
-import { randomUUID } from 'node:crypto';
+import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { prisma, type Prisma } from '@sparx/db';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { ok } from '@sparx/api-core/envelope';
-import { publish } from '@sparx/api-core/pubsub';
 import { requireAuth, requireRole } from '@sparx/api-core/auth';
 import { requireVerifiedEmail } from '../../lib/verified-email-guard.js';
 import { badRequest, conflict, forbidden, notFound } from '@sparx/api-core/errors';
 import {
-  invalidateModuleCache,
   requiredModules,
   blockingDependents,
   deriveModuleStates,
   type ModuleSlug,
 } from '@sparx/auth';
-import { publishPlatformEvent } from '@sparx/crm';
-import { isBillingConfigured, syncModuleItems } from '@sparx/billing';
+import {
+  MODULE_SLUGS,
+  MODULE_SLUG_SET,
+  readModuleFlags,
+  applyModuleWrites,
+  toggleTenantModule,
+  moduleBlockedMessage,
+} from '../../lib/module-toggle.js';
 import { computeBannerEnabled } from '../../lib/consent.js';
 import { env } from '../../env.js';
 import Stripe from 'stripe';
@@ -76,134 +79,6 @@ function serializeConsent(
     policyVersion: row?.policyVersion ?? '1',
     bannerEnabled: computeBannerEnabled(mode, activeCategories),
   };
-}
-
-const MODULE_SLUGS: ModuleSlug[] = [
-  'builder',
-  'commerce',
-  'cms',
-  'crm',
-  'email',
-  'b2b',
-  'invoicing',
-  'dropship',
-  'inventory',
-  'chat',
-  'ai',
-  'scheduling',
-];
-const MODULE_SLUG_SET = new Set<string>(MODULE_SLUGS);
-
-// Announce a module on/off transition on BOTH event buses (docs/82 Slice E4).
-// The tenant route stays module-agnostic — it knows nothing about pipelines or
-// email automations; it only says "this module just turned on/off" and lets the
-// consumers seed themselves. The two buses reach two different process spaces:
-//
-//   1. api-core publish() → the `module.{activated,deactivated}` Pub/Sub topic,
-//      which (a) enqueues webhook deliveries for tenant subscriptions and (b)
-//      tees to `automation.trigger`, where the automation-worker (a SEPARATE
-//      process) seeds the activated module's system automations.
-//   2. the in-process platform bus → the CRM + Email activation consumers that
-//      run inside THIS api-rest process (default pipeline + segments; default
-//      email automations). publishPlatformEvent awaits every subscriber, so the
-//      seed completes before the route returns — which is why the dashboard no
-//      longer needs a separate /v1/<module>/bootstrap round-trip.
-//
-// Every consumer is idempotent, so a redundant announce is a safe no-op; callers
-// still fire only on an actual transition to keep the bus quiet.
-async function announceModuleTransition(
-  log: FastifyBaseLogger,
-  tenantId: string,
-  actorId: string | null,
-  slug: ModuleSlug,
-  enabled: boolean
-): Promise<void> {
-  const type = enabled ? 'module.activated' : 'module.deactivated';
-  const data = { module: slug };
-  await publish(log, type, tenantId, actorId, data);
-  await publishPlatformEvent({
-    id: randomUUID(),
-    topic: type,
-    tenantId,
-    occurredAt: new Date(),
-    payload: data,
-  });
-}
-
-// Persist a batch of explicit module-flag writes (one read-modify-write), drop
-// the tenant's module cache, and announce activation transitions.
-//
-// Two subtleties this centralizes:
-//   • Whole-tenant cache flush, not per-slug: BUNDLED_FREE capabilities (e.g.
-//     `invoicing`) are DERIVED from provider flags, so toggling `b2b`/`commerce`
-//     changes `invoicing`'s gate result even though no invoicing flag was written.
-//   • Announce on DERIVED-state transitions, not raw writes: enabling B2B makes
-//     `invoicing` available with no invoicing flag of its own, and its seeding
-//     consumer (default workflows + line types) must still run. Billing keys off
-//     EXPLICIT flags (deriveModuleStates → source 'explicit'), never these
-//     availability events, so a bundled capability is announced but not charged.
-//
-// Returns the effective settings blob (next when anything changed, else the
-// original) so callers can shape their response without a re-read.
-async function applyModuleWrites(
-  log: FastifyBaseLogger,
-  tenantId: string,
-  actorId: string | null,
-  beforeSettings: unknown,
-  writes: Map<ModuleSlug, boolean>
-): Promise<unknown> {
-  if (writes.size === 0) return beforeSettings;
-
-  const currentSettings = (beforeSettings as Record<string, unknown> | null) ?? {};
-  const currentModules = (currentSettings.modules as Record<string, unknown> | undefined) ?? {};
-  const nextModules: Record<string, unknown> = { ...currentModules };
-  for (const [slug, enabled] of writes) {
-    const slot = (currentModules[slug] as Record<string, unknown> | undefined) ?? {};
-    nextModules[slug] = { ...slot, enabled };
-  }
-  const nextSettings = { ...currentSettings, modules: nextModules };
-
-  await prisma.tenant.update({
-    where: { id: tenantId },
-    data: { settings: nextSettings as Prisma.InputJsonValue },
-  });
-  invalidateModuleCache(tenantId);
-
-  const beforeStates = deriveModuleStates(beforeSettings);
-  const afterStates = deriveModuleStates(nextSettings);
-  for (const slug of MODULE_SLUGS) {
-    if (beforeStates[slug].enabled !== afterStates[slug].enabled) {
-      await announceModuleTransition(log, tenantId, actorId, slug, afterStates[slug].enabled);
-    }
-  }
-
-  // Keep the tenant's Stripe subscription items in lockstep with the new EXPLICIT
-  // module set (docs/67 §4). Only explicit purchases bill — a BUNDLED_FREE
-  // capability (invoicing via Commerce/B2B) has source 'bundled', no flag, and so
-  // never creates an item. Best-effort + guarded: a no-op until billing is
-  // configured, and a Stripe failure never blocks the toggle (the flag is already
-  // written; the webhook reconciles authoritative state).
-  if (isBillingConfigured()) {
-    try {
-      const explicitEnabled = MODULE_SLUGS.filter((s) => afterStates[s].source === 'explicit');
-      const t = await prisma.tenant.findUnique({
-        where: { id: tenantId },
-        select: { email: true, name: true },
-      });
-      if (t) {
-        await syncModuleItems({
-          tenantId,
-          email: t.email,
-          name: t.name,
-          enabledModules: explicitEnabled,
-        });
-      }
-    } catch (err) {
-      log.error({ err }, 'billing: module item sync failed (non-fatal)');
-    }
-  }
-
-  return nextSettings;
 }
 
 // Shape one module's row for GET/PUT responses: enabled + WHY, so the dashboard
@@ -506,21 +381,6 @@ function readOnboarding(settings: unknown): OnboardingState {
   };
 }
 
-function readModuleFlags(settings: unknown): Record<string, boolean> {
-  const out: Record<string, boolean> = {};
-  for (const slug of MODULE_SLUGS) out[slug] = false;
-  if (!settings || typeof settings !== 'object' || Array.isArray(settings)) return out;
-  const modules = (settings as Record<string, unknown>).modules;
-  if (!modules || typeof modules !== 'object') return out;
-  for (const slug of MODULE_SLUGS) {
-    const slot = (modules as Record<string, unknown>)[slug];
-    if (slot && typeof slot === 'object' && (slot as Record<string, unknown>).enabled === true) {
-      out[slug] = true;
-    }
-  }
-  return out;
-}
-
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const tenantRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/tenant', async (request) => {
@@ -672,32 +532,20 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     if (!before) throw notFound('Tenant', auth.tenantId);
 
     const target = slug as ModuleSlug;
-    const currentFlags = readModuleFlags(before.settings);
-    const writes = new Map<ModuleSlug, boolean>();
-
-    if (enabled) {
-      // Turn it on, and auto-enable every PAID requirement (each is separately
-      // billed — e.g. enabling B2B also activates Commerce at $49). REQUIRES is
-      // not derived, so these flags are physically written here.
-      for (const m of [target, ...requiredModules(target)]) {
-        if (currentFlags[m] !== true) writes.set(m, true);
-      }
-    } else {
-      // Block teardown of a module another ENABLED module still requires (you
-      // must disable B2B before you can disable Commerce).
-      const blockers = blockingDependents(target, (m) => currentFlags[m] === true);
-      if (blockers.length) {
-        throw conflict(
-          `Turn off ${blockers.join(' and ')} first — ${
-            blockers.length > 1 ? 'they require' : 'it requires'
-          } ${target}.`,
-          'module'
-        );
-      }
-      if (currentFlags[target] === true) writes.set(target, false);
+    // The whole toggle mechanic — REQUIRES fan-out, dependent guard, flag write,
+    // dual-bus announce, cache flush, Stripe sync — lives in the shared lib so
+    // the operator console drives the identical path (build-plan §5 Slice 8).
+    const result = await toggleTenantModule({
+      log: request.log,
+      tenantId: auth.tenantId,
+      actorId: auth.actorId,
+      slug: target,
+      enabled,
+      beforeSettings: before.settings,
+    });
+    if (result.blocked.length) {
+      throw conflict(moduleBlockedMessage(result.blocked, target), 'module');
     }
-
-    await applyModuleWrites(request.log, auth.tenantId, auth.actorId, before.settings, writes);
     return ok({ slug: target, enabled });
   });
 
