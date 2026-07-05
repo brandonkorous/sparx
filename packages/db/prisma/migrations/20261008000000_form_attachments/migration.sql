@@ -1,0 +1,12 @@
+-- Form attachments (docs/115 Part D). A visitor can attach files (resume, RFQ,
+-- spec sheet) to a Builder Form. The durable refs live in this JSON column as an
+-- array of `{ key, filename, mimeType, byteSize }`; the bytes live in the PRIVATE
+-- media bucket under `form-uploads/attached/…` (never a public URL). The keys are
+-- server-minted (a signed upload token binds them), so a submission can never
+-- reference an arbitrary object.
+--
+-- A constant-default column add is metadata-only on PostgreSQL 11+ (no per-row
+-- rewrite), so there is no FORCE-RLS backfill loop to worry about — nothing is
+-- UPDATEd, the default is stored once in the catalog. The table's existing
+-- tenant_isolation policy continues to cover every row unchanged.
+ALTER TABLE "form_submissions" ADD COLUMN "attachments" JSONB NOT NULL DEFAULT '[]';

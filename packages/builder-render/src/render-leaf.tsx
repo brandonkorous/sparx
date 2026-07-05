@@ -814,11 +814,16 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
     // state via the injected runtime (no-op in the canvas, capture endpoint live).
     case 'Signup':
       return <SignupForm cta={str('cta') || undefined} />;
-    // Wired contact/lead form (docs/115). Renders + validates identically on both
-    // surfaces; only the live runtime's `submitForm` captures. node.class lands on
-    // the <form> (ContactForm is in CLASS_ON_LEAF), props carry the routing config.
+    // Wired form (docs/115). A leaf-with-children: the render walker passes the
+    // author-composed field atoms as `children`, which the island wraps in a real
+    // <form>. Only the live runtime's `submitForm` captures. node.class lands on the
+    // <form> (ContactForm is in CLASS_ON_LEAF); props carry the routing config.
     case 'ContactForm':
-      return <ContactForm nodeId={node.id} props={p} className={leafClass ?? undefined} />;
+      return (
+        <ContactForm nodeId={node.id} props={p} className={leafClass ?? undefined}>
+          {children}
+        </ContactForm>
+      );
     // The light/dark switch. Inert here (the canvas always previews it); the live
     // host gates it on the site's appearance policy + scope before calling this.
     case 'ThemeToggle':

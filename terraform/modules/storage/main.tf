@@ -34,6 +34,25 @@ resource "google_storage_bucket" "media" {
     }
   }
 
+  # Site-form attachment STAGING (docs/115 Part D). An anonymous visitor's upload
+  # lands under `form-uploads/staging/` first and is PROMOTED to
+  # `form-uploads/attached/` only when the form is actually submitted. An
+  # uploaded-but-never-submitted object is thus abandoned — delete it after a day so
+  # a public, unauthenticated upload endpoint can't accumulate storage. Attached
+  # files live under a different prefix and are never matched by this rule. This is
+  # the orphan-GC mechanism (no worker, no ongoing compute — lifecycle deletes are
+  # free). The discriminator is the FIRST key segment so this one rule covers every
+  # tenant (see services/api-rest/src/lib/storage.ts formUploadStagingKey).
+  lifecycle_rule {
+    condition {
+      age            = 1
+      matches_prefix = ["form-uploads/staging/"]
+    }
+    action {
+      type = "Delete"
+    }
+  }
+
   # CORS for presigned PUTs from the dashboard. No GET/HEAD here — originals
   # are never fetched directly by a browser; api-rest streams them when
   # needed (e.g. variant regeneration triggered from the admin UI).

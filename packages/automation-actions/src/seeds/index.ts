@@ -48,6 +48,7 @@ import {
 } from './invoicing.js';
 import { CHAT_NO_RESPONSE_ALERT, CHAT_SATISFACTION_SURVEY } from './chat.js';
 import { INVENTORY_AUTO_REORDER } from './inventory.js';
+import { FORM_HANDLE_SUBMISSIONS } from './forms.js';
 
 /** A seed plus the module whose activation installs it. `module: null` ⇒ always
  *  seeded (platform-level, no owning module). */
@@ -99,6 +100,10 @@ export const SYSTEM_AUTOMATIONS: readonly SystemAutomationSeed[] = [
   { module: 'chat', spec: CHAT_SATISFACTION_SURVEY },
   // Inventory — auto-reorder ships paused (opt-in).
   { module: 'inventory', spec: INVENTORY_AUTO_REORDER },
+  // Site forms (docs/115) — always-on (module: null): any tenant with a site can
+  // have a form. Its actions self-gate per the form's own toggles; the CRM step
+  // rides the crm gate so it no-ops until CRM is on.
+  { module: null, spec: FORM_HANDLE_SUBMISSIONS },
 ];
 
 /**

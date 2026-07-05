@@ -15,13 +15,7 @@
 // reuses the inspector's own `bx-*` classes for a seamless look.
 
 import * as React from 'react';
-import {
-  ChevronDown,
-  MessageSquareText,
-  Send,
-  SlidersHorizontal,
-  type LucideIcon,
-} from 'lucide-react';
+import { ChevronDown, MessageSquareText, Send, type LucideIcon } from 'lucide-react';
 import { Input, Switch, Textarea } from '@sparx/ui';
 
 import {
@@ -61,17 +55,11 @@ export function ContactFormCard({
 
   return (
     <>
-      <InsCard icon={MessageSquareText} title="What the form says">
-        <Field label="Heading">
-          <Input value={str('title')} onChange={(e) => onProp('title', e.target.value)} />
-        </Field>
-        <Field label="Intro text">
-          <Textarea
-            rows={2}
-            value={str('description')}
-            onChange={(e) => onProp('description', e.target.value)}
-          />
-        </Field>
+      <InsCard icon={MessageSquareText} title="Submit & confirmation">
+        <p className="bx-inspector__tip">
+          The fields are regular blocks — add, remove, or restyle them by dropping input blocks
+          inside the form and editing them like anything else.
+        </p>
         <Field label="Submit button">
           <Input
             value={str('submitLabel')}
@@ -85,20 +73,6 @@ export function ContactFormCard({
             onChange={(e) => onProp('successMessage', e.target.value)}
           />
         </Field>
-      </InsCard>
-
-      <InsCard icon={SlidersHorizontal} title="Fields">
-        <SwitchRow
-          label="Show a phone number field"
-          checked={flag('showPhone')}
-          onChange={(v) => onProp('showPhone', v)}
-        />
-        <SwitchRow
-          label="Require a message"
-          hint="Name and email are always required."
-          checked={flag('messageRequired')}
-          onChange={(v) => onProp('messageRequired', v)}
-        />
       </InsCard>
 
       <InsCard icon={Send} title="When someone submits this form">
@@ -121,7 +95,14 @@ export function ContactFormCard({
           checked={flag('addToCrm')}
           onChange={(v) => onProp('addToCrm', v)}
         />
-        {flag('addToCrm') && ctx && !ctx.crmEnabled ? (
+
+        <SwitchRow
+          label="Start a sales deal"
+          hint="Open a deal in your sales pipeline so you can follow up and track it to a sale. Also saves them to your contacts."
+          checked={flag('openDeal')}
+          onChange={(v) => onProp('openDeal', v)}
+        />
+        {(flag('addToCrm') || flag('openDeal')) && ctx && !ctx.crmEnabled ? (
           <CrmActivatePrompt canActivate={ctx.canActivateCrm} />
         ) : null}
 

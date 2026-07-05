@@ -51,27 +51,13 @@ export function registerModuleActivationConsumers(ctx: ConsumerContext): (() => 
       const pending = await withTenant(serviceCtx, (tx) =>
         tx.formSubmission.findMany({
           where: { customerId: null, status: { not: 'spam' }, email: { not: null } },
-          select: {
-            id: true,
-            propertyId: true,
-            name: true,
-            email: true,
-            phone: true,
-            message: true,
-          },
+          select: { id: true },
           orderBy: { createdAt: 'asc' },
           take: LEAD_BACKFILL_CAP,
         })
       );
       for (const s of pending) {
-        await captureFormLead(serviceCtx, {
-          submissionId: s.id,
-          propertyId: s.propertyId,
-          name: s.name,
-          email: s.email,
-          phone: s.phone,
-          message: s.message,
-        });
+        await captureFormLead(serviceCtx, { submissionId: s.id });
       }
     }),
 

@@ -70,6 +70,7 @@ export const TRIGGER_EVENTS: readonly TriggerEventDef[] = [
   { eventType: 'email.opened', label: 'Email opened', module: 'email' },
   { eventType: 'email.clicked', label: 'Email link clicked', module: 'email' },
   { eventType: 'email.bounced', label: 'Email bounced', module: 'email' },
+  { eventType: 'form.submitted', label: 'Site form submitted', module: 'cms' },
   { eventType: 'webhook.received', label: 'Inbound webhook received', module: 'platform' },
 ];
 
@@ -116,7 +117,7 @@ export function moduleForEventType(eventType: string): ModuleSlug {
   if (head === 'commerce') return 'commerce';
   if (head === 'b2b') return 'b2b';
   if (head === 'email') return 'email';
-  if (head === 'cms' || head === 'site') return 'cms';
+  if (head === 'cms' || head === 'site' || head === 'form') return 'cms';
   return 'platform';
 }
 
@@ -167,6 +168,11 @@ export const COMMON_CONDITION_FIELDS: readonly string[] = [
   'b2bAccount.utilization',
   'b2bAccount.maxDaysPastDue',
   'b2bAccount.hasOverdueInvoices',
+  'form.formName',
+  'form.pageSlug',
+  'form.addToCrm',
+  'form.openDeal',
+  'form.notify',
 ];
 
 // ─── actions ─────────────────────────────────────────────────────────────────
@@ -359,6 +365,34 @@ export const ACTION_DEFS: readonly ActionDef[] = [
       },
     ],
   },
+  {
+    type: 'crm.capture_lead',
+    label: 'Add form contact to CRM',
+    module: 'crm',
+    description:
+      'Save the person who submitted a form as a CRM contact and log their message — and, if the form is set to, open a sales deal in your pipeline. Follows the form’s own “add to CRM” / “start a deal” settings.',
+    mode: 'none',
+    available: true,
+  },
+  // ── Site forms (docs/115) ──
+  {
+    type: 'form.notify',
+    label: 'Email me the submission',
+    module: 'platform',
+    description:
+      'Email you (and any recipients set on the form) when a form is submitted, with reply-to set to the visitor. Follows the form’s “email me” setting.',
+    mode: 'none',
+    available: true,
+  },
+  {
+    type: 'form.autoreply',
+    label: 'Send the visitor a confirmation',
+    module: 'platform',
+    description:
+      'Send the person who submitted the form a confirmation reply. Follows the form’s “send a confirmation” setting.',
+    mode: 'none',
+    available: true,
+  },
   // ── Email ──
   {
     type: 'email.send_campaign',
@@ -490,7 +524,11 @@ export function actionLabel(type: string): string {
 }
 
 export function moduleForActionType(type: string): ModuleSlug {
-  return (type.split('.')[0] as ModuleSlug) ?? 'platform';
+  const head = type.split('.')[0] ?? '';
+  // Site-form actions (form.notify / form.autoreply) are platform-transactional —
+  // treat them as platform so they don't tag a phantom "form" module on the row.
+  if (head === 'form') return 'platform';
+  return (head as ModuleSlug) ?? 'platform';
 }
 
 /** Actions offerable for a NEW step: registered executor + owning module active

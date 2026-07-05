@@ -728,13 +728,17 @@ const DEFS: ComponentDef[] = [
     // catalog entry (which stamps this node with a card wrapper), the same way
     // `text_field` wraps the bare `Input` atom — so it isn't offered twice.
     type: CONTACT_FORM_TYPE,
-    label: 'Contact form',
+    label: 'Form',
     kind: 'leaf',
     group: 'data',
     icon: Send,
     bindable: false,
     accepts: [],
     surfaces: ['page', 'site'],
+    // A leaf that HOLDS children (the Button/NavItem pattern): the author composes
+    // the fields from ordinary named input atoms dropped inside it, and the render
+    // walker passes them to the island, which wraps them in a real <form> (docs/115).
+    acceptsChildren: true,
     props: [],
     defaults: { props: { ...DEFAULT_CONTACT_FORM_PROPS } },
   },

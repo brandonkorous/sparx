@@ -14,6 +14,15 @@ export interface FormSubmissionContext {
   submittedAt?: string | null;
 }
 
+// A visitor-uploaded file (docs/115 Part D). The api-rest inbox response carries
+// only display metadata — never the private storage key. Bytes are pulled through
+// the authenticated dashboard download route, addressed by INDEX.
+export interface FormSubmissionAttachment {
+  filename: string;
+  mimeType: string;
+  byteSize: number;
+}
+
 export interface FormSubmission {
   id: string;
   propertyId: string | null;
@@ -26,6 +35,8 @@ export interface FormSubmission {
   message: string | null;
   // The full posted field set (a superset of name/email/phone/message).
   fields: Record<string, string>;
+  // Files the visitor attached (display metadata only — no storage key).
+  attachments: FormSubmissionAttachment[];
   context: FormSubmissionContext;
   status: FormSubmissionStatus;
   // Set once the lead has been mirrored into the CRM as a prospect.
@@ -94,6 +105,22 @@ export function formatRelativeTime(iso: string): string {
   const day = Math.round(hr / 24);
   if (day < 7) return `${day}d ago`;
   return new Date(iso).toLocaleDateString();
+}
+
+// The same-origin dashboard route that streams an attachment's bytes (it proxies
+// the authenticated api-rest download server-side). Addressed by index so the
+// private storage key never reaches the browser.
+export function attachmentDownloadHref(submissionId: string, index: number): string {
+  return `/builder/forms/${submissionId}/attachments/${index}`;
+}
+
+// Human-readable file size (1 decimal for MB/KB). Used by the attachments card.
+export function formatBytes(bytes: number): string {
+  if (!Number.isFinite(bytes) || bytes <= 0) return '';
+  if (bytes < 1024) return `${bytes} B`;
+  const kb = bytes / 1024;
+  if (kb < 1024) return `${Math.round(kb)} KB`;
+  return `${(kb / 1024).toFixed(1)} MB`;
 }
 
 // The extra posted fields beyond the four we surface as first-class contact

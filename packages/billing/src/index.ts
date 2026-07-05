@@ -25,3 +25,23 @@ export {
   type SubscriptionSyncInput,
   type BillingResult,
 } from './service';
+
+export {
+  listPlatformStripeEvents,
+  listTenantCharges,
+  listPlatformCoupons,
+  refundCharge,
+  createPlatformCoupon,
+  deletePlatformCoupon,
+  createEnterpriseInvoice,
+  type PlatformStripeEvent,
+  type PlatformCharge,
+  type PlatformCoupon,
+  type RefundReason,
+  type RefundInput,
+  type RefundResult,
+  type CreateCouponInput,
+  type EnterpriseInvoiceLine,
+  type CreateInvoiceInput,
+  type InvoiceResult,
+} from './operator';

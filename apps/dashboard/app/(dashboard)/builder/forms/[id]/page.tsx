@@ -16,7 +16,11 @@ import {
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
 import { SubmissionDetailActions } from './_components/submission-detail-actions';
-import { DetailRow, SubmissionSidebar } from './_components/submission-detail-parts';
+import {
+  DetailRow,
+  SubmissionAttachments,
+  SubmissionSidebar,
+} from './_components/submission-detail-parts';
 import { extraFields, submissionDisplayName, type FormSubmission } from '../types';
 
 // A single submission — a read-only/transaction record (docs/86): it keeps its
@@ -99,6 +103,8 @@ export default async function SubmissionDetailPage({ params }: PageProps) {
                   </CardContent>
                 </Card>
               ) : null}
+
+              <SubmissionAttachments submission={submission} />
             </div>
 
             <SubmissionSidebar submission={submission} submittedAt={submittedAt} />

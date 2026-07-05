@@ -3,19 +3,25 @@ import { Section } from '@react-email/components';
 import { EmailLayout } from './_layout';
 import { EmailCallout, EmailHeading, EmailLink, EmailMuted, EmailParagraph } from '../components';
 
-// Owner-facing notification when someone submits a Builder contact form on the
-// site (docs/115). Carries the message + the submitter's contact details so the
-// owner can reply straight from their inbox (api-rest sets reply-to = the
-// submitter). Also stored in the dashboard "Form submissions" inbox.
+// Owner-facing notification when someone submits a Builder form on the site
+// (docs/115). A form's fields are whatever named inputs the author composed, so the
+// email renders the WHOLE ordered answer set — plus a reply-to summary for the
+// recognized contact (api-rest sets reply-to = the submitter). Also stored in the
+// dashboard "Form submissions" inbox.
 export interface FormSubmissionNotificationEmailProps {
   /** The customer-facing site name (Property.name). */
   siteName: string;
   /** The form's author label (e.g. "Contact form"). */
   formName: string;
-  name?: string | null;
+  /** The recognized contact email, for the reply summary (if the form has one). */
   email?: string | null;
-  phone?: string | null;
-  message?: string | null;
+  /** Best-effort submitter name for the intro line. */
+  name?: string | null;
+  /** Every submitted field, humanized + in submitted order — the full record. */
+  answers?: { label: string; value: string }[];
+  /** Filenames the visitor attached (docs/115 Part D) — listed, not linked (the
+   *  files are private; the owner downloads them from the dashboard inbox). */
+  attachmentNames?: string[];
   /** The page the form was on (null = home). */
   pageSlug?: string | null;
   submittedAt?: string;
@@ -24,13 +30,15 @@ export interface FormSubmissionNotificationEmailProps {
 export function FormSubmissionNotificationEmail({
   siteName,
   formName,
-  name,
   email,
-  phone,
-  message,
+  name,
+  answers,
+  attachmentNames,
   pageSlug,
 }: FormSubmissionNotificationEmailProps) {
   const who = name ?? email ?? 'Someone';
+  const rows = (answers ?? []).filter((a) => a.value.trim() !== '');
+  const files = (attachmentNames ?? []).filter((n) => n.trim() !== '');
   return (
     <EmailLayout preview={`${who} sent a message via ${siteName}`}>
       <Section>
@@ -45,22 +53,27 @@ export function FormSubmissionNotificationEmail({
           ) : null}
         </EmailParagraph>
 
-        <EmailMuted>From</EmailMuted>
-        {name ? <EmailParagraph flush>{name}</EmailParagraph> : null}
-        {email ? (
-          <EmailParagraph flush>
-            <EmailLink href={`mailto:${email}`}>{email}</EmailLink>
-          </EmailParagraph>
-        ) : null}
-        {phone ? <EmailParagraph flush>{phone}</EmailParagraph> : null}
-        {!name && !email && !phone ? (
-          <EmailParagraph flush>No contact details provided.</EmailParagraph>
-        ) : null}
+        {rows.length > 0 ? (
+          rows.map((a) => (
+            <React.Fragment key={a.label}>
+              <EmailMuted>{a.label}</EmailMuted>
+              {a.value.includes('\n') ? (
+                <EmailCallout tone="info">{a.value}</EmailCallout>
+              ) : (
+                <EmailParagraph flush>{a.value}</EmailParagraph>
+              )}
+            </React.Fragment>
+          ))
+        ) : (
+          <EmailParagraph flush>No details were provided.</EmailParagraph>
+        )}
 
-        {message ? (
+        {files.length > 0 ? (
           <>
-            <EmailMuted>Message</EmailMuted>
-            <EmailCallout tone="info">{message}</EmailCallout>
+            <EmailMuted>{files.length === 1 ? 'Attachment' : 'Attachments'}</EmailMuted>
+            <EmailParagraph flush>
+              {files.join(', ')} — open your form submissions to download.
+            </EmailParagraph>
           </>
         ) : null}
 

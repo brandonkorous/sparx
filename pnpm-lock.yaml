@@ -2349,6 +2349,9 @@ importers:
       '@sparx/media':
         specifier: workspace:*
         version: link:../../packages/media
+      '@sparx/modules':
+        specifier: workspace:*
+        version: link:../../packages/modules
       '@sparx/operator':
         specifier: workspace:*
         version: link:../../packages/operator

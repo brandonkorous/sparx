@@ -57,6 +57,7 @@
     "@sparx/legal-templates": "workspace:*",
     "@sparx/media": "workspace:*",
     "@sparx/marketplace-schemas": "workspace:*",
+    "@sparx/modules": "workspace:*",
     "@sparx/operator": "workspace:*",
     "@sparx/payments": "workspace:*",
     "@sparx/provider-shippo": "workspace:*",

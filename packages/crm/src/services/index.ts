@@ -11,6 +11,9 @@ export * as pipelineService from './pipeline-service';
 export * as dealService from './deal-service';
 export * as activityService from './activity-service';
 export * as taskService from './task-service';
+// Site-form lead capture (docs/115) — shared by the automation crm.capture_lead
+// action and the CRM-activation backfill.
+export * as leadService from './lead-service';
 export * as segmentService from './segment-service';
 
 // CRM — orders / quotes spine (Phase 3). Each service file stays under

@@ -72,6 +72,13 @@ export interface EnqueueSendSpec {
   dedupeKey?: string | null;
   /** The email body source (template | raw | defer). */
   body: ScheduledSendBody;
+  /**
+   * Per-send Reply-To override (e.g. a contact-form notification replies to the
+   * visitor who wrote in, not the tenant's default reply address). Rides in the
+   * payload JSON; the email-dispatch tick prefers it over the tenant's configured
+   * reply-to. Omitted ⇒ the tenant default applies.
+   */
+  replyTo?: string;
   /** Extra Mailgun user-variables threaded onto the eventual send. */
   variables?: Record<string, string>;
   /**
@@ -104,6 +111,7 @@ function toPayload(spec: EnqueueSendSpec): Prisma.InputJsonValue {
   } else {
     payload.defer = spec.body.defer;
   }
+  if (spec.replyTo) payload.replyTo = spec.replyTo;
   if (spec.variables) payload.variables = spec.variables;
   return payload as Prisma.InputJsonValue;
 }

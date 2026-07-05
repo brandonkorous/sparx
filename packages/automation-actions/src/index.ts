@@ -11,6 +11,7 @@
 export { installCrmActions } from './crm.js';
 export { installB2bActions } from './b2b.js';
 export { installEmailActions } from './email.js';
+export { installFormActions } from './forms.js';
 export { installInventoryActions } from './inventory.js';
 export { installEntityResolvers } from './resolvers.js';
 export { seedSystemAutomations, SYSTEM_AUTOMATIONS } from './seeds/index.js';
@@ -23,6 +24,7 @@ export {
 import { installB2bActions } from './b2b.js';
 import { installCrmActions } from './crm.js';
 import { installEmailActions } from './email.js';
+import { installFormActions } from './forms.js';
 import { installInventoryActions } from './inventory.js';
 import { installEntityResolvers } from './resolvers.js';
 
@@ -31,6 +33,7 @@ export function installModuleActions(): void {
   installCrmActions();
   installB2bActions();
   installEmailActions();
+  installFormActions();
   installInventoryActions();
   installEntityResolvers();
   // installCommerceActions(); — Slice F (commerce.*)

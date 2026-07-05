@@ -45,6 +45,11 @@ export interface BuilderFormSubmit {
   values: Record<string, string>;
   /** Hidden anti-bot field — empty for a human; a value ⇒ silently dropped. */
   honeypot?: string;
+  /** Files the visitor attached (docs/115 Part D) — the raw File objects from the
+   *  form's file inputs. The live bridge uploads each (proxied, magic-sniffed
+   *  server-side) and passes the signed tokens to the submit endpoint; the canvas
+   *  no-ops. Empty/omitted for a form with no file field. */
+  files?: File[];
 }
 
 /** The terminal side effects the interactive islands perform. Live wires these to

@@ -14,6 +14,7 @@ import {
   readContactFormConfig,
   CONTACT_FORM_TYPE,
   type ContactFormConfig,
+  type FormAttachment,
 } from '@sparx/builder-schemas';
 
 import type { PropertyContext, ServiceContext } from '../errors';
@@ -72,6 +73,8 @@ export interface CreateSubmissionInput {
   phone: string | null;
   message: string | null;
   fields: Record<string, string>;
+  /** Verified, promoted file attachments (docs/115 Part D). Server-minted keys. */
+  attachments?: FormAttachment[];
   context: Record<string, unknown>;
   /** new | spam (honeypot). */
   status: string;
@@ -95,6 +98,7 @@ export async function createFormSubmission(
         phone: input.phone,
         message: input.message,
         fields: input.fields,
+        attachments: (input.attachments ?? []) as unknown as Prisma.InputJsonValue,
         context: input.context as Prisma.InputJsonValue,
         status: input.status,
       },
@@ -183,4 +187,30 @@ export async function deleteSubmission(ctx: ServiceContext, id: string): Promise
 /** Valid inbox statuses for input validation at the transport layer. */
 export function isSubmissionStatus(v: string): v is SubmissionStatus {
   return (SUBMISSION_STATUSES as readonly string[]).includes(v);
+}
+
+/** Parse the JSON `attachments` column into typed refs — tolerant of an empty
+ *  column or a legacy row (returns []). The single reader shared by the inbox
+ *  surface, the download route, and the notify resolver, so the stored shape is
+ *  interpreted in exactly one place. */
+export function parseFormAttachments(value: unknown): FormAttachment[] {
+  if (!Array.isArray(value)) return [];
+  const out: FormAttachment[] = [];
+  for (const item of value) {
+    if (item === null || typeof item !== 'object') continue;
+    const r = item as Record<string, unknown>;
+    if (
+      typeof r.key !== 'string' ||
+      typeof r.filename !== 'string' ||
+      typeof r.mimeType !== 'string'
+    )
+      continue;
+    out.push({
+      key: r.key,
+      filename: r.filename,
+      mimeType: r.mimeType,
+      byteSize: typeof r.byteSize === 'number' ? r.byteSize : 0,
+    });
+  }
+  return out;
 }

@@ -12,7 +12,37 @@
 // SERVER-ONLY. The secret must never reach a browser; construct the client in
 // Next server components / route handlers, never in a client component.
 
-import type { OperatorWhoAmIResult, OperatorApiErrorBody } from './types';
+import type {
+  OperatorWhoAmIResult,
+  OperatorApiErrorBody,
+  OperatorTenantListItem,
+  OperatorTenantListParams,
+  OperatorTenantListResult,
+  OperatorTenantDetail,
+  OperatorMetricsParams,
+  OperatorMetricsResult,
+  OperatorStripeEvent,
+  OperatorCoupon,
+  OperatorCouponInput,
+  OperatorRefundInput,
+  OperatorRefundResult,
+  OperatorInvoiceInput,
+  OperatorInvoiceResult,
+  OperatorTenantBillingView,
+  OperatorDomainListParams,
+  OperatorDomainListResult,
+  OperatorDomainDetail,
+  OperatorDomainReverifyResult,
+  OperatorSupportSearchParams,
+  OperatorOrderSearchResult,
+  OperatorCustomerSearchResult,
+  OperatorSearchIndexStatus,
+  OperatorReindexInput,
+  OperatorReindexResult,
+  OperatorEmailLogParams,
+  OperatorEmailLogResult,
+  OperatorResendConfirmationResult,
+} from './types';
 
 /** Shared-secret header — mirrors the existing `X-sparx-Internal-*-Token`
  *  Layer-5 convention (docs/16 §2.5). */
@@ -54,6 +84,118 @@ export interface OperatorApiClient {
   request<T>(path: string, options: OperatorApiRequestOptions): Promise<T>;
   /** Slice-1 round-trip probe (see OperatorWhoAmIResult). */
   whoami(operatorId: string, signal?: AbortSignal): Promise<OperatorWhoAmIResult>;
+  /** Cross-tenant tenant list, filtered + paginated (Slice 2). */
+  listTenants(
+    params: OperatorTenantListParams,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorTenantListResult>;
+  /** One tenant's full detail (Slice 2). Throws `OperatorApiError` with status 404
+   *  when the tenant id is unknown. */
+  getTenant(
+    tenantId: string,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorTenantDetail>;
+  /** Platform metrics snapshot (Slice 3). */
+  getMetrics(
+    params: OperatorMetricsParams,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorMetricsResult>;
+  // ── Billing ops (Slice 4) ──
+  /** Tenants whose platform subscription payment is failing (past_due / unpaid). */
+  listFailedPayments(operatorId: string, signal?: AbortSignal): Promise<OperatorTenantListItem[]>;
+  /** Recent platform Stripe events (webhook-log viewer). */
+  listStripeEvents(
+    operatorId: string,
+    limit?: number,
+    signal?: AbortSignal
+  ): Promise<OperatorStripeEvent[]>;
+  listCoupons(operatorId: string, signal?: AbortSignal): Promise<OperatorCoupon[]>;
+  createCoupon(
+    input: OperatorCouponInput,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorCoupon>;
+  deleteCoupon(couponId: string, operatorId: string, signal?: AbortSignal): Promise<void>;
+  /** A tenant's platform-billing view (subscription snapshot + recent charges). */
+  getTenantBilling(
+    tenantId: string,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorTenantBillingView>;
+  refundCharge(
+    input: OperatorRefundInput,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorRefundResult>;
+  createInvoice(
+    input: OperatorInvoiceInput,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorInvoiceResult>;
+  // ── Domain management (Slice 5) ──
+  /** All custom + purchased domains cross-tenant, filtered + paginated. */
+  listDomains(
+    params: OperatorDomainListParams,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorDomainListResult>;
+  /** One domain's full detail — routing, registrar, live DNS probe, purchase
+   *  history. Throws `OperatorApiError` 404 when the id is unknown. */
+  getDomain(
+    domainId: string,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorDomainDetail>;
+  /** Force re-verify a domain: re-check DNS now (custom) or re-trigger the
+   *  domain-worker (purchased). */
+  reverifyDomain(
+    domainId: string,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorDomainReverifyResult>;
+  // ── Support tools (Slice 6) ──
+  /** Cross-tenant order lookup (by number / customer / SKU) via Typesense. */
+  searchOrders(
+    params: OperatorSupportSearchParams,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorOrderSearchResult>;
+  /** Cross-tenant customer lookup (by email / name / company) via Typesense. */
+  searchCustomers(
+    params: OperatorSupportSearchParams,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorCustomerSearchResult>;
+  /** One tenant's per-collection search-index document counts. */
+  getSearchIndex(
+    tenantId: string,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorSearchIndexStatus>;
+  /** Trigger a full search reindex for a tenant (publishes the reindex event). */
+  reindexTenant(
+    tenantId: string,
+    input: OperatorReindexInput,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorReindexResult>;
+  /** A tenant's email delivery log (filtered by recipient / type / message id). */
+  getEmailLog(
+    tenantId: string,
+    params: OperatorEmailLogParams,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorEmailLogResult>;
+  /** Re-send an order's confirmation email through the tenant's own template. */
+  resendOrderConfirmation(
+    tenantId: string,
+    orderId: string,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorResendConfirmationResult>;
 }
 
 export function createOperatorApiClient(config: OperatorApiClientConfig): OperatorApiClient {
@@ -89,6 +231,145 @@ export function createOperatorApiClient(config: OperatorApiClientConfig): Operat
     request,
     whoami: (operatorId, signal) =>
       request<OperatorWhoAmIResult>('/internal/operator/whoami', { operatorId, signal }),
+    listTenants: (params, operatorId, signal) => {
+      const qs = new URLSearchParams();
+      if (params.q) qs.set('q', params.q);
+      if (params.status) qs.set('status', params.status);
+      if (params.plan) qs.set('plan', params.plan);
+      if (params.limit !== undefined) qs.set('limit', String(params.limit));
+      if (params.offset !== undefined) qs.set('offset', String(params.offset));
+      const query = qs.toString();
+      return request<OperatorTenantListResult>(
+        `/internal/operator/tenants${query ? `?${query}` : ''}`,
+        { operatorId, signal }
+      );
+    },
+    getTenant: (tenantId, operatorId, signal) =>
+      request<OperatorTenantDetail>(`/internal/operator/tenants/${encodeURIComponent(tenantId)}`, {
+        operatorId,
+        signal,
+      }),
+    getMetrics: (params, operatorId, signal) => {
+      const qs = new URLSearchParams();
+      if (params.windowDays !== undefined) qs.set('windowDays', String(params.windowDays));
+      const query = qs.toString();
+      return request<OperatorMetricsResult>(
+        `/internal/operator/metrics${query ? `?${query}` : ''}`,
+        { operatorId, signal }
+      );
+    },
+    listFailedPayments: (operatorId, signal) =>
+      request<OperatorTenantListItem[]>('/internal/operator/billing/failed-payments', {
+        operatorId,
+        signal,
+      }),
+    listStripeEvents: (operatorId, limit, signal) =>
+      request<OperatorStripeEvent[]>(
+        `/internal/operator/billing/events${limit ? `?limit=${limit}` : ''}`,
+        { operatorId, signal }
+      ),
+    listCoupons: (operatorId, signal) =>
+      request<OperatorCoupon[]>('/internal/operator/billing/coupons', { operatorId, signal }),
+    createCoupon: (input, operatorId, signal) =>
+      request<OperatorCoupon>('/internal/operator/billing/coupons', {
+        method: 'POST',
+        body: input,
+        operatorId,
+        signal,
+      }),
+    deleteCoupon: (couponId, operatorId, signal) =>
+      request<void>(`/internal/operator/billing/coupons/${encodeURIComponent(couponId)}`, {
+        method: 'DELETE',
+        operatorId,
+        signal,
+      }),
+    getTenantBilling: (tenantId, operatorId, signal) =>
+      request<OperatorTenantBillingView>(
+        `/internal/operator/tenants/${encodeURIComponent(tenantId)}/billing`,
+        { operatorId, signal }
+      ),
+    refundCharge: (input, operatorId, signal) =>
+      request<OperatorRefundResult>('/internal/operator/billing/refund', {
+        method: 'POST',
+        body: input,
+        operatorId,
+        signal,
+      }),
+    createInvoice: (input, operatorId, signal) =>
+      request<OperatorInvoiceResult>('/internal/operator/billing/invoice', {
+        method: 'POST',
+        body: input,
+        operatorId,
+        signal,
+      }),
+    listDomains: (params, operatorId, signal) => {
+      const qs = new URLSearchParams();
+      if (params.q) qs.set('q', params.q);
+      if (params.status) qs.set('status', params.status);
+      if (params.type) qs.set('type', params.type);
+      if (params.tenantId) qs.set('tenantId', params.tenantId);
+      if (params.attention) qs.set('attention', '1');
+      if (params.limit !== undefined) qs.set('limit', String(params.limit));
+      if (params.offset !== undefined) qs.set('offset', String(params.offset));
+      const query = qs.toString();
+      return request<OperatorDomainListResult>(
+        `/internal/operator/domains${query ? `?${query}` : ''}`,
+        { operatorId, signal }
+      );
+    },
+    getDomain: (domainId, operatorId, signal) =>
+      request<OperatorDomainDetail>(`/internal/operator/domains/${encodeURIComponent(domainId)}`, {
+        operatorId,
+        signal,
+      }),
+    reverifyDomain: (domainId, operatorId, signal) =>
+      request<OperatorDomainReverifyResult>(
+        `/internal/operator/domains/${encodeURIComponent(domainId)}/reverify`,
+        { method: 'POST', operatorId, signal }
+      ),
+    searchOrders: (params, operatorId, signal) => {
+      const qs = new URLSearchParams({ q: params.q });
+      if (params.page !== undefined) qs.set('page', String(params.page));
+      return request<OperatorOrderSearchResult>(
+        `/internal/operator/support/orders?${qs.toString()}`,
+        { operatorId, signal }
+      );
+    },
+    searchCustomers: (params, operatorId, signal) => {
+      const qs = new URLSearchParams({ q: params.q });
+      if (params.page !== undefined) qs.set('page', String(params.page));
+      return request<OperatorCustomerSearchResult>(
+        `/internal/operator/support/customers?${qs.toString()}`,
+        { operatorId, signal }
+      );
+    },
+    getSearchIndex: (tenantId, operatorId, signal) =>
+      request<OperatorSearchIndexStatus>(
+        `/internal/operator/tenants/${encodeURIComponent(tenantId)}/search-index`,
+        { operatorId, signal }
+      ),
+    reindexTenant: (tenantId, input, operatorId, signal) =>
+      request<OperatorReindexResult>(
+        `/internal/operator/tenants/${encodeURIComponent(tenantId)}/reindex`,
+        { method: 'POST', body: input, operatorId, signal }
+      ),
+    getEmailLog: (tenantId, params, operatorId, signal) => {
+      const qs = new URLSearchParams();
+      if (params.recipient) qs.set('recipient', params.recipient);
+      if (params.type) qs.set('type', params.type);
+      if (params.messageId) qs.set('messageId', params.messageId);
+      if (params.limit !== undefined) qs.set('limit', String(params.limit));
+      const query = qs.toString();
+      return request<OperatorEmailLogResult>(
+        `/internal/operator/tenants/${encodeURIComponent(tenantId)}/email-log${query ? `?${query}` : ''}`,
+        { operatorId, signal }
+      );
+    },
+    resendOrderConfirmation: (tenantId, orderId, operatorId, signal) =>
+      request<OperatorResendConfirmationResult>(
+        `/internal/operator/tenants/${encodeURIComponent(tenantId)}/orders/${encodeURIComponent(orderId)}/resend-confirmation`,
+        { method: 'POST', operatorId, signal }
+      ),
   };
 }
 

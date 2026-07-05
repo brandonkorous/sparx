@@ -104,7 +104,6 @@ import {
   cn,
 } from '@sparx/ui';
 import {
-  CONTACT_FORM_TYPE,
   REF_KEY,
   bindSlotKey,
   collectBindingSlots,
@@ -150,8 +149,7 @@ import {
 import { IconPicker } from './icon-picker';
 import { ProseControl } from './prose-control';
 import { LinkTargetControl } from './link-target-control';
-import { NavMenuLinksField } from './nav-menu-editor';
-import { ContactFormCard } from './contact-form-inspector';
+import { NODE_INSPECTORS } from './node-inspectors';
 import {
   ACCENT_COLOR_CONTROL,
   ALIGN_CONTENT_CONTROL,
@@ -4944,6 +4942,12 @@ export function Inspector({
   const def = getDef(node.type);
   if (!def) return null;
 
+  // A few node types register a bespoke editor (recipients chips, a nav link tree)
+  // via the node-inspector registry instead of the generic prop list.
+  const nodeInspector = NODE_INSPECTORS[node.type];
+  const InspectorCard = nodeInspector?.Card;
+  const ContentExtra = nodeInspector?.ContentExtra;
+
   const hasContent = def.props.length > 0 || def.bindable;
   // The source toggle (Type it in / Pull from your data) shows when the block can
   // bind AND isn't already owned by a record/action binding (Pillar 7). When it
@@ -4979,12 +4983,13 @@ export function Inspector({
       />
 
       <div className="bx-ins-stack">
-        {/* ContactForm (docs/115) is a wired lead-capture leaf whose config —
-            copy, field toggles, and the email / CRM / autoresponder routing (incl.
-            the sensitive recipients) — is authored by a BESPOKE card, not the
-            generic prop list (its def carries `props: []`, so the Content card
-            below is suppressed). Same special-case seam as NavMenu's link editor. */}
-        {node.type === CONTACT_FORM_TYPE ? <ContactFormCard node={node} onProp={onProp} /> : null}
+        {/* A bespoke top-of-stack editor (ContactForm's copy / field toggles /
+            recipients + CRM + autoresponder routing), registered in the
+            node-inspector registry. For such nodes the def carries `props: []` so
+            the generic Content card below self-suppresses. */}
+        {InspectorCard ? (
+          <InspectorCard node={node} onProp={onProp} onReplaceNode={onReplaceNode} />
+        ) : null}
 
         {/* Content first — what the block SAYS and where it comes from. The
             structural props (header level, link, …) sit up top; the typed-content
@@ -4999,10 +5004,10 @@ export function Inspector({
               tokens={tokens}
               omitKey={contentKey}
             />
-            {/* NavMenu is a container of NavItem children (docs/57) — offer the
-                fast "manage links" modal alongside its orientation prop. */}
-            {onReplaceNode && node.type === 'NavMenu' ? (
-              <NavMenuLinksField node={node} onReplace={(next) => onReplaceNode(node.id, next)} />
+            {/* A content-card augmentation registered for this node type (e.g.
+                NavMenu's "manage links" quick-editor, docs/57). */}
+            {ContentExtra ? (
+              <ContentExtra node={node} onProp={onProp} onReplaceNode={onReplaceNode} />
             ) : null}
             {showsSource ? (
               <DataSource

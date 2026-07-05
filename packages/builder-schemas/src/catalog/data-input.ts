@@ -269,12 +269,14 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
   }),
 
   // ── Contact form — a WIRED lead-capture block (docs/115) ─────────────────────
-  // Unlike the other data-input entries (presentational atoms), this stamps the
-  // interactive `ContactForm` leaf: it renders the same Name / Email / Message
-  // fields but, on the live site, actually POSTs to the public submit endpoint —
-  // storing the lead, emailing the owner, optionally auto-replying and adding the
-  // person to the CRM. Routing is configured in the inspector; recipient addresses
-  // are kept server-side (never shipped in the published tree).
+  // The interactive `ContactForm` block is a real <form> that WRAPS its children:
+  // the fields below are ordinary named input atoms, so the author edits, restyles,
+  // reorders, adds, or removes them with the normal builder — this is just a
+  // pre-filled starting point. On the live site it POSTs its named controls to the
+  // public submit endpoint; the seeded automation then stores the lead, emails the
+  // owner, optionally auto-replies, and adds the person to the CRM. Routing is
+  // configured in the inspector; recipient addresses are kept server-side (never
+  // shipped in the published tree). The block renders its own submit button.
   entry({
     key: 'contact_form',
     name: 'Contact form',
@@ -282,13 +284,127 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'send',
     description:
-      'A working contact form — captures the message, emails you, and can add the person to your CRM. Stacks on narrow containers.',
+      'A working form — collects whatever fields you put in it, emails you, and can add the person to your CRM. Add, remove, or restyle fields like any other blocks.',
     surfaces: ['page', 'site'],
     tags: ['form', 'contact', 'email', 'message', 'lead', 'inquiry'],
     tree: atom(
       'ContactForm',
       'flex w-full max-w-2xl flex-col gap-5 rounded-box border border-base-200 bg-base-100 p-6 shadow-sm @container',
-      { ...DEFAULT_CONTACT_FORM_PROPS }
+      { ...DEFAULT_CONTACT_FORM_PROPS },
+      [
+        el('div', 'flex flex-col gap-1', {
+          children: [
+            atom('Heading', 'text-lg font-semibold text-base-content', {
+              level: 'h3',
+              text: 'Get in touch',
+            }),
+            el('p', 'text-sm text-base-content/60', {
+              text: "Send us a note and we'll reply within one business day.",
+            }),
+          ],
+        }),
+        el('div', 'grid grid-cols-1 gap-4 @lg:grid-cols-2', {
+          children: [
+            field('Name', input('text', 'name', 'Jordan Avery'), { cls: 'w-full' }),
+            field('Email', input('email', 'email', 'you@example.com'), { cls: 'w-full' }),
+          ],
+        }),
+        field(
+          'Message',
+          atom('Textarea', 'st-c-primary st-fv-outline', {
+            name: 'message',
+            placeholder: 'How can we help?',
+            rows: '4',
+          }),
+          { cls: 'w-full' }
+        ),
+      ]
+    ),
+  }),
+
+  // ── Quote request — a Form preset that opens a CRM deal (docs/115) ───────────
+  // Same wired `ContactForm` block as the contact form, but its saved routing turns
+  // a submission into a sales opportunity: it adds the person to the CRM AND opens a
+  // deal on the default pipeline (`addToCrm` + `openDeal`), auto-replies, and emails
+  // the owner. The extra fields (phone, company, budget, timeline) are ordinary
+  // named input atoms the author edits freely — this is a starting point, not a
+  // fixed schema. The "What do you need a quote for?" answer is named `message`, so
+  // it lands on the submission + the new customer's timeline as the deal's context.
+  entry({
+    key: 'quote_form',
+    name: 'Quote request',
+    category: 'data-input',
+    kind: 'comprehensive',
+    icon: 'file-text',
+    description:
+      'A quote-request form — collects the details you need, adds the person to your CRM, and opens a deal in your sales pipeline so nothing slips. Edit or restyle any field.',
+    surfaces: ['page', 'site'],
+    tags: ['form', 'quote', 'lead', 'sales', 'deal', 'estimate', 'inquiry', 'crm'],
+    tree: atom(
+      'ContactForm',
+      'flex w-full max-w-2xl flex-col gap-5 rounded-box border border-base-200 bg-base-100 p-6 shadow-sm @container',
+      {
+        ...DEFAULT_CONTACT_FORM_PROPS,
+        submitLabel: 'Request a quote',
+        successMessage:
+          "Thanks — your request is in. We'll put together a quote and get back to you shortly.",
+        addToCrm: true,
+        openDeal: true,
+        autoresponder: true,
+        autoresponderSubject: 'We received your quote request',
+        autoresponderMessage:
+          "Thanks for your interest — we've received your request and our team is putting together a quote. We'll be in touch soon.",
+      },
+      [
+        el('div', 'flex flex-col gap-1', {
+          children: [
+            atom('Heading', 'text-lg font-semibold text-base-content', {
+              level: 'h3',
+              text: 'Request a quote',
+            }),
+            el('p', 'text-sm text-base-content/60', {
+              text: "Tell us what you need and we'll send over a tailored quote.",
+            }),
+          ],
+        }),
+        el('div', 'grid grid-cols-1 gap-4 @lg:grid-cols-2', {
+          children: [
+            field('Name', input('text', 'name', 'Jordan Avery'), { cls: 'w-full' }),
+            field('Email', input('email', 'email', 'you@example.com'), { cls: 'w-full' }),
+            field('Phone', input('tel', 'phone', '(555) 123-4567'), { cls: 'w-full' }),
+            field('Company', input('text', 'company', 'Acme Co.'), { cls: 'w-full' }),
+          ],
+        }),
+        field(
+          'What do you need a quote for?',
+          atom('Textarea', 'st-c-primary st-fv-outline', {
+            name: 'message',
+            placeholder: 'Describe the project, quantities, timing — whatever helps us scope it.',
+            rows: '4',
+          }),
+          { cls: 'w-full' }
+        ),
+        el('div', 'grid grid-cols-1 gap-4 @lg:grid-cols-2', {
+          children: [
+            field(
+              'Estimated budget',
+              atom('Select', 'st-c-primary st-fv-outline', {
+                name: 'budget',
+                options: 'Not sure yet\nUnder $1,000\n$1,000 – $5,000\n$5,000 – $25,000\n$25,000+',
+              }),
+              { cls: 'w-full' }
+            ),
+            field(
+              'Ideal timeline',
+              atom('Select', 'st-c-primary st-fv-outline', {
+                name: 'timeline',
+                options: 'As soon as possible\nWithin a month\n1 – 3 months\nJust exploring',
+              }),
+              { cls: 'w-full' }
+            ),
+          ],
+        }),
+      ]
     ),
   }),
 

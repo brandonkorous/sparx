@@ -16,12 +16,13 @@
 
 import {
   collectNodesByType,
+  formRoutingConfig,
   readContactFormConfig,
   CONTACT_FORM_TYPE,
   CONTACT_FORM_SECRET_PROPS,
   type BuilderNode,
 } from '@sparx/builder-schemas';
-import type { TxClient } from '@sparx/db';
+import type { Prisma, TxClient } from '@sparx/db';
 
 import type { PropertyContext } from '../errors';
 
@@ -39,6 +40,10 @@ export async function syncFormDefinitions(
   const sanitized = structuredClone(tree);
   for (const node of collectNodesByType(sanitized, CONTACT_FORM_TYPE)) {
     const cfg = readContactFormConfig(node.props);
+    // The non-sensitive routing toggles ride into `config` so the automation worker
+    // can route the submission (notify / autoresponder / CRM) without the published
+    // tree; the sensitive recipient addresses stay in their own column.
+    const config = formRoutingConfig(cfg) as unknown as Prisma.InputJsonValue;
     await tx.formDefinition.upsert({
       where: { propertyId_formNodeId: { propertyId: ctx.propertyId, formNodeId: node.id } },
       create: {
@@ -47,8 +52,9 @@ export async function syncFormDefinitions(
         formNodeId: node.id,
         pageSlug,
         recipients: cfg.recipients,
+        config,
       },
-      update: { pageSlug, recipients: cfg.recipients },
+      update: { pageSlug, recipients: cfg.recipients, config },
     });
     for (const secret of CONTACT_FORM_SECRET_PROPS) {
       delete node.props[secret];

@@ -25,6 +25,14 @@ export const ActionType = z.enum([
   'crm.add_tag',
   'crm.remove_tag',
   'crm.update_field',
+  // Capture a site-form submitter as a CRM prospect + log their message (docs/115).
+  // Reads the triggering submission; self-gates on the form's own "add to CRM" toggle.
+  'crm.capture_lead',
+  // Site forms (docs/115) — route a form.submitted submission. `form.notify` emails
+  // the owner/recipients (reply-to the submitter); `form.autoreply` confirms to the
+  // submitter. Both self-gate on the form's own toggles + are platform-transactional.
+  'form.notify',
+  'form.autoreply',
   // Commerce
   'commerce.create_invoice',
   'commerce.apply_discount',

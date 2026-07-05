@@ -47,6 +47,14 @@ model FormSubmission {
   message String? @db.Text
   fields  Json    @default("{}")
 
+  // Visitor-uploaded files (docs/115 Part D). A JSON array of FormAttachment refs
+  // `{ key, filename, mimeType, byteSize }` — the bytes live in the PRIVATE media
+  // bucket under `form-uploads/attached/…`, never a public URL; staff download via
+  // an authenticated, RLS-scoped route. Empty for a form with no file field. The
+  // keys are server-minted (a signed upload token binds them) so a submission can
+  // never reference an arbitrary object.
+  attachments Json @default("[]")
+
   // Captured request context — referrer, UTM params, user-agent, client IP, and
   // the submitted-at instant. Never rendered as HTML in the dashboard (escape on
   // display); this is untrusted public input.

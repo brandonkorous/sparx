@@ -60,6 +60,11 @@ export interface MediaStorage {
   writeObject(key: string, contentType: string, body: Buffer | Readable): Promise<{ url: string }>;
   // Best-effort delete. Used by soft-delete GC and bucket cleanup.
   deleteObject(key: string): Promise<void>;
+  // Copy an object within the bucket (server-side; no bytes through the app in
+  // GCS mode). Used by the form-attachment flow to promote an upload from the
+  // lifecycle-GC'd `staging/` prefix to the permanent `attached/` prefix. Both
+  // keys route to the same (private) bucket. Overwrites the destination.
+  copyObject(srcKey: string, destKey: string): Promise<void>;
   // Recursively delete every object under `prefix`. Used by bulk cleanup — e.g.
   // purging the whole marketplace blueprint catalog (artifacts + media) across
   // ALL versions in one call, since artifacts are immutable-per-version and a
@@ -182,6 +187,12 @@ class GcsStorage implements MediaStorage {
       .catch(() => {
         // Already-gone is fine; storage backends should be idempotent.
       });
+  }
+
+  async copyObject(srcKey: string, destKey: string): Promise<void> {
+    // Server-side copy — GCS moves the bytes bucket-internally; the app never
+    // streams them. src + dest share the private bucket (both non-variant keys).
+    await this.file(srcKey).copy(this.file(destKey));
   }
 
   async deletePrefix(prefix: string): Promise<void> {
@@ -308,6 +319,12 @@ class LocalStorage implements MediaStorage {
     await fs.rm(this.path(key), { force: true });
   }
 
+  async copyObject(srcKey: string, destKey: string): Promise<void> {
+    const dest = this.path(destKey);
+    await fs.mkdir(dirname(dest), { recursive: true });
+    await fs.copyFile(this.path(srcKey), dest);
+  }
+
   async deletePrefix(prefix: string): Promise<void> {
     assertNonRootPrefix(prefix);
     assertSafeKey(prefix);
@@ -424,6 +441,41 @@ export function careersResumeKey(
   filename: string
 ): string {
   return `${tenantId}/careers/resumes/${applicationId}/${safeFilename(filename)}`;
+}
+
+// ── Site-form attachments (docs/115 Part D) ─────────────────────────────────
+//
+// A visitor-uploaded file lands in a STAGING prefix first, then is promoted to a
+// permanent ATTACHED prefix once the form is actually submitted. Both are private
+// (no `/variants/` segment → private bucket). The lifecycle discriminator
+// (`staging`/`attached`) is the FIRST key segment — before the tenant id — so a
+// single GCS lifecycle rule (`matchesPrefix: ["form-uploads/staging/"]`) can
+// auto-delete abandoned uploads across ALL tenants without touching attached
+// files. The uploaded-but-never-submitted object is thus GC'd for free; a
+// submitted one is moved out of staging's reach (copyObject + deleteObject).
+
+/** The lifecycle-GC'd staging prefix — matched by the bucket lifecycle rule. */
+export const FORM_UPLOAD_STAGING_PREFIX = 'form-uploads/staging/';
+
+/** Staging key for a fresh, not-yet-submitted attachment (server-minted uid). */
+export function formUploadStagingKey(tenantId: string, uploadId: string, filename: string): string {
+  return `${FORM_UPLOAD_STAGING_PREFIX}${tenantId}/${uploadId}/${safeFilename(filename)}`;
+}
+
+/** Permanent key an attachment is promoted to at submit — outside staging's
+ *  lifecycle reach. Keyed by the same uid so the move is a deterministic rename. */
+export function formUploadAttachedKey(
+  tenantId: string,
+  uploadId: string,
+  filename: string
+): string {
+  return `form-uploads/attached/${tenantId}/${uploadId}/${safeFilename(filename)}`;
+}
+
+/** Public re-export so route handlers sanitize a filename the same way the key
+ *  helpers do (belt-and-braces before it reaches a Content-Disposition header). */
+export function sanitizeFilename(name: string): string {
+  return safeFilename(name);
 }
 
 function safeFilename(name: string): string {

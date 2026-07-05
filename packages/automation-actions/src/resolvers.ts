@@ -22,6 +22,8 @@ import {
   type TenantCtx,
 } from '@sparx/automation';
 
+import { fieldValueToString } from './entity.js';
+
 const MS_PER_DAY = 86_400_000;
 
 /** Prisma Decimal | number | null → number | null. */
@@ -306,6 +308,144 @@ async function hydrateInventory(
   };
 }
 
+// ─── site form submission (event, docs/115) ──────────────────────────────────
+//
+// A public site form submission. The trigger payload carries only ids + the
+// snapshot contact, and the arbitrary custom FIELDS of a multi-field form live on
+// the row — so we re-read it. The notify RECIPIENTS come from the server-only
+// FormDefinition (never the published tree), resolved here server-side at run time
+// so the addresses never reach a visitor. The submitter is exposed as `customer.*`
+// so an email/CRM action can address or capture them even though they aren't a
+// Customer yet.
+
+function splitName(full: string | null): { first: string | null; last: string | null } {
+  const t = (full ?? '').trim();
+  if (!t) return { first: null, last: null };
+  const i = t.indexOf(' ');
+  return i === -1
+    ? { first: t, last: null }
+    : { first: t.slice(0, i), last: t.slice(i + 1).trim() || null };
+}
+
+/** Read a boolean/string from the FormDefinition.config JSON with a default. */
+function cfgBool(cfg: Record<string, unknown>, key: string, dflt: boolean): boolean {
+  return typeof cfg[key] === 'boolean' ? cfg[key] : dflt;
+}
+function cfgStr(cfg: Record<string, unknown>, key: string, dflt: string): string {
+  return typeof cfg[key] === 'string' ? cfg[key] : dflt;
+}
+
+async function hydrateFormSubmission(
+  ctx: TenantCtx,
+  submissionId: string
+): Promise<ResolvedFields> {
+  const s = await ctx.tx.formSubmission.findUnique({
+    where: { id: submissionId },
+    select: {
+      id: true,
+      propertyId: true,
+      formNodeId: true,
+      formName: true,
+      pageSlug: true,
+      name: true,
+      email: true,
+      phone: true,
+      message: true,
+      status: true,
+      fields: true,
+      attachments: true,
+      createdAt: true,
+    },
+  });
+  if (!s) return {};
+  // The server-only routing config (recipients + the notify/autoresponder/CRM
+  // toggles + autoresponder copy), materialized at publish — the worker's ONLY view
+  // of the form's routing, since it can't read the published tree. Plus the site
+  // name for the email brand line.
+  const [def, property] =
+    s.propertyId != null
+      ? await Promise.all([
+          ctx.tx.formDefinition.findUnique({
+            where: {
+              propertyId_formNodeId: { propertyId: s.propertyId, formNodeId: s.formNodeId },
+            },
+            select: { recipients: true, config: true },
+          }),
+          ctx.tx.property.findUnique({ where: { id: s.propertyId }, select: { name: true } }),
+        ])
+      : [null, null];
+  const cfg: Record<string, unknown> =
+    def?.config && typeof def.config === 'object' && !Array.isArray(def.config) ? def.config : {};
+  const { first, last } = splitName(s.name);
+  const fields: ResolvedFields = {
+    'form.submissionId': s.id,
+    'form.nodeId': s.formNodeId,
+    'form.formName': s.formName,
+    'form.siteName': property?.name ?? null,
+    'form.pageSlug': s.pageSlug,
+    'form.status': s.status,
+    'form.message': s.message,
+    'form.submittedAt': s.createdAt.toISOString(),
+    // Server-only notify addresses (empty ⇒ the notify action falls back to the
+    // tenant email). Resolved server-side; never shipped to a visitor.
+    'form.recipients': def?.recipients ?? [],
+    // Routing toggles + autoresponder copy — the per-form policy each action gates on
+    // (defaults mirror DEFAULT_CONTACT_FORM_PROPS for a form published before config).
+    'form.notify': cfgBool(cfg, 'notify', true),
+    'form.addToCrm': cfgBool(cfg, 'addToCrm', false),
+    // Open a pipeline deal for the submitter (the quote/lead-form path) — implies
+    // capturing the contact, so crm.capture_lead gates on `addToCrm || openDeal`.
+    'form.openDeal': cfgBool(cfg, 'openDeal', false),
+    'form.autoresponder': cfgBool(cfg, 'autoresponder', false),
+    'form.autoresponderSubject': cfgStr(cfg, 'autoresponderSubject', 'We received your message'),
+    'form.autoresponderMessage': cfgStr(
+      cfg,
+      'autoresponderMessage',
+      "Thanks for reaching out — we've received your message and will get back to you shortly."
+    ),
+    // The submitter as an addressable contact for an email/CRM action.
+    'customer.email': s.email,
+    'customer.firstName': first,
+    'customer.lastName': last,
+    'customer.fullName': s.name,
+    'customer.phone': s.phone,
+  };
+  // Every submitted field. `form.field.<key>` lets a condition branch on one (e.g.
+  // form.field.budget contains "enterprise"); `form.fieldEntries` is the ORDERED
+  // {key,value} list the notify email renders (a form's fields are whatever named
+  // inputs the author composed, so this is the whole answer set). Object.entries
+  // preserves the submitted order.
+  const entries: { key: string; value: string }[] = [];
+  if (s.fields && typeof s.fields === 'object' && !Array.isArray(s.fields)) {
+    for (const [k, v] of Object.entries(s.fields as Record<string, unknown>)) {
+      fields[`form.field.${k}`] = v;
+      entries.push({ key: k, value: fieldValueToString(v) });
+    }
+  }
+  fields['form.fieldEntries'] = entries;
+  // Attachment filenames (docs/115 Part D) — the notify email lists them so the
+  // owner knows a file came in (they download it from the dashboard inbox; the
+  // bytes are private, never a link in an email). Names only, never the key.
+  fields['form.attachmentNames'] = attachmentNames(s.attachments);
+  return fields;
+}
+
+/** Extract attachment filenames from the stored JSON array (tolerant of empty). */
+function attachmentNames(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  const out: string[] = [];
+  for (const item of value) {
+    if (
+      item &&
+      typeof item === 'object' &&
+      typeof (item as { filename?: unknown }).filename === 'string'
+    ) {
+      out.push((item as { filename: string }).filename);
+    }
+  }
+  return out;
+}
+
 // ─── registration ─────────────────────────────────────────────────────────────
 
 // Quote lifecycle events (CRM publishes `crm.quote.*`). The seed catalog triggers
@@ -333,6 +473,11 @@ const B2B_ACCOUNT_EVENTS = ['crm.b2b_account.created'];
 
 const INVENTORY_EVENTS = ['inventory.low', 'inventory.depleted'];
 
+// Site form submissions (docs/115). The public submit endpoint dual-publishes
+// `form.submitted`; a `form.submitted`-triggered automation is how a tenant routes
+// a submission (notify / add to CRM / open a deal) beyond the always-on inbox.
+const FORM_EVENTS = ['form.submitted'];
+
 let installed = false;
 
 /** Register the module entity resolvers + scheduled scanners exactly once. */
@@ -353,6 +498,9 @@ export function installEntityResolvers(): void {
   }
   for (const ev of INVENTORY_EVENTS) {
     registerResolver(ev, (ctx, p) => hydrateInventory(ctx, p));
+  }
+  for (const ev of FORM_EVENTS) {
+    registerResolver(ev, (ctx, p) => hydrateFormSubmission(ctx, str(p.submissionId ?? p.id)));
   }
 
   // ── scheduled scanners ──────────────────────────────────────────────────────

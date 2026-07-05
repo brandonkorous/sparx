@@ -1,5 +1,6 @@
+import Link from 'next/link';
 import { Badge, Card, Heading, Stack, Text } from '@sparx/ui';
-import { requireOperator } from '@sparx/operator-auth/next';
+import { hasCapability, requireOperator } from '@sparx/operator-auth/next';
 import { logOperatorAction } from '@sparx/operator-auth';
 import { OPERATOR_CAPABILITY_LABELS } from '@sparx/operator';
 import { operatorApi } from '@/lib/operator-api';
@@ -39,10 +40,56 @@ export default async function ConsoleHome() {
       <Stack gap={1}>
         <Heading level={1}>Operator console</Heading>
         <Text variant="muted">
-          Signed in as {operator.email}. This is the Slice-1 shell — tenant management, metrics,
-          billing, domains, support, and feedback land in the next slices.
+          Signed in as {operator.email}. Tenant management, platform metrics, billing operations,
+          domain management, and support tools are live below; feedback triage arrives in a later
+          slice.
         </Text>
       </Stack>
+
+      {hasCapability(operator, 'support:read') ||
+      hasCapability(operator, 'billing:read') ||
+      hasCapability(operator, 'domain:manage') ? (
+        <div className="grid gap-4 md:grid-cols-2">
+          {hasCapability(operator, 'support:read') ? (
+            <>
+              <ConsoleEntry
+                title="Tenants"
+                href="/sparx/tenants"
+                cta="View tenants →"
+                body="Browse every account on the platform and open one to see its subscription, active modules, storage, domains, and recent activity — read-only."
+              />
+              <ConsoleEntry
+                title="Metrics"
+                href="/sparx/metrics"
+                cta="View metrics →"
+                body="Cross-tenant platform health — lifecycle, recurring revenue, module adoption, signups, and churn across every account."
+              />
+              <ConsoleEntry
+                title="Support"
+                href="/sparx/support"
+                cta="Open support →"
+                body="Look up any order or customer across every tenant, re-send an order confirmation, and manage a tenant’s search index and email delivery log."
+              />
+            </>
+          ) : null}
+          {hasCapability(operator, 'billing:read') ? (
+            <ConsoleEntry
+              title="Billing"
+              href="/sparx/billing"
+              cta="View billing →"
+              body="Failed-payment queue, platform coupons, and the Stripe event feed. Refunds and enterprise invoices live on each tenant’s billing tab."
+            />
+          ) : null}
+          {hasCapability(operator, 'domain:manage') ? (
+            <ConsoleEntry
+              title="Domains"
+              href="/sparx/domains"
+              cta="View domains →"
+              body="Every custom and sparx-purchased domain across the platform — routing status, SSL readiness, live DNS diagnostics, registration history, and a force re-verify."
+            />
+          ) : null}
+        </div>
+      ) : null}
 
       <Card>
         <Stack gap={3}>
@@ -81,5 +128,37 @@ export default async function ConsoleHome() {
         </Stack>
       </Card>
     </Stack>
+  );
+}
+
+/** A console home entry-point card (title + blurb + link). */
+function ConsoleEntry({
+  title,
+  href,
+  cta,
+  body,
+}: {
+  title: string;
+  href: string;
+  cta: string;
+  body: string;
+}) {
+  return (
+    <Card>
+      <Stack gap={3}>
+        <Stack gap={1}>
+          <Heading level={3}>{title}</Heading>
+          <Text size="sm" variant="muted">
+            {body}
+          </Text>
+        </Stack>
+        <Link
+          href={href}
+          className="text-sm font-medium text-[var(--module-active-text)] hover:underline"
+        >
+          {cta}
+        </Link>
+      </Stack>
+    </Card>
   );
 }

@@ -11,6 +11,7 @@
 // POST /internal/cron/reconcile-seeds).
 
 import type { PrismaClient } from '@prisma/client';
+import { upsertSystemAutomation } from '@sparx/automation';
 
 import { SYSTEM_AUTOMATIONS, seedSystemAutomations } from './index.js';
 
@@ -42,20 +43,13 @@ export async function reconcileSystemSeeds(
   db: PrismaClient,
   logger?: ReconcileLogger
 ): Promise<ReconcileSummary> {
-  // Distinct owning modules across the catalog. A null-module (always-on) seed
-  // would need an all-tenants scan — none exist today; warn loudly if one lands
-  // so the gap is visible rather than silently skipped.
+  // Split the catalog into module-owned seeds (scanned per active module) and
+  // always-on (module:null) seeds (installed for EVERY tenant — a form-handling
+  // default isn't owned by a feature module).
   const modules = new Set<string>();
-  let hasAlwaysOn = false;
+  const alwaysOn = SYSTEM_AUTOMATIONS.filter((s) => s.module === null);
   for (const seed of SYSTEM_AUTOMATIONS) {
-    if (seed.module === null) hasAlwaysOn = true;
-    else modules.add(seed.module);
-  }
-  if (hasAlwaysOn) {
-    logger?.warn(
-      {},
-      'reconcileSystemSeeds: an always-on (module:null) seed exists, but all-tenant backfill is not implemented — those tenants are seeded only on tenant.created'
-    );
+    if (seed.module !== null) modules.add(seed.module);
   }
 
   const results: ReconcileModuleResult[] = [];
@@ -73,6 +67,24 @@ export async function reconcileSystemSeeds(
     tenantsSeeded += rows.length;
     results.push({ module, tenants: rows.length, seeded });
     logger?.info({ module, tenants: rows.length, seeded }, 'reconciled system seeds for module');
+  }
+
+  // Always-on seeds → every tenant. `tenants` is the app-readable dispatch table
+  // (the same slug→id lookup the public routes use, no tenant GUC needed), so we can
+  // enumerate directly. Idempotent upsert (origin+name), so re-running is a safe
+  // no-op; module.activated already installs these forward, this is the backstop for
+  // tenants with no seed-owning module active.
+  if (alwaysOn.length > 0) {
+    const tenants = await db.tenant.findMany({ select: { id: true } });
+    let seeded = 0;
+    for (const { id } of tenants) {
+      for (const seed of alwaysOn) {
+        await upsertSystemAutomation({ tenantId: id }, seed.spec);
+        seeded += 1;
+      }
+    }
+    results.push({ module: '(always-on)', tenants: tenants.length, seeded });
+    logger?.info({ tenants: tenants.length, seeded }, 'reconciled always-on system seeds');
   }
 
   return { modules: results, tenantsSeeded };

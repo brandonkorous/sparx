@@ -45,6 +45,9 @@ interface SendPayload {
     preheader?: string;
     emailType?: 'transactional' | 'marketing';
   };
+  /** Per-send Reply-To override (e.g. a contact-form notification replies to the
+   *  submitter). Preferred over the tenant's configured reply-to when present. */
+  replyTo?: string;
   /** Extra Mailgun user variables (broadcast_id, automation_key, campaign). */
   variables?: Record<string, string>;
 }
@@ -123,7 +126,9 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             physicalAddress: settings?.physicalAddress ?? null,
             payload,
             from: buildFrom(settings?.fromName ?? null, settings?.fromAddress ?? null),
-            replyTo: settings?.replyTo ?? undefined,
+            // A per-send Reply-To (a form notification → the visitor) wins over the
+            // tenant's default reply address.
+            replyTo: payload.replyTo ?? settings?.replyTo ?? undefined,
           };
         });
 

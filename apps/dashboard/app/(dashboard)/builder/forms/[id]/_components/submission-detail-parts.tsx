@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Globe, Mail, Phone, UserCheck } from 'lucide-react';
+import { Download, Globe, Mail, Paperclip, Phone, UserCheck } from 'lucide-react';
 import {
   Button,
   Card,
@@ -11,7 +11,7 @@ import {
   Text,
 } from '@sparx/ui';
 
-import type { FormSubmission } from '../../types';
+import { attachmentDownloadHref, formatBytes, type FormSubmission } from '../../types';
 
 // The rail beside a submission's message: how to reach the person, whether they
 // were mirrored into the CRM (in CRM cyan via a nested ModuleProvider), and where
@@ -107,6 +107,54 @@ export function SubmissionSidebar({
         </CardContent>
       </Card>
     </Stack>
+  );
+}
+
+// The files a visitor attached (docs/115 Part D). Each downloads through the
+// authenticated same-origin route (addressed by index — the private storage key
+// never reaches the browser). Rendered in the main column, below the message.
+export function SubmissionAttachments({ submission }: { submission: FormSubmission }) {
+  if (submission.attachments.length === 0) return null;
+  return (
+    <Card>
+      <CardHeader>
+        <Stack direction="row" align="center" gap={2}>
+          <Paperclip className="h-4 w-4" />
+          <CardTitle>
+            {submission.attachments.length === 1
+              ? 'Attachment'
+              : `Attachments (${submission.attachments.length})`}
+          </CardTitle>
+        </Stack>
+      </CardHeader>
+      <CardContent>
+        <Stack gap={2}>
+          {submission.attachments.map((att, i) => (
+            <div
+              key={`${att.filename}-${i}`}
+              className="flex items-center justify-between gap-3 rounded-[var(--radius-md)] border border-[var(--color-border-default)] px-3 py-2"
+            >
+              <Stack gap={0} className="min-w-0">
+                <Text size="sm" className="truncate font-medium">
+                  {att.filename}
+                </Text>
+                {formatBytes(att.byteSize) ? (
+                  <Text size="xs" variant="muted">
+                    {formatBytes(att.byteSize)}
+                  </Text>
+                ) : null}
+              </Stack>
+              <Button asChild size="sm" variant="outline">
+                <a href={attachmentDownloadHref(submission.id, i)}>
+                  <Download className="h-4 w-4" />
+                  Download
+                </a>
+              </Button>
+            </div>
+          ))}
+        </Stack>
+      </CardContent>
+    </Card>
   );
 }
 

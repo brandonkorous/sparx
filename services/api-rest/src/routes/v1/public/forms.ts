@@ -1,14 +1,18 @@
 // Public site-forms submit endpoint (docs/115).
 //
 //   POST /v1/public/forms/submit ?tenant=<slug>[&property=<slug>]
-//   A visitor submits a Builder ContactForm on a tenant site. The row is ALWAYS
-//   stored (the durable inbox is the backbone), then — per the form's server-side
-//   config — the owner is emailed, the submitter optionally auto-replied, and
-//   `form.submitted` is published for the CRM lead consumer.
+//   A visitor submits a Builder ContactForm on a tenant site. The endpoint does
+//   exactly three things: verify a live form exists at this address, ALWAYS store
+//   the submission row (the durable inbox is the backbone), and publish
+//   `form.submitted`. EVERY side effect — notify the owner, confirm to the
+//   submitter, add to the CRM — is the platform automation engine's job now (the
+//   seeded "Handle form submissions" automation, docs/115), which resolves the
+//   form's server-side routing config + recipients and acts. This keeps the whole
+//   form response one visible, editable flow instead of hardcoded endpoint logic.
 //
 // Anonymous (no auth; the `/v1/public/` prefix is exempt). NOT module-gated:
-// storing + emailing must work regardless of modules; only the CRM fan-out (in the
-// consumer) checks the `crm` gate.
+// storing + announcing must work regardless of modules; each automation action
+// carries its own module gate (the CRM step no-ops until CRM is on).
 //
 // SECURITY — the request carries ONLY identifiers + field values. Tenant/site are
 // resolved server-side from slugs (never a client id); the form's routing config
@@ -25,7 +29,9 @@ import { publish } from '@sparx/api-core/pubsub';
 import { ok } from '@sparx/api-core/envelope';
 import { notFound } from '@sparx/api-core/errors';
 import { formService } from '@sparx/builder';
-import { publishPlatformEvent } from '@sparx/crm';
+import { type FormAttachment, MAX_FORM_ATTACHMENTS } from '@sparx/builder-schemas';
+import { getStorage, formUploadAttachedKey } from '../../../lib/storage.js';
+import { verifyFormUploadToken } from '../../../lib/form-upload-token.js';
 
 const Query = z.object({
   tenant: z.string().min(1).max(63),
@@ -43,6 +49,10 @@ const Body = z.object({
     .default({}),
   // Hidden anti-bot field — empty for a human.
   honeypot: z.string().max(255).optional(),
+  // Signed upload tokens for any files the visitor attached (docs/115 Part D) —
+  // each proves an object was uploaded, via our token flow, to THIS tenant. The
+  // key/name/mime are read from the SIGNED token, never trusted from the client.
+  attachments: z.array(z.string().min(1).max(4096)).max(MAX_FORM_ATTACHMENTS).optional(),
 });
 
 function clientIp(request: FastifyRequest): string | undefined {
@@ -63,6 +73,47 @@ function referrer(request: FastifyRequest): string | undefined {
 function pick(values: Record<string, string>, key: string): string | null {
   const v = values[key];
   return typeof v === 'string' && v.trim() !== '' ? v.trim() : null;
+}
+
+/** Verify each attachment token and promote its object from the lifecycle-GC'd
+ *  staging prefix to permanent storage. The token is the ONLY source of truth for
+ *  the key/name/mime — the client never names an object. A token that fails to
+ *  verify, targets another tenant, or whose staged object is missing is SKIPPED
+ *  (logged), never fatal: a broken attachment must not lose the message. The moved
+ *  key is keyed by the token's uid, so it's independent of the submission id. */
+async function promoteAttachments(
+  request: FastifyRequest,
+  tenantId: string,
+  tokens: readonly string[]
+): Promise<FormAttachment[]> {
+  if (tokens.length === 0) return [];
+  const storage = getStorage();
+  const out: FormAttachment[] = [];
+  for (const token of tokens.slice(0, MAX_FORM_ATTACHMENTS)) {
+    const v = verifyFormUploadToken(token);
+    if (!v.ok || v.claims.tid !== tenantId) {
+      request.log.warn(
+        { reason: v.ok ? 'tenant-mismatch' : v.reason },
+        'form submit: attachment token rejected'
+      );
+      continue;
+    }
+    const { uid, key: stagingKey, name, mime } = v.claims;
+    // Confirm the staged object exists (the PUT wrote it) + read its true size.
+    const staged = await storage.readObject(stagingKey).catch(() => null);
+    if (!staged) {
+      request.log.warn({ uid }, 'form submit: staged upload missing');
+      continue;
+    }
+    const byteSize = staged.size ?? 0;
+    staged.body.destroy();
+    // Promote out of staging's lifecycle reach into permanent storage.
+    const attachedKey = formUploadAttachedKey(tenantId, uid, name);
+    await storage.copyObject(stagingKey, attachedKey);
+    await storage.deleteObject(stagingKey);
+    out.push({ key: attachedKey, filename: name, mimeType: mime, byteSize });
+  }
+  return out;
 }
 
 const publicFormsRoutes: FastifyPluginAsync = (app) => {
@@ -117,6 +168,12 @@ const publicFormsRoutes: FastifyPluginAsync = (app) => {
       const phone = pick(values, 'phone');
       const message = pick(values, 'message');
 
+      // Promote attached files out of staging (non-bots only — a bot's staged
+      // uploads are left to the staging-prefix lifecycle GC). Never fatal.
+      const attachments = isBot
+        ? []
+        : await promoteAttachments(request, tenantId, body.attachments ?? []);
+
       // Always store the row (spam included, flagged — never silently lost).
       const submission = await formService.createFormSubmission(ctx, {
         formNodeId: body.formNodeId,
@@ -127,6 +184,7 @@ const publicFormsRoutes: FastifyPluginAsync = (app) => {
         phone,
         message,
         fields: values,
+        attachments,
         context: {
           ip: clientIp(request) ?? null,
           userAgent: userAgent(request) ?? null,
@@ -139,63 +197,13 @@ const publicFormsRoutes: FastifyPluginAsync = (app) => {
       // A bot learns nothing: success, no fan-out.
       if (isBot) return ok({ received: true });
 
-      const cfg = form.config;
-      // Recipients come ONLY from the server-side config; fall back to the tenant's
-      // account email so "email me" works even before the owner sets a recipient.
-      const recipients = form.recipients.length
-        ? form.recipients
-        : tenant.email
-          ? [tenant.email]
-          : [];
-      const siteName = property.name;
-      const formName = form.formName ?? 'Contact form';
-
-      const sends: Promise<void>[] = [];
-      if (cfg.notify) {
-        for (const to of recipients) {
-          sends.push(
-            publish(request.log, 'email.send', tenantId, null, {
-              template: 'form-submission-notification',
-              to,
-              // Reply goes straight to the person who wrote in.
-              ...(email ? { replyTo: email } : {}),
-              props: {
-                siteName,
-                formName,
-                name,
-                email,
-                phone,
-                message,
-                pageSlug,
-                submittedAt: new Date().toISOString(),
-              },
-            })
-          );
-        }
-      }
-      if (cfg.autoresponder && email?.includes('@')) {
-        sends.push(
-          publish(request.log, 'email.send', tenantId, null, {
-            template: 'form-submission-confirmation',
-            to: email,
-            props: {
-              siteName,
-              name,
-              subject: cfg.autoresponderSubject,
-              message: cfg.autoresponderMessage,
-            },
-          })
-        );
-      }
-      await Promise.all(sends);
-
-      // Drive the CRM lead consumer + analytics + automation fan-in. The consumer
-      // re-checks the `crm` gate, so a stale `addToCrm` on a since-disabled tenant
-      // is a safe no-op. Dual-published (mirrors module.activated): `publish` →
-      // Pub/Sub (webhooks + automation), `publishPlatformEvent` → the in-process
-      // bus the CRM consumer runs on in this api-rest process. The submission id is
-      // the event id, so the consumer's dedupe processes each submission once.
-      const formSubmittedPayload = {
+      // Announce the submission. `publish` tees onto the automation fan-in topic, so
+      // the seeded "Handle form submissions" automation fires (notify → auto-reply →
+      // add-to-CRM), resolving the form's server-side routing config + recipients
+      // itself — the endpoint never touches routing. The payload is also what external
+      // webhook subscribers receive; the automation re-reads the authoritative config,
+      // so `addToCrm` here is only a convenience hint for those subscribers.
+      await publish(request.log, 'form.submitted', tenantId, null, {
         submissionId: submission.id,
         propertyId: property.id,
         formNodeId: body.formNodeId,
@@ -203,15 +211,8 @@ const publicFormsRoutes: FastifyPluginAsync = (app) => {
         email,
         phone,
         message,
-        addToCrm: cfg.addToCrm,
-      };
-      await publish(request.log, 'form.submitted', tenantId, null, formSubmittedPayload);
-      await publishPlatformEvent({
-        id: submission.id,
-        topic: 'form.submitted',
-        tenantId,
-        occurredAt: new Date(),
-        payload: formSubmittedPayload,
+        addToCrm: form.config.addToCrm,
+        attachmentCount: attachments.length,
       });
 
       return ok({ received: true });

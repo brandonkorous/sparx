@@ -50,6 +50,19 @@ export function optionalBoolField(fields: ResolvedFields, key: string): boolean 
   return typeof value === 'boolean' ? value : undefined;
 }
 
+/** Render an unknown form-field value as a display string for the notify / answer
+ *  lists: strings pass through, null/undefined → '', other primitives coerce, and
+ *  objects/arrays JSON-encode — so a structured value never leaks the default
+ *  '[object Object]' stringification. */
+export function fieldValueToString(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (value == null) return '';
+  if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') {
+    return String(value);
+  }
+  return JSON.stringify(value);
+}
+
 /** The tenant's default actor — the owner user, who system automations assign tasks
  *  to and notify when a seed names no explicit recipient (docs/90 §3b: the
  *  `create_task` assignee + the staff-alert `to` both fall back to the owner). A

@@ -13,7 +13,13 @@
 // for every one — `module: 'crm'` means the module-active gate gates them when the
 // CRM module is disabled, and the kill-switch / tenant-active gates always apply.
 
-import { activityService, customerService, dealService, taskService } from '@sparx/crm/services';
+import {
+  activityService,
+  customerService,
+  dealService,
+  leadService,
+  taskService,
+} from '@sparx/crm/services';
 import type { ActionOutput, EffectInput, TenantCtx } from '@sparx/automation';
 import { registerAction } from '@sparx/automation';
 import { z } from 'zod';
@@ -177,6 +183,33 @@ export function installCrmActions(): void {
         }
       );
       return { taskId: task.id };
+    },
+  });
+
+  registerAction({
+    type: 'crm.capture_lead',
+    module: 'crm',
+    gates: [],
+    manifestNote:
+      'internal CRM write (upsert a site-form submitter as a prospect + log the message, optionally opening a pipeline deal); no external effect — global gates suffice',
+    async execute(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
+      // Self-gate on the form's own toggles (resolved from the server-only
+      // FormDefinition). Either "add to CRM" OR "open a deal" opts the submission
+      // in — opening a deal implies capturing the contact (a deal needs someone to
+      // attach to). A form with neither on — or any non-form trigger without a
+      // submission — is a clean no-op, not an error.
+      const addToCrm = effect.fields['form.addToCrm'] === true;
+      const openDeal = effect.fields['form.openDeal'] === true;
+      if (!addToCrm && !openDeal) return { skipped: 'crm_off' };
+      const submissionId = optionalEntityId(effect.fields, 'form.submissionId');
+      if (!submissionId) return { skipped: 'no_submission' };
+      // captureFormLead upserts the prospect + logs the message; openFormDeal then
+      // attaches a pipeline deal. Both load the row and are idempotent, so a retry
+      // is safe. Capture ALWAYS runs first (the deal needs the customer).
+      const svcCtx = { tenantId: ctx.tenantId, tx: ctx.tx };
+      await leadService.captureFormLead(svcCtx, { submissionId });
+      if (openDeal) await leadService.openFormDeal(svcCtx, { submissionId });
+      return { submissionId, openedDeal: openDeal };
     },
   });
 

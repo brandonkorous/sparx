@@ -38,12 +38,15 @@ async function forward(request: NextRequest, path: string[]): Promise<NextRespon
 
   const method = request.method;
   const hasBody = method !== 'GET' && method !== 'HEAD';
-  const body = hasBody ? await request.text() : undefined;
+  // Read as raw bytes, NOT text: a binary body (a form-attachment PDF/image PUT,
+  // docs/115 Part D) decoded as UTF-8 and re-encoded would be corrupted. An
+  // ArrayBuffer round-trips both JSON and binary faithfully.
+  const body = hasBody ? await request.arrayBuffer() : undefined;
 
   const upstream = await fetch(target, {
     method,
     headers,
-    ...(body ? { body } : {}),
+    ...(body && body.byteLength > 0 ? { body } : {}),
     redirect: 'manual',
     cache: 'no-store',
   });
