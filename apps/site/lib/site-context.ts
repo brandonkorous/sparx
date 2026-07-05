@@ -70,6 +70,9 @@ export interface ResolvedSite {
   // docs/45 §3): an ordered { platform, url }[] the layout chrome binds
   // `site.social` to.
   socials: { platform: string; url: string }[];
+  // Whether the always-on "Made with sparx" footer credit renders for this site.
+  // Defaults true; a future merchant toggle can hide it.
+  showSparxCredit: boolean;
 }
 
 // `ResolvedSite.name` is the customer-facing SITE name, NOT the tenant's legal/
@@ -282,6 +285,9 @@ export const resolveSite = cache(async (): Promise<ResolvedSite | null> => {
       // Defaults to [] so a storefront served by an older api-rest that doesn't
       // yet return `socials` behaves exactly as before (no links).
       socials: data.socials ?? [],
+      // Defaults true so a storefront on an older api-rest (pre-`showSparxCredit`)
+      // keeps showing the credit — the badge is always-on by default.
+      showSparxCredit: data.showSparxCredit ?? true,
     };
   } catch {
     return null;

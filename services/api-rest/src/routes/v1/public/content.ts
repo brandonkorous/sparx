@@ -454,7 +454,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
           // NEVER the tenant's legal/org name.
           tx.property.findUnique({
             where: { id: propertyId },
-            select: { name: true, settings: true },
+            select: { name: true, settings: true, showSparxCredit: true },
           }),
         ])
     );
@@ -521,6 +521,9 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
       name: tenant.name,
       businessName: identity.businessName,
       propertyName: propertyNameRow?.name ?? null,
+      // Platform attribution: whether this site shows the "Made with sparx" footer
+      // credit. Defaults true so a site predating the column still shows it.
+      showSparxCredit: propertyNameRow?.showSparxCredit ?? true,
       settings: tenant.settings,
       // PER-SITE social links (docs/49 "full per-site brand"): each site has its
       // own, stored in the property settings bag. Falls back to the tenant-level

@@ -38,7 +38,7 @@ import { ConsentManager } from '@/components/consent/consent-manager';
 import { SiteAnalyticsBeacon } from '@/components/site-analytics-beacon';
 import { TopProgressBar } from '@/components/top-progress-bar';
 import { ChatWidget } from '@sparx/chat-widget';
-import { ChunkReloadGuard } from '@sparx/ui';
+import { ChunkReloadGuard, MadeWithSparx } from '@sparx/ui';
 import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
 import { resolveActivePropertySlug, resolveSite, type SiteTheme } from '@/lib/site-context';
@@ -523,6 +523,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                         />
                       </>
                     )}
+                    {/* Platform attribution — always-on shell chrome, injected
+                        AFTER the layout tree so it can't be a deletable BuilderNode
+                        and covers both the Builder-layout and legacy footer paths.
+                        Hidden only when the site opts out (docs/95). */}
+                    {site.showSparxCredit !== false ? <MadeWithSparx /> : null}
                   </div>
                   <MiniCart />
                   <ConsentManager tenant={site.slug} config={site.consent} />

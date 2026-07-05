@@ -33,6 +33,7 @@ export { useDebouncedValue } from './hooks/use-debounced-value';
 // ── Brand ────────────────────────────────────────────────
 export { Wordmark, type WordmarkProps } from './components/brand/wordmark';
 export { SparxMark, type SparxMarkProps } from './components/brand/sparx-mark';
+export { MadeWithSparx, type MadeWithSparxProps } from './components/brand/made-with-sparx';
 export {
   BrandRail,
   RailWordmark,

@@ -25,9 +25,19 @@ export interface SparxMarkProps extends Omit<React.SVGProps<SVGSVGElement>, 'chi
   size?: number;
   /** Accessible label. When omitted, the mark is treated as decorative. */
   title?: string;
+  /** Fill for the indigo "x". Defaults to the `--sparx-primary` token. Pass the
+   *  literal hex only where that token isn't loaded (e.g. a TENANT public site,
+   *  scoped to its own `--st-*` theme). This exists to force the SAME indigo as a
+   *  literal — never to recolor the mark to a different hue (brand-guide §2). */
+  accentColor?: string;
 }
 
-export function SparxMark({ size = 24, title, ...rest }: SparxMarkProps) {
+export function SparxMark({
+  size = 24,
+  title,
+  accentColor = 'var(--sparx-primary)',
+  ...rest
+}: SparxMarkProps) {
   return (
     <svg
       width={size}
@@ -40,7 +50,7 @@ export function SparxMark({ size = 24, title, ...rest }: SparxMarkProps) {
     >
       {title ? <title>{title}</title> : null}
       <path d={S_PATH} fill="currentColor" />
-      <path d={X_PATH} fill="var(--sparx-primary)" />
+      <path d={X_PATH} fill={accentColor} />
     </svg>
   );
 }

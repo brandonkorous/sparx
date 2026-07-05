@@ -94,9 +94,8 @@ export function SiteFooter({
             <SocialRow socialLinks={social} />
             <div className="st-sitefooter__minimal-legal">
               <span>{legal}</span>
-              <span>
-                Powered by <strong>sparx</strong>
-              </span>
+              {/* sparx attribution is the always-on <MadeWithSparx> badge injected
+                  at the site-shell level (app/layout.tsx), not an inline footer line. */}
             </div>
           </div>
         </div>
@@ -129,9 +128,8 @@ export function SiteFooter({
         </div>
         <div className="st-sitefooter__bottom">
           <span>{legal}</span>
-          <span>
-            Powered by <strong>sparx</strong>
-          </span>
+          {/* sparx attribution is the always-on <MadeWithSparx> badge injected
+              at the site-shell level (app/layout.tsx), not an inline footer line. */}
         </div>
       </div>
     </footer>
