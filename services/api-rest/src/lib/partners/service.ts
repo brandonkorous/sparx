@@ -24,6 +24,7 @@ import {
 
 import { env } from '../../env.js';
 import { publishPartnerEvent } from './events.js';
+import { provisionPartnerAccount, ProvisionAccountError } from './provision-account.js';
 
 export interface PartnerContext {
   tenantId: string;
@@ -429,7 +430,15 @@ export const partnerService = {
   },
 
   /** Staff: approve an application → provision/activate the applicant's partner row
-   *  at the requested (or overridden) tier. Requires the applicant to have an org. */
+   *  at the requested (or overridden) tier.
+   *
+   *  A partner IS a tenant, so approval needs a Sparx account to attach the row to.
+   *  If the applicant applied from an account, it's already linked. If they applied
+   *  via the public form (email only), we PROVISION one now — mint the tenant +
+   *  owner login + a set-password invite (docs/114 §B.2). Provisioning runs in the
+   *  dashboard (the only Better Auth host) via provisionPartnerAccount; we link the
+   *  new tenant back onto the application immediately so a retry after a partial
+   *  failure reuses it instead of minting a second account. */
   async approveApplication(raw: unknown) {
     const input = InternalApproveApplicationInput.parse(raw);
     const platformTenantId = env.SPARX_PLATFORM_TENANT_ID;
@@ -438,9 +447,39 @@ export const partnerService = {
       tx.partnerApplication.findUnique({ where: { id: input.applicationId } })
     );
     if (!app) throw notFound('Application', input.applicationId);
-    if (!app.applicantTenantId) throw badRequest('Applicant has no Sparx account yet.');
+
+    let applicantTenantId = app.applicantTenantId;
+    if (!applicantTenantId) {
+      if (!app.email) {
+        throw badRequest('This applicant has no Sparx account and no email to invite.');
+      }
+      try {
+        // Provisioning handles both cases: a brand-new account (with set-password
+        // invite) OR a new partner workspace on an existing login. An existing
+        // email is NOT a refusal — it succeeds with a workspace on that account.
+        const account = await provisionPartnerAccount({ email: app.email, name: app.name });
+        applicantTenantId = account.tenantId;
+      } catch (err) {
+        if (err instanceof ProvisionAccountError) {
+          if (err.code === 'EMAIL_TAKEN') {
+            // Only reachable on a race (a concurrent signup claimed the email
+            // between the lookup and the insert) — safe to retry.
+            throw conflict('That email was just claimed by another signup — try approving again.');
+          }
+          if (err.code === 'INVALID_INPUT') throw badRequest(err.message);
+        }
+        throw err; // UNAVAILABLE / PROVISION_FAILED / unexpected → surfaced as 500
+      }
+      await withTenant({ tenantId: platformTenantId }, (tx) =>
+        tx.partnerApplication.update({
+          where: { id: app.id },
+          data: { applicantTenantId },
+        })
+      );
+    }
+
     const tier = (input.tier ?? app.requestedTier) as PartnerTier;
-    const partner = await partnerService.provisionForTenant(app.applicantTenantId, {
+    const partner = await partnerService.provisionForTenant(applicantTenantId, {
       displayName: app.name,
       kind: app.kind,
       tier,

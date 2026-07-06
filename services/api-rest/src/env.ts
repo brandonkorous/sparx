@@ -263,6 +263,16 @@ const EnvSchema = z
     MARKET_COMMISSION_BPS: z.string().optional(),
     MARKET_PAYOUTS_PROVIDER: z.string().optional(),
     SPARX_DASHBOARD_URL: z.string().optional(),
+    // In-cluster origin of the dashboard Next.js service, used ONLY for the
+    // service-to-service partner account-provisioning call (POST
+    // /api/internal/partner-provision, docs/114 §B.2). Distinct from
+    // SPARX_DASHBOARD_URL (which is a browser-facing base for email links): this
+    // is the private ClusterIP address (e.g. http://dashboard:3000). Account
+    // creation runs only where Better Auth lives — the dashboard — so approving an
+    // accountless partner delegates here. The call authenticates with
+    // SPARX_INTERNAL_JWT_SECRET (already shared both ways). Defaults to the dev
+    // dashboard origin so a local checkout works without extra wiring.
+    SPARX_DASHBOARD_INTERNAL_URL: z.string().default('http://localhost:3001'),
   })
   .superRefine((data, ctx) => {
     // GCS mode requires both buckets — the public one holds variants,

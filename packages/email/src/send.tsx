@@ -15,6 +15,11 @@ import {
   type WelcomeMerchantEmailProps,
 } from './templates/welcome-merchant';
 import {
+  PartnerWelcomeEmail,
+  partnerWelcomeSubject,
+  type PartnerWelcomeEmailProps,
+} from './templates/partner-welcome';
+import {
   EmailVerificationEmail,
   emailVerificationSubject,
   type EmailVerificationEmailProps,
@@ -89,6 +94,7 @@ function defaultFrom(): string {
 export type TemplateId =
   | 'password-reset'
   | 'welcome-merchant'
+  | 'partner-welcome'
   | 'email-verification'
   | 'domain-renewal-reminder'
   | 'chat-notification'
@@ -112,6 +118,13 @@ export type TemplateSend =
       template: 'welcome-merchant';
       to: string;
       props: WelcomeMerchantEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'partner-welcome';
+      to: string;
+      props: PartnerWelcomeEmailProps;
       from?: string;
       replyTo?: string;
     }
@@ -241,6 +254,22 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'welcome-merchant',
+      };
+    }
+    case 'partner-welcome': {
+      const element = wrap(<PartnerWelcomeEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: partnerWelcomeSubject,
+        html,
+        text,
+        templateId: 'partner-welcome',
       };
     }
     case 'email-verification': {

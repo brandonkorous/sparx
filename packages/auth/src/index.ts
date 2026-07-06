@@ -15,6 +15,11 @@ export {
   generateUniqueTenantSlug,
   type ProvisionTenantInput,
 } from './provision-tenant';
+export {
+  provisionInvitedOwner,
+  type ProvisionInvitedOwnerInput,
+  type ProvisionInvitedOwnerResult,
+} from './provision-invited-owner';
 export { randomFriendlySlug } from './friendly-slug';
 export { getSession, requireSession, type SparxSession } from './session';
 export { ORG_ROLES, ASSIGNABLE_ORG_ROLES, type OrgRole, type AssignableOrgRole } from './org-roles';

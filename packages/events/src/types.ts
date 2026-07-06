@@ -298,6 +298,7 @@ export interface EmailSendPayload {
   template:
     | 'password-reset'
     | 'welcome-merchant'
+    | 'partner-welcome'
     | 'email-verification'
     | 'domain-renewal-reminder'
     | 'chat-notification'

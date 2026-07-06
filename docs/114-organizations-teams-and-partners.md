@@ -1,8 +1,8 @@
 # Organizations, Teams & the Partner Program
 
-**Version:** 0.1 (planning)
+**Version:** 0.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-02
+**Last Updated:** 2026-07-06
 
 > Status: **planning / not yet built.** This doc is the reconciled blueprint for two
 > coupled bodies of work decided in the 2026-07-02 build session:
@@ -252,8 +252,31 @@ partner_payout_runs              (organization_id = partner's org)
   - `informal` + **anon** → application `approved`; return "Create your account to activate"
     → `app.sparx.works/sign-up?partner=informal`; onboarding provisions the `partners` row.
   - `registered`/`certified` → application `pending`; "We'll review within 3 business days."
-    Staff approve via `/internal/partners/:id/approve`, which provisions/activates the row
-    (requires the applicant to have an org to key to).
+    Staff approve via `/internal/partners/:id/approve` (through the operator console), which
+    provisions/activates the `partners` row at the requested (or overridden) tier.
+    - **Accountless applicants** (public form, email only): a partner IS a tenant, so there
+      must be an account to key the `partners` row to. Approval **provisions one** — account
+      creation runs only where Better Auth lives, so api-rest delegates to the dashboard's
+      token-gated `POST /api/internal/partner-provision` (authenticated with the shared
+      `SPARX_INTERNAL_JWT_SECRET`; api-rest reaches it at `SPARX_DASHBOARD_INTERNAL_URL`). That
+      route runs `@sparx/auth`'s `provisionInvitedOwner`, which mints the tenant + owner login
+      (module-less, so $0 under modules-not-plans), skips platform-legal acceptance (the
+      invitee never clicked the checkbox — the dashboard's legal banner prompts them at first
+      sign-in), and emails a **set-password invite** (Better Auth's reset flow; the
+      `password-reset` template copy is neutral so it reads correctly for a first-time set).
+      api-rest links the new tenant onto the application (idempotent — a retry after a partial
+      failure reuses it) and activates the `partners` row. Applicants who applied from an
+      existing account skip straight to activation.
+    - **Email already has a Sparx login** (applied via the public form despite having an
+      account): `provisionInvitedOwner` gives that existing user a **new partner workspace**
+      (a fresh org they own — no duplicate user, no set-password email; it joins their account
+      switcher). So an existing account is NOT a refusal — approval always lands the applicant a
+      partner workspace. (Deliberate v1: a dedicated partner org rather than attaching partner
+      status to a pre-existing tenant — keeps partner payouts separate from any store billing
+      and avoids a "which tenant?" picker. `EMAIL_TAKEN` is now reachable only on a
+      concurrent-signup race → retry.)
+    - Both branches send a branded **`partner-welcome`** email (`@sparx/email`); new accounts
+      additionally get the set-password invite.
 - **Self-serve "Become a partner"** (D7) — the same provisioning, reachable one-click from
   signup/onboarding and from the dashboard for an existing org.
 

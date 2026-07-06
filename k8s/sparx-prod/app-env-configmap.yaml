@@ -40,6 +40,14 @@ data:
   NEXT_PUBLIC_MARKETING_URL: https://sparx.works
   # Dashboard → api-rest in-cluster URL. Avoids going out through Caddy.
   SPARX_API_REST_URL: http://api-rest.sparx-prod.svc.cluster.local:3000
+  # api-rest → dashboard in-cluster URL, used ONLY for the partner account
+  # provisioning call (POST /api/internal/partner-provision, docs/114 §B.2):
+  # account creation runs only where Better Auth lives (the dashboard), so
+  # approving an accountless partner delegates the tenant + owner + invite there.
+  # Authenticated with the shared SPARX_INTERNAL_JWT_SECRET (already in
+  # sparx-app-secrets). Distinct from any browser-facing dashboard URL — this is
+  # the private ClusterIP address.
+  SPARX_DASHBOARD_INTERNAL_URL: http://dashboard.sparx-prod.svc.cluster.local:3000
   # PUBLIC origin of api-rest — baked into rendered email media URLs (logos,
   # product images), which resolve via GET /v1/public/media/:id (a REST-only
   # route; GraphQL at graphql.sparx.works doesn't serve bytes). Distinct from the

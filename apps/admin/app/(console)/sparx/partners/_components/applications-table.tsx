@@ -22,9 +22,11 @@ import { approveApplicationAction, rejectApplicationAction } from '../actions';
 
 // WizeWorks' partner-application review queue. Pending rows get Approve (grants
 // the REQUESTED tier — adjust later from the partner's detail) and Reject, each
-// confirmed. Approval provisions the applicant's partner row, so it needs an
-// applicant with a Sparx account (the server enforces this; we disable + explain
-// when there's no linked org).
+// confirmed. A partner IS a tenant, so approval needs a Sparx account: if the
+// applicant applied from one it's already linked; if they applied via the public
+// form (email only), approving CREATES the account for them and emails a
+// set-password invite (the confirm copy says which). We only disable Approve when
+// there's neither a linked account NOR an email to invite.
 export function ApplicationsTable({
   applications,
   canAct,
@@ -37,29 +39,43 @@ export function ApplicationsTable({
   const [, startTransition] = React.useTransition();
 
   function act(
-    id: string,
+    a: OperatorPartnerApplication,
     kind: 'approve' | 'reject',
-    name: string,
-    tier: string,
     run: () => Promise<{ ok: boolean; error?: string }>
   ) {
     return async () => {
+      // Approving an application with no linked account provisions one now.
+      const willProvision = kind === 'approve' && !a.applicantTenantId;
+      const description =
+        kind === 'reject'
+          ? 'Declines this application. They can re-apply later. No account is created.'
+          : willProvision
+            ? `No Sparx account is linked yet. Approving sets ${
+                a.email || 'this applicant'
+              } up as a partner at the ${tierLabel(
+                a.requestedTier
+              )} tier — creating their account (or adding a partner workspace if they already have one) and emailing them how to sign in. They can then manage referrals, commissions, and payouts.`
+            : `Activates their partner account at the ${tierLabel(
+                a.requestedTier
+              )} tier and mints a referral code. They can host bootcamps and earn referral commissions.`;
       const ok = await confirm({
-        title: kind === 'approve' ? `Approve ${name}?` : `Reject ${name}?`,
-        description:
-          kind === 'approve'
-            ? `Activates their partner account at the ${tierLabel(tier)} tier and mints a referral code. They can host bootcamps and earn referral commissions.`
-            : `Declines this application. They can re-apply later. No account is created.`,
-        confirmLabel: kind === 'approve' ? 'Approve partner' : 'Reject',
+        title: kind === 'approve' ? `Approve ${a.name}?` : `Reject ${a.name}?`,
+        description,
+        confirmLabel:
+          kind === 'reject'
+            ? 'Reject'
+            : willProvision
+              ? 'Create account & approve'
+              : 'Approve partner',
         tone: kind === 'approve' ? 'module' : 'warning',
       });
       if (!ok) return;
-      setPending((p) => ({ ...p, [id]: true }));
+      setPending((p) => ({ ...p, [a.id]: true }));
       startTransition(async () => {
         const res = await run();
-        if (res.ok) toast.success(kind === 'approve' ? `${name} approved` : `${name} rejected`);
+        if (res.ok) toast.success(kind === 'approve' ? `${a.name} approved` : `${a.name} rejected`);
         else toast.error(res.error ?? 'Action failed.');
-        setPending((p) => ({ ...p, [id]: false }));
+        setPending((p) => ({ ...p, [a.id]: false }));
       });
     };
   }
@@ -80,7 +96,9 @@ export function ApplicationsTable({
         {applications.map((a) => {
           const busy = Boolean(pending[a.id]);
           const isPending = a.status === 'pending';
-          const canApprove = isPending && Boolean(a.applicantTenantId);
+          // Approvable if pending AND we can attach a partner to a tenant — either
+          // a linked account, or an email we can provision + invite an account for.
+          const canApprove = isPending && (Boolean(a.applicantTenantId) || Boolean(a.email));
           return (
             <TableRow key={a.id}>
               <TableCell>
@@ -121,11 +139,9 @@ export function ApplicationsTable({
                         title={
                           canApprove
                             ? undefined
-                            : 'The applicant has not created a Sparx account yet.'
+                            : 'This applicant has no Sparx account and no email to invite.'
                         }
-                        onClick={act(a.id, 'approve', a.name, a.requestedTier, () =>
-                          approveApplicationAction(a.id)
-                        )}
+                        onClick={act(a, 'approve', () => approveApplicationAction(a.id))}
                       >
                         Approve
                       </Button>
@@ -134,9 +150,7 @@ export function ApplicationsTable({
                         size="sm"
                         variant="soft"
                         disabled={busy}
-                        onClick={act(a.id, 'reject', a.name, a.requestedTier, () =>
-                          rejectApplicationAction(a.id)
-                        )}
+                        onClick={act(a, 'reject', () => rejectApplicationAction(a.id))}
                       >
                         Reject
                       </Button>

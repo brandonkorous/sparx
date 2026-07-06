@@ -11,6 +11,12 @@ export {
 } from './welcome-merchant';
 
 export {
+  PartnerWelcomeEmail,
+  partnerWelcomeSubject,
+  type PartnerWelcomeEmailProps,
+} from './partner-welcome';
+
+export {
   EmailVerificationEmail,
   emailVerificationSubject,
   type EmailVerificationEmailProps,

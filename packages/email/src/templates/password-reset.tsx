@@ -23,16 +23,17 @@ export function PasswordResetEmail({
   outro,
 }: PasswordResetEmailProps) {
   return (
-    <EmailLayout preview="Reset your sparx password">
+    <EmailLayout preview="Set your sparx password">
       <Section>
-        <EmailHeading>Reset your password</EmailHeading>
+        <EmailHeading>Set your password</EmailHeading>
         <EmailParagraph>{name ? `Hi ${name},` : 'Hi there,'}</EmailParagraph>
         {intro ? <EmailParagraph>{intro}</EmailParagraph> : null}
         <EmailParagraph>
-          We received a request to reset the password on your sparx account. Click the button below
-          to choose a new one. The link expires in {expiresInMinutes} minutes.
+          Use the button below to set a password for your sparx account — whether you&apos;re
+          choosing one for the first time or replacing an old one. The link expires in{' '}
+          {expiresInMinutes} minutes.
         </EmailParagraph>
-        <EmailButton href={resetUrl}>Reset password</EmailButton>
+        <EmailButton href={resetUrl}>Set password</EmailButton>
         {outro ? <EmailParagraph>{outro}</EmailParagraph> : null}
         <EmailMuted>If the button doesn&apos;t work, paste this URL into your browser:</EmailMuted>
         <EmailParagraph flush>
@@ -47,4 +48,4 @@ export function PasswordResetEmail({
   );
 }
 
-export const passwordResetSubject = 'Reset your sparx password';
+export const passwordResetSubject = 'Set your sparx password';
