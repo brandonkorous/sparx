@@ -43,6 +43,7 @@ export interface Cart {
   items: CartItem[];
   totals: CartTotals;
   currency: string;
+  appliedDiscountCodes: string[];
 }
 
 /** What we persist in localStorage — the ownership triple. The full line
@@ -103,6 +104,7 @@ interface RawCart {
   cartId: string;
   token?: string;
   items: RawCartItem[];
+  appliedDiscountCodes?: string[];
   totals: {
     subtotalCents: number;
     discountTotalCents?: number;
@@ -161,6 +163,7 @@ function toCart(raw: RawCart, merchantSlug: string, token: string): Cart {
     cartId: raw.cartId,
     token,
     currency: raw.currency,
+    appliedDiscountCodes: raw.appliedDiscountCodes ?? [],
     items: raw.items.map((i) => ({
       id: i.id,
       variantId: i.variantId,
@@ -259,6 +262,30 @@ export async function removeCartItem(stored: StoredCart, itemId: string): Promis
   const raw = await call<RawCart>(
     withMerchant(
       `/cart/${encodeURIComponent(stored.cartId)}/items/${encodeURIComponent(itemId)}`,
+      stored.merchantSlug
+    ),
+    stored.token,
+    { method: 'DELETE' }
+  );
+  return toCart(raw, stored.merchantSlug, stored.token);
+}
+
+/** Apply a discount code to the cart. Throws CartRequestError (400) with the API's
+ *  message when the code is invalid/expired/ineligible. */
+export async function applyDiscount(stored: StoredCart, code: string): Promise<Cart> {
+  const raw = await call<RawCart>(
+    withMerchant(`/cart/${encodeURIComponent(stored.cartId)}/discount`, stored.merchantSlug),
+    stored.token,
+    { method: 'POST', json: { code } }
+  );
+  return toCart(raw, stored.merchantSlug, stored.token);
+}
+
+/** Remove a previously-applied discount code from the cart. */
+export async function removeDiscount(stored: StoredCart, code: string): Promise<Cart> {
+  const raw = await call<RawCart>(
+    withMerchant(
+      `/cart/${encodeURIComponent(stored.cartId)}/discount/${encodeURIComponent(code)}`,
       stored.merchantSlug
     ),
     stored.token,

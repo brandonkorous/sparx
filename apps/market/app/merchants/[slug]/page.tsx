@@ -1,21 +1,39 @@
-// Merchant profile page. Banner + logo + name + location + bio + socials and a
-// link out to the seller's own storefront, followed by their product grid. Pure
-// server component (revalidate 60). Emits Store JSON-LD + OG/meta from the
-// profile.
+// Merchant profile page — the seller storefront. Banner + logo + name + trust row
+// (rating, product count, member-since, location) + bio + socials + a link out to
+// the seller's own storefront, then their catalog with in-store search + sort +
+// pagination. Pure server component (revalidate 60). Emits Store JSON-LD + OG/meta.
+// Solid fills only — no gradients.
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { ExternalLink, MapPin, Store } from 'lucide-react';
-import { Button } from '@sparx/ui';
+import { CalendarDays, ExternalLink, MapPin, Package, Store } from 'lucide-react';
+import { Button } from 'silicaui-react';
 
 import { ProductGrid } from '@/components/product-grid';
-import { getMerchant } from '@/lib/market';
+import { MarketPager } from '@/components/market-pager';
+import { StoreControls } from '@/components/store-controls';
+import { Stars } from '@/components/stars';
+import { Container } from '@/components/ui/layout';
+import { getMerchant, type MarketSort } from '@/lib/market';
 
 export const revalidate = 60;
 
+const SORTS = new Set<MarketSort>([
+  'relevance',
+  'newest',
+  'lowest_price',
+  'highest_price',
+  'rating',
+]);
+
 interface PageProps {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}
+
+function one(v: string | string[] | undefined): string | undefined {
+  return Array.isArray(v) ? v[0] : v;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -46,12 +64,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function MerchantProfilePage({ params }: PageProps) {
+export default async function MerchantProfilePage({ params, searchParams }: PageProps) {
   const { slug } = await params;
-  const profile = await getMerchant(slug);
+  const sp = (await searchParams) ?? {};
+  const trimmedQ = one(sp.q)?.trim();
+  const q = trimmedQ && trimmedQ.length > 0 ? trimmedQ : undefined;
+  const rawSort = one(sp.sort);
+  const sort: MarketSort =
+    rawSort && SORTS.has(rawSort as MarketSort) ? (rawSort as MarketSort) : 'newest';
+  const page = Math.max(1, Number(one(sp.page) ?? '1') || 1);
+
+  const profile = await getMerchant(slug, { ...(q ? { q } : {}), sort, page });
   if (!profile) notFound();
 
-  const { merchant, products } = profile;
+  const { merchant, products, total, perPage } = profile;
+  const totalPages = Math.max(1, Math.ceil(total / (perPage || 24)));
+  const memberYear = new Date(merchant.memberSince).getFullYear();
 
   const storeJsonLd = {
     '@context': 'https://schema.org',
@@ -62,18 +90,27 @@ export default async function MerchantProfilePage({ params }: PageProps) {
     ...(merchant.bannerUrl ? { image: merchant.bannerUrl } : {}),
     ...(merchant.siteUrl ? { url: merchant.siteUrl } : {}),
     ...(merchant.location ? { address: merchant.location } : {}),
+    ...(merchant.rating != null && merchant.ratingCount > 0
+      ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: merchant.rating,
+            reviewCount: merchant.ratingCount,
+          },
+        }
+      : {}),
     ...(merchant.socials.length > 0 ? { sameAs: merchant.socials.map((s) => s.url) } : {}),
   };
 
   return (
-    <div className="mx-container mx-section">
+    <Container className="py-8 md:py-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(storeJsonLd) }}
       />
 
-      {/* Banner */}
-      <div className={merchant.bannerUrl ? 'mx-banner' : 'mx-banner mx-banner--empty'}>
+      {/* Banner — a real image, or a solid subtle panel (no gradient). */}
+      <div className="relative h-36 overflow-hidden rounded-2xl bg-[var(--color-bg-subtle)] md:h-56">
         {merchant.bannerUrl ? (
           <Image
             src={merchant.bannerUrl}
@@ -85,9 +122,9 @@ export default async function MerchantProfilePage({ params }: PageProps) {
         ) : null}
       </div>
 
-      {/* Identity head */}
-      <div className="mx-profile-head">
-        <span className="mx-profile-head__logo">
+      {/* Identity head — logo overlaps the banner. */}
+      <div className="-mt-12 flex flex-wrap items-end gap-5 px-2">
+        <span className="relative inline-flex h-[5.5rem] w-[5.5rem] flex-shrink-0 items-center justify-center overflow-hidden rounded-2xl border-[3px] border-[var(--color-bg-surface)] bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] shadow-[0_4px_14px_-6px_rgba(0,0,0,0.25)]">
           {merchant.logoUrl ? (
             <Image src={merchant.logoUrl} alt={merchant.name} fill sizes="88px" />
           ) : (
@@ -95,30 +132,49 @@ export default async function MerchantProfilePage({ params }: PageProps) {
           )}
         </span>
         <div className="min-w-0 flex-1 pb-1">
-          <h1 className="mx-page-title">{merchant.name}</h1>
-          <div
-            className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm"
-            style={{ color: 'var(--color-text-secondary)' }}
-          >
+          <h1 className="text-2xl font-bold tracking-[-0.02em] text-[var(--color-text-primary)] md:text-3xl">
+            {merchant.name}
+          </h1>
+          {/* Trust row */}
+          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-[var(--color-text-secondary)]">
+            {merchant.rating != null && merchant.ratingCount > 0 ? (
+              <Stars rating={merchant.rating} reviewCount={merchant.ratingCount} size={14} />
+            ) : null}
+            <span className="inline-flex items-center gap-1.5">
+              <Package size={14} aria-hidden />
+              {merchant.listingCount === 1
+                ? '1 product'
+                : `${merchant.listingCount.toLocaleString()} products`}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <CalendarDays size={14} aria-hidden />
+              Selling since {memberYear}
+            </span>
             {merchant.location ? (
-              <span className="inline-flex items-center gap-1">
+              <span className="inline-flex items-center gap-1.5">
                 <MapPin size={14} aria-hidden />
                 {merchant.location}
               </span>
             ) : null}
-            <span>
-              {merchant.listingCount === 1
-                ? '1 listing'
-                : `${merchant.listingCount.toLocaleString()} listings`}
-            </span>
           </div>
         </div>
         {merchant.siteUrl ? (
-          <Button asChild color="primary" variant="soft" size="md" className="self-end">
-            <a href={merchant.siteUrl} target="_blank" rel="noopener noreferrer nofollow">
-              Visit their store
-              <ExternalLink size={15} aria-hidden />
-            </a>
+          <Button
+            render={
+              <a
+                href={merchant.siteUrl}
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                aria-label="Visit their store"
+              />
+            }
+            color="primary"
+            variant="soft"
+            size="md"
+            className="self-end"
+          >
+            Visit their store
+            <ExternalLink size={15} aria-hidden />
           </Button>
         ) : null}
       </div>
@@ -127,12 +183,12 @@ export default async function MerchantProfilePage({ params }: PageProps) {
       {merchant.headline || merchant.bio || merchant.socials.length > 0 ? (
         <div className="mt-6 flex max-w-3xl flex-col gap-3">
           {merchant.headline ? (
-            <p className="text-lg font-medium" style={{ color: 'var(--color-text-primary)' }}>
+            <p className="text-lg font-medium text-[var(--color-text-primary)]">
               {merchant.headline}
             </p>
           ) : null}
           {merchant.bio ? (
-            <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
+            <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
               {merchant.bio}
             </p>
           ) : null}
@@ -144,7 +200,7 @@ export default async function MerchantProfilePage({ params }: PageProps) {
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer nofollow"
-                  className="mx-social"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border-default)] px-3 py-1.5 text-[0.8125rem] text-[var(--color-text-secondary)] transition-colors hover:border-[var(--color-border-strong)] hover:text-[var(--color-text-primary)]"
                 >
                   {social.platform}
                   <ExternalLink size={12} aria-hidden />
@@ -155,15 +211,25 @@ export default async function MerchantProfilePage({ params }: PageProps) {
         </div>
       ) : null}
 
-      {/* Products */}
+      {/* Catalog with in-store controls */}
       <section className="mt-10">
-        <h2 className="mx-section__title mb-5">Products from {merchant.name}</h2>
+        <div className="mb-5 flex flex-col gap-4">
+          <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
+            {q ? `Results for “${q}” in ${merchant.name}` : `Products from ${merchant.name}`}
+          </h2>
+          <StoreControls basePath={`/merchants/${merchant.slug}`} q={q} sort={sort} />
+        </div>
         <ProductGrid
           products={products}
-          emptyTitle="No products listed yet"
-          emptyHint="This seller hasn’t listed anything on the marketplace yet."
+          emptyTitle={q ? `No products match “${q}”` : 'No products listed yet'}
+          emptyHint={
+            q
+              ? 'Try a different search in this store.'
+              : 'This seller hasn’t listed anything on the marketplace yet.'
+          }
         />
+        <MarketPager basePath={`/merchants/${merchant.slug}`} page={page} totalPages={totalPages} />
       </section>
-    </div>
+    </Container>
   );
 }

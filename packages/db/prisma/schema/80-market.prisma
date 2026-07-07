@@ -65,6 +65,12 @@ model MarketListing {
   inStock            Boolean @default(false) @map("in_stock")
   averageRating      Float?  @map("average_rating")
   reviewCount        Int     @default(0) @map("review_count")
+  // Denormalized card-badge + trending signals (docs/117 S3). best_seller_rank
+  // mirrors commerce_products.best_seller_rank (1 = top seller); low_stock is the
+  // computed "in stock but running low" urgency flag. Both maintained by the
+  // projection writer + refreshed on inventory drift.
+  bestSellerRank     Int?    @map("best_seller_rank")
+  lowStock           Boolean @default(false) @map("low_stock")
   // sparx-curated placement (admin-set, mirrors commerce_products.market_featured).
   featured           Boolean @default(false)
   // Absolute URL of the product's page on the seller's own storefront (the
@@ -82,6 +88,7 @@ model MarketListing {
   @@unique([slug], map: "market_listings_slug_unique")
   @@index([category, featured])
   @@index([tenantId])
+  @@index([bestSellerRank], map: "market_listings_best_seller_rank_idx")
   @@map("market_listings")
 }
 
@@ -106,6 +113,10 @@ model MarketMerchant {
   socials   Json    @default("[]")
   // Count of currently-listed, approved products (drives "Browse N products").
   listingCount Int     @default(0) @map("listing_count")
+  // Aggregate seller rating (docs/117 S5) — review-count-weighted mean across the
+  // tenant's listings, maintained by the projection writer. Null until reviewed.
+  rating       Float?
+  ratingCount  Int     @default(0) @map("rating_count")
   featured     Boolean @default(false)
   approved     Boolean @default(true)
 

@@ -10,7 +10,15 @@ import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Check, Minus, Plus, ShoppingBag } from 'lucide-react';
-import { Alert, Button, NativeSelect } from '@sparx/ui';
+import {
+  Alert,
+  AlertActions,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
+  Button,
+  NativeSelect,
+} from 'silicaui-react';
 
 import { formatCents } from '@/lib/format';
 import { addCartItem, createCart, readStoredCart } from '@/lib/cart-client';
@@ -103,9 +111,9 @@ export function AddToCart({ merchantSlug, merchantName, variants, currency }: Ad
   }
 
   return (
-    <div className="mx-form">
+    <div className="flex flex-col gap-4">
       {sellableVariants.length > 1 ? (
-        <label className="mx-field">
+        <label className="flex flex-col gap-1.5 text-sm font-medium text-[var(--color-text-primary)]">
           <span>Option</span>
           <NativeSelect
             value={variantId}
@@ -162,47 +170,51 @@ export function AddToCart({ merchantSlug, merchantName, variants, currency }: Ad
           disabled={!canBuy || busy}
           loading={busy}
           onClick={handleAdd}
-          leftIcon={added ? <Check size={18} /> : <ShoppingBag size={18} />}
+          iconStart={added ? <Check size={18} /> : <ShoppingBag size={18} />}
         >
           {!canBuy ? 'Sold out' : added ? 'Added to cart' : 'Add to cart'}
         </Button>
       </div>
 
       {added ? (
-        <Button asChild color="neutral" variant="soft" size="md">
-          <Link href="/cart">View cart</Link>
+        <Button render={<Link href="/cart" />} color="neutral" variant="soft" size="md">
+          View cart
         </Button>
       ) : null}
 
       {conflict ? (
-        <Alert color="warning" variant="soft" title="Start a new cart?">
-          <p className="mb-3">
-            Your cart has items from <strong>{conflict.otherMerchant}</strong>. A sparx.market cart
-            can only hold items from one seller at a time. Start a new cart with {merchantName}?
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              type="button"
-              color="primary"
-              variant="solid"
-              size="sm"
-              disabled={busy}
-              loading={busy}
-              onClick={() => startNewCart()}
-            >
-              Start new cart
-            </Button>
-            <Button
-              type="button"
-              color="neutral"
-              variant="ghost"
-              size="sm"
-              disabled={busy}
-              onClick={() => setConflict(null)}
-            >
-              Keep current cart
-            </Button>
-          </div>
+        <Alert color="warning" variant="soft">
+          <AlertContent>
+            <AlertTitle>Start a new cart?</AlertTitle>
+            <AlertDescription>
+              Your cart has items from <strong>{conflict.otherMerchant}</strong>. A sparx.market
+              cart can only hold items from one seller at a time. Start a new cart with{' '}
+              {merchantName}?
+            </AlertDescription>
+            <AlertActions>
+              <Button
+                type="button"
+                color="primary"
+                variant="solid"
+                size="sm"
+                disabled={busy}
+                loading={busy}
+                onClick={() => startNewCart()}
+              >
+                Start new cart
+              </Button>
+              <Button
+                type="button"
+                color="neutral"
+                variant="ghost"
+                size="sm"
+                disabled={busy}
+                onClick={() => setConflict(null)}
+              >
+                Keep current cart
+              </Button>
+            </AlertActions>
+          </AlertContent>
         </Alert>
       ) : null}
 

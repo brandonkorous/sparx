@@ -13,14 +13,15 @@
   },
   "dependencies": {
     "@sparx/commerce-schemas": "workspace:*",
-    "@sparx/ui": "workspace:*",
     "@stripe/react-stripe-js": "^3.7.0",
     "@stripe/stripe-js": "^5.10.0",
     "geist": "^1.3.1",
     "lucide-react": "^0.577.0",
     "next": "^16.2.6",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "silicaui": "^0.1.0",
+    "silicaui-react": "^0.2.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.0",

@@ -39,6 +39,7 @@ import { z } from 'zod';
 import {
   cartService,
   checkoutService,
+  discountService,
   marketService,
   shippingService,
   type ServiceContext,
@@ -46,7 +47,7 @@ import {
 import { MARKET_CATEGORIES } from '@sparx/commerce-schemas';
 import { withTenant } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
-import { notFound } from '@sparx/api-core/errors';
+import { badRequest, notFound } from '@sparx/api-core/errors';
 
 import { assertCartToken, publicMarketContext } from '../../../lib/public-market-context.js';
 
@@ -78,10 +79,63 @@ const BrowseQuery = z.object({
   perPage: z.coerce.number().int().min(1).max(60).optional(),
 });
 
+const SuggestQuery = z.object({
+  q: z.string().max(80).default(''),
+  limit: z.coerce.number().int().min(1).max(10).optional(),
+});
+
+const TrendingQuery = z.object({
+  limit: z.coerce.number().int().min(1).max(24).optional(),
+});
+
+// Favorites page: resolve a client-held list of slugs to cards.
+const BySlugsQuery = z.object({
+  slugs: z
+    .string()
+    .max(4000)
+    .transform((s) =>
+      s
+        .split(',')
+        .map((x) => x.trim())
+        .filter(Boolean)
+        .slice(0, 100)
+    ),
+});
+
+const DiscountBody = z.object({ code: z.string().min(1).max(64) });
+const CodeParam = z.object({ cartId: z.string().uuid(), code: z.string().min(1).max(64) });
+
 const MerchantsQuery = z.object({
   page: z.coerce.number().int().min(1).optional(),
   perPage: z.coerce.number().int().min(1).max(60).optional(),
   q: z.string().max(255).optional(),
+});
+
+// In-store controls on a merchant profile (search + sort + paginate their catalog).
+const StoreQuery = z.object({
+  q: z.string().max(255).optional(),
+  sort: z.enum(['relevance', 'newest', 'lowest_price', 'highest_price', 'rating']).optional(),
+  page: z.coerce.number().int().min(1).optional(),
+});
+
+// PDP depth (reviews / Q&A) — cross-tenant public reads + guest submissions.
+const ReviewListQuery = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  perPage: z.coerce.number().int().min(1).max(50).default(20),
+});
+
+const SubmitReviewBody = z.object({
+  rating: z.number().int().min(1).max(5),
+  authorName: z.string().min(1).max(63),
+  // Collected for future verified-purchase matching; not persisted yet.
+  authorEmail: z.string().email().optional(),
+  title: z.string().max(127).optional(),
+  body: z.string().min(1).max(5000),
+});
+
+const SubmitQuestionBody = z.object({
+  displayName: z.string().min(1).max(63).optional(),
+  body: z.string().min(1).max(2000),
 });
 
 const CreateCartBody = z
@@ -287,11 +341,90 @@ const publicMarketRoutes: FastifyPluginAsync = async (app) => {
     return ok(result);
   });
 
+  // Facet tallies for the PLP sidebar (per-category + in-stock counts + total).
+  // Same filter vocabulary as browse; static route wins over /products/:slug.
+  app.get('/v1/public/market/products/facets', async (request) => {
+    const query = BrowseQuery.parse(request.query);
+    const facets = await marketService.getListingFacets(query);
+    return ok(facets);
+  });
+
+  // Header search autocomplete — matching product titles + merchant names.
+  app.get('/v1/public/market/products/suggest', async (request) => {
+    const { q, limit } = SuggestQuery.parse(request.query);
+    const result = await marketService.suggestListings(q, limit);
+    return ok(result);
+  });
+
+  // Discovery-home "Trending now" rail (best sellers first).
+  app.get('/v1/public/market/products/trending', async (request) => {
+    const { limit } = TrendingQuery.parse(request.query);
+    const items = await marketService.getTrendingListings(limit);
+    return ok({ items });
+  });
+
+  // Favorites page — resolve the client's saved slugs to cards (order preserved).
+  app.get('/v1/public/market/products/by-slugs', async (request) => {
+    const { slugs } = BySlugsQuery.parse(request.query);
+    const items = await marketService.getListingsBySlugs(slugs);
+    return ok({ items });
+  });
+
   app.get('/v1/public/market/products/:slug', async (request) => {
     const { slug } = SlugParam.parse(request.params);
     const detail = await marketService.getListingDetail(slug);
     if (!detail) throw notFound('Listing', slug);
     return ok(detail);
+  });
+
+  // Same-category "you may also like" rail for the PDP.
+  app.get('/v1/public/market/products/:slug/related', async (request) => {
+    const { slug } = SlugParam.parse(request.params);
+    const items = await marketService.getRelatedListings(slug);
+    return ok({ items });
+  });
+
+  // A listing's approved reviews (newest first) + live rating summary.
+  app.get('/v1/public/market/products/:slug/reviews', async (request) => {
+    const { slug } = SlugParam.parse(request.params);
+    const query = ReviewListQuery.parse(request.query ?? {});
+    const result = await marketService.getListingReviews(slug, query);
+    if (!result) throw notFound('Listing', slug);
+    return ok(result);
+  });
+
+  // Submit a guest review — lands in the seller's moderation queue.
+  app.post('/v1/public/market/products/:slug/reviews', async (request) => {
+    const { slug } = SlugParam.parse(request.params);
+    const body = SubmitReviewBody.parse(request.body);
+    const result = await marketService.submitListingReview(slug, {
+      rating: body.rating,
+      authorName: body.authorName,
+      ...(body.title ? { title: body.title } : {}),
+      body: body.body,
+    });
+    if (!result) throw notFound('Listing', slug);
+    return ok(result);
+  });
+
+  // A listing's published questions + their answers.
+  app.get('/v1/public/market/products/:slug/questions', async (request) => {
+    const { slug } = SlugParam.parse(request.params);
+    const items = await marketService.getListingQuestions(slug);
+    if (!items) throw notFound('Listing', slug);
+    return ok({ items });
+  });
+
+  // Submit a guest question — enters moderation.
+  app.post('/v1/public/market/products/:slug/questions', async (request) => {
+    const { slug } = SlugParam.parse(request.params);
+    const body = SubmitQuestionBody.parse(request.body);
+    const result = await marketService.submitListingQuestion(slug, {
+      ...(body.displayName ? { displayName: body.displayName } : {}),
+      body: body.body,
+    });
+    if (!result) throw notFound('Listing', slug);
+    return ok(result);
   });
 
   app.get('/v1/public/market/categories', () => {
@@ -306,15 +439,18 @@ const publicMarketRoutes: FastifyPluginAsync = async (app) => {
 
   app.get('/v1/public/market/merchants/:slug', async (request) => {
     const { slug } = SlugParam.parse(request.params);
+    const store = StoreQuery.parse(request.query);
     const merchant = await marketService.getMerchant(slug);
     if (!merchant) throw notFound('Merchant', slug);
+    // In-store search + sort + pagination over this seller's catalog only.
     const products = await marketService.browseListings({
       merchant: slug,
       perPage: 24,
-      page: 1,
-      sort: 'newest',
+      page: store.page ?? 1,
+      sort: store.sort ?? 'newest',
+      ...(store.q ? { q: store.q } : {}),
     });
-    return ok({ merchant, products: products.items });
+    return ok({ merchant, products });
   });
 
   // ── Cart (single-merchant; seller tenant from ?merchant=) ────────────────────────
@@ -373,6 +509,35 @@ const publicMarketRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId, ctx } = await publicMarketContext(request);
     await assertCartToken(request, tenantId, cartId);
     await cartService.removeItem(ctx, itemId);
+    return ok(await serializePublicMarketCart(ctx, tenantId, cartId));
+  });
+
+  // Apply a discount code to the cart (mirrors the storefront; MoR is sparx, but the
+  // discount belongs to the seller tenant, resolved from ?merchant=).
+  app.post('/v1/public/market/cart/:cartId/discount', async (request) => {
+    const { cartId } = CartParam.parse(request.params);
+    const body = DiscountBody.parse(request.body);
+    const { tenantId, ctx } = await publicMarketContext(request);
+    await assertCartToken(request, tenantId, cartId);
+    try {
+      await discountService.redeemCode(ctx, { cartId, code: body.code });
+    } catch (err) {
+      throw badRequest((err as Error).message || 'That code can’t be applied.');
+    }
+    return ok(await serializePublicMarketCart(ctx, tenantId, cartId));
+  });
+
+  app.delete('/v1/public/market/cart/:cartId/discount/:code', async (request) => {
+    const { cartId, code } = CodeParam.parse(request.params);
+    const { tenantId, ctx } = await publicMarketContext(request);
+    await assertCartToken(request, tenantId, cartId);
+    // No service method removes a cart discount; the join row is safe to drop under
+    // RLS. Recompute happens lazily on the next cart read (serializePublicMarketCart).
+    await withTenant({ tenantId }, (tx) =>
+      tx.cartDiscount.deleteMany({
+        where: { cartId, discount: { code: { equals: code, mode: 'insensitive' } } },
+      })
+    );
     return ok(await serializePublicMarketCart(ctx, tenantId, cartId));
   });
 

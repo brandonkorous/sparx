@@ -1,0 +1,167 @@
+/* ── sparx brand theme, expressed as a silicaui theme ──────────────────────────
+ *
+ * This is the sparx brand as a NAMED silicaui theme (`[data-theme="sparx"]`),
+ * NOT an override of silicaui's built-in `light`/`dark`. The root layout sets
+ * `<html data-theme="sparx">`, so the whole marketplace resolves against these
+ * tokens; a nested `[data-theme="dark"]` (or a future `sparx-dark`) island would
+ * still work because silicaui themes are DOM-scoped, not global.
+ *
+ * SOURCE OF TRUTH = silicaui's standard token names: `--color-{name}` paired
+ * with `--color-{name}-content` (the legible foreground on that fill), plus the
+ * `base-100/200/300` + `base-content` neutral ramp. That standard naming is on
+ * purpose — every colored silicaui object (`.btn-primary`, `.badge-danger`, …)
+ * is generated from a `{name}` + `{name}-content` pair, so adding a color is
+ * just adding a pair here and listing the name in `@plugin "silicaui { colors }"`
+ * (see globals.css). `danger` below is exactly that: an N-th named color beyond
+ * silicaui's defaults, so sparx's `statusTone()` vocabulary (which emits
+ * `danger`, not silicaui's `error`) maps 1:1.
+ *
+ * The `mx-*` marketplace chrome + a handful of inline page styles still speak
+ * sparx's older token vocabulary (`--color-text-*`, `--color-bg-*`,
+ * `--color-border-*`, `--sparx-primary`). Rather than rewrite ~900 lines of
+ * chrome in this pilot, those names are re-expressed here as a thin DERIVED
+ * ALIAS layer pointing at the silicaui standard tokens — so silicaui owns the
+ * values, a single `--color-primary` edit cascades into the chrome, and dark
+ * mode adapts for free. A later pass can inline the aliases onto base tokens.
+ *
+ * Once proven here, this block graduates to a shared `@sparx/brand` package that
+ * every app (web, dashboard, site, admin, b2b-portal) imports, so the brand is
+ * defined once and silicaui stays the component layer everywhere. */
+
+[data-theme='sparx'] {
+  color-scheme: light;
+
+  /* ── silicaui standard palette (source of truth) ─────────────────────────── */
+
+  /* Neutral ramp: base-100 is the topmost surface (card white), stepping darker
+     with depth. sparx's page background (#fafafa) is intentionally distinct from
+     the card surface, so it keeps its own chrome alias below rather than folding
+     into a base step. */
+  --color-base-100: #ffffff;
+  --color-base-200: #f4f4f5;
+  --color-base-300: #e4e4e7;
+  --color-base-content: #0a0a0a;
+
+  --color-primary: #6366f1;
+  --color-primary-content: #eef2ff;
+
+  --color-secondary: #db2777;
+  --color-secondary-content: #ffffff;
+
+  --color-accent: #8b5cf6;
+  --color-accent-content: #ffffff;
+
+  --color-neutral: #1f2937;
+  --color-neutral-content: #ffffff;
+
+  --color-info: #0ea5e9;
+  --color-info-content: #ffffff;
+
+  --color-success: #10b981;
+  --color-success-content: #ffffff;
+
+  --color-warning: #f59e0b;
+  --color-warning-content: #422006; /* dark ink — white fails AA on amber */
+
+  --color-error: #ef4444;
+  --color-error-content: #ffffff;
+
+  /* danger — the N-th named color. sparx `statusTone()` returns `danger`, so we
+     register it (see the plugin `colors:` list) and pair it here. Same hue as
+     `error`; kept as its own name so the platform's status vocabulary is exact. */
+  --color-danger: #ef4444;
+  --color-danger-content: #ffffff;
+
+  /* ── silicaui shape + type tokens ────────────────────────────────────────── */
+  --radius-box: 8px; /* cards, alerts, larger surfaces (sparx --radius-lg) */
+  --radius-field: 6px; /* inputs, buttons (sparx --radius-md) */
+  --radius-selector: 9999px; /* pills, toggles, badges */
+
+  --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+
+  /* ── sparx chrome aliases — DERIVED from the standard tokens above ─────────
+     The `mx-*` chrome + inline page styles read these; they now transitively
+     resolve to the silicaui palette, so there is one source of truth. */
+  --sparx-primary: var(--color-primary);
+
+  --color-bg-page: #fafafa; /* page canvas — a touch off the card white */
+  --color-bg-surface: var(--color-base-100);
+  --color-bg-subtle: var(--color-base-200);
+
+  --color-text-primary: var(--color-base-content);
+  --color-text-secondary: color-mix(in oklch, var(--color-base-content) 62%, var(--color-base-100));
+  --color-text-tertiary: color-mix(in oklch, var(--color-base-content) 40%, var(--color-base-100));
+
+  --color-border-default: var(--color-base-300);
+  --color-border-strong: color-mix(in oklch, var(--color-base-content) 18%, var(--color-base-100));
+
+  --radius-sm: 4px;
+  --radius-md: var(--radius-field);
+  --radius-lg: var(--radius-box);
+  --radius-xl: 12px;
+}
+
+/* Dark variant of the sparx brand — production-complete so a dark island (or a
+   future site-wide dark toggle) resolves correctly. Same derived-alias strategy;
+   the chrome aliases adapt automatically because they reference the base tokens. */
+[data-theme='sparx-dark'] {
+  color-scheme: dark;
+
+  --color-base-100: #1a1a1a;
+  --color-base-200: #1f1f1f;
+  --color-base-300: #2a2a2a;
+  --color-base-content: #f0f0f0;
+
+  --color-primary: #818cf8;
+  --color-primary-content: #14122e;
+
+  --color-secondary: #f472b6;
+  --color-secondary-content: #2a0a1a;
+
+  --color-accent: #a78bfa;
+  --color-accent-content: #17102e;
+
+  --color-neutral: #e5e7eb;
+  --color-neutral-content: #1f2937;
+
+  --color-info: #38bdf8;
+  --color-info-content: #082438;
+
+  --color-success: #34d399;
+  --color-success-content: #052e22;
+
+  --color-warning: #fbbf24;
+  --color-warning-content: #422006;
+
+  --color-error: #f87171;
+  --color-error-content: #2a0a0a;
+
+  --color-danger: #f87171;
+  --color-danger-content: #2a0a0a;
+
+  --radius-box: 8px;
+  --radius-field: 6px;
+  --radius-selector: 9999px;
+
+  --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+
+  --sparx-primary: var(--color-primary);
+
+  --color-bg-page: #0f0f0f;
+  --color-bg-surface: var(--color-base-100);
+  --color-bg-subtle: var(--color-base-200);
+
+  --color-text-primary: var(--color-base-content);
+  --color-text-secondary: color-mix(in oklch, var(--color-base-content) 62%, var(--color-base-100));
+  --color-text-tertiary: color-mix(in oklch, var(--color-base-content) 42%, var(--color-base-100));
+
+  --color-border-default: var(--color-base-300);
+  --color-border-strong: color-mix(in oklch, var(--color-base-content) 24%, var(--color-base-100));
+
+  --radius-sm: 4px;
+  --radius-md: var(--radius-field);
+  --radius-lg: var(--radius-box);
+  --radius-xl: 12px;
+}

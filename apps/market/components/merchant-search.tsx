@@ -6,7 +6,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { Search } from 'lucide-react';
-import { Button, Input } from '@sparx/ui';
+import { Button, Input } from 'silicaui-react';
 
 export function MerchantSearch({ initialQuery = '' }: { initialQuery?: string }) {
   const router = useRouter();

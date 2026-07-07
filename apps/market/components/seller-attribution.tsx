@@ -1,10 +1,12 @@
-// Merchant attribution card on the product detail page. Shows the seller's logo
-// + name and links to their sparx.market profile, plus an outbound "Visit their
-// store" link to the seller's own storefront when one is known.
+// Seller attribution / trust card on the product detail page. Shows the seller's
+// logo + name, links to their sparx.market storefront, and offers an outbound
+// "Visit their store" link to the seller's own site when known. A server
+// component composed on a silicaui <Card> (no more mx-seller / mx-social).
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ExternalLink, Store } from 'lucide-react';
+import { ExternalLink, ShieldCheck, Store } from 'lucide-react';
+import { Button, Card } from 'silicaui-react';
 
 export function SellerAttribution({
   merchantSlug,
@@ -19,36 +21,68 @@ export function SellerAttribution({
   storeUrl: string | null;
 }) {
   return (
-    <div className="mx-seller">
-      <Link
-        href={`/merchants/${merchantSlug}`}
-        className="mx-seller__logo"
-        aria-label={`${merchantName} on sparx.market`}
-      >
-        {merchantLogoUrl ? (
-          <Image src={merchantLogoUrl} alt={merchantName} fill sizes="44px" />
-        ) : (
-          <Store size={20} aria-hidden />
-        )}
-      </Link>
-
-      <div className="min-w-0 flex-1">
-        <Link href={`/merchants/${merchantSlug}`} className="mx-seller__name hover:underline">
-          {merchantName}
+    <Card className="border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-4">
+      <div className="flex items-center gap-3">
+        <Link
+          href={`/merchants/${merchantSlug}`}
+          className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[var(--color-bg-subtle)]"
+          aria-label={`${merchantName} on sparx.market`}
+        >
+          {merchantLogoUrl ? (
+            <Image
+              src={merchantLogoUrl}
+              alt={merchantName}
+              fill
+              sizes="44px"
+              className="object-cover"
+            />
+          ) : (
+            <Store size={20} aria-hidden className="text-[var(--color-text-secondary)]" />
+          )}
         </Link>
-        <p className="mx-seller__meta">Sold by an independent seller on sparx.market</p>
+
+        <div className="min-w-0 flex-1">
+          <Link
+            href={`/merchants/${merchantSlug}`}
+            className="font-semibold text-[var(--color-text-primary)] hover:underline"
+          >
+            {merchantName}
+          </Link>
+          <p className="inline-flex items-center gap-1 text-[0.8125rem] text-[var(--color-text-secondary)]">
+            <ShieldCheck size={13} aria-hidden className="text-[var(--color-success)]" />
+            Independent seller on sparx.market
+          </p>
+        </div>
       </div>
 
-      {storeUrl ? (
-        <a href={storeUrl} target="_blank" rel="noopener noreferrer nofollow" className="mx-social">
-          Visit their store
-          <ExternalLink size={13} aria-hidden />
-        </a>
-      ) : (
-        <Link href={`/merchants/${merchantSlug}`} className="mx-social">
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Button
+          render={<Link href={`/merchants/${merchantSlug}`} />}
+          color="neutral"
+          variant="outline"
+          size="sm"
+        >
           View shop
-        </Link>
-      )}
-    </div>
+        </Button>
+        {storeUrl ? (
+          <Button
+            render={
+              <a
+                href={storeUrl}
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                aria-label="Visit their store"
+              />
+            }
+            color="neutral"
+            variant="ghost"
+            size="sm"
+            iconEnd={<ExternalLink size={13} />}
+          >
+            Visit their store
+          </Button>
+        ) : null}
+      </div>
+    </Card>
   );
 }

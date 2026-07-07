@@ -5,16 +5,24 @@
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import Link from 'next/link';
-import { ImageOff } from 'lucide-react';
-import { Badge } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 import { marketCategoryLabel } from '@sparx/commerce-schemas';
 
 import { AddToCart } from '@/components/add-to-cart';
 import { SellerAttribution } from '@/components/seller-attribution';
+import { ProductGallery } from '@/components/product-gallery';
+import { ProductReviews } from '@/components/product-reviews';
+import { ProductQA } from '@/components/product-qa';
+import { ProductGrid } from '@/components/product-grid';
 import { Stars } from '@/components/stars';
-import { getProduct } from '@/lib/market';
+import { Container } from '@/components/ui/layout';
+import {
+  getProduct,
+  getProductReviews,
+  getProductQuestions,
+  getRelatedProducts,
+} from '@/lib/market';
 import { formatPriceRange } from '@/lib/format';
 
 export const revalidate = 60;
@@ -56,14 +64,34 @@ export default async function ProductDetailPage({ params }: PageProps) {
   const product = await getProduct(slug);
   if (!product) notFound();
 
+  // PDP depth loads alongside the listing; a failure in any one degrades to empty
+  // rather than 500ing the whole page.
+  const [reviewsResult, questions, related] = await Promise.all([
+    getProductReviews(slug).catch(() => null),
+    getProductQuestions(slug).catch(() => []),
+    getRelatedProducts(slug).catch(() => []),
+  ]);
+
+  const reviewSummary = reviewsResult?.summary ?? {
+    averageRating: product.averageRating ?? 0,
+    total: product.reviewCount,
+  };
+  const reviewItems = reviewsResult?.items ?? [];
+
   const price = formatPriceRange(product.priceMinCents, product.priceMaxCents, product.currency);
+  const galleryUrls =
+    product.images.length > 0
+      ? product.images.map((i) => i.url)
+      : product.imageUrl
+        ? [product.imageUrl]
+        : [];
 
   const productJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.title,
     description: product.description ?? undefined,
-    ...(product.imageUrl ? { image: [product.imageUrl] } : {}),
+    ...(galleryUrls.length > 0 ? { image: galleryUrls } : {}),
     brand: { '@type': 'Brand', name: product.merchantName },
     ...(product.reviewCount > 0 && product.averageRating != null
       ? {
@@ -87,18 +115,14 @@ export default async function ProductDetailPage({ params }: PageProps) {
   };
 
   return (
-    <div className="mx-container mx-section">
+    <Container className="py-8 md:py-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
       />
 
       {/* Breadcrumb trail */}
-      <nav
-        className="mb-6 text-sm"
-        aria-label="Breadcrumb"
-        style={{ color: 'var(--color-text-secondary)' }}
-      >
+      <nav className="mb-6 text-sm text-[var(--color-text-secondary)]" aria-label="Breadcrumb">
         <Link href="/products" className="hover:underline">
           Products
         </Link>
@@ -111,28 +135,17 @@ export default async function ProductDetailPage({ params }: PageProps) {
           </>
         ) : null}
         <span aria-hidden> / </span>
-        <span style={{ color: 'var(--color-text-primary)' }}>{product.title}</span>
+        <span className="text-[var(--color-text-primary)]">{product.title}</span>
       </nav>
 
-      <div className="mx-pdp">
-        {/* Gallery */}
-        <div className="mx-pdp__media">
-          {product.imageUrl ? (
-            <Image
-              src={product.imageUrl}
-              alt={product.title}
-              fill
-              priority
-              sizes="(min-width: 768px) 50vw, 100vw"
-            />
-          ) : (
-            <span className="mx-pdp__media--placeholder" aria-hidden>
-              <ImageOff size={48} />
-            </span>
-          )}
-        </div>
+      {/* Top: gallery + buy column */}
+      <div className="grid gap-8 md:grid-cols-2 md:gap-10">
+        <ProductGallery
+          images={product.images}
+          fallbackUrl={product.imageUrl}
+          title={product.title}
+        />
 
-        {/* Buy column */}
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-2.5">
             {product.category ? (
@@ -142,12 +155,16 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 </Badge>
               </Link>
             ) : null}
-            <h1 className="mx-pdp__title">{product.title}</h1>
+            <h1 className="text-2xl font-semibold text-[var(--color-text-primary)] md:text-3xl">
+              {product.title}
+            </h1>
             <Stars rating={product.averageRating} reviewCount={product.reviewCount} />
           </div>
 
           <div className="flex items-center gap-3">
-            {price ? <p className="mx-pdp__price">{price}</p> : null}
+            {price ? (
+              <p className="text-2xl font-semibold text-[var(--color-text-primary)]">{price}</p>
+            ) : null}
             {!product.inStock ? (
               <Badge color="danger" variant="soft">
                 Sold out
@@ -168,20 +185,41 @@ export default async function ProductDetailPage({ params }: PageProps) {
             variants={product.variants}
             currency={product.currency}
           />
-
-          {product.description ? (
-            <div
-              className="flex flex-col gap-2 border-t pt-5"
-              style={{ borderColor: 'var(--color-border-default)' }}
-            >
-              <h2 className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-                About this product
-              </h2>
-              <p className="mx-pdp__desc">{product.description}</p>
-            </div>
-          ) : null}
         </div>
       </div>
-    </div>
+
+      {/* Below the fold: description, reviews, Q&A, related — stacked full-width. */}
+      <div className="mt-12 flex flex-col gap-12">
+        {product.description ? (
+          <section aria-labelledby="about-heading" className="flex flex-col gap-3">
+            <h2
+              id="about-heading"
+              className="text-xl font-semibold text-[var(--color-text-primary)]"
+            >
+              About this product
+            </h2>
+            <p className="max-w-3xl leading-relaxed whitespace-pre-line text-[var(--color-text-primary)]">
+              {product.description}
+            </p>
+          </section>
+        ) : null}
+
+        <ProductReviews slug={slug} summary={reviewSummary} reviews={reviewItems} />
+
+        <ProductQA slug={slug} questions={questions} />
+
+        {related.length > 0 ? (
+          <section aria-labelledby="related-heading" className="flex flex-col gap-5">
+            <h2
+              id="related-heading"
+              className="text-xl font-semibold text-[var(--color-text-primary)]"
+            >
+              You may also like
+            </h2>
+            <ProductGrid products={related} />
+          </section>
+        ) : null}
+      </div>
+    </Container>
   );
 }

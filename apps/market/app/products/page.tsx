@@ -5,6 +5,7 @@
 import type { Metadata } from 'next';
 
 import { PlpView } from '@/components/plp-view';
+import { Container } from '@/components/ui/layout';
 import { parsePlpParams, PLP_PER_PAGE, type RawSearchParams } from '@/lib/plp-params';
 
 export const revalidate = 60;
@@ -39,27 +40,26 @@ export default async function ProductsPage({
   const q = facetState.q;
 
   return (
-    <div className="mx-container">
-      <header className="mx-section" style={{ paddingBottom: 0 }}>
-        <h1 className="mx-page-title">{q ? `Results for “${q}”` : 'All products'}</h1>
-        <p className="mx-page-lead">
+    <Container className="py-8 md:py-12">
+      <header className="mb-8">
+        <h1 className="text-[1.75rem] font-bold tracking-[-0.02em] text-[var(--color-text-primary)] md:text-4xl">
+          {q ? `Results for “${q}”` : 'All products'}
+        </h1>
+        <p className="mt-2 max-w-2xl text-base text-[var(--color-text-secondary)]">
           {q
             ? 'Products from independent sellers across the sparx network.'
             : 'Every product on sparx.market, from independent sellers shipping direct.'}
         </p>
       </header>
 
-      <div className="mx-section" style={{ paddingTop: '1.5rem' }}>
-        <PlpView
-          basePath="/products"
-          searchParams={sp}
-          query={query}
-          facetState={facetState}
-          perPage={PLP_PER_PAGE}
-          emptyTitle={q ? `No products match “${q}”` : 'No products found'}
-          emptyHint="Try a broader search or clear your filters."
-        />
-      </div>
-    </div>
+      <PlpView
+        basePath="/products"
+        query={query}
+        facetState={facetState}
+        perPage={PLP_PER_PAGE}
+        emptyTitle={q ? `No products match “${q}”` : 'No products found'}
+        emptyHint="Try a broader search or clear your filters."
+      />
+    </Container>
   );
 }

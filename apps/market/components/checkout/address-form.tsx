@@ -1,11 +1,12 @@
 'use client';
 
 // Reusable address form for marketplace checkout. Controlled — emits the full
-// Address on every change. Mirrors apps/site's address form, using @sparx/ui
+// Address on every change. Mirrors apps/site's address form, using silicaui
 // Input + NativeSelect.
 
-import { Input, NativeSelect } from '@sparx/ui';
+import { Input, NativeSelect } from 'silicaui-react';
 
+import { Field, FieldGrid } from '@/components/checkout/ui';
 import type { Address } from '@/lib/checkout-client';
 
 export const EMPTY_ADDRESS: Address = {
@@ -38,61 +39,54 @@ export function AddressForm({
   }
 
   return (
-    <div className="mx-addr">
-      <label className="mx-field mx-field--full">
-        <span>Full name</span>
+    <FieldGrid>
+      <Field label="Full name" full>
         <Input
           required
           value={value.name}
           onChange={(e) => set('name', e.target.value)}
           autoComplete="name"
         />
-      </label>
-      <label className="mx-field mx-field--full">
-        <span>Address</span>
+      </Field>
+      <Field label="Address" full>
         <Input
           required
           value={value.line1}
           onChange={(e) => set('line1', e.target.value)}
           autoComplete="address-line1"
         />
-      </label>
-      <label className="mx-field mx-field--full">
-        <span>Apartment, suite, etc. (optional)</span>
+      </Field>
+      <Field label="Apartment, suite, etc. (optional)" full>
         <Input
           value={value.line2 ?? ''}
           onChange={(e) => set('line2', e.target.value)}
           autoComplete="address-line2"
         />
-      </label>
-      <label className="mx-field">
-        <span>City</span>
+      </Field>
+      <Field label="City">
         <Input
           required
           value={value.city}
           onChange={(e) => set('city', e.target.value)}
           autoComplete="address-level2"
         />
-      </label>
-      <label className="mx-field">
-        <span>State / Region</span>
+      </Field>
+      <Field label="State / Region">
         <Input
           value={value.region ?? ''}
           onChange={(e) => set('region', e.target.value)}
           autoComplete="address-level1"
         />
-      </label>
-      <label className="mx-field">
-        <span>Postal code</span>
+      </Field>
+      <Field label="Postal code">
         <Input
           required
           value={value.postalCode}
           onChange={(e) => set('postalCode', e.target.value)}
           autoComplete="postal-code"
         />
-      </label>
-      <label className="mx-field">
-        <span>Country</span>
+      </Field>
+      <Field label="Country">
         <NativeSelect
           value={value.country}
           onChange={(e) => set('country', e.target.value)}
@@ -104,16 +98,15 @@ export function AddressForm({
             </option>
           ))}
         </NativeSelect>
-      </label>
-      <label className="mx-field mx-field--full">
-        <span>Phone (optional)</span>
+      </Field>
+      <Field label="Phone (optional)" full>
         <Input
           type="tel"
           value={value.phone ?? ''}
           onChange={(e) => set('phone', e.target.value)}
           autoComplete="tel"
         />
-      </label>
-    </div>
+      </Field>
+    </FieldGrid>
   );
 }

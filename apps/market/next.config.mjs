@@ -6,7 +6,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
-  transpilePackages: ['@sparx/ui'],
+  transpilePackages: ['silicaui-react'],
   typedRoutes: false,
   output: 'standalone',
   outputFileTracingRoot: join(__dirname, '../../'),

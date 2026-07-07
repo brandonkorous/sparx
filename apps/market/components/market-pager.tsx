@@ -1,86 +1,38 @@
-// Server-rendered pagination for the PLP / category / search grids. All state is
-// in the URL, so this is a pure server component emitting prev/next links that
-// preserve the current query string (only `page` changes). Hidden when there's a
-// single page.
+'use client';
 
-import Link from 'next/link';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@sparx/ui';
+// Numbered pagination for the PLP / category / search grids. All state is in the
+// URL — this reads the current query string and pushes a new `page` on change,
+// preserving every other facet. A client island (silicaui <Pagination> is
+// controlled); hidden when there's a single page.
+
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Pagination } from 'silicaui-react';
 
 export function MarketPager({
   basePath,
-  searchParams,
   page,
   totalPages,
 }: {
   basePath: string;
-  searchParams: Record<string, string | string[] | undefined>;
   page: number;
   totalPages: number;
 }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   if (totalPages <= 1) return null;
 
-  function hrefFor(targetPage: number): string {
-    const qs = new URLSearchParams();
-    for (const [key, value] of Object.entries(searchParams)) {
-      if (key === 'page' || value === undefined) continue;
-      qs.set(key, Array.isArray(value) ? (value[0] ?? '') : value);
-    }
-    if (targetPage > 1) qs.set('page', String(targetPage));
-    const s = qs.toString();
-    return s ? `${basePath}?${s}` : basePath;
+  function goTo(target: number) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (target > 1) params.set('page', String(target));
+    else params.delete('page');
+    const s = params.toString();
+    router.push(s ? `${basePath}?${s}` : basePath);
   }
 
-  const hasPrev = page > 1;
-  const hasNext = page < totalPages;
-
   return (
-    <nav className="mx-pager" aria-label="Pagination">
-      <Button
-        asChild={hasPrev}
-        color="neutral"
-        variant="outline"
-        size="sm"
-        disabled={!hasPrev}
-        aria-label="Previous page"
-      >
-        {hasPrev ? (
-          <Link href={hrefFor(page - 1)} rel="prev">
-            <ChevronLeft size={16} aria-hidden />
-            Prev
-          </Link>
-        ) : (
-          <span>
-            <ChevronLeft size={16} aria-hidden />
-            Prev
-          </span>
-        )}
-      </Button>
-
-      <span className="mx-pager__info">
-        Page {page} of {totalPages}
-      </span>
-
-      <Button
-        asChild={hasNext}
-        color="neutral"
-        variant="outline"
-        size="sm"
-        disabled={!hasNext}
-        aria-label="Next page"
-      >
-        {hasNext ? (
-          <Link href={hrefFor(page + 1)} rel="next">
-            Next
-            <ChevronRight size={16} aria-hidden />
-          </Link>
-        ) : (
-          <span>
-            Next
-            <ChevronRight size={16} aria-hidden />
-          </span>
-        )}
-      </Button>
+    <nav className="flex justify-center pt-10" aria-label="Pagination">
+      <Pagination page={page} count={totalPages} onChange={goTo} color="primary" size="sm" />
     </nav>
   );
 }

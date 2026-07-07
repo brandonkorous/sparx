@@ -4,10 +4,12 @@
 
 import type { Metadata } from 'next';
 import { Store } from 'lucide-react';
+import { EmptyState } from 'silicaui-react';
 
 import { MarketPager } from '@/components/market-pager';
 import { MerchantCard } from '@/components/merchant-card';
 import { MerchantSearch } from '@/components/merchant-search';
+import { Container } from '@/components/ui/layout';
 import { listMerchants, toMerchantCardData } from '@/lib/market';
 import type { RawSearchParams } from '@/lib/plp-params';
 
@@ -39,13 +41,15 @@ export default async function MerchantsPage({
   const totalPages = Math.max(1, Math.ceil(result.total / result.perPage));
 
   return (
-    <div className="mx-container mx-section">
+    <Container className="py-8 md:py-12">
       <header className="mb-8">
-        <h1 className="mx-page-title">Merchants</h1>
-        <p className="mx-page-lead">
+        <h1 className="text-[1.75rem] font-bold tracking-[-0.02em] text-[var(--color-text-primary)] md:text-4xl">
+          Independent sellers
+        </h1>
+        <p className="mt-2 max-w-2xl text-base text-[var(--color-text-secondary)]">
           {q
             ? `Sellers matching “${q}”.`
-            : 'Independent shops and makers selling direct on sparx.market.'}
+            : 'Real shops and makers selling direct on sparx.market — shipped from across the network.'}
         </p>
         <div className="mt-5">
           <MerchantSearch initialQuery={q ?? ''} />
@@ -54,31 +58,24 @@ export default async function MerchantsPage({
 
       {result.items.length > 0 ? (
         <>
-          <div className="mx-grid">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {result.items.map((merchant) => (
               <MerchantCard key={merchant.slug} merchant={toMerchantCardData(merchant)} />
             ))}
           </div>
-          <MarketPager
-            basePath="/merchants"
-            searchParams={sp}
-            page={result.page}
-            totalPages={totalPages}
-          />
+          <MarketPager basePath="/merchants" page={result.page} totalPages={totalPages} />
         </>
       ) : (
-        <div className="mx-empty">
-          <span className="mx-empty__icon" aria-hidden>
-            <Store size={40} />
-          </span>
-          <p className="mx-empty__title">{q ? `No sellers match “${q}”` : 'No sellers yet'}</p>
-          <p>
-            {q
+        <EmptyState
+          icon={<Store size={40} aria-hidden />}
+          title={q ? `No sellers match “${q}”` : 'No sellers yet'}
+          description={
+            q
               ? 'Try a different name, or browse the full directory.'
-              : 'Independent sellers are joining the marketplace all the time — check back soon.'}
-          </p>
-        </div>
+              : 'Independent sellers are joining the marketplace all the time — check back soon.'
+          }
+        />
       )}
-    </div>
+    </Container>
   );
 }

@@ -8,9 +8,17 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Loader2, ShoppingBag } from 'lucide-react';
-import { Alert, Button } from '@sparx/ui';
+import {
+  Alert,
+  AlertContent,
+  AlertTitle,
+  AlertDescription,
+  Button,
+  EmptyState,
+} from 'silicaui-react';
 
 import { CheckoutFlow } from '@/components/checkout/checkout-flow';
+import { Container } from '@/components/ui/layout';
 import { fetchCart, readStoredCart, type Cart } from '@/lib/cart-client';
 
 export default function CheckoutPage() {
@@ -40,39 +48,50 @@ export default function CheckoutPage() {
   }, []);
 
   return (
-    <div className="mx-container mx-section">
-      <h1 className="mx-page-title mb-6">Checkout</h1>
+    <Container className="py-8 md:py-12">
+      <h1 className="mb-6 text-[1.75rem] font-bold tracking-[-0.02em] text-[var(--color-text-primary)] md:text-4xl">
+        Checkout
+      </h1>
 
       {status === 'loading' ? (
-        <div className="mx-empty">
-          <Loader2 size={32} className="animate-spin" aria-hidden />
-          <p>Loading your cart…</p>
+        <div className="flex items-center justify-center gap-2 py-20 text-[var(--color-text-secondary)]">
+          <Loader2 size={20} className="animate-spin" aria-hidden />
+          Loading your cart…
         </div>
       ) : null}
 
       {status === 'error' ? (
-        <Alert color="danger" variant="soft" title="We couldn’t load your cart">
-          <p className="mb-3">{error}</p>
-          <Button asChild color="primary" variant="soft" size="sm">
-            <Link href="/cart">Back to cart</Link>
-          </Button>
+        <Alert color="danger" variant="soft">
+          <AlertContent>
+            <AlertTitle>We couldn’t load your cart</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+            <Button
+              render={<Link href="/cart" />}
+              color="primary"
+              variant="soft"
+              size="sm"
+              className="mt-3"
+            >
+              Back to cart
+            </Button>
+          </AlertContent>
         </Alert>
       ) : null}
 
       {status === 'empty' ? (
-        <div className="mx-empty">
-          <span className="mx-empty__icon" aria-hidden>
-            <ShoppingBag size={40} />
-          </span>
-          <p className="mx-empty__title">Your cart is empty</p>
-          <p>Add something to your cart before checking out.</p>
-          <Button asChild color="primary" variant="solid" size="md">
-            <Link href="/products">Browse the marketplace</Link>
-          </Button>
-        </div>
+        <EmptyState
+          icon={<ShoppingBag size={40} aria-hidden />}
+          title="Your cart is empty"
+          description="Add something to your cart before checking out."
+          actions={
+            <Button render={<Link href="/products" />} color="primary" variant="solid" size="md">
+              Browse the marketplace
+            </Button>
+          }
+        />
       ) : null}
 
       {status === 'ready' && cart ? <CheckoutFlow cart={cart} /> : null}
-    </div>
+    </Container>
   );
 }

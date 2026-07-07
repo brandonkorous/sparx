@@ -1,6 +1,8 @@
-// Inline star-rating display. Pure presentational — renders filled/half/empty
-// stars for an average rating plus the numeric value and review count. Used on
-// the product detail page and (compactly) on cards.
+// Inline read-only star-rating display. Pure presentational — renders
+// filled/half/empty stars for an average rating plus (optionally) the numeric
+// value and review count. silicaui's <Rating> is an INPUT (used on the
+// write-review form); for fractional read-only display the lucide half-star reads
+// cleaner, so this stays a small utility-composed primitive (no more mx-rating).
 
 import { Star, StarHalf } from 'lucide-react';
 
@@ -8,13 +10,22 @@ export function Stars({
   rating,
   reviewCount,
   size = 16,
+  compact = false,
 }: {
   rating: number | null;
   reviewCount: number;
+  /** Star glyph size in px. */
   size?: number;
+  /** Cards: show just stars + count in parentheses (and nothing when unrated). */
+  compact?: boolean;
 }) {
   if (rating === null || reviewCount === 0) {
-    return <span className="mx-rating">No reviews yet</span>;
+    if (compact) return null;
+    return (
+      <span className="inline-flex items-center gap-1.5 text-sm text-[var(--color-text-tertiary)]">
+        No reviews yet
+      </span>
+    );
   }
 
   const rounded = Math.round(rating * 2) / 2;
@@ -23,22 +34,26 @@ export function Stars({
 
   return (
     <span
-      className="mx-rating"
+      className="inline-flex items-center gap-1.5 text-sm text-[var(--color-text-secondary)]"
       aria-label={`Rated ${rating.toFixed(1)} out of 5 from ${reviewCount} ${
         reviewCount === 1 ? 'review' : 'reviews'
       }`}
     >
-      <span className="mx-rating__stars" aria-hidden>
+      <span className="inline-flex text-[var(--color-warning)]" aria-hidden>
         {Array.from({ length: 5 }, (_, i) => {
           if (i < full) return <Star key={i} size={size} fill="currentColor" strokeWidth={0} />;
           if (i === full && hasHalf)
             return <StarHalf key={i} size={size} fill="currentColor" strokeWidth={0} />;
-          return <Star key={i} size={size} className="opacity-30" strokeWidth={1.5} />;
+          return <Star key={i} size={size} className="opacity-25" strokeWidth={1.5} />;
         })}
       </span>
-      <span>
-        {rating.toFixed(1)} ({reviewCount.toLocaleString()})
-      </span>
+      {compact ? (
+        <span className="text-[var(--color-text-tertiary)]">({reviewCount.toLocaleString()})</span>
+      ) : (
+        <span>
+          {rating.toFixed(1)} ({reviewCount.toLocaleString()})
+        </span>
+      )}
     </span>
   );
 }

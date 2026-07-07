@@ -2,27 +2,28 @@
 //
 // sparx.market is a SINGLE public host — sparx's own first-party shopping
 // destination — so there's no per-tenant theme resolution (cf. apps/site). It
-// wears the sparx brand directly: Geist for body/mono, Inter for the wordmark
-// (--font-wordmark, which @sparx/ui's <Wordmark> consumes), and the sparx tokens
-// from @sparx/ui. Every page is framed in the marketplace header + footer chrome.
+// wears the sparx brand directly via the `sparx` silicaui theme (see
+// sparx-theme.css): Geist for body/mono, Inter for the wordmark (--font-wordmark,
+// which the local <Wordmark> consumes). Every page is framed in the marketplace
+// header + footer chrome. silicaui is the component layer; sparx is a consumer.
 
 import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import { Inter } from 'next/font/google';
-import { ChunkReloadGuard } from '@sparx/ui';
+import { ChunkReloadGuard } from '@/components/chunk-reload-guard';
 
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 
 // MUST be first: declares the cascade-layer order so the marketplace `mx-*`
-// component classes rank correctly against @sparx/ui's `components` layer and
-// Tailwind preflight. See layers.css.
+// component classes rank correctly against silicaui's base-layer component
+// styles and Tailwind preflight. See layers.css.
 import './layers.css';
 import './globals.css';
 
 // Inter powers the sparx wordmark (bold, to match the monogram mark). Exposed as
-// --font-wordmark, which @sparx/ui's <Wordmark> consumes.
+// --font-wordmark, which the local <Wordmark> consumes.
 const interWordmark = Inter({
   subsets: ['latin'],
   weight: ['700'],
@@ -99,7 +100,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      data-theme="light"
+      data-theme="sparx"
       suppressHydrationWarning
       className={`${GeistSans.variable} ${GeistMono.variable} ${interWordmark.variable}`}
     >
@@ -110,12 +111,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_SCHEMA) }}
         />
-        <div className="mx-frame">
-          <a href="#mx-main" className="mx-skip-link">
+        <div className="flex min-h-screen flex-col">
+          <a
+            href="#main-content"
+            className="sr-only rounded-md px-3.5 py-2 shadow-md focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-[var(--color-bg-surface)] focus:text-[var(--color-text-primary)]"
+          >
             Skip to content
           </a>
           <SiteHeader />
-          <main className="mx-main" id="mx-main" tabIndex={-1}>
+          <main className="w-full flex-1" id="main-content" tabIndex={-1}>
             {children}
           </main>
           <SiteFooter />

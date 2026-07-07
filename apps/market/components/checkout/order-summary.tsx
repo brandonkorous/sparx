@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { ImageOff } from 'lucide-react';
 
 import { formatCents } from '@/lib/format';
+import { TotalsRow } from '@/components/checkout/ui';
 import type { CartItem, CartTotals } from '@/lib/cart-client';
 
 export function OrderSummary({
@@ -20,79 +21,79 @@ export function OrderSummary({
   surchargeLabel?: string;
 }) {
   return (
-    <aside className="mx-summary">
-      <h2 className="mb-4 text-base font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+    <aside className="rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-5 lg:sticky lg:top-32">
+      <h2 className="mb-4 text-base font-semibold text-[var(--color-text-primary)]">
         Order summary
       </h2>
 
-      <div className="mb-4">
+      <div className="mb-4 flex flex-col divide-y divide-[var(--color-border-default)]">
         {items.map((line) => (
-          <div key={line.id} className="mx-line">
-            <span className="mx-line__media">
+          <div key={line.id} className="flex gap-3 py-3 first:pt-0 last:pb-0">
+            <span className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
               {line.imageUrl ? (
-                <Image src={line.imageUrl} alt={line.title} fill sizes="64px" />
+                <Image
+                  src={line.imageUrl}
+                  alt={line.title}
+                  fill
+                  sizes="64px"
+                  className="object-cover"
+                />
               ) : (
-                <span className="flex h-full items-center justify-center" aria-hidden>
-                  <ImageOff size={18} style={{ color: 'var(--color-text-secondary)' }} />
+                <span
+                  className="flex h-full items-center justify-center text-[var(--color-text-tertiary)]"
+                  aria-hidden
+                >
+                  <ImageOff size={18} />
                 </span>
               )}
             </span>
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <span className="mx-line__title">{line.title}</span>
+              <span className="text-sm font-semibold text-[var(--color-text-primary)]">
+                {line.title}
+              </span>
               {line.variantTitle ? (
-                <span className="mx-line__meta">{line.variantTitle}</span>
+                <span className="text-[0.8125rem] text-[var(--color-text-secondary)]">
+                  {line.variantTitle}
+                </span>
               ) : null}
-              <span className="mx-line__meta">Qty {line.quantity}</span>
+              <span className="text-[0.8125rem] text-[var(--color-text-secondary)]">
+                Qty {line.quantity}
+              </span>
             </div>
-            <span
-              className="text-sm font-semibold tabular-nums"
-              style={{ color: 'var(--color-text-primary)' }}
-            >
+            <span className="text-sm font-semibold text-[var(--color-text-primary)] tabular-nums">
               {formatCents(line.lineTotalCents, currency)}
             </span>
           </div>
         ))}
       </div>
 
-      <div className="mx-totals">
-        <div className="mx-totals__row">
-          <span>Subtotal</span>
-          <span className="tabular-nums">{formatCents(totals.subtotalCents, currency)}</span>
-        </div>
+      <div className="flex flex-col gap-2 text-sm">
+        <TotalsRow label="Subtotal" value={formatCents(totals.subtotalCents, currency)} />
         {totals.discountTotalCents > 0 ? (
-          <div className="mx-totals__row">
-            <span>Discount</span>
-            <span className="tabular-nums">
-              −{formatCents(totals.discountTotalCents, currency)}
-            </span>
-          </div>
+          <TotalsRow
+            label="Discount"
+            value={`−${formatCents(totals.discountTotalCents, currency)}`}
+            tone="success"
+          />
         ) : null}
-        <div className="mx-totals__row">
-          <span>Shipping</span>
-          <span className="tabular-nums">
-            {totals.shippingTotalCents > 0
+        <TotalsRow
+          label="Shipping"
+          value={
+            totals.shippingTotalCents > 0
               ? formatCents(totals.shippingTotalCents, currency)
-              : 'Free'}
-          </span>
-        </div>
+              : 'Free'
+          }
+        />
         {totals.taxTotalCents > 0 ? (
-          <div className="mx-totals__row">
-            <span>Tax</span>
-            <span className="tabular-nums">{formatCents(totals.taxTotalCents, currency)}</span>
-          </div>
+          <TotalsRow label="Tax" value={formatCents(totals.taxTotalCents, currency)} />
         ) : null}
         {totals.surchargeTotalCents && totals.surchargeTotalCents > 0 ? (
-          <div className="mx-totals__row">
-            <span>{surchargeLabel ?? 'Processing fee'}</span>
-            <span className="tabular-nums">
-              {formatCents(totals.surchargeTotalCents, currency)}
-            </span>
-          </div>
+          <TotalsRow
+            label={surchargeLabel ?? 'Processing fee'}
+            value={formatCents(totals.surchargeTotalCents, currency)}
+          />
         ) : null}
-        <div className="mx-totals__row mx-totals__row--grand">
-          <span>Total</span>
-          <span className="tabular-nums">{formatCents(totals.totalCents, currency)}</span>
-        </div>
+        <TotalsRow label="Total" value={formatCents(totals.totalCents, currency)} grand />
       </div>
     </aside>
   );

@@ -8,7 +8,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Stepper, Alert, Button, Input } from '@sparx/ui';
+import { Steps, Step, Alert, Button, Input } from 'silicaui-react';
 
 import {
   createPaymentIntent,
@@ -26,6 +26,7 @@ import type { Cart } from '@/lib/cart-client';
 import { AddressForm, EMPTY_ADDRESS } from './address-form';
 import { OrderSummary } from './order-summary';
 import { PaymentStep } from './payment-step';
+import { Field } from './ui';
 
 type Step = 'contact' | 'shipping' | 'payment';
 const STEP_LABELS = [{ label: 'Contact' }, { label: 'Shipping' }, { label: 'Payment' }];
@@ -124,9 +125,15 @@ export function CheckoutFlow({ cart }: { cart: Cart }) {
   }
 
   return (
-    <div className="mx-checkout">
+    <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
       <div className="flex flex-col gap-6">
-        <Stepper steps={STEP_LABELS} current={STEP_INDEX[step]} />
+        <Steps>
+          {STEP_LABELS.map((s, i) => (
+            <Step key={s.label} color={i <= STEP_INDEX[step] ? 'primary' : undefined}>
+              {s.label}
+            </Step>
+          ))}
+        </Steps>
 
         {error ? (
           <Alert color="danger" variant="soft">
@@ -135,12 +142,9 @@ export function CheckoutFlow({ cart }: { cart: Cart }) {
         ) : null}
 
         {step === 'contact' ? (
-          <form onSubmit={handleContact} className="mx-form">
-            <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-              Contact
-            </h2>
-            <label className="mx-field">
-              <span>Email</span>
+          <form onSubmit={handleContact} className="flex flex-col gap-4">
+            <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">Contact</h2>
+            <Field label="Email">
               <Input
                 type="email"
                 required
@@ -149,13 +153,11 @@ export function CheckoutFlow({ cart }: { cart: Cart }) {
                 placeholder="you@example.com"
                 autoComplete="email"
               />
-            </label>
-            <label
-              className="mx-field__check flex items-center gap-2 text-sm"
-              style={{ color: 'var(--color-text-secondary)' }}
-            >
+            </Field>
+            <label className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
               <input
                 type="checkbox"
+                className="accent-[var(--sparx-primary)]"
                 checked={acceptsMarketing}
                 onChange={(e) => setAcceptsMarketing(e.target.checked)}
               />
@@ -175,43 +177,52 @@ export function CheckoutFlow({ cart }: { cart: Cart }) {
         ) : null}
 
         {step === 'shipping' ? (
-          <form onSubmit={handleShipping} className="mx-form">
-            <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+          <form onSubmit={handleShipping} className="flex flex-col gap-4">
+            <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
               Shipping address
             </h2>
             <AddressForm value={address} onChange={setAddress} />
 
             {rates.length > 0 ? (
-              <fieldset className="mx-rates">
-                <legend className="mx-facet__legend mb-1">Shipping method</legend>
-                {rates.map((rate) => (
-                  <label
-                    key={rate.rateRef}
-                    className="mx-rate"
-                    data-active={chosenRate?.rateRef === rate.rateRef ? 'true' : 'false'}
-                  >
-                    <input
-                      type="radio"
-                      name="rate"
-                      checked={chosenRate?.rateRef === rate.rateRef}
-                      onChange={() => setChosenRate(rate)}
-                    />
-                    <span className="flex-1">
-                      <strong style={{ color: 'var(--color-text-primary)' }}>{rate.service}</strong>
-                      {rate.estimatedDays != null ? (
-                        <span style={{ color: 'var(--color-text-secondary)' }}>
-                          {' '}
-                          · {rate.estimatedDays} days
-                        </span>
-                      ) : null}
-                    </span>
-                    <span className="tabular-nums" style={{ color: 'var(--color-text-primary)' }}>
-                      {rate.amountCents === 0
-                        ? 'Free'
-                        : formatCents(rate.amountCents, session?.currency ?? cart.currency)}
-                    </span>
-                  </label>
-                ))}
+              <fieldset className="m-0 flex flex-col gap-2 border-0 p-0">
+                <legend className="mb-1 text-xs font-semibold tracking-[0.04em] text-[var(--color-text-secondary)] uppercase">
+                  Shipping method
+                </legend>
+                {rates.map((rate) => {
+                  const active = chosenRate?.rateRef === rate.rateRef;
+                  return (
+                    <label
+                      key={rate.rateRef}
+                      className={`flex cursor-pointer items-center gap-3 rounded-md border px-3.5 py-3 text-sm transition-colors ${
+                        active
+                          ? 'border-[var(--sparx-primary)] bg-[color-mix(in_oklch,var(--sparx-primary)_6%,transparent)]'
+                          : 'border-[var(--color-border-default)]'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="rate"
+                        className="accent-[var(--sparx-primary)]"
+                        checked={active}
+                        onChange={() => setChosenRate(rate)}
+                      />
+                      <span className="flex-1">
+                        <strong className="text-[var(--color-text-primary)]">{rate.service}</strong>
+                        {rate.estimatedDays != null ? (
+                          <span className="text-[var(--color-text-secondary)]">
+                            {' '}
+                            · {rate.estimatedDays} days
+                          </span>
+                        ) : null}
+                      </span>
+                      <span className="text-[var(--color-text-primary)] tabular-nums">
+                        {rate.amountCents === 0
+                          ? 'Free'
+                          : formatCents(rate.amountCents, session?.currency ?? cart.currency)}
+                      </span>
+                    </label>
+                  );
+                })}
               </fieldset>
             ) : null}
 

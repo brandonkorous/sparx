@@ -1,12 +1,13 @@
-// Renders a responsive grid of product cards from resolved ListingCards, or an
-// empty state when there are none. A thin server component shared by the PLP,
-// category pages, merchant profiles, and the homepage strips.
+// Renders a responsive grid of product cards from resolved ListingCards, or a
+// silicaui <EmptyState> when there are none. A thin server component shared by
+// the PLP, category pages, merchant profiles, and the homepage strips.
 
 import Link from 'next/link';
 import { PackageOpen } from 'lucide-react';
-import { Button } from '@sparx/ui';
+import { Button, EmptyState } from 'silicaui-react';
 
 import { ProductCard } from './product-card';
+import { CardGrid } from '@/components/ui/layout';
 import { toProductCardData, type ListingCard } from '@/lib/market';
 
 export function ProductGrid({
@@ -22,26 +23,26 @@ export function ProductGrid({
 }) {
   if (products.length === 0) {
     return (
-      <div className="mx-empty">
-        <span className="mx-empty__icon" aria-hidden>
-          <PackageOpen size={40} />
-        </span>
-        <p className="mx-empty__title">{emptyTitle}</p>
-        <p>{emptyHint}</p>
-        {showBrowseCta ? (
-          <Button asChild color="primary" variant="soft" size="sm">
-            <Link href="/products">Browse all products</Link>
-          </Button>
-        ) : null}
-      </div>
+      <EmptyState
+        icon={<PackageOpen size={40} aria-hidden />}
+        title={emptyTitle}
+        description={emptyHint}
+        actions={
+          showBrowseCta ? (
+            <Button render={<Link href="/products" />} color="primary" variant="soft" size="sm">
+              Browse all products
+            </Button>
+          ) : undefined
+        }
+      />
     );
   }
 
   return (
-    <div className="mx-grid">
+    <CardGrid>
       {products.map((product) => (
         <ProductCard key={product.slug} product={toProductCardData(product)} />
       ))}
-    </div>
+    </CardGrid>
   );
 }

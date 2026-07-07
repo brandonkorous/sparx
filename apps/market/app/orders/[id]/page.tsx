@@ -7,9 +7,11 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle2, MapPin } from 'lucide-react';
-import { Badge, Button, statusLabel, statusTone } from '@sparx/ui';
+import { Badge, Button } from 'silicaui-react';
 
+import { statusLabel, statusTone } from '@/lib/status';
 import { getOrder } from '@/lib/market';
+import { Container } from '@/components/ui/layout';
 import { formatCents } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
@@ -52,14 +54,16 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
   );
 
   return (
-    <div className="mx-container mx-section">
+    <Container className="py-8 md:py-12">
       <div className="mx-auto max-w-2xl">
         {/* Confirmation header */}
         <div className="flex flex-col items-center gap-3 text-center">
           <span style={{ color: 'var(--color-success)' }}>
             <CheckCircle2 size={48} aria-hidden />
           </span>
-          <h1 className="mx-page-title">Order confirmed</h1>
+          <h1 className="text-[1.75rem] font-bold tracking-[-0.02em] text-[var(--color-text-primary)] md:text-4xl">
+            Order confirmed
+          </h1>
           <p style={{ color: 'var(--color-text-secondary)' }}>
             Thanks for your order! A confirmation email is on its way. Your order number is{' '}
             <strong style={{ color: 'var(--color-text-primary)' }}>{order.orderNumber}</strong>.
@@ -148,11 +152,11 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
         </div>
 
         <div className="mt-8 flex justify-center">
-          <Button asChild color="primary" variant="solid" size="md">
-            <Link href="/products">Continue shopping</Link>
+          <Button render={<Link href="/products" />} color="primary" variant="solid" size="md">
+            Continue shopping
           </Button>
         </div>
       </div>
-    </div>
+    </Container>
   );
 }

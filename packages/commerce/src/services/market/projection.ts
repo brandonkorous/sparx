@@ -22,6 +22,12 @@ import type { ServiceContext } from '../../errors';
 
 const SITE_BASE = process.env.SPARX_SITE_BASE ?? '';
 
+// A listing is flagged `low_stock` when it is still buyable but its total sellable
+// quantity across variants is at/under this floor — the "Only a few left" urgency
+// badge (docs/117 S3). Kept intentionally coarse: the marketplace never exposes an
+// exact remaining count cross-tenant, only the boolean signal.
+const MARKET_LOW_STOCK_THRESHOLD = 5;
+
 /** The seller's own storefront product URL (the "Visit their store" link). */
 function storefrontProductUrl(slug: string, handle: string): string | null {
   if (!SITE_BASE) return null;
@@ -119,6 +125,20 @@ async function refreshMerchantOnTx(tx: TxClient, tenantId: string): Promise<void
   if (!identity.slug) return;
   const listingCount = await tx.marketListing.count({ where: { tenantId } });
   const bannerUrl = await resolveMediaUrl(tx, profile.bannerMediaId);
+
+  // Seller trust rating (docs/117 S5): review-count-weighted mean across the
+  // tenant's own listings (market_listings grants unconditional SELECT), so it
+  // refreshes whenever any listing's rating changes and re-projects.
+  const [ratingRow] = await tx.$queryRaw<{ rating: number | null; ratingCount: number }[]>`
+    SELECT
+      SUM(average_rating * review_count) / NULLIF(SUM(review_count), 0) AS rating,
+      COALESCE(SUM(review_count), 0)::int AS "ratingCount"
+    FROM market_listings
+    WHERE tenant_id = ${tenantId}::uuid
+  `;
+  const rating = ratingRow?.rating ?? null;
+  const ratingCount = ratingRow?.ratingCount ?? 0;
+
   const data = {
     tenantId,
     slug: identity.slug,
@@ -131,6 +151,8 @@ async function refreshMerchantOnTx(tx: TxClient, tenantId: string): Promise<void
     siteUrl: storefrontBaseUrl(identity.slug),
     socials: identity.socials as object,
     listingCount,
+    rating,
+    ratingCount,
     approved: true,
   };
   await tx.marketMerchant.upsert({
@@ -167,6 +189,7 @@ export async function projectMarketListing(ctx: ServiceContext, productId: strin
         inStock: true,
         averageRating: true,
         reviewCount: true,
+        bestSellerRank: true,
         publishedAt: true,
         images: {
           where: { variantId: null },
@@ -174,7 +197,15 @@ export async function projectMarketListing(ctx: ServiceContext, productId: strin
           take: 1,
           select: { mediaAssetId: true },
         },
-        variants: { where: { deletedAt: null }, take: 1, select: { currency: true } },
+        // All active variants' inventory drives the low-stock signal (and the first
+        // variant's currency). Bounded — a product carries a handful of variants.
+        variants: {
+          where: { deletedAt: null },
+          select: {
+            currency: true,
+            inventoryLevels: { select: { onHand: true, allocated: true, safetyBuffer: true } },
+          },
+        },
       },
     });
 
@@ -211,6 +242,21 @@ export async function projectMarketListing(ctx: ServiceContext, productId: strin
       .toLowerCase()
       .slice(0, 4000);
 
+    // Total sellable across every tracked variant (mirrors getListingDetail's
+    // per-variant math). An untracked product (no inventory levels) is never "low".
+    const sellable = product.variants.reduce(
+      (sum, v) =>
+        sum +
+        v.inventoryLevels.reduce(
+          (s, l) => s + Math.max(0, l.onHand - l.allocated - l.safetyBuffer),
+          0
+        ),
+      0
+    );
+    const tracked = product.variants.some((v) => v.inventoryLevels.length > 0);
+    const lowStock =
+      product.inStock && tracked && sellable > 0 && sellable <= MARKET_LOW_STOCK_THRESHOLD;
+
     const data = {
       tenantId: ctx.tenantId,
       productId: product.id,
@@ -229,6 +275,8 @@ export async function projectMarketListing(ctx: ServiceContext, productId: strin
       inStock: product.inStock,
       averageRating: product.averageRating,
       reviewCount: product.reviewCount,
+      bestSellerRank: product.bestSellerRank,
+      lowStock,
       featured: product.marketFeatured,
       productUrl: storefrontProductUrl(identity.slug, product.handle),
       searchText,

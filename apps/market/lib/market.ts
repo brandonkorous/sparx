@@ -31,6 +31,11 @@ export interface ListingCard {
   merchantSlug: string;
   merchantName: string;
   merchantLogoUrl: string | null;
+  // Card-badge signals (docs/117 S3): bestseller rank (1 = top; null = unranked),
+  // running-low urgency flag, sparx-curated featured placement.
+  bestSellerRank: number | null;
+  lowStock: boolean;
+  featured: boolean;
 }
 
 export interface ListingVariant {
@@ -43,12 +48,19 @@ export interface ListingVariant {
   inStock: boolean;
 }
 
+export interface ListingImage {
+  url: string;
+  alt: string | null;
+}
+
 /** A full product detail record (a ListingCard plus the buyable detail). */
 export interface ListingDetail extends ListingCard {
   productId: string;
   description: string | null;
   /** The seller's own storefront URL for this product ("Visit their store"). */
   productUrl: string | null;
+  /** Ordered product gallery (primary first). Empty → fall back to `imageUrl`. */
+  images: ListingImage[];
   variants: ListingVariant[];
 }
 
@@ -68,6 +80,11 @@ export interface MerchantSummary {
   siteUrl: string | null;
   socials: MerchantSocial[];
   listingCount: number;
+  // Seller trust signals (docs/117 S5).
+  rating: number | null;
+  ratingCount: number;
+  /** ISO join date, for "Selling since {year}" trust copy. */
+  memberSince: string;
 }
 
 export type MarketSort = 'relevance' | 'newest' | 'lowest_price' | 'highest_price' | 'rating';
@@ -102,6 +119,9 @@ export interface MerchantDirectoryPage {
 export interface MerchantProfile {
   merchant: MerchantSummary;
   products: ListingCard[];
+  total: number;
+  page: number;
+  perPage: number;
 }
 
 // ── Raw wire types (pre-resolution) ─────────────────────────────────────────
@@ -115,9 +135,10 @@ interface RawListingCard extends Omit<ListingCard, 'imageUrl' | 'merchantLogoUrl
   merchantLogoUrl: string | null;
 }
 
-interface RawListingDetail extends Omit<ListingDetail, 'imageUrl' | 'merchantLogoUrl'> {
+interface RawListingDetail extends Omit<ListingDetail, 'imageUrl' | 'merchantLogoUrl' | 'images'> {
   imageUrl: string | null;
   merchantLogoUrl: string | null;
+  images?: ListingImage[];
 }
 
 interface RawMerchantSummary extends Omit<MerchantSummary, 'logoUrl' | 'bannerUrl'> {
@@ -171,6 +192,11 @@ export function toProductCardData(listing: ListingCard): ProductCardData {
     merchantName: listing.merchantName,
     merchantSlug: listing.merchantSlug,
     inStock: listing.inStock,
+    averageRating: listing.averageRating,
+    reviewCount: listing.reviewCount,
+    bestSellerRank: listing.bestSellerRank,
+    lowStock: listing.lowStock,
+    featured: listing.featured,
   };
 }
 
@@ -182,6 +208,8 @@ export function toMerchantCardData(merchant: MerchantSummary): MerchantCardData 
     logoUrl: merchant.logoUrl,
     location: merchant.location,
     listingCount: merchant.listingCount,
+    rating: merchant.rating,
+    ratingCount: merchant.ratingCount,
   };
 }
 
@@ -215,16 +243,53 @@ export async function listProducts(params: ListProductsParams = {}): Promise<Pro
   };
 }
 
+export interface MarketFacets {
+  /** Per-category tallies (honoring every filter except the selected category). */
+  categories: { slug: string; count: number }[];
+  /** How many results remain if "in stock only" is toggled on. */
+  inStockCount: number;
+  /** Total matching the full active filter set (mirrors the grid count). */
+  total: number;
+}
+
+/** Facet counts for the PLP sidebar. Shares the browse filter vocabulary. */
+export async function listFacets(params: ListProductsParams = {}): Promise<MarketFacets> {
+  const query = buildQuery({
+    q: params.q,
+    category: params.category,
+    merchant: params.merchant,
+    minPriceCents: params.minPriceCents,
+    maxPriceCents: params.maxPriceCents,
+    inStock: params.inStock,
+    featured: params.featured,
+  });
+  return marketApi<MarketFacets>(`/products/facets${query}`, {
+    next: { revalidate: REVALIDATE },
+  });
+}
+
+/** The discovery-home "Trending now" rail (best sellers first). */
+export async function listTrending(limit = 12): Promise<ListingCard[]> {
+  const data = await marketApi<{ items: RawListingCard[] }>(`/products/trending?limit=${limit}`, {
+    next: { revalidate: REVALIDATE },
+  });
+  return data.items.map(resolveCard);
+}
+
 /** Single product detail. Returns null on a 404 so the page can `notFound()`. */
 export async function getProduct(slug: string): Promise<ListingDetail | null> {
   try {
     const raw = await marketApi<RawListingDetail>(`/products/${encodeURIComponent(slug)}`, {
       next: { revalidate: REVALIDATE },
     });
+    // Gallery URLs are already resolved to absolute CDN URLs server-side; the
+    // single card image still runs through mediaUrl (it may arrive as a bare ref).
+    const gallery = raw.images ?? [];
     return {
       ...raw,
       imageUrl: mediaUrl(raw.imageUrl, raw.merchantSlug),
       merchantLogoUrl: mediaUrl(raw.merchantLogoUrl, raw.merchantSlug),
+      images: gallery,
       variants: raw.variants ?? [],
     };
   } catch (err) {
@@ -252,16 +317,24 @@ export async function listMerchants(
   };
 }
 
-/** Merchant profile + their products. Null on a 404 so the page can `notFound()`. */
-export async function getMerchant(slug: string): Promise<MerchantProfile | null> {
+/** Merchant profile + their products (with in-store search/sort/paginate). Null on
+ *  a 404 so the page can `notFound()`. */
+export async function getMerchant(
+  slug: string,
+  params: { q?: string; sort?: MarketSort; page?: number } = {}
+): Promise<MerchantProfile | null> {
+  const query = buildQuery({ q: params.q, sort: params.sort, page: params.page });
   try {
-    const data = await marketApi<{ merchant: RawMerchantSummary; products: RawListingCard[] }>(
-      `/merchants/${encodeURIComponent(slug)}`,
-      { next: { revalidate: REVALIDATE } }
-    );
+    const data = await marketApi<{
+      merchant: RawMerchantSummary;
+      products: { items: RawListingCard[]; total: number; page: number; perPage: number };
+    }>(`/merchants/${encodeURIComponent(slug)}${query}`, { next: { revalidate: REVALIDATE } });
     return {
       merchant: resolveMerchant(data.merchant),
-      products: data.products.map(resolveCard),
+      products: data.products.items.map(resolveCard),
+      total: data.products.total,
+      page: data.products.page,
+      perPage: data.products.perPage,
     };
   } catch (err) {
     if (err instanceof MarketApiError && err.status === 404) return null;
@@ -303,4 +376,72 @@ export async function getOrder(orderId: string, merchantSlug: string): Promise<P
     if (err instanceof MarketApiError && err.status === 404) return null;
     throw err;
   }
+}
+
+// ── PDP depth: reviews, Q&A, related ─────────────────────────────────────────
+
+export interface ProductReview {
+  id: string;
+  rating: number;
+  title: string | null;
+  body: string;
+  author: string | null;
+  verifiedPurchase: boolean;
+  helpfulCount: number;
+  /** The seller's public reply, if any. */
+  response: string | null;
+  respondedAt: string | null;
+  createdAt: string;
+}
+
+export interface ProductReviewPage {
+  summary: { averageRating: number; total: number };
+  items: ProductReview[];
+  page: number;
+  perPage: number;
+}
+
+/** A listing's approved reviews (newest first) + the live rating summary. */
+export async function getProductReviews(
+  slug: string,
+  params: { page?: number; perPage?: number } = {}
+): Promise<ProductReviewPage> {
+  const query = buildQuery({ page: params.page, perPage: params.perPage });
+  return marketApi<ProductReviewPage>(`/products/${encodeURIComponent(slug)}/reviews${query}`, {
+    next: { revalidate: REVALIDATE },
+  });
+}
+
+export interface ProductQuestionAnswer {
+  id: string;
+  body: string;
+  isOfficial: boolean;
+  createdAt: string;
+}
+
+export interface ProductQuestion {
+  id: string;
+  displayName: string | null;
+  body: string;
+  createdAt: string;
+  helpfulCount: number;
+  answers: ProductQuestionAnswer[];
+}
+
+/** A listing's published questions + their answers (official first). */
+export async function getProductQuestions(slug: string): Promise<ProductQuestion[]> {
+  const data = await marketApi<{ items: ProductQuestion[] }>(
+    `/products/${encodeURIComponent(slug)}/questions`,
+    { next: { revalidate: REVALIDATE } }
+  );
+  return data.items;
+}
+
+/** Same-category "you may also like" listings for the PDP. */
+export async function getRelatedProducts(slug: string): Promise<ListingCard[]> {
+  const data = await marketApi<{ items: RawListingCard[] }>(
+    `/products/${encodeURIComponent(slug)}/related`,
+    { next: { revalidate: REVALIDATE } }
+  );
+  return data.items.map(resolveCard);
 }

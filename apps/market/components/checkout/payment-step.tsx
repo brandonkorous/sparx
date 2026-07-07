@@ -12,7 +12,7 @@ import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-
 import { loadStripe, type Stripe } from '@stripe/stripe-js';
 import { useEffect, useMemo, useState } from 'react';
 import { Loader2 } from 'lucide-react';
-import { Alert, Button } from '@sparx/ui';
+import { Alert, Button } from 'silicaui-react';
 
 import { formatCents } from '@/lib/format';
 import {
@@ -82,7 +82,7 @@ export function PaymentStep({
 
   if (error) {
     return (
-      <div className="mx-form">
+      <div className="flex flex-col gap-4">
         <Alert color="danger" variant="soft">
           {error}
         </Alert>
@@ -95,7 +95,7 @@ export function PaymentStep({
 
   if (!intent?.clientSecret) {
     return (
-      <div className="mx-form">
+      <div className="flex flex-col gap-4">
         <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text-primary)' }}>
           Payment
         </h2>
@@ -180,7 +180,7 @@ function PaymentInner({
   }
 
   return (
-    <form onSubmit={pay} className="mx-form">
+    <form onSubmit={pay} className="flex flex-col gap-4">
       <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text-primary)' }}>
         Payment
       </h2>

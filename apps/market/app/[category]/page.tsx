@@ -9,6 +9,7 @@ import { getMarketCategory, MARKET_CATEGORIES } from '@sparx/commerce-schemas';
 
 import { CategoryIcon } from '@/components/category-icon';
 import { PlpView } from '@/components/plp-view';
+import { Container } from '@/components/ui/layout';
 import { parsePlpParams, PLP_PER_PAGE, type RawSearchParams } from '@/lib/plp-params';
 
 export const revalidate = 60;
@@ -56,28 +57,29 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
   };
 
   return (
-    <div className="mx-container">
+    <Container>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
       />
 
-      <section className="mx-section" style={{ paddingBottom: 0 }}>
-        <div className="mx-hero">
-          <span className="mx-cat-tile__icon">
+      <section className="pt-8 pb-6 md:pt-12">
+        <div className="rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-6 py-10 md:px-10 md:py-12">
+          <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[color-mix(in_oklch,var(--sparx-primary)_12%,var(--color-bg-subtle))] text-[var(--sparx-primary)]">
             <CategoryIcon name={category.icon} size={22} />
           </span>
-          <h1 className="mx-hero__title" style={{ marginTop: '1rem' }}>
+          <h1 className="mt-4 max-w-2xl text-[2rem] leading-[1.05] font-bold tracking-[-0.03em] text-[var(--color-text-primary)] md:text-[3rem]">
             {category.name}
           </h1>
-          <p className="mx-hero__lead">{category.tagline}</p>
+          <p className="mt-3 max-w-xl text-[1.0625rem] leading-relaxed text-[var(--color-text-secondary)]">
+            {category.tagline}
+          </p>
         </div>
       </section>
 
-      <div className="mx-section" style={{ paddingTop: '1.5rem' }}>
+      <div className="pb-12">
         <PlpView
           basePath={`/${category.slug}`}
-          searchParams={sp}
           query={query}
           facetState={facetState}
           perPage={PLP_PER_PAGE}
@@ -86,6 +88,6 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           emptyHint="Check back soon — sellers are listing in this category all the time."
         />
       </div>
-    </div>
+    </Container>
   );
 }

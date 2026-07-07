@@ -3,8 +3,10 @@
 # Multi-stage Next.js build for @sparx/market — the public sparx.market shopping
 # destination. Mirrors apps/site/Dockerfile (same standalone output shape), but a
 # much smaller workspace subgraph: apps/market renders NO tenant themes and NO
-# builder, so it depends only on @sparx/ui + @sparx/commerce-schemas (which pulls
-# @sparx/crm-schemas). There is no @sparx/site-ui stylesheet build step.
+# builder. Its UI layer is silicaui (silicaui + silicaui-react, from npm — NOT a
+# workspace package, so no COPY here; pnpm install pulls them from the registry),
+# leaving @sparx/commerce-schemas (which pulls @sparx/crm-schemas) as its only
+# workspace dep. There is no @sparx/site-ui stylesheet build step.
 #
 # Built from the repo root context (per .github/workflows/build-images.yml):
 #   docker build -f apps/market/Dockerfile -t sparx/market:tag .
@@ -22,9 +24,9 @@ FROM base AS builder
 # Workspace metadata first — maximises layer cache reuse across source changes.
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 COPY apps/market/package.json apps/market/
-COPY packages/ui/package.json packages/ui/
 # @sparx/commerce-schemas (pure-zod: MARKET_CATEGORIES + the category taxonomy)
-# and its only workspace dep, @sparx/crm-schemas.
+# and its only workspace dep, @sparx/crm-schemas. silicaui + silicaui-react are
+# npm deps resolved by pnpm install below, so they need no COPY.
 COPY packages/commerce-schemas/package.json packages/commerce-schemas/
 COPY packages/crm-schemas/package.json packages/crm-schemas/
 
@@ -32,7 +34,6 @@ COPY packages/crm-schemas/package.json packages/crm-schemas/
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile --filter @sparx/market...
 
-COPY packages/ui packages/ui
 COPY packages/commerce-schemas packages/commerce-schemas
 COPY packages/crm-schemas packages/crm-schemas
 COPY apps/market apps/market

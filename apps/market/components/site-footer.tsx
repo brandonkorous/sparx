@@ -1,11 +1,14 @@
-// Marketplace footer chrome. A server component. Four-column link map (shop /
-// categories / sell / company) plus a "Sell on sparx.market" CTA column and the
-// legal strip. Category links are driven by MARKET_CATEGORIES so the footer
-// tracks the same taxonomy as the header.
+// Marketplace footer chrome. A server component. Four-column link map (brand +
+// sell CTA / shop / categories / company) plus the legal strip. Layout is
+// composed from silicaui utilities (no more mx-footer-*); category links are
+// driven by MARKET_CATEGORIES so the footer tracks the same taxonomy as the header.
 
 import Link from 'next/link';
 import { MARKET_CATEGORIES } from '@sparx/commerce-schemas';
-import { Wordmark, Button } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+
+import { Wordmark } from '@/components/sparx-brand';
+import { Container } from '@/components/ui/layout';
 
 const FOOTER_YEAR = 2026; // static so SSR output stays deterministic/cacheable
 
@@ -34,75 +37,82 @@ const LEGAL_LINKS: FooterLink[] = [
   { label: 'Buyer protection', href: '/legal/buyer-protection' },
 ];
 
+const colTitle =
+  'mb-3 text-xs font-semibold tracking-[0.04em] text-[var(--color-text-secondary)] uppercase';
+const footerLink =
+  'block py-1 text-sm text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text-primary)]';
+
 export function SiteFooter() {
   return (
-    <footer className="mx-footer">
-      <div className="mx-container">
-        <div className="mx-footer__grid">
+    <footer className="border-t border-[var(--color-border-default)] bg-[var(--color-bg-surface)]">
+      <Container>
+        <div className="grid grid-cols-1 gap-8 py-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
           {/* Brand + sell CTA column. */}
           <div>
             <Link href="/" aria-label="sparx.market home" className="inline-flex items-baseline">
               <Wordmark size={22} />
-              <span
-                className="ml-0.5 text-sm font-medium"
-                style={{ color: 'var(--color-text-secondary)' }}
-              >
+              <span className="ml-0.5 text-sm font-medium text-[var(--color-text-secondary)]">
                 .market
               </span>
             </Link>
-            <p className="mt-3 max-w-xs text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+            <p className="mt-3 max-w-xs text-sm text-[var(--color-text-secondary)]">
               One destination for thousands of independent sellers. Real shops, real makers, shipped
               direct.
             </p>
-            <Button asChild color="primary" variant="solid" size="sm" className="mt-4">
-              <Link href="/sell">Start selling</Link>
+            <Button
+              render={<Link href="/sell" />}
+              color="primary"
+              variant="solid"
+              size="sm"
+              className="mt-4"
+            >
+              Start selling
             </Button>
           </div>
 
           <div>
-            <h2 className="mx-footer__col-title">Shop</h2>
+            <h2 className={colTitle}>Shop</h2>
             {SHOP_LINKS.map((link) => (
-              <Link key={link.href} href={link.href} className="mx-footer__link">
+              <Link key={link.href} href={link.href} className={footerLink}>
                 {link.label}
               </Link>
             ))}
           </div>
 
           <div>
-            <h2 className="mx-footer__col-title">Categories</h2>
+            <h2 className={colTitle}>Categories</h2>
             {MARKET_CATEGORIES.map((category) => (
-              <Link key={category.slug} href={`/${category.slug}`} className="mx-footer__link">
+              <Link key={category.slug} href={`/${category.slug}`} className={footerLink}>
                 {category.name}
               </Link>
             ))}
           </div>
 
           <div>
-            <h2 className="mx-footer__col-title">Company</h2>
+            <h2 className={colTitle}>Company</h2>
             {COMPANY_LINKS.map((link) => (
-              <Link key={link.href} href={link.href} className="mx-footer__link">
+              <Link key={link.href} href={link.href} className={footerLink}>
                 {link.label}
               </Link>
             ))}
           </div>
         </div>
 
-        <div className="mx-footer__legal">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--color-border-default)] py-6 text-[0.8125rem] text-[var(--color-text-secondary)]">
           <span>© {FOOTER_YEAR} WizeWorks, Inc. sparx.market is a sparx property.</span>
           <nav className="flex flex-wrap items-center gap-4" aria-label="Legal">
             {LEGAL_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="transition-colors"
-                style={{ color: 'var(--color-text-secondary)' }}
+                className="text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text-primary)]"
               >
                 {link.label}
               </Link>
             ))}
           </nav>
         </div>
-      </div>
+      </Container>
     </footer>
   );
 }
