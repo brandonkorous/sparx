@@ -8,6 +8,7 @@ import { Store, MapPin } from 'lucide-react';
 import { Card } from 'silicaui-react';
 
 import { Stars } from '@/components/stars';
+import { INTERACTIVE_CARD_CLASS } from '@/components/ui/card';
 
 export interface MerchantCardData {
   slug: string;
@@ -27,13 +28,13 @@ export function MerchantCard({ merchant }: { merchant: MerchantCardData }) {
       : `${merchant.listingCount.toLocaleString()} listings`;
 
   return (
-    <Card className="border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] transition-all duration-150 hover:-translate-y-0.5 hover:border-[color-mix(in_oklch,var(--sparx-primary)_40%,var(--color-border-default))] hover:shadow-[0_10px_28px_-12px_rgba(0,0,0,0.28)]">
+    <Card className={INTERACTIVE_CARD_CLASS}>
       <Link
         href={`/merchants/${merchant.slug}`}
         className="flex items-center gap-3 p-4"
         aria-label={merchant.name}
       >
-        <span className="relative inline-flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[var(--color-bg-subtle)]">
+        <span className="bg-base-200 relative inline-flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-full">
           {merchant.logoUrl ? (
             <Image
               src={merchant.logoUrl}
@@ -43,26 +44,24 @@ export function MerchantCard({ merchant }: { merchant: MerchantCardData }) {
               className="object-cover"
             />
           ) : (
-            <Store size={22} aria-hidden className="text-[var(--color-text-secondary)]" />
+            <Store size={22} aria-hidden className="text-base-content/70" />
           )}
         </span>
 
         <span className="flex min-w-0 flex-col gap-0.5">
-          <span className="truncate text-[0.9375rem] font-semibold text-[var(--color-text-primary)]">
+          <span className="text-base-content truncate text-[0.9375rem] font-semibold">
             {merchant.name}
           </span>
           {merchant.rating != null && merchant.ratingCount > 0 ? (
             <Stars rating={merchant.rating} reviewCount={merchant.ratingCount} size={13} compact />
           ) : null}
           {merchant.location ? (
-            <span className="inline-flex items-center gap-1 text-[0.8125rem] text-[var(--color-text-secondary)]">
+            <span className="text-base-content/70 inline-flex items-center gap-1 text-[0.8125rem]">
               <MapPin size={13} aria-hidden />
               {merchant.location}
             </span>
           ) : null}
-          <span className="text-[0.8125rem] text-[var(--color-text-secondary)]">
-            {listingLabel}
-          </span>
+          <span className="text-base-content/70 text-[0.8125rem]">{listingLabel}</span>
         </span>
       </Link>
     </Card>

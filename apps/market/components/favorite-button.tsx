@@ -32,10 +32,8 @@ export function FavoriteButton({
       aria-pressed={favorited}
       aria-label={favorited ? `Remove ${title} from favorites` : `Save ${title} to favorites`}
       title={favorited ? 'Saved to favorites' : 'Save to favorites'}
-      className={`inline-flex items-center justify-center rounded-full border border-[var(--color-border-default)] bg-[color-mix(in_oklch,var(--color-bg-surface)_88%,transparent)] p-2 backdrop-blur-sm transition-colors hover:border-[var(--color-border-strong)] ${
-        favorited
-          ? 'text-[var(--color-danger)]'
-          : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
+      className={`border-base-300 hover:border-base-content/20 bg-base-100/90 inline-flex items-center justify-center rounded-full border p-2 backdrop-blur-sm transition-colors ${
+        favorited ? 'text-danger' : 'text-base-content/70 hover:text-base-content'
       } ${className ?? ''}`}
     >
       <Heart size={size} aria-hidden fill={favorited ? 'currentColor' : 'none'} />

@@ -105,7 +105,7 @@ export default function CartPage() {
   if (status === 'loading') {
     return (
       <Container className="py-8 md:py-12">
-        <div className="flex items-center justify-center gap-2 py-20 text-[var(--color-text-secondary)]">
+        <div className="text-base-content/70 flex items-center justify-center gap-2 py-20">
           <Loader2 size={20} className="animate-spin" aria-hidden />
           Loading your cart…
         </div>
@@ -116,7 +116,7 @@ export default function CartPage() {
   if (status === 'empty' || !cart) {
     return (
       <Container className="py-8 md:py-12">
-        <h1 className="mb-6 text-[1.75rem] font-bold tracking-[-0.02em] text-[var(--color-text-primary)] md:text-4xl">
+        <h1 className="text-base-content mb-6 text-[1.75rem] font-bold tracking-[-0.02em] md:text-4xl">
           Your cart
         </h1>
         <EmptyState
@@ -136,14 +136,14 @@ export default function CartPage() {
   return (
     <Container className="py-8 md:py-12">
       <header className="mb-6">
-        <h1 className="text-[1.75rem] font-bold tracking-[-0.02em] text-[var(--color-text-primary)] md:text-4xl">
+        <h1 className="text-base-content text-[1.75rem] font-bold tracking-[-0.02em] md:text-4xl">
           Your cart
         </h1>
-        <p className="mt-2 text-base text-[var(--color-text-secondary)]">
+        <p className="text-base-content/70 mt-2 text-base">
           Items from{' '}
           <Link
             href={`/merchants/${cart.merchantSlug}`}
-            className="font-medium text-[var(--sparx-primary)] hover:underline"
+            className="text-primary font-medium hover:underline"
           >
             {cart.merchantSlug}
           </Link>
@@ -159,12 +159,12 @@ export default function CartPage() {
 
       <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         {/* Line items */}
-        <div className="divide-y divide-[var(--color-border-default)] rounded-xl border border-[var(--color-border-default)]">
+        <div className="border-base-300 divide-base-300 divide-y rounded-xl border">
           {cart.items.map((line) => {
             const busy = pendingItem === line.id;
             return (
               <div key={line.id} className="flex gap-4 p-4">
-                <span className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
+                <span className="border-base-300 bg-base-200 relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border">
                   {line.imageUrl ? (
                     <Image
                       src={line.imageUrl}
@@ -175,7 +175,7 @@ export default function CartPage() {
                     />
                   ) : (
                     <span
-                      className="flex h-full items-center justify-center text-[var(--color-text-tertiary)]"
+                      className="text-base-content/50 flex h-full items-center justify-center"
                       aria-hidden
                     >
                       <ImageOff size={20} />
@@ -187,21 +187,19 @@ export default function CartPage() {
                   {line.productSlug ? (
                     <Link
                       href={`/products/${line.productSlug}`}
-                      className="text-sm font-semibold text-[var(--color-text-primary)] hover:underline"
+                      className="text-base-content text-sm font-semibold hover:underline"
                     >
                       {line.title}
                     </Link>
                   ) : (
-                    <span className="text-sm font-semibold text-[var(--color-text-primary)]">
-                      {line.title}
-                    </span>
+                    <span className="text-base-content text-sm font-semibold">{line.title}</span>
                   )}
                   {line.variantTitle ? (
-                    <span className="text-[0.8125rem] text-[var(--color-text-secondary)]">
+                    <span className="text-base-content/70 text-[0.8125rem]">
                       {line.variantTitle}
                     </span>
                   ) : null}
-                  <span className="text-[0.8125rem] text-[var(--color-text-secondary)]">
+                  <span className="text-base-content/70 text-[0.8125rem]">
                     {formatCents(line.unitPriceCents, cart.currency)} each
                   </span>
 
@@ -252,7 +250,7 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                <span className="text-sm font-semibold text-[var(--color-text-primary)] tabular-nums">
+                <span className="text-base-content text-sm font-semibold tabular-nums">
                   {formatCents(line.lineTotalCents, cart.currency)}
                 </span>
               </div>
@@ -261,10 +259,8 @@ export default function CartPage() {
         </div>
 
         {/* Summary */}
-        <aside className="rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-5 lg:sticky lg:top-32">
-          <h2 className="mb-4 text-base font-semibold text-[var(--color-text-primary)]">
-            Order summary
-          </h2>
+        <aside className="border-base-300 bg-base-100 rounded-xl border p-5 lg:sticky lg:top-32">
+          <h2 className="text-base-content mb-4 text-base font-semibold">Order summary</h2>
 
           {/* Discount code */}
           <form onSubmit={submitCode} className="mb-4 flex flex-col gap-2">
@@ -273,7 +269,7 @@ export default function CartPage() {
                 <Tag
                   size={15}
                   aria-hidden
-                  className="pointer-events-none absolute left-3 z-10 text-[var(--color-text-tertiary)]"
+                  className="text-base-content/50 pointer-events-none absolute left-3 z-10"
                 />
                 <Input
                   value={code}
@@ -293,9 +289,7 @@ export default function CartPage() {
                 Apply
               </Button>
             </div>
-            {codeError ? (
-              <span className="text-[0.8125rem] text-[var(--color-danger)]">{codeError}</span>
-            ) : null}
+            {codeError ? <span className="text-danger text-[0.8125rem]">{codeError}</span> : null}
             {cart.appliedDiscountCodes.length > 0 ? (
               <div className="flex flex-wrap gap-1.5">
                 {cart.appliedDiscountCodes.map((c) => (
@@ -306,7 +300,7 @@ export default function CartPage() {
                       onClick={() => dropCode(c)}
                       disabled={codeBusy}
                       aria-label={`Remove code ${c}`}
-                      className="-mr-1 ml-0.5 inline-flex items-center rounded-full p-0.5 hover:text-[var(--color-text-primary)]"
+                      className="hover:text-base-content -mr-1 ml-0.5 inline-flex items-center rounded-full p-0.5"
                     >
                       <X size={12} aria-hidden />
                     </button>
@@ -317,25 +311,25 @@ export default function CartPage() {
           </form>
 
           <div className="flex flex-col gap-2 text-sm">
-            <div className="flex items-center justify-between text-[var(--color-text-secondary)]">
+            <div className="text-base-content/70 flex items-center justify-between">
               <span>Subtotal</span>
               <span className="tabular-nums">
                 {formatCents(cart.totals.subtotalCents, cart.currency)}
               </span>
             </div>
             {cart.totals.discountTotalCents > 0 ? (
-              <div className="flex items-center justify-between text-[var(--color-success)]">
+              <div className="text-success flex items-center justify-between">
                 <span>Discount</span>
                 <span className="tabular-nums">
                   −{formatCents(cart.totals.discountTotalCents, cart.currency)}
                 </span>
               </div>
             ) : null}
-            <div className="flex items-center justify-between text-[var(--color-text-secondary)]">
+            <div className="text-base-content/70 flex items-center justify-between">
               <span>Shipping</span>
               <span>Calculated at checkout</span>
             </div>
-            <div className="mt-2 flex items-center justify-between border-t border-[var(--color-border-default)] pt-3 text-[1.0625rem] font-bold text-[var(--color-text-primary)]">
+            <div className="border-base-300 text-base-content mt-2 flex items-center justify-between border-t pt-3 text-[1.0625rem] font-bold">
               <span>Total</span>
               <span className="tabular-nums">
                 {formatCents(cart.totals.totalCents, cart.currency)}
@@ -362,7 +356,7 @@ export default function CartPage() {
             Continue shopping
           </Button>
 
-          <p className="mt-4 flex items-center justify-center gap-1.5 text-[0.8125rem] text-[var(--color-text-tertiary)]">
+          <p className="text-base-content/50 mt-4 flex items-center justify-center gap-1.5 text-[0.8125rem]">
             <Lock size={13} aria-hidden />
             Secure checkout — sparx is the merchant of record.
           </p>

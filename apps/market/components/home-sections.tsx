@@ -3,12 +3,16 @@
 // section heading, a photo-driven category grid, a horizontally-scrollable product
 // rail (CSS scroll-snap, no JS), and a trust/value-props strip.
 
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, PackageCheck, RotateCcw, ShieldCheck, Store } from 'lucide-react';
+import { Card } from 'silicaui-react';
 
 import { CategoryIcon } from '@/components/category-icon';
 import { ProductCard } from '@/components/product-card';
+import { LinkCard } from '@/components/ui/card';
+import { tintChip } from '@/lib/hue';
 import { toProductCardData, type ListingCard } from '@/lib/market';
 
 /** A section header row: title + optional subhead + optional "see all" link. */
@@ -26,17 +30,15 @@ export function SectionHeading({
   return (
     <div className="mb-6 flex items-end justify-between gap-4">
       <div>
-        <h2 className="text-2xl font-semibold tracking-[-0.01em] text-[var(--color-text-primary)] md:text-[1.75rem]">
+        <h2 className="text-base-content text-2xl font-semibold tracking-[-0.01em] md:text-[1.75rem]">
           {title}
         </h2>
-        {sub ? (
-          <p className="mt-1.5 text-[0.9375rem] text-[var(--color-text-secondary)]">{sub}</p>
-        ) : null}
+        {sub ? <p className="text-base-content/70 mt-1.5 text-[0.9375rem]">{sub}</p> : null}
       </div>
       {href ? (
         <Link
           href={href}
-          className="inline-flex shrink-0 items-center gap-1 text-sm font-medium whitespace-nowrap text-[var(--sparx-primary)] hover:underline"
+          className="text-primary inline-flex shrink-0 items-center gap-1 text-sm font-medium whitespace-nowrap hover:underline"
         >
           {linkLabel ?? 'See all'}
           <ArrowRight size={15} aria-hidden />
@@ -70,12 +72,13 @@ export function CategoryTiles({ categories }: { categories: CategoryTileData[] }
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
       {categories.map((category) => (
-        <Link
+        <LinkCard
           key={category.slug}
           href={`/${category.slug}`}
-          className="group flex flex-col overflow-hidden rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] transition-all duration-150 hover:-translate-y-0.5 hover:border-[color-mix(in_oklch,var(--sparx-primary)_45%,var(--color-border-default))] hover:shadow-[0_10px_28px_-14px_rgba(0,0,0,0.28)]"
+          ariaLabel={category.name}
+          className="rounded-xl"
         >
-          <div className="relative aspect-[4/3] overflow-hidden bg-[var(--color-bg-subtle)]">
+          <div className="bg-base-200 relative aspect-[4/3] overflow-hidden">
             {category.imageUrl ? (
               <Image
                 src={category.imageUrl}
@@ -86,11 +89,7 @@ export function CategoryTiles({ categories }: { categories: CategoryTileData[] }
               />
             ) : (
               <span
-                className="flex h-full w-full items-center justify-center"
-                style={{
-                  color: `var(--color-${category.color})`,
-                  background: `color-mix(in oklch, var(--color-${category.color}) 12%, var(--color-bg-subtle))`,
-                }}
+                className={`flex h-full w-full items-center justify-center ${tintChip(category.color)}`}
                 aria-hidden
               >
                 <CategoryIcon name={category.icon} />
@@ -99,36 +98,50 @@ export function CategoryTiles({ categories }: { categories: CategoryTileData[] }
           </div>
           <div className="flex items-center justify-between gap-2 px-3.5 py-3">
             <div className="min-w-0">
-              <span className="block truncate text-base font-semibold text-[var(--color-text-primary)]">
+              <span className="text-base-content block truncate text-base font-semibold">
                 {category.name}
               </span>
-              <span className="block text-[0.8125rem] text-[var(--color-text-secondary)]">
+              <span className="text-base-content/70 block text-[0.8125rem]">
                 {categoryCountLabel(category.count)}
               </span>
             </div>
             <ArrowRight
               size={16}
               aria-hidden
-              className="shrink-0 text-[var(--color-text-tertiary)] transition-all group-hover:translate-x-0.5 group-hover:text-[var(--sparx-primary)]"
+              className="text-base-content/50 group-hover:text-primary shrink-0 transition-all group-hover:translate-x-0.5"
             />
           </div>
-        </Link>
+        </LinkCard>
       ))}
     </div>
   );
 }
 
+/** A horizontally-scrollable, scroll-snap "carousel" track. Shared by the product
+ *  rails (home strips, category spotlights, recently-viewed). Each child should be
+ *  a fixed-width rail item (use RAIL_ITEM_CLASS). */
+export function ScrollRail({ children }: { children: ReactNode }) {
+  return (
+    <div className="-mx-4 flex snap-x snap-mandatory [scrollbar-width:none] gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden">
+      {children}
+    </div>
+  );
+}
+
+/** Fixed-width rail cell — keeps every rail's card width identical. */
+export const RAIL_ITEM_CLASS = 'w-[220px] shrink-0 snap-start sm:w-[240px]';
+
 /** A horizontally-scrollable product rail (scroll-snap "carousel"). */
 export function ProductRail({ products }: { products: ListingCard[] }) {
   if (products.length === 0) return null;
   return (
-    <div className="-mx-4 flex snap-x snap-mandatory [scrollbar-width:none] gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden">
+    <ScrollRail>
       {products.map((product) => (
-        <div key={product.slug} className="w-[220px] shrink-0 snap-start sm:w-[240px]">
+        <div key={product.slug} className={RAIL_ITEM_CLASS}>
           <ProductCard product={toProductCardData(product)} />
         </div>
       ))}
-    </div>
+    </ScrollRail>
   );
 }
 
@@ -168,29 +181,20 @@ export function TrustStrip() {
       {TRUST_ITEMS.map((item) => {
         const Icon = item.icon;
         return (
-          <div
-            key={item.title}
-            className="flex gap-3.5 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-4"
-          >
+          <Card key={item.title} className="flex-row gap-3.5 p-4">
             <span
-              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
-              style={{
-                color: `var(--color-${item.color})`,
-                background: `color-mix(in oklch, var(--color-${item.color}) 12%, var(--color-bg-surface))`,
-              }}
+              className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${tintChip(item.color)}`}
               aria-hidden
             >
               <Icon size={20} />
             </span>
             <div>
-              <p className="text-[0.9375rem] font-semibold text-[var(--color-text-primary)]">
-                {item.title}
-              </p>
-              <p className="mt-0.5 text-[0.8125rem] leading-snug text-[var(--color-text-secondary)]">
+              <p className="text-base-content text-[0.9375rem] font-semibold">{item.title}</p>
+              <p className="text-base-content/70 mt-0.5 text-[0.8125rem] leading-snug">
                 {item.text}
               </p>
             </div>
-          </div>
+          </Card>
         );
       })}
     </div>

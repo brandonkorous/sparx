@@ -20,14 +20,11 @@ import { Container } from '@/components/ui/layout';
 
 // Shared nav-link chrome (primary destinations + category strip).
 const navLink =
-  'inline-flex items-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-2 text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-subtle)] hover:text-[var(--color-text-primary)]';
+  'inline-flex items-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-2 text-sm font-medium text-base-content/70 transition-colors hover:bg-base-200 hover:text-base-content';
 
 export function SiteHeader() {
   return (
-    <header
-      className="sticky top-0 z-50 border-b border-[var(--color-border-default)] backdrop-blur-[8px] backdrop-saturate-[180%]"
-      style={{ background: 'color-mix(in oklch, var(--color-bg-surface) 88%, transparent)' }}
-    >
+    <header className="border-base-300 bg-base-100/90 sticky top-0 z-50 border-b backdrop-blur-[8px] backdrop-saturate-[180%]">
       <Container>
         <div className="flex h-16 items-center gap-4 sm:gap-6">
           <Link
@@ -36,9 +33,7 @@ export function SiteHeader() {
             className="inline-flex shrink-0 items-baseline"
           >
             <Wordmark size={22} />
-            <span className="ml-0.5 text-sm font-medium text-[var(--color-text-secondary)]">
-              .market
-            </span>
+            <span className="text-base-content/70 ml-0.5 text-sm font-medium">.market</span>
           </Link>
 
           {/* The search takes the middle and grows — the marketplace signature. */}
@@ -93,7 +88,7 @@ export function SiteHeader() {
       </Container>
 
       {/* Category strip — its own row so the bar stays clean; scrolls on mobile. */}
-      <div className="border-t border-[var(--color-border-default)] bg-[var(--color-bg-surface)]">
+      <div className="border-base-300 bg-base-100 border-t">
         <Container>
           <nav
             className="flex h-11 [scrollbar-width:none] items-center gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden"

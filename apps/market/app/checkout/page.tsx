@@ -49,12 +49,12 @@ export default function CheckoutPage() {
 
   return (
     <Container className="py-8 md:py-12">
-      <h1 className="mb-6 text-[1.75rem] font-bold tracking-[-0.02em] text-[var(--color-text-primary)] md:text-4xl">
+      <h1 className="text-base-content mb-6 text-[1.75rem] font-bold tracking-[-0.02em] md:text-4xl">
         Checkout
       </h1>
 
       {status === 'loading' ? (
-        <div className="flex items-center justify-center gap-2 py-20 text-[var(--color-text-secondary)]">
+        <div className="text-base-content/70 flex items-center justify-center gap-2 py-20">
           <Loader2 size={20} className="animate-spin" aria-hidden />
           Loading your cart…
         </div>

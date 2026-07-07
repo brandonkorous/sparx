@@ -22,17 +22,17 @@ function formatDate(iso: string): string {
 
 function ReviewCard({ review }: { review: ProductReview }) {
   return (
-    <article className="border-t border-[var(--color-border-default)] py-5 first:border-t-0 first:pt-0">
+    <article className="border-base-300 border-t py-5 first:border-t-0 first:pt-0">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <Stars rating={review.rating} reviewCount={1} size={15} />
         {review.title ? (
-          <span className="font-semibold text-[var(--color-text-primary)]">{review.title}</span>
+          <span className="text-base-content font-semibold">{review.title}</span>
         ) : null}
       </div>
-      <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.8125rem] text-[var(--color-text-secondary)]">
+      <div className="text-base-content/70 mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.8125rem]">
         <span>{review.author ?? 'Verified buyer'}</span>
         {review.verifiedPurchase ? (
-          <span className="inline-flex items-center gap-1 text-[var(--color-success)]">
+          <span className="text-success inline-flex items-center gap-1">
             <BadgeCheck size={13} aria-hidden />
             Verified purchase
           </span>
@@ -40,19 +40,17 @@ function ReviewCard({ review }: { review: ProductReview }) {
         <span aria-hidden>·</span>
         <span>{formatDate(review.createdAt)}</span>
       </div>
-      <p className="mt-2 text-sm leading-relaxed whitespace-pre-line text-[var(--color-text-primary)]">
+      <p className="text-base-content mt-2 text-sm leading-relaxed whitespace-pre-line">
         {review.body}
       </p>
       {review.response ? (
-        <div className="mt-3 rounded-lg bg-[var(--color-bg-subtle)] p-3 text-sm">
-          <p className="font-semibold text-[var(--color-text-primary)]">Seller response</p>
-          <p className="mt-1 whitespace-pre-line text-[var(--color-text-secondary)]">
-            {review.response}
-          </p>
+        <div className="bg-base-200 mt-3 rounded-lg p-3 text-sm">
+          <p className="text-base-content font-semibold">Seller response</p>
+          <p className="text-base-content/70 mt-1 whitespace-pre-line">{review.response}</p>
         </div>
       ) : null}
       {review.helpfulCount > 0 ? (
-        <p className="mt-2 inline-flex items-center gap-1.5 text-[0.8125rem] text-[var(--color-text-tertiary)]">
+        <p className="text-base-content/50 mt-2 inline-flex items-center gap-1.5 text-[0.8125rem]">
           <ThumbsUp size={13} aria-hidden />
           {review.helpfulCount.toLocaleString()} found this helpful
         </p>
@@ -98,7 +96,7 @@ function WriteReviewForm({ slug, onDone }: { slug: string; onDone: () => void })
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col gap-4 rounded-xl border border-[var(--color-border-default)] p-4"
+      className="border-base-300 flex flex-col gap-4 rounded-xl border p-4"
     >
       <Field>
         <FieldLabel>Your rating</FieldLabel>
@@ -182,21 +180,18 @@ export function ProductReviews({
     <section aria-labelledby="reviews-heading" className="flex flex-col gap-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2
-            id="reviews-heading"
-            className="text-xl font-semibold text-[var(--color-text-primary)]"
-          >
+          <h2 id="reviews-heading" className="text-base-content text-xl font-semibold">
             Customer reviews
           </h2>
           {hasReviews ? (
             <div className="mt-1 flex items-center gap-2">
-              <span className="text-2xl font-semibold text-[var(--color-text-primary)]">
+              <span className="text-base-content text-2xl font-semibold">
                 {summary.averageRating.toFixed(1)}
               </span>
               <Stars rating={summary.averageRating} reviewCount={summary.total} />
             </div>
           ) : (
-            <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
+            <p className="text-base-content/70 mt-1 text-sm">
               No reviews yet — be the first to share your experience.
             </p>
           )}
@@ -237,7 +232,7 @@ export function ProductReviews({
             <ReviewCard key={review.id} review={review} />
           ))}
           {summary.total > reviews.length ? (
-            <p className="mt-4 text-sm text-[var(--color-text-secondary)]">
+            <p className="text-base-content/70 mt-4 text-sm">
               Showing {reviews.length} of {summary.total.toLocaleString()} reviews.
             </p>
           ) : null}

@@ -58,35 +58,24 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
       <div className="mx-auto max-w-2xl">
         {/* Confirmation header */}
         <div className="flex flex-col items-center gap-3 text-center">
-          <span style={{ color: 'var(--color-success)' }}>
+          <span className="text-success">
             <CheckCircle2 size={48} aria-hidden />
           </span>
-          <h1 className="text-[1.75rem] font-bold tracking-[-0.02em] text-[var(--color-text-primary)] md:text-4xl">
+          <h1 className="text-base-content text-[1.75rem] font-bold tracking-[-0.02em] md:text-4xl">
             Order confirmed
           </h1>
-          <p style={{ color: 'var(--color-text-secondary)' }}>
+          <p className="text-base-content/70">
             Thanks for your order! A confirmation email is on its way. Your order number is{' '}
-            <strong style={{ color: 'var(--color-text-primary)' }}>{order.orderNumber}</strong>.
+            <strong className="text-base-content">{order.orderNumber}</strong>.
           </p>
         </div>
 
         {/* Order card */}
-        <div
-          className="mt-8 rounded-xl border p-5 sm:p-6"
-          style={{
-            borderColor: 'var(--color-border-default)',
-            background: 'var(--color-bg-surface)',
-          }}
-        >
-          <div
-            className="flex flex-wrap items-center justify-between gap-3 border-b pb-4"
-            style={{ borderColor: 'var(--color-border-default)' }}
-          >
+        <div className="border-base-300 bg-base-100 mt-8 rounded-xl border p-5 sm:p-6">
+          <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-b pb-4">
             <div>
-              <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-                Order {order.orderNumber}
-              </p>
-              <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+              <p className="text-base-content/70 text-sm">Order {order.orderNumber}</p>
+              <p className="text-base-content/70 text-sm">
                 Placed {formatPlacedAt(order.placedAt)}
               </p>
             </div>
@@ -107,17 +96,11 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
                 key={`${item.name}-${idx}`}
                 className="flex items-center justify-between gap-4 py-2.5"
               >
-                <span
-                  className="min-w-0 flex-1 text-sm"
-                  style={{ color: 'var(--color-text-primary)' }}
-                >
+                <span className="text-base-content min-w-0 flex-1 text-sm">
                   {item.name}
-                  <span style={{ color: 'var(--color-text-secondary)' }}> × {item.quantity}</span>
+                  <span className="text-base-content/70"> × {item.quantity}</span>
                 </span>
-                <span
-                  className="text-sm font-medium tabular-nums"
-                  style={{ color: 'var(--color-text-primary)' }}
-                >
+                <span className="text-base-content text-sm font-medium tabular-nums">
                   {formatCents(item.lineTotalCents, order.currency)}
                 </span>
               </div>
@@ -125,26 +108,14 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
           </div>
 
           {/* Total */}
-          <div
-            className="flex items-center justify-between border-t pt-4 text-base font-semibold"
-            style={{
-              borderColor: 'var(--color-border-default)',
-              color: 'var(--color-text-primary)',
-            }}
-          >
+          <div className="text-base-content border-base-300 flex items-center justify-between border-t pt-4 text-base font-semibold">
             <span>Total</span>
             <span className="tabular-nums">{formatCents(order.totalCents, order.currency)}</span>
           </div>
 
           {/* Shipping destination */}
           {shippingParts.length > 0 ? (
-            <div
-              className="mt-4 flex items-center gap-2 border-t pt-4 text-sm"
-              style={{
-                borderColor: 'var(--color-border-default)',
-                color: 'var(--color-text-secondary)',
-              }}
-            >
+            <div className="text-base-content/70 border-base-300 mt-4 flex items-center gap-2 border-t pt-4 text-sm">
               <MapPin size={15} aria-hidden />
               Shipping to {shippingParts.join(', ')}
             </div>

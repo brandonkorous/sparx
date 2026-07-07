@@ -10,6 +10,7 @@ import { Badge } from 'silicaui-react';
 import { marketCategoryLabel } from '@sparx/commerce-schemas';
 
 import { AddToCart } from '@/components/add-to-cart';
+import { RecordView } from '@/components/record-view';
 import { SellerAttribution } from '@/components/seller-attribution';
 import { ProductGallery } from '@/components/product-gallery';
 import { ProductReviews } from '@/components/product-reviews';
@@ -120,9 +121,10 @@ export default async function ProductDetailPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
       />
+      <RecordView slug={product.slug} />
 
       {/* Breadcrumb trail */}
-      <nav className="mb-6 text-sm text-[var(--color-text-secondary)]" aria-label="Breadcrumb">
+      <nav className="text-base-content/70 mb-6 text-sm" aria-label="Breadcrumb">
         <Link href="/products" className="hover:underline">
           Products
         </Link>
@@ -135,7 +137,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
           </>
         ) : null}
         <span aria-hidden> / </span>
-        <span className="text-[var(--color-text-primary)]">{product.title}</span>
+        <span className="text-base-content">{product.title}</span>
       </nav>
 
       {/* Top: gallery + buy column */}
@@ -155,16 +157,14 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 </Badge>
               </Link>
             ) : null}
-            <h1 className="text-2xl font-semibold text-[var(--color-text-primary)] md:text-3xl">
+            <h1 className="text-base-content text-2xl font-semibold md:text-3xl">
               {product.title}
             </h1>
             <Stars rating={product.averageRating} reviewCount={product.reviewCount} />
           </div>
 
           <div className="flex items-center gap-3">
-            {price ? (
-              <p className="text-2xl font-semibold text-[var(--color-text-primary)]">{price}</p>
-            ) : null}
+            {price ? <p className="text-base-content text-2xl font-semibold">{price}</p> : null}
             {!product.inStock ? (
               <Badge color="danger" variant="soft">
                 Sold out
@@ -192,13 +192,10 @@ export default async function ProductDetailPage({ params }: PageProps) {
       <div className="mt-12 flex flex-col gap-12">
         {product.description ? (
           <section aria-labelledby="about-heading" className="flex flex-col gap-3">
-            <h2
-              id="about-heading"
-              className="text-xl font-semibold text-[var(--color-text-primary)]"
-            >
+            <h2 id="about-heading" className="text-base-content text-xl font-semibold">
               About this product
             </h2>
-            <p className="max-w-3xl leading-relaxed whitespace-pre-line text-[var(--color-text-primary)]">
+            <p className="text-base-content max-w-3xl leading-relaxed whitespace-pre-line">
               {product.description}
             </p>
           </section>
@@ -210,10 +207,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
         {related.length > 0 ? (
           <section aria-labelledby="related-heading" className="flex flex-col gap-5">
-            <h2
-              id="related-heading"
-              className="text-xl font-semibold text-[var(--color-text-primary)]"
-            >
+            <h2 id="related-heading" className="text-base-content text-xl font-semibold">
               You may also like
             </h2>
             <ProductGrid products={related} />

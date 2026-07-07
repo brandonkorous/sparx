@@ -21,11 +21,11 @@ export function SellerAttribution({
   storeUrl: string | null;
 }) {
   return (
-    <Card className="border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-4">
+    <Card className="border-base-300 bg-base-100 border p-4">
       <div className="flex items-center gap-3">
         <Link
           href={`/merchants/${merchantSlug}`}
-          className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[var(--color-bg-subtle)]"
+          className="bg-base-200 relative inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full"
           aria-label={`${merchantName} on sparx.market`}
         >
           {merchantLogoUrl ? (
@@ -37,19 +37,19 @@ export function SellerAttribution({
               className="object-cover"
             />
           ) : (
-            <Store size={20} aria-hidden className="text-[var(--color-text-secondary)]" />
+            <Store size={20} aria-hidden className="text-base-content/70" />
           )}
         </Link>
 
         <div className="min-w-0 flex-1">
           <Link
             href={`/merchants/${merchantSlug}`}
-            className="font-semibold text-[var(--color-text-primary)] hover:underline"
+            className="text-base-content font-semibold hover:underline"
           >
             {merchantName}
           </Link>
-          <p className="inline-flex items-center gap-1 text-[0.8125rem] text-[var(--color-text-secondary)]">
-            <ShieldCheck size={13} aria-hidden className="text-[var(--color-success)]" />
+          <p className="text-base-content/70 inline-flex items-center gap-1 text-[0.8125rem]">
+            <ShieldCheck size={13} aria-hidden className="text-success" />
             Independent seller on sparx.market
           </p>
         </div>

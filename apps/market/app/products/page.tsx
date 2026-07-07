@@ -42,10 +42,10 @@ export default async function ProductsPage({
   return (
     <Container className="py-8 md:py-12">
       <header className="mb-8">
-        <h1 className="text-[1.75rem] font-bold tracking-[-0.02em] text-[var(--color-text-primary)] md:text-4xl">
+        <h1 className="text-base-content text-[1.75rem] font-bold tracking-[-0.02em] md:text-4xl">
           {q ? `Results for “${q}”` : 'All products'}
         </h1>
-        <p className="mt-2 max-w-2xl text-base text-[var(--color-text-secondary)]">
+        <p className="text-base-content/70 mt-2 max-w-2xl text-base">
           {q
             ? 'Products from independent sellers across the sparx network.'
             : 'Every product on sparx.market, from independent sellers shipping direct.'}

@@ -26,7 +26,7 @@ export function ProductGallery({
 
   if (gallery.length === 0) {
     return (
-      <div className="flex aspect-square items-center justify-center rounded-xl bg-[var(--color-bg-subtle)] text-[var(--color-text-tertiary)]">
+      <div className="bg-base-200 text-base-content/50 flex aspect-square items-center justify-center rounded-xl">
         <ImageOff size={48} aria-hidden />
       </div>
     );
@@ -37,7 +37,7 @@ export function ProductGallery({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="relative aspect-square overflow-hidden rounded-xl bg-[var(--color-bg-subtle)]">
+      <div className="bg-base-200 relative aspect-square overflow-hidden rounded-xl">
         <Image
           src={current.url}
           alt={current.alt ?? title}
@@ -59,9 +59,7 @@ export function ProductGallery({
               aria-current={i === index}
               className={cx(
                 'relative aspect-square overflow-hidden rounded-lg border-2 transition-colors',
-                i === index
-                  ? 'border-[var(--sparx-primary)]'
-                  : 'border-transparent hover:border-[var(--color-border-strong)]'
+                i === index ? 'border-primary' : 'hover:border-base-content/20 border-transparent'
               )}
             >
               <Image src={img.url} alt="" fill sizes="80px" className="object-cover" />

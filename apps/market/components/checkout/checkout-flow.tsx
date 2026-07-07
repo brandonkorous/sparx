@@ -143,7 +143,7 @@ export function CheckoutFlow({ cart }: { cart: Cart }) {
 
         {step === 'contact' ? (
           <form onSubmit={handleContact} className="flex flex-col gap-4">
-            <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">Contact</h2>
+            <h2 className="text-base-content text-lg font-semibold">Contact</h2>
             <Field label="Email">
               <Input
                 type="email"
@@ -154,10 +154,10 @@ export function CheckoutFlow({ cart }: { cart: Cart }) {
                 autoComplete="email"
               />
             </Field>
-            <label className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
+            <label className="text-base-content/70 flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
-                className="accent-[var(--sparx-primary)]"
+                className="accent-primary"
                 checked={acceptsMarketing}
                 onChange={(e) => setAcceptsMarketing(e.target.checked)}
               />
@@ -178,14 +178,12 @@ export function CheckoutFlow({ cart }: { cart: Cart }) {
 
         {step === 'shipping' ? (
           <form onSubmit={handleShipping} className="flex flex-col gap-4">
-            <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
-              Shipping address
-            </h2>
+            <h2 className="text-base-content text-lg font-semibold">Shipping address</h2>
             <AddressForm value={address} onChange={setAddress} />
 
             {rates.length > 0 ? (
               <fieldset className="m-0 flex flex-col gap-2 border-0 p-0">
-                <legend className="mb-1 text-xs font-semibold tracking-[0.04em] text-[var(--color-text-secondary)] uppercase">
+                <legend className="text-base-content/70 mb-1 text-xs font-semibold tracking-[0.04em] uppercase">
                   Shipping method
                 </legend>
                 {rates.map((rate) => {
@@ -194,28 +192,23 @@ export function CheckoutFlow({ cart }: { cart: Cart }) {
                     <label
                       key={rate.rateRef}
                       className={`flex cursor-pointer items-center gap-3 rounded-md border px-3.5 py-3 text-sm transition-colors ${
-                        active
-                          ? 'border-[var(--sparx-primary)] bg-[color-mix(in_oklch,var(--sparx-primary)_6%,transparent)]'
-                          : 'border-[var(--color-border-default)]'
+                        active ? 'border-primary bg-primary/5' : 'border-base-300'
                       }`}
                     >
                       <input
                         type="radio"
                         name="rate"
-                        className="accent-[var(--sparx-primary)]"
+                        className="accent-primary"
                         checked={active}
                         onChange={() => setChosenRate(rate)}
                       />
                       <span className="flex-1">
-                        <strong className="text-[var(--color-text-primary)]">{rate.service}</strong>
+                        <strong className="text-base-content">{rate.service}</strong>
                         {rate.estimatedDays != null ? (
-                          <span className="text-[var(--color-text-secondary)]">
-                            {' '}
-                            · {rate.estimatedDays} days
-                          </span>
+                          <span className="text-base-content/70"> · {rate.estimatedDays} days</span>
                         ) : null}
                       </span>
-                      <span className="text-[var(--color-text-primary)] tabular-nums">
+                      <span className="text-base-content tabular-nums">
                         {rate.amountCents === 0
                           ? 'Free'
                           : formatCents(rate.amountCents, session?.currency ?? cart.currency)}

@@ -1,15 +1,16 @@
-// The marketplace home hero — a shoppable band, not a marketing box. A tight
-// benefit headline + primary actions on the left; a live bento mosaic of real
-// trending product photos on the right, each linking straight to its PDP with a
-// price tag. Leading with actual products (the way Amazon/Etsy do) is what makes
-// the surface read as a marketplace instead of a SaaS landing page. Solid fills
-// only — the color comes from the product photography.
+// The marketplace home hero — a shoppable band, not a marketing box. When enough
+// photographed products are available it's two columns: benefit copy + actions on
+// the left, a live bento mosaic of real trending products (each linking to its PDP
+// with a price tag) on the right. When imagery is thin it falls back to a single
+// CENTERED hero rather than stranding the copy in an empty half. Solid fills only —
+// the color comes from the product photography.
 
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, ImageOff } from 'lucide-react';
 import { MARKET_CATEGORIES } from '@sparx/commerce-schemas';
 import { Badge, Button } from 'silicaui-react';
+import { cx } from 'silicaui-react/server';
 
 import { formatCents } from '@/lib/format';
 import type { ListingCard } from '@/lib/market';
@@ -37,7 +38,7 @@ function MosaicTile({
     <Link
       href={`/products/${product.slug}`}
       aria-label={product.title}
-      className={`group relative overflow-hidden rounded-xl bg-[var(--color-bg-subtle)] ${span}`}
+      className={`group bg-base-200 relative overflow-hidden rounded-xl ${span}`}
     >
       {product.imageUrl ? (
         <Image
@@ -50,7 +51,7 @@ function MosaicTile({
         />
       ) : (
         <span
-          className="flex h-full w-full items-center justify-center text-[var(--color-text-tertiary)]"
+          className="text-base-content/50 flex h-full w-full items-center justify-center"
           aria-hidden
         >
           <ImageOff size={28} />
@@ -93,43 +94,61 @@ function HeroMosaic({ products }: { products: ListingCard[] }) {
   );
 }
 
+/** The hero copy block — left-aligned beside the mosaic, or centered on its own. */
+function HeroCopy({ centered }: { centered: boolean }) {
+  return (
+    <div className={centered ? 'mx-auto max-w-2xl text-center' : 'max-w-xl'}>
+      <h1 className="text-base-content text-[2.25rem] leading-[1.04] font-bold tracking-[-0.03em] md:text-[3rem]">
+        Shop thousands of independent sellers.
+      </h1>
+      <p className="text-base-content/70 mt-4 text-[1.0625rem] leading-relaxed">
+        One cart for the whole network of independent shops on sparx — discover original products
+        you won’t find on the big marketplaces, and check out in a single place.
+      </p>
+      <div className={cx('mt-7 flex flex-wrap gap-3', centered && 'justify-center')}>
+        <Button render={<Link href="/products" />} color="primary" variant="solid" size="lg">
+          Start browsing
+          <ArrowRight size={18} aria-hidden />
+        </Button>
+        <Button render={<Link href="/merchants" />} color="neutral" variant="soft" size="lg">
+          Meet the sellers
+        </Button>
+      </div>
+      <nav
+        aria-label="Shop by category"
+        className={cx('mt-6 flex flex-wrap gap-x-4 gap-y-2 text-sm', centered && 'justify-center')}
+      >
+        {MARKET_CATEGORIES.map((category) => (
+          <Link
+            key={category.slug}
+            href={`/${category.slug}`}
+            className="text-base-content/70 hover:text-primary font-medium transition-colors hover:underline"
+          >
+            {category.name}
+          </Link>
+        ))}
+      </nav>
+    </div>
+  );
+}
+
 export function HomeHero({ products }: { products: ListingCard[] }) {
   const withImages = products.filter((p) => p.imageUrl);
-  const hasMosaic = withImages.length >= 4;
+
+  // Not enough photography for a balanced two-column hero → center the copy rather
+  // than leaving it stranded against an empty right half.
+  if (withImages.length < 4) {
+    return (
+      <section className="py-6 md:py-10">
+        <HeroCopy centered />
+      </section>
+    );
+  }
 
   return (
     <section className="grid items-center gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-12">
-      <div className="max-w-xl">
-        <h1 className="text-[2.25rem] leading-[1.04] font-bold tracking-[-0.03em] text-[var(--color-text-primary)] md:text-[3rem]">
-          Shop thousands of independent sellers.
-        </h1>
-        <p className="mt-4 text-[1.0625rem] leading-relaxed text-[var(--color-text-secondary)]">
-          One cart for the whole network of independent shops on sparx — discover original products
-          you won’t find on the big marketplaces, and check out in a single place.
-        </p>
-        <div className="mt-7 flex flex-wrap gap-3">
-          <Button render={<Link href="/products" />} color="primary" variant="solid" size="lg">
-            Start browsing
-            <ArrowRight size={18} aria-hidden />
-          </Button>
-          <Button render={<Link href="/merchants" />} color="neutral" variant="soft" size="lg">
-            Meet the sellers
-          </Button>
-        </div>
-        <nav aria-label="Shop by category" className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-sm">
-          {MARKET_CATEGORIES.map((category) => (
-            <Link
-              key={category.slug}
-              href={`/${category.slug}`}
-              className="font-medium text-[var(--color-text-secondary)] transition-colors hover:text-[var(--sparx-primary)] hover:underline"
-            >
-              {category.name}
-            </Link>
-          ))}
-        </nav>
-      </div>
-
-      {hasMosaic ? <HeroMosaic products={withImages} /> : null}
+      <HeroCopy centered={false} />
+      <HeroMosaic products={withImages} />
     </section>
   );
 }

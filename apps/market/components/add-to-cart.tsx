@@ -113,7 +113,7 @@ export function AddToCart({ merchantSlug, merchantName, variants, currency }: Ad
   return (
     <div className="flex flex-col gap-4">
       {sellableVariants.length > 1 ? (
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-[var(--color-text-primary)]">
+        <label className="text-base-content flex flex-col gap-1.5 text-sm font-medium">
           <span>Option</span>
           <NativeSelect
             value={variantId}

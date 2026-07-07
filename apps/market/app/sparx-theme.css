@@ -16,13 +16,14 @@
  * silicaui's defaults, so sparx's `statusTone()` vocabulary (which emits
  * `danger`, not silicaui's `error`) maps 1:1.
  *
- * The `mx-*` marketplace chrome + a handful of inline page styles still speak
- * sparx's older token vocabulary (`--color-text-*`, `--color-bg-*`,
- * `--color-border-*`, `--sparx-primary`). Rather than rewrite ~900 lines of
- * chrome in this pilot, those names are re-expressed here as a thin DERIVED
- * ALIAS layer pointing at the silicaui standard tokens — so silicaui owns the
- * values, a single `--color-primary` edit cascades into the chrome, and dark
- * mode adapts for free. A later pass can inline the aliases onto base tokens.
+ * There is NO sparx alias layer and NO bespoke text/border colors: the whole
+ * marketplace is styled with silicaui utilities + components reading these tokens
+ * directly (`bg-base-100`, `text-primary`, `<Card>`, …). The secondary / tertiary
+ * text inks and the emphasis border are just OPACITY on the base ink —
+ * `text-base-content/70`, `text-base-content/50`, `border-base-content/20` — which
+ * silicaui supports natively, so no `muted` / `faint` color is invented. The
+ * earlier `--color-bg-*` / `--color-text-*` / `--sparx-primary` chrome aliases have
+ * been fully retired.
  *
  * Once proven here, this block graduates to a shared `@sparx/brand` package that
  * every app (web, dashboard, site, admin, b2b-portal) imports, so the brand is
@@ -73,33 +74,12 @@
   --color-danger-content: #ffffff;
 
   /* ── silicaui shape + type tokens ────────────────────────────────────────── */
-  --radius-box: 8px; /* cards, alerts, larger surfaces (sparx --radius-lg) */
-  --radius-field: 6px; /* inputs, buttons (sparx --radius-md) */
-  --radius-selector: 9999px; /* pills, toggles, badges */
+  --radius-box: 8px; /* cards, alerts, larger surfaces (rounded-box) */
+  --radius-field: 6px; /* inputs, buttons (rounded-field) */
+  --radius-selector: 9999px; /* pills, toggles, badges (rounded-selector) */
 
   --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
   --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
-
-  /* ── sparx chrome aliases — DERIVED from the standard tokens above ─────────
-     The `mx-*` chrome + inline page styles read these; they now transitively
-     resolve to the silicaui palette, so there is one source of truth. */
-  --sparx-primary: var(--color-primary);
-
-  --color-bg-page: #fafafa; /* page canvas — a touch off the card white */
-  --color-bg-surface: var(--color-base-100);
-  --color-bg-subtle: var(--color-base-200);
-
-  --color-text-primary: var(--color-base-content);
-  --color-text-secondary: color-mix(in oklch, var(--color-base-content) 62%, var(--color-base-100));
-  --color-text-tertiary: color-mix(in oklch, var(--color-base-content) 40%, var(--color-base-100));
-
-  --color-border-default: var(--color-base-300);
-  --color-border-strong: color-mix(in oklch, var(--color-base-content) 18%, var(--color-base-100));
-
-  --radius-sm: 4px;
-  --radius-md: var(--radius-field);
-  --radius-lg: var(--radius-box);
-  --radius-xl: 12px;
 }
 
 /* Dark variant of the sparx brand — production-complete so a dark island (or a
@@ -146,22 +126,4 @@
 
   --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
   --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
-
-  --sparx-primary: var(--color-primary);
-
-  --color-bg-page: #0f0f0f;
-  --color-bg-surface: var(--color-base-100);
-  --color-bg-subtle: var(--color-base-200);
-
-  --color-text-primary: var(--color-base-content);
-  --color-text-secondary: color-mix(in oklch, var(--color-base-content) 62%, var(--color-base-100));
-  --color-text-tertiary: color-mix(in oklch, var(--color-base-content) 42%, var(--color-base-100));
-
-  --color-border-default: var(--color-base-300);
-  --color-border-strong: color-mix(in oklch, var(--color-base-content) 24%, var(--color-base-100));
-
-  --radius-sm: 4px;
-  --radius-md: var(--radius-field);
-  --radius-lg: var(--radius-box);
-  --radius-xl: 12px;
 }

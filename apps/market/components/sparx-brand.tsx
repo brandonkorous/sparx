@@ -67,14 +67,17 @@ export interface WordmarkProps extends React.HTMLAttributes<HTMLSpanElement> {
 export function Wordmark({ size = 22, icon = false, className, style, ...rest }: WordmarkProps) {
   return (
     <span
-      className={join('font-bold tracking-tight', icon && 'inline-flex items-center', className)}
+      className={join(
+        'text-base-content font-bold tracking-tight',
+        icon && 'inline-flex items-center',
+        className
+      )}
       style={{
         fontSize: size,
         fontFamily: "var(--font-wordmark, 'Inter', system-ui, sans-serif)",
         fontWeight: 700,
         letterSpacing: '-0.03em',
         lineHeight: 1,
-        color: 'var(--color-base-content)',
         ...(icon ? { gap: Math.round(size * 0.28) } : {}),
         ...style,
       }}
@@ -84,7 +87,7 @@ export function Wordmark({ size = 22, icon = false, className, style, ...rest }:
         <SparxMark size={Math.round(size * 1.5)} />
       ) : (
         <span>
-          spar<span style={{ color: 'var(--color-primary)' }}>x</span>
+          spar<span className="text-primary">x</span>
         </span>
       )}
     </span>

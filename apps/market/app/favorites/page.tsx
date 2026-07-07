@@ -34,16 +34,16 @@ export default function FavoritesPage() {
   return (
     <Container className="py-8 md:py-12">
       <header className="mb-8">
-        <h1 className="text-[1.75rem] font-bold tracking-[-0.02em] text-[var(--color-text-primary)] md:text-4xl">
+        <h1 className="text-base-content text-[1.75rem] font-bold tracking-[-0.02em] md:text-4xl">
           Your favorites
         </h1>
-        <p className="mt-2 max-w-2xl text-base text-[var(--color-text-secondary)]">
+        <p className="text-base-content/70 mt-2 max-w-2xl text-base">
           Products you’ve saved from across the marketplace. Saved on this device.
         </p>
       </header>
 
       {items === null ? (
-        <div className="flex items-center justify-center gap-2 py-20 text-[var(--color-text-secondary)]">
+        <div className="text-base-content/70 flex items-center justify-center gap-2 py-20">
           <Loader2 size={20} className="animate-spin" aria-hidden />
           Loading your favorites…
         </div>

@@ -12,15 +12,11 @@ export default function NotFound() {
       as="section"
       className="flex flex-col items-center justify-center gap-5 py-24 text-center"
     >
-      <Text
-        as="span"
-        className="text-7xl font-semibold tracking-tight"
-        style={{ color: 'var(--sparx-primary)' }}
-      >
+      <Text as="span" className="text-primary text-7xl font-semibold tracking-tight">
         404
       </Text>
       <Heading level={1}>We couldn’t find that page</Heading>
-      <Text className="max-w-md" style={{ color: 'var(--color-text-secondary)' }}>
+      <Text className="text-base-content/70 max-w-md">
         The product, shop, or category you’re looking for may have moved or sold out. Try browsing
         the full marketplace instead.
       </Text>

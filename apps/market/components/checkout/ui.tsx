@@ -25,7 +25,7 @@ export function Field({
 }) {
   return (
     <label className={`flex flex-col gap-1.5 ${full ? 'sm:col-span-2' : ''}`}>
-      <span className="text-sm font-medium text-[var(--color-text-primary)]">{label}</span>
+      <span className="text-base-content text-sm font-medium">{label}</span>
       {children}
     </label>
   );
@@ -50,7 +50,7 @@ export function TotalsRow({
 }) {
   if (grand) {
     return (
-      <div className="mt-2 flex items-center justify-between border-t border-[var(--color-border-default)] pt-3 text-[1.0625rem] font-bold text-[var(--color-text-primary)]">
+      <div className="border-base-300 text-base-content mt-2 flex items-center justify-between border-t pt-3 text-[1.0625rem] font-bold">
         <span>{label}</span>
         <span className="tabular-nums">{value}</span>
       </div>
@@ -59,7 +59,7 @@ export function TotalsRow({
   return (
     <div
       className={`flex items-center justify-between ${
-        tone === 'success' ? 'text-[var(--color-success)]' : 'text-[var(--color-text-secondary)]'
+        tone === 'success' ? 'text-success' : 'text-base-content/70'
       }`}
     >
       <span>{label}</span>

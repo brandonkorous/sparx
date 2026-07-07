@@ -64,14 +64,14 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
       />
 
       <section className="pt-8 pb-6 md:pt-12">
-        <div className="rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-6 py-10 md:px-10 md:py-12">
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[color-mix(in_oklch,var(--sparx-primary)_12%,var(--color-bg-subtle))] text-[var(--sparx-primary)]">
+        <div className="border-base-300 bg-base-100 rounded-2xl border px-6 py-10 md:px-10 md:py-12">
+          <span className="text-primary bg-primary/10 inline-flex h-12 w-12 items-center justify-center rounded-xl">
             <CategoryIcon name={category.icon} size={22} />
           </span>
-          <h1 className="mt-4 max-w-2xl text-[2rem] leading-[1.05] font-bold tracking-[-0.03em] text-[var(--color-text-primary)] md:text-[3rem]">
+          <h1 className="text-base-content mt-4 max-w-2xl text-[2rem] leading-[1.05] font-bold tracking-[-0.03em] md:text-[3rem]">
             {category.name}
           </h1>
-          <p className="mt-3 max-w-xl text-[1.0625rem] leading-relaxed text-[var(--color-text-secondary)]">
+          <p className="text-base-content/70 mt-3 max-w-xl text-[1.0625rem] leading-relaxed">
             {category.tagline}
           </p>
         </div>

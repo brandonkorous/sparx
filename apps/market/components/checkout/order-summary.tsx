@@ -21,15 +21,13 @@ export function OrderSummary({
   surchargeLabel?: string;
 }) {
   return (
-    <aside className="rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-5 lg:sticky lg:top-32">
-      <h2 className="mb-4 text-base font-semibold text-[var(--color-text-primary)]">
-        Order summary
-      </h2>
+    <aside className="border-base-300 bg-base-100 rounded-xl border p-5 lg:sticky lg:top-32">
+      <h2 className="text-base-content mb-4 text-base font-semibold">Order summary</h2>
 
-      <div className="mb-4 flex flex-col divide-y divide-[var(--color-border-default)]">
+      <div className="divide-base-300 mb-4 flex flex-col divide-y">
         {items.map((line) => (
           <div key={line.id} className="flex gap-3 py-3 first:pt-0 last:pb-0">
-            <span className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
+            <span className="border-base-300 bg-base-200 relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border">
               {line.imageUrl ? (
                 <Image
                   src={line.imageUrl}
@@ -40,7 +38,7 @@ export function OrderSummary({
                 />
               ) : (
                 <span
-                  className="flex h-full items-center justify-center text-[var(--color-text-tertiary)]"
+                  className="text-base-content/50 flex h-full items-center justify-center"
                   aria-hidden
                 >
                   <ImageOff size={18} />
@@ -48,19 +46,13 @@ export function OrderSummary({
               )}
             </span>
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <span className="text-sm font-semibold text-[var(--color-text-primary)]">
-                {line.title}
-              </span>
+              <span className="text-base-content text-sm font-semibold">{line.title}</span>
               {line.variantTitle ? (
-                <span className="text-[0.8125rem] text-[var(--color-text-secondary)]">
-                  {line.variantTitle}
-                </span>
+                <span className="text-base-content/70 text-[0.8125rem]">{line.variantTitle}</span>
               ) : null}
-              <span className="text-[0.8125rem] text-[var(--color-text-secondary)]">
-                Qty {line.quantity}
-              </span>
+              <span className="text-base-content/70 text-[0.8125rem]">Qty {line.quantity}</span>
             </div>
-            <span className="text-sm font-semibold text-[var(--color-text-primary)] tabular-nums">
+            <span className="text-base-content text-sm font-semibold tabular-nums">
               {formatCents(line.lineTotalCents, currency)}
             </span>
           </div>

@@ -117,7 +117,7 @@ export function SearchAutocomplete({ className }: { className?: string }) {
           <Search
             size={17}
             aria-hidden
-            className="pointer-events-none absolute left-3 z-10 text-[var(--color-text-tertiary)]"
+            className="text-base-content/50 pointer-events-none absolute left-3 z-10"
           />
           <Input
             name="q"
@@ -144,7 +144,7 @@ export function SearchAutocomplete({ className }: { className?: string }) {
           <div
             id={listboxId}
             role="listbox"
-            className="absolute top-[calc(100%+0.5rem)] right-0 left-0 z-50 overflow-hidden rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] py-1.5 shadow-[0_16px_40px_-16px_rgba(0,0,0,0.35)]"
+            className="border-base-300 bg-base-100 absolute top-[calc(100%+0.5rem)] right-0 left-0 z-50 overflow-hidden rounded-xl border py-1.5 shadow-[0_16px_40px_-16px_rgba(0,0,0,0.35)]"
           >
             {options.map((opt, i) => {
               const isActive = i === active;
@@ -157,10 +157,10 @@ export function SearchAutocomplete({ className }: { className?: string }) {
                   onMouseEnter={() => setActive(i)}
                   onClick={() => go(opt.href)}
                   className={`flex w-full items-center gap-3 px-3.5 py-2 text-left text-sm transition-colors ${
-                    isActive ? 'bg-[var(--color-bg-subtle)]' : 'hover:bg-[var(--color-bg-subtle)]'
+                    isActive ? 'bg-base-200' : 'hover:bg-base-200'
                   }`}
                 >
-                  <span className="text-[var(--color-text-tertiary)]" aria-hidden>
+                  <span className="text-base-content/50" aria-hidden>
                     {opt.kind === 'merchant' ? (
                       <Store size={16} />
                     ) : opt.kind === 'product' ? (
@@ -169,7 +169,7 @@ export function SearchAutocomplete({ className }: { className?: string }) {
                       <Search size={16} />
                     )}
                   </span>
-                  <span className="min-w-0 flex-1 truncate text-[var(--color-text-primary)]">
+                  <span className="text-base-content min-w-0 flex-1 truncate">
                     {opt.kind === 'search' ? (
                       <>
                         Search for <span className="font-semibold">“{opt.label}”</span>
@@ -179,11 +179,11 @@ export function SearchAutocomplete({ className }: { className?: string }) {
                     )}
                   </span>
                   {opt.kind === 'product' ? (
-                    <span className="shrink-0 text-xs text-[var(--color-text-tertiary)]">
+                    <span className="text-base-content/50 shrink-0 text-xs">
                       {marketCategoryLabel(opt.category)}
                     </span>
                   ) : opt.kind === 'merchant' ? (
-                    <span className="shrink-0 text-xs text-[var(--color-text-tertiary)]">Shop</span>
+                    <span className="text-base-content/50 shrink-0 text-xs">Shop</span>
                   ) : null}
                 </button>
               );

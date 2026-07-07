@@ -33,8 +33,7 @@ export interface PlpFacetState {
   inStock: boolean;
 }
 
-const LEGEND =
-  'text-xs font-semibold uppercase tracking-[0.04em] text-[var(--color-text-secondary)]';
+const LEGEND = 'text-xs font-semibold uppercase tracking-[0.04em] text-base-content/70';
 
 function FacetGroup({ legend, children }: { legend: string; children: ReactNode }) {
   return (
@@ -54,7 +53,7 @@ function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }
         type="button"
         onClick={onRemove}
         aria-label={`Remove filter: ${label}`}
-        className="-mr-1 ml-0.5 inline-flex items-center rounded-full p-0.5 text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text-primary)]"
+        className="text-base-content/70 hover:text-base-content -mr-1 ml-0.5 inline-flex items-center rounded-full p-0.5 transition-colors"
       >
         <X size={12} aria-hidden />
       </button>
@@ -155,8 +154,8 @@ export function PlpFacets({
     cx(
       '-mx-2 flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm transition-colors',
       active
-        ? 'bg-[color-mix(in_oklch,var(--sparx-primary)_10%,transparent)] font-semibold text-[var(--sparx-primary)]'
-        : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)] hover:text-[var(--color-text-primary)]'
+        ? 'bg-primary/10 font-semibold text-primary'
+        : 'text-base-content/70 hover:bg-base-200 hover:text-base-content'
     );
 
   return (
@@ -191,7 +190,7 @@ export function PlpFacets({
               <button
                 type="button"
                 onClick={clearAll}
-                className="text-xs font-medium text-[var(--sparx-primary)] hover:underline"
+                className="text-primary text-xs font-medium hover:underline"
               >
                 Clear all
               </button>
@@ -237,9 +236,7 @@ export function PlpFacets({
                 onClick={() => navigate({ category: undefined })}
               >
                 <span>All categories</span>
-                <span className="text-[var(--color-text-tertiary)]">
-                  {allCount.toLocaleString()}
-                </span>
+                <span className="text-base-content/50">{allCount.toLocaleString()}</span>
               </button>
               {visibleCategories.map((category) => {
                 const active = state.category === category.slug;
@@ -251,7 +248,7 @@ export function PlpFacets({
                     onClick={() => navigate({ category: category.slug })}
                   >
                     <span>{category.name}</span>
-                    <span className="text-[var(--color-text-tertiary)]">
+                    <span className="text-base-content/50">
                       {(countBySlug.get(category.slug) ?? 0).toLocaleString()}
                     </span>
                   </button>
@@ -298,19 +295,17 @@ export function PlpFacets({
 
         {/* Availability */}
         <FacetGroup legend="Availability">
-          <label className="flex cursor-pointer items-center justify-between gap-2 text-sm text-[var(--color-text-primary)]">
+          <label className="text-base-content flex cursor-pointer items-center justify-between gap-2 text-sm">
             <span className="inline-flex items-center gap-2">
               <input
                 type="checkbox"
-                className="accent-[var(--sparx-primary)]"
+                className="accent-primary"
                 checked={state.inStock}
                 onChange={(e) => navigate({ inStock: e.target.checked ? 'true' : undefined })}
               />
               In stock only
             </span>
-            <span className="text-[var(--color-text-tertiary)]">
-              {counts.inStockCount.toLocaleString()}
-            </span>
+            <span className="text-base-content/50">{counts.inStockCount.toLocaleString()}</span>
           </label>
         </FacetGroup>
 
@@ -352,7 +347,7 @@ export function PlpSort({ basePath, sort }: { basePath: string; sort: MarketSort
 
   return (
     <div className="hidden items-center gap-2 lg:flex">
-      <span className="text-sm text-[var(--color-text-secondary)]">Sort</span>
+      <span className="text-base-content/70 text-sm">Sort</span>
       <NativeSelect
         className="w-48"
         value={sort}

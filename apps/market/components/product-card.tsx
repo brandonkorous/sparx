@@ -8,10 +8,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ImageOff } from 'lucide-react';
 import { Badge, type BadgeColor, type BadgeVariant, Card } from 'silicaui-react';
+import { cx } from 'silicaui-react/server';
 
 import { formatPriceRange } from '@/lib/format';
 import { Stars } from '@/components/stars';
 import { FavoriteButton } from '@/components/favorite-button';
+import { INTERACTIVE_CARD_CLASS } from '@/components/ui/card';
 
 export interface ProductCardData {
   slug: string;
@@ -51,7 +53,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
   const badge = cornerBadge(product);
 
   return (
-    <Card className="group relative overflow-hidden border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] transition-all duration-150 hover:-translate-y-0.5 hover:border-[color-mix(in_oklch,var(--sparx-primary)_40%,var(--color-border-default))] hover:shadow-[0_10px_28px_-12px_rgba(0,0,0,0.28)]">
+    <Card className={cx('group', INTERACTIVE_CARD_CLASS)}>
       <FavoriteButton
         slug={product.slug}
         title={product.title}
@@ -61,7 +63,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       <Link
         href={`/products/${product.slug}`}
         aria-label={product.title}
-        className="relative block aspect-square overflow-hidden bg-[var(--color-bg-subtle)]"
+        className="bg-base-200 relative block aspect-square overflow-hidden"
       >
         {product.imageUrl ? (
           <Image
@@ -73,7 +75,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           />
         ) : (
           <span
-            className="flex h-full w-full items-center justify-center text-[var(--color-text-tertiary)]"
+            className="text-base-content/50 flex h-full w-full items-center justify-center"
             aria-hidden
           >
             <ImageOff size={28} />
@@ -91,29 +93,25 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       <div className="flex flex-1 flex-col gap-1.5 p-3.5">
         <Link
           href={`/products/${product.slug}`}
-          className="line-clamp-2 text-[0.9375rem] leading-tight font-semibold text-[var(--color-text-primary)] transition-colors group-hover:text-[var(--sparx-primary)]"
+          className="text-base-content group-hover:text-primary line-clamp-2 text-[0.9375rem] leading-tight font-semibold transition-colors"
         >
           {product.title}
         </Link>
         <Link
           href={`/merchants/${product.merchantSlug}`}
-          className="text-[0.8125rem] text-[var(--color-text-secondary)] transition-colors hover:underline"
+          className="text-base-content/70 text-[0.8125rem] transition-colors hover:underline"
         >
           {product.merchantName}
         </Link>
         <Stars rating={product.averageRating} reviewCount={product.reviewCount} size={13} compact />
         <div className="mt-auto flex items-center justify-between gap-2 pt-0.5">
           {price ? (
-            <p className="text-[0.9375rem] font-semibold text-[var(--color-text-primary)]">
-              {price}
-            </p>
+            <p className="text-base-content text-[0.9375rem] font-semibold">{price}</p>
           ) : (
             <span />
           )}
           {product.inStock && product.lowStock ? (
-            <span className="text-[0.75rem] font-medium text-[var(--color-warning)]">
-              Only a few left
-            </span>
+            <span className="text-warning text-[0.75rem] font-medium">Only a few left</span>
           ) : null}
         </div>
       </div>

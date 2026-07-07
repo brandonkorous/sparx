@@ -37,25 +37,22 @@ const LEGAL_LINKS: FooterLink[] = [
   { label: 'Buyer protection', href: '/legal/buyer-protection' },
 ];
 
-const colTitle =
-  'mb-3 text-xs font-semibold tracking-[0.04em] text-[var(--color-text-secondary)] uppercase';
+const colTitle = 'mb-3 text-xs font-semibold tracking-[0.04em] text-base-content/70 uppercase';
 const footerLink =
-  'block py-1 text-sm text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text-primary)]';
+  'block py-1 text-sm text-base-content/70 transition-colors hover:text-base-content';
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-[var(--color-border-default)] bg-[var(--color-bg-surface)]">
+    <footer className="border-base-300 bg-base-100 border-t">
       <Container>
         <div className="grid grid-cols-1 gap-8 py-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
           {/* Brand + sell CTA column. */}
           <div>
             <Link href="/" aria-label="sparx.market home" className="inline-flex items-baseline">
               <Wordmark size={22} />
-              <span className="ml-0.5 text-sm font-medium text-[var(--color-text-secondary)]">
-                .market
-              </span>
+              <span className="text-base-content/70 ml-0.5 text-sm font-medium">.market</span>
             </Link>
-            <p className="mt-3 max-w-xs text-sm text-[var(--color-text-secondary)]">
+            <p className="text-base-content/70 mt-3 max-w-xs text-sm">
               One destination for thousands of independent sellers. Real shops, real makers, shipped
               direct.
             </p>
@@ -98,14 +95,14 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--color-border-default)] py-6 text-[0.8125rem] text-[var(--color-text-secondary)]">
+        <div className="border-base-300 text-base-content/70 flex flex-wrap items-center justify-between gap-4 border-t py-6 text-[0.8125rem]">
           <span>© {FOOTER_YEAR} WizeWorks, Inc. sparx.market is a sparx property.</span>
           <nav className="flex flex-wrap items-center gap-4" aria-label="Legal">
             {LEGAL_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text-primary)]"
+                className="text-base-content/70 hover:text-base-content transition-colors"
               >
                 {link.label}
               </Link>
