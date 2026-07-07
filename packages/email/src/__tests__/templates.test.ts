@@ -24,7 +24,7 @@ describe('templates', () => {
         expiresInMinutes: 30,
       },
     });
-    expect(rendered.subject).toMatch(/reset your sparx password/i);
+    expect(rendered.subject).toMatch(/set your sparx password/i);
     expect(rendered.html).toContain('https://app.sparx.works/reset?token=abc');
     expect(rendered.text).toContain('https://app.sparx.works/reset?token=abc');
     expect(rendered.text).toMatch(/30 minutes/);
