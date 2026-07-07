@@ -184,8 +184,8 @@ describe('sitebuilder saved theme apply — brand scope (docs/49)', () => {
 
 describe('sitebuilder update_site_settings — identity media (logo/favicon)', () => {
   let test: TestContext;
-  const LOGO = '11111111-1111-1111-1111-111111111111';
-  const FAVICON = '22222222-2222-2222-2222-222222222222';
+  const LOGO = '11111111-1111-1111-8111-111111111111';
+  const FAVICON = '22222222-2222-2222-8222-222222222222';
 
   beforeAll(async () => {
     test = await makeTestContext('owner');
