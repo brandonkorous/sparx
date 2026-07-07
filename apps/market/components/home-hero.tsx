@@ -1,128 +1,71 @@
-// The marketplace home hero — a shoppable band, not a marketing box. When enough
-// photographed products are available it's two columns: benefit copy + actions on
-// the left, a live bento mosaic of real trending products (each linking to its PDP
-// with a price tag) on the right. When imagery is thin it falls back to a single
-// CENTERED hero rather than stranding the copy in an empty half. Solid fills only —
-// the color comes from the product photography.
+// The marketplace home hero — a warm, welcoming band: benefit copy + actions +
+// live trust stats on one side, a tall PORTRAIT photograph of a real independent
+// seller on the other, so the very first thing a shopper sees is a person, not a
+// grid. The surface is a bold solid sparx pink (secondary) — energetic and warm,
+// never a gradient. White inks (secondary-content) ride the pink. The product
+// catalog leads the sections immediately below; the hero sets the tone.
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, ImageOff } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { MARKET_CATEGORIES } from '@sparx/commerce-schemas';
-import { Badge, Button } from 'silicaui-react';
-import { cx } from 'silicaui-react/server';
+import { Button } from 'silicaui-react';
 
-import { formatCents } from '@/lib/format';
-import type { ListingCard } from '@/lib/market';
+import { Container } from '@/components/ui/layout';
+import { HERO_IMAGE, HERO_ALT } from '@/lib/editorial';
 
-// Bento cell placement for the 5-tile mosaic: one 2×2 feature + four 1×1.
-const MOSAIC_SPANS = [
-  'col-span-2 row-span-2',
-  'col-span-1 row-span-1',
-  'col-span-1 row-span-1',
-  'col-span-1 row-span-1',
-  'col-span-1 row-span-1',
-];
-
-function MosaicTile({
-  product,
-  span,
-  priority,
-}: {
-  product: ListingCard;
-  span: string;
-  priority: boolean;
-}) {
-  const price = formatCents(product.priceMinCents, product.currency);
-  return (
-    <Link
-      href={`/products/${product.slug}`}
-      aria-label={product.title}
-      className={`group bg-base-200 relative overflow-hidden rounded-xl ${span}`}
-    >
-      {product.imageUrl ? (
-        <Image
-          src={product.imageUrl}
-          alt={product.title}
-          fill
-          priority={priority}
-          sizes="(min-width: 1024px) 30vw, 50vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
-        />
-      ) : (
-        <span
-          className="text-base-content/50 flex h-full w-full items-center justify-center"
-          aria-hidden
-        >
-          <ImageOff size={28} />
-        </span>
-      )}
-      <span className="absolute bottom-2 left-2">
-        <Badge color="neutral" variant="solid" size="sm">
-          {price}
-        </Badge>
-      </span>
-    </Link>
-  );
+/** A live trust stat ("2,480+ products"), or a graceful generic when the count is
+ *  not yet known. Real numbers earn more trust than round marketing claims. */
+function statLabel(count: number | undefined, noun: string, fallback: string): string {
+  return count && count > 0 ? `${count.toLocaleString()}+ ${noun}` : fallback;
 }
 
-/** The 5-up bento mosaic of trending products (desktop) — degrades to a simple
- *  2-up grid when fewer than five photographed products are available. */
-function HeroMosaic({ products }: { products: ListingCard[] }) {
-  if (products.length >= 5) {
-    return (
-      <div className="grid aspect-[5/4] grid-cols-4 grid-rows-2 gap-3 md:aspect-[3/2]">
-        {products.slice(0, 5).map((product, i) => (
-          <MosaicTile
-            key={product.slug}
-            product={product}
-            span={MOSAIC_SPANS[i] ?? 'col-span-1 row-span-1'}
-            priority={i === 0}
-          />
-        ))}
-      </div>
-    );
-  }
+/** The hero copy block — on the pink band, so its inks are the light
+ *  secondary-content ramp (never base-content, which would vanish on the fill). */
+function HeroCopy({ productCount, sellerCount }: { productCount?: number; sellerCount?: number }) {
   return (
-    <div className="grid grid-cols-2 gap-3">
-      {products.slice(0, 4).map((product, i) => (
-        <div key={product.slug} className="relative aspect-square">
-          <MosaicTile product={product} span="absolute inset-0" priority={i === 0} />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/** The hero copy block — left-aligned beside the mosaic, or centered on its own. */
-function HeroCopy({ centered }: { centered: boolean }) {
-  return (
-    <div className={centered ? 'mx-auto max-w-2xl text-center' : 'max-w-xl'}>
-      <h1 className="text-base-content text-[2.25rem] leading-[1.04] font-bold tracking-[-0.03em] md:text-[3rem]">
+    <div className="max-w-xl">
+      <h1 className="text-secondary-content text-[2.5rem] leading-[1.03] font-bold tracking-[-0.03em] md:text-[3.25rem]">
         Shop thousands of independent sellers.
       </h1>
-      <p className="text-base-content/70 mt-4 text-[1.0625rem] leading-relaxed">
+      <p className="text-secondary-content/90 mt-5 text-[1.0625rem] leading-relaxed">
         One cart for the whole network of independent shops on sparx — discover original products
         you won’t find on the big marketplaces, and check out in a single place.
       </p>
-      <div className={cx('mt-7 flex flex-wrap gap-3', centered && 'justify-center')}>
-        <Button render={<Link href="/products" />} color="primary" variant="solid" size="lg">
+      <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
+        <Button render={<Link href="/products" />} color="neutral" variant="solid" size="lg">
           Start browsing
           <ArrowRight size={18} aria-hidden />
         </Button>
-        <Button render={<Link href="/merchants" />} color="neutral" variant="soft" size="lg">
+        <Link
+          href="/merchants"
+          className="text-secondary-content inline-flex items-center gap-1.5 text-[0.9375rem] font-semibold underline-offset-4 hover:underline"
+        >
           Meet the sellers
-        </Button>
+          <ArrowRight size={16} aria-hidden />
+        </Link>
       </div>
-      <nav
-        aria-label="Shop by category"
-        className={cx('mt-6 flex flex-wrap gap-x-4 gap-y-2 text-sm', centered && 'justify-center')}
-      >
+
+      {/* Live trust stats — real catalog + seller counts when available. */}
+      <div className="text-secondary-content/80 mt-7 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm">
+        <span className="text-secondary-content font-semibold">
+          {statLabel(productCount, 'products', 'Thousands of products')}
+        </span>
+        <span aria-hidden>·</span>
+        <span className="text-secondary-content font-semibold">
+          {statLabel(sellerCount, 'independent shops', 'Hundreds of independent shops')}
+        </span>
+        <span aria-hidden>·</span>
+        <span>Ships direct</span>
+      </div>
+
+      {/* Category quick-links as pills — legible on the pink band. */}
+      <nav aria-label="Shop by category" className="mt-7 flex flex-wrap gap-2">
         {MARKET_CATEGORIES.map((category) => (
           <Link
             key={category.slug}
             href={`/${category.slug}`}
-            className="text-base-content/70 hover:text-primary font-medium transition-colors hover:underline"
+            className="bg-secondary-content/15 text-secondary-content hover:bg-secondary-content/25 rounded-full px-3 py-1.5 text-sm font-medium transition-colors"
           >
             {category.name}
           </Link>
@@ -132,23 +75,33 @@ function HeroCopy({ centered }: { centered: boolean }) {
   );
 }
 
-export function HomeHero({ products }: { products: ListingCard[] }) {
-  const withImages = products.filter((p) => p.imageUrl);
-
-  // Not enough photography for a balanced two-column hero → center the copy rather
-  // than leaving it stranded against an empty right half.
-  if (withImages.length < 4) {
-    return (
-      <section className="py-6 md:py-10">
-        <HeroCopy centered />
-      </section>
-    );
-  }
-
+export function HomeHero({
+  productCount,
+  sellerCount,
+}: {
+  productCount?: number;
+  sellerCount?: number;
+}) {
   return (
-    <section className="grid items-center gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-12">
-      <HeroCopy centered={false} />
-      <HeroMosaic products={withImages} />
+    <section className="bg-secondary text-secondary-content">
+      <Container className="py-12 md:py-16">
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.82fr)] lg:gap-14">
+          <HeroCopy
+            {...(productCount !== undefined ? { productCount } : {})}
+            {...(sellerCount !== undefined ? { sellerCount } : {})}
+          />
+          <div className="ring-secondary-content/15 relative mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden rounded-3xl ring-1 sm:aspect-[4/5] lg:mx-0 lg:max-w-none">
+            <Image
+              src={HERO_IMAGE}
+              alt={HERO_ALT}
+              fill
+              priority
+              sizes="(min-width: 1024px) 40vw, (min-width: 640px) 60vw, 100vw"
+              className="object-cover"
+            />
+          </div>
+        </div>
+      </Container>
     </section>
   );
 }
