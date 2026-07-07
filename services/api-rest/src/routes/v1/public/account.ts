@@ -20,7 +20,7 @@ import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 
 import { isModuleEnabled } from '@sparx/auth';
-import { orderService } from '@sparx/crm';
+import { orderService, orderFulfillmentsService } from '@sparx/crm';
 import { withTenant } from '@sparx/db';
 import {
   CustomerAuthError,
@@ -306,6 +306,9 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
     // get() scopes to tenant, not customer — enforce ownership without leaking
     // existence of other customers' orders.
     if (order.customerId !== customerId) throw notFound('Order', orderId);
+    // Shipments carry per-parcel tracking so the timeline can render a real
+    // "track your package" link once a fulfillment ships.
+    const fulfillments = await orderFulfillmentsService.listForOrder(ctx, orderId);
     return ok({
       id: order.id,
       orderNumber: order.orderNumber,
@@ -313,6 +316,12 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
       paymentStatus: order.paymentStatus,
       currency: order.currency,
       placedAt: order.placedAt.toISOString(),
+      // Lifecycle timestamps drive the order-status timeline. Nullable until the
+      // order reaches each stage.
+      paidAt: order.paidAt?.toISOString() ?? null,
+      fulfilledAt: order.fulfilledAt?.toISOString() ?? null,
+      deliveredAt: order.deliveredAt?.toISOString() ?? null,
+      cancelledAt: order.cancelledAt?.toISOString() ?? null,
       subtotalCents: toCents(order.subtotal),
       taxTotalCents: toCents(order.taxTotal),
       shippingTotalCents: toCents(order.shippingTotal),
@@ -326,6 +335,16 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
         quantity: it.quantity,
         unitPriceCents: toCents(it.unitPrice),
         lineTotalCents: toCents(it.lineTotal),
+      })),
+      fulfillments: fulfillments.map((f) => ({
+        id: f.id,
+        status: f.status,
+        carrier: f.carrier,
+        service: f.service,
+        trackingNumber: f.trackingNumber,
+        trackingUrl: f.trackingUrl,
+        shippedAt: f.shippedAt?.toISOString() ?? null,
+        deliveredAt: f.deliveredAt?.toISOString() ?? null,
       })),
     });
   });

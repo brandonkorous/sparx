@@ -6,11 +6,19 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { SparxAlert, SparxButton } from '@sparx/site-ui';
+import { SparxAlert, SparxBadge, SparxButton } from '@sparx/site-ui';
 
 import { useCustomer } from '@/components/customer-provider';
+import { OrderTimeline, orderStatusTone } from '@/components/order-timeline';
 import { getOrder, AccountError, type OrderDetail } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
+
+function titleCase(s: string): string {
+  return s
+    .split('_')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -30,6 +38,38 @@ function addressLine(addr: Record<string, unknown> | null): string | null {
     addr.country,
   ].filter((p): p is string => typeof p === 'string' && p.length > 0);
   return parts.length ? parts.join(' · ') : null;
+}
+
+/** The money breakdown — subtotal, optional discount/tax, shipping, total. */
+function OrderTotals({ order }: { order: OrderDetail }) {
+  return (
+    <div className="st-summary" style={{ maxWidth: 360, marginLeft: 'auto' }}>
+      <div className="st-summary__row">
+        <span>Subtotal</span>
+        <span>{formatMoney(order.subtotalCents, order.currency)}</span>
+      </div>
+      {order.discountTotalCents > 0 ? (
+        <div className="st-summary__row">
+          <span>Discount</span>
+          <span>−{formatMoney(order.discountTotalCents, order.currency)}</span>
+        </div>
+      ) : null}
+      <div className="st-summary__row">
+        <span>Shipping</span>
+        <span>{formatMoney(order.shippingTotalCents, order.currency)}</span>
+      </div>
+      {order.taxTotalCents > 0 ? (
+        <div className="st-summary__row">
+          <span>Tax</span>
+          <span>{formatMoney(order.taxTotalCents, order.currency)}</span>
+        </div>
+      ) : null}
+      <div className="st-summary__total">
+        <span>Total</span>
+        <span>{formatMoney(order.totalCents, order.currency)}</span>
+      </div>
+    </div>
+  );
 }
 
 export default function OrderDetailPage() {
@@ -90,13 +130,21 @@ export default function OrderDetailPage() {
         }}
       >
         <h1 className="st-h2">Order #{order.orderNumber}</h1>
-        <span className="st-badge" data-status={order.status}>
-          {order.status}
-        </span>
+        <SparxBadge color={orderStatusTone(order.status)} variant="soft">
+          {titleCase(order.status)}
+        </SparxBadge>
       </div>
       <p className="st-muted" style={{ marginBottom: '1.5rem' }}>
-        Placed {formatDate(order.placedAt)} · {order.paymentStatus}
+        Placed {formatDate(order.placedAt)} · Payment {titleCase(order.paymentStatus)}
       </p>
+
+      {/* Order status timeline — the lifecycle at a glance. */}
+      <div className="st-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+        <h2 className="st-h3" style={{ marginBottom: '1.25rem' }}>
+          Order status
+        </h2>
+        <OrderTimeline order={order} />
+      </div>
 
       <div
         style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}
@@ -115,32 +163,7 @@ export default function OrderDetailPage() {
         ))}
       </div>
 
-      <div className="st-summary" style={{ maxWidth: 360, marginLeft: 'auto' }}>
-        <div className="st-summary__row">
-          <span>Subtotal</span>
-          <span>{formatMoney(order.subtotalCents, order.currency)}</span>
-        </div>
-        {order.discountTotalCents > 0 ? (
-          <div className="st-summary__row">
-            <span>Discount</span>
-            <span>−{formatMoney(order.discountTotalCents, order.currency)}</span>
-          </div>
-        ) : null}
-        <div className="st-summary__row">
-          <span>Shipping</span>
-          <span>{formatMoney(order.shippingTotalCents, order.currency)}</span>
-        </div>
-        {order.taxTotalCents > 0 ? (
-          <div className="st-summary__row">
-            <span>Tax</span>
-            <span>{formatMoney(order.taxTotalCents, order.currency)}</span>
-          </div>
-        ) : null}
-        <div className="st-summary__total">
-          <span>Total</span>
-          <span>{formatMoney(order.totalCents, order.currency)}</span>
-        </div>
-      </div>
+      <OrderTotals order={order} />
 
       {ship ? (
         <div style={{ marginTop: '1.5rem' }}>

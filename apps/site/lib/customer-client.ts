@@ -152,12 +152,29 @@ export interface OrderSummary {
   placedAt: string;
 }
 
+export interface OrderFulfillmentView {
+  id: string;
+  status: string;
+  carrier: string | null;
+  service: string | null;
+  trackingNumber: string | null;
+  trackingUrl: string | null;
+  shippedAt: string | null;
+  deliveredAt: string | null;
+}
+
 export interface OrderDetail extends Omit<OrderSummary, never> {
   subtotalCents: number;
   taxTotalCents: number;
   shippingTotalCents: number;
   discountTotalCents: number;
   shippingAddress: Record<string, unknown> | null;
+  // Lifecycle timestamps — nullable until the order reaches each stage. Drive
+  // the order-status timeline.
+  paidAt: string | null;
+  fulfilledAt: string | null;
+  deliveredAt: string | null;
+  cancelledAt: string | null;
   items: {
     id: string;
     name: string;
@@ -166,6 +183,7 @@ export interface OrderDetail extends Omit<OrderSummary, never> {
     unitPriceCents: number;
     lineTotalCents: number;
   }[];
+  fulfillments: OrderFulfillmentView[];
 }
 
 export async function getOrders(
